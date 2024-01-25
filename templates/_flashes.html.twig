@@ -1,0 +1,3 @@
+{% for message in app.flashes('success') %}
+    <twig:Toast type="success">{{ message }}</twig:Toast>
+{% endfor %}

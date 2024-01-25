@@ -4,6 +4,12 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    app.site_domain: '%env(SITE_DOMAIN)%'
+    router.request_context.scheme: '%env(SITE_BASE_SCHEME)%'
+    router.request_context.host: '%env(SITE_BASE_HOST)%'
+
+    bind:
+        string $publicDir: '%kernel.project_dir%/public'
 
 services:
     # default configuration for services in *this* file
@@ -22,3 +28,7 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    App\Controller\RegistrationController:
+        bind:
+            $formLoginAuthenticator: '@security.authenticator.form_login.main'

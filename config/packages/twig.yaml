@@ -1,0 +1,11 @@
+twig:
+    file_name_pattern: '*.twig'
+    form_themes: ['@TalesFromADevFlowbite/form/default.html.twig']
+    paths:
+        'assets/styles': styles
+    globals:
+        domain: '%env(SITE_DOMAIN)%'
+
+when@test:
+    twig:
+        strict_variables: true

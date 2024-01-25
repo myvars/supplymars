@@ -1,0 +1,36 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #f3f3f3;
+    font-family: Helvetica, Arial, sans-serif;
+}
+h1 {
+    background-color: #212529;
+    color: #ffffff;
+    /*padding: 30px 0 50px 0;*/
+    font-weight: normal;
+}
+hr {
+    border: none;
+    border-top: 3px solid #212529;
+    margin: 20px;
+}
+.welcome {
+    background-color: #212529;
+}
+.bottom {
+    background-color: #efefee;
+}
+.logo {
+    width: 100%;
+}
+.text-center {
+    text-align: center;
+}
+table.button a {
+    background-color: #212529;
+}
+table.button table td {
+    background-color: #212529;
+    border: 2px solid #212529;
+}

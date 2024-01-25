@@ -1,0 +1,15 @@
+framework:
+    mailer:
+        dsn: '%env(MAILER_DSN)%'
+
+        envelope:
+            sender: 'no-reply@%env(SITE_DOMAIN)%'
+        headers:
+            From: '%env(SITE_DOMAIN)% <no-reply@%env(SITE_DOMAIN)%>'
+
+when@dev:
+    framework:
+        mailer:
+            envelope:
+                recipients: ['%env(DEV_MAIL_RECIPIENT)%']
+

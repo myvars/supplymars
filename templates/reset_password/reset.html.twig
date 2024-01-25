@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Reset password{% endblock %}
+
+{% block body %}
+
+    <section class="rounded-lg bg-gray-50 dark:bg-gray-900">
+        <div class="flex flex-col items-center px-6 py-8 mx-auto lg:py-0">
+            <div
+                class="w-full bg-white rounded-lg shadow dark:border md:m-10 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+                <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+                    <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+                        Change Password
+                    </h1>
+                    {{ form_start(resetForm, {
+                        'attr': {
+                            'class': 'space-y-4 md:space-y-6',
+                            'novalidate': 'novalidate',
+                        }
+                    }) }}
+                    {{ form_row(resetForm.plainPassword) }}
+                    <twig:Button type="submit" class="w-full">Reset password</twig:Button>
+                    {{ form_end(resetForm) }}
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}

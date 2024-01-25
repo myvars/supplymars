@@ -1,0 +1,21 @@
+{% apply inky_to_html|inline_css(source('@styles/email.css'), source('@styles/foundation-emails.min.css')) %}
+    <container>
+        <row class="header">
+            <columns>
+                <br>
+                <a href="{{ url('app_homepage') }}">
+                    {{ include('logo/_logo.html.twig', { logoHeight: 80 }) }}
+                </a>
+            </columns>
+        </row>
+
+        {% block content %}{% endblock %}
+
+        <row class="footer">
+            <columns>
+                <p>Cheers,</p>
+                <p>Your friendly <em>{{ domain|title }} team</em></p>
+            </columns>
+        </row>
+    </container>
+{% endapply %}

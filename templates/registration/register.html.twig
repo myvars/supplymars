@@ -1,0 +1,62 @@
+{% extends 'modalBase.html.twig' %}
+
+{% block title %}Sign Up{% endblock %}
+
+{% block body %}
+    <section class="rounded-lg bg-gray-50 dark:bg-gray-900">
+        <div class="flex flex-col items-center px-6 py-8 mx-auto lg:py-0">
+            <div
+                class="w-full bg-white rounded-lg shadow dark:border md:m-10 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
+                <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+                    <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+                        Create an account
+                    </h1>
+                    {% for flash_error in app.flashes('verify_email_error') %}
+                        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+                    {% endfor %}
+                    {{ form_start(registrationForm, {
+                        'attr': {
+                            'class': 'space-y-4 md:space-y-6',
+                            'novalidate': 'novalidate',
+                        }
+                    }) }}
+                    {{ form_row(registrationForm.fullName) }}
+                    {{ form_row(registrationForm.email) }}
+                    {{ form_row(registrationForm.plainPassword) }}
+                    <div class="mb-3">
+                        <div class="flex items-center mr-4">
+                            <input type="checkbox" id="registration_form_agreeTerms"
+                                   name="{{ field_name(registrationForm.agreeTerms) }}"
+                                   required="required"
+                                   class="rounded w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                   value="{{ field_value(registrationForm.agreeTerms) }}">
+                            <label class="ml-2 text-sm font-light text-gray-500 dark:text-gray-400"
+                                   for="registration_form_agreeTerms">
+                                I accept the
+                                <a
+                                    class="font-medium text-primary-600 hover:underline dark:text-primary-500" href="#">
+                                    Terms and Conditions
+                                </a>
+                            </label>
+                        </div>
+                        <div class="form-error">
+                            {{ form_errors(registrationForm.agreeTerms) }}
+                        </div>
+                    </div>
+                    <twig:Button type="submit" class="w-full">Create account</twig:Button>
+                    <p class="text-sm font-light text-gray-500 dark:text-gray-400">
+                        Already have an account?
+                        <a
+                            href="{{ path('app_login') }}"
+                            class="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                        >
+                            Login here
+                        </a>
+                    </p>
+                    {{ form_end(registrationForm) }}
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
