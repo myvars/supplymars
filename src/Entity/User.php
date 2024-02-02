@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -41,6 +43,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: 'boolean')]
     private $isVerified = false;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Category::class)]
+    private Collection $categories;
+
+    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Subcategory::class)]
+    private Collection $subcategories;
+
+
+    public function __construct()
+    {
+        $this->categories = new ArrayCollection();
+        $this->subcategories = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -137,6 +152,66 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIsVerified(bool $isVerified): static
     {
         $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Category>
+     */
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    public function addCategory(Category $category): static
+    {
+        if (!$this->categories->contains($category)) {
+            $this->categories->add($category);
+            $category->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCategory(Category $category): static
+    {
+        if ($this->categories->removeElement($category)) {
+            // set the owning side to null (unless already changed)
+            if ($category->getOwner() === $this) {
+                $category->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Subcategory>
+     */
+    public function getSubcategories(): Collection
+    {
+        return $this->subcategories;
+    }
+
+    public function addSubcategory(Subcategory $subcategory): static
+    {
+        if (!$this->subcategories->contains($subcategory)) {
+            $this->subcategories->add($subcategory);
+            $subcategory->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSubcategory(Subcategory $subcategory): static
+    {
+        if ($this->subcategories->removeElement($subcategory)) {
+            // set the owning side to null (unless already changed)
+            if ($subcategory->getOwner() === $this) {
+                $subcategory->setOwner(null);
+            }
+        }
 
         return $this;
     }

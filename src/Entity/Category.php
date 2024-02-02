@@ -1,0 +1,177 @@
+<?php
+
+namespace App\Entity;
+
+use App\Repository\CategoryRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
+#[ORM\Entity(repositoryClass: CategoryRepository::class)]
+class Category
+{
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Please enter a category name')]
+    private ?string $name = null;
+
+    #[ORM\Column]
+    #[Assert\NotNull]
+    #[Assert\Range(notInRangeMessage: 'Please enter a valid markup', min: 0, max: 100000)]
+    private ?int $markup = null;
+
+    #[ORM\ManyToOne(inversedBy: 'categories')]
+    #[Assert\NotNull(message: 'Please enter a category owner')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $owner = null;
+
+    #[ORM\Column]
+    private bool $isActive = false;
+
+    #[ORM\OneToMany(mappedBy: 'category', targetEntity: Subcategory::class)]
+    private Collection $subcategories;
+
+    #[ORM\ManyToOne(inversedBy: 'categories')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull]
+    private ?VatRate $vatRate = null;
+
+    #[ORM\OneToMany(mappedBy: 'category', targetEntity: Product::class)]
+    private Collection $products;
+
+    public function __construct()
+    {
+        $this->subcategories = new ArrayCollection();
+        $this->products = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
+
+    public function setName(string $name): static
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    public function getMarkup(): ?int
+    {
+        return $this->markup;
+    }
+
+    public function setMarkup(int $markup): static
+    {
+        $this->markup = $markup;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(User $owner): static
+    {
+        $this->owner = $owner;
+
+        return $this;
+    }
+
+    public function isIsActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): static
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Subcategory>
+     */
+    public function getSubcategories(): Collection
+    {
+        return $this->subcategories;
+    }
+
+    public function addSubcategory(Subcategory $subcategory): static
+    {
+        if (!$this->subcategories->contains($subcategory)) {
+            $this->subcategories->add($subcategory);
+            $subcategory->setCategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSubcategory(Subcategory $subcategory): static
+    {
+        if ($this->subcategories->removeElement($subcategory)) {
+            // set the owning side to null (unless already changed)
+            if ($subcategory->getCategory() === $this) {
+                $subcategory->setCategory(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getVatRate(): ?VatRate
+    {
+        return $this->vatRate;
+    }
+
+    public function setVatRate(VatRate $vatRate): static
+    {
+        $this->vatRate = $vatRate;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Product>
+     */
+    public function getProducts(): Collection
+    {
+        return $this->products;
+    }
+
+    public function addProduct(Product $product): static
+    {
+        if (!$this->products->contains($product)) {
+            $this->products->add($product);
+            $product->setCategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProduct(Product $product): static
+    {
+        if ($this->products->removeElement($product)) {
+            // set the owning side to null (unless already changed)
+            if ($product->getCategory() === $this) {
+                $product->setCategory(null);
+            }
+        }
+
+        return $this;
+    }
+}
