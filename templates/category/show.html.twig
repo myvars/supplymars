@@ -1,0 +1,83 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Category{% endblock %}
+
+{% block body %}
+    <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+        <div
+            class="flex justify-between"
+        >
+            <h1 class="text-xl font-semibold text-white mb-4">Category</h1>
+            <twig:Button
+                tag="a"
+                variant="warning"
+                href="{{ path('app_category_edit', {'id': category.id }) }}"
+                class="flex items-center space-x-1 font-bold"
+            >
+                <svg class="w-4 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="m14.3 4.8 2.9 2.9M7 7H4a1 1 0 0 0-1 1v10c0 .6.4 1 1 1h11c.6 0 1-.4 1-1v-4.5m2.4-10a2 2 0 0 1 0 3l-6.8 6.8L8 14l.7-3.6 6.9-6.8a2 2 0 0 1 2.8 0Z"/>
+                </svg>
+                <span>Edit</span>
+            </twig:Button>
+        </div>
+
+        <div class="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+            <ul class="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200 rounded-t-lg bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:bg-gray-800"
+                id="defaultTab" data-tabs-toggle="#defaultTabContent" role="tablist">
+                <li class="me-2">
+                    <button id="details-tab" data-tabs-target="#details" type="button" role="tab"
+                            aria-controls="details" aria-selected="true"
+                            class="inline-block p-4 text-blue-600 rounded-ss-lg hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-blue-500">
+                        Details
+                    </button>
+                </li>
+                <li class="me-2">
+                    <button id="sales-tab" data-tabs-target="#sales" type="button" role="tab" aria-controls="sales"
+                            aria-selected="false"
+                            class="inline-block p-4 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-gray-300">
+                        Sales
+                    </button>
+                </li>
+            </ul>
+            <div id="defaultTabContent">
+                <div class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800" id="details" role="tabpanel"
+                     aria-labelledby="details-tab">
+                    <h2 class="mb-3 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">{{ category.name }}</h2>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">{{ (category.markup / 100)|number_format(2) }}%</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">
+                        {{ category.vatRate.name }}
+                        <span class="ms-2">{{ (category.vatRate.rate / 100)|number_format(2) }}%</span>
+                    </p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">{{ category.owner.fullName }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">{{ category.isActive ? 'Yes' : 'No' }}</p>
+                </div>
+                <div class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800" id="sales" role="tabpanel"
+                     aria-labelledby="sales-tab">
+                    <dl class="grid max-w-screen-xl grid-cols-2 gap-8 p-4 mx-auto text-gray-900 sm:grid-cols-3 xl:grid-cols-6 dark:text-white sm:p-8">
+                        <div class="flex flex-col">
+                            <dt class="mb-2 text-3xl font-extrabold">73M+</dt>
+                            <dd class="text-gray-500 dark:text-gray-400">Developers</dd>
+                        </div>
+                        <div class="flex flex-col">
+                            <dt class="mb-2 text-3xl font-extrabold">100M+</dt>
+                            <dd class="text-gray-500 dark:text-gray-400">Public repositories</dd>
+                        </div>
+                        <div class="flex flex-col">
+                            <dt class="mb-2 text-3xl font-extrabold">1000s</dt>
+                            <dd class="text-gray-500 dark:text-gray-400">Open source projects</dd>
+                        </div>
+                    </dl>
+                </div>
+                <div>
+                    <hr class="border-t border-gray-200 dark:border-gray-700">
+                    <p class="text-sm font-light text-gray-500 dark:text-gray-400 p-4">
+                        <a href="{{ path('app_category_index') }}" class="hover:underline">Back to list</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+

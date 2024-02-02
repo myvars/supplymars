@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Vat Rates{% endblock %}
+{% block title %}Category index{% endblock %}
 
 {% block body %}
     <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
@@ -8,12 +8,13 @@
             class="flex justify-between"
         >
             <h1 class="text-xl font-semibold text-white mb-4">
-                VAT Rate List
-                <span class="text-base font-light text-gray-500 dark:text-gray-400 ms-3">( {{ vat_rates|length }} )</span>
+                Category List
+                <span
+                    class="text-base font-light text-gray-500 dark:text-gray-400 ms-3">( {{ categories|length }} )</span>
             </h1>
             <twig:Button
                 tag="a"
-                href="{{ path('app_vat_rate_new') }}"
+                href="{{ path('app_category_new') }}"
                 class="flex items-center space-x-1 font-bold"
             >
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 inline" viewBox="0 0 24 24" stroke-width="2"
@@ -23,7 +24,7 @@
                     <path d="M9 12h6"/>
                     <path d="M12 9v6"/>
                 </svg>
-                <span>Add VAT Rate</span>
+                <span>Add Category</span>
             </twig:Button>
         </div>
 
@@ -33,30 +34,32 @@
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Id</th>
                     <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Name</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">VAT Rate</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Markup</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Active</th>
                     <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
                 </tr>
                 </thead>
 
                 <tbody class="divide-y divide-gray-600">
-                {% for vat_rate in vat_rates %}
+                {% for category in categories %}
                     <tr class="bg-gray-50 dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-                        id="vat_rate-list-item-{{ vat_rate.id }}">
-                        <td class="px-6 py-6 whitespace-nowrap">{{ vat_rate.id }}</td>
-                        <td class="px-6 py-6 text-gray-900 dark:text-white">{{ vat_rate.name }}</td>
-                        <td class="px-6 py-6 whitespace-nowrap">{{ (vat_rate.rate / 100)|number_format(2) }}%</td>
+                        id="category-list-item-{{ category.id }}">
+                        <td class="px-6 py-6 whitespace-nowrap">{{ category.id }}</td>
+                        <td class="px-6 py-6 text-gray-900 dark:text-white">{{ category.name }}</td>
+                        <td class="px-6 py-6 whitespace-nowrap">{{ (category.markup / 100)|number_format(2) }}%</td>
+                        <td class="px-6 py-6 whitespace-nowrap">{{ category.isActive ? 'Yes' : 'No' }}</td>
                         <td class="px-6 py-6 whitespace-nowrap flex">
-                            <a href="{{ path('app_vat_rate_show', {'id': vat_rate.id }) }}"
+                            <a href="{{ path('app_category_show', {'id': category.id }) }}"
                                class="text-blue-400 hover:text-blue-600">show</a>
                             <a
-                                href="{{ path('app_vat_rate_edit', {'id': vat_rate.id }) }}"
+                                href="{{ path('app_category_edit', {'id': category.id }) }}"
                                 class="ml-4 text-yellow-400 hover:text-yellow-600"
                             >edit</a>
                         </td>
                     </tr>
                 {% else %}
                     <tr>
-                        <td colspan="4" class="px-6 py-6 whitespace-nowrap text-center text-gray-400">No records found
+                        <td colspan="5" class="px-6 py-6 whitespace-nowrap text-center text-gray-400">No records found
                         </td>
                     </tr>
                 {% endfor %}

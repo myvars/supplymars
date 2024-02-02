@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Factory\ManufacturerFactory;
 use App\Factory\UserFactory;
 use App\Factory\VatRateFactory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -40,6 +41,12 @@ class AppFixtures extends Fixture
             'name' => 'Zero rate',
             'rate' => 0,
         ]);
+
+        ManufacturerFactory::createOne([
+            'name' => 'Apple',
+        ]);
+
+        ManufacturerFactory::createMany(29);
 
         $manager->flush();
     }

@@ -48,7 +48,7 @@ final class VatRateFactory extends ModelFactory
     {
         return [
             'name' => self::faker()->text(255),
-            'rate' => self::faker()->randomNumber(),
+            'rate' => self::faker()->randomNumber(4),
         ];
     }
 
