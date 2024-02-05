@@ -13,6 +13,7 @@ class ManufacturerType extends AbstractType
     {
         $builder
             ->add('name')
+            ->add('isActive')
         ;
     }
 

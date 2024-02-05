@@ -11,17 +11,25 @@ class IntegerToPercentageTransformer implements DataTransformerInterface
      * Transforms an integer (value) to a percentage.
      *
      */
-    public function transform(mixed $value): string
+    public function transform(mixed $value): int
     {
+        if (!$value) {
+            return 0;
+        }
+
         return $value / 100;
     }
 
     /**
-     * Transforms a percentage (percent to an integer.
+     * Transforms a percentage (percent) to an integer.
      *
      */
-    public function reverseTransform(mixed $value): int
+    public function reverseTransform($value): int
     {
+        if (!$value) {
+            return 0;
+        }
+
         return $value * 100;
     }
 }

@@ -1,17 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Manufacturer{% endblock %}
+{% block title %}Subcategory{% endblock %}
 
 {% block body %}
     <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
         <div
             class="flex justify-between"
         >
-            <h1 class="text-xl font-semibold text-white mb-4">Manufacturer</h1>
+            <h1 class="text-xl font-semibold text-white mb-4">Subcategory</h1>
             <twig:Button
                 tag="a"
                 variant="warning"
-                href="{{ path('app_manufacturer_edit', {'id': manufacturer.id }) }}"
+                href="{{ path('app_subcategory_edit', {'id': subcategory.id }) }}"
                 class="flex items-center space-x-1 font-bold"
             >
                 <svg class="w-4 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -43,8 +43,31 @@
             <div id="defaultTabContent">
                 <div class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800" id="details" role="tabpanel"
                      aria-labelledby="details-tab">
-                    <h2 class="mb-3 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">{{ manufacturer.name }}</h2>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">{{ manufacturer.isActive ? 'Yes' : 'No' }}</p>
+                    <h2 class="mb-3 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">{{ subcategory.name }}</h2>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Category: {{ subcategory.category.name }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">
+                        {% if subcategory.markup %}
+                            {{ (subcategory.markup / 100)|number_format(2) }}%
+                        {% else %}
+                            'n/a'
+                        {% endif %}
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">
+                        {% if subcategory.vatRate %}
+                            {{ subcategory.vatRate.name }}
+                            <span class="ms-2">{{ (subcategory.vatRate.rate / 100)|number_format(2) }}%</span>
+                        {% else %}
+                            'n/a'
+                        {% endif %}
+                    </p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">
+                        {% if subcategory.owner %}
+                            {{ subcategory.owner.fullName }}
+                        {% else %}
+                            'n/a'
+                        {% endif %}
+                        {{ subcategory.owner.fullName }}
+                    </p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">{{ subcategory.isActive ? 'Yes' : 'No' }}</p>
                 </div>
                 <div class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800" id="sales" role="tabpanel"
                      aria-labelledby="sales-tab">
@@ -66,14 +89,12 @@
                 <div>
                     <hr class="border-t border-gray-200 dark:border-gray-700">
                     <p class="text-sm font-light text-gray-500 dark:text-gray-400 p-4">
-                        <a href="{{ path('app_manufacturer_index') }}" class="hover:underline">Back to list</a>
+                        <a href="{{ path('app_subcategory_index') }}" class="hover:underline">Back to list</a>
                     </p>
                 </div>
             </div>
         </div>
     </div>
 {% endblock %}
-
-
 
 

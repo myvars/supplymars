@@ -6,19 +6,41 @@ use App\Entity\VatRate;
 use App\Form\VatRateType;
 use App\Repository\VatRateRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Pagerfanta\Doctrine\ORM\QueryAdapter;
+use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/vat-rate')]
 class VatRateController extends AbstractController
 {
     #[Route('/', name: 'app_vat_rate_index', methods: ['GET'])]
-    public function index(VatRateRepository $vatRateRepository): Response
+    public function index(
+        VatRateRepository $vatRateRepository,
+        #[MapQueryParameter] int $page = 1,
+        #[MapQueryParameter] int $limit = 10,
+        #[MapQueryParameter] string $sort = 'leaveAt',
+        #[MapQueryParameter] string $sortDirection = 'ASC',
+        #[MapQueryParameter] string $query = null,
+    ): Response
     {
+        $validSorts = ['id', 'name'];
+        $sort = in_array($sort, $validSorts) ? $sort : 'id';
+
+        $pager = Pagerfanta::createForCurrentPageWithMaxPerPage(
+            new QueryAdapter($vatRateRepository->findBySearchQueryBuilder($query, $sort, $sortDirection)),
+            $page,
+            $limit
+        );
+
         return $this->render('vat_rate/index.html.twig', [
-            'vat_rates' => $vatRateRepository->findAll(),
+            'section' => 'VAT rate',
+            'results' => $pager,
+            'sort' => $sort,
+            'sortDirection' => $sortDirection,
         ]);
     }
 
@@ -65,6 +87,14 @@ class VatRateController extends AbstractController
         return $this->render('vat_rate/edit.html.twig', [
             'vat_rate' => $vatRate,
             'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}/delete', name: 'app_vat_rate_delete_confirm', methods: ['GET'])]
+    public function deleteConfirm(VatRate $vatRate): Response
+    {
+        return $this->render('vat_rate/delete.html.twig', [
+            'vat_rate' => $vatRate,
         ]);
     }
 

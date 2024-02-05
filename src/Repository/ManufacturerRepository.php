@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Manufacturer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -21,28 +22,32 @@ class ManufacturerRepository extends ServiceEntityRepository
         parent::__construct($registry, Manufacturer::class);
     }
 
-//    /**
-//     * @return Manufacturer[] Returns an array of Manufacturer objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('m.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function findBySearch(?string $query, int $limit = null): array
+    {
+        $qb =  $this->findBySearchQueryBuilder($query);
 
-//    public function findOneBySomeField($value): ?Manufacturer
-//    {
-//        return $this->createQueryBuilder('m')
-//            ->andWhere('m.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        if ($limit) {
+            $qb->setMaxResults($limit);
+        }
+
+        return $qb
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findBySearchQueryBuilder(?string $query, ?string $sort = null, string $direction = 'DESC'): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('m');
+
+        if ($query) {
+            $qb->andWhere('m.name LIKE :query')
+                ->setParameter('query', '%' . $query . '%');
+        }
+
+        if ($sort) {
+            $qb->orderBy('m.' . $sort, $direction);
+        }
+
+        return $qb;
+    }
 }

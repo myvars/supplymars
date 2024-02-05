@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Factory\CategoryFactory;
 use App\Factory\ManufacturerFactory;
 use App\Factory\UserFactory;
 use App\Factory\VatRateFactory;
@@ -12,7 +13,7 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        UserFactory::createOne([
+        $user = UserFactory::createOne([
             'fullName' => 'Adam Ashmore',
             'email' => 'adam@admin.com',
             'password' => 'letmein',
@@ -27,7 +28,7 @@ class AppFixtures extends Fixture
             'password' => 'letmein',
         ]);
 
-        VatRateFactory::createOne([
+        $vatRate = VatRateFactory::createOne([
             'name' => 'Standard rate',
             'rate' => 2000,
         ]);
@@ -46,7 +47,19 @@ class AppFixtures extends Fixture
             'name' => 'Apple',
         ]);
 
-        ManufacturerFactory::createMany(29);
+        ManufacturerFactory::createMany(199);
+
+        CategoryFactory::createOne([
+            'name' => 'Laptops',
+            'markup' => 2000,
+            'vatRate' => $vatRate,
+            'owner' => $user,
+        ]);
+
+        CategoryFactory::createMany(299, [
+            'vatRate' => VatRateFactory::random(),
+            'owner' => UserFactory::random(),
+        ]);
 
         $manager->flush();
     }

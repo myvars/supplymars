@@ -48,6 +48,7 @@ final class ManufacturerFactory extends ModelFactory
     {
         return [
             'name' => self::faker()->company(),
+            'isActive' => self::faker()->boolean(),
         ];
     }
 

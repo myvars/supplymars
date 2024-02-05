@@ -23,6 +23,9 @@ class Manufacturer
     #[ORM\OneToMany(mappedBy: 'manufacturer', targetEntity: Product::class)]
     private Collection $products;
 
+    #[ORM\Column]
+    private bool $isActive = false;
+
     public function __construct()
     {
         $this->products = new ArrayCollection();
@@ -41,6 +44,18 @@ class Manufacturer
     public function setName(string $name): static
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function isIsActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): static
+    {
+        $this->isActive = $isActive;
 
         return $this;
     }

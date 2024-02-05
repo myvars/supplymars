@@ -6,19 +6,41 @@ use App\Entity\Manufacturer;
 use App\Form\ManufacturerType;
 use App\Repository\ManufacturerRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Pagerfanta\Doctrine\ORM\QueryAdapter;
+use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/manufacturer')]
 class ManufacturerController extends AbstractController
 {
     #[Route('/', name: 'app_manufacturer_index', methods: ['GET'])]
-    public function index(ManufacturerRepository $manufacturerRepository): Response
+    public function index(
+        ManufacturerRepository $manufacturerRepository,
+        #[MapQueryParameter] int $page = 1,
+        #[MapQueryParameter] int $limit = 10,
+        #[MapQueryParameter] string $sort = 'leaveAt',
+        #[MapQueryParameter] string $sortDirection = 'ASC',
+        #[MapQueryParameter] string $query = null,
+    ): Response
     {
+        $validSorts = ['id', 'name', 'isActive'];
+        $sort = in_array($sort, $validSorts) ? $sort : 'id';
+
+        $pager = Pagerfanta::createForCurrentPageWithMaxPerPage(
+            new QueryAdapter($manufacturerRepository->findBySearchQueryBuilder($query, $sort, $sortDirection)),
+            $page,
+            $limit
+        );
+
         return $this->render('manufacturer/index.html.twig', [
-            'manufacturers' => $manufacturerRepository->findAll(),
+            'section' => 'manufacturer',
+            'results' => $pager,
+            'sort' => $sort,
+            'sortDirection' => $sortDirection,
         ]);
     }
 
@@ -65,6 +87,14 @@ class ManufacturerController extends AbstractController
         return $this->render('manufacturer/edit.html.twig', [
             'manufacturer' => $manufacturer,
             'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}/delete', name: 'app_manufacturer_delete_confirm', methods: ['GET'])]
+    public function deleteConfirm(Manufacturer $manufacturer): Response
+    {
+        return $this->render('manufacturer/delete.html.twig', [
+            'manufacturer' => $manufacturer
         ]);
     }
 

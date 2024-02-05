@@ -1,4 +1,0 @@
-<form method="post" action="{{ path('app_vat_rate_delete', {'id': vat_rate.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
-    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ vat_rate.id) }}">
-    <twig:Button type="submit" variant="danger" class="w-full">Delete</twig:Button>
-</form>

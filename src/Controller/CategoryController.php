@@ -6,19 +6,41 @@ use App\Entity\Category;
 use App\Form\CategoryType;
 use App\Repository\CategoryRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Pagerfanta\Doctrine\ORM\QueryAdapter;
+use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/category')]
 class CategoryController extends AbstractController
 {
     #[Route('/', name: 'app_category_index', methods: ['GET'])]
-    public function index(CategoryRepository $categoryRepository): Response
+    public function index(
+        CategoryRepository $categoryRepository,
+        #[MapQueryParameter] int $page = 1,
+        #[MapQueryParameter] int $limit = 10,
+        #[MapQueryParameter] string $sort = 'leaveAt',
+        #[MapQueryParameter] string $sortDirection = 'ASC',
+        #[MapQueryParameter] string $query = null,
+    ): Response
     {
+        $validSorts = ['id', 'name', 'markup', 'isActive'];
+        $sort = in_array($sort, $validSorts) ? $sort : 'id';
+
+        $pager = Pagerfanta::createForCurrentPageWithMaxPerPage(
+            new QueryAdapter($categoryRepository->findBySearchQueryBuilder($query, $sort, $sortDirection)),
+            $page,
+            $limit
+        );
+
         return $this->render('category/index.html.twig', [
-            'categories' => $categoryRepository->findAll(),
+            'section' => 'category',
+            'results' => $pager,
+            'sort' => $sort,
+            'sortDirection' => $sortDirection,
         ]);
     }
 
@@ -65,6 +87,14 @@ class CategoryController extends AbstractController
         return $this->render('category/edit.html.twig', [
             'category' => $category,
             'form' => $form,
+        ]);
+    }
+
+    #[Route('/{id}/delete', name: 'app_category_delete_confirm', methods: ['GET'])]
+    public function deleteConfirm(Category $category): Response
+    {
+        return $this->render('category/delete.html.twig', [
+            'category' => $category,
         ]);
     }
 
