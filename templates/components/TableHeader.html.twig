@@ -7,7 +7,7 @@
         href="{{ path(app.current_route, {
             ...app.request.query.all(),
             sort: sortValue,
-            sortDirection: sort == app.request.query.get('sort') and app.request.query.get('sortDirection') == 'asc' ? 'desc' : 'asc',
+            sortDirection: sortValue == app.request.query.get('sort') and app.request.query.get('sortDirection') == 'asc' ? 'desc' : 'asc',
         }) }}"
     >
     {% endif %}

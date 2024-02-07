@@ -1,17 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Subcategory{% endblock %}
+{% block title %}Category{% endblock %}
 
 {% block body %}
     <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
         <div
             class="flex justify-between"
         >
-            <h1 class="text-xl font-semibold text-white mb-4">Subcategory</h1>
+            <h1 class="text-xl font-semibold text-white mb-4">Product</h1>
             <twig:Button
                 tag="a"
                 variant="warning"
-                href="{{ path('app_subcategory_edit', {'id': subcategory.id }) }}"
+                href="{{ path('app_product_edit', {'id': product.id }) }}"
                 class="flex items-center space-x-1 font-bold"
             >
                 <svg class="w-4 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -43,16 +43,25 @@
             <div id="defaultTabContent">
                 <div class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800" id="details" role="tabpanel"
                      aria-labelledby="details-tab">
-                    <h2 class="mb-3 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">{{ subcategory.name }}</h2>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Category: {{ subcategory.category.name }}</p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">{{ (subcategory.markup / 100)|number_format(2) }}%</p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">
-                        {{ subcategory.vatRate.name }}
-                        <span class="ms-2">{{ (subcategory.vatRate.rate / 100)|number_format(2) }}%</span>
+                    <h2 class="mb-3 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">{{ product.name }}</h2>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Category: {{ product.category.name }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Subcategory: {{ product.subcategory.name }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Manufacturer: {{ product.manufacturer.name }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Mfr Part Number: {{ product.mfrPartNumber }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Stock Level: {{ product.stock }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Lead Time (Days): {{ product.leadTimeDays }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Weight: {{ product.weight }} grams</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">VAT Rate:
+                        {{ product.vatRate.name }}
+                        <span class="ms-2">{{ (product.vatRate.rate / 100)|number_format(2) }}%</span>
                     </p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">{{ subcategory.owner.fullName }}</p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">{{ subcategory.isActive ? 'Yes' : 'No' }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Cost: £{{ (product.cost / 100)|number_format(2) }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Markup: {{ (product.markup / 100)|number_format(2) }}%</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Sell Price: £{{ (product.sellPrice / 100)|number_format(2) }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Product manager: {{ product.owner.fullName }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Active: {{ product.isActive ? 'Yes' : 'No' }}</p>
                 </div>
+
                 <div class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800" id="sales" role="tabpanel"
                      aria-labelledby="sales-tab">
                     <dl class="grid max-w-screen-xl grid-cols-2 gap-8 p-4 mx-auto text-gray-900 sm:grid-cols-3 xl:grid-cols-6 dark:text-white sm:p-8">
@@ -73,15 +82,13 @@
                 <div>
                     <hr class="border-t border-gray-200 dark:border-gray-700">
                     <p class="text-sm font-light text-gray-500 dark:text-gray-400 p-4">
-                        <a href="{{ path('app_subcategory_index') }}" class="hover:underline">Back to list</a>
+                        <a href="{{ path('app_product_index') }}" class="hover:underline">Back to list</a>
                     </p>
                 </div>
             </div>
         </div>
     </div>
 {% endblock %}
-
-
 
 
 

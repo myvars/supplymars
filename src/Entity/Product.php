@@ -44,16 +44,16 @@ class Product
 
     #[ORM\Column]
     #[Assert\NotNull]
-    #[Assert\Range(notInRangeMessage: 'Please enter a valid cost', min: 0, max: 1000000)]
+    #[Assert\Range(notInRangeMessage: 'Please enter a valid cost', min: 1, max: 1000000)]
     private ?int $cost = null;
 
     #[ORM\Column]
     #[Assert\NotNull]
-    #[Assert\Range(notInRangeMessage: 'Please enter a valid sell price', min: 0, max: 1000000)]
+    #[Assert\Range(notInRangeMessage: 'Please enter a valid sell price', min: 1, max: 1000000)]
     private ?int $sellPrice = null;
 
     #[ORM\ManyToOne]
-    #[Assert\Range(notInRangeMessage: 'Please enter a valid VAT rate', min: 0, max: 10000)]
+    #[Assert\NotNull(message: 'Please enter a valid VAT Rate')]
     private ?VatRate $vatRate = null;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
@@ -72,6 +72,7 @@ class Product
     private ?Manufacturer $manufacturer = null;
 
     #[ORM\ManyToOne]
+    #[Assert\NotNull(message: 'Please enter a valid product manager')]
     private ?User $owner = null;
 
     #[ORM\Column]
@@ -190,7 +191,7 @@ class Product
         return $this;
     }
 
-    public function getCategory(): Category
+    public function getCategory(): ?Category
     {
         return $this->category;
     }
@@ -202,24 +203,24 @@ class Product
         return $this;
     }
 
-    public function getSubcategory(): Subcategory
+    public function getSubcategory(): ?Subcategory
     {
         return $this->subcategory;
     }
 
-    public function setSubcategory(Subcategory $subcategory): static
+    public function setSubcategory(?Subcategory $subcategory): static
     {
         $this->subcategory = $subcategory;
 
         return $this;
     }
 
-    public function getManufacturer(): Manufacturer
+    public function getManufacturer(): ?Manufacturer
     {
         return $this->manufacturer;
     }
 
-    public function setManufacturer(Manufacturer $manufacturer): static
+    public function setManufacturer(?Manufacturer $manufacturer): static
     {
         $this->manufacturer = $manufacturer;
 

@@ -25,22 +25,31 @@ class SubcategoryType extends AbstractType
             ->add('category', EntityType::class, [
                 'class' => Category::class,
                 'choice_label' => 'name',
+                'placeholder' => 'Choose a Category',
             ])
-            ->add('name')
+            ->add('name', null, [
+                'label' => 'Subcategory Name',
+            ])
+            ->add('vatRate', EntityType::class, [
+                'class' => VatRate::class,
+                'choice_label' => 'name',
+                'label' => 'VAT Rate',
+                'placeholder' => 'Choose a VAT Rate',
+            ])
             ->add('markup', PercentType::class, [
                 'scale' => 2,
                 'type' => 'integer',
                 'label' => 'Markup %',
             ])
-            ->add('vatRate', EntityType::class, [
-                'class' => VatRate::class,
-                'choice_label' => 'name',
-            ])
             ->add('owner', EntityType::class, [
                 'class' => User::class,
                 'choice_label' => 'fullName',
+                'label' => 'Subcategory Manager',
+                'placeholder' => 'Choose a Subcategory Manager',
             ])
-            ->add('isActive')
+            ->add('isActive', null, [
+                'label' => 'Active',
+            ])
         ;
 
         $builder->get('markup')->addModelTransformer($this->transformer);

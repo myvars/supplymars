@@ -39,8 +39,6 @@ class VatRateController extends AbstractController
         return $this->render('vat_rate/index.html.twig', [
             'section' => 'VAT rate',
             'results' => $pager,
-            'sort' => $sort,
-            'sortDirection' => $sortDirection,
         ]);
     }
 

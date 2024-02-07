@@ -4,6 +4,8 @@ namespace App\DataFixtures;
 
 use App\Factory\CategoryFactory;
 use App\Factory\ManufacturerFactory;
+use App\Factory\ProductFactory;
+use App\Factory\SubcategoryFactory;
 use App\Factory\UserFactory;
 use App\Factory\VatRateFactory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -43,23 +45,69 @@ class AppFixtures extends Fixture
             'rate' => 0,
         ]);
 
-        ManufacturerFactory::createOne([
+        $manufacturer = ManufacturerFactory::createOne([
             'name' => 'Apple',
         ]);
 
         ManufacturerFactory::createMany(199);
 
-        CategoryFactory::createOne([
+        $category = CategoryFactory::createOne([
             'name' => 'Laptops',
             'markup' => 2000,
             'vatRate' => $vatRate,
             'owner' => $user,
         ]);
 
-        CategoryFactory::createMany(299, [
-            'vatRate' => VatRateFactory::random(),
-            'owner' => UserFactory::random(),
+        CategoryFactory::createMany(29,  function () {
+            return [
+                'vatRate' => VatRateFactory::random(),
+                'owner' => UserFactory::random(),
+            ];
+        });
+
+        $subcategory = SubcategoryFactory::createOne([
+            'name' => 'Macbook Pro',
+            'markup' => 5000,
+            'category' => $category,
+            'vatRate' => $vatRate,
+            'owner' => $user,
         ]);
+
+        SubcategoryFactory::createMany(149,  function () {
+            return [
+                'category' => CategoryFactory::random(),
+                'vatRate' => VatRateFactory::random(),
+                'owner' => UserFactory::random(),
+            ];
+        });
+
+        $product = ProductFactory::createOne([
+            'name' => 'Macbook Pro 13"',
+            'MfrPartNumber' => 'M1MBP132024',
+            'category' => $category,
+            'subcategory' => $subcategory,
+            'manufacturer' => $manufacturer,
+            'owner' => $user,
+            'vatRate' => $vatRate,
+            'cost' => 103500,
+            'isActive' => true,
+            'leadTimeDays' => 7,
+            'sellPrice' => 129900,
+            'stock' => 50,
+            'weight' => 1388,
+            'markup' => 500,
+        ]);
+
+        ProductFactory::createMany(299,  function () {
+            $randomSubcategory = SubcategoryFactory::random();
+            return [
+                'subcategory' => $randomSubcategory,
+                'category' => $randomSubcategory->getCategory(),
+                'manufacturer' => ManufacturerFactory::random(),
+                'vatRate' => VatRateFactory::random(),
+                'owner' => UserFactory::random(),
+            ];
+        });
 
         $manager->flush();
     }

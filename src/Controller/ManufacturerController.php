@@ -39,8 +39,6 @@ class ManufacturerController extends AbstractController
         return $this->render('manufacturer/index.html.twig', [
             'section' => 'manufacturer',
             'results' => $pager,
-            'sort' => $sort,
-            'sortDirection' => $sortDirection,
         ]);
     }
 

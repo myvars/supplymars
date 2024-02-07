@@ -19,7 +19,9 @@ class VatRateType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name')
+            ->add('name', null, [
+                'label' => 'VAT Rate Name',
+            ])
             ->add('rate', PercentType::class, [
                 'scale' => 2,
                 'type' => 'integer',

@@ -1,31 +1,28 @@
-{% extends 'base.html.twig' %}
+{% extends 'modalBase.html.twig' %}
 
 {% block title %}Delete Category{% endblock %}
 
 {% block body %}
-    <section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5">
-        <div class="flex flex-col items-center px-6 py-8 mx-auto lg:py-0">
-            <div
-                class="w-full bg-white rounded-lg shadow dark:border md:m-10 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-                <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-                    <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                        Delete Category
-                    </h1>
-                    <p class="">
-                        {{ category.name }}
-                    </p>
-                    <p class="text-sm font-light text-gray-500 dark:text-gray-400">
-                        Are you sure you want to delete this category?
-                    </p>
-                    <form method="post" action="{{ path('app_category_delete', {'id': category.id}) }}">
-                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ category.id) }}">
-                        <twig:Button type="submit" variant="danger" class="w-full">Delete</twig:Button>
-                    </form>
-                    <p class="text-sm font-light text-gray-500 dark:text-gray-400">
-                        <a href="{{ path('app_category_index') }}" class="hover:underline">Back to list</a>
-                    </p>
-                </div>
-            </div>
+    <div class="relative p-6 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
+        <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                Delete Category
+            </h3>
         </div>
-    </section>
+        <div class="space-y-4 md:space-y-6">
+            <p class="text-base text-gray-500 dark:text-white">
+                {{ category.name }}
+            </p>
+            <p class="text-sm font-light text-gray-500 dark:text-gray-400">
+                Are you sure you want to delete this category?
+            </p>
+            <form method="post" action="{{ path('app_category_delete', {'id': category.id}) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ category.id) }}">
+                <twig:Button type="submit" variant="danger" class="w-full">Delete</twig:Button>
+            </form>
+            <p class="text-sm font-light text-gray-500 dark:text-gray-400">
+                <a href="{{ path('app_category_index') }}" class="hover:underline">Back to list</a>
+            </p>
+        </div>
+    </div>
 {% endblock %}

@@ -25,6 +25,7 @@ class Subcategory
     private ?int $markup = null;
 
     #[ORM\ManyToOne(inversedBy: 'subcategories')]
+    #[Assert\NotNull(message: 'Please enter a valid subcategory manager')]
     private ?User $owner = null;
 
     #[ORM\ManyToOne(inversedBy: 'subcategories')]
@@ -36,6 +37,7 @@ class Subcategory
     private bool $isActive = false;
 
     #[ORM\ManyToOne]
+    #[Assert\NotNull(message: 'Please enter a valid VAT Rate')]
     private ?VatRate $vatRate = null;
 
     #[ORM\OneToMany(mappedBy: 'subcategory', targetEntity: Product::class)]

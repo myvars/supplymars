@@ -6,18 +6,22 @@
     <twig:DataTable
         section="{{ section }}"
         results="{{ results }}"
-        colspan="4"
+        colspan="6"
     >
         <twig:block name="table_header">
             <twig:TableHeader sortValue="id">Id</twig:TableHeader>
-            <twig:TableHeader sortValue="name">Manufacturer</twig:TableHeader>
+            <twig:TableHeader sortValue="name">Product</twig:TableHeader>
+            <twig:TableHeader sortValue="cost">Cost</twig:TableHeader>
+            <twig:TableHeader sortValue="sellPrice"><span class="text-nowrap">Sell Price</span></twig:TableHeader>
             <twig:TableHeader sortValue="isActive">Status</twig:TableHeader>
             <twig:TableHeader><span class="sr-only">Actions</span></twig:TableHeader>
         </twig:block>
 
         <twig:block name="table_rows">
             <th scope="row" class="px-4 py-3">{{ result.id }}</th>
-            <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ result.name }}</td>
+            <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">{{ result.name }}</td>
+            <td class="px-4 py-3 text-right">£{{ (result.cost / 100)|number_format(2) }}</td>
+            <td class="px-4 py-3 text-right">£{{ (result.sellPrice / 100)|number_format(2) }}</td>
             <td class="px-4 py-3">
                 <div class="flex items-center">
                     {{ result.isActive ?
@@ -30,19 +34,19 @@
 
         <twig:block name="table_actions">
             <li>
-                <a href="{{ path('app_manufacturer_show', {'id': result.id }) }}"
+                <a href="{{ path('app_product_show', {'id': result.id }) }}"
                    class="flex items-center block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                    target="_top"
                 ><twig:Icon name="show" class="w-4 me-1.5"></twig:Icon>Show</a>
             </li>
             <li>
-                <a href="{{ path('app_manufacturer_edit', {'id': result.id }) }}"
+                <a href="{{ path('app_product_edit', {'id': result.id }) }}"
                    class="flex items-center block py-2 px-4 text-yellow-700 dark:text-yellow-500 hover:bg-gray-100 dark:hover:bg-gray-600"
                    target="_top"
                 ><twig:Icon name="edit" class="w-4 me-1.5"></twig:Icon>Edit</a>
             </li>
             <li>
-                <a href="{{ path('app_manufacturer_delete_confirm', {'id': result.id }) }}"
+                <a href="{{ path('app_product_delete_confirm', {'id': result.id }) }}"
                    class="flex items-center block py-2 px-4 text-red-700 hover:bg-gray-100 dark:hover:bg-red-600 dark:text-red-500 dark:hover:text-white"
                    target="_top"
                 ><twig:Icon name="delete" class="w-4 me-1.5"></twig:Icon>Delete</a>
@@ -52,15 +56,14 @@
         <twig:block name="table_add">
             <twig:Button
                 tag="a"
-                href="{{ path('app_manufacturer_new') }}"
+                href="{{ path('app_product_new') }}"
                 class="flex items-center space-x-1 font-bold"
             >
                 <twig:Icon name="add" class="w-4"></twig:Icon><span>Add {{ section|title }}</span>
             </twig:Button>
         </twig:block>
 
-        <twig:block name="filter"></twig:block>
+        {#<twig:block name="filter"></twig:block>#}
 
     </twig:DataTable>
 {% endblock %}
-

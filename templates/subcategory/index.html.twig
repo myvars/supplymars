@@ -1,79 +1,69 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Subcategory index{% endblock %}
+{% block title %}{{ section|title }} index{% endblock %}
 
 {% block body %}
-    <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-        <div
-            class="flex justify-between"
-        >
-            <h1 class="text-xl font-semibold text-white mb-4">
-                Subcategory List
-                <span
-                    class="text-base font-light text-gray-500 dark:text-gray-400 ms-3">( {{ subcategories|length }} )</span>
-            </h1>
+    <twig:DataTable
+        section="{{ section }}"
+        results="{{ results }}"
+        colspan="6"
+    >
+        <twig:block name="table_header">
+            <twig:TableHeader sortValue="id">Id</twig:TableHeader>
+            <twig:TableHeader sortValue="category.name">Category</twig:TableHeader>
+            <twig:TableHeader sortValue="name">Subcategory</twig:TableHeader>
+            <twig:TableHeader sortValue="markup">Markup</twig:TableHeader>
+            <twig:TableHeader sortValue="isActive">Status</twig:TableHeader>
+            <twig:TableHeader><span class="sr-only">Actions</span></twig:TableHeader>
+        </twig:block>
+
+        <twig:block name="table_rows">
+            <th scope="row" class="px-4 py-3">{{ result.id }}</th>
+            <td class="px-4 py-3">{{ result.category.name }}</td>
+            <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ result.name }}</td>
+            <td class="px-4 py-3">{{ (result.markup / 100)|number_format(2) }}%</td>
+            <td class="px-4 py-3">
+                <div class="flex items-center">
+                    {{ result.isActive ?
+                    '<span class="flex w-2.5 h-2.5 me-2 rounded-full bg-green-500"></span>Active'
+                    : '<span class="flex w-2.5 h-2.5 me-2 rounded-full bg-red-500 "></span>Inactive'
+                    }}
+                </div>
+            </td>
+        </twig:block>
+
+        <twig:block name="table_actions">
+            <li>
+                <a href="{{ path('app_subcategory_show', {'id': result.id }) }}"
+                   class="flex items-center block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                   target="_top"
+                ><twig:Icon name="show" class="w-4 me-1.5"></twig:Icon>Show</a>
+            </li>
+            <li>
+                <a href="{{ path('app_subcategory_edit', {'id': result.id }) }}"
+                   class="flex items-center block py-2 px-4 text-yellow-700 dark:text-yellow-500 hover:bg-gray-100 dark:hover:bg-gray-600"
+                   target="_top"
+                ><twig:Icon name="edit" class="w-4 me-1.5"></twig:Icon>Edit</a>
+            </li>
+            <li>
+                <a href="{{ path('app_subcategory_delete_confirm', {'id': result.id }) }}"
+                   class="flex items-center block py-2 px-4 text-red-700 hover:bg-gray-100 dark:hover:bg-red-600 dark:text-red-500 dark:hover:text-white"
+                   target="_top"
+                ><twig:Icon name="delete" class="w-4 me-1.5"></twig:Icon>Delete</a>
+            </li>
+        </twig:block>
+
+        <twig:block name="table_add">
             <twig:Button
                 tag="a"
                 href="{{ path('app_subcategory_new') }}"
                 class="flex items-center space-x-1 font-bold"
             >
-                <svg xmlns="http://www.w3.org/2000/svg" class="w-4 inline" viewBox="0 0 24 24" stroke-width="2"
-                     stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                    <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
-                    <path d="M3 12a9 9 0 1 0 18 0a9 9 0 0 0 -18 0"/>
-                    <path d="M9 12h6"/>
-                    <path d="M12 9v6"/>
-                </svg>
-                <span>Add Subcategory</span>
+                <twig:Icon name="add" class="w-4"></twig:Icon><span>Add {{ section|title }}</span>
             </twig:Button>
-        </div>
+        </twig:block>
 
-        <div class="mt-4 relative overflow-x-auto shadow-md sm:rounded-lg">
-            <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
-                <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-                <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Id</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Category</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Subcategory</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Markup</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Active</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider">Actions</th>
-                </tr>
-                </thead>
+        <twig:block name="filter"></twig:block>
 
-                <tbody class="divide-y divide-gray-600">
-                {% for subcategory in subcategories %}
-                    <tr class="bg-gray-50 dark:bg-gray-800 border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600"
-                        id="subcategory-list-item-{{ subcategory.id }}">
-                        <td class="px-6 py-6 whitespace-nowrap">{{ subcategory.id }}</td>
-                        <td class="px-6 py-6 text-gray-900 dark:text-white">{{ subcategory.category.name }}</td>
-                        <td class="px-6 py-6 text-gray-900 dark:text-white">{{ subcategory.name }}</td>
-                        <td class="px-6 py-6 whitespace-nowrap">
-                            {% if subcategory.markup %}
-                                {{ (subcategory.markup / 100)|number_format(2) }}%
-                            {% else %}
-                                'n/a'
-                            {% endif %}
-                        </td>
-                        <td class="px-6 py-6 whitespace-nowrap">{{ subcategory.isActive ? 'Yes' : 'No' }}</td>
-                        <td class="px-6 py-6 whitespace-nowrap flex">
-                            <a href="{{ path('app_subcategory_show', {'id': subcategory.id }) }}"
-                               class="text-blue-400 hover:text-blue-600">show</a>
-                            <a
-                                href="{{ path('app_subcategory_edit', {'id': subcategory.id }) }}"
-                                class="ml-4 text-yellow-400 hover:text-yellow-600"
-                            >edit</a>
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="6" class="px-6 py-6 whitespace-nowrap text-center text-gray-400">No records found
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
+    </twig:DataTable>
 {% endblock %}
-

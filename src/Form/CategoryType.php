@@ -21,21 +21,29 @@ class CategoryType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('name')
+            ->add('name', null, [
+                'label' => 'Category Name',
+            ])
+            ->add('vatRate', EntityType::class, [
+                'class' => VatRate::class,
+                'choice_label' => 'name',
+                'label' => 'VAT Rate',
+                'placeholder' => 'Choose a VAT Rate',
+            ])
             ->add('markup', PercentType::class, [
                 'scale' => 2,
                 'type' => 'integer',
                 'label' => 'Markup %',
             ])
-            ->add('vatRate', EntityType::class, [
-                'class' => VatRate::class,
-                'choice_label' => 'name',
-            ])
             ->add('owner', EntityType::class, [
                 'class' => User::class,
                 'choice_label' => 'fullName',
+                'label' => 'Category Manager',
+                'placeholder' => 'Choose a Category Manager',
             ])
-            ->add('isActive')
+            ->add('isActive', null, [
+                'label' => 'Active',
+            ])
         ;
 
         $builder->get('markup')->addModelTransformer($this->transformer);

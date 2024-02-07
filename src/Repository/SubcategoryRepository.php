@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Subcategory;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -21,28 +22,38 @@ class SubcategoryRepository extends ServiceEntityRepository
         parent::__construct($registry, Subcategory::class);
     }
 
-//    /**
-//     * @return Subcategory[] Returns an array of Subcategory objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('s')
-//            ->andWhere('s.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('s.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function findBySearch(?string $query, int $limit = null): array
+    {
+        $qb =  $this->findBySearchQueryBuilder($query);
 
-//    public function findOneBySomeField($value): ?Subcategory
-//    {
-//        return $this->createQueryBuilder('s')
-//            ->andWhere('s.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        if ($limit) {
+            $qb->setMaxResults($limit);
+        }
+
+        return $qb
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findBySearchQueryBuilder(?string $query, ?string $sort = null, string $direction = 'DESC'): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('s');
+
+        if ($query) {
+            $qb->andWhere('s.name LIKE :query')
+                ->setParameter('query', '%' . $query . '%');
+        }
+
+        if ($sort) {
+
+            if (str_starts_with($sort, 'category.')) {
+                $qb->leftJoin('s.category', 'category')->orderBy($sort, $direction);
+            } else {
+                $qb->orderBy('s.' . $sort, $direction);
+            }
+
+        }
+
+        return $qb;
+    }
 }

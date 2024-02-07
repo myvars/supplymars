@@ -39,8 +39,6 @@ class CategoryController extends AbstractController
         return $this->render('category/index.html.twig', [
             'section' => 'category',
             'results' => $pager,
-            'sort' => $sort,
-            'sortDirection' => $sortDirection,
         ]);
     }
 

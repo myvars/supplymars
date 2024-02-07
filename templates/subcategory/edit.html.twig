@@ -1,23 +1,28 @@
-{% extends 'base.html.twig' %}
+{% extends 'modalBase.html.twig' %}
 
 {% block title %}Edit Subcategory{% endblock %}
 
 {% block body %}
-    <div class="flex flex-col items-center px-6 py-8 mx-auto lg:py-0">
-        <div
-            class="w-full bg-white rounded-lg shadow dark:border md:m-10 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-            <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-
-                <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
-                    Edit Subcategory
-                </h1>
-                {{ include('subcategory/_form.html.twig', {'button_label': 'Update'}) }}
-
-                <p class="text-sm font-light text-gray-500 dark:text-gray-400">
-                    <a href="{{ path('app_subcategory_index') }}" class="hover:underline">Back to list</a>
-                </p>
-                {{ include('subcategory/_delete_form.html.twig') }}
-            </div>
+    <div class="relative p-6 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
+        <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                Edit Subcategory
+            </h3>
         </div>
+        {{ include('subcategory/_form.html.twig', {'button_label': 'Update Subcategory'}) }}
+        <hr class="h-px my-6 bg-gray-200 border-0 dark:bg-gray-700">
+        <twig:Button
+            tag="a"
+            href="{{ path('app_subcategory_delete_confirm', {'id': subcategory.id}) }}"
+            type="submit"
+            variant="danger"
+            class="w-full">
+            Delete
+        </twig:Button>
+
+        <p class="text-sm font-light text-gray-500 dark:text-gray-400 mt-6">
+            <a href="{{ path('app_subcategory_index') }}" class="hover:underline">Back to list</a>
+        </p>
     </div>
 {% endblock %}
+
