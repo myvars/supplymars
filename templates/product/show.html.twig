@@ -1,24 +1,21 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Category{% endblock %}
+{% block title %}{{ section }}{% endblock %}
 
 {% block body %}
     <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
         <div
             class="flex justify-between"
         >
-            <h1 class="text-xl font-semibold text-white mb-4">Product</h1>
+            <h1 class="text-xl font-semibold text-white mb-4">{{ section }}</h1>
             <twig:Button
                 tag="a"
                 variant="warning"
-                href="{{ path('app_product_edit', {'id': product.id }) }}"
+                href="{{ path('app_'~section|lower|u.snake~'_edit', {'id': result.id }) }}"
                 class="flex items-center space-x-1 font-bold"
+                data-turbo-frame="modal"
             >
-                <svg class="w-4 inline" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="m14.3 4.8 2.9 2.9M7 7H4a1 1 0 0 0-1 1v10c0 .6.4 1 1 1h11c.6 0 1-.4 1-1v-4.5m2.4-10a2 2 0 0 1 0 3l-6.8 6.8L8 14l.7-3.6 6.9-6.8a2 2 0 0 1 2.8 0Z"/>
-                </svg>
-                <span>Edit</span>
+                <twig:Icon name="add" class="w-4"></twig:Icon><span>Edit {{ section }}</span>
             </twig:Button>
         </div>
 
@@ -43,23 +40,23 @@
             <div id="defaultTabContent">
                 <div class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800" id="details" role="tabpanel"
                      aria-labelledby="details-tab">
-                    <h2 class="mb-3 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">{{ product.name }}</h2>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Category: {{ product.category.name }}</p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Subcategory: {{ product.subcategory.name }}</p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Manufacturer: {{ product.manufacturer.name }}</p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Mfr Part Number: {{ product.mfrPartNumber }}</p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Stock Level: {{ product.stock }}</p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Lead Time (Days): {{ product.leadTimeDays }}</p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Weight: {{ product.weight }} grams</p>
+                    <h2 class="mb-3 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">{{ result.name }}</h2>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Category: {{ result.category.name }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Subcategory: {{ result.subcategory.name }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Manufacturer: {{ result.manufacturer.name }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Mfr Part Number: {{ result.mfrPartNumber }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Stock Level: {{ result.stock }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Lead Time (Days): {{ result.leadTimeDays }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Weight: {{ result.weight }} grams</p>
                     <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">VAT Rate:
-                        {{ product.vatRate.name }}
-                        <span class="ms-2">{{ (product.vatRate.rate / 100)|number_format(2) }}%</span>
+                        {{ result.vatRate.name }}
+                        <span class="ms-2">{{ (result.vatRate.rate / 100)|number_format(2) }}%</span>
                     </p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Cost: £{{ (product.cost / 100)|number_format(2) }}</p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Markup: {{ (product.markup / 100)|number_format(2) }}%</p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Sell Price: £{{ (product.sellPrice / 100)|number_format(2) }}</p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Product manager: {{ product.owner.fullName }}</p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Active: {{ product.isActive ? 'Yes' : 'No' }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Cost: £{{ (result.cost / 100)|number_format(2) }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Markup: {{ (result.markup / 100)|number_format(2) }}%</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Sell Price: £{{ (result.sellPrice / 100)|number_format(2) }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">result manager: {{ result.owner.fullName }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Active: {{ result.isActive ? 'Yes' : 'No' }}</p>
                 </div>
 
                 <div class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800" id="sales" role="tabpanel"
@@ -82,7 +79,7 @@
                 <div>
                     <hr class="border-t border-gray-200 dark:border-gray-700">
                     <p class="text-sm font-light text-gray-500 dark:text-gray-400 p-4">
-                        <a href="{{ path('app_product_index') }}" class="hover:underline">Back to list</a>
+                        <a href="{{ path('app_'~section|lower|u.snake~'_index') }}" class="hover:underline">Back to list</a>
                     </p>
                 </div>
             </div>

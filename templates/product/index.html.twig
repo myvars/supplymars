@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ section|title }} index{% endblock %}
+{% block title %}{{ section }} index{% endblock %}
 
 {% block body %}
     <twig:DataTable
@@ -34,19 +34,19 @@
 
         <twig:block name="table_actions">
             <li>
-                <a href="{{ path('app_product_show', {'id': result.id }) }}"
+                <a href="{{ path('app_'~section|lower|u.snake~'_show', {'id': result.id }) }}"
                    class="flex items-center block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
                    target="_top"
                 ><twig:Icon name="show" class="w-4 me-1.5"></twig:Icon>Show</a>
             </li>
             <li>
-                <a href="{{ path('app_product_edit', {'id': result.id }) }}"
+                <a href="{{ path('app_'~section|lower|u.snake~'_edit', {'id': result.id }) }}"
                    class="flex items-center block py-2 px-4 text-yellow-700 dark:text-yellow-500 hover:bg-gray-100 dark:hover:bg-gray-600"
                    data-turbo-frame="modal"
                 ><twig:Icon name="edit" class="w-4 me-1.5"></twig:Icon>Edit</a>
             </li>
             <li>
-                <a href="{{ path('app_product_delete_confirm', {'id': result.id }) }}"
+                <a href="{{ path('app_'~section|lower|u.snake~'_delete_confirm', {'id': result.id }) }}"
                    class="flex items-center block py-2 px-4 text-red-700 hover:bg-gray-100 dark:hover:bg-red-600 dark:text-red-500 dark:hover:text-white"
                    data-turbo-frame="modal"
                 ><twig:Icon name="delete" class="w-4 me-1.5"></twig:Icon>Delete</a>
@@ -56,11 +56,11 @@
         <twig:block name="table_add">
             <twig:Button
                 tag="a"
-                href="{{ path('app_product_new') }}"
+                href="{{ path('app_'~section|lower|u.snake~'_new') }}"
                 class="flex items-center space-x-1 font-bold"
                 data-turbo-frame="modal"
             >
-                <twig:Icon name="add" class="w-4"></twig:Icon><span>Add {{ section|title }}</span>
+                <twig:Icon name="add" class="w-4"></twig:Icon><span>Add {{ section }}</span>
             </twig:Button>
         </twig:block>
 

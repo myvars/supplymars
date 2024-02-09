@@ -7,6 +7,7 @@ module.exports = {
     "./templates/**/*.html.twig",
     "./vendor/tales-from-a-dev/flowbite-bundle/templates/**/*.html.twig",
     "./src/Twig/Components/**/*.php",
+    "./src/Form/**/*.php",
   ],
   theme: {
     extend: {

@@ -20,12 +20,14 @@ use Symfony\UX\Turbo\TurboBundle;
 #[Route('/product')]
 class ProductController extends AbstractController
 {
+    CONST string SECTION = 'Product';
+
     #[Route('/', name: 'app_product_index', methods: ['GET'])]
     public function index(
         ProductRepository $productRepository,
         #[MapQueryParameter] int $page = 1,
         #[MapQueryParameter] int $limit = 10,
-        #[MapQueryParameter] string $sort = 'leaveAt',
+        #[MapQueryParameter] string $sort = 'id',
         #[MapQueryParameter] string $sortDirection = 'ASC',
         #[MapQueryParameter] string $query = null,
     ): Response
@@ -49,8 +51,9 @@ class ProductController extends AbstractController
             ], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('product/index.html.twig', [
-            'section' => 'product',
+        return $this->render('crud/crud.html.twig', [
+            'section' => self::SECTION,
+            'template' => 'index',
             'results' => $pager,
         ]);
     }
@@ -68,7 +71,7 @@ class ProductController extends AbstractController
             $entityManager->persist($product);
             $entityManager->flush();
 
-            $this->addFlash('success', 'New Product added!');
+            $this->addFlash('success', 'New '.self::SECTION.' added!');
 
             if ($request->headers->has('turbo-frame')) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -79,9 +82,12 @@ class ProductController extends AbstractController
             return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('product/new.html.twig', [
-            'product' => $product,
+        return $this->render('crud/crud.html.twig', [
+            'section' => self::SECTION,
+            'template' => 'new',
+            'result' => $product,
             'form' => $form,
+            'formColumns' => 2
         ]);
     }
 
@@ -91,8 +97,10 @@ class ProductController extends AbstractController
         Product $product
     ): Response
     {
-        return $this->render('product/show.html.twig', [
-            'product' => $product,
+        return $this->render('crud/crud.html.twig', [
+            'section' => self::SECTION,
+            'template' => 'show',
+            'result' => $product,
         ]);
     }
 
@@ -107,7 +115,7 @@ class ProductController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            $this->addFlash('success', 'Product updated!');
+            $this->addFlash('success', self::SECTION.' updated!');
 
             if ($request->headers->has('turbo-frame')) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -118,17 +126,22 @@ class ProductController extends AbstractController
             return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->render('product/edit.html.twig', [
-            'product' => $product,
+        return $this->render('crud/crud.html.twig', [
+            'section' => self::SECTION,
+            'template' => 'edit',
+            'result' => $product,
             'form' => $form,
+            'formColumns' => 2
         ]);
     }
 
     #[Route('/{id}/delete', name: 'app_product_delete_confirm', methods: ['GET'])]
     public function deleteConfirm(Product $product): Response
     {
-        return $this->render('product/delete.html.twig', [
-            'product' => $product,
+        return $this->render('crud/crud.html.twig', [
+            'section' => self::SECTION,
+            'template' => 'delete',
+            'result' => $product,
         ]);
     }
 
@@ -139,7 +152,7 @@ class ProductController extends AbstractController
             $entityManager->remove($product);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Product deleted!');
+            $this->addFlash('success', self::SECTION.' deleted!');
 
             if ($request->headers->has('turbo-frame')) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);

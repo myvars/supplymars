@@ -25,7 +25,7 @@ class SubcategoryController extends AbstractController
         SubcategoryRepository $subcategoryRepository,
         #[MapQueryParameter] int $page = 1,
         #[MapQueryParameter] int $limit = 10,
-        #[MapQueryParameter] string $sort = 'leaveAt',
+        #[MapQueryParameter] string $sort = 'id',
         #[MapQueryParameter] string $sortDirection = 'ASC',
         #[MapQueryParameter] string $query = null,
     ): Response
