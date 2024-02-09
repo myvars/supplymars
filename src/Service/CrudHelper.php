@@ -3,8 +3,9 @@
 namespace App\Service;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
+use Pagerfanta\Exception\OutOfRangeCurrentPageException;
 use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,8 +27,7 @@ class CrudHelper extends AbstractController
     }
 
     public function renderIndex(
-        EntityRepository $entityRepository,
-        array $validSorts = ['id'],
+        QueryBuilder $queryBuilder,
         int $page = 1,
         int $limit = 10,
         string $sort = 'id',
@@ -35,15 +35,31 @@ class CrudHelper extends AbstractController
         string $query = null,
     ): Response
     {
-        $sort = in_array($sort, $validSorts) ? $sort : 'id';
+        try {
+            $pager = Pagerfanta::createForCurrentPageWithMaxPerPage(
+                new QueryAdapter($queryBuilder),
+                $page,
+                $limit
+            );
 
-        $pager = Pagerfanta::createForCurrentPageWithMaxPerPage(
-            new QueryAdapter(
-                $entityRepository->findBySearchQueryBuilder($query, $sort, $sortDirection)
-            ),
-            $page,
-            $limit
-        );
+        } catch (OutOfRangeCurrentPageException $e) {
+            $this->addFlash(
+                'warning',
+                'Page ' . $page . ' could not be found!'
+            );
+
+            return $this->redirectToRoute(
+                'app_' . $this->snakeSection() . '_index',
+                [
+                    'page' => 1,
+                    'limit' => $limit,
+                    'sort' => $sort,
+                    'sortDirection' => $sortDirection,
+                    'query' => $query,
+                ],
+                Response::HTTP_SEE_OTHER
+            );
+        }
 
         return $this->render(self::CRUD_BASE_TEMPLATE, [
             'section' => $this->getSection(),
@@ -54,10 +70,14 @@ class CrudHelper extends AbstractController
 
     public function renderCreate(
         Request $request,
-        object $entity,
+        ?object $entity,
         string $formType
     ): Response
     {
+        if (!$entity) {
+            return $this->crudError();
+        }
+
         $form = $this->createForm($formType, $entity, [
             'action' => $this->generateUrl('app_'.$this->snakeSection().'_new')
         ]);
@@ -97,21 +117,26 @@ class CrudHelper extends AbstractController
         ]);
     }
 
-    public function renderShow(object $entity): Response
+    public function renderShow(?object $entity): Response
     {
+
         return $this->render(self::CRUD_BASE_TEMPLATE, [
             'section' => $this->getSection(),
-            'template' => 'show',
+            'template' => $entity ? 'show' : 'show_empty',
             'result' => $entity,
         ]);
     }
 
     public function renderUpdate(
         Request $request,
-        object $entity,
+        ?object $entity,
         string $formType,
     ): Response
     {
+        if (!$entity) {
+            return $this->crudError();
+        }
+
         $form = $this->createForm($formType, $entity, [
             'action' => $this->generateUrl('app_'.$this->snakeSection().'_edit', ['id' => $entity->getId()])
         ]);
@@ -150,8 +175,12 @@ class CrudHelper extends AbstractController
         ]);
     }
 
-    public function renderDeleteConfirm(object $entity): Response
+    public function renderDeleteConfirm(?object $entity): Response
     {
+        if (!$entity) {
+            return $this->crudError();
+        }
+
         return $this->render(self::CRUD_BASE_TEMPLATE, [
             'section' => $this->getSection(),
             'template' => 'delete',
@@ -161,18 +190,29 @@ class CrudHelper extends AbstractController
 
     public function renderDelete(
         Request $request,
-        object $entity,
+        ?object $entity,
     ): Response
     {
+        if (!$entity) {
+            return $this->crudError();
+        }
+
         if ($this->isCsrfTokenValid('delete'.$entity->getId(), $request->request->get('_token')))
         {
-            $this->entityManager->remove($entity);
-            $this->entityManager->flush();
+            try {
+                $this->entityManager->remove($entity);
+                $this->entityManager->flush();
 
-            $this->addFlash(
-                'success',
-                $this->getSection().' deleted!'
-            );
+                $this->addFlash(
+                    'success',
+                    $this->getSection().' deleted!'
+                );
+            } catch (\Exception $e) {
+                $this->addFlash(
+                    'error',
+                    'Can not delete '.$this->getSection().', it has dependents!'
+                );
+            }
 
             if ($request->headers->has('turbo-frame')) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -214,5 +254,22 @@ class CrudHelper extends AbstractController
     private function snakeSection(): string
     {
         return (new UnicodeString($this->getSection()))->lower()->snake();
+    }
+
+    /**
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function crudError(): Response
+    {
+        $this->addFlash(
+            'warning',
+            $this->getSection() . ' not found!'
+        );
+
+        return $this->redirectToRoute(
+            'app_' . $this->snakeSection() . '_index',
+            [],
+            Response::HTTP_SEE_OTHER
+        );
     }
 }

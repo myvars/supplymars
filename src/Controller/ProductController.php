@@ -35,10 +35,10 @@ class ProductController extends AbstractController
     ): Response
     {
         $validSorts = ['id', 'name', 'cost', 'sellPrice', 'isActive'];
+        $sort = in_array($sort, $validSorts) ? $sort : 'id';
 
         return $this->crudHelper->renderIndex(
-            $productRepository,
-            $validSorts,
+            $productRepository->findBySearchQueryBuilder($query, $sort, $sortDirection),
             $page,
             $limit,
             $sort,
@@ -58,14 +58,14 @@ class ProductController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_product_show', methods: ['GET'])]
-    public function show(Product $product): Response
+    public function show(?Product $product): Response
     {
 //        #[MapEntity(expr: 'repository.findFullProduct(id)')]
         return $this->crudHelper->renderShow($product);
     }
 
     #[Route('/{id}/edit', name: 'app_product_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Product $product): Response
+    public function edit(Request $request, ?Product $product): Response
     {
         return $this->crudHelper->renderUpdate(
             $request,
@@ -75,13 +75,13 @@ class ProductController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'app_product_delete_confirm', methods: ['GET'])]
-    public function deleteConfirm(Product $product): Response
+    public function deleteConfirm(?Product $product): Response
     {
         return $this->crudHelper->renderDeleteConfirm($product);
     }
 
     #[Route('/{id}', name: 'app_product_delete', methods: ['POST'])]
-    public function delete(Request $request, Product $product): Response
+    public function delete(Request $request, ?Product $product): Response
     {
         return $this->crudHelper->renderDelete(
             $request,

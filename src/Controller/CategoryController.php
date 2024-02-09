@@ -5,20 +5,24 @@ namespace App\Controller;
 use App\Entity\Category;
 use App\Form\CategoryType;
 use App\Repository\CategoryRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Pagerfanta\Doctrine\ORM\QueryAdapter;
-use Pagerfanta\Pagerfanta;
+use App\Service\CrudHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\UX\Turbo\TurboBundle;
 
 #[Route('/category')]
 class CategoryController extends AbstractController
 {
     CONST string SECTION = 'Category';
+    const int FORM_COLUMNS = 1;
+
+    public function __construct(private readonly CrudHelper $crudHelper)
+    {
+        $this->crudHelper->setSection(self::SECTION);
+        $this->crudHelper->setFormColumns(self::FORM_COLUMNS);
+    }
 
     #[Route('/', name: 'app_category_index', methods: ['GET'])]
     public function index(
@@ -33,117 +37,54 @@ class CategoryController extends AbstractController
         $validSorts = ['id', 'name', 'markup', 'isActive'];
         $sort = in_array($sort, $validSorts) ? $sort : 'id';
 
-        $pager = Pagerfanta::createForCurrentPageWithMaxPerPage(
-            new QueryAdapter($categoryRepository->findBySearchQueryBuilder($query, $sort, $sortDirection)),
+        return $this->crudHelper->renderIndex(
+            $categoryRepository->findBySearchQueryBuilder($query, $sort, $sortDirection),
             $page,
-            $limit
+            $limit,
+            $sort,
+            $sortDirection,
+            $query,
         );
-
-        return $this->render('crud/crud.html.twig', [
-            'section' => self::SECTION,
-            'template' => 'index',
-            'results' => $pager,
-        ]);
     }
 
     #[Route('/new', name: 'app_category_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request): Response
     {
-        $category = new Category();
-        $form = $this->createForm(CategoryType::class, $category, [
-            'action' => $this->generateUrl('app_category_new')
-        ]);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($category);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'New '.self::SECTION.' added!');
-
-            if ($request->headers->has('turbo-frame')) {
-                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
-
-                return $this->renderBlock('common/turboStreamRefresh.html.twig', 'stream_success');
-            }
-
-            return $this->redirectToRoute('app_category_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('crud/crud.html.twig', [
-            'section' => self::SECTION,
-            'template' => 'new',
-            'result' => $category,
-            'form' => $form,
-        ]);
+        return $this->crudHelper->renderCreate(
+            $request,
+            new Category(),
+            CategoryType::class,
+        );
     }
 
     #[Route('/{id}', name: 'app_category_show', methods: ['GET'])]
-    public function show(Category $category): Response
+    public function show(?Category $category): Response
     {
-        return $this->render('crud/crud.html.twig', [
-            'section' => self::SECTION,
-            'template' => 'show',
-            'result' => $category,
-        ]);
+        return $this->crudHelper->renderShow($category);
     }
 
     #[Route('/{id}/edit', name: 'app_category_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Category $category, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, ?Category $category): Response
     {
-        $form = $this->createForm(CategoryType::class, $category, [
-            'action' => $this->generateUrl('app_category_edit', ['id' => $category->getId()])
-        ]);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            $this->addFlash('success', self::SECTION.' updated!');
-
-            if ($request->headers->has('turbo-frame')) {
-                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
-
-                return $this->renderBlock('common/turboStreamRefresh.html.twig', 'stream_success');
-            }
-
-            return $this->redirectToRoute('app_category_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('crud/crud.html.twig', [
-            'section' => self::SECTION,
-            'template' => 'edit',
-            'result' => $category,
-            'form' => $form,
-        ]);
+        return $this->crudHelper->renderUpdate(
+            $request,
+            $category,
+            CategoryType::class,
+        );
     }
 
     #[Route('/{id}/delete', name: 'app_category_delete_confirm', methods: ['GET'])]
-    public function deleteConfirm(Category $category): Response
+    public function deleteConfirm(?Category $category): Response
     {
-        return $this->render('crud/crud.html.twig', [
-            'section' => self::SECTION,
-            'template' => 'delete',
-            'result' => $category,
-        ]);
+        return $this->crudHelper->renderDeleteConfirm($category);
     }
 
     #[Route('/{id}', name: 'app_category_delete', methods: ['POST'])]
-    public function delete(Request $request, Category $category, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, ?Category $category): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$category->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($category);
-            $entityManager->flush();
-
-            $this->addFlash('success', self::SECTION.' deleted!');
-
-            if ($request->headers->has('turbo-frame')) {
-                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
-
-                return $this->renderBlock('common/turboStreamRefresh.html.twig', 'stream_success');
-            }
-        }
-
-        return $this->redirectToRoute('app_category_index', [], Response::HTTP_SEE_OTHER);
+        return $this->crudHelper->renderDelete(
+            $request,
+            $category,
+        );
     }
 }

@@ -5,20 +5,24 @@ namespace App\Controller;
 use App\Entity\Subcategory;
 use App\Form\SubcategoryType;
 use App\Repository\SubcategoryRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use Pagerfanta\Doctrine\ORM\QueryAdapter;
-use Pagerfanta\Pagerfanta;
+use App\Service\CrudHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\UX\Turbo\TurboBundle;
 
 #[Route('/subcategory')]
 class SubcategoryController extends AbstractController
 {
     CONST string SECTION = 'Subcategory';
+    const int FORM_COLUMNS = 1;
+
+    public function __construct(private readonly CrudHelper $crudHelper)
+    {
+        $this->crudHelper->setSection(self::SECTION);
+        $this->crudHelper->setFormColumns(self::FORM_COLUMNS);
+    }
 
     #[Route('/', name: 'app_subcategory_index', methods: ['GET'])]
     public function index(
@@ -33,118 +37,54 @@ class SubcategoryController extends AbstractController
         $validSorts = ['id', 'name', 'category.name', 'markup', 'isActive'];
         $sort = in_array($sort, $validSorts) ? $sort : 'id';
 
-        $pager = Pagerfanta::createForCurrentPageWithMaxPerPage(
-            new QueryAdapter($subcategoryRepository->findBySearchQueryBuilder($query, $sort, $sortDirection)),
+        return $this->crudHelper->renderIndex(
+            $subcategoryRepository->findBySearchQueryBuilder($query, $sort, $sortDirection),
             $page,
-            $limit
+            $limit,
+            $sort,
+            $sortDirection,
+            $query,
         );
-
-        return $this->render('crud/crud.html.twig', [
-            'section' => self::SECTION,
-            'template' => 'index',
-            'results' => $pager,
-        ]);
     }
 
     #[Route('/new', name: 'app_subcategory_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request): Response
     {
-        $subcategory = new Subcategory();
-        $form = $this->createForm(SubcategoryType::class, $subcategory, [
-            'action' => $this->generateUrl('app_subcategory_new')
-        ]);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($subcategory);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'New '.self::SECTION.' added!');
-
-            if ($request->headers->has('turbo-frame')) {
-                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
-
-                return $this->renderBlock('common/turboStreamRefresh.html.twig', 'stream_success');
-            }
-
-            return $this->redirectToRoute('app_subcategory_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('crud/crud.html.twig', [
-            'section' => self::SECTION,
-            'template' => 'new',
-            'result' => $subcategory,
-            'form' => $form,
-            'formColumns' => 2
-        ]);
+        return $this->crudHelper->renderCreate(
+            $request,
+            new Subcategory(),
+            SubcategoryType::class,
+        );
     }
 
     #[Route('/{id}', name: 'app_subcategory_show', methods: ['GET'])]
-    public function show(Subcategory $subcategory): Response
+    public function show(?Subcategory $subcategory): Response
     {
-        return $this->render('crud/crud.html.twig', [
-            'section' => self::SECTION,
-            'template' => 'show',
-            'result' => $subcategory,
-        ]);
+        return $this->crudHelper->renderShow($subcategory);
     }
 
     #[Route('/{id}/edit', name: 'app_subcategory_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Subcategory $subcategory, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, ?Subcategory $subcategory): Response
     {
-        $form = $this->createForm(SubcategoryType::class, $subcategory, [
-            'action' => $this->generateUrl('app_subcategory_edit', ['id' => $subcategory->getId()])
-        ]);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            $this->addFlash('success', self::SECTION.' updated!');
-
-            if ($request->headers->has('turbo-frame')) {
-                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
-
-                return $this->renderBlock('common/turboStreamRefresh.html.twig', 'stream_success');
-            }
-
-            return $this->redirectToRoute('app_subcategory_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('crud/crud.html.twig', [
-            'section' => self::SECTION,
-            'template' => 'edit',
-            'result' => $subcategory,
-            'form' => $form,
-        ]);
+        return $this->crudHelper->renderUpdate(
+            $request,
+            $subcategory,
+            SubcategoryType::class,
+        );
     }
 
     #[Route('/{id}/delete', name: 'app_subcategory_delete_confirm', methods: ['GET'])]
-    public function deleteConfirm(Subcategory $subcategory): Response
+    public function deleteConfirm(?Subcategory $subcategory): Response
     {
-        return $this->render('crud/crud.html.twig', [
-            'section' => self::SECTION,
-            'template' => 'delete',
-            'result' => $subcategory,
-        ]);
+        return $this->crudHelper->renderDeleteConfirm($subcategory);
     }
 
     #[Route('/{id}', name: 'app_subcategory_delete', methods: ['POST'])]
-    public function delete(Request $request, Subcategory $subcategory, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, ?Subcategory $subcategory): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$subcategory->getId(), $request->request->get('_token'))) {
-            $entityManager->remove($subcategory);
-            $entityManager->flush();
-
-            $this->addFlash('success', self::SECTION.' deleted!');
-
-            if ($request->headers->has('turbo-frame')) {
-                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
-
-                return $this->renderBlock('common/turboStreamRefresh.html.twig', 'stream_success');
-            }
-        }
-
-        return $this->redirectToRoute('app_subcategory_index', [], Response::HTTP_SEE_OTHER);
+        return $this->crudHelper->renderDelete(
+            $request,
+            $subcategory,
+        );
     }
 }
