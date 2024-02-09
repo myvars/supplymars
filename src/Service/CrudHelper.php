@@ -84,13 +84,22 @@ class CrudHelper extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->entityManager->persist($entity);
-            $this->entityManager->flush();
 
-            $this->addFlash(
-                'success',
-                'New '.$this->getSection().' added!'
-            );
+            try {
+                $this->entityManager->persist($entity);
+                $this->entityManager->flush();
+
+                $this->addFlash(
+                    'success',
+                    'New '.$this->getSection().' added!'
+                );
+
+            } catch (\Exception $e) {
+                $this->addFlash(
+                    'error',
+                    'Can not add '.$this->getSection().'!'
+                );
+            }
 
             if ($request->headers->has('turbo-frame')) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -119,7 +128,6 @@ class CrudHelper extends AbstractController
 
     public function renderShow(?object $entity): Response
     {
-
         return $this->render(self::CRUD_BASE_TEMPLATE, [
             'section' => $this->getSection(),
             'template' => $entity ? 'show' : 'show_empty',
@@ -143,12 +151,21 @@ class CrudHelper extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->entityManager->flush();
 
-            $this->addFlash(
-                'success',
-                $this->getSection().' updated!'
-            );
+            try {
+                $this->entityManager->flush();
+
+                $this->addFlash(
+                    'success',
+                    $this->getSection().' updated!'
+                );
+
+            } catch (\Exception $e) {
+                $this->addFlash(
+                    'error',
+                    'Can not update '.$this->getSection().'!'
+                );
+            }
 
             if ($request->headers->has('turbo-frame')) {
                 $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
@@ -207,6 +224,7 @@ class CrudHelper extends AbstractController
                     'success',
                     $this->getSection().' deleted!'
                 );
+
             } catch (\Exception $e) {
                 $this->addFlash(
                     'error',
