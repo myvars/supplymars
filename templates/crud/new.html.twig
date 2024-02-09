@@ -1,18 +1,17 @@
 {% extends 'modalBase.html.twig' %}
 
-{% block title %}New VAT Rate{% endblock %}
+{% block title %}New {{ section }}{% endblock %}
 
 {% block body %}
     <div class="relative p-6 bg-white rounded-lg shadow dark:bg-gray-800 sm:p-5">
         <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                Create new VAT Rate
+                Create new {{ section }}
             </h3>
         </div>
-        {{ include('vat_rate/_form.html.twig', {'button_label': 'Create VAT Rate'}) }}
+        {{ include('crud/crud.html.twig', {'template': '_form', 'button_label': 'Create '~section}) }}
         <p class="text-sm font-light text-gray-500 dark:text-gray-400 mt-6">
-            <a href="{{ path('app_vat_rate_index') }}" class="hover:underline">Back to list</a>
+            <a href="{{ path('app_'~section|lower|u.snake~'_index') }}" class="hover:underline">Back to list</a>
         </p>
     </div>
 {% endblock %}
-

@@ -17,11 +17,11 @@ class VatRate
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Please enter a VAT rate name')]
+    #[Assert\NotNull(message: 'Please enter a VAT rate name')]
     private ?string $name = null;
 
     #[ORM\Column]
-    #[Assert\NotBlank(message: 'Please enter a valid VAT rate')]
+    #[Assert\NotNull(message: 'Please enter a valid VAT rate')]
     #[Assert\Range(notInRangeMessage: 'Please enter a valid range', min: 0, max: 10000)]
     private ?int $rate = null;
 
@@ -43,7 +43,7 @@ class VatRate
         return $this->name;
     }
 
-    public function setName(string $name): static
+    public function setName(?string $name): static
     {
         $this->name = $name;
 
@@ -55,7 +55,7 @@ class VatRate
         return $this->rate;
     }
 
-    public function setRate(int $rate): static
+    public function setRate(?int $rate): static
     {
         $this->rate = $rate;
 

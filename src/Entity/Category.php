@@ -17,7 +17,7 @@ class Category
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Please enter a category name')]
+    #[Assert\NotNull(message: 'Please enter a category name')]
     private ?string $name = null;
 
     #[ORM\Column]
@@ -34,11 +34,12 @@ class Category
     private bool $isActive = false;
 
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Subcategory::class)]
+    #[Assert\NotNull(message: 'Please enter a subcategory')]
     private Collection $subcategories;
 
     #[ORM\ManyToOne(inversedBy: 'categories')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull]
+    #[Assert\NotNull(message: 'Please enter a VAT rate')]
     private ?VatRate $vatRate = null;
 
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Product::class)]
@@ -60,7 +61,7 @@ class Category
         return $this->name;
     }
 
-    public function setName(string $name): static
+    public function setName(?string $name): static
     {
         $this->name = $name;
 
@@ -84,7 +85,7 @@ class Category
         return $this->owner;
     }
 
-    public function setOwner(User $owner): static
+    public function setOwner(?User $owner): static
     {
         $this->owner = $owner;
 
@@ -138,7 +139,7 @@ class Category
         return $this->vatRate;
     }
 
-    public function setVatRate(VatRate $vatRate): static
+    public function setVatRate(?VatRate $vatRate): static
     {
         $this->vatRate = $vatRate;
 

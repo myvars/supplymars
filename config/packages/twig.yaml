@@ -5,6 +5,7 @@ twig:
         'assets/styles': styles
     globals:
         domain: '%env(SITE_DOMAIN)%'
+    debug: true
 
 when@test:
     twig:

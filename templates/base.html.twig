@@ -7,6 +7,8 @@
     <meta name="theme-color" content="#cccccc">
     {% if app.environment != 'test' %}
         <meta name="view-transition">
+        <meta name="turbo-refresh-method" content="replace">
+        <meta name="turbo-refresh-scroll" content="preserve">
     {% endif %}
     <title>{% block title %}Butterfly{% endblock %}</title>
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/icons/apple-touch-icon.png') }}">

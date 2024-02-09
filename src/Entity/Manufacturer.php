@@ -17,7 +17,7 @@ class Manufacturer
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Please enter a manufacturer name')]
+    #[Assert\NotNull(message: 'Please enter a manufacturer name')]
     private ?string $name = null;
 
     #[ORM\OneToMany(mappedBy: 'manufacturer', targetEntity: Product::class)]
@@ -41,7 +41,7 @@ class Manufacturer
         return $this->name;
     }
 
-    public function setName(string $name): static
+    public function setName(?string $name): static
     {
         $this->name = $name;
 

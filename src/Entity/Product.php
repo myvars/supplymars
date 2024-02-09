@@ -15,40 +15,40 @@ class Product
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Please enter a product name')]
+    #[Assert\NotNull(message: 'Please enter a product name')]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Please enter a Mfr part number')]
+    #[Assert\NotNull(message: 'Please enter a Mfr part number')]
     private ?string $MfrPartNumber = null;
 
     #[ORM\Column]
-    #[Assert\NotNull]
+    #[Assert\NotNull(message: 'Please enter a stock level')]
     #[Assert\Range(notInRangeMessage: 'Please enter a stock level', min: 0, max: 10000)]
     private ?int $stock = null;
 
     #[ORM\Column]
-    #[Assert\NotNull]
+    #[Assert\NotNull(message: 'Please enter a lead time')]
     #[Assert\Range(notInRangeMessage: 'Please enter a lead time(days)', min: 0, max: 1000)]
     private ?int $leadTimeDays = null;
 
     #[ORM\Column]
-    #[Assert\NotNull]
+    #[Assert\NotNull(message: 'Please enter a weight')]
     #[Assert\Range(notInRangeMessage: 'Please enter a product weight(grams)', min: 0, max: 100000)]
     private ?int $weight = null;
 
     #[ORM\Column(nullable: true)]
-    #[Assert\NotNull]
+    #[Assert\NotNull(message: 'Please enter a markup %')]
     #[Assert\Range(notInRangeMessage: 'Please enter a valid markup', min: 0, max: 100000)]
     private ?int $markup = null;
 
     #[ORM\Column]
-    #[Assert\NotNull]
+    #[Assert\NotNull(message: 'Please enter a cost')]
     #[Assert\Range(notInRangeMessage: 'Please enter a valid cost', min: 1, max: 1000000)]
     private ?int $cost = null;
 
     #[ORM\Column]
-    #[Assert\NotNull]
+    #[Assert\NotNull(message: 'Please enter a sell price')]
     #[Assert\Range(notInRangeMessage: 'Please enter a valid sell price', min: 1, max: 1000000)]
     private ?int $sellPrice = null;
 
@@ -88,7 +88,7 @@ class Product
         return $this->name;
     }
 
-    public function setName(string $name): static
+    public function setName(?string $name): static
     {
         $this->name = $name;
 
@@ -100,7 +100,7 @@ class Product
         return $this->MfrPartNumber;
     }
 
-    public function setMfrPartNumber(string $MfrPartNumber): static
+    public function setMfrPartNumber(?string $MfrPartNumber): static
     {
         $this->MfrPartNumber = $MfrPartNumber;
 
@@ -112,7 +112,7 @@ class Product
         return $this->stock;
     }
 
-    public function setStock(int $stock): static
+    public function setStock(?int $stock): static
     {
         $this->stock = $stock;
 
@@ -124,7 +124,7 @@ class Product
         return $this->leadTimeDays;
     }
 
-    public function setLeadTimeDays(int $leadTimeDays): static
+    public function setLeadTimeDays(?int $leadTimeDays): static
     {
         $this->leadTimeDays = $leadTimeDays;
 
@@ -136,7 +136,7 @@ class Product
         return $this->weight;
     }
 
-    public function setWeight(int $weight): static
+    public function setWeight(?int $weight): static
     {
         $this->weight = $weight;
 
@@ -160,7 +160,7 @@ class Product
         return $this->cost;
     }
 
-    public function setCost(int $cost): static
+    public function setCost(?int $cost): static
     {
         $this->cost = $cost;
 
@@ -172,7 +172,7 @@ class Product
         return $this->sellPrice;
     }
 
-    public function setSellPrice(int $sellPrice): static
+    public function setSellPrice(?int $sellPrice): static
     {
         $this->sellPrice = $sellPrice;
 

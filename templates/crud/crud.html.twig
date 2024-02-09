@@ -1,0 +1,5 @@
+{% if section is defined and template is defined %}
+{{ include([section|lower|u.snake~'/'~template~'.html.twig', 'crud/'~template~'.html.twig' ]) }}
+{% else %}
+{{ include(['common/missingTemplate.html.twig']) }}
+{% endif %}

@@ -17,12 +17,12 @@ document.addEventListener('turbo:before-render', (event) => {
 });
 document.addEventListener('turbo:load', () => {
     // View Transitions don't play nicely with Turbo cache
-    if (shouldPerformTransition()) Turbo.cache.exemptPageFromCache();
+//    if (shouldPerformTransition()) Turbo.cache.exemptPageFromCache();
     initFlowbite();
 });
 
 document.addEventListener('turbo:before-frame-render', (event) => {
-    if (shouldPerformTransition() && !event.target.hasAttribute('data-skip-transition')) {
+   if (shouldPerformTransition() && !event.target.hasAttribute('data-skip-transition')) {
         event.preventDefault();
 
         // workaround for data-turbo-action="advance", which triggers

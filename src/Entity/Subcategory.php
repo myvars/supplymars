@@ -17,7 +17,7 @@ class Subcategory
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Please enter a Subcategory name')]
+    #[Assert\NotNull(message: 'Please enter a Subcategory name')]
     private ?string $name = null;
 
     #[ORM\Column(nullable: true)]
@@ -58,7 +58,7 @@ class Subcategory
         return $this->name;
     }
 
-    public function setName(string $name): static
+    public function setName(?string $name): static
     {
         $this->name = $name;
 
@@ -82,7 +82,7 @@ class Subcategory
         return $this->owner;
     }
 
-    public function setOwner(User $owner): static
+    public function setOwner(?User $owner): static
     {
         $this->owner = $owner;
 
@@ -94,7 +94,7 @@ class Subcategory
         return $this->category;
     }
 
-    public function setCategory(Category $category): static
+    public function setCategory(?Category $category): static
     {
         $this->category = $category;
 
@@ -118,7 +118,7 @@ class Subcategory
         return $this->vatRate;
     }
 
-    public function setVatRate(VatRate $vatRate): static
+    public function setVatRate(?VatRate $vatRate): static
     {
         $this->vatRate = $vatRate;
 

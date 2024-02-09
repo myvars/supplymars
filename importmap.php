@@ -25,7 +25,7 @@ return [
         'version' => '3.2.2',
     ],
     '@hotwired/turbo' => [
-        'version' => '7.3.0',
+        'version' => '8.0.2',
     ],
     'stimulus-use' => [
         'version' => '0.52.2',
@@ -41,7 +41,7 @@ return [
         'type' => 'css',
     ],
     'aos' => [
-        'version' => '3.0.0-beta.6',
+        'version' => '2.3.4',
     ],
     'lodash.throttle' => [
         'version' => '4.1.1',
