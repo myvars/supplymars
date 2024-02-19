@@ -8,6 +8,7 @@ use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Pagerfanta\Exception\OutOfRangeCurrentPageException;
 use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\SubmitButton;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\String\UnicodeString;
@@ -79,7 +80,8 @@ class CrudHelper extends AbstractController
         }
 
         $form = $this->createForm($formType, $entity, [
-            'action' => $this->generateUrl('app_'.$this->snakeSection().'_new')
+            'action' => $this->generateUrl('app_'.$this->snakeSection().'_new'),
+//            'validation_groups' => $request->request->get('btnSubmit') !== 'submit' ? [''] : ['Default']
         ]);
         $form->handleRequest($request);
 
@@ -274,9 +276,6 @@ class CrudHelper extends AbstractController
         return (new UnicodeString($this->getSection()))->lower()->snake();
     }
 
-    /**
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
-     */
     public function crudError(): Response
     {
         $this->addFlash(

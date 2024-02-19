@@ -20,7 +20,7 @@
     {% block stylesheets %}{% endblock %}
 
     {% block javascripts %}
-        {{ importmap('app') }}
+    {% block importmap %}{{ importmap('app') }}{% endblock %}
     {% endblock %}
 </head>
 

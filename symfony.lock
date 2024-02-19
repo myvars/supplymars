@@ -2,22 +2,13 @@
     "babdev/pagerfanta-bundle": {
         "version": "v4.4.0"
     },
-    "doctrine/annotations": {
-        "version": "2.0",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "main",
-            "version": "1.10",
-            "ref": "64d8583af5ea57b7afa4aba4b159907f3a148b05"
-        }
-    },
     "doctrine/doctrine-bundle": {
         "version": "2.11",
         "recipe": {
             "repo": "github.com/symfony/recipes",
             "branch": "main",
             "version": "2.10",
-            "ref": "310a02a22033e35640468f48ff6bf31a25891537"
+            "ref": "c170ded8fc587d6bd670550c43dafcf093762245"
         },
         "files": [
             "config/packages/doctrine.yaml",
@@ -82,7 +73,7 @@
             "repo": "github.com/symfony/recipes",
             "branch": "main",
             "version": "6.4",
-            "ref": "7824128ef0da56f09a376539d00a17e23e9b5054"
+            "ref": "4ff49f66191ce9356098e588684c27b935958b33"
         },
         "files": [
             "assets/app.js",
