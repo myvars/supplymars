@@ -30,12 +30,6 @@ class SubcategoryType extends AbstractType
             ->add('name', null, [
                 'label' => 'Subcategory Name',
             ])
-            ->add('vatRate', EntityType::class, [
-                'class' => VatRate::class,
-                'choice_label' => 'name',
-                'label' => 'VAT Rate',
-                'placeholder' => 'Choose a VAT Rate',
-            ])
             ->add('markup', PercentType::class, [
                 'scale' => 2,
                 'type' => 'integer',

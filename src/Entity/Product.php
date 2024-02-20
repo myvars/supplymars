@@ -4,11 +4,14 @@ namespace App\Entity;
 
 use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
 {
+    use TimestampableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -51,10 +54,6 @@ class Product
     #[Assert\NotNull(message: 'Please enter a sell price')]
     #[Assert\Range(notInRangeMessage: 'Please enter a valid sell price', min: 1, max: 1000000)]
     private ?int $sellPrice = null;
-
-    #[ORM\ManyToOne]
-    #[Assert\NotNull(message: 'Please enter a valid VAT Rate')]
-    private ?VatRate $vatRate = null;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
@@ -175,18 +174,6 @@ class Product
     public function setSellPrice(?int $sellPrice): static
     {
         $this->sellPrice = $sellPrice;
-
-        return $this;
-    }
-
-    public function getVatRate(): ?VatRate
-    {
-        return $this->vatRate;
-    }
-
-    public function setVatRate(?VatRate $vatRate): static
-    {
-        $this->vatRate = $vatRate;
 
         return $this;
     }

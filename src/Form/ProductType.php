@@ -68,12 +68,6 @@ class ProductType extends AbstractType
             ->add('weight', null, [
                 'label' => 'Weight (grams)',
             ])
-            ->add('vatRate', EntityType::class, [
-                'class' => VatRate::class,
-                'choice_label' => 'name',
-                'label' => 'VAT Rate',
-                'placeholder' => 'Choose a VAT Rate',
-            ])
             ->add('MfrPartNumber', null, [
                 'label' => 'Mfr Part Number',
             ])

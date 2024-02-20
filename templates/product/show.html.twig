@@ -48,10 +48,6 @@
                     <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Stock Level: {{ result.stock }}</p>
                     <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Lead Time (Days): {{ result.leadTimeDays }}</p>
                     <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Weight: {{ result.weight }} grams</p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">VAT Rate:
-                        {{ result.vatRate.name }}
-                        <span class="ms-2">{{ (result.vatRate.rate / 100)|number_format(2) }}%</span>
-                    </p>
                     <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Cost: £{{ (result.cost / 100)|number_format(2) }}</p>
                     <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Markup: {{ (result.markup / 100)|number_format(2) }}%</p>
                     <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Sell Price: £{{ (result.sellPrice / 100)|number_format(2) }}</p>

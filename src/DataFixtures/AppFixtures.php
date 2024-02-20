@@ -69,14 +69,12 @@ class AppFixtures extends Fixture
             'name' => 'Macbook Pro',
             'markup' => 5000,
             'category' => $category,
-            'vatRate' => $vatRate,
             'owner' => $user,
         ]);
 
         SubcategoryFactory::createMany(149,  function () {
             return [
                 'category' => CategoryFactory::random(),
-                'vatRate' => VatRateFactory::random(),
                 'owner' => UserFactory::random(),
             ];
         });
@@ -88,7 +86,6 @@ class AppFixtures extends Fixture
             'subcategory' => $subcategory,
             'manufacturer' => $manufacturer,
             'owner' => $user,
-            'vatRate' => $vatRate,
             'cost' => 103500,
             'isActive' => true,
             'leadTimeDays' => 7,
@@ -104,7 +101,6 @@ class AppFixtures extends Fixture
                 'subcategory' => $randomSubcategory,
                 'category' => $randomSubcategory->getCategory(),
                 'manufacturer' => ManufacturerFactory::random(),
-                'vatRate' => VatRateFactory::random(),
                 'owner' => UserFactory::random(),
             ];
         });

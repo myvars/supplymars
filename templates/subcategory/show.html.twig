@@ -43,10 +43,6 @@
                     <h2 class="mb-3 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">{{ result.name }}</h2>
                     <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Category: {{ result.category.name }}</p>
                     <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">{{ (result.markup / 100)|number_format(2) }}%</p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">
-                        {{ result.vatRate.name }}
-                        <span class="ms-2">{{ (result.vatRate.rate / 100)|number_format(2) }}%</span>
-                    </p>
                     <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">{{ result.owner.fullName }}</p>
                     <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">{{ result.isActive ? 'Yes' : 'No' }}</p>
                 </div>

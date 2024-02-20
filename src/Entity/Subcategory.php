@@ -6,11 +6,14 @@ use App\Repository\SubcategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: SubcategoryRepository::class)]
 class Subcategory
 {
+    use TimestampableEntity;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -35,10 +38,6 @@ class Subcategory
 
     #[ORM\Column]
     private bool $isActive = false;
-
-    #[ORM\ManyToOne]
-    #[Assert\NotNull(message: 'Please enter a valid VAT Rate')]
-    private ?VatRate $vatRate = null;
 
     #[ORM\OneToMany(mappedBy: 'subcategory', targetEntity: Product::class)]
     private Collection $products;
@@ -109,18 +108,6 @@ class Subcategory
     public function setIsActive(bool $isActive): static
     {
         $this->isActive = $isActive;
-
-        return $this;
-    }
-
-    public function getVatRate(): ?VatRate
-    {
-        return $this->vatRate;
-    }
-
-    public function setVatRate(?VatRate $vatRate): static
-    {
-        $this->vatRate = $vatRate;
 
         return $this;
     }

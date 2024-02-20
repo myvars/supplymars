@@ -52,7 +52,6 @@ final class SubcategoryFactory extends ModelFactory
             'markup' => self::faker()->randomNumber(4),
             'category' => CategoryFactory::new(),
             'owner' => UserFactory::new(),
-            'vatRate' => VatRateFactory::new(),
 
         ];
     }
