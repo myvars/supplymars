@@ -43,8 +43,7 @@ class Subcategory
     #[ORM\OneToMany(mappedBy: 'subcategory', targetEntity: Product::class)]
     private Collection $products;
 
-    #[ORM\ManyToOne(inversedBy: 'subcategories')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\Column(length: 255)]
     #[Assert\NotNull(message: 'Please enter a price model')]
     private ?PriceModel $priceModel = null;
 

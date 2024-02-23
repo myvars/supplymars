@@ -2,6 +2,7 @@
 
 namespace App\Factory;
 
+use App\Entity\PriceModel;
 use App\Entity\Product;
 use App\Repository\ProductRepository;
 use App\Service\ProductPriceCalculator;
@@ -60,7 +61,7 @@ final class ProductFactory extends ModelFactory
             'weight' => self::faker()->randomNumber(4),
             'defaultMarkup' => self::faker()->randomNumber(4)/100,
             'markup' => self::faker()->randomNumber(4)/100,
-            'priceModel' => PriceModelFactory::new(),
+            'priceModel' => PriceModel::NONE,
         ];
     }
 

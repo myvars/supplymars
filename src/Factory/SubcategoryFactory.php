@@ -2,6 +2,7 @@
 
 namespace App\Factory;
 
+use App\Entity\PriceModel;
 use App\Entity\Subcategory;
 use App\Repository\SubcategoryRepository;
 use Zenstruck\Foundry\ModelFactory;
@@ -52,7 +53,7 @@ final class SubcategoryFactory extends ModelFactory
             'defaultMarkup' => self::faker()->randomNumber(4)/100,
             'category' => CategoryFactory::new(),
             'owner' => UserFactory::new(),
-            'priceModel' => PriceModelFactory::new(),
+            'priceModel' => PriceModel::NONE,
 
         ];
     }

@@ -2,12 +2,10 @@
 
 namespace App\Service;
 
+use App\Entity\PriceModel;
+
 readonly class MarkupCalculator
 {
-    public function __construct(private PrettyPriceService $prettyPriceService)
-    {
-    }
-
     public function calculateMarkupFromSellPrice(
         string $cost,
         string $sellPrice
@@ -75,7 +73,7 @@ readonly class MarkupCalculator
         string $cost,
         string $markup,
         string $vatRate,
-        string $priceModel
+        PriceModel $priceModel
     ): string
     {
         $sellPriceIncVat = $this->calculateSellPriceIncVat(
@@ -84,10 +82,8 @@ readonly class MarkupCalculator
             $vatRate
         );
 
-        return $this->prettyPriceService->fromSellPriceIncVat(
-            $sellPriceIncVat,
-            $priceModel
-        );
+        return $priceModel->getPrettyPrice($sellPriceIncVat);
+
     }
 
     public function calculateCustomMarkup(

@@ -8,16 +8,13 @@ use App\Entity\PriceModel;
 use App\Entity\Product;
 use App\Entity\Subcategory;
 use App\Entity\User;
-use App\Entity\VatRate;
-use App\Form\DataTransformer\IntegerToPercentageTransformer;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\PercentType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Component\Validator\Constraints\Valid;
 
 class ProductType extends AbstractType
 {
@@ -82,9 +79,9 @@ class ProductType extends AbstractType
                 'label' => 'Markup %',
                 'disabled' => true,
             ])
-            ->add('priceModel', EntityType::class, [
+            ->add('priceModel', EnumType::class, [
                 'class' => PriceModel::class,
-                'choice_label' => 'name',
+                'choice_label' => fn (PriceModel $priceModel) => $priceModel->getName(),
                 'label' => 'Price Model',
                 'placeholder' => 'Choose a Price Model',
             ])

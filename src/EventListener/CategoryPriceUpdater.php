@@ -37,7 +37,7 @@ class CategoryPriceUpdater
         if ($eventArgs->hasChangedField('priceModel')) {
             $products = $category->getProducts();
             foreach ($products as $product) {
-                $productPriceModel = $product->getPriceModel()->getModelTag();
+                $productPriceModel = $product->getPriceModel()->value;
                 if ($productPriceModel === 'NONE') {
                     $this->changedProducts[$product->getId()] = $product;
                 }

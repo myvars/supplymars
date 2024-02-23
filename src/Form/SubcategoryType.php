@@ -6,10 +6,9 @@ use App\Entity\Category;
 use App\Entity\PriceModel;
 use App\Entity\Subcategory;
 use App\Entity\User;
-use App\Entity\VatRate;
-use App\Form\DataTransformer\IntegerToPercentageTransformer;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\PercentType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -32,9 +31,9 @@ class SubcategoryType extends AbstractType
                 'type' => 'integer',
                 'label' => 'Subcategory Markup %',
             ])
-            ->add('priceModel', EntityType::class, [
+            ->add('priceModel', EnumType::class, [
                 'class' => PriceModel::class,
-                'choice_label' => 'name',
+                'choice_label' => fn (PriceModel $priceModel) => $priceModel->getName(),
                 'label' => 'Price Model',
                 'placeholder' => 'Choose a Price Model',
             ])

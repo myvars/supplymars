@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\ProductRepository;
-use App\Service\MarkupCalculator;
-use App\Service\PrettyPriceService;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -90,7 +88,8 @@ class Product
     #[ORM\Column]
     private bool $isActive = false;
 
-    #[ORM\ManyToOne(inversedBy: 'products')]
+    #[ORM\Column(length: 255)]
+    #[Assert\NotNull(message: 'Please enter a price model')]
     private ?PriceModel $priceModel = null;
 
     public function getId(): ?int
@@ -301,14 +300,14 @@ class Product
         return $this->getCategory()->getDefaultMarkup();
     }
 
-    public function getActiveModelTag(): ?string
+    public function getActivePriceModel(): ?PriceModel
     {
-        if ($this->getPriceModel()->getModelTag() !== 'NONE') {
-            return $this->getPriceModel()->getModelTag();
+        if ($this->getPriceModel()->value !== 'NONE') {
+            return $this->getPriceModel();
         }
-        if ($this->getSubcategory()->getPriceModel()->getModelTag() !== 'NONE') {
-            return $this->getSubcategory()->getPriceModel()->getModelTag();
+        if ($this->getSubcategory()->getPriceModel()->value !== 'NONE') {
+            return $this->getSubcategory()->getPriceModel();
         }
-        return $this->getCategory()->getPriceModel()->getModelTag();
+        return $this->getCategory()->getPriceModel();
     }
 }

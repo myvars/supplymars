@@ -3,6 +3,7 @@
 namespace App\Factory;
 
 use App\Entity\Category;
+use App\Entity\PriceModel;
 use App\Repository\CategoryRepository;
 use Zenstruck\Foundry\ModelFactory;
 use Zenstruck\Foundry\Proxy;
@@ -52,7 +53,7 @@ final class CategoryFactory extends ModelFactory
             'name' => ucfirst(implode(' ', self::faker()->words(rand(1, 3)))),
             'owner' => UserFactory::new(),
             'vatRate' => VatRateFactory::new(),
-            'priceModel' => PriceModelFactory::new(),
+            'priceModel' => PriceModel::NONE,
         ];
     }
 

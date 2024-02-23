@@ -2,11 +2,9 @@
 
 namespace App\Entity;
 
-enum PriceModel : string
+enum PrettyPrice : string
 {
-
-    case NONE = 'NONE';
-    case DEFAULT = 'DEFAULT';
+    case DEFAULT = 'NONE';
     case PRETTY_00 = 'PRETTY_00';
     case PRETTY_10 = 'PRETTY_10';
     case PRETTY_49 = 'PRETTY_49';
@@ -16,8 +14,7 @@ enum PriceModel : string
     public function getName(): string
     {
         return match ($this) {
-            self::NONE => 'None',
-            self::DEFAULT => 'Default',
+            self::DEFAULT => 'None',
             self::PRETTY_00 => 'Pretty 00',
             self::PRETTY_10 => 'Pretty 10',
             self::PRETTY_49 => 'Pretty 49',
@@ -29,7 +26,6 @@ enum PriceModel : string
     public function getDescription(): string
     {
         return match ($this) {
-            self::NONE => 'No Price Model',
             self::DEFAULT => 'The default price model',
             self::PRETTY_00 => 'A pretty price model with .00 rounding',
             self::PRETTY_10 => 'A pretty price model with .10 rounding',
@@ -46,7 +42,7 @@ enum PriceModel : string
         }
 
         return match ($this) {
-            self::NONE, self::DEFAULT => $price,
+            self::DEFAULT => $price,
             self::PRETTY_00 => $this->pretty00($price),
             self::PRETTY_10 => $this->pretty10($price),
             self::PRETTY_49 => $this->pretty49($price),

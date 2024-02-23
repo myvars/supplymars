@@ -4,14 +4,12 @@ namespace App\Service;
 
 use App\Entity\Product;
 use Doctrine\ORM\EntityManagerInterface;
-use Psr\Log\LoggerInterface;
 
-class ProductPriceCalculator
+readonly class ProductPriceCalculator
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
-        private readonly MarkupCalculator $markupCalculator,
-        private readonly loggerInterface $logger
+        private EntityManagerInterface $entityManager,
+        private MarkupCalculator       $markupCalculator,
     )
     {
     }
@@ -25,7 +23,7 @@ class ProductPriceCalculator
             $product->getCost(),
             $product->getActiveMarkup(),
             $product->getCategory()->getVatRate()->getRate(),
-            $product->getActiveModelTag()
+            $product->getActivePriceModel()
         );
         $customMarkup = $this->markupCalculator->calculateCustomMarkup(
             $product->getCost(),
@@ -40,8 +38,6 @@ class ProductPriceCalculator
         $product->setMarkup($customMarkup);
         $product->setSellPrice($newSellPrice);
         $product->setSellPriceIncVat($prettyPriceIncVat);
-
-        $this->logger->info('Updating product ' . $product->getId() . ' with cost ' . $product->getCost() . ' and active markup ' . $product->getActiveMarkup());
 
         if ($flush) {
             $this->flush();

@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\PriceModel;
 use App\Factory\CategoryFactory;
 use App\Factory\ManufacturerFactory;
 use App\Factory\PriceModelFactory;
@@ -46,48 +47,6 @@ class AppFixtures extends Fixture
             'rate' => 0,
         ]);
 
-        $priceModel = PriceModelFactory::createOne([
-            'name' => 'None',
-            'description' => 'The default price model',
-            'modelTag' => 'NONE',
-            'isActive' => true,
-        ]);
-
-        PriceModelFactory::createOne([
-            'name' => 'Pretty 00',
-            'description' => 'A pretty price model with .00 rounding',
-            'modelTag' => 'PRETTY_00',
-            'isActive' => true,
-        ]);
-
-        PriceModelFactory::createOne([
-            'name' => 'Pretty 10',
-            'description' => 'A pretty price model with .10 rounding',
-            'modelTag' => 'PRETTY_10',
-            'isActive' => true,
-        ]);
-
-        PriceModelFactory::createOne([
-            'name' => 'Pretty 49',
-            'description' => 'A pretty price model with .49 or .99 rounding',
-            'modelTag' => 'PRETTY_49',
-            'isActive' => true,
-        ]);
-
-        PriceModelFactory::createOne([
-            'name' => 'Pretty 95',
-            'description' => 'A pretty price model with .95 rounding',
-            'modelTag' => 'PRETTY_95',
-            'isActive' => true,
-        ]);
-
-        PriceModelFactory::createOne([
-            'name' => 'Pretty 99',
-            'description' => 'A pretty price model with .99 rounding',
-            'modelTag' => 'PRETTY_99',
-            'isActive' => true,
-        ]);
-
         $manufacturer = ManufacturerFactory::createOne([
             'name' => 'Apple',
         ]);
@@ -99,14 +58,14 @@ class AppFixtures extends Fixture
             'defaultMarkup' => 10,
             'vatRate' => $vatRate,
             'owner' => $user,
-            'priceModel' => $priceModel,
+            'priceModel' => PriceModel::DEFAULT,
         ]);
 
         CategoryFactory::createMany(29,  function () {
             return [
                 'vatRate' => VatRateFactory::first(),
                 'owner' => UserFactory::random(),
-                'priceModel' => rand(1,10) === 1 ? PriceModelFactory::random() :PriceModelFactory::first(),
+                'priceModel' => PriceModel::DEFAULT,
             ];
         });
 
@@ -115,15 +74,15 @@ class AppFixtures extends Fixture
             'defaultMarkup' => 5,
             'category' => $category,
             'owner' => $user,
-            'priceModel' => $priceModel,
+            'priceModel' => PriceModel::NONE,
         ]);
 
         SubcategoryFactory::createMany(149,  function () {
             return [
                 'category' => CategoryFactory::random(),
                 'owner' => UserFactory::random(),
-                'priceModel' => rand(1,10) === 1 ? PriceModelFactory::random() :PriceModelFactory::first(),
-                'defaultMarkup' => rand(1, 5) === 1 ? rand(1, 10000)/100 : 0
+                'priceModel' => PriceModel::NONE,
+                'defaultMarkup' => rand(1, 10) === 1 ? rand(1, 10000)/100 : 0
             ];
         });
 
@@ -140,7 +99,7 @@ class AppFixtures extends Fixture
             'stock' => 50,
             'weight' => 1388,
             'defaultMarkup' => 5,
-            'priceModel' => $priceModel,
+            'priceModel' => PriceModel::NONE,
         ]);
 
         ProductFactory::createMany(199,  function () {
@@ -150,7 +109,7 @@ class AppFixtures extends Fixture
                 'category' => $randomSubcategory->getCategory(),
                 'manufacturer' => ManufacturerFactory::random(),
                 'owner' => UserFactory::random(),
-                'priceModel' => PriceModelFactory::random(),
+                'priceModel' => PriceModel::NONE,
                 'defaultMarkup' => rand(1, 10) === 1 ? rand(1, 10000)/100 : 0
             ];
         });
