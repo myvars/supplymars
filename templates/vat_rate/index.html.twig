@@ -11,14 +11,14 @@
         <twig:block name="table_header">
             <twig:TableHeader sortValue="id">Id</twig:TableHeader>
             <twig:TableHeader sortValue="name">Name</twig:TableHeader>
-            <twig:TableHeader sortValue="isActive">VAT Rate</twig:TableHeader>
+            <twig:TableHeader sortValue="isActive" alignText="justify-end">VAT Rate</twig:TableHeader>
             <twig:TableHeader><span class="sr-only">Actions</span></twig:TableHeader>
         </twig:block>
 
         <twig:block name="table_rows">
             <th scope="row" class="px-4 py-3">{{ result.id }}</th>
             <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ result.name }}</td>
-            <td class="px-4 py-3">{{ (result.rate / 100)|number_format(2) }}%</td>
+            <td class="px-4 py-3 text-right">{{ result.rate|number_format(2) }}%</td>
         </twig:block>
 
         <twig:block name="table_actions">

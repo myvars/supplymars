@@ -23,10 +23,10 @@ class VatRate
     #[Assert\NotNull(message: 'Please enter a VAT rate name')]
     private ?string $name = null;
 
-    #[ORM\Column]
-    #[Assert\NotNull(message: 'Please enter a valid VAT rate')]
-    #[Assert\Range(notInRangeMessage: 'Please enter a valid range', min: 0, max: 10000)]
-    private ?int $rate = null;
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    #[Assert\NotBlank(message: 'Please enter a VAT rate %')]
+    #[Assert\PositiveOrZero]
+    private ?string $rate = null;
 
     #[ORM\OneToMany(mappedBy: 'vatRate', targetEntity: Category::class)]
     private Collection $categories;
@@ -53,12 +53,12 @@ class VatRate
         return $this;
     }
 
-    public function getRate(): ?int
+    public function getRate(): ?string
     {
         return $this->rate;
     }
 
-    public function setRate(?int $rate): static
+    public function setRate(?string $rate): static
     {
         $this->rate = $rate;
 

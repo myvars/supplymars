@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Category;
+use App\Entity\PriceModel;
 use App\Entity\Subcategory;
 use App\Entity\User;
 use App\Entity\VatRate;
@@ -15,10 +16,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SubcategoryType extends AbstractType
 {
-    public function __construct(private readonly IntegerToPercentageTransformer $transformer)
-    {
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -30,10 +27,16 @@ class SubcategoryType extends AbstractType
             ->add('name', null, [
                 'label' => 'Subcategory Name',
             ])
-            ->add('markup', PercentType::class, [
-                'scale' => 2,
+            ->add('defaultMarkup', PercentType::class, [
+                'scale' => 3,
                 'type' => 'integer',
-                'label' => 'Markup %',
+                'label' => 'Subcategory Markup %',
+            ])
+            ->add('priceModel', EntityType::class, [
+                'class' => PriceModel::class,
+                'choice_label' => 'name',
+                'label' => 'Price Model',
+                'placeholder' => 'Choose a Price Model',
             ])
             ->add('owner', EntityType::class, [
                 'class' => User::class,
@@ -45,9 +48,6 @@ class SubcategoryType extends AbstractType
                 'label' => 'Active',
             ])
         ;
-
-        $builder->get('markup')->addModelTransformer($this->transformer);
-
     }
 
     public function configureOptions(OptionsResolver $resolver): void

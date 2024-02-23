@@ -1,6 +1,11 @@
-{% props sortValue='' %}
+{% props sortValue='', alignText='' %}
 
-<th scope="col" class="px-4 py-3">
+
+<th {{ attributes.defaults({
+    class: 'px-4 py-3',
+    scope: 'col',
+}) }}>
+<div class="flex {{ alignText }}">
     {% if sortValue %}
     <a
         class="flex items-center"
@@ -22,4 +27,5 @@
         </svg>
     </a>
     {% endif %}
+    </div>
 </th>

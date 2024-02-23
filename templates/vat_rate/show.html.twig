@@ -35,7 +35,8 @@
                 <div class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800" id="details" role="tabpanel"
                      aria-labelledby="details-tab">
                     <h2 class="mb-3 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">{{ result.name }}</h2>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">{{ (result.rate / 100)|number_format(2) }}%</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Markup: {{ result.rate|number_format(2) }}%</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Price Model: {{ result.priceModel.name }}</p>
                 </div>
                 <div>
                     <hr class="border-t border-gray-200 dark:border-gray-700">

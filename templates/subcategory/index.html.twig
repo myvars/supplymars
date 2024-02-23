@@ -21,7 +21,7 @@
             <th scope="row" class="px-4 py-3">{{ result.id }}</th>
             <td class="px-4 py-3">{{ result.category.name }}</td>
             <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ result.name }}</td>
-            <td class="px-4 py-3">{{ (result.markup / 100)|number_format(2) }}%</td>
+            <td class="px-4 py-3">{{ result.defaultMarkup|number_format(3) }}%</td>
             <td class="px-4 py-3">
                 <div class="flex items-center">
                     {{ result.isActive ?

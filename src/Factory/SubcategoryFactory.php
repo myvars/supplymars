@@ -49,9 +49,10 @@ final class SubcategoryFactory extends ModelFactory
         return [
             'name' => ucfirst(implode(' ', self::faker()->words(rand(1, 3)))),
             'isActive' => self::faker()->boolean(),
-            'markup' => self::faker()->randomNumber(4),
+            'defaultMarkup' => self::faker()->randomNumber(4)/100,
             'category' => CategoryFactory::new(),
             'owner' => UserFactory::new(),
+            'priceModel' => PriceModelFactory::new(),
 
         ];
     }

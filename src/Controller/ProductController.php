@@ -6,6 +6,7 @@ use App\Entity\Product;
 use App\Form\ProductType;
 use App\Repository\ProductRepository;
 use App\Service\CrudHelper;
+use App\Service\ProductPriceCalculator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,7 +19,10 @@ class ProductController extends AbstractController
     CONST string SECTION = 'Product';
     const int FORM_COLUMNS = 2;
 
-    public function __construct(private readonly CrudHelper $crudHelper)
+    public function __construct(
+        private readonly CrudHelper         $crudHelper,
+        private readonly ProductPriceCalculator $productPriceCalculator,
+    )
     {
         $this->crudHelper->setSection(self::SECTION);
         $this->crudHelper->setFormColumns(self::FORM_COLUMNS);

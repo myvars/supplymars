@@ -23,10 +23,10 @@ class Category
     #[Assert\NotNull(message: 'Please enter a category name')]
     private ?string $name = null;
 
-    #[ORM\Column]
-    #[Assert\NotNull]
-    #[Assert\Range(notInRangeMessage: 'Please enter a valid markup', min: 0, max: 100000)]
-    private ?int $markup = null;
+    #[ORM\Column(type: 'decimal', precision: 9, scale: 3)]
+    #[Assert\NotBlank(message: 'Please enter a category markup %')]
+    #[Assert\PositiveOrZero]
+    private ?string $defaultMarkup = null;
 
     #[ORM\ManyToOne(inversedBy: 'categories')]
     #[Assert\NotNull(message: 'Please enter a category owner')]
@@ -47,6 +47,11 @@ class Category
 
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Product::class)]
     private Collection $products;
+
+    #[ORM\ManyToOne(inversedBy: 'categories')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: 'Please enter a price model')]
+    private ?PriceModel $priceModel = null;
 
     public function __construct()
     {
@@ -71,14 +76,14 @@ class Category
         return $this;
     }
 
-    public function getMarkup(): ?int
+    public function getDefaultMarkup(): ?string
     {
-        return $this->markup;
+        return $this->defaultMarkup;
     }
 
-    public function setMarkup(int $markup): static
+    public function setDefaultMarkup(string $defaultMarkup): static
     {
-        $this->markup = $markup;
+        $this->defaultMarkup = $defaultMarkup;
 
         return $this;
     }
@@ -175,6 +180,18 @@ class Category
                 $product->setCategory(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPriceModel(): ?PriceModel
+    {
+        return $this->priceModel;
+    }
+
+    public function setPriceModel(?PriceModel $priceModel): static
+    {
+        $this->priceModel = $priceModel;
 
         return $this;
     }

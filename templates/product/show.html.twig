@@ -48,9 +48,12 @@
                     <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Stock Level: {{ result.stock }}</p>
                     <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Lead Time (Days): {{ result.leadTimeDays }}</p>
                     <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Weight: {{ result.weight }} grams</p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Cost: £{{ (result.cost / 100)|number_format(2) }}</p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Markup: {{ (result.markup / 100)|number_format(2) }}%</p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Sell Price: £{{ (result.sellPrice / 100)|number_format(2) }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Cost: £{{ result.cost|number_format(2) }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Product Markup: {{ result.defaultMarkup|number_format(3) }}%</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Markup: {{ result.markup|number_format(3) }}%</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Price Model: {{ result.priceModel.name }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Sell Price: £{{ result.sellPrice|number_format(2) }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Sell Price inc VAT: £{{ result.sellPriceIncVat|number_format(2) }}</p>
                     <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">result manager: {{ result.owner.fullName }}</p>
                     <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Active: {{ result.isActive ? 'Yes' : 'No' }}</p>
                 </div>

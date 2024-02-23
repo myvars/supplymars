@@ -48,10 +48,11 @@ final class CategoryFactory extends ModelFactory
     {
         return [
             'isActive' => self::faker()->boolean(),
-            'markup' => self::faker()->randomNumber(4),
+            'defaultMarkup' => self::faker()->randomNumber(4)/100,
             'name' => ucfirst(implode(' ', self::faker()->words(rand(1, 3)))),
             'owner' => UserFactory::new(),
             'vatRate' => VatRateFactory::new(),
+            'priceModel' => PriceModelFactory::new(),
         ];
     }
 

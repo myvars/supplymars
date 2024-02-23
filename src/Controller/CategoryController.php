@@ -34,7 +34,7 @@ class CategoryController extends AbstractController
         #[MapQueryParameter] string $query = null,
     ): Response
     {
-        $validSorts = ['id', 'name', 'markup', 'isActive'];
+        $validSorts = ['id', 'name', 'defaultMarkup', 'isActive'];
         $sort = in_array($sort, $validSorts) ? $sort : 'id';
 
         return $this->crudHelper->renderIndex(

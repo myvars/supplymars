@@ -2,26 +2,27 @@
 
 namespace App\Form;
 
-use App\Entity\VatRate;
-use App\Form\DataTransformer\IntegerToPercentageTransformer;
+use App\Entity\PriceModel;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\CallbackTransformer;
-use Symfony\Component\Form\Extension\Core\Type\PercentType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class VatRateType extends AbstractType
+class PriceModelType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('name', null, [
-                'label' => 'VAT Rate Name',
+                'label' => 'Price Model Name',
             ])
-            ->add('rate', PercentType::class, [
-                'scale' => 2,
-                'type' => 'integer',
-                'label' => 'Rate %',
+            ->add('description', null, [
+                'label' => 'Description',
+            ])
+            ->add('modelTag', null, [
+                'label' => 'Model Tag',
+            ])
+            ->add('isActive', null, [
+                'label' => 'Active',
             ])
         ;
     }
@@ -29,7 +30,7 @@ class VatRateType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => VatRate::class,
+            'data_class' => PriceModel::class,
         ]);
     }
 }

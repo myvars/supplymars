@@ -11,8 +11,8 @@
         <twig:block name="table_header">
             <twig:TableHeader sortValue="id">Id</twig:TableHeader>
             <twig:TableHeader sortValue="name">Product</twig:TableHeader>
-            <twig:TableHeader sortValue="cost">Cost</twig:TableHeader>
-            <twig:TableHeader sortValue="sellPrice"><span class="text-nowrap">Sell Price</span></twig:TableHeader>
+            <twig:TableHeader sortValue="cost" alignText="justify-end">Cost</twig:TableHeader>
+            <twig:TableHeader sortValue="sellPrice" alignText="justify-end"><span class="text-nowrap">Sell Price</span></twig:TableHeader>
             <twig:TableHeader sortValue="isActive">Status</twig:TableHeader>
             <twig:TableHeader><span class="sr-only">Actions</span></twig:TableHeader>
         </twig:block>
@@ -20,8 +20,8 @@
         <twig:block name="table_rows">
             <th scope="row" class="px-4 py-3">{{ result.id }}</th>
             <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">{{ result.name }}</td>
-            <td class="px-4 py-3 text-right">£{{ (result.cost / 100)|number_format(2) }}</td>
-            <td class="px-4 py-3 text-right">£{{ (result.sellPrice / 100)|number_format(2) }}</td>
+            <td class="px-4 py-3 text-right">£{{ result.cost|number_format(2) }}</td>
+            <td class="px-4 py-3 text-right">£{{ result.sellPrice|number_format(2) }}</td>
             <td class="px-4 py-3">
                 <div class="flex items-center">
                     {{ result.isActive ?

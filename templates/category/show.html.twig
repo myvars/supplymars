@@ -41,13 +41,14 @@
                 <div class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800" id="details" role="tabpanel"
                      aria-labelledby="details-tab">
                     <h2 class="mb-3 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">{{ result.name }}</h2>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">{{ (result.markup / 100)|number_format(2) }}%</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Category Markup: {{ result.defaultMarkup|number_format(3) }}%</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Price Model: {{ result.priceModel.name }}</p>
                     <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">
-                        {{ result.vatRate.name }}
-                        <span class="ms-2">{{ (result.vatRate.rate / 100)|number_format(2) }}%</span>
+                        VAT Rate: {{ result.vatRate.name }}
+                        <span class="ms-2">{{ result.vatRate.rate|number_format(2) }}%</span>
                     </p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">{{ result.owner.fullName }}</p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">{{ result.isActive ? 'Yes' : 'No' }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Manager: {{ result.owner.fullName }}</p>
+                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Active: {{ result.isActive ? 'Yes' : 'No' }}</p>
                 </div>
                 <div class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800" id="sales" role="tabpanel"
                      aria-labelledby="sales-tab">

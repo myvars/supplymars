@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ProductRepository;
+use App\Service\MarkupCalculator;
+use App\Service\PrettyPriceService;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -40,20 +42,31 @@ class Product
     #[Assert\Range(notInRangeMessage: 'Please enter a product weight(grams)', min: 0, max: 100000)]
     private ?int $weight = null;
 
-    #[ORM\Column(nullable: true)]
-    #[Assert\NotNull(message: 'Please enter a markup %')]
-    #[Assert\Range(notInRangeMessage: 'Please enter a valid markup', min: 0, max: 100000)]
-    private ?int $markup = null;
 
-    #[ORM\Column]
-    #[Assert\NotNull(message: 'Please enter a cost')]
-    #[Assert\Range(notInRangeMessage: 'Please enter a valid cost', min: 1, max: 1000000)]
-    private ?int $cost = null;
+    #[ORM\Column(type: 'decimal', precision: 9, scale: 3)]
+    #[Assert\NotBlank(message: 'Please enter a product markup %')]
+    #[Assert\PositiveOrZero]
+    private ?string $defaultMarkup = '0';
 
-    #[ORM\Column]
-    #[Assert\NotNull(message: 'Please enter a sell price')]
-    #[Assert\Range(notInRangeMessage: 'Please enter a valid sell price', min: 1, max: 1000000)]
-    private ?int $sellPrice = null;
+    #[ORM\Column(type: 'decimal', precision: 9, scale: 3)]
+    #[Assert\NotBlank(message: 'Please enter a markup %')]
+    #[Assert\PositiveOrZero]
+    private ?string $markup = null;
+
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    #[Assert\NotBlank(message: 'Please enter a cost')]
+    #[Assert\PositiveOrZero]
+    private ?string $cost = null;
+
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    #[Assert\NotBlank(message: 'Please enter a sell price')]
+    #[Assert\PositiveOrZero]
+    private ?string $sellPrice = null;
+
+    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    #[Assert\NotBlank(message: 'Please enter a sell price inc VAT')]
+    #[Assert\PositiveOrZero]
+    private ?string $sellPriceIncVat = null;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
@@ -76,6 +89,9 @@ class Product
 
     #[ORM\Column]
     private bool $isActive = false;
+
+    #[ORM\ManyToOne(inversedBy: 'products')]
+    private ?PriceModel $priceModel = null;
 
     public function getId(): ?int
     {
@@ -142,38 +158,62 @@ class Product
         return $this;
     }
 
-    public function getMarkup(): ?int
+    public function getDefaultMarkup(): ?string
+    {
+        return $this->defaultMarkup;
+    }
+
+    public function setDefaultMarkup(?string $defaultMarkup): static
+    {
+        $this->defaultMarkup = $defaultMarkup;
+
+        return $this;
+    }
+
+    public function getMarkup(): ?string
     {
         return $this->markup;
     }
 
-    public function setMarkup(?int $markup): static
+    public function setMarkup(?string $markup): static
     {
         $this->markup = $markup;
 
         return $this;
     }
 
-    public function getCost(): ?int
+    public function getCost(): ?string
     {
         return $this->cost;
     }
 
-    public function setCost(?int $cost): static
+    public function setCost(?string $cost): static
     {
         $this->cost = $cost;
 
         return $this;
     }
 
-    public function getSellPrice(): ?int
+    public function getSellPrice(): ?string
     {
         return $this->sellPrice;
     }
 
-    public function setSellPrice(?int $sellPrice): static
+    public function setSellPrice(?string $sellPrice): static
     {
         $this->sellPrice = $sellPrice;
+
+        return $this;
+    }
+
+    public function getSellPriceIncVat(): ?string
+    {
+        return $this->sellPriceIncVat;
+    }
+
+    public function setSellPriceIncVat(?string $sellPriceIncVat): static
+    {
+        $this->sellPriceIncVat = $sellPriceIncVat;
 
         return $this;
     }
@@ -236,5 +276,39 @@ class Product
         $this->isActive = $isActive;
 
         return $this;
+    }
+
+    public function getPriceModel(): ?PriceModel
+    {
+        return $this->priceModel;
+    }
+
+    public function setPriceModel(?PriceModel $priceModel): static
+    {
+        $this->priceModel = $priceModel;
+
+        return $this;
+    }
+
+    public function getActiveMarkup(): ?string
+    {
+        if ($this->getDefaultMarkup() > 0) {
+            return $this->getDefaultMarkup();
+        }
+        if ($this->getSubcategory()->getDefaultMarkup() > 0) {
+            return $this->getSubcategory()->getDefaultMarkup();
+        }
+        return $this->getCategory()->getDefaultMarkup();
+    }
+
+    public function getActiveModelTag(): ?string
+    {
+        if ($this->getPriceModel()->getModelTag() !== 'NONE') {
+            return $this->getPriceModel()->getModelTag();
+        }
+        if ($this->getSubcategory()->getPriceModel()->getModelTag() !== 'NONE') {
+            return $this->getSubcategory()->getPriceModel()->getModelTag();
+        }
+        return $this->getCategory()->getPriceModel()->getModelTag();
     }
 }

@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Category;
 use App\Entity\Manufacturer;
+use App\Entity\PriceModel;
 use App\Entity\Product;
 use App\Entity\Subcategory;
 use App\Entity\User;
@@ -21,8 +22,8 @@ use Symfony\Component\Validator\Constraints\Valid;
 class ProductType extends AbstractType
 {
     public function __construct(
-        private readonly IntegerToPercentageTransformer $transformer,
-        private readonly UrlGeneratorInterface $router,
+//        private readonly IntegerToPercentageTransformer $transformer,
+//        private readonly UrlGeneratorInterface $router,
     )
     {
     }
@@ -54,7 +55,6 @@ class ProductType extends AbstractType
                 'class' => Subcategory::class,
                 'choice_label' => 'name',
                 'placeholder' => 'Choose a Subcategory',
-                'choices' => [],
                 'priority' => 1,
             ])
             ->add('leadTimeDays', null, [
@@ -71,10 +71,22 @@ class ProductType extends AbstractType
             ->add('MfrPartNumber', null, [
                 'label' => 'Mfr Part Number',
             ])
+            ->add('defaultMarkup', PercentType::class, [
+                'scale' => 3,
+                'type' => 'integer',
+                'label' => 'Product Markup %',
+            ])
             ->add('markup', PercentType::class, [
-                'scale' => 2,
+                'scale' => 3,
                 'type' => 'integer',
                 'label' => 'Markup %',
+                'disabled' => true,
+            ])
+            ->add('priceModel', EntityType::class, [
+                'class' => PriceModel::class,
+                'choice_label' => 'name',
+                'label' => 'Price Model',
+                'placeholder' => 'Choose a Price Model',
             ])
             ->add('cost', MoneyType::class, [
                 'currency' => 'GBP',
@@ -89,6 +101,12 @@ class ProductType extends AbstractType
             ->add('sellPrice', MoneyType::class, [
                 'currency' => 'GBP',
                 'label' => 'Sell Price',
+                'disabled' => true,
+            ])
+            ->add('sellPriceIncVat', MoneyType::class, [
+                'currency' => 'GBP',
+                'label' => 'Sell Price inc VAT',
+                'disabled' => true,
             ])
             ->add('isActive', null, [
                 'label' => 'Active',
@@ -96,9 +114,7 @@ class ProductType extends AbstractType
             ])
         ;
 
-        $builder->get('markup')->addModelTransformer($this->transformer);
-        $builder->get('cost')->addModelTransformer($this->transformer);
-        $builder->get('sellPrice')->addModelTransformer($this->transformer);
+//        $builder->get('markup')->addModelTransformer($this->transformer);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

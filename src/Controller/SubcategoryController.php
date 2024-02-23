@@ -34,7 +34,7 @@ class SubcategoryController extends AbstractController
         #[MapQueryParameter] string $query = null,
     ): Response
     {
-        $validSorts = ['id', 'name', 'category.name', 'markup', 'isActive'];
+        $validSorts = ['id', 'name', 'category.name', 'defaultMarkup', 'isActive'];
         $sort = in_array($sort, $validSorts) ? $sort : 'id';
 
         return $this->crudHelper->renderIndex(
