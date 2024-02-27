@@ -17,7 +17,7 @@ enum PriceModel : string
     {
         return match ($this) {
             self::NONE => 'None',
-            self::DEFAULT => 'Default',
+            self::DEFAULT => 'Default (Cost+)',
             self::PRETTY_00 => 'Pretty 00',
             self::PRETTY_10 => 'Pretty 10',
             self::PRETTY_49 => 'Pretty 49',
@@ -30,7 +30,7 @@ enum PriceModel : string
     {
         return match ($this) {
             self::NONE => 'No Price Model',
-            self::DEFAULT => 'The default price model',
+            self::DEFAULT => 'The default Cost+ price model',
             self::PRETTY_00 => 'A pretty price model with .00 rounding',
             self::PRETTY_10 => 'A pretty price model with .10 rounding',
             self::PRETTY_49 => 'A pretty price model with .49 or .99 rounding',

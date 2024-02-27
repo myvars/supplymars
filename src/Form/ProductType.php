@@ -62,8 +62,11 @@ class ProductType extends AbstractType
                 'choice_label' => 'name',
                 'placeholder' => 'Choose a Manufacturer',
             ])
-            ->add('weight', null, [
-                'label' => 'Weight (grams)',
+            ->add('priceModel', EnumType::class, [
+                'class' => PriceModel::class,
+                'choice_label' => fn (PriceModel $priceModel) => $priceModel->getName(),
+                'label' => 'Price Model',
+                'placeholder' => 'Choose a Price Model',
             ])
             ->add('MfrPartNumber', null, [
                 'label' => 'Mfr Part Number',
@@ -73,32 +76,19 @@ class ProductType extends AbstractType
                 'type' => 'integer',
                 'label' => 'Product Markup %',
             ])
-            ->add('markup', PercentType::class, [
-                'scale' => 3,
-                'type' => 'integer',
-                'label' => 'Markup %',
-                'disabled' => true,
-            ])
-            ->add('priceModel', EnumType::class, [
-                'class' => PriceModel::class,
-                'choice_label' => fn (PriceModel $priceModel) => $priceModel->getName(),
-                'label' => 'Price Model',
-                'placeholder' => 'Choose a Price Model',
+            ->add('weight', null, [
+                'label' => 'Weight (grams)',
             ])
             ->add('cost', MoneyType::class, [
                 'currency' => 'GBP',
                 'label' => 'Cost',
             ])
+
             ->add('owner', EntityType::class, [
                 'class' => User::class,
                 'choice_label' => 'fullName',
                 'label' => 'Product Manager',
                 'placeholder' => 'Choose a Product Manager',
-            ])
-            ->add('sellPrice', MoneyType::class, [
-                'currency' => 'GBP',
-                'label' => 'Sell Price',
-                'disabled' => true,
             ])
             ->add('sellPriceIncVat', MoneyType::class, [
                 'currency' => 'GBP',

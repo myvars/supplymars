@@ -23,22 +23,25 @@ class SubcategoryPriceUpdater
 
     public function preUpdate(Subcategory $subcategory, PreUpdateEventArgs $eventArgs): void
     {
-        if ($eventArgs->hasChangedField('defaultMarkup')) {
-            $products = $subcategory->getProducts();
-            foreach ($products as $product) {
-                $productMarkup = floatval($product->getDefaultMarkup());
-                if ($productMarkup <= 0) {
-                    $this->changedProducts[$product->getId()] = $product;
-                }
-            }
-        }
+        if ($eventArgs->hasChangedField('defaultMarkup') ||
+            $eventArgs->hasChangedField('priceModel')) {
 
-        if ($eventArgs->hasChangedField('priceModel')) {
-            $products = $subcategory->getProducts();
+            $products = $subcategory->getActiveProducts();
+
             foreach ($products as $product) {
-                $productPriceModel = $product->getPriceModel()->value;
-                if ($productPriceModel === 'NONE') {
-                    $this->changedProducts[$product->getId()] = $product;
+
+                if ($eventArgs->hasChangedField('defaultMarkup')) {
+                    $productMarkup = floatval($product->getDefaultMarkup());
+                    if ($productMarkup <= 0) {
+                        $this->changedProducts[$product->getId()] = $product;
+                    }
+                }
+
+                if ($eventArgs->hasChangedField('priceModel')) {
+                    $productPriceModel = $product->getPriceModel()->value;
+                    if ($productPriceModel === 'NONE') {
+                        $this->changedProducts[$product->getId()] = $product;
+                    }
                 }
             }
         }
@@ -53,7 +56,6 @@ class SubcategoryPriceUpdater
         foreach ($this->changedProducts as $product) {
             $this->productPriceCalculator->recalculatePrice($product, false);
         }
-
         $this->productPriceCalculator->flush();
         unset($this->changedProducts);
     }

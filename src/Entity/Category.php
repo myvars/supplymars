@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\CategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -159,6 +160,17 @@ class Category
     public function getProducts(): Collection
     {
         return $this->products;
+    }
+
+    /**
+     * @return Collection<int, Product>
+     */
+    public function getActiveProducts(): Collection
+    {
+        $criteria = Criteria::create()
+            ->andWhere(Criteria::expr()->eq('isActive', true));
+
+        return $this->products->matching($criteria);
     }
 
     public function addProduct(Product $product): static

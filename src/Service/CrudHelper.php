@@ -8,7 +8,9 @@ use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Pagerfanta\Exception\OutOfRangeCurrentPageException;
 use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\SubmitButton;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\String\UnicodeString;
@@ -137,7 +139,7 @@ class CrudHelper extends AbstractController
         ]);
     }
 
-    public function renderUpdate(
+/*    public function renderUpdate(
         Request $request,
         ?object $entity,
         string $formType,
@@ -192,7 +194,103 @@ class CrudHelper extends AbstractController
             'form' => $form,
             'formColumns' => $this->getFormColumns()
         ]);
+    }*/
+
+    public function renderUpdate(
+        Request $request,
+        ?object $entity,
+        string $formType,
+    ): Response
+    {
+        if (!$entity) {
+            return $this->crudError();
+        }
+
+        $form = $this->createForm($formType, $entity, [
+            'action' => $this->generateUrl('app_'.$this->snakeSection().'_edit', ['id' => $entity->getId()])
+        ]);
+
+        $successResponse = $this->redirectToRoute(
+            'app_'.$this->snakeSection().'_index',
+            [],
+            Response::HTTP_SEE_OTHER
+        );
+
+        $backLink = $this->generateUrl('app_'.$this->snakeSection().'_index');
+
+        return $this->renderCustomUpdate(
+            $this->getSection(),
+            $request,
+            $entity,
+            $form,
+            $successResponse,
+            $backLink,
+            $this->getFormColumns(),
+            true
+        );
     }
+
+    public function renderCustomUpdate(
+        string $section,
+        Request $request,
+        ?object $entity,
+        FormInterface $form,
+        RedirectResponse $successResponse,
+        string $returnLink,
+        int $formColumns = 1,
+        bool $allowDelete = false,
+    ): Response
+    {
+        if (!$this->section) {
+            return $this->crudError();
+        }
+
+        if (!$entity) {
+            return $this->crudError();
+        }
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            try {
+                $this->entityManager->flush();
+
+                $this->addFlash(
+                    'success',
+                    $this->getSection().' updated!'
+                );
+
+            } catch (\Exception $e) {
+                $this->addFlash(
+                    'error',
+                    'Can not update '.$this->getSection().'!'
+                );
+            }
+
+            if ($request->headers->has('turbo-frame')) {
+                $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+
+                return $this->renderBlock(
+                    self::TURBO_STREAM_REFRESH_TEMPLATE,
+                    'stream_success'
+                );
+            }
+
+            return $successResponse;
+        }
+
+        return $this->render(self::CRUD_BASE_TEMPLATE, [
+            'section' => $section,
+            'template' => 'edit',
+            'result' => $entity,
+            'form' => $form,
+            'returnLink' => $returnLink,
+            'allowDelete' => $allowDelete,
+            'formColumns' => $formColumns
+        ]);
+    }
+
 
     public function renderDeleteConfirm(?object $entity): Response
     {

@@ -10,6 +10,7 @@
             </h3>
         </div>
         {{ include('crud/crud.html.twig', {'template': '_form', 'button_label': 'Update '~section}) }}
+        {% if allowDelete %}
         <hr class="h-px my-6 bg-gray-200 border-0 dark:bg-gray-700">
         <twig:Button
             tag="a"
@@ -19,9 +20,9 @@
             class="w-full">
             Delete
         </twig:Button>
-
+        {% endif %}
         <p class="text-sm font-light text-gray-500 dark:text-gray-400 mt-6">
-            <a href="{{ path('app_'~section|lower|u.snake~'_index') }}" class="hover:underline">Back to list</a>
+            <a href="{{ returnLink }}" class="hover:underline">Back to list</a>
         </p>
     </div>
 {% endblock %}

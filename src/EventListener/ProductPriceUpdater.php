@@ -20,7 +20,8 @@ readonly class ProductPriceUpdater
         if (
             $eventArgs->hasChangedField('cost') ||
             $eventArgs->hasChangedField('defaultMarkup') ||
-            $eventArgs->hasChangedField('priceModel')
+            $eventArgs->hasChangedField('priceModel') ||
+            $eventArgs->hasChangedField('isActive')
         ) {
             $this->productPriceCalculator->recalculatePrice($product,false);
         }

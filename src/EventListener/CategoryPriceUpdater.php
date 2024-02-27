@@ -23,23 +23,32 @@ class CategoryPriceUpdater
 
     public function preUpdate(Category $category, PreUpdateEventArgs $eventArgs): void
     {
-        if ($eventArgs->hasChangedField('defaultMarkup')) {
-            $products = $category->getProducts();
-            foreach ($products as $product) {
-                $productMarkup = floatval($product->getDefaultMarkup());
-                $subcategoryMarkup = floatval($product->getSubcategory()->getDefaultMarkup());
-                if ($productMarkup <= 0 && $subcategoryMarkup <= 0) {
-                    $this->changedProducts[$product->getId()] = $product;
-                }
-            }
-        }
+        if ($eventArgs->hasChangedField('defaultMarkup') ||
+            $eventArgs->hasChangedField('priceModel') ||
+            $eventArgs->hasChangedField('vatRate')) {
 
-        if ($eventArgs->hasChangedField('priceModel')) {
-            $products = $category->getProducts();
+            $products = $category->getActiveProducts();
+
             foreach ($products as $product) {
-                $productPriceModel = $product->getPriceModel()->value;
-                if ($productPriceModel === 'NONE') {
+
+                if ($eventArgs->hasChangedField('vatRate')) {
                     $this->changedProducts[$product->getId()] = $product;
+                    continue;
+                }
+
+                if ($eventArgs->hasChangedField('defaultMarkup')) {
+                    $productMarkup = floatval($product->getDefaultMarkup());
+                    $subcategoryMarkup = floatval($product->getSubcategory()->getDefaultMarkup());
+                    if ($productMarkup <= 0 && $subcategoryMarkup <= 0) {
+                        $this->changedProducts[$product->getId()] = $product;
+                    }
+                }
+
+                if ($eventArgs->hasChangedField('priceModel')) {
+                    $productPriceModel = $product->getPriceModel()->value;
+                    if ($productPriceModel === 'NONE') {
+                        $this->changedProducts[$product->getId()] = $product;
+                    }
                 }
             }
         }
@@ -54,7 +63,6 @@ class CategoryPriceUpdater
         foreach ($this->changedProducts as $product) {
             $this->productPriceCalculator->recalculatePrice($product, false);
         }
-
         $this->productPriceCalculator->flush();
         unset($this->changedProducts);
     }
