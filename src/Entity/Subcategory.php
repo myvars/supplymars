@@ -48,9 +48,13 @@ class Subcategory
     #[Assert\NotNull(message: 'Please enter a price model')]
     private ?PriceModel $priceModel = null;
 
+    #[ORM\OneToMany(mappedBy: 'subcategory', targetEntity: SupplierSubcategory::class)]
+    private Collection $supplierSubcategories;
+
     public function __construct()
     {
         $this->products = new ArrayCollection();
+        $this->supplierSubcategories = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -167,6 +171,36 @@ class Subcategory
     public function setPriceModel(?PriceModel $priceModel): static
     {
         $this->priceModel = $priceModel;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, SupplierSubcategory>
+     */
+    public function getSupplierSubcategories(): Collection
+    {
+        return $this->supplierSubcategories;
+    }
+
+    public function addSupplierSubcategory(SupplierSubcategory $supplierSubcategory): static
+    {
+        if (!$this->supplierSubcategories->contains($supplierSubcategory)) {
+            $this->supplierSubcategories->add($supplierSubcategory);
+            $supplierSubcategory->setMappedSubcategory($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSupplierSubcategory(SupplierSubcategory $supplierSubcategory): static
+    {
+        if ($this->supplierSubcategories->removeElement($supplierSubcategory)) {
+            // set the owning side to null (unless already changed)
+            if ($supplierSubcategory->getMappedSubcategory() === $this) {
+                $supplierSubcategory->setMappedSubcategory(null);
+            }
+        }
 
         return $this;
     }

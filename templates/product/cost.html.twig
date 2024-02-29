@@ -7,6 +7,47 @@
 <section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5">
     <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
         <h1 class="text-2xl font-semibold text-white mb-4">Product Costing</h1>
+
+        {% if result.isActive and result.category.isActive and result.subcategory.isActive and result.activeProductSource is not null%}
+            <section class="bg-white dark:bg-gray-900 border border-gray-700 rounded-lg">
+                <div class="max-w-screen-xl px-4 py-8 mx-auto text-center lg:py-14 lg:px-6">
+                    <dl class="grid max-w-screen-md gap-8 mx-auto text-gray-900 sm:grid-cols-3 dark:text-white">
+                        <div class="flex flex-col items-center justify-center">
+                            <dt class="mb-2 font-light text-gray-500 dark:text-gray-400">Cost Price</dt>
+                            <dd class="text-3xl md:text-4xl font-bold text-gray-600 dark:text-gray-500">£{{ result.cost|number_format(2) }}</dd>
+                        </div>
+                        <div class="flex flex-col items-center justify-center">
+                            <dt class="mb-2 font-light text-gray-500 dark:text-gray-400">Sell Price</dt>
+                            <dd class="text-3xl md:text-4xl font-bold">£{{ result.sellPrice|number_format(2) }}</dd>
+                        </div>
+                        <div class="flex flex-col items-center justify-center">
+                            <dt class="mb-2 font-light text-gray-500 dark:text-gray-400">Sell Price Inc VAT</dt>
+                            <dd class="text-3xl md:text-4xl font-bold">£{{ result.sellPriceIncVat|number_format(2) }}</dd>
+                        </div>
+                    </dl>
+                </div>
+            </section>
+            <section class="bg-white dark:bg-gray-900 border border-gray-700 rounded-lg">
+                <div class="p-4 text-center">
+                    <p class="text-2xl font-light text-gray-700 dark:text-gray-500">Active Markup: {{ result.markup|number_format(3) }}%</p>
+                </div>
+            </section>
+        {% endif %}
+
+        {% if result.isActive and result.category.isActive and result.subcategory.isActive and result.activeProductSource is not null%}
+        {% else %}
+            <section class="bg-white dark:bg-gray-900 border border-gray-700 rounded-lg">
+                <div class="p-4 text-center">
+                    <p class="mb-2 text-2xl font-light text-red-400 dark:text-red-400">Inactive Product</p>
+                    {% if result.activeProductSource is null%}
+                        <p class="text-sm font-light text-red-600 dark:text-gray-500">No Active Supplier</p>
+                    {% else %}
+                        <p class="text-sm font-light text-red-600 dark:text-gray-500">Inactive Category, Subcategory or Product</p>
+                    {% endif %}
+                </div>
+            </section>
+        {% endif %}
+
         <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
             <tr>
@@ -99,44 +140,6 @@
             </tr>
             </tbody>
         </table>
-
-        <section class="bg-white dark:bg-gray-900 border border-gray-700 rounded-lg">
-            <div class="p-4 text-center">
-                {% if result.isActive and result.category.isActive and result.subcategory.isActive %}
-                    <p class="text-2xl font-light text-green-400 dark:text-green-400">Active Product</p>
-                {% else %}
-                    <p class="text-2xl font-light text-red-400 dark:text-red-400">Inactive Product</p>
-                {% endif %}
-            </div>
-        </section>
-
-        {% if result.isActive and result.category.isActive and result.subcategory.isActive %}
-        <section class="bg-white dark:bg-gray-900 border border-gray-700 rounded-lg">
-            <div class="max-w-screen-xl px-4 py-8 mx-auto text-center lg:py-14 lg:px-6">
-                <dl class="grid max-w-screen-md gap-8 mx-auto text-gray-900 sm:grid-cols-3 dark:text-white">
-                    <div class="flex flex-col items-center justify-center">
-                        <dt class="mb-2 font-light text-gray-500 dark:text-gray-400">Cost Price</dt>
-                        <dd class="text-3xl md:text-4xl font-bold text-gray-600 dark:text-gray-500">£{{ result.cost|number_format(2) }}</dd>
-                    </div>
-                    <div class="flex flex-col items-center justify-center">
-                        <dt class="mb-2 font-light text-gray-500 dark:text-gray-400">Sell Price</dt>
-                        <dd class="text-3xl md:text-4xl font-bold">£{{ result.sellPrice|number_format(2) }}</dd>
-                    </div>
-                    <div class="flex flex-col items-center justify-center">
-                        <dt class="mb-2 font-light text-gray-500 dark:text-gray-400">Sell Price Inc VAT</dt>
-                        <dd class="text-3xl md:text-4xl font-bold">£{{ result.sellPriceIncVat|number_format(2) }}</dd>
-                    </div>
-                </dl>
-            </div>
-        </section>
-
-        <section class="bg-white dark:bg-gray-900 border border-gray-700 rounded-lg">
-            <div class="p-4 text-center">
-                <p class="text-2xl font-light text-gray-700 dark:text-gray-500">Real Markup: {{ result.markup|number_format(3) }}%</p>
-            </div>
-        </section>
-        {% endif %}
-
     </div>
 </section>
 {% endblock %}

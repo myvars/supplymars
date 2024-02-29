@@ -50,7 +50,7 @@ final class ProductFactory extends ModelFactory
     {
         return [
             'name' => self::faker()->text(100),
-            'MfrPartNumber' => self::faker()->text(30),
+            'MfrPartNumber' => self::faker()->regexify('[A-Z]{4}[0-4]{4}'),
             'category' => CategoryFactory::new(),
             'subcategory' => SubcategoryFactory::new(),
             'manufacturer' => ManufacturerFactory::new(),

@@ -16,7 +16,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\UX\Turbo\TurboBundle;
 
 #[Route('/product')]
 class ProductController extends AbstractController
@@ -96,6 +95,14 @@ class ProductController extends AbstractController
             $request,
             $product,
         );
+    }
+
+    #[Route('/{id}/stock', name: 'app_product_stock', methods: ['GET'])]
+    public function productStock(?Product $product, Request $request): Response
+    {
+        return $this->render('product/stock.html.twig', [
+            'product' => $product,
+        ]);
     }
 
     #[Route('/{id}/cost', name: 'app_product_cost', methods: ['GET'])]

@@ -55,15 +55,15 @@ class ProductRepository extends ServiceEntityRepository
 
     public function findBySearchQueryBuilder(?string $query, ?string $sort = null, string $direction = 'DESC'): QueryBuilder
     {
-        $qb = $this->createQueryBuilder('c');
+        $qb = $this->createQueryBuilder('p');
 
         if ($query) {
-            $qb->andWhere('c.name LIKE :query')
+            $qb->andWhere('p.name LIKE :query')
                 ->setParameter('query', '%' . $query . '%');
         }
 
         if ($sort) {
-            $qb->orderBy('c.' . $sort, $direction);
+            $qb->orderBy('p.' . $sort, $direction);
         }
 
         return $qb;

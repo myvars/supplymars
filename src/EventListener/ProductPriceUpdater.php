@@ -21,6 +21,7 @@ readonly class ProductPriceUpdater
             $eventArgs->hasChangedField('cost') ||
             $eventArgs->hasChangedField('defaultMarkup') ||
             $eventArgs->hasChangedField('priceModel') ||
+            $eventArgs->hasChangedField('subcategory') ||
             $eventArgs->hasChangedField('isActive')
         ) {
             $this->productPriceCalculator->recalculatePrice($product,false);

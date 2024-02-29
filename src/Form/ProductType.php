@@ -68,8 +68,8 @@ class ProductType extends AbstractType
                 'label' => 'Price Model',
                 'placeholder' => 'Choose a Price Model',
             ])
-            ->add('MfrPartNumber', null, [
-                'label' => 'Mfr Part Number',
+            ->add('mfrPartNumber', null, [
+                'label' => 'Manufacturer Part Number',
             ])
             ->add('defaultMarkup', PercentType::class, [
                 'scale' => 3,

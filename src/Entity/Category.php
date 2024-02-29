@@ -53,6 +53,7 @@ class Category
     #[Assert\NotNull(message: 'Please enter a price model')]
     private ?PriceModel $priceModel = null;
 
+
     public function __construct()
     {
         $this->subcategories = new ArrayCollection();

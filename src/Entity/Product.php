@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ProductRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -22,7 +24,7 @@ class Product
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotNull(message: 'Please enter a Mfr part number')]
+    #[Assert\NotNull(message: 'Please enter a manufacturer part number')]
     private ?string $MfrPartNumber = null;
 
     #[ORM\Column]
@@ -91,6 +93,17 @@ class Product
     #[ORM\Column(length: 255)]
     #[Assert\NotNull(message: 'Please enter a price model')]
     private ?PriceModel $priceModel = null;
+
+    #[ORM\OneToMany(mappedBy: 'product', targetEntity: SupplierProduct::class)]
+    private Collection $supplierProducts;
+
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    private ?SupplierProduct $activeProductSource = null;
+
+    public function __construct()
+    {
+        $this->supplierProducts = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -309,5 +322,47 @@ class Product
             return $this->getSubcategory()->getPriceModel();
         }
         return $this->getCategory()->getPriceModel();
+    }
+
+    /**
+     * @return Collection<int, SupplierProduct>
+     */
+    public function getSupplierProducts(): Collection
+    {
+        return $this->supplierProducts;
+    }
+
+    public function addSupplierProduct(SupplierProduct $supplierProduct): static
+    {
+        if (!$this->supplierProducts->contains($supplierProduct)) {
+            $this->supplierProducts->add($supplierProduct);
+            $supplierProduct->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSupplierProduct(SupplierProduct $supplierProduct): static
+    {
+        if ($this->supplierProducts->removeElement($supplierProduct)) {
+            // set the owning side to null (unless already changed)
+            if ($supplierProduct->getProduct() === $this) {
+                $supplierProduct->setProduct(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getActiveProductSource(): ?SupplierProduct
+    {
+        return $this->activeProductSource;
+    }
+
+    public function setActiveProductSource(?SupplierProduct $activeProductSource): static
+    {
+        $this->activeProductSource = $activeProductSource;
+
+        return $this;
     }
 }

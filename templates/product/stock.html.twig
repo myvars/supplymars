@@ -1,0 +1,110 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Product Stock{% endblock %}
+
+{% block body %}
+
+<section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5">
+    <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+        <h1 class="text-2xl font-semibold text-white mb-4">Product Stock</h1>
+
+        {% if product.isActive and product.category.isActive and product.subcategory.isActive and product.activeProductSource is not null%}
+            <section class="bg-white dark:bg-gray-900 border border-gray-700 rounded-lg">
+                <div class="max-w-screen-xl px-4 py-8 mx-auto text-center lg:py-10 lg:px-6">
+                    <dl class="grid max-w-screen-md gap-8 mx-auto text-gray-900 sm:grid-cols-2 dark:text-white">
+                        <div class="flex flex-col items-center justify-center">
+                            <dt class="mb-2 font-light text-gray-500 dark:text-gray-400">Cost Price</dt>
+                            <dd class="mb-2 text-3xl md:text-4xl font-bold ">£{{ product.cost|number_format(2) }}</dd>
+                            <dd class="font-light text-gray-600 dark:text-gray-500">{{ product.activeProductSource.supplier.name }}</dd>
+                        </div>
+                        <div class="flex flex-col items-center justify-center">
+                            <dt class="mb-2 font-light text-gray-500 dark:text-gray-400">Stock</dt>
+                            <dd class="mb-2 text-3xl md:text-4xl font-bold">{{ product.stock }}</dd>
+                            <dd class="font-light text-gray-600 dark:text-gray-500">{{ product.activeProductSource.updatedAt|ago }}</dd>
+                        </div>
+                    </dl>
+                </div>
+            </section>
+        {% endif %}
+
+        {% if product.isActive and product.category.isActive and product.subcategory.isActive and product.activeProductSource is not null%}
+        {% else %}
+            <section class="bg-white dark:bg-gray-900 border border-gray-700 rounded-lg">
+                <div class="p-4 text-center">
+                    <p class="mb-2 text-2xl font-light text-red-400 dark:text-red-400">Inactive Product</p>
+                    {% if product.activeProductSource is null%}
+                        <p class="text-sm font-light text-red-600 dark:text-gray-500">No Active Supplier</p>
+                    {% else %}
+                        <p class="text-sm font-light text-red-600 dark:text-gray-500">Inactive Category, Subcategory or Product</p>
+                    {% endif %}
+                </div>
+            </section>
+        {% endif %}
+
+        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+            <tr>
+                <td class="p-2 ps-4">Supplier</td>
+                <td>Product Code</td>
+                <td>Cost</td>
+                <td>Lead Time</td>
+                <td>Stock</td>
+                <td></td>
+            </tr>
+            </thead>
+            <tbody>
+            {% for result in product.supplierProducts %}
+            <tr class="border-b dark:border-gray-700">
+                <td class="min-w-0 flex-auto p-4">
+                    <p class="text-sm text-gray-500">{{ result.supplier.name|u.truncate(30, '...', false) }}</p>
+                    <p class="mt-1 text-base leading-5 text-gray-300">{{ result.name|u.truncate(30, '...', false) }}</p>
+                    <p class="mt-1 text-xs text-gray-500">Last updated {{ result.updatedAt|ago }}</p>
+                </td>
+                <td class="mt-1 text-sm leading-5 text-gray-300">{{ result.productCode }}</td>
+                <td class="mt-1 text-sm leading-5 text-gray-300">£{{ result.cost|number_format(2) }}</td>
+                <td class="mt-1 text-sm leading-5 text-gray-300">{{ result.leadTimeDays }}</td>
+                <td class="mt-1 text-sm leading-5 text-gray-300">{{ result.stock }}</td>
+                <td class="px-4">
+                    <div class="shrink-0 sm:flex justify-around">
+                        {% if result.isActive %}
+                            <a href="{{ path('app_supplier_product_toggle_status', {'id': result.id }) }}"
+                               data-turbo-prefetch="false"
+                               class="flex items-center block py-1 px-4 text-green-700 dark:text-green-500 hover:text-green-500 dark:hover:text-green-300"
+                            >
+                                <twig:Icon name="edit" class="w-4 me-1.5"></twig:Icon>
+                                Active</a>
+                        {% else %}
+                            <a href="{{ path('app_supplier_product_toggle_status', {'id': result.id }) }}"
+                               data-turbo-prefetch="false"
+                               class="flex items-center block py-1 px-4 text-red-700 dark:text-red-500 hover:text-red-500 dark:hover:text-red-300"
+                            >
+                                <twig:Icon name="edit" class="w-4 me-1.5"></twig:Icon>
+                                Inactive</a>
+                        {% endif %}
+                        <a href="{{ path('app_supplier_product_remove_confirm', {'id': result.id }) }}"
+                           data-turbo-prefetch="false"
+                           data-turbo-frame="modal"
+                           class="flex items-center block py-1 px-4 text-yellow-700 dark:text-yellow-500 hover:text-yellow-500 dark:hover:text-yellow-300"
+                        >
+                            <twig:Icon name="delete" class="w-4 me-1.5"></twig:Icon>
+                            Remove</a>
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+                <tr>
+                    <td colspan="6"
+                        class="px-6 py-6 whitespace-nowrap text-center text-gray-400">
+                        No suppliers found
+                    </td>
+                </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}
+
+
+
