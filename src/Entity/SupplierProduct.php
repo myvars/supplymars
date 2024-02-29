@@ -62,11 +62,11 @@ class SupplierProduct
     #[ORM\JoinColumn(nullable: false)]
     private ?Supplier $supplier = null;
 
-    #[ORM\Column]
-    private ?bool $isActive = null;
-
     #[ORM\ManyToOne(inversedBy: 'supplierProducts')]
     private ?Product $product = null;
+
+    #[ORM\Column]
+    private ?bool $isActive = null;
 
     public function getId(): ?int
     {
@@ -205,18 +205,6 @@ class SupplierProduct
         return $this;
     }
 
-    public function isIsActive(): ?bool
-    {
-        return $this->isActive;
-    }
-
-    public function setIsActive(bool $isActive): static
-    {
-        $this->isActive = $isActive;
-
-        return $this;
-    }
-
     public function getProduct(): ?Product
     {
         return $this->product;
@@ -229,4 +217,15 @@ class SupplierProduct
         return $this;
     }
 
+    public function isIsActive(): ?bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): static
+    {
+        $this->isActive = $isActive;
+
+        return $this;
+    }
 }

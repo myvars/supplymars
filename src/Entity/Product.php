@@ -87,18 +87,18 @@ class Product
     #[Assert\NotNull(message: 'Please enter a valid product manager')]
     private ?User $owner = null;
 
-    #[ORM\Column]
-    private bool $isActive = false;
-
     #[ORM\Column(length: 255)]
     #[Assert\NotNull(message: 'Please enter a price model')]
     private ?PriceModel $priceModel = null;
 
-    #[ORM\OneToMany(mappedBy: 'product', targetEntity: SupplierProduct::class)]
-    private Collection $supplierProducts;
-
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?SupplierProduct $activeProductSource = null;
+
+    #[ORM\Column]
+    private bool $isActive = false;
+
+    #[ORM\OneToMany(mappedBy: 'product', targetEntity: SupplierProduct::class)]
+    private Collection $supplierProducts;
 
     public function __construct()
     {
@@ -278,18 +278,6 @@ class Product
         return $this;
     }
 
-    public function isIsActive(): bool
-    {
-        return $this->isActive;
-    }
-
-    public function setIsActive(bool $isActive): static
-    {
-        $this->isActive = $isActive;
-
-        return $this;
-    }
-
     public function getPriceModel(): ?PriceModel
     {
         return $this->priceModel;
@@ -302,26 +290,28 @@ class Product
         return $this;
     }
 
-    public function getActiveMarkup(): ?string
+    public function getActiveProductSource(): ?SupplierProduct
     {
-        if ($this->getDefaultMarkup() > 0) {
-            return $this->getDefaultMarkup();
-        }
-        if ($this->getSubcategory()->getDefaultMarkup() > 0) {
-            return $this->getSubcategory()->getDefaultMarkup();
-        }
-        return $this->getCategory()->getDefaultMarkup();
+        return $this->activeProductSource;
     }
 
-    public function getActivePriceModel(): ?PriceModel
+    public function setActiveProductSource(?SupplierProduct $activeProductSource): static
     {
-        if ($this->getPriceModel()->value !== 'NONE') {
-            return $this->getPriceModel();
-        }
-        if ($this->getSubcategory()->getPriceModel()->value !== 'NONE') {
-            return $this->getSubcategory()->getPriceModel();
-        }
-        return $this->getCategory()->getPriceModel();
+        $this->activeProductSource = $activeProductSource;
+
+        return $this;
+    }
+
+    public function isIsActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): static
+    {
+        $this->isActive = $isActive;
+
+        return $this;
     }
 
     /**
@@ -354,15 +344,25 @@ class Product
         return $this;
     }
 
-    public function getActiveProductSource(): ?SupplierProduct
+    public function getActiveMarkup(): ?string
     {
-        return $this->activeProductSource;
+        if ($this->getDefaultMarkup() > 0) {
+            return $this->getDefaultMarkup();
+        }
+        if ($this->getSubcategory()->getDefaultMarkup() > 0) {
+            return $this->getSubcategory()->getDefaultMarkup();
+        }
+        return $this->getCategory()->getDefaultMarkup();
     }
 
-    public function setActiveProductSource(?SupplierProduct $activeProductSource): static
+    public function getActivePriceModel(): ?PriceModel
     {
-        $this->activeProductSource = $activeProductSource;
-
-        return $this;
+        if ($this->getPriceModel()->value !== 'NONE') {
+            return $this->getPriceModel();
+        }
+        if ($this->getSubcategory()->getPriceModel()->value !== 'NONE') {
+            return $this->getSubcategory()->getPriceModel();
+        }
+        return $this->getCategory()->getPriceModel();
     }
 }

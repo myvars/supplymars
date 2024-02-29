@@ -27,7 +27,7 @@ class SupplierManufacturer
     #[ORM\JoinColumn(nullable: false)]
     private ?Supplier $supplier = null;
 
-    #[ORM\OneToMany(mappedBy: 'manufacturer', targetEntity: SupplierProduct::class)]
+    #[ORM\OneToMany(mappedBy: 'supplierManufacturer', targetEntity: SupplierProduct::class)]
     private Collection $supplierProducts;
 
     public function __construct()

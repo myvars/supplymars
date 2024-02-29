@@ -5,7 +5,6 @@ namespace App\DataFixtures;
 use App\Entity\PriceModel;
 use App\Factory\CategoryFactory;
 use App\Factory\ManufacturerFactory;
-use App\Factory\PriceModelFactory;
 use App\Factory\ProductFactory;
 use App\Factory\SubcategoryFactory;
 use App\Factory\SupplierCategoryFactory;
@@ -35,7 +34,7 @@ class AppFixtures extends Fixture
             'email' => 'adam@test.com',
             'isVerified' => true,
             'password' => 'letmein',
-        ]);
+       ]);
 
         $vatRate = VatRateFactory::createOne([
             'name' => 'Standard rate',
@@ -51,6 +50,73 @@ class AppFixtures extends Fixture
             'name' => 'Zero rate',
             'rate' => 0,
         ]);
+
+        $category = CategoryFactory::createOne([
+            'name' => 'Laptops',
+            'defaultMarkup' => 10,
+            'vatRate' => $vatRate,
+            'owner' => $user,
+            'priceModel' => PriceModel::DEFAULT,
+        ]);
+
+        CategoryFactory::createMany(29,  function () {
+            return [
+                'vatRate' => VatRateFactory::first(),
+                'owner' => UserFactory::random(),
+                'priceModel' => PriceModel::DEFAULT,
+            ];
+        });
+
+        $subcategory = SubcategoryFactory::createOne([
+            'name' => 'Macbook Pro',
+            'defaultMarkup' => 5,
+            'category' => $category,
+            'owner' => $user,
+            'priceModel' => PriceModel::NONE,
+        ]);
+
+        SubcategoryFactory::createMany(149,  function () {
+            return [
+                'category' => CategoryFactory::random(),
+                'owner' => UserFactory::random(),
+                'priceModel' => PriceModel::NONE,
+                'defaultMarkup' => rand(1, 10) === 1 ? rand(1, 10000)/100 : 0
+            ];
+        });
+
+        $manufacturer = ManufacturerFactory::createOne([
+            'name' => 'Apple',
+        ]);
+
+        ManufacturerFactory::createMany(199);
+
+        $product = ProductFactory::createOne([
+            'name' => 'Macbook Pro 13"',
+            'MfrPartNumber' => 'M1MBP132024',
+            'category' => $category,
+            'subcategory' => $subcategory,
+            'manufacturer' => $manufacturer,
+            'owner' => $user,
+            'cost' => '1190.47',
+            'isActive' => true,
+            'leadTimeDays' => 7,
+            'stock' => 50,
+            'weight' => 1388,
+            'defaultMarkup' => 5,
+            'priceModel' => PriceModel::NONE,
+        ]);
+
+        ProductFactory::createMany(199,  function () {
+            $randomSubcategory = SubcategoryFactory::random();
+            return [
+                'subcategory' => $randomSubcategory,
+                'category' => $randomSubcategory->getCategory(),
+                'manufacturer' => ManufacturerFactory::random(),
+                'owner' => UserFactory::random(),
+                'priceModel' => PriceModel::NONE,
+                'defaultMarkup' => rand(1, 10) === 1 ? rand(1, 10000)/100 : 0
+            ];
+        });
 
         //  Suppliers
 
@@ -116,73 +182,6 @@ class AppFixtures extends Fixture
                 'supplierCategory' => $randomSubcategory->getSupplierCategory(),
                 'supplierSubcategory' => $randomSubcategory,
                 'supplierManufacturer' => SupplierManufacturerFactory::random(),
-            ];
-        });
-
-        $manufacturer = ManufacturerFactory::createOne([
-            'name' => 'Apple',
-        ]);
-
-        ManufacturerFactory::createMany(199);
-
-        $category = CategoryFactory::createOne([
-            'name' => 'Laptops',
-            'defaultMarkup' => 10,
-            'vatRate' => $vatRate,
-            'owner' => $user,
-            'priceModel' => PriceModel::DEFAULT,
-        ]);
-
-        CategoryFactory::createMany(29,  function () {
-            return [
-                'vatRate' => VatRateFactory::first(),
-                'owner' => UserFactory::random(),
-                'priceModel' => PriceModel::DEFAULT,
-            ];
-        });
-
-        $subcategory = SubcategoryFactory::createOne([
-            'name' => 'Macbook Pro',
-            'defaultMarkup' => 5,
-            'category' => $category,
-            'owner' => $user,
-            'priceModel' => PriceModel::NONE,
-        ]);
-
-        SubcategoryFactory::createMany(149,  function () {
-            return [
-                'category' => CategoryFactory::random(),
-                'owner' => UserFactory::random(),
-                'priceModel' => PriceModel::NONE,
-                'defaultMarkup' => rand(1, 10) === 1 ? rand(1, 10000)/100 : 0
-            ];
-        });
-
-        $product = ProductFactory::createOne([
-            'name' => 'Macbook Pro 13"',
-            'MfrPartNumber' => 'M1MBP132024',
-            'category' => $category,
-            'subcategory' => $subcategory,
-            'manufacturer' => $manufacturer,
-            'owner' => $user,
-            'cost' => '1190.47',
-            'isActive' => true,
-            'leadTimeDays' => 7,
-            'stock' => 50,
-            'weight' => 1388,
-            'defaultMarkup' => 5,
-            'priceModel' => PriceModel::NONE,
-        ]);
-
-        ProductFactory::createMany(199,  function () {
-            $randomSubcategory = SubcategoryFactory::random();
-            return [
-                'subcategory' => $randomSubcategory,
-                'category' => $randomSubcategory->getCategory(),
-                'manufacturer' => ManufacturerFactory::random(),
-                'owner' => UserFactory::random(),
-                'priceModel' => PriceModel::NONE,
-                'defaultMarkup' => rand(1, 10) === 1 ? rand(1, 10000)/100 : 0
             ];
         });
 

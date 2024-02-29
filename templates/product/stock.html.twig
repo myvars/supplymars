@@ -54,7 +54,11 @@
             </thead>
             <tbody>
             {% for result in product.supplierProducts %}
-            <tr class="border-b dark:border-gray-700">
+                {% if product.activeProductSource is not null and result.id == product.activeProductSource.id %}
+                    <tr class="border-b dark:border-gray-700 outline outline-green-800">
+                {% else %}
+                    <tr class="border-b dark:border-gray-700">
+                {% endif %}
                 <td class="min-w-0 flex-auto p-4">
                     <p class="text-sm text-gray-500">{{ result.supplier.name|u.truncate(30, '...', false) }}</p>
                     <p class="mt-1 text-base leading-5 text-gray-300">{{ result.name|u.truncate(30, '...', false) }}</p>
@@ -66,6 +70,7 @@
                 <td class="mt-1 text-sm leading-5 text-gray-300">{{ result.stock }}</td>
                 <td class="px-4">
                     <div class="shrink-0 sm:flex justify-around">
+                        {% if result.supplier.isActive %}
                         {% if result.isActive %}
                             <a href="{{ path('app_supplier_product_toggle_status', {'id': result.id }) }}"
                                data-turbo-prefetch="false"
@@ -80,6 +85,9 @@
                             >
                                 <twig:Icon name="edit" class="w-4 me-1.5"></twig:Icon>
                                 Inactive</a>
+                        {% endif %}
+                        {% else %}
+                            <p>Supplier Inactive</p>
                         {% endif %}
                         <a href="{{ path('app_supplier_product_remove_confirm', {'id': result.id }) }}"
                            data-turbo-prefetch="false"
@@ -98,6 +106,7 @@
                         No suppliers found
                     </td>
                 </tr>
+                </div>
             {% endfor %}
 
             </tbody>

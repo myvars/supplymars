@@ -38,17 +38,17 @@ class Subcategory
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
 
+    #[ORM\Column(length: 255)]
+    #[Assert\NotNull(message: 'Please enter a price model')]
+    private ?PriceModel $priceModel = null;
+
     #[ORM\Column]
     private bool $isActive = false;
 
     #[ORM\OneToMany(mappedBy: 'subcategory', targetEntity: Product::class)]
     private Collection $products;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\NotNull(message: 'Please enter a price model')]
-    private ?PriceModel $priceModel = null;
-
-    #[ORM\OneToMany(mappedBy: 'subcategory', targetEntity: SupplierSubcategory::class)]
+    #[ORM\OneToMany(mappedBy: 'mappedSubcategory', targetEntity: SupplierSubcategory::class)]
     private Collection $supplierSubcategories;
 
     public function __construct()
@@ -110,6 +110,18 @@ class Subcategory
         return $this;
     }
 
+    public function getPriceModel(): ?PriceModel
+    {
+        return $this->priceModel;
+    }
+
+    public function setPriceModel(?PriceModel $priceModel): static
+    {
+        $this->priceModel = $priceModel;
+
+        return $this;
+    }
+
     public function isIsActive(): ?bool
     {
         return $this->isActive;
@@ -159,18 +171,6 @@ class Subcategory
                 $product->setSubcategory(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getPriceModel(): ?PriceModel
-    {
-        return $this->priceModel;
-    }
-
-    public function setPriceModel(?PriceModel $priceModel): static
-    {
-        $this->priceModel = $priceModel;
 
         return $this;
     }

@@ -23,19 +23,15 @@ class Manufacturer
     #[Assert\NotNull(message: 'Please enter a manufacturer name')]
     private ?string $name = null;
 
-    #[ORM\OneToMany(mappedBy: 'manufacturer', targetEntity: Product::class)]
-    private Collection $products;
-
     #[ORM\Column]
     private bool $isActive = false;
 
-    #[ORM\OneToMany(mappedBy: 'manufacturer', targetEntity: SupplierManufacturer::class)]
-    private Collection $supplierManufacturers;
+    #[ORM\OneToMany(mappedBy: 'manufacturer', targetEntity: Product::class)]
+    private Collection $products;
 
     public function __construct()
     {
         $this->products = new ArrayCollection();
-        $this->supplierManufacturers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -91,36 +87,6 @@ class Manufacturer
             // set the owning side to null (unless already changed)
             if ($product->getManufacturer() === $this) {
                 $product->setManufacturer(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, SupplierManufacturer>
-     */
-    public function getSupplierManufacturers(): Collection
-    {
-        return $this->supplierManufacturers;
-    }
-
-    public function addSupplierManufacturer(SupplierManufacturer $supplierManufacturer): static
-    {
-        if (!$this->supplierManufacturers->contains($supplierManufacturer)) {
-            $this->supplierManufacturers->add($supplierManufacturer);
-            $supplierManufacturer->setManufacturer($this);
-        }
-
-        return $this;
-    }
-
-    public function removeSupplierManufacturer(SupplierManufacturer $supplierManufacturer): static
-    {
-        if ($this->supplierManufacturers->removeElement($supplierManufacturer)) {
-            // set the owning side to null (unless already changed)
-            if ($supplierManufacturer->getManufacturer() === $this) {
-                $supplierManufacturer->setManufacturer(null);
             }
         }
 

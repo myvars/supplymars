@@ -34,6 +34,15 @@ class Category
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;
 
+    #[ORM\ManyToOne(inversedBy: 'categories')]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: 'Please enter a VAT rate')]
+    private ?VatRate $vatRate = null;
+
+    #[ORM\Column(length: 255)]
+    #[Assert\NotNull(message: 'Please enter a price model')]
+    private ?PriceModel $priceModel = null;
+
     #[ORM\Column]
     private bool $isActive = false;
 
@@ -41,18 +50,8 @@ class Category
     #[Assert\NotNull(message: 'Please enter a subcategory')]
     private Collection $subcategories;
 
-    #[ORM\ManyToOne(inversedBy: 'categories')]
-    #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: 'Please enter a VAT rate')]
-    private ?VatRate $vatRate = null;
-
     #[ORM\OneToMany(mappedBy: 'category', targetEntity: Product::class)]
     private Collection $products;
-
-    #[ORM\Column(length: 255)]
-    #[Assert\NotNull(message: 'Please enter a price model')]
-    private ?PriceModel $priceModel = null;
-
 
     public function __construct()
     {
@@ -101,6 +100,30 @@ class Category
         return $this;
     }
 
+    public function getVatRate(): ?VatRate
+    {
+        return $this->vatRate;
+    }
+
+    public function setVatRate(?VatRate $vatRate): static
+    {
+        $this->vatRate = $vatRate;
+
+        return $this;
+    }
+
+    public function getPriceModel(): ?PriceModel
+    {
+        return $this->priceModel;
+    }
+
+    public function setPriceModel(?PriceModel $priceModel): static
+    {
+        $this->priceModel = $priceModel;
+
+        return $this;
+    }
+
     public function isIsActive(): bool
     {
         return $this->isActive;
@@ -143,18 +166,6 @@ class Category
         return $this;
     }
 
-    public function getVatRate(): ?VatRate
-    {
-        return $this->vatRate;
-    }
-
-    public function setVatRate(?VatRate $vatRate): static
-    {
-        $this->vatRate = $vatRate;
-
-        return $this;
-    }
-
     /**
      * @return Collection<int, Product>
      */
@@ -192,18 +203,6 @@ class Category
                 $product->setCategory(null);
             }
         }
-
-        return $this;
-    }
-
-    public function getPriceModel(): ?PriceModel
-    {
-        return $this->priceModel;
-    }
-
-    public function setPriceModel(?PriceModel $priceModel): static
-    {
-        $this->priceModel = $priceModel;
 
         return $this;
     }
