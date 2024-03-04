@@ -101,7 +101,7 @@ class ProductController extends AbstractController
     public function productStock(?Product $product, Request $request): Response
     {
         return $this->render('product/stock.html.twig', [
-            'product' => $product,
+            'result' => $product,
         ]);
     }
 
@@ -196,5 +196,15 @@ class ProductController extends AbstractController
             $successResponse,
             $this->generateUrl('app_product_cost', ['id' => $product->getId()])
         );
+    }
+
+
+    #[Route('/{id}/details', name: 'app_product_details', methods: ['GET'])]
+    public function details(?Product $product): Response
+    {
+        return $this->render('_navigation.html.twig', [
+            'section' => self::SECTION,
+            'result' => $product,
+        ]);
     }
 }

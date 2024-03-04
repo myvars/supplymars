@@ -1,13 +1,10 @@
-{% extends 'base.html.twig' %}
+{% extends 'product/_navigation.html.twig' %}
 
 {% block title %}Product Cost{% endblock %}
 
-{% block body %}
-
-<section class="bg-gray-50 dark:bg-gray-900 p-3 sm:p-5">
-    <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-        <h1 class="text-2xl font-semibold text-white mb-4">Product Costing</h1>
-
+{% block detail %}
+<div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+        <h1 class="text-2xl font-semibold text-white mb-4">Product Cost</h1>
         {% if result.isActive and result.category.isActive and result.subcategory.isActive and result.activeProductSource is not null%}
             <section class="bg-white dark:bg-gray-900 border border-gray-700 rounded-lg">
                 <div class="max-w-screen-xl px-4 py-8 mx-auto text-center lg:py-14 lg:px-6">
@@ -140,9 +137,5 @@
             </tr>
             </tbody>
         </table>
-    </div>
-</section>
+</div>
 {% endblock %}
-
-
-
