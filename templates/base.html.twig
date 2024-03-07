@@ -11,12 +11,6 @@
         <meta name="turbo-refresh-scroll" content="preserve">
     {% endif %}
     <title>{% block title %}Butterfly{% endblock %}</title>
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/icons/apple-touch-icon.png') }}">
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/icons/favicon-32x32.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('images/icons/favicon-16x16.png') }}">
-    <link rel="manifest" href="{{ asset('images/icons/site.webmanifest') }}">
-    <link rel="mask-icon" href="{{ asset('images/icons/safari-pinned-tab.svg') }}" color="#5bbad5">
-    <meta name="msapplication-TileColor" content="#da532c">
     {% block stylesheets %}{% endblock %}
 
     {% block javascripts %}
@@ -38,7 +32,7 @@
                 <button id="navigationButton"
                         type="button"
                         class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
-                        data-action="basic-drawer#open"
+                        data-action="click->basic-drawer#open"
                 >
                     <span class="sr-only">Open side menu</span>
                     <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14">

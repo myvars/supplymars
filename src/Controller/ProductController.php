@@ -97,6 +97,23 @@ class ProductController extends AbstractController
         );
     }
 
+    #[Route('/{id}/details', name: 'app_product_details', methods: ['GET'])]
+    public function details(?Product $product): Response
+    {
+        return $this->render('product/_navigation.html.twig', [
+            'section' => self::SECTION,
+            'result' => $product,
+        ]);
+    }
+
+    #[Route('/{id}/attachment', name: 'app_product_attachment', methods: ['GET'])]
+    public function productAttachment(?Product $product): Response
+    {
+        return $this->render('product/attachment.html.twig', [
+            'result' => $product,
+        ]);
+    }
+
     #[Route('/{id}/stock', name: 'app_product_stock', methods: ['GET'])]
     public function productStock(?Product $product, Request $request): Response
     {
@@ -196,15 +213,5 @@ class ProductController extends AbstractController
             $successResponse,
             $this->generateUrl('app_product_cost', ['id' => $product->getId()])
         );
-    }
-
-
-    #[Route('/{id}/details', name: 'app_product_details', methods: ['GET'])]
-    public function details(?Product $product): Response
-    {
-        return $this->render('_navigation.html.twig', [
-            'section' => self::SECTION,
-            'result' => $product,
-        ]);
     }
 }

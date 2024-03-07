@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ section }} index{% endblock %}
+
+{% block body %}
+    <twig:DataTable
+        section="{{ section }}"
+        results="{{ results }}"
+        colspan="6"
+    >
+        <twig:block name="table_header">
+            <twig:TableHeader sortValue="id">Id</twig:TableHeader>
+            <twig:TableHeader sortValue="product">Product</twig:TableHeader>
+            <twig:TableHeader sortValue="imageName">Image Name</twig:TableHeader>
+            <twig:TableHeader>Image</twig:TableHeader>
+            <twig:TableHeader sortValue="isActive">Status</twig:TableHeader>
+            <twig:TableHeader><span class="sr-only">Actions</span></twig:TableHeader>
+        </twig:block>
+
+        <twig:block name="table_rows">
+            <th scope="row" class="px-4 py-3">{{ result.id }}</th>
+            <td class="px-4 py-3 font-medium text-gray-900 whitespace-nowrap dark:text-white">{{ result.product.id }}</td>
+            <td class="px-4 py-3">{{ result.imageName }}</td>
+            <td class="px-4 py-3">
+                <img src="{{ asset(result.imageName) | imagine_filter('my_thumbnail') }}"  alt=""/>
+            </td>
+            <td class="px-4 py-3">
+                <div class="flex items-center">
+                    {{ result.isActive ?
+                    '<span class="flex w-2.5 h-2.5 me-2 rounded-full bg-green-500"></span>Active'
+                    : '<span class="flex w-2.5 h-2.5 me-2 rounded-full bg-red-500 "></span>Inactive'
+                    }}
+                </div>
+            </td>
+        </twig:block>
+
+        <twig:block name="table_actions">
+            <li>
+                <a href="{{ path('app_'~section|lower|u.snake~'_show', {'id': result.id }) }}"
+                   class="flex items-center block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
+                   target="_top"
+                ><twig:Icon name="show" class="w-4 me-1.5"></twig:Icon>Show</a>
+            </li>
+            <li>
+                <a href="{{ path('app_'~section|lower|u.snake~'_edit', {'id': result.id }) }}"
+                   class="flex items-center block py-2 px-4 text-yellow-700 dark:text-yellow-500 hover:bg-gray-100 dark:hover:bg-gray-600"
+                   data-turbo-frame="modal"
+                ><twig:Icon name="edit" class="w-4 me-1.5"></twig:Icon>Edit</a>
+            </li>
+            <li>
+                <a href="{{ path('app_'~section|lower|u.snake~'_delete_confirm', {'id': result.id }) }}"
+                   class="flex items-center block py-2 px-4 text-red-700 hover:bg-gray-100 dark:hover:bg-red-600 dark:text-red-500 dark:hover:text-white"
+                   data-turbo-frame="modal"
+                ><twig:Icon name="delete" class="w-4 me-1.5"></twig:Icon>Delete</a>
+            </li>
+        </twig:block>
+
+        <twig:block name="table_add">
+            <twig:Button
+                tag="a"
+                href="{{ path('app_'~section|lower|u.snake~'_new') }}"
+                class="flex items-center space-x-1 font-bold"
+                data-turbo-frame="modal"
+            >
+                <twig:Icon name="add" class="w-4"></twig:Icon><span>Add {{ section|title }}</span>
+            </twig:Button>
+        </twig:block>
+
+        <twig:block name="filter"></twig:block>
+
+    </twig:DataTable>
+{% endblock %}
+

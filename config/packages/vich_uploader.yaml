@@ -1,0 +1,19 @@
+vich_uploader:
+    db_driver: orm
+    storage: flysystem
+
+    metadata:
+        type: attribute
+
+    mappings:
+        products:
+            uri_prefix: '%app.product_uploads%'
+            upload_destination: oneup_flysystem.products_fs_filesystem
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+
+
+when@prod:
+    vich_uploader:
+        mappings:
+            products:
+                uri_prefix: '%app.uploads_base_url%/%app.product_uploads%'

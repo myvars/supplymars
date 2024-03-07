@@ -1,0 +1,19 @@
+oneup_flysystem:
+    adapters:
+        products_adapter:
+            local:
+                location: '%kernel.project_dir%/public/%app.product_uploads%'
+
+    filesystems:
+        products_fs:
+            adapter: products_adapter
+            mount: products_fs
+
+when@prod:
+    oneup_flysystem:
+        adapters:
+            products_adapter:
+                awss3v3:
+                    client: Aws\S3\S3Client
+                    bucket: '%env(AWS_S3_BUCKET)%'
+                    prefix: '%app.product_uploads%'

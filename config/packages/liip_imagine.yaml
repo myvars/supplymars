@@ -1,0 +1,30 @@
+liip_imagine:
+    driver: "gd"
+
+    twig:
+        mode: lazy
+
+    loaders:
+        flysystem_loader:
+            flysystem:
+                filesystem_service: oneup_flysystem.products_fs_filesystem
+
+    data_loader: flysystem_loader
+
+    resolvers:
+        flysystem_resolver:
+            flysystem:
+                filesystem_service: oneup_flysystem.products_fs_filesystem
+                root_url: '%app.uploads_base_url%/%app.product_uploads%'
+                cache_prefix: media/cache
+                visibility: public
+
+    cache: flysystem_resolver
+
+    filter_sets:
+        my_thumbnail:
+            filters:
+                thumbnail:
+                    size: [ 50, 50 ]
+                    mode: outbound
+                    allow_upscale: true

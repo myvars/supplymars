@@ -13,6 +13,9 @@
         "doctrine/doctrine-migrations-bundle": "^3.3",
         "doctrine/orm": "^2.17",
         "knplabs/knp-time-bundle": "^2.2",
+        "league/flysystem-aws-s3-v3": "^3.24",
+        "liip/imagine-bundle": "^2.12",
+        "oneup/flysystem-bundle": "^4.11",
         "pagerfanta/doctrine-orm-adapter": "^4.3",
         "pagerfanta/twig": "^4.3",
         "phpdocumentor/reflection-docblock": "^5.3",
@@ -59,7 +62,8 @@
         "twig/inky-extra": "^3.8",
         "twig/intl-extra": "^3.8",
         "twig/string-extra": "^3.8",
-        "twig/twig": "^2.12|^3.0"
+        "twig/twig": "^2.12|^3.0",
+        "vich/uploader-bundle": "^2.3"
     },
     "config": {
         "allow-plugins": {

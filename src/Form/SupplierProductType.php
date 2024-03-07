@@ -17,8 +17,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SupplierProductType extends AbstractType
 {
-
-
     public function __construct(private readonly ProductToIdTransformer $productToIdTransformer)
     {
     }

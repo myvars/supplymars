@@ -100,9 +100,13 @@ class Product
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: SupplierProduct::class)]
     private Collection $supplierProducts;
 
+    #[ORM\OneToMany(mappedBy: 'product', targetEntity: ProductImage::class)]
+    private Collection $productImages;
+
     public function __construct()
     {
         $this->supplierProducts = new ArrayCollection();
+        $this->productImages = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -364,5 +368,35 @@ class Product
             return $this->getSubcategory()->getPriceModel();
         }
         return $this->getCategory()->getPriceModel();
+    }
+
+    /**
+     * @return Collection<int, ProductImage>
+     */
+    public function getProductImages(): Collection
+    {
+        return $this->productImages;
+    }
+
+    public function addProductImage(ProductImage $productImage): static
+    {
+        if (!$this->productImages->contains($productImage)) {
+            $this->productImages->add($productImage);
+            $productImage->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProductImage(ProductImage $productImage): static
+    {
+        if ($this->productImages->removeElement($productImage)) {
+            // set the owning side to null (unless already changed)
+            if ($productImage->getProduct() === $this) {
+                $productImage->setProduct(null);
+            }
+        }
+
+        return $this;
     }
 }
