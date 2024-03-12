@@ -6,9 +6,10 @@ use App\Entity\ProductImage;
 use App\Form\ProductImageType;
 use App\Repository\ProductImageRepository;
 use App\Service\CrudHelper;
+use App\Service\UploadHelper;
 use Doctrine\ORM\EntityManagerInterface;
-use League\Flysystem\FilesystemOperator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
@@ -18,15 +19,15 @@ use Symfony\Component\Routing\Attribute\Route;
 class ProductImageController extends AbstractController
 {
     CONST string SECTION = 'Product Image';
-    const int FORM_COLUMNS = 1;
 
     public function __construct(
         private readonly CrudHelper $crudHelper,
         private readonly EntityManagerInterface $entityManager,
+        #[Autowire('%app.product_uploads%')]
+        private readonly string $appProductUploads,
     )
     {
         $this->crudHelper->setSection(self::SECTION);
-        $this->crudHelper->setFormColumns(self::FORM_COLUMNS);
     }
 
     #[Route('/', name: 'app_product_image_index', methods: ['GET'])]
@@ -39,7 +40,7 @@ class ProductImageController extends AbstractController
         #[MapQueryParameter] string $query = null,
     ): Response
     {
-        $validSorts = ['id', 'product', 'imageName', 'isActive'];
+        $validSorts = ['id', 'product.id', 'imageName', 'isActive'];
         $sort = in_array($sort, $validSorts) ? $sort : 'id';
 
         return $this->crudHelper->renderIndex(
@@ -53,30 +54,45 @@ class ProductImageController extends AbstractController
     }
 
     #[Route('/new', name: 'app_product_image_new', methods: ['GET', 'POST'])]
-    public function new(Request $request): Response
+    public function new(Request $request, ?productImage $productImage, UploadHelper $uploadHelper): Response
     {
-        return $this->crudHelper->renderCreate(
-            $request,
-            new ProductImage(),
-            ProductImageType::class,
-        );
+        $form = $this->createForm(ProductImageType::class, $productImage, [
+            'action' => $this->generateUrl('app_product_image_new'),
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $productImage = $form->getData();
+            $productImage->setImageName(
+                $uploadHelper->uploadFile($productImage->getImageFile(), $this->appProductUploads)
+            );
+
+            $this->entityManager->persist($productImage);
+            $this->entityManager->flush();
+
+            $this->addFlash(
+                'success',
+                'New Product Image added!'
+            );
+
+            if ($request->headers->has('turbo-frame')) {
+                return $this->crudHelper->streamRefresh($request);
+            }
+
+            return $this->redirectToRoute('app_product_image_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('product_image/new.html.twig', [
+            'result' => $productImage,
+            'form' => $form,
+            'formColumns' => 1
+        ]);
     }
 
     #[Route('/{id}', name: 'app_product_image_show', methods: ['GET'])]
     public function show(?ProductImage $productImage): Response
     {
-//        #[MapEntity(expr: 'repository.findFullProduct(id)')]
         return $this->crudHelper->renderShow($productImage);
-    }
-
-    #[Route('/{id}/edit', name: 'app_product_image_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, ?ProductImage $productImage): Response
-    {
-        return $this->crudHelper->renderUpdate(
-            $request,
-            $productImage,
-            ProductImageType::class,
-        );
     }
 
     #[Route('/{id}/delete', name: 'app_product_image_delete_confirm', methods: ['GET'])]
@@ -86,7 +102,7 @@ class ProductImageController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_product_image_delete', methods: ['POST'])]
-    public function delete(Request $request, ?ProductImage $productImage): Response
+    public function delete(Request $request, ?ProductImage $productImage,): Response
     {
         return $this->crudHelper->renderDelete(
             $request,

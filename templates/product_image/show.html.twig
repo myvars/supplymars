@@ -8,15 +8,7 @@
             class="flex justify-between"
         >
             <h1 class="text-xl font-semibold text-white mb-4">{{ section }}</h1>
-            <twig:Button
-                tag="a"
-                variant="warning"
-                href="{{ path('app_'~section|lower|u.snake~'_edit', {'id': result.id }) }}"
-                class="flex items-center space-x-1 font-bold"
-                data-turbo-frame="modal"
-            >
-                <twig:Icon name="add" class="w-4"></twig:Icon><span>Edit {{ section }}</span>
-            </twig:Button>
+
         </div>
 
         <div class="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
@@ -42,9 +34,8 @@
                      aria-labelledby="details-tab">
                     <h2 class="mb-3 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">{{ result.imageName }}</h2>
                     <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">
-                        <img src="{{ asset(result.imageName) | imagine_filter('my_thumbnail') }}"  alt=""/>
+                        <img src="{{ asset(product_uploads~result.imageName) | imagine_filter('my_thumbnail') }}"  alt=""/>
                     </p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Active: {{ result.isActive ? 'Yes' : 'No' }}</p>
                 </div>
                 <div class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800" id="sales" role="tabpanel"
                      aria-labelledby="sales-tab">

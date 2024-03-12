@@ -40,12 +40,16 @@ class ProductImageRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('p');
 
         if ($query) {
-            $qb->andWhere('p.name LIKE :query')
+            $qb->andWhere('p.imageName LIKE :query')
                 ->setParameter('query', '%' . $query . '%');
         }
 
         if ($sort) {
-            $qb->orderBy('p.' . $sort, $direction);
+            if (str_starts_with($sort, 'product.')) {
+                $qb->leftJoin('p.product', 'product')->orderBy($sort, $direction);
+            } else {
+                $qb->orderBy('p.' . $sort, $direction);
+            }
         }
 
         return $qb;

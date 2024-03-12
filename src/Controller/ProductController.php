@@ -9,6 +9,7 @@ use App\Form\ProductType;
 use App\Form\SubcategoryCostType;
 use App\Repository\ProductRepository;
 use App\Service\CrudHelper;
+use App\Service\UploadHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
@@ -23,10 +24,7 @@ class ProductController extends AbstractController
     CONST string SECTION = 'Product';
     const int FORM_COLUMNS = 2;
 
-    public function __construct(
-        private readonly CrudHelper $crudHelper,
-        private readonly EntityManagerInterface $entityManager,
-    )
+    public function __construct(private readonly CrudHelper $crudHelper)
     {
         $this->crudHelper->setSection(self::SECTION);
         $this->crudHelper->setFormColumns(self::FORM_COLUMNS);
@@ -106,10 +104,15 @@ class ProductController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/attachment', name: 'app_product_attachment', methods: ['GET'])]
-    public function productAttachment(?Product $product): Response
+    #[Route('/{id}/images', name: 'app_product_images', methods: ['GET'])]
+    public function showProductImages(
+        Request $request,
+        ?Product $product,
+        EntityManagerInterface $entityManager,
+        UploadHelper $uploadHelper,
+    ): Response
     {
-        return $this->render('product/attachment.html.twig', [
+        return $this->render('product/images.html.twig', [
             'result' => $product,
         ]);
     }
