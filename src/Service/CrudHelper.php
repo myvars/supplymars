@@ -83,7 +83,6 @@ class CrudHelper extends AbstractController
 
         $form = $this->createForm($formType, $entity, [
             'action' => $this->generateUrl('app_'.$this->snakeSection().'_new'),
-//            'validation_groups' => $request->request->get('btnSubmit') !== 'submit' ? [''] : ['Default']
         ]);
         $form->handleRequest($request);
 
