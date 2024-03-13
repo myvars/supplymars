@@ -23,6 +23,9 @@ class ProductImage
     #[Assert\NotNull(message: 'Please enter a valid Product')]
     private ?Product $product = null;
 
+    #[ORM\Column]
+    private ?int $position = null;
+
     #[ORM\Column(length: 255)]
     private ?string $imageName = null;
 
@@ -40,6 +43,7 @@ class ProductImage
     #[Assert\File(mimeTypes: ['image/*'], mimeTypesMessage: 'Please upload a valid image file')]
     private ?File $imageFile = null;
 
+
     public function getId(): ?int
     {
         return $this->id;
@@ -53,6 +57,18 @@ class ProductImage
     public function setProduct(?Product $product): static
     {
         $this->product = $product;
+
+        return $this;
+    }
+
+    public function getPosition(): ?int
+    {
+        return $this->position;
+    }
+
+    public function setPosition(int $position): static
+    {
+        $this->position = $position;
 
         return $this;
     }

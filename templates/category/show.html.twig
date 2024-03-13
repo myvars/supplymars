@@ -3,79 +3,71 @@
 {% block title %}{{ section }}{% endblock %}
 
 {% block body %}
-    <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-        <div
-            class="flex justify-between"
-        >
-            <h1 class="text-xl font-semibold text-white mb-4">{{ section }}</h1>
-            <twig:Button
-                tag="a"
-                variant="warning"
-                href="{{ path('app_'~section|lower|u.snake~'_edit', {'id': result.id }) }}"
-                class="flex items-center space-x-1 font-bold"
-                data-turbo-frame="modal"
-            >
-                <twig:Icon name="add" class="w-4"></twig:Icon><span>Edit {{ section }}</span>
-            </twig:Button>
-        </div>
 
-        <div class="w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-            <ul class="flex flex-wrap text-sm font-medium text-center text-gray-500 border-b border-gray-200 rounded-t-lg bg-gray-50 dark:border-gray-700 dark:text-gray-400 dark:bg-gray-800"
-                id="defaultTab" data-tabs-toggle="#defaultTabContent" role="tablist">
-                <li class="me-2">
-                    <button id="details-tab" data-tabs-target="#details" type="button" role="tab"
-                            aria-controls="details" aria-selected="true"
-                            class="inline-block p-4 text-blue-600 rounded-ss-lg hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-blue-500">
-                        Details
-                    </button>
-                </li>
-                <li class="me-2">
-                    <button id="sales-tab" data-tabs-target="#sales" type="button" role="tab" aria-controls="sales"
-                            aria-selected="false"
-                            class="inline-block p-4 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 dark:hover:text-gray-300">
-                        Sales
-                    </button>
-                </li>
-            </ul>
-            <div id="defaultTabContent">
-                <div class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800" id="details" role="tabpanel"
-                     aria-labelledby="details-tab">
-                    <h2 class="mb-3 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">{{ result.name }}</h2>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Category Markup: {{ result.defaultMarkup|number_format(3) }}%</p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Price Model: {{ result.priceModel.name }}</p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">
-                        VAT Rate: {{ result.vatRate.name }}
-                        <span class="ms-2">{{ result.vatRate.rate|number_format(2) }}%</span>
+    <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+    <h1 class="text-2xl font-semibold text-white mb-4">{{ section }}</h1>
+    <div class="flex flex-wrap gap-8">
+        <div
+            class="relative h-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+            <a href="{{ path('app_'~section|lower|u.snake~'_edit', {'id': result.id }) }}"
+            class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-full shadow-lg"
+            data-turbo-prefetch="false"
+            data-turbo-frame="modal"
+            >
+                <twig:Icon name="edit" class="w-6 h-6 p-0.5"/>
+            </a>
+            <div class="p-5">
+                <p class="mb-1 text-sm text-gray-500 dark:text-gray-500">Category</p>
+                <h5 class="mb-4 text-2xl font-normal text-gray-900 dark:text-white">{{ result.name|u.truncate(30, '...') }}</h5>
+                {% if result.defaultMarkup > 0 %}
+                    <p class="mb-1 text-2xl font-extralight text-gray-500 dark:text-gray-400">
+                        {{ result.defaultMarkup|number_format(3) }}%
+                        <span class="text-sm font-normal text-gray-500 dark:text-gray-400"> mark-up</span>
                     </p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Manager: {{ result.owner.fullName }}</p>
-                    <p class="mb-3 text-xl text-gray-500 dark:text-gray-400">Active: {{ result.isActive ? 'Yes' : 'No' }}</p>
-                </div>
-                <div class="hidden p-4 bg-white rounded-lg md:p-8 dark:bg-gray-800" id="sales" role="tabpanel"
-                     aria-labelledby="sales-tab">
-                    <dl class="grid max-w-screen-xl grid-cols-2 gap-8 p-4 mx-auto text-gray-900 sm:grid-cols-3 xl:grid-cols-6 dark:text-white sm:p-8">
-                        <div class="flex flex-col">
-                            <dt class="mb-2 text-3xl font-extrabold">73M+</dt>
-                            <dd class="text-gray-500 dark:text-gray-400">Developers</dd>
-                        </div>
-                        <div class="flex flex-col">
-                            <dt class="mb-2 text-3xl font-extrabold">100M+</dt>
-                            <dd class="text-gray-500 dark:text-gray-400">Public repositories</dd>
-                        </div>
-                        <div class="flex flex-col">
-                            <dt class="mb-2 text-3xl font-extrabold">1000s</dt>
-                            <dd class="text-gray-500 dark:text-gray-400">Open source projects</dd>
-                        </div>
-                    </dl>
-                </div>
-                <div>
-                    <hr class="border-t border-gray-200 dark:border-gray-700">
-                    <p class="text-sm font-light text-gray-500 dark:text-gray-400 p-4">
-                        <a href="{{ path('app_'~section|lower|u.snake~'_index') }}" class="hover:underline">Back to list</a>
+                {% else %}
+                    <p class="mb-1 text-sm text-gray-500 dark:text-gray-400">No subcategory mark-up
+                {% endif %}
+                {% if result.priceModel is same as 'NONE' %}
+                    <p class="mb-1 text-sm text-gray-500 dark:text-gray-400">No price model</p>
+                {% else %}
+                    <p class="mb-1 text-sm text-gray-500 dark:text-gray-400">{{ result.priceModel.getName }} price model</p>
+                {% endif %}
+                <p class="mb-1 text-sm text-gray-500 dark:text-gray-400">{{ result.vatRate.name }} VAT</p>
+                <div class="flex items-center justify-between mt-4">
+                    <p class="text-sm text-gray-500 dark:text-gray-400 me-10">Managed by {{ result.owner.fullName }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        {{ result.isActive ? '<span class="text-green-500">Active</span>' : '<span class="text-red-500">Inactive</span>' }}
                     </p>
                 </div>
             </div>
         </div>
+        <div class="h-full border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+            <div class="p-5">
+                <h5 class="mb-2 text-lg text-gray-900 dark:text-white">Subcategories</h5>
+                <ul class="space-y-1">
+                    {% for subcategory in result.subcategories %}
+                        <li class="flex items center justify-between text-sm text-gray-500 dark:text-gray-400">
+                            <a href="{{ path('app_subcategory_show', {'id': subcategory.id }) }}"
+                               class="dark:hover:text-white me-10"
+                               data-turbo-frame="_top"
+                               data-turbo-prefetch="false"
+                            >{{ subcategory.name|u.truncate(30, '...') }}</a>
+                            {{ subcategory.isActive ? '<span class="text-green-500">Active</span>' : '<span class="text-red-500">Inactive</span>' }}
+                        </li>
+                    {% else %}
+                        <li class="text-sm text-gray-500 dark:text-gray-400">No subcategories</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="mt-4">
+        <p class="text-sm font-light text-gray-500 dark:text-gray-400">
+            <a href="{{ path('app_'~section|lower|u.snake~'_index') }}"
+               class="hover:underline"
+               data-turbo-frame="_top"
+            >Back to list</a>
+        </p>
+    </div>
     </div>
 {% endblock %}
-
-

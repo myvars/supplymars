@@ -4,10 +4,11 @@
 
 {% block detail %}
 <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+    <div class="mb-8">
         <h1 class="text-2xl font-semibold text-white mb-4">Product Cost</h1>
         {% if result.isActive and result.category.isActive and result.subcategory.isActive and result.activeProductSource is not null%}
-            <section class="bg-white dark:bg-gray-900 border border-gray-700 rounded-lg">
-                <div class="max-w-screen-xl px-4 py-8 mx-auto text-center lg:py-14 lg:px-6">
+            <section class="bg-white dark:bg-gray-900 border border-gray-700 rounded-lg mb-6">
+                <div class="max-w-screen-xl px-4 py-8 mx-auto text-center lg:py-12 lg:px-6">
                     <dl class="grid max-w-screen-md gap-8 mx-auto text-gray-900 sm:grid-cols-3 dark:text-white">
                         <div class="flex flex-col items-center justify-center">
                             <dt class="mb-2 font-light text-gray-500 dark:text-gray-400">Cost Price</dt>
@@ -26,7 +27,9 @@
             </section>
             <section class="bg-white dark:bg-gray-900 border border-gray-700 rounded-lg">
                 <div class="p-4 text-center">
-                    <p class="text-2xl font-light text-gray-700 dark:text-gray-500">Active Markup: {{ result.markup|number_format(3) }}%</p>
+                    <p class="mb-2 font-light text-gray-500 dark:text-gray-400">Mark-up</p>
+                    <p class="mb-2 text-3xl font-light text-gray-700 dark:text-white">{{ result.markup|number_format(3) }}%</p>
+                    <p class="text-sm font-light text-gray-700 dark:text-gray-500">using {{ result.activePriceModelTarget }} price model and {{ result.activeMarkupTarget }} mark-up</p>
                 </div>
             </section>
         {% endif %}
@@ -44,98 +47,112 @@
                 </div>
             </section>
         {% endif %}
+    </div>
 
-        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-            <tr>
-                <td class="p-2 ps-4">Name</td>
-                <td class="text-nowrap">Price Model</td>
-                <td>Markup</td>
-                <td>Status</td>
-                <td></td>
-            </tr>
-            </thead>
-            <tbody>
-            <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                <td class="min-w-0 flex-auto p-4">
-                    <p class="text-xs text-gray-500">Category</p>
-                    <p class="mt-1 text-base leading-5 text-gray-300">{{ result.category.name|u.truncate(30, '...', false) }}</p>
-                </td>
-                <td class="mt-1 text-sm leading-5 text-gray-300">{{ result.category.priceModel.getName }}</td>
-                <td class="mt-1 text-sm leading-5 text-gray-300">{{ result.category.defaultMarkup|number_format(3) }}%</td>
-                <td>
-                    <div class="flex items-center text-gray-300">
-                        {{ result.category.isActive ?
-                        '<span class="flex w-2.5 h-2.5 me-2 rounded-full bg-green-500"></span>Active'
-                        : '<span class="flex w-2.5 h-2.5 me-2 rounded-full bg-red-500 "></span>Inactive' }}
-                    </div>
-                </td>
-                <td class="px-4">
-                    <div class="shrink-0 sm:flex sm:flex-col sm:items-end">
-                        <a href="{{ path('app_product_cost_category_edit', {'id': result.id }) }}"
-                           class="flex items-center block py-1 px-4 text-yellow-700 dark:text-yellow-500 hover:bg-gray-100 dark:hover:bg-gray-600"
-                           data-turbo-frame="modal"
-                        >
-                            <twig:Icon name="edit" class="w-4 me-1.5"></twig:Icon>
-                            Edit</a>
-                        <p class="text-xs leading-5 text-gray-500">Last updated {{ result.category.updatedAt|ago }}</p>
-                    </div>
-                </td>
-            </tr>
-            <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                <td class="min-w-0 flex-auto p-4">
-                    <p class="text-xs text-gray-500">Subcategory</p>
-                    <p class="mt-1 text-base leading-5 text-gray-300">{{ result.subcategory.name|u.truncate(30, '...', false) }}</p>
-                </td>
-                <td class="mt-1 text-sm leading-5 text-gray-300">{{ result.subcategory.priceModel.getName }}</td>
-                <td class="mt-1 text-sm leading-5 text-gray-300">{{ result.subcategory.defaultMarkup|number_format(3) }}%</td>
-                <td>
-                    <div class="flex items-center text-gray-300">
-                        {{ result.subcategory.isActive ?
-                        '<span class="flex w-2.5 h-2.5 me-2 rounded-full bg-green-500"></span>Active'
-                        : '<span class="flex w-2.5 h-2.5 me-2 rounded-full bg-red-500 "></span>Inactive' }}
-                    </div>
-                </td>
-                <td class="px-4">
-                    <div class="shrink-0 sm:flex sm:flex-col sm:items-end">
-                        <a href="{{ path('app_product_cost_subcategory_edit', {'id': result.id }) }}"
-                           class="flex items-center block py-1 px-4 text-yellow-700 dark:text-yellow-500 hover:bg-gray-100 dark:hover:bg-gray-600"
-                           data-turbo-frame="modal"
-                        >
-                            <twig:Icon name="edit" class="w-4 me-1.5"></twig:Icon>
-                            Edit</a>
-                        <p class="text-xs leading-5 text-gray-500">Last
-                            updated {{ result.subcategory.updatedAt|ago }}</p>
-                    </div>
-                </td>
-            </tr>
-            <tr class="border-b dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                <td class="min-w-0 flex-auto p-4">
-                    <p class="text-xs text-gray-500">Product</p>
-                    <p class="mt-1 text-base leading-5 text-gray-300">{{ result.name|u.truncate(30, '...', false) }}</p>
-                </td>
-                <td class="mt-1 text-sm leading-5 text-gray-300">{{ result.priceModel.getName }}</td>
-                <td class="mt-1 text-sm leading-5 text-gray-300">{{ result.defaultMarkup|number_format(3) }}%</td>
-                <td>
-                    <div class="flex items-center text-gray-300">
-                        {{ result.isActive ?
-                        '<span class="flex w-2.5 h-2.5 me-2 rounded-full bg-green-500"></span>Active'
-                        : '<span class="flex w-2.5 h-2.5 me-2 rounded-full bg-red-500 "></span>Inactive' }}
-                    </div>
-                </td>
-                <td class="px-4">
-                    <div class="shrink-0 sm:flex sm:flex-col sm:items-end">
-                        <a href="{{ path('app_product_cost_edit', {'id': result.id }) }}"
-                           class="flex items-center block py-1 px-4 text-yellow-700 dark:text-yellow-500 hover:bg-gray-100 dark:hover:bg-gray-600"
-                           data-turbo-frame="modal"
-                        >
-                            <twig:Icon name="edit" class="w-4 me-1.5"></twig:Icon>
-                            Edit</a>
-                        <p class="text-xs leading-5 text-gray-500">Last updated {{ result.updatedAt|ago }}</p>
-                    </div>
-                </td>
-            </tr>
-            </tbody>
-        </table>
+    <div class="flex flex-wrap justify-center gap-8">
+        <div
+            class="relative h-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+            <a href="{{ path('app_product_cost_category_edit', {'id': result.id }) }}"
+               class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-full shadow-lg"
+               data-turbo-prefetch="false"
+               data-turbo-frame="modal"
+            >
+                <twig:Icon name="edit" class="w-6 h-6 p-0.5"/>
+            </a>
+            <div class="p-5">
+                <p class="mb-1 text-sm text-gray-500 dark:text-gray-500">Category</p>
+                <h5 class="mb-4 text-2xl font-normal text-gray-900 dark:text-white">{{ result.category.name|u.truncate(30, '...') }}</h5>
+                {% if result.category.defaultMarkup > 0 %}
+                    <p class="mb-1 text-2xl font-extralight text-gray-500 dark:text-gray-400">
+                        {{ result.category.defaultMarkup|number_format(3) }}%
+                        <span class="text-sm font-normal text-gray-500 dark:text-gray-400"> mark-up</span>
+                    </p>
+                {% else %}
+                    <p class="mb-1 text-sm text-gray-500 dark:text-gray-400">No category mark-up
+                {% endif %}
+                {% if result.category.priceModel.name is same as 'NONE' %}
+                    <p class="mb-1 text-sm text-gray-500 dark:text-gray-400">No price model</p>
+                {% else %}
+                    <p class="mb-1 text-sm text-gray-500 dark:text-gray-400">{{ result.category.priceModel.getName }} price model</p>
+                {% endif %}
+                <p class="mb-1 text-sm text-gray-500 dark:text-gray-400">{{ result.category.vatRate.name }} VAT</p>
+                <div class="flex items-center justify-between mt-4">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 me-10">Updated {{ result.category.updatedAt|ago }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        {{ result.category.isActive ? '<span class="text-green-500">Active</span>' : '<span class="text-red-500">Inactive</span>' }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div
+            class="relative h-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+            <a href="{{ path('app_product_cost_subcategory_edit', {'id': result.id }) }}"
+               class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-full shadow-lg"
+               data-turbo-prefetch="false"
+               data-turbo-frame="modal"
+            >
+                <twig:Icon name="edit" class="w-6 h-6 p-0.5"/>
+            </a>
+            <div class="p-5">
+                <p class="mb-1 text-sm text-gray-500 dark:text-gray-500">Subcategory</p>
+                <h5 class="mb-4 text-2xl font-normal text-gray-900 dark:text-white">{{ result.subcategory.name|u.truncate(30, '...') }}</h5>
+                 {% if result.subcategory.defaultMarkup > 0 %}
+                    <p class="mb-1 text-2xl font-extralight text-gray-500 dark:text-gray-400">
+                        {{ result.subcategory.defaultMarkup|number_format(3) }}%
+                        <span class="text-sm font-normal text-gray-500 dark:text-gray-400"> mark-up</span>
+                    </p>
+                {% else %}
+                    <p class="mb-1 text-sm text-gray-500 dark:text-gray-400">No subcategory mark-up
+                {% endif %}
+                {% if result.subcategory.priceModel.name is same as 'NONE' %}
+                    <p class="mb-1 text-sm text-gray-500 dark:text-gray-400">No price model</p>
+                {% else %}
+                    <p class="mb-1 text-sm text-gray-500 dark:text-gray-400">{{ result.subcategory.priceModel.getName }} price model</p>
+                {% endif %}
+                <div class="flex items-center justify-between mt-4">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 me-10">Updated {{ result.subcategory.updatedAt|ago }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        {{ result.subcategory.isActive ? '<span class="text-green-500">Active</span>' : '<span class="text-red-500">Inactive</span>' }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div
+            class="relative h-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+            <a href="{{ path('app_product_cost_edit', {'id': result.id }) }}"
+               class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-full shadow-lg"
+               data-turbo-prefetch="false"
+               data-turbo-frame="modal"
+            >
+                <twig:Icon name="edit" class="w-6 h-6 p-0.5"/>
+            </a>
+            <div class="p-5">
+                <p class="mb-1 text-sm text-gray-500 dark:text-gray-500">Product</p>
+                <h5 class="mb-4 text-2xl font-normal text-gray-900 dark:text-white">{{ result.name|u.truncate(30, '...') }}</h5>
+                {% if result.defaultMarkup > 0 %}
+                    <p class="mb-1 text-2xl font-extralight text-gray-500 dark:text-gray-400">
+                        {{ result.defaultMarkup|number_format(3) }}%
+                        <span class="text-sm font-normal text-gray-500 dark:text-gray-400"> mark-up</span>
+                    </p>
+                {% else %}
+                    <p class="mb-1 text-sm text-gray-500 dark:text-gray-400">No product mark-up
+                {% endif %}
+                {% if result.priceModel.name is same as 'NONE' %}
+                    <p class="mb-1 text-sm text-gray-500 dark:text-gray-400">No price model</p>
+                {% else %}
+                    <p class="mb-1 text-sm text-gray-500 dark:text-gray-400">{{ result.priceModel.getName }} price model</p>
+                {% endif %}
+                <div class="flex items-center justify-between mt-4">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 me-10">Updated {{ result.updatedAt|ago }}</p>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        {{ result.isActive ? '<span class="text-green-500">Active</span>' : '<span class="text-red-500">Inactive</span>' }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
 </div>
+
 {% endblock %}

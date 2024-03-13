@@ -2,8 +2,11 @@
 
 namespace App\Repository;
 
+use App\Entity\Product;
 use App\Entity\ProductImage;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -37,21 +40,38 @@ class ProductImageRepository extends ServiceEntityRepository
 
     public function findBySearchQueryBuilder(?string $query, ?string $sort = null, string $direction = 'DESC'): QueryBuilder
     {
-        $qb = $this->createQueryBuilder('p');
+        $qb = $this->createQueryBuilder('pi');
 
         if ($query) {
-            $qb->andWhere('p.imageName LIKE :query')
+            $qb->andWhere('pi.imageName LIKE :query')
                 ->setParameter('query', '%' . $query . '%');
         }
 
         if ($sort) {
             if (str_starts_with($sort, 'product.')) {
-                $qb->leftJoin('p.product', 'product')->orderBy($sort, $direction);
+                $qb->leftJoin('pi.product', 'product')->orderBy($sort, $direction);
             } else {
-                $qb->orderBy('p.' . $sort, $direction);
+                $qb->orderBy('pi.' . $sort, $direction);
             }
         }
 
         return $qb;
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getNextPositionForProduct(Product $product): int
+    {
+        $query = $this->createQueryBuilder('pi')
+            ->select('MAX(pi.position)')
+            ->where('pi.product = :product')
+            ->setParameter('product', $product)
+            ->getQuery();
+
+        $maxPosition = $query->getSingleScalarResult();
+
+        return (int) $maxPosition + 1;
     }
 }

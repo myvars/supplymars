@@ -101,6 +101,7 @@ class Product
     private Collection $supplierProducts;
 
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: ProductImage::class)]
+    #[ORM\OrderBy(['position' => 'ASC'])]
     private Collection $productImages;
 
     public function __construct()
@@ -359,6 +360,17 @@ class Product
         return $this->getCategory()->getDefaultMarkup();
     }
 
+    public function getActiveMarkupTarget(): string
+    {
+        if ($this->getDefaultMarkup() > 0) {
+            return 'product';
+        }
+        if ($this->getSubcategory()->getDefaultMarkup() > 0) {
+            return 'subcategory';
+        }
+        return 'category';
+    }
+
     public function getActivePriceModel(): ?PriceModel
     {
         if ($this->getPriceModel()->value !== 'NONE') {
@@ -368,6 +380,17 @@ class Product
             return $this->getSubcategory()->getPriceModel();
         }
         return $this->getCategory()->getPriceModel();
+    }
+
+    public function getActivePriceModelTarget(): string
+    {
+        if ($this->getPriceModel()->value !== 'NONE') {
+            return 'product';
+        }
+        if ($this->getSubcategory()->getPriceModel()->value !== 'NONE') {
+            return 'subcategory';
+        }
+        return 'category';
     }
 
     /**

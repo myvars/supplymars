@@ -20,3 +20,8 @@ body {
 ::view-transition-new(root) {
     animation-duration: 0.5s;
 }
+
+.dropzone.dz-clickable {
+    border: 1px solid rgb(55 65 81);
+    border-radius: 10px;
+}

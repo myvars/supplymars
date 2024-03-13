@@ -4,6 +4,7 @@
 
 {% block detail %}
 <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+    <div class="mb-8">
         <h1 class="text-2xl font-semibold text-white mb-4">Product Stock</h1>
         {% if result.isActive and result.category.isActive and result.subcategory.isActive and result.activeProductSource is not null%}
             <section class="bg-white dark:bg-gray-900 border border-gray-700 rounded-lg">
@@ -11,13 +12,13 @@
                     <dl class="grid max-w-screen-md gap-8 mx-auto text-gray-900 sm:grid-cols-2 dark:text-white">
                         <div class="flex flex-col items-center justify-center">
                             <dt class="mb-2 font-light text-gray-500 dark:text-gray-400">Cost Price</dt>
-                            <dd class="mb-2 text-3xl md:text-4xl font-bold ">£{{ result.cost|number_format(2) }}</dd>
-                            <dd class="font-light text-gray-600 dark:text-gray-500">{{ result.activeProductSource.supplier.name }}</dd>
+                            <dd class="mb-2 text-3xl md:text-4xl font-bold text-gray-600 dark:text-gray-500">£{{ result.cost|number_format(2) }}</dd>
+                            <dd class="font-light text-gray-600 dark:text-gray-500">using {{ result.activeProductSource.supplier.name }}</dd>
                         </div>
                         <div class="flex flex-col items-center justify-center">
                             <dt class="mb-2 font-light text-gray-500 dark:text-gray-400">Stock</dt>
                             <dd class="mb-2 text-3xl md:text-4xl font-bold">{{ result.stock }}</dd>
-                            <dd class="font-light text-gray-600 dark:text-gray-500">{{ result.activeProductSource.updatedAt|ago }}</dd>
+                            <dd class="font-light text-gray-600 dark:text-gray-500">updated {{ result.activeProductSource.updatedAt|ago }}</dd>
                         </div>
                     </dl>
                 </div>
@@ -37,74 +38,72 @@
                 </div>
             </section>
         {% endif %}
-
-        <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
-            <tr>
-                <td class="p-2 ps-4">Supplier</td>
-                <td>Product Code</td>
-                <td>Cost</td>
-                <td>Lead Time</td>
-                <td>Stock</td>
-                <td></td>
-            </tr>
-            </thead>
-            <tbody>
-            {% for supplierProduct in result.supplierProducts %}
-                {% if result.activeProductSource is not null and supplierProduct.id == result.activeProductSource.id %}
-                    <tr class="border-b dark:border-gray-700 outline outline-green-800">
-                {% else %}
-                    <tr class="border-b dark:border-gray-700">
-                {% endif %}
-                <td class="min-w-0 flex-auto p-4">
-                    <p class="text-sm text-gray-500">{{ supplierProduct.supplier.name|u.truncate(30, '...', false) }}</p>
-                    <p class="mt-1 text-base leading-5 text-gray-300">{{ supplierProduct.name|u.truncate(30, '...', false) }}</p>
-                    <p class="mt-1 text-xs text-gray-500">Last updated {{ supplierProduct.updatedAt|ago }}</p>
-                </td>
-                <td class="mt-1 text-sm leading-5 text-gray-300">{{ supplierProduct.productCode }}</td>
-                <td class="mt-1 text-sm leading-5 text-gray-300">£{{ supplierProduct.cost|number_format(2) }}</td>
-                <td class="mt-1 text-sm leading-5 text-gray-300">{{ supplierProduct.leadTimeDays }}</td>
-                <td class="mt-1 text-sm leading-5 text-gray-300">{{ supplierProduct.stock }}</td>
-                <td class="px-4">
-                    <div class="shrink-0 sm:flex justify-around">
-                        {% if supplierProduct.supplier.isActive %}
-                        {% if supplierProduct.isActive %}
-                            <a href="{{ path('app_supplier_product_toggle_status', {'id': supplierProduct.id }) }}"
-                               data-turbo-prefetch="false"
-                               class="flex items-center block py-1 px-4 text-green-700 dark:text-green-500 hover:text-green-500 dark:hover:text-green-300"
-                            >
-                                <twig:Icon name="edit" class="w-4 me-1.5"></twig:Icon>
-                                Active</a>
-                        {% else %}
-                            <a href="{{ path('app_supplier_product_toggle_status', {'id': supplierProduct.id }) }}"
-                               data-turbo-prefetch="false"
-                               class="flex items-center block py-1 px-4 text-red-700 dark:text-red-500 hover:text-red-500 dark:hover:text-red-300"
-                            >
-                                <twig:Icon name="edit" class="w-4 me-1.5"></twig:Icon>
-                                Inactive</a>
-                        {% endif %}
-                        {% else %}
-                            <p>Supplier Inactive</p>
-                        {% endif %}
-                        <a href="{{ path('app_supplier_product_remove_confirm', {'id': supplierProduct.id }) }}"
-                           data-turbo-prefetch="false"
-                           data-turbo-frame="modal"
-                           class="flex items-center block py-1 px-4 text-yellow-700 dark:text-yellow-500 hover:text-yellow-500 dark:hover:text-yellow-300"
-                        >
-                            <twig:Icon name="delete" class="w-4 me-1.5"></twig:Icon>
-                            Remove</a>
-                    </div>
-                </td>
-            </tr>
-            {% else %}
-                <tr>
-                    <td colspan="6"
-                        class="px-6 py-6 whitespace-nowrap text-center text-gray-400">
-                        No suppliers found
-                    </td>
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
     </div>
+
+    <div class="flex flex-wrap justify-center gap-8">
+        {% for supplierProduct in result.supplierProducts %}
+        <div class="relative h-full bg-white border {{ result.activeProductSource is same as supplierProduct ? 'border-green-600 dark:border-green-700' : 'border-gray-600 dark:border-gray-700' }} rounded-lg shadow dark:bg-gray-800 ">
+            <a href="{{ path('app_supplier_product_remove_confirm', {'id': supplierProduct.id }) }}"
+               class="absolute -top-1.5 -right-1 p-1.5 bg-white text-gray-300 border border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-full shadow-lg"
+               data-turbo-prefetch="false"
+               data-turbo-frame="modal"
+            >
+                <twig:Icon name="delete" class="w-6 h-6 p-0.5"/>
+            </a>
+            <div class="p-5">
+                {% if supplierProduct.supplier.isActive %}
+                    <p class="mb-1 text-sm text-gray-500 dark:text-gray-500">{{ supplierProduct.supplier.name|u.truncate(30, '...', false) }}</p>
+                {% else %}
+                    <p class="mb-1 text-sm text-red-700 dark:text-red-500">{{ supplierProduct.supplier.name|u.truncate(30, '...', false) }} : Inactive</p>
+                {% endif %}
+                <h5 class="mb-4 text-2xl font-normal text-gray-900 dark:text-white">
+                    <a href="{{ path('app_supplier_product_show', {'id': supplierProduct.id }) }}"
+                       data-turbo-frame="_top"
+                       data-turbo-prefetch="false"
+                       class="hover:text-blue-600 dark:hover:text-white/70">
+                        {{ (supplierProduct.productCode) }}
+                    </a>
+                </h5>
+                <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                    {{ supplierProduct.name|u.truncate(30, '...', false) }}
+                </p>
+                <p class="mb-1 text-2xl text-gray-500 dark:text-gray-500">
+                    £{{ supplierProduct.cost|number_format(2) }}</p>
+                <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                    {% if supplierProduct.stock > 0 %}
+                        {{ supplierProduct.stock }} in stock
+                    {% else %}
+                        Out of stock ({{ supplierProduct.leadTimeDays }} day lead time)
+                    {% endif %}
+                </p>
+                <div class="flex items-center justify-between mt-4">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 me-10">Updated {{ supplierProduct.updatedAt|ago }}</p>
+
+                    {% if supplierProduct.isActive %}
+                        <a href="{{ path('app_supplier_product_toggle_status', {'id': supplierProduct.id }) }}"
+                           data-turbo-prefetch="false"
+                           class="flex items-center block py-1 text-sm text-green-700 dark:text-green-500 hover:text-green-500 dark:hover:text-green-300"
+                        >
+                            <twig:Icon name="edit" class="w-4 me-1.5"></twig:Icon>
+                            Active</a>
+                    {% else %}
+                        <a href="{{ path('app_supplier_product_toggle_status', {'id': supplierProduct.id }) }}"
+                           data-turbo-prefetch="false"
+                           class="flex items-center block py-1 text-sm text-red-700 dark:text-red-500 hover:text-red-500 dark:hover:text-red-300"
+                        >
+                            <twig:Icon name="edit" class="w-4 me-1.5"></twig:Icon>
+                            Inactive</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+            <p class="mb-1 text-2xl text-gray-500 dark:text-white">
+                No supplier products found
+            </p>
+        {% endfor %}
+    </div>
+
+</div>
+
 {% endblock %}

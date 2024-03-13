@@ -6,7 +6,7 @@ import 'dropzone/dist/dropzone.css'
 export default class extends Controller {
     static values = {
         url: String,
-        paramName: String
+        paramName: String,
     };
 
     connect() {
@@ -14,8 +14,10 @@ export default class extends Controller {
             url: this.urlValue,
             paramName: this.paramNameValue, // The name that will be used to transfer the file
             maxFiles: 10,
-            maxFilesize: 1, // MB
+            maxFilesize: 2, // MB
+            uploadMultiple: true,
             addRemoveLinks: true,
+            acceptedFiles: "image/*",
         });
 
         dropzone.on("error", (file, message) => {
@@ -29,5 +31,22 @@ export default class extends Controller {
                 detail: { file }
             });
         });
+
+        dropzone.on("completemultiple", file => {
+            this.dispatch('dropzone:uploaded', {
+                detail: { file }
+            });
+            // wait for 500ms before refreshing the page
+            // to give the server time to process the uploaded files
+            setTimeout(() => {
+                this.turboRefresh();
+            }, 500);
+        });
+    }
+
+    turboRefresh() {
+        if (window.Turbo) {
+            Turbo.visit(window.location, {action: 'replace'});
+        }
     }
 }

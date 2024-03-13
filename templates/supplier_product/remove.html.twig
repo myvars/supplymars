@@ -9,9 +9,10 @@
                 Remove Supplier Product
             </h3>
         </div>
-        <div class="space-y-4 md:space-y-6">
-            <p class="text-sm text-gray-500">{{ supplierProduct.supplier.name|u.truncate(30, '...', false) }}</p>
-            <p class="mt-1 text-base leading-5 text-gray-300">{{ supplierProduct.name|u.truncate(30, '...', false) }}</p>
+        <div class="space-y-4 md:space-y-4">
+            <p class="mb-1 text-sm text-gray-500 dark:text-gray-500">{{ supplierProduct.supplier.name|u.truncate(30, '...', false) }}</p>
+            <p class="mb-4 text-2xl font-normal text-gray-900 dark:text-white">{{ supplierProduct.productCode }}</p>
+            <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">{{ supplierProduct.name|u.truncate(30, '...', false) }}</p>
             <p class="text-sm font-light text-gray-500 dark:text-gray-400">
                 Are you sure you want to remove this supplier product?
             </p>

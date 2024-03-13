@@ -77,4 +77,7 @@ return [
     'just-extend' => [
         'version' => '6.2.0',
     ],
+    'sortablejs' => [
+        'version' => '1.15.2',
+    ],
 ];
