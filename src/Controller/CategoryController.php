@@ -87,12 +87,4 @@ class CategoryController extends AbstractController
             $category,
         );
     }
-
-    #[Route('/{id}/subcategories', name: 'app_category_subcategories', methods: ['GET'])]
-    public function getSubcategories(?Category $category): Response
-    {;
-        return $this->render('category/subcategories.html.twig', [
-            'subcategories' => $category?->getSubcategories(),
-        ]);
-    }
 }

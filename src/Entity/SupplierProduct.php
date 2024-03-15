@@ -59,6 +59,7 @@ class SupplierProduct
     private ?string $cost = null;
 
     #[ORM\ManyToOne(inversedBy: 'supplierProducts')]
+    #[Assert\NotNull(message: 'Please enter a supplier')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Supplier $supplier = null;
 

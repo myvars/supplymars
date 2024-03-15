@@ -1,0 +1,34 @@
+<div class="relative h-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+    <a href="{{ path('app_product_cost_category_edit', {'id': category.id }) }}"
+       class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-gray-600 rounded-full shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600"
+       data-turbo-prefetch="false"
+       data-turbo-frame="modal"
+    >
+        <twig:Icon name="edit" class="w-6 h-6 p-0.5"/>
+    </a>
+    <div class="p-5 text-sm text-gray-500 dark:text-gray-400">
+        <p class="mb-1 text-gray-600 dark:text-gray-500">Category</p>
+        <h5 class="mb-4 text-2xl text-gray-900 dark:text-white">{{ category.name|u.truncate(30, '...') }}</h5>
+        {% if category.defaultMarkup > 0 %}
+            <p class="mb-1 text-2xl font-extralight">
+                {{ category.defaultMarkup|number_format(3) }}%
+                <span class="font-normal text-sm text-gray-500 dark:text-gray-400"> mark-up</span>
+            </p>
+        {% else %}
+            <p class="mb-1">No subcategory mark-up</p>
+        {% endif %}
+        {% if category.priceModel.name is same as 'NONE' %}
+            <p class="mb-1">No price model</p>
+        {% else %}
+            <p class="mb-1">{{ category.priceModel.getName }} price model</p>
+        {% endif %}
+        <div class="mt-4 flex items-center justify-between">
+            <p class="me-10 text-xs">Updated {{ category.updatedAt|ago }}</p>
+            {% if category.isActive %}
+                <p class="text-green-500">Active</p>
+            {% else %}
+                <p class="text-red-500">InActive</p>
+            {% endif %}
+        </div>
+    </div>
+</div>

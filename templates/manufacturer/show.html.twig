@@ -1,38 +1,20 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ section }}{% endblock %}
+{% block title %}Manufacturer{% endblock %}
 
 {% block body %}
 
-    <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-        <h1 class="text-2xl font-semibold text-white mb-4">{{ section }}</h1>
-        <div class="flex flex-wrap gap-8">
-            <div
-                class="relative h-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                <a href="{{ path('app_'~section|lower|u.snake~'_edit', {'id': result.id }) }}"
-                   class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-full shadow-lg"
-                   data-turbo-prefetch="false"
-                   data-turbo-frame="modal"
-                >
-                    <twig:Icon name="edit" class="w-6 h-6 p-0.5"/>
-                </a>
-                <div class="p-5">
-                    <p class="mb-1 text-sm text-gray-500 dark:text-gray-500">Manufacturer</p>
-                    <h5 class="mb-4 text-2xl font-normal text-gray-900 dark:text-white">{{ result.name|u.truncate(30, '...') }}</h5>
-                    <div class="flex items-center justify-between mt-4">
-                        <p class="text-sm text-gray-500 dark:text-gray-400 me-10">Updated {{ result.updatedAt|ago }}</p>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                            {{ result.isActive ? '<span class="text-green-500">Active</span>' : '<span class="text-red-500">Inactive</span>' }}
-                        </p>
-                    </div>
-                </div>
-            </div>
+    <div class="p-6 sm:p-8 space-y-4 md:space-y-6 text-sm text-gray-500 dark:text-gray-400">
+        <h1 class="mb-4 text-2xl font-semibold text-white">Manufacturer</h1>
+        <div class="flex flex-wrap justify-center gap-8">
+            {{ include('manufacturer/_manufacturer_card.html.twig', {manufacturer: result}) }}
         </div>
         <div class="mt-4">
-            <p class="text-sm font-light text-gray-500 dark:text-gray-400">
-                <a href="{{ path('app_'~section|lower|u.snake~'_index') }}"
-                   class="hover:underline"
+            <p>
+                <a href="{{ path('app_manufacturer_index') }}"
+                   class="font-light hover:text-gray-300 dark:hover:text-white"
                    data-turbo-frame="_top"
+                   data-turbo-prefetch="false"
                 >Back to list</a>
             </p>
         </div>

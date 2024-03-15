@@ -25,12 +25,11 @@ class Product
 
     #[ORM\Column(length: 255)]
     #[Assert\NotNull(message: 'Please enter a manufacturer part number')]
-    private ?string $MfrPartNumber = null;
+    private ?string $mfrPartNumber = null;
 
     #[ORM\Column]
-    #[Assert\NotNull(message: 'Please enter a stock level')]
     #[Assert\Range(notInRangeMessage: 'Please enter a stock level', min: 0, max: 10000)]
-    private ?int $stock = null;
+    private ?int $stock = 0;
 
     #[ORM\Column]
     #[Assert\NotNull(message: 'Please enter a lead time')]
@@ -49,7 +48,6 @@ class Product
     private ?string $defaultMarkup = '0';
 
     #[ORM\Column(type: 'decimal', precision: 9, scale: 3)]
-    #[Assert\NotBlank(message: 'Please enter a markup %')]
     #[Assert\PositiveOrZero]
     private ?string $markup = null;
 
@@ -59,12 +57,10 @@ class Product
     private ?string $cost = null;
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
-    #[Assert\NotBlank(message: 'Please enter a sell price')]
     #[Assert\PositiveOrZero]
     private ?string $sellPrice = null;
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
-    #[Assert\NotBlank(message: 'Please enter a sell price inc VAT')]
     #[Assert\PositiveOrZero]
     private ?string $sellPriceIncVat = null;
 
@@ -129,12 +125,12 @@ class Product
 
     public function getMfrPartNumber(): ?string
     {
-        return $this->MfrPartNumber;
+        return $this->mfrPartNumber;
     }
 
-    public function setMfrPartNumber(?string $MfrPartNumber): static
+    public function setMfrPartNumber(?string $mfrPartNumber): static
     {
-        $this->MfrPartNumber = $MfrPartNumber;
+        $this->mfrPartNumber = $mfrPartNumber;
 
         return $this;
     }

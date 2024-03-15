@@ -3,156 +3,60 @@
 {% block title %}Product Cost{% endblock %}
 
 {% block detail %}
-<div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-    <div class="mb-8">
-        <h1 class="text-2xl font-semibold text-white mb-4">Product Cost</h1>
-        {% if result.isActive and result.category.isActive and result.subcategory.isActive and result.activeProductSource is not null%}
-            <section class="bg-white dark:bg-gray-900 border border-gray-700 rounded-lg mb-6">
-                <div class="max-w-screen-xl px-4 py-8 mx-auto text-center lg:py-12 lg:px-6">
-                    <dl class="grid max-w-screen-md gap-8 mx-auto text-gray-900 sm:grid-cols-3 dark:text-white">
-                        <div class="flex flex-col items-center justify-center">
-                            <dt class="mb-2 font-light text-gray-500 dark:text-gray-400">Cost Price</dt>
-                            <dd class="text-3xl md:text-4xl font-bold text-gray-600 dark:text-gray-500">£{{ result.cost|number_format(2) }}</dd>
-                        </div>
-                        <div class="flex flex-col items-center justify-center">
-                            <dt class="mb-2 font-light text-gray-500 dark:text-gray-400">Sell Price</dt>
-                            <dd class="text-3xl md:text-4xl font-bold">£{{ result.sellPrice|number_format(2) }}</dd>
-                        </div>
-                        <div class="flex flex-col items-center justify-center">
-                            <dt class="mb-2 font-light text-gray-500 dark:text-gray-400">Sell Price Inc VAT</dt>
-                            <dd class="text-3xl md:text-4xl font-bold">£{{ result.sellPriceIncVat|number_format(2) }}</dd>
-                        </div>
-                    </dl>
-                </div>
-            </section>
-            <section class="bg-white dark:bg-gray-900 border border-gray-700 rounded-lg">
-                <div class="p-4 text-center">
-                    <p class="mb-2 font-light text-gray-500 dark:text-gray-400">Mark-up</p>
-                    <p class="mb-2 text-3xl font-light text-gray-700 dark:text-white">{{ result.markup|number_format(3) }}%</p>
-                    <p class="text-sm font-light text-gray-700 dark:text-gray-500">using {{ result.activePriceModelTarget }} price model and {{ result.activeMarkupTarget }} mark-up</p>
-                </div>
-            </section>
-        {% endif %}
 
-        {% if result.isActive and result.category.isActive and result.subcategory.isActive and result.activeProductSource is not null%}
-        {% else %}
-            <section class="bg-white dark:bg-gray-900 border border-gray-700 rounded-lg">
-                <div class="p-4 text-center">
-                    <p class="mb-2 text-2xl font-light text-red-400 dark:text-red-400">Inactive Product</p>
-                    {% if result.activeProductSource is null%}
-                        <p class="text-sm font-light text-red-600 dark:text-gray-500">No Active Supplier</p>
-                    {% else %}
-                        <p class="text-sm font-light text-red-600 dark:text-gray-500">Inactive Category, Subcategory or Product</p>
-                    {% endif %}
-                </div>
-            </section>
-        {% endif %}
+    <div class="p-6 sm:p-8 space-y-4 md:space-y-6 text-sm text-gray-500 dark:text-gray-400">
+        <div class="mb-8">
+            <h1 class="mb-4 text-2xl font-semibold text-white">Product Cost</h1>
+            {% if result.isActive and result.category.isActive and result.subcategory.isActive and result.activeProductSource is not null %}
+                <section class="mb-6 border border-gray-700 rounded-lg bg-white dark:bg-gray-900">
+                    <div class="px-4 py-8 lg:py-12 lg:px-6 mx-auto max-w-screen-xl text-center font-bold">
+                        <dl class="grid max-w-screen-md mx-auto sm:grid-cols-3 gap-8 items-center">
+                            <div>
+                                <dt class="mb-2 font-light">Cost Price</dt>
+                                <dd class="text-3xl md:text-4xl text-gray-600 dark:text-gray-500">£{{ result.cost|number_format(2) }}</dd>
+                            </div>
+                            <div>
+                                <dt class="mb-2 font-light">Sell Price</dt>
+                                <dd class="text-3xl md:text-4xl text-gray-900 dark:text-white">£{{ result.sellPrice|number_format(2) }}</dd>
+                            </div>
+                            <div>
+                                <dt class="mb-2 font-light">Sell Price Inc VAT</dt>
+                                <dd class="text-3xl md:text-4xl text-gray-900 dark:text-white">£{{ result.sellPriceIncVat|number_format(2) }}</dd>
+                            </div>
+                        </dl>
+                    </div>
+                </section>
+                <section class="border border-gray-700 rounded-lg bg-white dark:bg-gray-900">
+                    <div class="p-4 text-center">
+                        <p class="mb-2 font-light">Mark-up</p>
+                        <p class="mb-2 text-3xl font-light text-gray-700 dark:text-white">{{ result.markup|number_format(3) }}%</p>
+                        <p class="text-sm font-light text-gray-600 dark:text-gray-500">
+                            {{ result.category.vatRate.name|title }} VAT |
+                            {{ result.activePriceModelTarget|title }} price model |
+                            {{ result.activeMarkupTarget|title }} mark-up
+                        </p>
+                    </div>
+                </section>
+            {% endif %}
+            {% if result.isActive and result.category.isActive and result.subcategory.isActive and result.activeProductSource is not null %}
+            {% else %}
+                <section class="bg-white dark:bg-gray-900 border border-gray-700 rounded-lg">
+                    <div class="p-4 text-center">
+                        <p class="mb-2 text-2xl font-light text-red-400 dark:text-red-400">Inactive Product</p>
+                        {% if result.activeProductSource is null %}
+                            <p class="font-light">No Active Supplier</p>
+                        {% else %}
+                            <p class="font-light">Inactive Category, Subcategory or Product</p>
+                        {% endif %}
+                    </div>
+                </section>
+            {% endif %}
+        </div>
+        <div class="flex flex-wrap justify-center gap-8">
+            {{ include('category/_category_cost_card.html.twig', {category: result.category}) }}
+            {{ include('subcategory/_subcategory_cost_card.html.twig', {subcategory: result.subcategory}) }}
+            {{ include('product/_product_cost_card.html.twig', {product: result}) }}
+        </div>
     </div>
-
-    <div class="flex flex-wrap justify-center gap-8">
-        <div
-            class="relative h-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-            <a href="{{ path('app_product_cost_category_edit', {'id': result.id }) }}"
-               class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-full shadow-lg"
-               data-turbo-prefetch="false"
-               data-turbo-frame="modal"
-            >
-                <twig:Icon name="edit" class="w-6 h-6 p-0.5"/>
-            </a>
-            <div class="p-5">
-                <p class="mb-1 text-sm text-gray-500 dark:text-gray-500">Category</p>
-                <h5 class="mb-4 text-2xl font-normal text-gray-900 dark:text-white">{{ result.category.name|u.truncate(30, '...') }}</h5>
-                {% if result.category.defaultMarkup > 0 %}
-                    <p class="mb-1 text-2xl font-extralight text-gray-500 dark:text-gray-400">
-                        {{ result.category.defaultMarkup|number_format(3) }}%
-                        <span class="text-sm font-normal text-gray-500 dark:text-gray-400"> mark-up</span>
-                    </p>
-                {% else %}
-                    <p class="mb-1 text-sm text-gray-500 dark:text-gray-400">No category mark-up
-                {% endif %}
-                {% if result.category.priceModel.name is same as 'NONE' %}
-                    <p class="mb-1 text-sm text-gray-500 dark:text-gray-400">No price model</p>
-                {% else %}
-                    <p class="mb-1 text-sm text-gray-500 dark:text-gray-400">{{ result.category.priceModel.getName }} price model</p>
-                {% endif %}
-                <p class="mb-1 text-sm text-gray-500 dark:text-gray-400">{{ result.category.vatRate.name }} VAT</p>
-                <div class="flex items-center justify-between mt-4">
-                    <p class="text-xs text-gray-500 dark:text-gray-400 me-10">Updated {{ result.category.updatedAt|ago }}</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
-                        {{ result.category.isActive ? '<span class="text-green-500">Active</span>' : '<span class="text-red-500">Inactive</span>' }}
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div
-            class="relative h-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-            <a href="{{ path('app_product_cost_subcategory_edit', {'id': result.id }) }}"
-               class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-full shadow-lg"
-               data-turbo-prefetch="false"
-               data-turbo-frame="modal"
-            >
-                <twig:Icon name="edit" class="w-6 h-6 p-0.5"/>
-            </a>
-            <div class="p-5">
-                <p class="mb-1 text-sm text-gray-500 dark:text-gray-500">Subcategory</p>
-                <h5 class="mb-4 text-2xl font-normal text-gray-900 dark:text-white">{{ result.subcategory.name|u.truncate(30, '...') }}</h5>
-                 {% if result.subcategory.defaultMarkup > 0 %}
-                    <p class="mb-1 text-2xl font-extralight text-gray-500 dark:text-gray-400">
-                        {{ result.subcategory.defaultMarkup|number_format(3) }}%
-                        <span class="text-sm font-normal text-gray-500 dark:text-gray-400"> mark-up</span>
-                    </p>
-                {% else %}
-                    <p class="mb-1 text-sm text-gray-500 dark:text-gray-400">No subcategory mark-up
-                {% endif %}
-                {% if result.subcategory.priceModel.name is same as 'NONE' %}
-                    <p class="mb-1 text-sm text-gray-500 dark:text-gray-400">No price model</p>
-                {% else %}
-                    <p class="mb-1 text-sm text-gray-500 dark:text-gray-400">{{ result.subcategory.priceModel.getName }} price model</p>
-                {% endif %}
-                <div class="flex items-center justify-between mt-4">
-                    <p class="text-xs text-gray-500 dark:text-gray-400 me-10">Updated {{ result.subcategory.updatedAt|ago }}</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
-                        {{ result.subcategory.isActive ? '<span class="text-green-500">Active</span>' : '<span class="text-red-500">Inactive</span>' }}
-                    </p>
-                </div>
-            </div>
-        </div>
-        <div
-            class="relative h-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-            <a href="{{ path('app_product_cost_edit', {'id': result.id }) }}"
-               class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-full shadow-lg"
-               data-turbo-prefetch="false"
-               data-turbo-frame="modal"
-            >
-                <twig:Icon name="edit" class="w-6 h-6 p-0.5"/>
-            </a>
-            <div class="p-5">
-                <p class="mb-1 text-sm text-gray-500 dark:text-gray-500">Product</p>
-                <h5 class="mb-4 text-2xl font-normal text-gray-900 dark:text-white">{{ result.name|u.truncate(30, '...') }}</h5>
-                {% if result.defaultMarkup > 0 %}
-                    <p class="mb-1 text-2xl font-extralight text-gray-500 dark:text-gray-400">
-                        {{ result.defaultMarkup|number_format(3) }}%
-                        <span class="text-sm font-normal text-gray-500 dark:text-gray-400"> mark-up</span>
-                    </p>
-                {% else %}
-                    <p class="mb-1 text-sm text-gray-500 dark:text-gray-400">No product mark-up
-                {% endif %}
-                {% if result.priceModel.name is same as 'NONE' %}
-                    <p class="mb-1 text-sm text-gray-500 dark:text-gray-400">No price model</p>
-                {% else %}
-                    <p class="mb-1 text-sm text-gray-500 dark:text-gray-400">{{ result.priceModel.getName }} price model</p>
-                {% endif %}
-                <div class="flex items-center justify-between mt-4">
-                    <p class="text-xs text-gray-500 dark:text-gray-400 me-10">Updated {{ result.updatedAt|ago }}</p>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
-                        {{ result.isActive ? '<span class="text-green-500">Active</span>' : '<span class="text-red-500">Inactive</span>' }}
-                    </p>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-</div>
 
 {% endblock %}

@@ -30,7 +30,6 @@ class ProductType extends AbstractType
             ->add('name', null, [
                 'label' => 'Product Name',
                 'row_attr' => ['class' => 'sm:col-span-2 mb-4'],
-                'priority' => 4,
             ])
             ->add('category', EntityType::class, [
                 'class' => Category::class,
@@ -42,20 +41,17 @@ class ProductType extends AbstractType
 //                    'data-dependent-field-dependent-value' => 'product_subcategory',
 //                    'data-action' => 'dependent-field#updateDependent',
 //                ],
-                'priority' => 3,
             ])
-            ->add('stock', null, [
-                'label' => 'Stock Level',
-                'priority' => 2,
+            ->add('leadTimeDays', null, [
+                'label' => 'Lead Time (days)',
             ])
             ->add('subcategory', EntityType::class, [
                 'class' => Subcategory::class,
                 'choice_label' => 'name',
                 'placeholder' => 'Choose a Subcategory',
-                'priority' => 1,
             ])
-            ->add('leadTimeDays', null, [
-                'label' => 'Lead Time (days)',
+            ->add('weight', null, [
+                'label' => 'Weight (grams)',
             ])
             ->add('manufacturer', EntityType::class, [
                 'class' => Manufacturer::class,
@@ -71,29 +67,20 @@ class ProductType extends AbstractType
             ->add('mfrPartNumber', null, [
                 'label' => 'Manufacturer Part Number',
             ])
-            ->add('defaultMarkup', PercentType::class, [
-                'scale' => 3,
-                'type' => 'integer',
-                'label' => 'Product Markup %',
-            ])
-            ->add('weight', null, [
-                'label' => 'Weight (grams)',
-            ])
             ->add('cost', MoneyType::class, [
                 'currency' => 'GBP',
                 'label' => 'Cost',
             ])
-
             ->add('owner', EntityType::class, [
                 'class' => User::class,
                 'choice_label' => 'fullName',
                 'label' => 'Product Manager',
                 'placeholder' => 'Choose a Product Manager',
             ])
-            ->add('sellPriceIncVat', MoneyType::class, [
-                'currency' => 'GBP',
-                'label' => 'Sell Price inc VAT',
-                'disabled' => true,
+            ->add('defaultMarkup', PercentType::class, [
+                'scale' => 3,
+                'type' => 'integer',
+                'label' => 'Product Markup %',
             ])
             ->add('isActive', null, [
                 'label' => 'Active',

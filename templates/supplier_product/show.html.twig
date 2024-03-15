@@ -3,86 +3,21 @@
 {% block title %}{{ section }}{% endblock %}
 
 {% block body %}
-    <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-        <h1 class="text-xl font-semibold text-white mb-4">{{ section }}</h1>
+
+    <div class="p-6 sm:p-8 space-y-4 md:space-y-6 text-sm text-gray-500 dark:text-gray-400">
+        <h1 class="mb-4 text-2xl font-semibold text-white">Supplier Product</h1>
         <div class="flex flex-wrap justify-center gap-8">
-            <div
-                class="relative h-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-                <a href="{{ path('app_supplier_product_edit', {'id': result.id }) }}"
-                   class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-full shadow-lg"
-                   data-turbo-prefetch="false"
-                   data-turbo-frame="modal"
-                >
-                    <twig:Icon name="edit" class="w-6 h-6 p-0.5"/>
-                </a>
-                <div class="p-5">
-                    <p class="mb-1 text-sm text-gray-500 dark:text-gray-500">Supplier Product</p>
-                    <h5 class="mb-4 text-2xl font-normal text-gray-900 dark:text-white">{{ result.name|u.truncate(30, '...') }}</h5>
-                    <nav class="flex mb-4" aria-label="Breadcrumb">
-                        <ol class="inline-flex items-center space-x-1 md:space-x-2">
-                            <li>
-                                <div class="flex items-center">
-                                    <a href="#"
-                                        data-turbo-frame="_top"
-                                        class="text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
-                                        {{ result.supplierCategory.name|u.truncate(30, '...') }}
-                                    </a>
-                                </div>
-                            </li>
-                            <li aria-current="page">
-                                <div class="flex items-center">
-                                    <svg class="w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/></svg>
-                                    <a href="#"
-                                        data-turbo-frame="_top"
-                                        class="ms-1 text-sm font-medium text-gray-700 hover:text-blue-600 md:ms-2 dark:text-gray-400 dark:hover:text-white">
-                                        {{ result.supplierSubcategory.name|u.truncate(30, '...') }}
-                                    </a>
-                                </div>
-                            </li>
-                        </ol>
-                    </nav>
-
-                    <p class="mb-1 text-2xl text-gray-500 dark:text-white">
-                        £{{ result.cost|number_format(2) }}</p>
-                    <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
-                        {% if result.stock > 0 %}
-                            {{ result.stock }} in stock
-                        {% else %}
-                            Out of stock ({{ result.leadTimeDays }} day lead time)
-                        {% endif %}
-                    </p>
-                    <p class="mb-1 text-sm font-medium text-gray-700 dark:text-gray-400">{{ result.supplierManufacturer.name }} {{ result.mfrPartNumber }}</p>
-                    <p class="mb-1 text-sm font-medium text-gray-700 dark:text-gray-400">Product Code {{ (result.productCode) }}</p>
-                    <p class="mb-1 text-sm font-medium text-gray-700 dark:text-gray-400">
-                    {% if result.product is not null%}
-                        <a href="{{ path('app_product_show', {'id': result.product.id }) }}"
-                           data-turbo-frame="_top"
-                           data-turbo-prefetch="false"
-                           class="text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
-                            Mapped to {{ (result.product.name)|u.truncate(30, '...') }}
-                        </a>
-                    {% else %}
-                        Unmapped product
-                    {% endif %}
-                    </p>
-                    <div class="flex items-center justify-between mt-4">
-                        <p class="text-sm text-gray-500 dark:text-gray-400 me-10">Last updated {{ result.updatedAt|ago }}</p>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">
-                            {{ result.isActive ? '<span class="text-green-500">Active</span>' : '<span class="text-red-500">Inactive</span>' }}
-                        </p>
-                    </div>
-                </div>
-            </div>
+            {{ include('supplier_product/_supplier_product_card.html.twig', {supplierProduct: result}) }}
         </div>
-
-        <div>
-            <p class="text-sm font-light text-gray-500 dark:text-gray-400 p-4">
-                <a href="{{ path('app_'~section|lower|u.snake~'_index') }}" class="hover:underline">Back to list</a>
+        <div class="mt-4">
+            <p>
+                <a href="{{ path('app_supplier_product_index') }}"
+                   class="font-light hover:text-gray-300 dark:hover:text-white"
+                   data-turbo-frame="_top"
+                   data-turbo-prefetch="false"
+                >Back to list</a>
             </p>
         </div>
-
     </div>
+
 {% endblock %}
-
-
-

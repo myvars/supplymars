@@ -18,12 +18,6 @@ class CategoryCostType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('vatRate', EntityType::class, [
-                'class' => VatRate::class,
-                'choice_label' => 'name',
-                'label' => 'VAT Rate',
-                'placeholder' => 'Choose a VAT Rate',
-            ])
             ->add('defaultMarkup', PercentType::class, [
                 'scale' => 3,
                 'type' => 'integer',
