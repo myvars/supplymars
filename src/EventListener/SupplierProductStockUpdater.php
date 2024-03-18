@@ -25,12 +25,11 @@ class SupplierProductStockUpdater
 
     public function preUpdate(SupplierProduct $supplierProduct, PreUpdateEventArgs $eventArgs): void
     {
-        if ($eventArgs->hasChangedField('stock') ||
-            $eventArgs->hasChangedField('cost') ||
-            $eventArgs->hasChangedField('leadTimeDays') ||
-            $eventArgs->hasChangedField('product') ||
-            $eventArgs->hasChangedField('isActive'))
-        {
+        if ($eventArgs->hasChangedField('stock')
+            || $eventArgs->hasChangedField('cost')
+            || $eventArgs->hasChangedField('leadTimeDays')
+            || $eventArgs->hasChangedField('product')
+            || $eventArgs->hasChangedField('isActive')) {
             $this->changedSupplierProducts[$supplierProduct->getId()] = $supplierProduct;
         }
     }
@@ -39,6 +38,7 @@ class SupplierProductStockUpdater
     {
         if (empty($this->changedSupplierProducts)) {
             unset($this->changedProducts);
+
             return;
         }
 

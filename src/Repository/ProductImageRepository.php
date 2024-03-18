@@ -25,9 +25,9 @@ class ProductImageRepository extends ServiceEntityRepository
         parent::__construct($registry, ProductImage::class);
     }
 
-    public function findBySearch(?string $query, int $limit = null): array
+    public function findBySearch(?string $query, ?int $limit = null): array
     {
-        $qb =  $this->findBySearchQueryBuilder($query);
+        $qb = $this->findBySearchQueryBuilder($query);
 
         if ($limit) {
             $qb->setMaxResults($limit);
@@ -44,14 +44,14 @@ class ProductImageRepository extends ServiceEntityRepository
 
         if ($query) {
             $qb->andWhere('pi.imageName LIKE :query')
-                ->setParameter('query', '%' . $query . '%');
+                ->setParameter('query', '%'.$query.'%');
         }
 
         if ($sort) {
             if (str_starts_with($sort, 'product.')) {
                 $qb->leftJoin('pi.product', 'product')->orderBy($sort, $direction);
             } else {
-                $qb->orderBy('pi.' . $sort, $direction);
+                $qb->orderBy('pi.'.$sort, $direction);
             }
         }
 

@@ -12,30 +12,27 @@ readonly class ActiveSourceCalculator
     public function __construct(
         private EntityManagerInterface $entityManager,
         private ProductRepository $productRepository
-    )
-    {
+    ) {
     }
 
     public function recalculateActiveSource(
         Product $product,
-        bool $flush=true
-    ): void
-    {
+        bool $flush = true
+    ): void {
         $supplierProducts = $product->getSupplierProducts();
 
         foreach ($supplierProducts as $supplierProduct) {
-            if ($supplierProduct->getSupplier()->IsisActive() &&
-                $supplierProduct->IsisActive() &&
-                $supplierProduct->getStock() > 0 &&
-                $supplierProduct->getCost() > 0) {
-
+            if ($supplierProduct->getSupplier()->IsisActive()
+                && $supplierProduct->IsisActive()
+                && $supplierProduct->getStock() > 0
+                && $supplierProduct->getCost() > 0) {
                 if (!isset($activeSource)) {
                     $activeSource = $supplierProduct;
                     continue;
                 }
 
-                if ($supplierProduct->getCost() === $activeSource->getCost() &&
-                    $supplierProduct->getStock() <= $activeSource->getStock()
+                if ($supplierProduct->getCost() === $activeSource->getCost()
+                    && $supplierProduct->getStock() <= $activeSource->getStock()
                 ) {
                     continue;
                 }

@@ -22,9 +22,9 @@ class SupplierRepository extends ServiceEntityRepository
         parent::__construct($registry, Supplier::class);
     }
 
-    public function findBySearch(?string $query, int $limit = null): array
+    public function findBySearch(?string $query, ?int $limit = null): array
     {
-        $qb =  $this->findBySearchQueryBuilder($query);
+        $qb = $this->findBySearchQueryBuilder($query);
 
         if ($limit) {
             $qb->setMaxResults($limit);
@@ -41,11 +41,11 @@ class SupplierRepository extends ServiceEntityRepository
 
         if ($query) {
             $qb->andWhere('s.name LIKE :query')
-                ->setParameter('query', '%' . $query . '%');
+                ->setParameter('query', '%'.$query.'%');
         }
 
         if ($sort) {
-            $qb->orderBy('s.' . $sort, $direction);
+            $qb->orderBy('s.'.$sort, $direction);
         }
 
         return $qb;

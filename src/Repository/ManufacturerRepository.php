@@ -22,9 +22,9 @@ class ManufacturerRepository extends ServiceEntityRepository
         parent::__construct($registry, Manufacturer::class);
     }
 
-    public function findBySearch(?string $query, int $limit = null): array
+    public function findBySearch(?string $query, ?int $limit = null): array
     {
-        $qb =  $this->findBySearchQueryBuilder($query);
+        $qb = $this->findBySearchQueryBuilder($query);
 
         if ($limit) {
             $qb->setMaxResults($limit);
@@ -41,11 +41,11 @@ class ManufacturerRepository extends ServiceEntityRepository
 
         if ($query) {
             $qb->andWhere('m.name LIKE :query')
-                ->setParameter('query', '%' . $query . '%');
+                ->setParameter('query', '%'.$query.'%');
         }
 
         if ($sort) {
-            $qb->orderBy('m.' . $sort, $direction);
+            $qb->orderBy('m.'.$sort, $direction);
         }
 
         return $qb;

@@ -9,12 +9,11 @@ readonly class MarkupCalculator
     public function calculateMarkupFromSellPrice(
         string $cost,
         string $sellPrice
-    ): string
-    {
-        if (bccomp($cost, '0', 2) !== 1) {
+    ): string {
+        if (1 !== bccomp($cost, '0', 2)) {
             throw new \InvalidArgumentException('Cost must be greater than 0.');
         }
-        if (bccomp($sellPrice, $cost, 2) !== 1) {
+        if (1 !== bccomp($sellPrice, $cost, 2)) {
             throw new \InvalidArgumentException('Sell price must be greater than cost.');
         }
         $markupDecimal = bcdiv(bcsub($sellPrice, $cost, 2), $cost, 8);
@@ -25,12 +24,11 @@ readonly class MarkupCalculator
     public function calculateSellPrice(
         string $cost,
         string $markup
-    ): string
-    {
-        if (bccomp($cost, '0', 2) !== 1) {
+    ): string {
+        if (1 !== bccomp($cost, '0', 2)) {
             throw new \InvalidArgumentException('Cost must be greater than 0.');
         }
-        if (bccomp($markup, '0', 2) === -1) {
+        if (-1 === bccomp($markup, '0', 2)) {
             throw new \InvalidArgumentException('Markup must not be negative.');
         }
         $markupDecimal = bcadd('1', bcdiv($markup, '100', 8), 8);
@@ -42,9 +40,8 @@ readonly class MarkupCalculator
         string $cost,
         string $markup,
         string $vatRate
-    ): string
-    {
-        if (bccomp($vatRate, '0', 2) === -1) {
+    ): string {
+        if (-1 === bccomp($vatRate, '0', 2)) {
             throw new \InvalidArgumentException('VAT rate must not be negative.');
         }
         $sellPrice = $this->calculateSellPrice($cost, $markup);
@@ -56,12 +53,11 @@ readonly class MarkupCalculator
     public function calculateSellPriceBeforeVat(
         string $sellPriceIncVat,
         string $vatRate
-    ): string
-    {
-        if (bccomp($sellPriceIncVat, '0', 2) !== 1) {
+    ): string {
+        if (1 !== bccomp($sellPriceIncVat, '0', 2)) {
             throw new \InvalidArgumentException('Sell price (inc VAT) must be greater than 0.');
         }
-        if (bccomp($vatRate, '0', 2) === -1) {
+        if (-1 === bccomp($vatRate, '0', 2)) {
             throw new \InvalidArgumentException('VAT rate must not be negative.');
         }
         $vatMultiplier = $this->getVatMultiplier($vatRate);
@@ -74,8 +70,7 @@ readonly class MarkupCalculator
         string $markup,
         string $vatRate,
         PriceModel $priceModel
-    ): string
-    {
+    ): string {
         $sellPriceIncVat = $this->calculateSellPriceIncVat(
             $cost,
             $markup,
@@ -83,15 +78,13 @@ readonly class MarkupCalculator
         );
 
         return $priceModel->getPrettyPrice($sellPriceIncVat);
-
     }
 
     public function calculateCustomMarkup(
         string $cost,
         string $sellPriceIncVat,
         string $vatRate
-    ): string
-    {
+    ): string {
         $sellPriceBeforeVat = $this->calculateSellPriceBeforeVat(
             $sellPriceIncVat,
             $vatRate
@@ -110,7 +103,7 @@ readonly class MarkupCalculator
 
     private function bcround(string $number, int $precision): string
     {
-        $adjustment = '0.' . str_repeat('0', $precision) . '5';
+        $adjustment = '0.'.str_repeat('0', $precision).'5';
         $number = bcadd($number, $adjustment, $precision + 1);
 
         return bcmul($number, '1', $precision);

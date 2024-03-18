@@ -2,7 +2,6 @@
 
 namespace App\EventListener;
 
-
 use App\Entity\Product;
 use App\Entity\VatRate;
 use App\Service\ProductPriceCalculator;

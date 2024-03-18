@@ -17,8 +17,8 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/product')]
 class ProductController extends AbstractController
 {
-    CONST string SECTION = 'Product';
-    const int FORM_COLUMNS = 2;
+    public const string SECTION = 'Product';
+    public const int FORM_COLUMNS = 2;
 
     public function __construct(private readonly CrudHelper $crudHelper)
     {
@@ -33,9 +33,8 @@ class ProductController extends AbstractController
         #[MapQueryParameter] int $limit = 10,
         #[MapQueryParameter] string $sort = 'id',
         #[MapQueryParameter] string $sortDirection = 'ASC',
-        #[MapQueryParameter] string $query = null,
-    ): Response
-    {
+        #[MapQueryParameter] ?string $query = null,
+    ): Response {
         $validSorts = ['id', 'name', 'cost', 'sellPrice', 'isActive'];
         $sort = in_array($sort, $validSorts) ? $sort : 'id';
 
@@ -62,7 +61,7 @@ class ProductController extends AbstractController
     #[Route('/{id}', name: 'app_product_show', methods: ['GET'])]
     public function show(?Product $product): Response
     {
-//        #[MapEntity(expr: 'repository.findFullProduct(id)')]
+        //        #[MapEntity(expr: 'repository.findFullProduct(id)')]
         return $this->crudHelper->renderShow($product);
     }
 
@@ -106,8 +105,7 @@ class ProductController extends AbstractController
         ?Product $product,
         EntityManagerInterface $entityManager,
         UploadHelper $uploadHelper,
-    ): Response
-    {
+    ): Response {
         return $this->render('product/images.html.twig', [
             'result' => $product,
         ]);

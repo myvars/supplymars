@@ -50,7 +50,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Subcategory::class)]
     private Collection $subcategories;
 
-
     public function __construct()
     {
         $this->categories = new ArrayCollection();

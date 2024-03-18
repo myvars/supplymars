@@ -8,24 +8,21 @@ use App\Repository\SupplierProductRepository;
 use App\Service\ActiveSourceCalculator;
 use App\Service\CrudHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\UX\Turbo\TurboBundle;
 
 #[Route('/supplier-product')]
 class SupplierProductController extends AbstractController
 {
-    CONST string SECTION = 'Supplier Product';
-    const int FORM_COLUMNS = 2;
+    public const string SECTION = 'Supplier Product';
+    public const int FORM_COLUMNS = 2;
 
     public function __construct(
         private readonly CrudHelper $crudHelper,
         private readonly ActiveSourceCalculator $activeSourceCalculator
-    )
-    {
+    ) {
         $this->crudHelper->setSection(self::SECTION);
         $this->crudHelper->setFormColumns(self::FORM_COLUMNS);
     }
@@ -37,10 +34,9 @@ class SupplierProductController extends AbstractController
         #[MapQueryParameter] int $limit = 10,
         #[MapQueryParameter] string $sort = 'id',
         #[MapQueryParameter] string $sortDirection = 'ASC',
-        #[MapQueryParameter] string $query = null,
-    ): Response
-    {
-        $validSorts = ['id', 'supplier.name', 'name','productCode', 'cost', 'stock', 'isActive'];
+        #[MapQueryParameter] ?string $query = null,
+    ): Response {
+        $validSorts = ['id', 'supplier.name', 'name', 'productCode', 'cost', 'stock', 'isActive'];
         $sort = in_array($sort, $validSorts) ? $sort : 'id';
 
         return $this->crudHelper->renderIndex(
@@ -98,7 +94,7 @@ class SupplierProductController extends AbstractController
     public function removeConfirm(?SupplierProduct $supplierProduct): Response
     {
         return $this->render('supplier_product/remove.html.twig', [
-            'supplierProduct' => $supplierProduct
+            'supplierProduct' => $supplierProduct,
         ]);
     }
 
@@ -106,7 +102,6 @@ class SupplierProductController extends AbstractController
     public function remove(Request $request, ?SupplierProduct $supplierProduct): Response
     {
         if ($this->isCsrfTokenValid('remove'.$supplierProduct->getId(), $request->request->get('_token'))) {
-
             $product = $supplierProduct->getProduct();
             $this->activeSourceCalculator->removeMappedProduct($supplierProduct);
             $this->activeSourceCalculator->recalculateActiveSource($product);

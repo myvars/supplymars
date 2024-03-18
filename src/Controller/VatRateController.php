@@ -15,8 +15,8 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/vat-rate')]
 class VatRateController extends AbstractController
 {
-    CONST string SECTION = 'VAT Rate';
-    const int FORM_COLUMNS = 2;
+    public const string SECTION = 'VAT Rate';
+    public const int FORM_COLUMNS = 2;
 
     public function __construct(private readonly CrudHelper $crudHelper)
     {
@@ -31,9 +31,8 @@ class VatRateController extends AbstractController
         #[MapQueryParameter] int $limit = 10,
         #[MapQueryParameter] string $sort = 'id',
         #[MapQueryParameter] string $sortDirection = 'ASC',
-        #[MapQueryParameter] string $query = null,
-    ): Response
-    {
+        #[MapQueryParameter] ?string $query = null,
+    ): Response {
         $validSorts = ['id', 'name'];
         $sort = in_array($sort, $validSorts) ? $sort : 'id';
 

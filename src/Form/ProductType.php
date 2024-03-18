@@ -19,11 +19,11 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 class ProductType extends AbstractType
 {
     public function __construct(
-//        private readonly IntegerToPercentageTransformer $transformer,
-//        private readonly UrlGeneratorInterface $router,
-    )
-    {
+        //        private readonly IntegerToPercentageTransformer $transformer,
+        //        private readonly UrlGeneratorInterface $router,
+    ) {
     }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -88,7 +88,7 @@ class ProductType extends AbstractType
             ])
         ;
 
-//        $builder->get('markup')->addModelTransformer($this->transformer);
+        //        $builder->get('markup')->addModelTransformer($this->transformer);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

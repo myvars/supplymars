@@ -2,7 +2,6 @@
 
 namespace App\EventListener;
 
-
 use App\Entity\Product;
 use App\Entity\Subcategory;
 use App\Service\ProductPriceCalculator;
@@ -23,13 +22,11 @@ class SubcategoryPriceUpdater
 
     public function preUpdate(Subcategory $subcategory, PreUpdateEventArgs $eventArgs): void
     {
-        if ($eventArgs->hasChangedField('defaultMarkup') ||
-            $eventArgs->hasChangedField('priceModel')) {
-
+        if ($eventArgs->hasChangedField('defaultMarkup')
+            || $eventArgs->hasChangedField('priceModel')) {
             $products = $subcategory->getActiveProducts();
 
             foreach ($products as $product) {
-
                 if ($eventArgs->hasChangedField('defaultMarkup')) {
                     $productMarkup = floatval($product->getDefaultMarkup());
                     if ($productMarkup <= 0) {
@@ -39,7 +36,7 @@ class SubcategoryPriceUpdater
 
                 if ($eventArgs->hasChangedField('priceModel')) {
                     $productPriceModel = $product->getPriceModel()->value;
-                    if ($productPriceModel === 'NONE') {
+                    if ('NONE' === $productPriceModel) {
                         $this->changedProducts[$product->getId()] = $product;
                     }
                 }

@@ -20,7 +20,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 #[Route('/product-image')]
 class ProductImageController extends AbstractController
 {
-    CONST string SECTION = 'Product Image';
+    public const string SECTION = 'Product Image';
 
     public function __construct(
         private readonly CrudHelper $crudHelper,
@@ -28,8 +28,7 @@ class ProductImageController extends AbstractController
         private readonly EntityManagerInterface $entityManager,
         #[Autowire('%app.product_uploads%')]
         private readonly string $appProductUploads,
-    )
-    {
+    ) {
         $this->crudHelper->setSection(self::SECTION);
     }
 
@@ -40,9 +39,8 @@ class ProductImageController extends AbstractController
         #[MapQueryParameter] int $limit = 10,
         #[MapQueryParameter] string $sort = 'id',
         #[MapQueryParameter] string $sortDirection = 'ASC',
-        #[MapQueryParameter] string $query = null,
-    ): Response
-    {
+        #[MapQueryParameter] ?string $query = null,
+    ): Response {
         $validSorts = ['id', 'product.id', 'imageName', 'isActive'];
         $sort = in_array($sort, $validSorts) ? $sort : 'id';
 
@@ -57,7 +55,7 @@ class ProductImageController extends AbstractController
     }
 
     #[Route('/new', name: 'app_product_image_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, ?productImage $productImage): Response
+    public function new(Request $request, ?ProductImage $productImage): Response
     {
         $form = $this->createForm(ProductImageType::class, $productImage, [
             'action' => $this->generateUrl('app_product_image_new'),
@@ -83,7 +81,7 @@ class ProductImageController extends AbstractController
         return $this->render('product_image/new.html.twig', [
             'result' => $productImage,
             'form' => $form,
-            'formColumns' => 1
+            'formColumns' => 1,
         ]);
     }
 
@@ -110,7 +108,7 @@ class ProductImageController extends AbstractController
                 'success',
                 'New Product Image added!'
             );
-            $nextPosition++;
+            ++$nextPosition;
         }
 
         if ($request->headers->has('turbo-frame')) {
@@ -118,7 +116,7 @@ class ProductImageController extends AbstractController
         }
 
         return $this->redirectToRoute('app_product_images', [
-            'id' => $product->getId()
+            'id' => $product->getId(),
         ], Response::HTTP_SEE_OTHER);
     }
 
@@ -138,7 +136,7 @@ class ProductImageController extends AbstractController
         }
 
         return $this->redirectToRoute('app_product_images', [
-            'id' => $product->getId()
+            'id' => $product->getId(),
         ], Response::HTTP_SEE_OTHER);
     }
 
@@ -155,7 +153,7 @@ class ProductImageController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_product_image_delete', methods: ['POST'])]
-    public function delete(Request $request, ?ProductImage $productImage,): Response
+    public function delete(Request $request, ?ProductImage $productImage): Response
     {
         return $this->crudHelper->renderDelete(
             $request,
@@ -167,13 +165,13 @@ class ProductImageController extends AbstractController
     public function reorder(Request $request, ?Product $product): Response
     {
         $orderedIds = json_decode($request->getContent(), true);
-        if ($orderedIds === null) {
+        if (null === $orderedIds) {
             return $this->json(['detail' => 'Invalid body'], 400);
         }
         // from (position)=>(id) to (id)=>(position)
         $orderedIds = array_flip($orderedIds);
         foreach ($product->getProductImages() as $productImage) {
-            $newPosition = (int)$orderedIds[$productImage->getId()] + 1;
+            $newPosition = (int) $orderedIds[$productImage->getId()] + 1;
             $productImage->setPosition($newPosition);
         }
         $this->entityManager->flush();

@@ -19,7 +19,7 @@ final class Button
             'success' => 'px-4 text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800',
             'danger' => 'px-4 text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800',
             'warning' => 'px-4 text-white bg-yellow-600 hover:bg-yellow-700 focus:ring-4 focus:outline-none focus:ring-yellow-300 dark:bg-yellow-600 dark:hover:bg-yellow-700 dark:focus:ring-yellow-800',
-            'link'  => 'text-white',
+            'link' => 'text-white',
             default => throw new \LogicException(sprintf('Unknown button type "%s"', $this->variant)),
         };
     }

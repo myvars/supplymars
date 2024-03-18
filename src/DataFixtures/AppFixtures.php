@@ -59,7 +59,7 @@ class AppFixtures extends Fixture
             'priceModel' => PriceModel::DEFAULT,
         ]);
 
-        CategoryFactory::createMany(29,  function () {
+        CategoryFactory::createMany(29, function () {
             return [
                 'vatRate' => VatRateFactory::first(),
                 'owner' => UserFactory::random(),
@@ -75,12 +75,12 @@ class AppFixtures extends Fixture
             'priceModel' => PriceModel::NONE,
         ]);
 
-        SubcategoryFactory::createMany(149,  function () {
+        SubcategoryFactory::createMany(149, function () {
             return [
                 'category' => CategoryFactory::random(),
                 'owner' => UserFactory::random(),
                 'priceModel' => PriceModel::NONE,
-                'defaultMarkup' => rand(1, 10) === 1 ? rand(1, 10000)/100 : 0
+                'defaultMarkup' => 1 === rand(1, 10) ? rand(1, 10000) / 100 : 0,
             ];
         });
 
@@ -106,15 +106,16 @@ class AppFixtures extends Fixture
             'priceModel' => PriceModel::NONE,
         ]);
 
-        ProductFactory::createMany(199,  function () {
+        ProductFactory::createMany(199, function () {
             $randomSubcategory = SubcategoryFactory::random();
+
             return [
                 'subcategory' => $randomSubcategory,
                 'category' => $randomSubcategory->getCategory(),
                 'manufacturer' => ManufacturerFactory::random(),
                 'owner' => UserFactory::random(),
                 'priceModel' => PriceModel::NONE,
-                'defaultMarkup' => rand(1, 10) === 1 ? rand(1, 10000)/100 : 0
+                'defaultMarkup' => 1 === rand(1, 10) ? rand(1, 10000) / 100 : 0,
             ];
         });
 
@@ -131,7 +132,7 @@ class AppFixtures extends Fixture
             'supplier' => $supplier,
         ]);
 
-        SupplierCategoryFactory::createMany(29,  function () {
+        SupplierCategoryFactory::createMany(29, function () {
             return [
                 'supplier' => SupplierFactory::random(),
             ];
@@ -143,7 +144,7 @@ class AppFixtures extends Fixture
             'supplierCategory' => $supplierCategory,
         ]);
 
-        SupplierSubcategoryFactory::createMany(149,  function () {
+        SupplierSubcategoryFactory::createMany(149, function () {
             return [
                 'supplier' => SupplierFactory::random(),
                 'supplierCategory' => SupplierCategoryFactory::random(),
@@ -155,7 +156,7 @@ class AppFixtures extends Fixture
             'supplier' => $supplier,
         ]);
 
-        SupplierManufacturerFactory::createMany(99,  function () {
+        SupplierManufacturerFactory::createMany(99, function () {
             return [
                 'supplier' => SupplierFactory::random(),
             ];
@@ -175,8 +176,9 @@ class AppFixtures extends Fixture
             'weight' => 1388,
         ]);
 
-        SupplierProductFactory::createMany(199,  function () {
+        SupplierProductFactory::createMany(199, function () {
             $randomSubcategory = SupplierSubcategoryFactory::random();
+
             return [
                 'supplier' => $randomSubcategory->getSupplier(),
                 'supplierCategory' => $randomSubcategory->getSupplierCategory(),

@@ -9,16 +9,14 @@ readonly class ProductPriceCalculator
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private MarkupCalculator       $markupCalculator,
-    )
-    {
+        private MarkupCalculator $markupCalculator,
+    ) {
     }
 
     public function recalculatePrice(
         Product $product,
-        bool $flush=true
-    ): void
-    {
+        bool $flush = true
+    ): void {
         $prettyPriceIncVat = $this->markupCalculator->calculatePrettyPrice(
             $product->getCost(),
             $product->getActiveMarkup(),

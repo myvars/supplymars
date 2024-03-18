@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/product/cost')]
 class ProductCostController extends AbstractController
 {
-    CONST string SECTION = 'Product';
+    public const string SECTION = 'Product';
 
     public function __construct(private readonly CrudHelper $crudHelper)
     {
@@ -37,9 +37,9 @@ class ProductCostController extends AbstractController
         $form = $this->createForm(ProductCostType::class, $product, [
             'action' => $this->generateUrl(
                 'app_product_cost_edit', [
-                    'id' => $product->getId()
+                    'id' => $product->getId(),
                 ]
-            )
+            ),
         ]);
 
         return $this->renderCostUpdate(
@@ -59,9 +59,9 @@ class ProductCostController extends AbstractController
         $form = $this->createForm(CategoryCostType::class, $category, [
             'action' => $this->generateUrl(
                 'app_product_cost_category_edit', [
-                    'id' => $product->getId()
+                    'id' => $product->getId(),
                 ]
-            )
+            ),
         ]);
 
         return $this->renderCostUpdate(
@@ -81,9 +81,9 @@ class ProductCostController extends AbstractController
         $form = $this->createForm(SubcategoryCostType::class, $subcategory, [
             'action' => $this->generateUrl(
                 'app_product_cost_subcategory_edit', [
-                    'id' => $product->getId()
+                    'id' => $product->getId(),
                 ]
-            )
+            ),
         ]);
 
         return $this->renderCostUpdate(
@@ -101,11 +101,10 @@ class ProductCostController extends AbstractController
         Request $request,
         object $entity,
         FormInterface $form
-    ): Response
-    {
+    ): Response {
         $successResponse = $this->redirectToRoute(
             'app_product_cost', [
-                'id' => $product->getId()
+                'id' => $product->getId(),
             ],
             Response::HTTP_SEE_OTHER
         );
@@ -117,7 +116,7 @@ class ProductCostController extends AbstractController
             $form,
             $successResponse,
             $this->generateUrl('app_product_cost', [
-                'id' => $product->getId()
+                'id' => $product->getId(),
             ])
         );
     }

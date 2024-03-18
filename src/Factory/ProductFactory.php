@@ -54,13 +54,13 @@ final class ProductFactory extends ModelFactory
             'category' => CategoryFactory::new(),
             'subcategory' => SubcategoryFactory::new(),
             'manufacturer' => ManufacturerFactory::new(),
-            'cost' => self::faker()->randomNumber(5)/100,
+            'cost' => self::faker()->randomNumber(5) / 100,
             'isActive' => self::faker()->boolean(),
             'leadTimeDays' => self::faker()->randomNumber(2),
             'stock' => self::faker()->randomNumber(4),
             'weight' => self::faker()->randomNumber(4),
-            'defaultMarkup' => self::faker()->randomNumber(4)/100,
-            'markup' => self::faker()->randomNumber(4)/100,
+            'defaultMarkup' => self::faker()->randomNumber(4) / 100,
+            'markup' => self::faker()->randomNumber(4) / 100,
             'priceModel' => PriceModel::NONE,
         ];
     }
@@ -71,7 +71,7 @@ final class ProductFactory extends ModelFactory
     protected function initialize(): self
     {
         return $this
-             ->afterInstantiate(function(Product $product): void {
+             ->afterInstantiate(function (Product $product): void {
                  $this->productPriceCalculator->recalculatePrice($product);
              })
         ;

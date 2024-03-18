@@ -9,7 +9,6 @@ use Pagerfanta\Exception\OutOfRangeCurrentPageException;
 use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\Form\SubmitButton;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,15 +17,14 @@ use Symfony\UX\Turbo\TurboBundle;
 
 class CrudHelper extends AbstractController
 {
-    const string CRUD_BASE_TEMPLATE = 'crud/crud.html.twig';
-    const string TURBO_STREAM_REFRESH_TEMPLATE = 'common/turboStreamRefresh.html.twig';
+    public const string CRUD_BASE_TEMPLATE = 'crud/crud.html.twig';
+    public const string TURBO_STREAM_REFRESH_TEMPLATE = 'common/turboStreamRefresh.html.twig';
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private string $section = '',
         private int $formColumns = 1,
-    )
-    {
+    ) {
     }
 
     public function renderIndex(
@@ -35,24 +33,22 @@ class CrudHelper extends AbstractController
         int $limit = 10,
         string $sort = 'id',
         string $sortDirection = 'ASC',
-        string $query = null,
-    ): Response
-    {
+        ?string $query = null,
+    ): Response {
         try {
             $pager = Pagerfanta::createForCurrentPageWithMaxPerPage(
                 new QueryAdapter($queryBuilder),
                 $page,
                 $limit
             );
-
         } catch (OutOfRangeCurrentPageException $e) {
             $this->addFlash(
                 'warning',
-                'Page ' . $page . ' could not be found!'
+                'Page '.$page.' could not be found!'
             );
 
             return $this->redirectToRoute(
-                'app_' . $this->snakeSection() . '_index',
+                'app_'.$this->snakeSection().'_index',
                 [
                     'page' => 1,
                     'limit' => $limit,
@@ -75,8 +71,7 @@ class CrudHelper extends AbstractController
         Request $request,
         ?object $entity,
         string $formType
-    ): Response
-    {
+    ): Response {
         if (!$entity) {
             return $this->crudError();
         }
@@ -87,7 +82,6 @@ class CrudHelper extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             try {
                 $this->entityManager->persist($entity);
                 $this->entityManager->flush();
@@ -96,7 +90,6 @@ class CrudHelper extends AbstractController
                     'success',
                     'New '.$this->getSection().' added!'
                 );
-
             } catch (\Exception $e) {
                 $this->addFlash(
                     'error',
@@ -137,14 +130,13 @@ class CrudHelper extends AbstractController
         Request $request,
         ?object $entity,
         string $formType,
-    ): Response
-    {
+    ): Response {
         if (!$entity) {
             return $this->crudError();
         }
 
         $form = $this->createForm($formType, $entity, [
-            'action' => $this->generateUrl('app_'.$this->snakeSection().'_edit', ['id' => $entity->getId()])
+            'action' => $this->generateUrl('app_'.$this->snakeSection().'_edit', ['id' => $entity->getId()]),
         ]);
 
         $successResponse = $this->redirectToRoute(
@@ -176,8 +168,7 @@ class CrudHelper extends AbstractController
         string $returnLink,
         int $formColumns = 1,
         bool $allowDelete = false,
-    ): Response
-    {
+    ): Response {
         if (!$this->section) {
             return $this->crudError();
         }
@@ -189,7 +180,6 @@ class CrudHelper extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             try {
                 $this->entityManager->flush();
 
@@ -197,7 +187,6 @@ class CrudHelper extends AbstractController
                     'success',
                     $this->getSection().' updated!'
                 );
-
             } catch (\Exception $e) {
                 $this->addFlash(
                     'error',
@@ -219,10 +208,9 @@ class CrudHelper extends AbstractController
             'form' => $form,
             'returnLink' => $returnLink,
             'allowDelete' => $allowDelete,
-            'formColumns' => $formColumns
+            'formColumns' => $formColumns,
         ]);
     }
-
 
     public function renderDeleteConfirm(?object $entity): Response
     {
@@ -240,14 +228,12 @@ class CrudHelper extends AbstractController
     public function renderDelete(
         Request $request,
         ?object $entity,
-    ): Response
-    {
+    ): Response {
         if (!$entity) {
             return $this->crudError();
         }
 
-        if ($this->isCsrfTokenValid('delete'.$entity->getId(), $request->request->get('_token')))
-        {
+        if ($this->isCsrfTokenValid('delete'.$entity->getId(), $request->request->get('_token'))) {
             try {
                 $this->entityManager->remove($entity);
                 $this->entityManager->flush();
@@ -256,7 +242,6 @@ class CrudHelper extends AbstractController
                     'success',
                     $this->getSection().' deleted!'
                 );
-
             } catch (\Exception $e) {
                 $this->addFlash(
                     'error',
@@ -305,11 +290,11 @@ class CrudHelper extends AbstractController
     {
         $this->addFlash(
             'warning',
-            $this->getSection() . ' not found!'
+            $this->getSection().' not found!'
         );
 
         return $this->redirectToRoute(
-            'app_' . $this->snakeSection() . '_index',
+            'app_'.$this->snakeSection().'_index',
             [],
             Response::HTTP_SEE_OTHER
         );

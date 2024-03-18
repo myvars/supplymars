@@ -19,7 +19,7 @@ readonly class UploadHelper
     {
     }
 
-    public function uploadFile(File $file, ?string $directory, ?string $existingFilename=null): string
+    public function uploadFile(File $file, ?string $directory, ?string $existingFilename = null): string
     {
         $originalFileName = $this->getOriginalFileName($file);
         $newFileName = $this->getNewFilename($file, $originalFileName);
@@ -49,7 +49,7 @@ readonly class UploadHelper
         return $this->uploadFilesystem->publicUrl($path);
     }
 
-    private function doUpload(File $file, $directory, $fileName, bool $isPublic=true): void
+    private function doUpload(File $file, $directory, $fileName, bool $isPublic = true): void
     {
         $path = $this->createFilePath($directory, $fileName);
         $stream = fopen($file->getPathname(), 'r');
@@ -80,11 +80,11 @@ readonly class UploadHelper
     private function getNewFilename(File $file, $fileName): string
     {
         return Urlizer::urlize(pathinfo($fileName, PATHINFO_FILENAME))
-            . '-' . uniqid() . '.' . $file->guessExtension();
+            .'-'.uniqid().'.'.$file->guessExtension();
     }
 
     private function createFilePath(?string $directory, string $fileName): string
     {
-        return !empty($directory) ? $directory . '/' . $fileName : $fileName;
+        return !empty($directory) ? $directory.'/'.$fileName : $fileName;
     }
 }

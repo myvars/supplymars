@@ -49,7 +49,7 @@ final class UserFactory extends ModelFactory
     {
         return [
             'email' => self::faker()->email(),
-            'fullName' => self::faker()->firstName() . ' ' . self::faker()->lastName(),
+            'fullName' => self::faker()->firstName().' '.self::faker()->lastName(),
             'password' => self::faker()->password(),
             'isVerified' => true,
         ];
@@ -66,7 +66,7 @@ final class UserFactory extends ModelFactory
                     $user->setPassword($this->passwordEncoder->hashPassword($user, $user->getPassword()));
                 }
             })
-            ;
+        ;
     }
 
     protected static function getClass(): string

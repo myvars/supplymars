@@ -41,7 +41,6 @@ class Product
     #[Assert\Range(notInRangeMessage: 'Please enter a product weight(grams)', min: 0, max: 100000)]
     private ?int $weight = null;
 
-
     #[ORM\Column(type: 'decimal', precision: 9, scale: 3)]
     #[Assert\NotBlank(message: 'Please enter a product markup %')]
     #[Assert\PositiveOrZero]
@@ -353,6 +352,7 @@ class Product
         if ($this->getSubcategory()->getDefaultMarkup() > 0) {
             return $this->getSubcategory()->getDefaultMarkup();
         }
+
         return $this->getCategory()->getDefaultMarkup();
     }
 
@@ -364,28 +364,31 @@ class Product
         if ($this->getSubcategory()->getDefaultMarkup() > 0) {
             return 'subcategory';
         }
+
         return 'category';
     }
 
     public function getActivePriceModel(): ?PriceModel
     {
-        if ($this->getPriceModel()->value !== 'NONE') {
+        if ('NONE' !== $this->getPriceModel()->value) {
             return $this->getPriceModel();
         }
-        if ($this->getSubcategory()->getPriceModel()->value !== 'NONE') {
+        if ('NONE' !== $this->getSubcategory()->getPriceModel()->value) {
             return $this->getSubcategory()->getPriceModel();
         }
+
         return $this->getCategory()->getPriceModel();
     }
 
     public function getActivePriceModelTarget(): string
     {
-        if ($this->getPriceModel()->value !== 'NONE') {
+        if ('NONE' !== $this->getPriceModel()->value) {
             return 'product';
         }
-        if ($this->getSubcategory()->getPriceModel()->value !== 'NONE') {
+        if ('NONE' !== $this->getSubcategory()->getPriceModel()->value) {
             return 'subcategory';
         }
+
         return 'category';
     }
 

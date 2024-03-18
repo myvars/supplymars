@@ -3,9 +3,7 @@
 namespace App\Form;
 
 use App\Entity\VatRate;
-use App\Form\DataTransformer\IntegerToPercentageTransformer;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\PercentType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;

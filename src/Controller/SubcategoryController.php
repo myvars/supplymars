@@ -15,8 +15,8 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/subcategory')]
 class SubcategoryController extends AbstractController
 {
-    CONST string SECTION = 'Subcategory';
-    const int FORM_COLUMNS = 1;
+    public const string SECTION = 'Subcategory';
+    public const int FORM_COLUMNS = 1;
 
     public function __construct(private readonly CrudHelper $crudHelper)
     {
@@ -31,9 +31,8 @@ class SubcategoryController extends AbstractController
         #[MapQueryParameter] int $limit = 10,
         #[MapQueryParameter] string $sort = 'id',
         #[MapQueryParameter] string $sortDirection = 'ASC',
-        #[MapQueryParameter] string $query = null,
-    ): Response
-    {
+        #[MapQueryParameter] ?string $query = null,
+    ): Response {
         $validSorts = ['id', 'name', 'category.name', 'defaultMarkup', 'isActive'];
         $sort = in_array($sort, $validSorts) ? $sort : 'id';
 

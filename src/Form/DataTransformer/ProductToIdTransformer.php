@@ -9,13 +9,14 @@ use Symfony\Component\Form\Exception\TransformationFailedException;
 
 readonly class ProductToIdTransformer implements DataTransformerInterface
 {
-    public function __construct(private EntityManagerInterface $entityManager) {
+    public function __construct(private EntityManagerInterface $entityManager)
+    {
     }
 
     /**
      * Transforms an object (product) to a string (id).
      *
-     * @param  Product|null $value
+     * @param Product|null $value
      */
     public function transform($value): string
     {
@@ -29,8 +30,9 @@ readonly class ProductToIdTransformer implements DataTransformerInterface
     /**
      * Transforms a string (value) to an object (Product).
      *
-     * @param  string $value
-     * @throws TransformationFailedException if object (Product) is not found.
+     * @param string $value
+     *
+     * @throws TransformationFailedException if object (Product) is not found
      */
     public function reverseTransform(mixed $value): ?Product
     {

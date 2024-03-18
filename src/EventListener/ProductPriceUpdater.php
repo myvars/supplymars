@@ -18,13 +18,13 @@ readonly class ProductPriceUpdater
     public function preUpdate(Product $product, PreUpdateEventArgs $eventArgs): void
     {
         if (
-            $eventArgs->hasChangedField('cost') ||
-            $eventArgs->hasChangedField('defaultMarkup') ||
-            $eventArgs->hasChangedField('priceModel') ||
-            $eventArgs->hasChangedField('subcategory') ||
-            $eventArgs->hasChangedField('isActive')
+            $eventArgs->hasChangedField('cost')
+            || $eventArgs->hasChangedField('defaultMarkup')
+            || $eventArgs->hasChangedField('priceModel')
+            || $eventArgs->hasChangedField('subcategory')
+            || $eventArgs->hasChangedField('isActive')
         ) {
-            $this->productPriceCalculator->recalculatePrice($product,false);
+            $this->productPriceCalculator->recalculatePrice($product, false);
         }
     }
 }

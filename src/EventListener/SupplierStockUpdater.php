@@ -22,8 +22,7 @@ class SupplierStockUpdater
 
     public function preUpdate(Supplier $supplier, PreUpdateEventArgs $eventArgs): void
     {
-        if ($eventArgs->hasChangedField('isActive'))
-        {
+        if ($eventArgs->hasChangedField('isActive')) {
             $supplierProducts = $supplier->getSupplierProducts();
 
             foreach ($supplierProducts as $supplierProduct) {
@@ -38,8 +37,8 @@ class SupplierStockUpdater
             return;
         }
 
-        foreach($this->changedSupplierProducts as $changedSupplierProduct) {
-            if ($supplier->isIsActive() === false) {
+        foreach ($this->changedSupplierProducts as $changedSupplierProduct) {
+            if (false === $supplier->isIsActive()) {
                 if ($product = $this->activeSourceCalculator->getProductFromActiveSource($changedSupplierProduct)) {
                     $this->activeSourceCalculator->recalculateActiveSource($product, false);
                 }

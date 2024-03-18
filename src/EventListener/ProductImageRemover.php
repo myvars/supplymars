@@ -2,7 +2,6 @@
 
 namespace App\EventListener;
 
-
 use App\Entity\Product;
 use App\Entity\ProductImage;
 use App\Service\UploadHelper;
@@ -17,7 +16,6 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 #[AsEntityListener(event: Events::postRemove, method: 'postRemove', entity: ProductImage::class)]
 class ProductImageRemover
 {
-
     /** @var Product[] */
     private array $changedProducts = [];
 
@@ -27,13 +25,12 @@ class ProductImageRemover
         private readonly CacheManager $cacheManager,
         #[Autowire('%app.product_uploads%')]
         private readonly string $appProductUploads
-    )
-    {
+    ) {
     }
 
     public function preRemove(ProductImage $productImage, PreRemoveEventArgs $eventArgs): void
     {
-        if ($productImage->getImageName() === null) {
+        if (null === $productImage->getImageName()) {
             return;
         }
 

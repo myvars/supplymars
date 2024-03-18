@@ -2,9 +2,8 @@
 
 namespace App\Entity;
 
-enum PriceModel : string
+enum PriceModel: string
 {
-
     case NONE = 'NONE';
     case DEFAULT = 'DEFAULT';
     case PRETTY_00 = 'PRETTY_00';
@@ -41,7 +40,7 @@ enum PriceModel : string
 
     public function getPrettyPrice(string $price): string
     {
-        if (bccomp($price, '0', 2) !== 1) {
+        if (1 !== bccomp($price, '0', 2)) {
             throw new \InvalidArgumentException('Price must be greater than 0');
         }
 
@@ -58,24 +57,28 @@ enum PriceModel : string
     private function pretty00(string $price): string
     {
         $fraction = bccomp(bcsub($price, bcdiv($price, 1, 0), 2), '0.00', 2) > 0 ? '1.00' : '0.00';
+
         return bcadd(bcmul($price, '1', 0), $fraction, 2);
     }
 
     private function pretty10(string $price): string
     {
         $fraction = bccomp(bcsub($price, bcdiv($price, 1, 1), 2), '0.00', 2) > 0 ? '0.10' : '0.00';
+
         return bcadd(bcmul($price, '1', 1), $fraction, 2);
     }
 
     private function pretty49(string $price): string
     {
         $fraction = bccomp(bcsub($price, bcdiv($price, 1, 0), 2), '0.50', 2) >= 0 ? '0.99' : '0.49';
+
         return bcadd(bcmul($price, '1', 0), $fraction, 2);
     }
 
     private function pretty95(string $price): string
     {
         $fraction = bccomp(bcsub($price, bcdiv($price, 1, 0), 2), '0.95', 2) >= 0 ? '0.95' : '1.95';
+
         return bcadd(bcmul($price, '1', 0), $fraction, 2);
     }
 

@@ -49,7 +49,7 @@ final class CategoryFactory extends ModelFactory
     {
         return [
             'isActive' => self::faker()->boolean(),
-            'defaultMarkup' => self::faker()->randomNumber(4)/100,
+            'defaultMarkup' => self::faker()->randomNumber(4) / 100,
             'name' => ucfirst(implode(' ', self::faker()->words(rand(1, 3)))),
             'owner' => UserFactory::new(),
             'vatRate' => VatRateFactory::new(),

@@ -43,7 +43,6 @@ class ProductImage
     #[Assert\File(mimeTypes: ['image/*'], mimeTypesMessage: 'Please upload a valid image file')]
     private ?File $imageFile = null;
 
-
     public function getId(): ?int
     {
         return $this->id;

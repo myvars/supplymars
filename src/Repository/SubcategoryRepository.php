@@ -22,9 +22,9 @@ class SubcategoryRepository extends ServiceEntityRepository
         parent::__construct($registry, Subcategory::class);
     }
 
-    public function findBySearch(?string $query, int $limit = null): array
+    public function findBySearch(?string $query, ?int $limit = null): array
     {
-        $qb =  $this->findBySearchQueryBuilder($query);
+        $qb = $this->findBySearchQueryBuilder($query);
 
         if ($limit) {
             $qb->setMaxResults($limit);
@@ -41,17 +41,15 @@ class SubcategoryRepository extends ServiceEntityRepository
 
         if ($query) {
             $qb->andWhere('s.name LIKE :query')
-                ->setParameter('query', '%' . $query . '%');
+                ->setParameter('query', '%'.$query.'%');
         }
 
         if ($sort) {
-
             if (str_starts_with($sort, 'category.')) {
                 $qb->leftJoin('s.category', 'category')->orderBy($sort, $direction);
             } else {
-                $qb->orderBy('s.' . $sort, $direction);
+                $qb->orderBy('s.'.$sort, $direction);
             }
-
         }
 
         return $qb;

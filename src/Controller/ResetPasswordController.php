@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Controller;
 
 use App\Entity\User;
@@ -27,17 +26,15 @@ class ResetPasswordController extends AbstractController
     public function __construct(
         private ResetPasswordHelperInterface $resetPasswordHelper,
         private EntityManagerInterface $entityManager
-    )
-    {
+    ) {
     }
 
     #[Route('', name: 'app_forgot_password_request')]
     public function request(
-        Request             $request,
+        Request $request,
         TranslatorInterface $translator,
-        MailerHelper        $mailerHelper
-    ): Response
-    {
+        MailerHelper $mailerHelper
+    ): Response {
         $form = $this->createForm(ResetPasswordRequestFormType::class);
         $form->handleRequest($request);
 
@@ -69,7 +66,7 @@ class ResetPasswordController extends AbstractController
     }
 
     #[Route('/reset/{token}', name: 'app_reset_password')]
-    public function reset(Request $request, UserPasswordHasherInterface $passwordHasher, TranslatorInterface $translator, string $token = null): Response
+    public function reset(Request $request, UserPasswordHasherInterface $passwordHasher, TranslatorInterface $translator, ?string $token = null): Response
     {
         if ($token) {
             // We store the token in session and remove it from the URL, to avoid the URL being
@@ -128,11 +125,10 @@ class ResetPasswordController extends AbstractController
     }
 
     private function processSendingPasswordResetEmail(
-        string              $emailFormData,
-        MailerHelper        $mailerHelper,
+        string $emailFormData,
+        MailerHelper $mailerHelper,
         TranslatorInterface $translator
-    ): RedirectResponse
-    {
+    ): RedirectResponse {
         $user = $this->entityManager->getRepository(User::class)->findOneBy([
             'email' => $emailFormData,
         ]);
@@ -145,7 +141,6 @@ class ResetPasswordController extends AbstractController
         try {
             $resetToken = $this->resetPasswordHelper->generateResetToken($user);
         } catch (ResetPasswordExceptionInterface $e) {
-
             return $this->redirectToRoute('app_check_email');
         }
 

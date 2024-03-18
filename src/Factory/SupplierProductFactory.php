@@ -56,7 +56,7 @@ final class SupplierProductFactory extends ModelFactory
             'weight' => self::faker()->randomNumber(4),
             'stock' => self::faker()->randomNumber(4),
             'leadTimeDays' => self::faker()->randomNumber(2),
-            'cost' => self::faker()->randomNumber(5)/100,
+            'cost' => self::faker()->randomNumber(5) / 100,
             'isActive' => self::faker()->boolean(),
             'supplier' => SupplierFactory::new(),
         ];

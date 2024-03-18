@@ -15,8 +15,8 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/supplier')]
 class SupplierController extends AbstractController
 {
-    CONST string SECTION = 'Supplier';
-    const int FORM_COLUMNS = 1;
+    public const string SECTION = 'Supplier';
+    public const int FORM_COLUMNS = 1;
 
     public function __construct(private readonly CrudHelper $crudHelper)
     {
@@ -30,9 +30,8 @@ class SupplierController extends AbstractController
         #[MapQueryParameter] int $limit = 10,
         #[MapQueryParameter] string $sort = 'id',
         #[MapQueryParameter] string $sortDirection = 'ASC',
-        #[MapQueryParameter] string $query = null,
-    ): Response
-    {
+        #[MapQueryParameter] ?string $query = null,
+    ): Response {
         $validSorts = ['id', 'name'];
         $sort = in_array($sort, $validSorts) ? $sort : 'id';
 

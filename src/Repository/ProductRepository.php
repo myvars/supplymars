@@ -26,7 +26,7 @@ class ProductRepository extends ServiceEntityRepository
     /**
      * @throws NonUniqueResultException
      */
-    public function findFullProduct(int $id=null): ?Product
+    public function findFullProduct(?int $id = null): ?Product
     {
         return $this->createQueryBuilder('p')
             ->leftJoin('p.category', 'c')
@@ -40,9 +40,9 @@ class ProductRepository extends ServiceEntityRepository
             ->getOneOrNullResult();
     }
 
-    public function findBySearch(?string $query, int $limit = null): array
+    public function findBySearch(?string $query, ?int $limit = null): array
     {
-        $qb =  $this->findBySearchQueryBuilder($query);
+        $qb = $this->findBySearchQueryBuilder($query);
 
         if ($limit) {
             $qb->setMaxResults($limit);
@@ -59,11 +59,11 @@ class ProductRepository extends ServiceEntityRepository
 
         if ($query) {
             $qb->andWhere('p.name LIKE :query')
-                ->setParameter('query', '%' . $query . '%');
+                ->setParameter('query', '%'.$query.'%');
         }
 
         if ($sort) {
-            $qb->orderBy('p.' . $sort, $direction);
+            $qb->orderBy('p.'.$sort, $direction);
         }
 
         return $qb;
