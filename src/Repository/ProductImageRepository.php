@@ -25,39 +25,6 @@ class ProductImageRepository extends ServiceEntityRepository
         parent::__construct($registry, ProductImage::class);
     }
 
-    public function findBySearch(?string $query, ?int $limit = null): array
-    {
-        $qb = $this->findBySearchQueryBuilder($query);
-
-        if ($limit) {
-            $qb->setMaxResults($limit);
-        }
-
-        return $qb
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findBySearchQueryBuilder(?string $query, ?string $sort = null, string $direction = 'DESC'): QueryBuilder
-    {
-        $qb = $this->createQueryBuilder('pi');
-
-        if ($query) {
-            $qb->andWhere('pi.imageName LIKE :query')
-                ->setParameter('query', '%'.$query.'%');
-        }
-
-        if ($sort) {
-            if (str_starts_with($sort, 'product.')) {
-                $qb->leftJoin('pi.product', 'product')->orderBy($sort, $direction);
-            } else {
-                $qb->orderBy('pi.'.$sort, $direction);
-            }
-        }
-
-        return $qb;
-    }
-
     /**
      * @throws NonUniqueResultException
      * @throws NoResultException

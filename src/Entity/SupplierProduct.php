@@ -18,12 +18,17 @@ class SupplierProduct
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotNull(message: 'Please enter a product name')]
+    #[Assert\NotBlank(message: 'Please enter a supplier product name')]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotNull(message: 'Please enter a product code')]
+    #[Assert\NotBlank(message: 'Please enter a product code')]
     private ?string $productCode = null;
+
+    #[ORM\ManyToOne(inversedBy: 'supplierProducts')]
+    #[Assert\NotBlank(message: 'Please enter a supplier')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Supplier $supplier = null;
 
     #[ORM\ManyToOne(inversedBy: 'supplierProducts')]
     private ?SupplierCategory $supplierCategory = null;
@@ -35,7 +40,7 @@ class SupplierProduct
     private ?SupplierManufacturer $supplierManufacturer = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotNull(message: 'Please enter a manufacturer part number')]
+    #[Assert\NotBlank(message: 'Please enter a manufacturer part number')]
     private ?string $mfrPartNumber = null;
 
     #[ORM\Column]
@@ -59,11 +64,6 @@ class SupplierProduct
     private ?string $cost = null;
 
     #[ORM\ManyToOne(inversedBy: 'supplierProducts')]
-    #[Assert\NotNull(message: 'Please enter a supplier')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Supplier $supplier = null;
-
-    #[ORM\ManyToOne(inversedBy: 'supplierProducts')]
     private ?Product $product = null;
 
     #[ORM\Column]
@@ -79,7 +79,7 @@ class SupplierProduct
         return $this->name;
     }
 
-    public function setName(string $name): static
+    public function setName(?string $name): static
     {
         $this->name = $name;
 
@@ -91,9 +91,21 @@ class SupplierProduct
         return $this->productCode;
     }
 
-    public function setProductCode(string $productCode): static
+    public function setProductCode(?string $productCode): static
     {
         $this->productCode = $productCode;
+
+        return $this;
+    }
+
+    public function getSupplier(): ?Supplier
+    {
+        return $this->supplier;
+    }
+
+    public function setSupplier(?Supplier $supplier): static
+    {
+        $this->supplier = $supplier;
 
         return $this;
     }
@@ -139,7 +151,7 @@ class SupplierProduct
         return $this->mfrPartNumber;
     }
 
-    public function setMfrPartNumber(string $mfrPartNumber): static
+    public function setMfrPartNumber(?string $mfrPartNumber): static
     {
         $this->mfrPartNumber = $mfrPartNumber;
 
@@ -151,7 +163,7 @@ class SupplierProduct
         return $this->weight;
     }
 
-    public function setWeight(int $weight): static
+    public function setWeight(?int $weight): static
     {
         $this->weight = $weight;
 
@@ -163,7 +175,7 @@ class SupplierProduct
         return $this->stock;
     }
 
-    public function setStock(int $stock): static
+    public function setStock(?int $stock): static
     {
         $this->stock = $stock;
 
@@ -175,7 +187,7 @@ class SupplierProduct
         return $this->leadTimeDays;
     }
 
-    public function setLeadTimeDays(int $leadTimeDays): static
+    public function setLeadTimeDays(?int $leadTimeDays): static
     {
         $this->leadTimeDays = $leadTimeDays;
 
@@ -187,21 +199,9 @@ class SupplierProduct
         return $this->cost;
     }
 
-    public function setCost(string $cost): static
+    public function setCost(?string $cost): static
     {
         $this->cost = $cost;
-
-        return $this;
-    }
-
-    public function getSupplier(): ?Supplier
-    {
-        return $this->supplier;
-    }
-
-    public function setSupplier(?Supplier $supplier): static
-    {
-        $this->supplier = $supplier;
 
         return $this;
     }

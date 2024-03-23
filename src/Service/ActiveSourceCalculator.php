@@ -7,11 +7,11 @@ use App\Entity\SupplierProduct;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 
-readonly class ActiveSourceCalculator
+class ActiveSourceCalculator
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private ProductRepository $productRepository
+        private readonly EntityManagerInterface $entityManager,
+        private readonly ProductRepository $productRepository
     ) {
     }
 
@@ -52,6 +52,16 @@ readonly class ActiveSourceCalculator
         if ($flush) {
             $this->flush();
         }
+    }
+
+    /**
+     * @param Product[] $products
+     */
+    public function recalculateActiveSourceFromArray(array $products): void {
+        foreach ($products as $product) {
+            $this->recalculateActiveSource($product, false);
+        }
+        $this->flush();
     }
 
     public function flush(): void

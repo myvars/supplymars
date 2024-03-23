@@ -75,7 +75,7 @@ class AppFixtures extends Fixture
             'priceModel' => PriceModel::NONE,
         ]);
 
-        SubcategoryFactory::createMany(149, function () {
+        SubcategoryFactory::createMany(99, function () {
             return [
                 'category' => CategoryFactory::random(),
                 'owner' => UserFactory::random(),
@@ -88,7 +88,7 @@ class AppFixtures extends Fixture
             'name' => 'Apple',
         ]);
 
-        ManufacturerFactory::createMany(199);
+        ManufacturerFactory::createMany(99);
 
         $product = ProductFactory::createOne([
             'name' => 'Macbook Pro 13"',
@@ -106,7 +106,7 @@ class AppFixtures extends Fixture
             'priceModel' => PriceModel::NONE,
         ]);
 
-        ProductFactory::createMany(199, function () {
+        ProductFactory::createMany(99, function () {
             $randomSubcategory = SubcategoryFactory::random();
 
             return [
@@ -123,6 +123,7 @@ class AppFixtures extends Fixture
 
         $supplier = SupplierFactory::createOne([
             'name' => 'Butterfly Inc',
+            'isActive' => true,
         ]);
 
         SupplierFactory::createMany(2);
@@ -144,7 +145,7 @@ class AppFixtures extends Fixture
             'supplierCategory' => $supplierCategory,
         ]);
 
-        SupplierSubcategoryFactory::createMany(149, function () {
+        SupplierSubcategoryFactory::createMany(99, function () {
             return [
                 'supplier' => SupplierFactory::random(),
                 'supplierCategory' => SupplierCategoryFactory::random(),
@@ -176,7 +177,7 @@ class AppFixtures extends Fixture
             'weight' => 1388,
         ]);
 
-        SupplierProductFactory::createMany(199, function () {
+        SupplierProductFactory::createMany(99, function () {
             $randomSubcategory = SupplierSubcategoryFactory::random();
 
             return [

@@ -5,11 +5,11 @@ namespace App\Service;
 use App\Entity\Product;
 use Doctrine\ORM\EntityManagerInterface;
 
-readonly class ProductPriceCalculator
+class ProductPriceCalculator
 {
     public function __construct(
-        private EntityManagerInterface $entityManager,
-        private MarkupCalculator $markupCalculator,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly MarkupCalculator $markupCalculator,
     ) {
     }
 
@@ -40,6 +40,16 @@ readonly class ProductPriceCalculator
         if ($flush) {
             $this->flush();
         }
+    }
+
+    /**
+     * @param Product[] $products
+     */
+    public function recalculatePriceFromArray(array $products): void {
+        foreach ($products as $product) {
+            $this->recalculatePrice($product, false);
+        }
+        $this->flush();
     }
 
     public function flush(): void

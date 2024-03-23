@@ -26,7 +26,7 @@ class SupplierStockUpdater
             $supplierProducts = $supplier->getSupplierProducts();
 
             foreach ($supplierProducts as $supplierProduct) {
-                $this->changedSupplierProducts[$supplierProduct->getId()] = $supplierProduct;
+                $this->setChangedSupplierProduct($supplierProduct);
             }
         }
     }
@@ -38,18 +38,31 @@ class SupplierStockUpdater
         }
 
         foreach ($this->changedSupplierProducts as $changedSupplierProduct) {
+            // If supplier becomes inactive
             if (false === $supplier->isIsActive()) {
+                // Get product from ActiveSource
                 if ($product = $this->activeSourceCalculator->getProductFromActiveSource($changedSupplierProduct)) {
                     $this->activeSourceCalculator->recalculateActiveSource($product, false);
                 }
                 continue;
             }
 
+            // Get mapped product from supplierProduct
             if ($product = $changedSupplierProduct->getProduct()) {
                 $this->activeSourceCalculator->recalculateActiveSource($product, true);
             }
         }
         $this->activeSourceCalculator->flush();
         unset($this->changedSupplierProducts);
+    }
+
+    public function setChangedSupplierProduct(SupplierProduct $supplierProduct): void
+    {
+        $this->changedSupplierProducts[$supplierProduct->getId()] = $supplierProduct;
+    }
+
+    public function getChangedSupplierProducts(): array
+    {
+        return $this->changedSupplierProducts;
     }
 }

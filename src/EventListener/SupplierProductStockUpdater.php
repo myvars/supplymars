@@ -30,7 +30,7 @@ class SupplierProductStockUpdater
             || $eventArgs->hasChangedField('leadTimeDays')
             || $eventArgs->hasChangedField('product')
             || $eventArgs->hasChangedField('isActive')) {
-            $this->changedSupplierProducts[$supplierProduct->getId()] = $supplierProduct;
+            $this->setChangedSupplierProduct($supplierProduct);
         }
     }
 
@@ -43,28 +43,41 @@ class SupplierProductStockUpdater
         }
 
         foreach ($this->changedSupplierProducts as $changedSupplierProduct) {
+            // If the product is mapped, we will need to recalculate the active source
             if ($product = $changedSupplierProduct->getProduct()) {
-                $this->changedProducts[$product->getId()] = $product;
+                $this->setChangedProduct($product);
             }
 
+            // If the supplierProduct is the activeSource, we will need to recalculate the active source
             if ($product = $this->activeSourceCalculator->getProductFromActiveSource($changedSupplierProduct)) {
-                $this->changedProducts[$product->getId()] = $product;
+                $this->setChangedProduct($product);
             }
         }
-        $this->processChangedProducts();
+
+        if ($this->changedProducts) {
+            $this->activeSourceCalculator->recalculateActiveSourceFromArray($this->changedProducts);
+            unset($this->changedProducts);
+        }
         unset($this->changedSupplierProducts);
     }
 
-    public function processChangedProducts(): void
+    public function setChangedSupplierProduct(SupplierProduct $supplierProduct): void
     {
-        if (empty($this->changedProducts)) {
-            return;
-        }
+        $this->changedSupplierProducts[$supplierProduct->getId()] = $supplierProduct;
+    }
 
-        foreach ($this->changedProducts as $changedProduct) {
-            $this->activeSourceCalculator->recalculateActiveSource($changedProduct, false);
-        }
-        unset($this->changedProducts);
-        $this->activeSourceCalculator->flush();
+    public function getChangedSupplierProducts(): array
+    {
+        return $this->changedSupplierProducts;
+    }
+
+    public function setChangedProduct(Product $product): void
+    {
+        $this->changedProducts[$product->getId()] = $product;
+    }
+
+    public function getChangedProducts(): array
+    {
+        return $this->changedProducts;
     }
 }

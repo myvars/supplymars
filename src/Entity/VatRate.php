@@ -20,12 +20,12 @@ class VatRate
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotNull(message: 'Please enter a VAT rate name')]
+    #[Assert\NotBlank(message: 'Please enter a VAT rate name')]
     private ?string $name = null;
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
     #[Assert\NotBlank(message: 'Please enter a VAT rate %')]
-    #[Assert\PositiveOrZero]
+    #[Assert\PositiveOrZero(message: 'Please enter a positive or zero VAT rate')]
     private ?string $rate = null;
 
     #[ORM\OneToMany(mappedBy: 'vatRate', targetEntity: Category::class)]

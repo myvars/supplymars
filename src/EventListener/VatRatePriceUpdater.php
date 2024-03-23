@@ -27,7 +27,7 @@ class VatRatePriceUpdater
             foreach ($categories as $category) {
                 $products = $category->getProducts();
                 foreach ($products as $product) {
-                    $this->changedProducts[$product->getId()] = $product;
+                    $this->setChangedProduct($product);
                 }
             }
         }
@@ -39,10 +39,17 @@ class VatRatePriceUpdater
             return;
         }
 
-        foreach ($this->changedProducts as $product) {
-            $this->productPriceCalculator->recalculatePrice($product, false);
-        }
-        $this->productPriceCalculator->flush();
+        $this->productPriceCalculator->recalculatePriceFromArray($this->changedProducts);
         unset($this->changedProducts);
+    }
+
+    public function setChangedProduct(Product $product): void
+    {
+        $this->changedProducts[$product->getId()] = $product;
+    }
+
+    public function getChangedProducts(): array
+    {
+        return $this->changedProducts;
     }
 }

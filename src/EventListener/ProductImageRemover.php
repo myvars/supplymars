@@ -39,7 +39,7 @@ class ProductImageRemover
         if ($this->uploadHelper->deleteFile($path)) {
             $this->cacheManager->remove($path);
             $product = $productImage->getProduct();
-            $this->changedProducts[$product->getId()] = $product;
+            $this->setChangedProduct($product);
         }
     }
 
@@ -55,6 +55,11 @@ class ProductImageRemover
         $this->entityManager->flush();
 
         unset($this->changedProducts);
+    }
+
+    public function setChangedProduct(Product $product): void
+    {
+        $this->changedProducts[$product->getId()] = $product;
     }
 
     public function reorderProductImages(Product $product): void

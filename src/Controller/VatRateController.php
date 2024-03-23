@@ -72,13 +72,13 @@ class VatRateController extends AbstractController
         );
     }
 
-    #[Route('/{id}/delete', name: 'app_vat_rate_delete_confirm', methods: ['GET'])]
+    #[Route('/{id}/delete/confirm', name: 'app_vat_rate_delete_confirm', methods: ['GET'])]
     public function deleteConfirm(?VatRate $vatRate): Response
     {
         return $this->crudHelper->renderDeleteConfirm($vatRate);
     }
 
-    #[Route('/{id}', name: 'app_vat_rate_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'app_vat_rate_delete', methods: ['POST'])]
     public function delete(Request $request, ?VatRate $vatRate): Response
     {
         return $this->crudHelper->renderDelete(

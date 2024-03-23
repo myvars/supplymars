@@ -119,10 +119,22 @@ class CrudHelper extends AbstractController
 
     public function renderShow(?object $entity): Response
     {
+        if (!$entity) {
+            return $this->renderShowEmpty($this->getSection());
+        }
+
         return $this->render(self::CRUD_BASE_TEMPLATE, [
             'section' => $this->getSection(),
-            'template' => $entity ? 'show' : 'show_empty',
+            'template' => 'show',
             'result' => $entity,
+        ]);
+    }
+
+    public function renderShowEmpty(string $section) : Response
+    {
+        return $this->render(self::CRUD_BASE_TEMPLATE, [
+            'section' => $section,
+            'template' => 'show_empty'
         ]);
     }
 

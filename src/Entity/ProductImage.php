@@ -5,7 +5,7 @@ namespace App\Entity;
 use App\Repository\ProductImageRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
-use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProductImageRepository::class)]
@@ -20,7 +20,7 @@ class ProductImage
 
     #[ORM\ManyToOne(inversedBy: 'productImages')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: 'Please enter a valid Product')]
+    #[Assert\NotNull(message: 'Please enter a product')]
     private ?Product $product = null;
 
     #[ORM\Column]
@@ -40,8 +40,8 @@ class ProductImage
 
     #[Assert\NotNull(message: 'Please upload an image')]
     #[Assert\Image(maxSize: '2M', maxSizeMessage: 'The image is too large. Allowed maximum size is 2MB')]
-    #[Assert\File(mimeTypes: ['image/*'], mimeTypesMessage: 'Please upload a valid image file')]
-    private ?File $imageFile = null;
+    #[Assert\File(mimeTypes: ['image/*'], mimeTypesMessage: 'Please upload a valid file type')]
+    private ?UploadedFile $imageFile = null;
 
     public function getId(): ?int
     {
@@ -72,9 +72,11 @@ class ProductImage
         return $this;
     }
 
-    public function setImageName(?string $imageName): void
+    public function setImageName(?string $imageName): static
     {
         $this->imageName = $imageName;
+
+        return $this;
     }
 
     public function getImageName(): ?string
@@ -97,16 +99,15 @@ class ProductImage
         return $this->imageOriginalName;
     }
 
-    public function setImageFile(File $imageFile): void
+    public function setImageFile(UploadedFile $imageFile): void
     {
         $this->imageFile = $imageFile;
         $this->imageSize = $imageFile->getSize();
         $this->imageMimeType = $imageFile->getMimeType();
-        $this->imageMimeType = $imageFile->getMimeType();
         $this->imageOriginalName = $imageFile->getClientOriginalName();
     }
 
-    public function getImageFile(): ?File
+    public function getImageFile(): ?UploadedFile
     {
         return $this->imageFile;
     }

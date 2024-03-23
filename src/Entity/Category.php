@@ -21,12 +21,12 @@ class Category
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotNull(message: 'Please enter a category name')]
+    #[Assert\NotBlank(message: 'Please enter a category name')]
     private ?string $name = null;
 
     #[ORM\Column(type: 'decimal', precision: 9, scale: 3)]
     #[Assert\NotBlank(message: 'Please enter a category markup %')]
-    #[Assert\PositiveOrZero]
+    #[Assert\PositiveOrZero(message: 'Please enter a positive or zero category markup %')]
     private ?string $defaultMarkup = null;
 
     #[ORM\ManyToOne(inversedBy: 'categories')]

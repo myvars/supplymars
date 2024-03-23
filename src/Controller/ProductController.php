@@ -75,39 +75,18 @@ class ProductController extends AbstractController
         );
     }
 
-    #[Route('/{id}/delete', name: 'app_product_delete_confirm', methods: ['GET'])]
+    #[Route('/{id}/delete/confirm', name: 'app_product_delete_confirm', methods: ['GET'])]
     public function deleteConfirm(?Product $product): Response
     {
         return $this->crudHelper->renderDeleteConfirm($product);
     }
 
-    #[Route('/{id}', name: 'app_product_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'app_product_delete', methods: ['POST'])]
     public function delete(Request $request, ?Product $product): Response
     {
         return $this->crudHelper->renderDelete(
             $request,
             $product,
         );
-    }
-
-    #[Route('/{id}/details', name: 'app_product_details', methods: ['GET'])]
-    public function details(?Product $product): Response
-    {
-        return $this->render('product/_navigation.html.twig', [
-            'section' => self::SECTION,
-            'result' => $product,
-        ]);
-    }
-
-    #[Route('/{id}/images', name: 'app_product_images', methods: ['GET'])]
-    public function showProductImages(
-        Request $request,
-        ?Product $product,
-        EntityManagerInterface $entityManager,
-        UploadHelper $uploadHelper,
-    ): Response {
-        return $this->render('product/images.html.twig', [
-            'result' => $product,
-        ]);
     }
 }

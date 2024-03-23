@@ -30,14 +30,14 @@ class SubcategoryPriceUpdater
                 if ($eventArgs->hasChangedField('defaultMarkup')) {
                     $productMarkup = floatval($product->getDefaultMarkup());
                     if ($productMarkup <= 0) {
-                        $this->changedProducts[$product->getId()] = $product;
+                        $this->setChangedProduct($product);
                     }
                 }
 
                 if ($eventArgs->hasChangedField('priceModel')) {
                     $productPriceModel = $product->getPriceModel()->value;
                     if ('NONE' === $productPriceModel) {
-                        $this->changedProducts[$product->getId()] = $product;
+                        $this->setChangedProduct($product);
                     }
                 }
             }
@@ -50,10 +50,17 @@ class SubcategoryPriceUpdater
             return;
         }
 
-        foreach ($this->changedProducts as $product) {
-            $this->productPriceCalculator->recalculatePrice($product, false);
-        }
-        $this->productPriceCalculator->flush();
+        $this->productPriceCalculator->recalculatePriceFromArray($this->changedProducts);
         unset($this->changedProducts);
+    }
+
+    public function setChangedProduct(Product $product): void
+    {
+        $this->changedProducts[$product->getId()] = $product;
+    }
+
+    public function getChangedProducts(): array
+    {
+        return $this->changedProducts;
     }
 }

@@ -72,13 +72,13 @@ class CategoryController extends AbstractController
         );
     }
 
-    #[Route('/{id}/delete', name: 'app_category_delete_confirm', methods: ['GET'])]
+    #[Route('/{id}/delete/confirm', name: 'app_category_delete_confirm', methods: ['GET'])]
     public function deleteConfirm(?Category $category): Response
     {
         return $this->crudHelper->renderDeleteConfirm($category);
     }
 
-    #[Route('/{id}', name: 'app_category_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'app_category_delete', methods: ['POST'])]
     public function delete(Request $request, ?Category $category): Response
     {
         return $this->crudHelper->renderDelete(

@@ -4,7 +4,7 @@ namespace App\Service;
 
 use App\Entity\PriceModel;
 
-readonly class MarkupCalculator
+class MarkupCalculator
 {
     public function calculateMarkupFromSellPrice(
         string $cost,

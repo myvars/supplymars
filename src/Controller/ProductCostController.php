@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/product/cost')]
+#[Route('/product')]
 class ProductCostController extends AbstractController
 {
     public const string SECTION = 'Product';
@@ -23,17 +23,25 @@ class ProductCostController extends AbstractController
         $this->crudHelper->setSection(self::SECTION);
     }
 
-    #[Route('/{id}', name: 'app_product_cost', methods: ['GET'])]
+    #[Route('/{id}/cost', name: 'app_product_cost', methods: ['GET'])]
     public function cost(?Product $product, Request $request): Response
     {
+        if (!$product) {
+            return $this->crudHelper->renderShowEmpty(self::SECTION);
+        }
+
         return $this->render('product/cost.html.twig', [
             'result' => $product,
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_product_cost_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/cost/edit', name: 'app_product_cost_edit', methods: ['GET', 'POST'])]
     public function costEdit(?Product $product, Request $request): Response
     {
+        if (!$product) {
+            return $this->crudHelper->renderShowEmpty(self::SECTION);
+        }
+
         $form = $this->createForm(ProductCostType::class, $product, [
             'action' => $this->generateUrl(
                 'app_product_cost_edit', [
@@ -43,7 +51,7 @@ class ProductCostController extends AbstractController
         ]);
 
         return $this->renderCostUpdate(
-            self::SECTION,
+            'Product Cost',
             $product,
             $request,
             $product,
@@ -51,11 +59,14 @@ class ProductCostController extends AbstractController
         );
     }
 
-    #[Route('/{id}/category/edit', name: 'app_product_cost_category_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/cost/category/edit', name: 'app_product_cost_category_edit', methods: ['GET', 'POST'])]
     public function costCategoryEdit(?Product $product, Request $request): Response
     {
-        $category = $product->getCategory();
+        if (!$product) {
+            return $this->crudHelper->renderShowEmpty(self::SECTION);
+        }
 
+        $category = $product->getCategory();
         $form = $this->createForm(CategoryCostType::class, $category, [
             'action' => $this->generateUrl(
                 'app_product_cost_category_edit', [
@@ -65,7 +76,7 @@ class ProductCostController extends AbstractController
         ]);
 
         return $this->renderCostUpdate(
-            'Category',
+            'Category Cost',
             $product,
             $request,
             $category,
@@ -73,11 +84,14 @@ class ProductCostController extends AbstractController
         );
     }
 
-    #[Route('/{id}/subcategory/edit', name: 'app_product_cost_subcategory_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/cost/subcategory/edit', name: 'app_product_cost_subcategory_edit', methods: ['GET', 'POST'])]
     public function costSubcategoryEdit(?Product $product, Request $request): Response
     {
-        $subcategory = $product->getSubcategory();
+        if (!$product) {
+            return $this->crudHelper->renderShowEmpty(self::SECTION);
+        }
 
+        $subcategory = $product->getSubcategory();
         $form = $this->createForm(SubcategoryCostType::class, $subcategory, [
             'action' => $this->generateUrl(
                 'app_product_cost_subcategory_edit', [
@@ -87,7 +101,7 @@ class ProductCostController extends AbstractController
         ]);
 
         return $this->renderCostUpdate(
-            'Subcategory',
+            'Subcategory Cost',
             $product,
             $request,
             $subcategory,

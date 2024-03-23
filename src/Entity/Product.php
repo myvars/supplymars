@@ -20,11 +20,11 @@ class Product
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotNull(message: 'Please enter a product name')]
+    #[Assert\NotBlank(message: 'Please enter a product name')]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotNull(message: 'Please enter a manufacturer part number')]
+    #[Assert\NotBlank(message: 'Please enter a manufacturer part number')]
     private ?string $mfrPartNumber = null;
 
     #[ORM\Column]
@@ -32,23 +32,23 @@ class Product
     private ?int $stock = 0;
 
     #[ORM\Column]
-    #[Assert\NotNull(message: 'Please enter a lead time')]
-    #[Assert\Range(notInRangeMessage: 'Please enter a lead time(days)', min: 0, max: 1000)]
+    #[Assert\NotNull(message: 'Please enter a lead time(days)')]
+    #[Assert\Range(notInRangeMessage: 'Please enter a lead time (0 to 1000)', min: 0, max: 1000)]
     private ?int $leadTimeDays = null;
 
     #[ORM\Column]
-    #[Assert\NotNull(message: 'Please enter a weight')]
-    #[Assert\Range(notInRangeMessage: 'Please enter a product weight(grams)', min: 0, max: 100000)]
+    #[Assert\NotNull(message: 'Please enter a product weight(grams)')]
+    #[Assert\Range(notInRangeMessage: 'Please enter a product weight (0 to 100000)', min: 0, max: 100000)]
     private ?int $weight = null;
 
     #[ORM\Column(type: 'decimal', precision: 9, scale: 3)]
     #[Assert\NotBlank(message: 'Please enter a product markup %')]
-    #[Assert\PositiveOrZero]
+    #[Assert\PositiveOrZero(message: 'Please enter a positive or zero product markup %')]
     private ?string $defaultMarkup = '0';
 
     #[ORM\Column(type: 'decimal', precision: 9, scale: 3)]
     #[Assert\PositiveOrZero]
-    private ?string $markup = null;
+    private ?string $markup = '0';
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
     #[Assert\NotBlank(message: 'Please enter a cost')]
@@ -57,29 +57,29 @@ class Product
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
     #[Assert\PositiveOrZero]
-    private ?string $sellPrice = null;
+    private ?string $sellPrice = '0';
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
     #[Assert\PositiveOrZero]
-    private ?string $sellPriceIncVat = null;
+    private ?string $sellPriceIncVat = '0';
 
     #[ORM\ManyToOne(inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: 'Please enter a Category')]
+    #[Assert\NotNull(message: 'Please enter a category')]
     private ?Category $category = null;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: 'Please enter a Subcategory')]
+    #[Assert\NotNull(message: 'Please enter a subcategory')]
     private ?Subcategory $subcategory = null;
 
     #[ORM\ManyToOne(inversedBy: 'products')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: 'Please enter a Manufacturer')]
+    #[Assert\NotNull(message: 'Please enter a manufacturer')]
     private ?Manufacturer $manufacturer = null;
 
     #[ORM\ManyToOne]
-    #[Assert\NotNull(message: 'Please enter a valid product manager')]
+    #[Assert\NotNull(message: 'Please enter a product owner')]
     private ?User $owner = null;
 
     #[ORM\Column(length: 255)]

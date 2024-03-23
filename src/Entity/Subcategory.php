@@ -21,20 +21,20 @@ class Subcategory
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotNull(message: 'Please enter a Subcategory name')]
+    #[Assert\NotBlank(message: 'Please enter a Subcategory name')]
     private ?string $name = null;
 
     #[ORM\Column(type: 'decimal', precision: 9, scale: 3)]
     #[Assert\NotBlank(message: 'Please enter a subcategory markup %')]
-    #[Assert\PositiveOrZero]
+    #[Assert\PositiveOrZero(message: 'Please enter a positive or zero subcategory markup %')]
     private ?string $defaultMarkup = null;
 
     #[ORM\ManyToOne(inversedBy: 'subcategories')]
-    #[Assert\NotNull(message: 'Please enter a valid subcategory manager')]
+    #[Assert\NotNull(message: 'Please enter a subcategory owner')]
     private ?User $owner = null;
 
     #[ORM\ManyToOne(inversedBy: 'subcategories')]
-    #[Assert\NotNull(message: 'Please enter a valid Category')]
+    #[Assert\NotNull(message: 'Please enter a category')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
 

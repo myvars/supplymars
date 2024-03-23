@@ -26,25 +26,28 @@ class CategoryPriceUpdater
             || $eventArgs->hasChangedField('priceModel')
             || $eventArgs->hasChangedField('vatRate')) {
             $products = $category->getActiveProducts();
-
             foreach ($products as $product) {
                 if ($eventArgs->hasChangedField('vatRate')) {
-                    $this->changedProducts[$product->getId()] = $product;
+                    $this->setChangedProduct($product);
                     continue;
                 }
 
                 if ($eventArgs->hasChangedField('defaultMarkup')) {
                     $productMarkup = floatval($product->getDefaultMarkup());
                     $subcategoryMarkup = floatval($product->getSubcategory()->getDefaultMarkup());
+                    // If category is driving the ActiveMarkup
                     if ($productMarkup <= 0 && $subcategoryMarkup <= 0) {
-                        $this->changedProducts[$product->getId()] = $product;
+                        $this->setChangedProduct($product);
+                        continue;
                     }
                 }
 
                 if ($eventArgs->hasChangedField('priceModel')) {
                     $productPriceModel = $product->getPriceModel()->value;
-                    if ('NONE' === $productPriceModel) {
-                        $this->changedProducts[$product->getId()] = $product;
+                    $subcategoryPriceModel = $product->getSubcategory()->getPriceModel()->value;
+                    // If category is driving the ActivePriceModel
+                    if ('NONE' === $productPriceModel && 'NONE' === $subcategoryPriceModel) {
+                        $this->setChangedProduct($product);
                     }
                 }
             }
@@ -57,10 +60,17 @@ class CategoryPriceUpdater
             return;
         }
 
-        foreach ($this->changedProducts as $product) {
-            $this->productPriceCalculator->recalculatePrice($product, false);
-        }
-        $this->productPriceCalculator->flush();
+        $this->productPriceCalculator->recalculatePriceFromArray($this->changedProducts);
         unset($this->changedProducts);
+    }
+
+    public function setChangedProduct(Product $product): void
+    {
+        $this->changedProducts[$product->getId()] = $product;
+    }
+
+    public function getChangedProducts(): array
+    {
+        return $this->changedProducts;
     }
 }

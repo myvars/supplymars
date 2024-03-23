@@ -11,11 +11,11 @@ use Symfony\Component\HttpFoundation\File\Exception\CannotWriteFileException;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 
-readonly class UploadHelper
+class UploadHelper
 {
     public function __construct(
         #[Autowire(service: 'oneup_flysystem.products_fs_filesystem')]
-        private Filesystem $uploadFilesystem)
+        private readonly Filesystem $uploadFilesystem)
     {
     }
 

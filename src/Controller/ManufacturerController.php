@@ -72,13 +72,13 @@ class ManufacturerController extends AbstractController
         );
     }
 
-    #[Route('/{id}/delete', name: 'app_manufacturer_delete_confirm', methods: ['GET'])]
+    #[Route('/{id}/delete/confirm', name: 'app_manufacturer_delete_confirm', methods: ['GET'])]
     public function deleteConfirm(?Manufacturer $manufacturer): Response
     {
         return $this->crudHelper->renderDeleteConfirm($manufacturer);
     }
 
-    #[Route('/{id}', name: 'app_manufacturer_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'app_manufacturer_delete', methods: ['POST'])]
     public function delete(Request $request, ?Manufacturer $manufacturer): Response
     {
         return $this->crudHelper->renderDelete(

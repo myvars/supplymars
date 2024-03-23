@@ -75,13 +75,13 @@ class SupplierProductController extends AbstractController
         );
     }
 
-    #[Route('/{id}/delete', name: 'app_supplier_product_delete_confirm', methods: ['GET'])]
+    #[Route('/{id}/delete/confirm', name: 'app_supplier_product_delete_confirm', methods: ['GET'])]
     public function deleteConfirm(?SupplierProduct $supplierProduct): Response
     {
         return $this->crudHelper->renderDeleteConfirm($supplierProduct);
     }
 
-    #[Route('/{id}', name: 'app_supplier_product_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'app_supplier_product_delete', methods: ['POST'])]
     public function delete(Request $request, ?SupplierProduct $supplierProduct): Response
     {
         return $this->crudHelper->renderDelete(
@@ -93,6 +93,10 @@ class SupplierProductController extends AbstractController
     #[Route('/{id}/remove', name: 'app_supplier_product_remove_confirm', methods: ['GET'])]
     public function removeConfirm(?SupplierProduct $supplierProduct): Response
     {
+        if (!$supplierProduct || !$supplierProduct->getProduct()) {
+            return $this->crudHelper->renderShowEmpty(self::SECTION);
+        }
+
         return $this->render('supplier_product/remove.html.twig', [
             'supplierProduct' => $supplierProduct,
         ]);
@@ -101,6 +105,10 @@ class SupplierProductController extends AbstractController
     #[Route('/{id}/remove', name: 'app_supplier_product_remove', methods: ['POST'])]
     public function remove(Request $request, ?SupplierProduct $supplierProduct): Response
     {
+        if (!$supplierProduct || !$supplierProduct->getProduct()) {
+            return $this->crudHelper->renderShowEmpty(self::SECTION);
+        }
+
         if ($this->isCsrfTokenValid('remove'.$supplierProduct->getId(), $request->request->get('_token'))) {
             $product = $supplierProduct->getProduct();
             $this->activeSourceCalculator->removeMappedProduct($supplierProduct);
@@ -115,9 +123,13 @@ class SupplierProductController extends AbstractController
         return $this->crudHelper->streamRefresh($request);
     }
 
-    #[Route('/{id}/toggle/status', name: 'app_supplier_product_toggle_status', methods: ['GET'])]
+    #[Route('/{id}/status/toggle', name: 'app_supplier_product_toggle_status', methods: ['GET'])]
     public function toggleStatus(Request $request, ?SupplierProduct $supplierProduct): Response
     {
+        if (!$supplierProduct) {
+            return $this->crudHelper->renderShowEmpty(self::SECTION);
+        }
+
         $this->activeSourceCalculator->toggleStatus($supplierProduct);
         $this->activeSourceCalculator->recalculateActiveSource($supplierProduct->getProduct());
 

@@ -77,7 +77,7 @@ enum PriceModel: string
 
     private function pretty95(string $price): string
     {
-        $fraction = bccomp(bcsub($price, bcdiv($price, 1, 0), 2), '0.95', 2) >= 0 ? '0.95' : '1.95';
+        $fraction = bccomp(bcsub($price, bcdiv($price, 1, 0), 2), '0.95', 2) > 0 ? '1.95' : '0.95';
 
         return bcadd(bcmul($price, '1', 0), $fraction, 2);
     }

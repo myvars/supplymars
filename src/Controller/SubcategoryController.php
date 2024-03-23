@@ -72,13 +72,13 @@ class SubcategoryController extends AbstractController
         );
     }
 
-    #[Route('/{id}/delete', name: 'app_subcategory_delete_confirm', methods: ['GET'])]
+    #[Route('/{id}/delete/confirm', name: 'app_subcategory_delete_confirm', methods: ['GET'])]
     public function deleteConfirm(?Subcategory $subcategory): Response
     {
         return $this->crudHelper->renderDeleteConfirm($subcategory);
     }
 
-    #[Route('/{id}', name: 'app_subcategory_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'app_subcategory_delete', methods: ['POST'])]
     public function delete(Request $request, ?Subcategory $subcategory): Response
     {
         return $this->crudHelper->renderDelete(

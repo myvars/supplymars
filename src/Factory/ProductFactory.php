@@ -62,6 +62,7 @@ final class ProductFactory extends ModelFactory
             'defaultMarkup' => self::faker()->randomNumber(4) / 100,
             'markup' => self::faker()->randomNumber(4) / 100,
             'priceModel' => PriceModel::NONE,
+            'owner' => UserFactory::new(),
         ];
     }
 

@@ -56,7 +56,7 @@ class SupplierController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_supplier_show', methods: ['GET'])]
-    public function show(Supplier $supplier): Response
+    public function show(?Supplier $supplier): Response
     {
         return $this->crudHelper->renderShow($supplier);
     }
@@ -71,13 +71,13 @@ class SupplierController extends AbstractController
         );
     }
 
-    #[Route('/{id}/delete', name: 'app_supplier_delete_confirm', methods: ['GET'])]
+    #[Route('/{id}/delete/confirm', name: 'app_supplier_delete_confirm', methods: ['GET'])]
     public function deleteConfirm(?Supplier $supplier): Response
     {
         return $this->crudHelper->renderDeleteConfirm($supplier);
     }
 
-    #[Route('/{id}', name: 'app_supplier_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'app_supplier_delete', methods: ['POST'])]
     public function delete(Request $request, ?Supplier $supplier): Response
     {
         return $this->crudHelper->renderDelete(
