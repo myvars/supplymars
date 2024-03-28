@@ -4,7 +4,8 @@
        data-turbo-prefetch="false"
        data-turbo-frame="modal"
     >
-        <twig:Icon name="delete" class="w-6 h-6 p-0.5"/>
+        <twig:ux:icon name="bi:x-lg" class="w-6 h-6 p-0.5" />
+
     </a>
     <div class="p-5 text-sm text-gray-500 dark:text-gray-400">
         <p class="mb-1 text-gray-500 dark:text-gray-500">Supplier Product</p>
@@ -39,14 +40,14 @@
                    data-turbo-prefetch="false"
                    class="flex items-center block py-1 text-sm text-green-700 dark:text-green-500 hover:text-green-500 dark:hover:text-green-300"
                 >
-                    <twig:Icon name="edit" class="w-4 me-1.5"></twig:Icon>
-                    Active</a>
+                    <twig:ux:icon name="mynaui:edit-one" class="w-4 me-1.5" />Active
+                </a>
             {% else %}
                 <a href="{{ path('app_supplier_product_toggle_status', {'id': supplierProduct.id }) }}"
                    data-turbo-prefetch="false"
                    class="flex items-center block py-1 text-sm text-red-700 dark:text-red-500 hover:text-red-500 dark:hover:text-red-300"
                 >
-                    <twig:Icon name="edit" class="w-4 me-1.5"></twig:Icon>Inactive
+                    <twig:ux:icon name="mynaui:edit-one" class="w-4 me-1.5" />Inactive
                 </a>
             {% endif %}
         </div>

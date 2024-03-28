@@ -5,7 +5,7 @@
        class="absolute -top-1.5 -right-1 p-1.5 bg-white text-gray-300 border border-gray-600 rounded-full shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600"
        data-turbo-prefetch="false"
     >
-        <twig:Icon name="delete" class="w-6 h-6 p-0.5"/>
+        <twig:ux:icon name="bi:x-lg" class="w-6 h-6 p-0.5" />
     </a>
     <img class="w-60 mx-auto rounded-lg"
          src="{{ asset(product_uploads~productImage.imageName) | imagine_filter('large_thumbnail') }}"
