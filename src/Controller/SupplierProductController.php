@@ -31,12 +31,12 @@ class SupplierProductController extends AbstractController
     public function index(
         SupplierProductRepository $supplierProductRepository,
         #[MapQueryParameter] int $page = 1,
-        #[MapQueryParameter] int $limit = 10,
+        #[MapQueryParameter] int $limit = 5,
         #[MapQueryParameter] string $sort = 'id',
         #[MapQueryParameter] string $sortDirection = 'ASC',
         #[MapQueryParameter] ?string $query = null,
     ): Response {
-        $validSorts = ['id', 'supplier.name', 'name', 'productCode', 'cost', 'stock', 'isActive'];
+        $validSorts = ['id', 'supplier.name', 'name', 'cost', 'stock', 'isActive'];
         $sort = in_array($sort, $validSorts) ? $sort : 'id';
 
         return $this->crudHelper->renderIndex(

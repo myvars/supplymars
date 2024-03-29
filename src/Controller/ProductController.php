@@ -30,12 +30,12 @@ class ProductController extends AbstractController
     public function index(
         ProductRepository $productRepository,
         #[MapQueryParameter] int $page = 1,
-        #[MapQueryParameter] int $limit = 10,
+        #[MapQueryParameter] int $limit = 5,
         #[MapQueryParameter] string $sort = 'id',
         #[MapQueryParameter] string $sortDirection = 'ASC',
         #[MapQueryParameter] ?string $query = null,
     ): Response {
-        $validSorts = ['id', 'name', 'cost', 'sellPrice', 'isActive'];
+        $validSorts = ['id', 'name', 'cost', 'stock', 'sellPriceIncVat', 'isActive'];
         $sort = in_array($sort, $validSorts) ? $sort : 'id';
 
         return $this->crudHelper->renderIndex(

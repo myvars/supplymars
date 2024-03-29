@@ -28,12 +28,12 @@ class ManufacturerController extends AbstractController
     public function index(
         ManufacturerRepository $manufacturerRepository,
         #[MapQueryParameter] int $page = 1,
-        #[MapQueryParameter] int $limit = 10,
+        #[MapQueryParameter] int $limit = 5,
         #[MapQueryParameter] string $sort = 'id',
         #[MapQueryParameter] string $sortDirection = 'ASC',
         #[MapQueryParameter] ?string $query = null,
     ): Response {
-        $validSorts = ['id', 'name'];
+        $validSorts = ['id', 'name', 'isActive'];
         $sort = in_array($sort, $validSorts) ? $sort : 'id';
 
         return $this->crudHelper->renderIndex(

@@ -28,7 +28,7 @@ class SubcategoryController extends AbstractController
     public function index(
         SubcategoryRepository $subcategoryRepository,
         #[MapQueryParameter] int $page = 1,
-        #[MapQueryParameter] int $limit = 10,
+        #[MapQueryParameter] int $limit = 5,
         #[MapQueryParameter] string $sort = 'id',
         #[MapQueryParameter] string $sortDirection = 'ASC',
         #[MapQueryParameter] ?string $query = null,

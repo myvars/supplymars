@@ -3,68 +3,48 @@
 {% block title %}{{ section }} index{% endblock %}
 
 {% block body %}
-    <twig:DataTable
+    <twig:DataList
         section="{{ section }}"
         results="{{ results }}"
-        colspan="6"
     >
-        <twig:block name="table_header">
-            <twig:TableHeader sortValue="id">Id</twig:TableHeader>
-            <twig:TableHeader sortValue="name">Product</twig:TableHeader>
-            <twig:TableHeader sortValue="cost" alignText="justify-end">Cost</twig:TableHeader>
-            <twig:TableHeader sortValue="sellPrice" alignText="justify-end"><span class="text-nowrap">Sell Price</span></twig:TableHeader>
-            <twig:TableHeader sortValue="isActive">Status</twig:TableHeader>
-            <twig:TableHeader><span class="sr-only">Actions</span></twig:TableHeader>
+        <twig:block name="list_sort">
+            <twig:SortLink sortValue="id">Id</twig:SortLink>
+            <twig:SortLink sortValue="name">Product</twig:SortLink>
+            <twig:SortLink sortValue="stock">Stock</twig:SortLink>
+            <twig:SortLink sortValue="sellPriceIncVat">Sell Price Inc VAT</twig:SortLink>
+            <twig:SortLink sortValue="isActive">Status</twig:SortLink>
         </twig:block>
 
-        <twig:block name="table_rows">
-            <th scope="row" class="px-4 py-3">{{ result.id }}</th>
-            <td class="px-4 py-3 font-medium text-gray-900 dark:text-white">{{ result.name }}</td>
-            <td class="px-4 py-3 text-right">£{{ result.cost|number_format(2) }}</td>
-            <td class="px-4 py-3 text-right">£{{ result.sellPrice|number_format(2) }}</td>
-            <td class="px-4 py-3">
-                <div class="flex items-center">
-                    {{ result.isActive ?
-                    '<span class="flex w-2.5 h-2.5 me-2 rounded-full bg-green-500"></span>Active'
-                    : '<span class="flex w-2.5 h-2.5 me-2 rounded-full bg-red-500 "></span>Inactive'
-                    }}
-                </div>
-            </td>
+        <twig:block name="list_item">
+            <p class="mb-1 items-center text-xl text-gray-900 dark:text-white">{{ result.name|u.truncate(30, '...') }}</p>
+            <p class="mb-2 items-center text-sm">Product {{ '%06d'|format(result.id) }}</p>
+            <p class="flex justify-between items-center">
+                <span class="me-1 text-gray-600 dark:text-gray-500">Managed by {{ result.owner.fullName }}</span>
+                <span class="">{{ result.stock }} stock</span>
+                <span class="me-1 text-2xl font-extralight">£{{ result.sellPriceIncVat|number_format(2) }}
+                    <span class="me-1 font-normal text-sm text-nowrap text-gray-500 dark:text-gray-400"> inc VAT</span>
+                </span>
+                {% if result.isActive %}
+                    <span class="text-green-500">Active</span>
+                {% else %}
+                    <span class="text-red-500">InActive</span>
+                {% endif %}
+            </p>
         </twig:block>
 
-        <twig:block name="table_actions">
-            <li>
-                <a href="{{ path('app_'~section|lower|u.snake~'_show', {'id': result.id }) }}"
-                   class="flex items-center block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white"
-                   target="_top"
-                ><twig:ux:icon name="solar:document-outline" class="w-4 me-1.5"/>Show</a>
-            </li>
-            <li>
-                <a href="{{ path('app_'~section|lower|u.snake~'_edit', {'id': result.id }) }}"
-                   class="flex items-center block py-2 px-4 text-yellow-700 dark:text-yellow-500 hover:bg-gray-100 dark:hover:bg-gray-600"
-                   data-turbo-frame="modal"
-                ><twig:ux:icon name="mynaui:edit-one" class="w-4 me-1.5" />Edit</a>
-            </li>
-            <li>
-                <a href="{{ path('app_'~section|lower|u.snake~'_delete_confirm', {'id': result.id }) }}"
-                   class="flex items-center block py-2 px-4 text-red-700 hover:bg-gray-100 dark:hover:bg-red-600 dark:text-red-500 dark:hover:text-white"
-                   data-turbo-frame="modal"
-                ><twig:ux:icon name="bi:x-lg" class="w-4 me-1.5" />Delete</a>
-            </li>
-        </twig:block>
-
-        <twig:block name="table_add">
+        <twig:block name="list_add">
             <twig:Button
                 tag="a"
                 href="{{ path('app_'~section|lower|u.snake~'_new') }}"
                 class="flex items-center space-x-1 font-bold"
                 data-turbo-frame="modal"
             >
-                <twig:ux:icon name="flowbite:circle-plus-outline" class="w-5" /><span>Add {{ section }}</span>
+                <twig:ux:icon name="flowbite:circle-plus-outline" class="w-5"/>
+                <span>Add {{ section }}</span>
             </twig:Button>
         </twig:block>
 
-        {#<twig:block name="filter"></twig:block>#}
+        <twig:block name="filter"></twig:block>
+    </twig:DataList>
 
-    </twig:DataTable>
 {% endblock %}
