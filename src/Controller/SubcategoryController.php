@@ -15,8 +15,8 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/subcategory')]
 class SubcategoryController extends AbstractController
 {
-    public const string SECTION = 'Subcategory';
-    public const int FORM_COLUMNS = 1;
+    public const SECTION = 'Subcategory';
+    public const FORM_COLUMNS = 1;
 
     public function __construct(private readonly CrudHelper $crudHelper)
     {

@@ -1,6 +1,6 @@
-# Butterfly
+# Turtle
 
-A simple code skeleton for a symfony project
+A simple e-commerce back-end built with modern PHP/Symfony
 
 ## Setup
 

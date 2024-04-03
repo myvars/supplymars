@@ -15,8 +15,8 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/vat-rate')]
 class VatRateController extends AbstractController
 {
-    public const string SECTION = 'VAT Rate';
-    public const int FORM_COLUMNS = 2;
+    public const SECTION = 'VAT Rate';
+    public const FORM_COLUMNS = 2;
 
     public function __construct(private readonly CrudHelper $crudHelper)
     {

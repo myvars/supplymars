@@ -16,8 +16,8 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/supplier-product')]
 class SupplierProductController extends AbstractController
 {
-    public const string SECTION = 'Supplier Product';
-    public const int FORM_COLUMNS = 2;
+    public const SECTION = 'Supplier Product';
+    public const FORM_COLUMNS = 2;
 
     public function __construct(
         private readonly CrudHelper $crudHelper,

@@ -17,8 +17,8 @@ use Symfony\UX\Turbo\TurboBundle;
 
 class CrudHelper extends AbstractController
 {
-    public const string CRUD_BASE_TEMPLATE = 'crud/crud.html.twig';
-    public const string TURBO_STREAM_REFRESH_TEMPLATE = 'common/turboStreamRefresh.html.twig';
+    public const CRUD_BASE_TEMPLATE = 'crud/crud.html.twig';
+    public const TURBO_STREAM_REFRESH_TEMPLATE = 'common/turboStreamRefresh.html.twig';
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
