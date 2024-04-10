@@ -14,6 +14,8 @@ use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfonycasts\DynamicForms\DependentField;
+use Symfonycasts\DynamicForms\DynamicFormBuilder;
 
 class SupplierProductType extends AbstractType
 {
@@ -23,31 +25,34 @@ class SupplierProductType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $builder = new DynamicFormBuilder($builder);
+
         $builder
             ->add('name', null, [
                 'label' => 'Product Name',
                 'row_attr' => ['class' => 'sm:col-span-2 mb-4'],
+                'priority' => 6,
             ])
             ->add('supplier', EntityType::class, [
                 'class' => Supplier::class,
                 'choice_label' => 'name',
                 'placeholder' => 'Choose a Supplier',
+                'priority' => 5,
             ])
             ->add('productCode', null, [
                 'label' => 'Product Code',
+                'priority' => 4,
             ])
             ->add('supplierCategory', EntityType::class, [
                 'class' => SupplierCategory::class,
                 'choice_label' => 'name',
                 'placeholder' => 'Choose a Category',
+                'attr' => ['data-action' => 'change->submit-form#submitForm'],
+                'priority' => 3,
             ])
             ->add('mfrPartNumber', null, [
                 'label' => 'Manufacturer Part Number',
-            ])
-            ->add('supplierSubcategory', EntityType::class, [
-                'class' => SupplierSubcategory::class,
-                'choice_label' => 'name',
-                'placeholder' => 'Choose a Subcategory',
+                'priority' => 2,
             ])
             ->add('leadTimeDays', null, [
                 'label' => 'Lead Time (days)',
@@ -76,6 +81,17 @@ class SupplierProductType extends AbstractType
                 'row_attr' => ['class' => 'sm:col-span-2 mb-4'],
             ])
         ;
+
+        $builder->addDependent('supplierSubcategory', 'supplierCategory', function(DependentField $field, ?SupplierCategory $supplierCategory) {
+            $field
+                ->add(EntityType::class, [
+                    'class' => SupplierSubcategory::class,
+                    'choices' => $supplierCategory ? $supplierCategory->getSupplierSubcategories() : [],
+                    'choice_label' => 'name',
+                    'placeholder' => 'Choose a Subcategory',
+                    'priority' => 1,
+                ]);
+        });
 
         $builder->get('product')->addModelTransformer($this->productToIdTransformer);
     }

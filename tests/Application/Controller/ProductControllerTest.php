@@ -60,6 +60,7 @@ class ProductControllerTest extends WebTestCase
             ->assertSuccessful()
             ->fillField('product[name]','Test Product')
             ->fillField('product[category]', $subcategory->getCategory()->getId())
+            ->click('Create Product')
             ->fillField('product[subcategory]', $subcategory->getId())
             ->fillField('product[manufacturer]', $manufacturer->getId())
             ->fillField('product[owner]', $owner->getId())
@@ -95,7 +96,12 @@ class ProductControllerTest extends WebTestCase
 
     public function testEditProduct(): void
     {
-        $product = ProductFactory::createOne(['name' => 'Product to be edited']);
+        $subcategory = SubcategoryFactory::createOne(['name' => 'Test Subcategory']);
+        $product = ProductFactory::createOne([
+            'name' => 'Product to be edited',
+            'category' => $subcategory->getCategory(),
+            'subcategory' => $subcategory,
+        ]);
 
         $this->browser()
             ->get("/product/" . $product->getId() . "/edit")

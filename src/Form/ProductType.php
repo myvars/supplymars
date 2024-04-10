@@ -15,40 +15,35 @@ use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\PercentType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfonycasts\DynamicForms\DependentField;
+use Symfonycasts\DynamicForms\DynamicFormBuilder;
 
 class ProductType extends AbstractType
 {
     public function __construct(
-        //        private readonly IntegerToPercentageTransformer $transformer,
-        //        private readonly UrlGeneratorInterface $router,
     ) {
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $builder = new DynamicFormBuilder($builder);
+
         $builder
             ->add('name', null, [
                 'label' => 'Product Name',
                 'row_attr' => ['class' => 'sm:col-span-2 mb-4'],
+                'priority' => 4,
             ])
             ->add('category', EntityType::class, [
                 'class' => Category::class,
                 'choice_label' => 'name',
                 'placeholder' => 'Choose a Category',
-//                'attr' => [
-//                    'data-controller' => 'dependent-field',
-//                    'data-dependent-field-url-value' => $this->router->generate('app_category_subcategories', ['id' => '%id%']),
-//                    'data-dependent-field-dependent-value' => 'product_subcategory',
-//                    'data-action' => 'dependent-field#updateDependent',
-//                ],
+                'attr' => ['data-action' => 'change->submit-form#submitForm'],
+                'priority' => 3,
             ])
             ->add('leadTimeDays', null, [
                 'label' => 'Lead Time (days)',
-            ])
-            ->add('subcategory', EntityType::class, [
-                'class' => Subcategory::class,
-                'choice_label' => 'name',
-                'placeholder' => 'Choose a Subcategory',
+                'priority' => 2,
             ])
             ->add('weight', null, [
                 'label' => 'Weight (grams)',
@@ -88,7 +83,16 @@ class ProductType extends AbstractType
             ])
         ;
 
-        //        $builder->get('markup')->addModelTransformer($this->transformer);
+        $builder->addDependent('subcategory', 'category', function(DependentField $field, ?Category $category) {
+            $field
+                ->add(EntityType::class, [
+                    'class' => Subcategory::class,
+                    'choices' => $category ? $category->getSubcategories() : [],
+                    'choice_label' => 'name',
+                    'placeholder' => 'Choose a Subcategory',
+                    'priority' => 1,
+                ]);
+        });
     }
 
     public function configureOptions(OptionsResolver $resolver): void
