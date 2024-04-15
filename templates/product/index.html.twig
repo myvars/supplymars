@@ -11,7 +11,7 @@
             <twig:SortLink sortValue="id">Id</twig:SortLink>
             <twig:SortLink sortValue="name">Product</twig:SortLink>
             <twig:SortLink sortValue="stock">Stock</twig:SortLink>
-            <twig:SortLink sortValue="sellPriceIncVat">Sell Price Inc VAT</twig:SortLink>
+            <twig:SortLink sortValue="sellPriceIncVat">Price</twig:SortLink>
             <twig:SortLink sortValue="isActive">Status</twig:SortLink>
         </twig:block>
 
@@ -21,7 +21,7 @@
             <p class="flex justify-between items-center">
                 <span class="me-1 text-gray-600 dark:text-gray-500">Managed by {{ result.owner.fullName }}</span>
                 <span class="">{{ result.stock }} stock</span>
-                <span class="me-1 text-2xl font-extralight">£{{ result.sellPriceIncVat|number_format(2) }}
+                <span class="me-1 text-base sm:text-2xl font-extralight">£{{ result.sellPriceIncVat|number_format(2) }}
                     <span class="me-1 font-normal text-sm text-nowrap text-gray-500 dark:text-gray-400"> inc VAT</span>
                 </span>
                 {% if result.isActive %}

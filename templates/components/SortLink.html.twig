@@ -1,7 +1,7 @@
 {% props sortValue='' %}
 
 <a {{ attributes.defaults({
-    class: 'flex items-center',
+    class: 'flex items-center me-2',
 }) }}
     href="{{ path(app.current_route, {
         ...app.request.query.all(),
