@@ -7,52 +7,36 @@ use App\Form\ManufacturerType;
 use App\Repository\ManufacturerRepository;
 use App\Service\CrudHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/manufacturer')]
 class ManufacturerController extends AbstractController
 {
     public const SECTION = 'Manufacturer';
-    public const FORM_COLUMNS = 1;
 
     public function __construct(private readonly CrudHelper $crudHelper)
     {
         $this->crudHelper->setSection(self::SECTION);
-        $this->crudHelper->setFormColumns(self::FORM_COLUMNS);
     }
 
     #[Route('/', name: 'app_manufacturer_index', methods: ['GET'])]
-    public function index(
-        ManufacturerRepository $manufacturerRepository,
-        #[MapQueryParameter] int $page = 1,
-        #[MapQueryParameter] int $limit = 5,
-        #[MapQueryParameter] string $sort = 'id',
-        #[MapQueryParameter] string $sortDirection = 'ASC',
-        #[MapQueryParameter] ?string $query = null,
-    ): Response {
-        $validSorts = ['id', 'name', 'isActive'];
-        $sort = in_array($sort, $validSorts) ? $sort : 'id';
+    public function index(ManufacturerRepository $manufacturerRepository): Response
+    {
+        $sortOptions = ['id', 'name', 'isActive'];
 
         return $this->crudHelper->renderIndex(
-            $manufacturerRepository->findBySearchQueryBuilder($query, $sort, $sortDirection),
-            $page,
-            $limit,
-            $sort,
-            $sortDirection,
-            $query,
+            $manufacturerRepository,
+            $sortOptions
         );
     }
 
     #[Route('/new', name: 'app_manufacturer_new', methods: ['GET', 'POST'])]
-    public function new(Request $request): Response
+    public function new(): Response
     {
         return $this->crudHelper->renderCreate(
-            $request,
             new Manufacturer(),
-            ManufacturerType::class,
+            ManufacturerType::class
         );
     }
 
@@ -63,12 +47,11 @@ class ManufacturerController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_manufacturer_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, ?Manufacturer $manufacturer): Response
+    public function edit(?Manufacturer $manufacturer): Response
     {
         return $this->crudHelper->renderUpdate(
-            $request,
             $manufacturer,
-            ManufacturerType::class,
+            ManufacturerType::class
         );
     }
 
@@ -79,11 +62,8 @@ class ManufacturerController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'app_manufacturer_delete', methods: ['POST'])]
-    public function delete(Request $request, ?Manufacturer $manufacturer): Response
+    public function delete(?Manufacturer $manufacturer): Response
     {
-        return $this->crudHelper->renderDelete(
-            $request,
-            $manufacturer,
-        );
+        return $this->crudHelper->renderDelete($manufacturer);
     }
 }

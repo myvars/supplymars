@@ -24,7 +24,7 @@ class ProductCostController extends AbstractController
     }
 
     #[Route('/{id}/cost', name: 'app_product_cost', methods: ['GET'])]
-    public function cost(?Product $product, Request $request): Response
+    public function cost(?Product $product): Response
     {
         if (!$product) {
             return $this->crudHelper->renderShowEmpty(self::SECTION);
@@ -36,7 +36,7 @@ class ProductCostController extends AbstractController
     }
 
     #[Route('/{id}/cost/edit', name: 'app_product_cost_edit', methods: ['GET', 'POST'])]
-    public function costEdit(?Product $product, Request $request): Response
+    public function costEdit(?Product $product): Response
     {
         if (!$product) {
             return $this->crudHelper->renderShowEmpty(self::SECTION);
@@ -53,14 +53,13 @@ class ProductCostController extends AbstractController
         return $this->renderCostUpdate(
             'Product Cost',
             $product,
-            $request,
             $product,
             $form
         );
     }
 
     #[Route('/{id}/cost/category/edit', name: 'app_product_cost_category_edit', methods: ['GET', 'POST'])]
-    public function costCategoryEdit(?Product $product, Request $request): Response
+    public function costCategoryEdit(?Product $product): Response
     {
         if (!$product) {
             return $this->crudHelper->renderShowEmpty(self::SECTION);
@@ -78,14 +77,13 @@ class ProductCostController extends AbstractController
         return $this->renderCostUpdate(
             'Category Cost',
             $product,
-            $request,
             $category,
             $form
         );
     }
 
     #[Route('/{id}/cost/subcategory/edit', name: 'app_product_cost_subcategory_edit', methods: ['GET', 'POST'])]
-    public function costSubcategoryEdit(?Product $product, Request $request): Response
+    public function costSubcategoryEdit(?Product $product): Response
     {
         if (!$product) {
             return $this->crudHelper->renderShowEmpty(self::SECTION);
@@ -103,7 +101,6 @@ class ProductCostController extends AbstractController
         return $this->renderCostUpdate(
             'Subcategory Cost',
             $product,
-            $request,
             $subcategory,
             $form
         );
@@ -112,7 +109,6 @@ class ProductCostController extends AbstractController
     private function renderCostUpdate(
         string $section,
         Product $product,
-        Request $request,
         object $entity,
         FormInterface $form
     ): Response {
@@ -125,7 +121,6 @@ class ProductCostController extends AbstractController
 
         return $this->crudHelper->renderCustomUpdate(
             $section,
-            $request,
             $entity,
             $form,
             $successResponse,

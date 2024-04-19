@@ -2,15 +2,15 @@
 
 namespace App\Service;
 
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\ORM\QueryBuilder;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Pagerfanta\Exception\OutOfRangeCurrentPageException;
 use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\String\UnicodeString;
 use Symfony\UX\Turbo\TurboBundle;
@@ -22,19 +22,25 @@ class CrudHelper extends AbstractController
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
+        private readonly RequestStack $requestStack,
         private string $section = '',
-        private int $formColumns = 1,
     ) {
     }
 
     public function renderIndex(
-        QueryBuilder $queryBuilder,
-        int $page = 1,
-        int $limit = 10,
-        string $sort = 'id',
-        string $sortDirection = 'ASC',
-        ?string $query = null,
+        ServiceEntityRepositoryInterface $repository,
+        array $sortOptions = [],
+        string $sortDefault = 'id'
     ): Response {
+        $request = $this->requestStack->getCurrentRequest();
+        $query = $request->query->get('query') ?: null;
+        $sort = $request->query->get('sort');
+        $sort = in_array($sort, $sortOptions) ? $sort : $sortDefault;
+        $sortDirection = $request->query->get('sortDirection') ?: 'ASC';
+        $limit = $request->query->get('limit') ?: 5;
+        $page = $request->query->get('page') ?: 1;
+        $queryBuilder = $repository->findBySearchQueryBuilder($query, $sort, $sortDirection);
+
         try {
             $pager = Pagerfanta::createForCurrentPageWithMaxPerPage(
                 new QueryAdapter($queryBuilder),
@@ -48,7 +54,7 @@ class CrudHelper extends AbstractController
             );
 
             return $this->redirectToRoute(
-                'app_'.$this->snakeSection().'_index',
+                'app_'.$this->getSnakeSection().'_index',
                 [
                     'page' => 1,
                     'limit' => $limit,
@@ -68,18 +74,18 @@ class CrudHelper extends AbstractController
     }
 
     public function renderCreate(
-        Request $request,
         ?object $entity,
-        string $formType
+        string $formType,
+        int $formColumns = 1
     ): Response {
         if (!$entity) {
             return $this->crudError();
         }
 
         $form = $this->createForm($formType, $entity, [
-            'action' => $this->generateUrl('app_'.$this->snakeSection().'_new'),
+            'action' => $this->generateUrl('app_'.$this->getSnakeSection().'_new'),
         ]);
-        $form->handleRequest($request);
+        $form->handleRequest($this->requestStack->getCurrentRequest());
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
@@ -97,12 +103,12 @@ class CrudHelper extends AbstractController
                 );
             }
 
-            if ($request->headers->has('turbo-frame')) {
-                return $this->streamRefresh($request);
+            if ($this->requestStack->getCurrentRequest()->headers->has('turbo-frame')) {
+                return $this->streamRefresh();
             }
 
             return $this->redirectToRoute(
-                'app_'.$this->snakeSection().'_index',
+                'app_'.$this->getSnakeSection().'_index',
                 [],
                 Response::HTTP_SEE_OTHER
             );
@@ -113,7 +119,7 @@ class CrudHelper extends AbstractController
             'template' => 'new',
             'result' => $entity,
             'form' => $form,
-            'formColumns' => $this->getFormColumns(),
+            'formColumns' => $formColumns,
         ]);
     }
 
@@ -139,41 +145,39 @@ class CrudHelper extends AbstractController
     }
 
     public function renderUpdate(
-        Request $request,
         ?object $entity,
         string $formType,
+        int $formColumns = 1
     ): Response {
         if (!$entity) {
             return $this->crudError();
         }
 
         $form = $this->createForm($formType, $entity, [
-            'action' => $this->generateUrl('app_'.$this->snakeSection().'_edit', ['id' => $entity->getId()]),
+            'action' => $this->generateUrl('app_'.$this->getSnakeSection().'_edit', ['id' => $entity->getId()]),
         ]);
 
         $successResponse = $this->redirectToRoute(
-            'app_'.$this->snakeSection().'_index',
+            'app_'.$this->getSnakeSection().'_index',
             [],
             Response::HTTP_SEE_OTHER
         );
 
-        $backLink = $this->generateUrl('app_'.$this->snakeSection().'_index');
+        $backLink = $this->generateUrl('app_'.$this->getSnakeSection().'_index');
 
         return $this->renderCustomUpdate(
             $this->getSection(),
-            $request,
             $entity,
             $form,
             $successResponse,
             $backLink,
-            $this->getFormColumns(),
+            $formColumns,
             true
         );
     }
 
     public function renderCustomUpdate(
         string $section,
-        Request $request,
         ?object $entity,
         FormInterface $form,
         RedirectResponse $successResponse,
@@ -189,7 +193,7 @@ class CrudHelper extends AbstractController
             return $this->crudError();
         }
 
-        $form->handleRequest($request);
+        $form->handleRequest($this->requestStack->getCurrentRequest());
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
@@ -206,8 +210,8 @@ class CrudHelper extends AbstractController
                 );
             }
 
-            if ($request->headers->has('turbo-frame')) {
-                return $this->streamRefresh($request);
+            if ($this->requestStack->getCurrentRequest()->headers->has('turbo-frame')) {
+                return $this->streamRefresh();
             }
 
             return $successResponse;
@@ -238,14 +242,13 @@ class CrudHelper extends AbstractController
     }
 
     public function renderDelete(
-        Request $request,
         ?object $entity,
     ): Response {
         if (!$entity) {
             return $this->crudError();
         }
 
-        if ($this->isCsrfTokenValid('delete'.$entity->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete'.$entity->getId(), $this->requestStack->getCurrentRequest()->request->get('_token'))) {
             try {
                 $this->entityManager->remove($entity);
                 $this->entityManager->flush();
@@ -261,13 +264,13 @@ class CrudHelper extends AbstractController
                 );
             }
 
-            if ($request->headers->has('turbo-frame')) {
-                return $this->streamRefresh($request);
+            if ($this->requestStack->getCurrentRequest()->headers->has('turbo-frame')) {
+                return $this->streamRefresh();
             }
         }
 
         return $this->redirectToRoute(
-            'app_'.$this->snakeSection().'_index',
+            'app_'.$this->getSnakeSection().'_index',
             [],
             Response::HTTP_SEE_OTHER
         );
@@ -283,22 +286,13 @@ class CrudHelper extends AbstractController
         $this->section = $section;
     }
 
-    public function getFormColumns(): int
-    {
-        return $this->formColumns;
-    }
-
-    public function setFormColumns(int $formColumns): void
-    {
-        $this->formColumns = $formColumns;
-    }
-
-    private function snakeSection(): string
+    private function getSnakeSection(): string
     {
         return (new UnicodeString($this->getSection()))->lower()->snake();
     }
 
     public function crudError(): Response
+
     {
         $this->addFlash(
             'warning',
@@ -306,15 +300,15 @@ class CrudHelper extends AbstractController
         );
 
         return $this->redirectToRoute(
-            'app_'.$this->snakeSection().'_index',
+            'app_'.$this->getSnakeSection().'_index',
             [],
             Response::HTTP_SEE_OTHER
         );
     }
 
-    public function streamRefresh(Request $request): Response
+    public function streamRefresh(): Response
     {
-        $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
+        $this->requestStack->getCurrentRequest()->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
         return $this->renderBlock(
             self::TURBO_STREAM_REFRESH_TEMPLATE,

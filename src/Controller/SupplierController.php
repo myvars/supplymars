@@ -7,52 +7,34 @@ use App\Form\SupplierType;
 use App\Repository\SupplierRepository;
 use App\Service\CrudHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/supplier')]
 class SupplierController extends AbstractController
 {
     public const SECTION = 'Supplier';
-    public const FORM_COLUMNS = 1;
 
     public function __construct(private readonly CrudHelper $crudHelper)
     {
         $this->crudHelper->setSection(self::SECTION);
-        $this->crudHelper->setFormColumns(self::FORM_COLUMNS);
     }
 
     #[Route('/', name: 'app_supplier_index', methods: ['GET'])]
-    public function index(SupplierRepository $supplierRepository,
-        #[MapQueryParameter] int $page = 1,
-        #[MapQueryParameter] int $limit = 5,
-        #[MapQueryParameter] string $sort = 'id',
-        #[MapQueryParameter] string $sortDirection = 'ASC',
-        #[MapQueryParameter] ?string $query = null,
-    ): Response {
-        $validSorts = ['id', 'name', 'isActive'];
-        $sort = in_array($sort, $validSorts) ? $sort : 'id';
+    public function index(SupplierRepository $supplierRepository): Response
+    {
+        $sortOptions = ['id', 'name', 'isActive'];
 
         return $this->crudHelper->renderIndex(
-            $supplierRepository->findBySearchQueryBuilder($query, $sort, $sortDirection),
-            $page,
-            $limit,
-            $sort,
-            $sortDirection,
-            $query,
+            $supplierRepository,
+            $sortOptions
         );
     }
 
     #[Route('/new', name: 'app_supplier_new', methods: ['GET', 'POST'])]
-    public function new(Request $request): Response
+    public function new(): Response
     {
-        return $this->crudHelper->renderCreate(
-            $request,
-            new Supplier(),
-            SupplierType::class,
-        );
+        return $this->crudHelper->renderCreate(new Supplier(), SupplierType::class);
     }
 
     #[Route('/{id}', name: 'app_supplier_show', methods: ['GET'])]
@@ -62,12 +44,11 @@ class SupplierController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_supplier_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Supplier $supplier): Response
+    public function edit(Supplier $supplier): Response
     {
         return $this->crudHelper->renderUpdate(
-            $request,
             $supplier,
-            SupplierType::class,
+            SupplierType::class
         );
     }
 
@@ -78,11 +59,8 @@ class SupplierController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'app_supplier_delete', methods: ['POST'])]
-    public function delete(Request $request, ?Supplier $supplier): Response
+    public function delete(?Supplier $supplier): Response
     {
-        return $this->crudHelper->renderDelete(
-            $request,
-            $supplier,
-        );
+        return $this->crudHelper->renderDelete($supplier);
     }
 }

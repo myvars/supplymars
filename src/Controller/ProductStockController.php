@@ -5,7 +5,6 @@ namespace App\Controller;
 use App\Entity\Product;
 use App\Service\CrudHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -20,7 +19,7 @@ class ProductStockController extends AbstractController
     }
 
     #[Route('/{id}/stock', name: 'app_product_stock', methods: ['GET'])]
-    public function stock(?Product $product, Request $request): Response
+    public function stock(?Product $product): Response
     {
         if (!$product) {
             return $this->crudHelper->renderShowEmpty(self::SECTION);

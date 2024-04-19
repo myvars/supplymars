@@ -7,52 +7,36 @@ use App\Form\SubcategoryType;
 use App\Repository\SubcategoryRepository;
 use App\Service\CrudHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/subcategory')]
 class SubcategoryController extends AbstractController
 {
     public const SECTION = 'Subcategory';
-    public const FORM_COLUMNS = 1;
 
     public function __construct(private readonly CrudHelper $crudHelper)
     {
         $this->crudHelper->setSection(self::SECTION);
-        $this->crudHelper->setFormColumns(self::FORM_COLUMNS);
     }
 
     #[Route('/', name: 'app_subcategory_index', methods: ['GET'])]
-    public function index(
-        SubcategoryRepository $subcategoryRepository,
-        #[MapQueryParameter] int $page = 1,
-        #[MapQueryParameter] int $limit = 5,
-        #[MapQueryParameter] string $sort = 'id',
-        #[MapQueryParameter] string $sortDirection = 'ASC',
-        #[MapQueryParameter] ?string $query = null,
-    ): Response {
-        $validSorts = ['id', 'name', 'category.name', 'defaultMarkup', 'isActive'];
-        $sort = in_array($sort, $validSorts) ? $sort : 'id';
+    public function index(SubcategoryRepository $subcategoryRepository): Response
+    {
+        $sortOptions = ['id', 'name', 'category.name', 'defaultMarkup', 'isActive'];
 
         return $this->crudHelper->renderIndex(
-            $subcategoryRepository->findBySearchQueryBuilder($query, $sort, $sortDirection),
-            $page,
-            $limit,
-            $sort,
-            $sortDirection,
-            $query,
+            $subcategoryRepository,
+            $sortOptions
         );
     }
 
     #[Route('/new', name: 'app_subcategory_new', methods: ['GET', 'POST'])]
-    public function new(Request $request): Response
+    public function new(): Response
     {
         return $this->crudHelper->renderCreate(
-            $request,
             new Subcategory(),
-            SubcategoryType::class,
+            SubcategoryType::class
         );
     }
 
@@ -63,12 +47,11 @@ class SubcategoryController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_subcategory_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, ?Subcategory $subcategory): Response
+    public function edit(?Subcategory $subcategory): Response
     {
         return $this->crudHelper->renderUpdate(
-            $request,
             $subcategory,
-            SubcategoryType::class,
+            SubcategoryType::class
         );
     }
 
@@ -79,11 +62,8 @@ class SubcategoryController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'app_subcategory_delete', methods: ['POST'])]
-    public function delete(Request $request, ?Subcategory $subcategory): Response
+    public function delete(?Subcategory $subcategory): Response
     {
-        return $this->crudHelper->renderDelete(
-            $request,
-            $subcategory,
-        );
+        return $this->crudHelper->renderDelete($subcategory);
     }
 }

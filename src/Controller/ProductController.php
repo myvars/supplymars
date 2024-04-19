@@ -6,55 +6,39 @@ use App\Entity\Product;
 use App\Form\ProductType;
 use App\Repository\ProductRepository;
 use App\Service\CrudHelper;
-use App\Service\UploadHelper;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/product')]
 class ProductController extends AbstractController
 {
     public const SECTION = 'Product';
-    public const FORM_COLUMNS = 2;
+    public const COLUMNS = 2;
 
     public function __construct(private readonly CrudHelper $crudHelper)
     {
         $this->crudHelper->setSection(self::SECTION);
-        $this->crudHelper->setFormColumns(self::FORM_COLUMNS);
     }
 
     #[Route('/', name: 'app_product_index', methods: ['GET'])]
-    public function index(
-        ProductRepository $productRepository,
-        #[MapQueryParameter] int $page = 1,
-        #[MapQueryParameter] int $limit = 5,
-        #[MapQueryParameter] string $sort = 'id',
-        #[MapQueryParameter] string $sortDirection = 'ASC',
-        #[MapQueryParameter] ?string $query = null,
-    ): Response {
-        $validSorts = ['id', 'name', 'cost', 'stock', 'sellPriceIncVat', 'isActive'];
-        $sort = in_array($sort, $validSorts) ? $sort : 'id';
+    public function index(ProductRepository $productRepository): Response
+    {
+        $sortOptions = ['id', 'name', 'cost', 'stock', 'sellPriceIncVat', 'isActive'];
 
         return $this->crudHelper->renderIndex(
-            $productRepository->findBySearchQueryBuilder($query, $sort, $sortDirection),
-            $page,
-            $limit,
-            $sort,
-            $sortDirection,
-            $query,
+            $productRepository,
+            $sortOptions
         );
     }
 
     #[Route('/new', name: 'app_product_new', methods: ['GET', 'POST'])]
-    public function new(Request $request): Response
+    public function new(): Response
     {
         return $this->crudHelper->renderCreate(
-            $request,
             new Product(),
             ProductType::class,
+            self::COLUMNS
         );
     }
 
@@ -66,12 +50,12 @@ class ProductController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_product_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, ?Product $product): Response
+    public function edit(?Product $product): Response
     {
         return $this->crudHelper->renderUpdate(
-            $request,
             $product,
             ProductType::class,
+            self::COLUMNS
         );
     }
 
@@ -82,11 +66,8 @@ class ProductController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'app_product_delete', methods: ['POST'])]
-    public function delete(Request $request, ?Product $product): Response
+    public function delete(?Product $product): Response
     {
-        return $this->crudHelper->renderDelete(
-            $request,
-            $product,
-        );
+        return $this->crudHelper->renderDelete($product);
     }
 }

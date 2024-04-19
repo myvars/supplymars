@@ -10,52 +10,39 @@ use App\Service\CrudHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/supplier-product')]
 class SupplierProductController extends AbstractController
 {
     public const SECTION = 'Supplier Product';
-    public const FORM_COLUMNS = 2;
+    public const COLUMNS = 2;
 
     public function __construct(
         private readonly CrudHelper $crudHelper,
         private readonly ActiveSourceCalculator $activeSourceCalculator
     ) {
         $this->crudHelper->setSection(self::SECTION);
-        $this->crudHelper->setFormColumns(self::FORM_COLUMNS);
     }
 
     #[Route('/', name: 'app_supplier_product_index', methods: ['GET'])]
-    public function index(
-        SupplierProductRepository $supplierProductRepository,
-        #[MapQueryParameter] int $page = 1,
-        #[MapQueryParameter] int $limit = 5,
-        #[MapQueryParameter] string $sort = 'id',
-        #[MapQueryParameter] string $sortDirection = 'ASC',
-        #[MapQueryParameter] ?string $query = null,
-    ): Response {
-        $validSorts = ['id', 'supplier.name', 'name', 'cost', 'stock', 'isActive'];
-        $sort = in_array($sort, $validSorts) ? $sort : 'id';
+    public function index(SupplierProductRepository $supplierProductRepository): Response
+    {
+        $sortOptions = ['id', 'supplier.name', 'name', 'cost', 'stock', 'isActive'];
 
         return $this->crudHelper->renderIndex(
-            $supplierProductRepository->findBySearchQueryBuilder($query, $sort, $sortDirection),
-            $page,
-            $limit,
-            $sort,
-            $sortDirection,
-            $query,
+            $supplierProductRepository,
+            $sortOptions
         );
     }
 
     #[Route('/new', name: 'app_supplier_product_new', methods: ['GET', 'POST'])]
-    public function new(Request $request): Response
+    public function new(): Response
     {
         return $this->crudHelper->renderCreate(
-            $request,
             new SupplierProduct(),
             SupplierProductType::class,
+            self::COLUMNS
         );
     }
 
@@ -66,12 +53,12 @@ class SupplierProductController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_supplier_product_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, ?SupplierProduct $supplierProduct): Response
+    public function edit(?SupplierProduct $supplierProduct): Response
     {
         return $this->crudHelper->renderUpdate(
-            $request,
             $supplierProduct,
             SupplierProductType::class,
+            self::COLUMNS
         );
     }
 
@@ -82,12 +69,9 @@ class SupplierProductController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'app_supplier_product_delete', methods: ['POST'])]
-    public function delete(Request $request, ?SupplierProduct $supplierProduct): Response
+    public function delete(?SupplierProduct $supplierProduct): Response
     {
-        return $this->crudHelper->renderDelete(
-            $request,
-            $supplierProduct,
-        );
+        return $this->crudHelper->renderDelete($supplierProduct);
     }
 
     #[Route('/{id}/remove', name: 'app_supplier_product_remove_confirm', methods: ['GET'])]
@@ -120,11 +104,11 @@ class SupplierProductController extends AbstractController
             );
         }
 
-        return $this->crudHelper->streamRefresh($request);
+        return $this->crudHelper->streamRefresh();
     }
 
     #[Route('/{id}/status/toggle', name: 'app_supplier_product_toggle_status', methods: ['GET'])]
-    public function toggleStatus(Request $request, ?SupplierProduct $supplierProduct): Response
+    public function toggleStatus(?SupplierProduct $supplierProduct): Response
     {
         if (!$supplierProduct) {
             return $this->crudHelper->renderShowEmpty(self::SECTION);
@@ -138,6 +122,6 @@ class SupplierProductController extends AbstractController
             'Supplier product status updated'
         );
 
-        return $this->crudHelper->streamRefresh($request);
+        return $this->crudHelper->streamRefresh();
     }
 }

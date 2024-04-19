@@ -7,52 +7,36 @@ use App\Form\CategoryType;
 use App\Repository\CategoryRepository;
 use App\Service\CrudHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Attribute\MapQueryParameter;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/category')]
 class CategoryController extends AbstractController
 {
     public const SECTION = 'Category';
-    public const FORM_COLUMNS = 1;
 
     public function __construct(private readonly CrudHelper $crudHelper)
     {
         $this->crudHelper->setSection(self::SECTION);
-        $this->crudHelper->setFormColumns(self::FORM_COLUMNS);
     }
 
     #[Route('/', name: 'app_category_index', methods: ['GET'])]
-    public function index(
-        CategoryRepository $categoryRepository,
-        #[MapQueryParameter] int $page = 1,
-        #[MapQueryParameter] int $limit = 5,
-        #[MapQueryParameter] string $sort = 'id',
-        #[MapQueryParameter] string $sortDirection = 'ASC',
-        #[MapQueryParameter] ?string $query = null,
-    ): Response {
-        $validSorts = ['id', 'name', 'defaultMarkup', 'isActive'];
-        $sort = in_array($sort, $validSorts) ? $sort : 'id';
+    public function index(CategoryRepository $categoryRepository): Response
+    {
+        $sortOptions = ['id', 'name', 'defaultMarkup', 'isActive'];
 
         return $this->crudHelper->renderIndex(
-            $categoryRepository->findBySearchQueryBuilder($query, $sort, $sortDirection),
-            $page,
-            $limit,
-            $sort,
-            $sortDirection,
-            $query,
+            $categoryRepository,
+            $sortOptions
         );
     }
 
     #[Route('/new', name: 'app_category_new', methods: ['GET', 'POST'])]
-    public function new(Request $request): Response
+    public function new(): Response
     {
         return $this->crudHelper->renderCreate(
-            $request,
             new Category(),
-            CategoryType::class,
+            CategoryType::class
         );
     }
 
@@ -63,12 +47,11 @@ class CategoryController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_category_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, ?Category $category): Response
+    public function edit(?Category $category): Response
     {
         return $this->crudHelper->renderUpdate(
-            $request,
             $category,
-            CategoryType::class,
+            CategoryType::class
         );
     }
 
@@ -79,11 +62,8 @@ class CategoryController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'app_category_delete', methods: ['POST'])]
-    public function delete(Request $request, ?Category $category): Response
+    public function delete(?Category $category): Response
     {
-        return $this->crudHelper->renderDelete(
-            $request,
-            $category,
-        );
+        return $this->crudHelper->renderDelete($category);
     }
 }

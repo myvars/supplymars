@@ -28,7 +28,6 @@ class ProductImageController extends AbstractController
 
     #[Route('/{id}/images', name: 'app_product_images', methods: ['GET'])]
     public function showProductImages(
-        Request $request,
         ?Product $product,
         EntityManagerInterface $entityManager,
         UploadHelper $uploadHelper,
@@ -69,7 +68,7 @@ class ProductImageController extends AbstractController
         }
 
         if ($request->headers->has('turbo-frame')) {
-            return $this->crudHelper->streamRefresh($request);
+            return $this->crudHelper->streamRefresh();
         }
 
         return $this->redirectToRoute('app_product_images', [
@@ -89,7 +88,7 @@ class ProductImageController extends AbstractController
         );
 
         if ($request->headers->has('turbo-frame')) {
-            return $this->crudHelper->streamRefresh($request);
+            return $this->crudHelper->streamRefresh();
         }
 
         return $this->redirectToRoute('app_product_images', [
