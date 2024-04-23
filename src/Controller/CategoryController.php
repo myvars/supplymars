@@ -6,6 +6,7 @@ use App\Entity\Category;
 use App\Form\CategoryType;
 use App\Repository\CategoryRepository;
 use App\Service\CrudHelper;
+use App\Strategy\CategoryCrudStrategy;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -15,9 +16,12 @@ class CategoryController extends AbstractController
 {
     public const SECTION = 'Category';
 
-    public function __construct(private readonly CrudHelper $crudHelper)
-    {
+    public function __construct(
+        private readonly CrudHelper $crudHelper,
+        CategoryCrudStrategy $crudStrategy
+    ) {
         $this->crudHelper->setSection(self::SECTION);
+        $this->crudHelper->setStrategy($crudStrategy);
     }
 
     #[Route('/', name: 'app_category_index', methods: ['GET'])]

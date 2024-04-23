@@ -15,8 +15,8 @@ class UploadHelper
 {
     public function __construct(
         #[Autowire(service: 'oneup_flysystem.products_fs_filesystem')]
-        private readonly Filesystem $uploadFilesystem)
-    {
+        private readonly Filesystem $uploadFilesystem
+    ) {
     }
 
     public function uploadFile(File $file, ?string $directory, ?string $existingFilename = null): string

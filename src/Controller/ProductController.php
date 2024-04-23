@@ -6,6 +6,7 @@ use App\Entity\Product;
 use App\Form\ProductType;
 use App\Repository\ProductRepository;
 use App\Service\CrudHelper;
+use App\Strategy\ProductCrudStrategy;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -16,9 +17,13 @@ class ProductController extends AbstractController
     public const SECTION = 'Product';
     public const COLUMNS = 2;
 
-    public function __construct(private readonly CrudHelper $crudHelper)
+    public function __construct(
+        private readonly CrudHelper $crudHelper,
+        ProductCrudStrategy $crudStrategy
+    )
     {
         $this->crudHelper->setSection(self::SECTION);
+        $this->crudHelper->setStrategy($crudStrategy);
     }
 
     #[Route('/', name: 'app_product_index', methods: ['GET'])]

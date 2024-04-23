@@ -2,11 +2,9 @@
 
 namespace App\Service;
 
+use App\Strategy\CrudStrategyInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface;
-use Doctrine\ORM\EntityManagerInterface;
-use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Pagerfanta\Exception\OutOfRangeCurrentPageException;
-use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -21,8 +19,9 @@ class CrudHelper extends AbstractController
     public const TURBO_STREAM_REFRESH_TEMPLATE = 'common/turboStreamRefresh.html.twig';
 
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
         private readonly RequestStack $requestStack,
+        private readonly Paginator $paginator,
+        private CrudStrategyInterface $crudStrategy,
         private string $section = '',
     ) {
     }
@@ -33,19 +32,21 @@ class CrudHelper extends AbstractController
         string $sortDefault = 'id'
     ): Response {
         $request = $this->requestStack->getCurrentRequest();
-        $query = $request->query->get('query') ?: null;
+        $query = $request->query->get('query');
         $sort = $request->query->get('sort');
         $sort = in_array($sort, $sortOptions) ? $sort : $sortDefault;
         $sortDirection = $request->query->get('sortDirection') ?: 'ASC';
         $limit = $request->query->get('limit') ?: 5;
         $page = $request->query->get('page') ?: 1;
-        $queryBuilder = $repository->findBySearchQueryBuilder($query, $sort, $sortDirection);
 
         try {
-            $pager = Pagerfanta::createForCurrentPageWithMaxPerPage(
-                new QueryAdapter($queryBuilder),
-                $page,
-                $limit
+            $pager = $this->paginator->createPagination(
+                $repository,
+                $query,
+                $sort,
+                $sortDirection,
+                $limit,
+                $page
             );
         } catch (OutOfRangeCurrentPageException $e) {
             $this->addFlash(
@@ -89,9 +90,7 @@ class CrudHelper extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $this->entityManager->persist($entity);
-                $this->entityManager->flush();
-
+                $this->crudStrategy->create($entity);
                 $this->addFlash(
                     'success',
                     'New '.$this->getSection().' added!'
@@ -197,8 +196,7 @@ class CrudHelper extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $this->entityManager->flush();
-
+                $this->crudStrategy->update($entity);
                 $this->addFlash(
                     'success',
                     $this->getSection().' updated!'
@@ -248,11 +246,12 @@ class CrudHelper extends AbstractController
             return $this->crudError();
         }
 
-        if ($this->isCsrfTokenValid('delete'.$entity->getId(), $this->requestStack->getCurrentRequest()->request->get('_token'))) {
+        if ($this->isCsrfTokenValid(
+            'delete'.$entity->getId(),
+            $this->requestStack->getCurrentRequest()->request->get('_token'))
+        ) {
             try {
-                $this->entityManager->remove($entity);
-                $this->entityManager->flush();
-
+                $this->crudStrategy->delete($entity);
                 $this->addFlash(
                     'success',
                     $this->getSection().' deleted!'
@@ -276,6 +275,11 @@ class CrudHelper extends AbstractController
         );
     }
 
+    public function setStrategy(CrudStrategyInterface $crudStrategy): void
+    {
+        $this->crudStrategy = $crudStrategy;
+    }
+
     public function getSection(): string
     {
         return $this->section;
@@ -292,7 +296,6 @@ class CrudHelper extends AbstractController
     }
 
     public function crudError(): Response
-
     {
         $this->addFlash(
             'warning',
