@@ -43,7 +43,11 @@
         <p class="mb-2 text-right">{{ product.stock }} in stock</p>
         <p class="mb-1">{{ product.manufacturer.name }} {{ product.mfrPartNumber }}</p>
         <p class="mb-1">Product {{ '%06d'|format(product.id) }}</p>
-        <p class="mb-1">Managed by {{ product.owner.fullName }}</p>
+        {% if product.owner is not null %}
+            <p class="mb-1">Managed by {{ product.owner.fullName }}</p>
+        {% else %}
+            <p class="mb-1">No product manager</p>
+        {% endif %}
         <div class="mt-4 flex items-center justify-between">
             <p class="me-10 text-xs">Updated {{ product.updatedAt|ago }}</p>
             {% if product.isActive %}

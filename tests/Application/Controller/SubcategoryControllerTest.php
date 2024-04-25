@@ -68,8 +68,7 @@ class SubcategoryControllerTest extends WebTestCase
             ->assertSee('Please enter a Subcategory name')
             ->assertSee('Please enter a category')
             ->assertSee('Please enter a positive or zero subcategory markup %')
-            ->assertSee('Please enter a price model')
-            ->assertSee('Please enter a subcategory owner');
+            ->assertSee('Please enter a price model');
     }
 
     public function testEditSubcategory(): void
@@ -97,14 +96,12 @@ class SubcategoryControllerTest extends WebTestCase
             ->fillField('subcategory[category]', '')
             ->fillField('subcategory[defaultMarkup]','-1')
             ->fillField('subcategory[priceModel]', '')
-            ->fillField('subcategory[owner]', '')
             ->click('Update Subcategory')
             ->assertOn("/subcategory/" . $subcategory->getId() . "/edit")
             ->assertSee('Please enter a Subcategory name')
             ->assertSee('Please enter a category')
             ->assertSee('Please enter a positive or zero subcategory markup %')
-            ->assertSee('Please enter a price model')
-            ->assertSee('Please enter a subcategory owner');
+            ->assertSee('Please enter a price model');
     }
 
     public function testDeleteSubcategoryConfirmation(): void

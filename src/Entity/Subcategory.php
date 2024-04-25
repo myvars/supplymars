@@ -30,7 +30,6 @@ class Subcategory
     private ?string $defaultMarkup = null;
 
     #[ORM\ManyToOne(inversedBy: 'subcategories')]
-    #[Assert\NotNull(message: 'Please enter a subcategory owner')]
     private ?User $owner = null;
 
     #[ORM\ManyToOne(inversedBy: 'subcategories')]

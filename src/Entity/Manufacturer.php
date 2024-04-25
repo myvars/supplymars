@@ -29,9 +29,13 @@ class Manufacturer
     #[ORM\OneToMany(mappedBy: 'manufacturer', targetEntity: Product::class)]
     private Collection $products;
 
+    #[ORM\OneToMany(mappedBy: 'mappedManufacturer', targetEntity: SupplierManufacturer::class)]
+    private Collection $supplierManufacturers;
+
     public function __construct()
     {
         $this->products = new ArrayCollection();
+        $this->supplierManufacturers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -87,6 +91,36 @@ class Manufacturer
             // set the owning side to null (unless already changed)
             if ($product->getManufacturer() === $this) {
                 $product->setManufacturer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, SupplierManufacturer>
+     */
+    public function getSupplierManufacturers(): Collection
+    {
+        return $this->supplierManufacturers;
+    }
+
+    public function addSupplierManufacturer(SupplierManufacturer $supplierManufacturer): static
+    {
+        if (!$this->supplierManufacturers->contains($supplierManufacturer)) {
+            $this->supplierManufacturers->add($supplierManufacturer);
+            $supplierManufacturer->setMappedManufacturer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSupplierManufacturer(SupplierManufacturer $supplierManufacturer): static
+    {
+        if ($this->supplierManufacturers->removeElement($supplierManufacturer)) {
+            // set the owning side to null (unless already changed)
+            if ($supplierManufacturer->getMappedManufacturer() === $this) {
+                $supplierManufacturer->setMappedManufacturer(null);
             }
         }
 

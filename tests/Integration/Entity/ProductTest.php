@@ -115,30 +115,6 @@ class ProductTest extends KernelTestCase
         $this->assertEquals('Please enter a subcategory', $result[0]->getMessage());
     }
 
-    public function testProductOwnerIsMissing(): void
-    {
-        $subcategory = SubcategoryFactory::createOne(['name' => 'Test Subcategory'])->object();
-        $manufacturer = ManufacturerFactory::createOne(['name' => 'Test Manufacturer'])->object();
-
-        $product = new Product();
-        $product
-            ->setName('Test Product')
-            ->setMfrPartNumber('Test MfrPartNumber')
-            ->setStock(1)
-            ->setLeadTimeDays(1)
-            ->setWeight(1)
-            ->setDefaultMarkup(0.21)
-            ->setCost(100)
-            ->setCategory($subcategory->getCategory())
-            ->setSubcategory($subcategory)
-            ->setManufacturer($manufacturer)
-            ->setPriceModel(PriceModel::PRETTY_99);
-
-        $result = $this->validator->validate($product);
-        $this->assertCount(1, $result);
-        $this->assertEquals('Please enter a product owner', $result[0]->getMessage());
-    }
-
     public function testProductActiveMarkupAndTarget(): void
     {
         $category = CategoryFactory::createOne([

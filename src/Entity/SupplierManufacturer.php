@@ -27,6 +27,9 @@ class SupplierManufacturer
     #[ORM\JoinColumn(nullable: false)]
     private ?Supplier $supplier = null;
 
+    #[ORM\ManyToOne(inversedBy: 'supplierManufacturers')]
+    private ?Manufacturer $mappedManufacturer = null;
+
     #[ORM\OneToMany(mappedBy: 'supplierManufacturer', targetEntity: SupplierProduct::class)]
     private Collection $supplierProducts;
 
@@ -60,6 +63,18 @@ class SupplierManufacturer
     public function setSupplier(?Supplier $supplier): static
     {
         $this->supplier = $supplier;
+
+        return $this;
+    }
+
+    public function getMappedManufacturer(): ?Manufacturer
+    {
+        return $this->mappedManufacturer;
+    }
+
+    public function setMappedManufacturer(?Manufacturer $mappedManufacturer): static
+    {
+        $this->mappedManufacturer = $mappedManufacturer;
 
         return $this;
     }

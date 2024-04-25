@@ -72,23 +72,6 @@ class SubcategoryTest extends KernelTestCase
         $this->assertEquals('Please enter a category', $result[0]->getMessage());
     }
 
-    public function testSubcategoryOwnerIsMissing(): void
-    {
-        $category = CategoryFactory::createOne(['name' => 'Test Category'])->object();
-
-        $subcategory = new Subcategory();
-        $subcategory
-            ->setName('Test Subcategory')
-            ->setCategory($category)
-            ->setDefaultMarkup(0.21)
-            ->setPriceModel(PriceModel::DEFAULT)
-            ->setIsActive(true);
-
-        $result = $this->validator->validate($subcategory);
-        $this->assertCount(1, $result);
-        $this->assertEquals('Please enter a subcategory owner', $result[0]->getMessage());
-    }
-
     public function testSubcategoryFindBySearch(): void
     {
         SubcategoryFactory::createOne(['name' => 'Test Subcategory A']);

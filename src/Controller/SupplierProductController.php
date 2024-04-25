@@ -7,6 +7,7 @@ use App\Form\SupplierProductType;
 use App\Repository\SupplierProductRepository;
 use App\Service\ActiveSourceCalculator;
 use App\Service\CrudHelper;
+use App\Service\ProductGenerator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -120,6 +121,23 @@ class SupplierProductController extends AbstractController
         $this->addFlash(
             'success',
             'Supplier product status updated'
+        );
+
+        return $this->crudHelper->streamRefresh();
+    }
+
+    #[Route('/{id}/map', name: 'app_supplier_product_map', methods: ['GET'])]
+    public function map(?SupplierProduct $supplierProduct, ProductGenerator $productGenerator): Response
+    {
+        if (!$supplierProduct) {
+            return $this->crudHelper->renderShowEmpty(self::SECTION);
+        }
+
+        $productGenerator->createFromSupplierProduct($supplierProduct);
+
+        $this->addFlash(
+            'success',
+            'Supplier product mapped'
         );
 
         return $this->crudHelper->streamRefresh();

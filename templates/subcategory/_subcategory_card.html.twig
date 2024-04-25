@@ -47,7 +47,11 @@
         {% else %}
             <p class="mb-4">{{ subcategory.priceModel.getName }} price model</p>
         {% endif %}
-        <p class="mb-1">Managed by {{ subcategory.owner.fullName }}</p>
+        {% if subcategory.owner is not null %}
+            <p class="mb-1">Managed by {{ subcategory.owner.fullName }}</p>
+        {% else %}
+            <p class="mb-1">No subcategory manager</p>
+        {% endif %}
         <div class="mt-4 flex items-center justify-between">
             <p class="me-10 text-xs">Updated {{ subcategory.updatedAt|ago }}</p>
             {% if subcategory.isActive %}

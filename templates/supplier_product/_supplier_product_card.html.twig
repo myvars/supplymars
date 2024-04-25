@@ -58,7 +58,12 @@
                     Mapped to {{ (supplierProduct.product.name)|u.truncate(30, '...') }}
                 </a>
             {% else %}
-                Unmapped product
+                <a href="{{ path('app_supplier_product_map', {'id': supplierProduct.id }) }}"
+                   data-turbo-prefetch="false"
+                   class="flex items-center block py-1 text-sm text-yellow-700 dark:text-yellow-500 hover:text-yellow-500 dark:hover:text-yellow-300"
+                >
+                    <twig:ux:icon name="f7:wand-stars" class="w-4 me-1.5" />Map Product
+                </a>
             {% endif %}
         </p>
         <div class="mt-4 flex items-center justify-between">

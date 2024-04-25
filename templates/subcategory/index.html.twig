@@ -22,7 +22,11 @@
                 <span class="text-gray-500 dark:text-gray-400">{{ result.category.name|u.truncate(30, '...') }}</span>
             </p>
             <p class="flex justify-between items-center">
-                <span class="me-1 text-gray-600 dark:text-gray-500">Managed by {{ result.owner.fullName }}</span>
+                {% if result.owner is not null%}
+                    <span class="me-1 text-gray-600 dark:text-gray-500">Managed by {{ result.owner.fullName }}</span>
+                {% else %}
+                    <span class="me-1 text-gray-600 dark:text-gray-500">No subcategory manager</span>
+                {% endif %}
                 {% if result.defaultMarkup > 0 %}
                     <span class="me-1 text-2xl font-extralight">{{ result.defaultMarkup|number_format(3) }}%
                     <span class="me-1 font-normal text-sm text-nowrap text-gray-500 dark:text-gray-400"> mark-up</span>

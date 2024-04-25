@@ -2,11 +2,6 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\PriceModel;
-use App\Factory\CategoryFactory;
-use App\Factory\ManufacturerFactory;
-use App\Factory\ProductFactory;
-use App\Factory\SubcategoryFactory;
 use App\Factory\SupplierCategoryFactory;
 use App\Factory\SupplierFactory;
 use App\Factory\SupplierManufacturerFactory;
@@ -29,13 +24,6 @@ class AppFixtures extends Fixture
             'roles' => ['ROLE_ADMIN'],
         ]);
 
-        UserFactory::createOne([
-            'fullName' => 'Adam Ashmore',
-            'email' => 'adam@test.com',
-            'isVerified' => true,
-            'password' => 'letmein',
-       ]);
-
         $vatRate = VatRateFactory::createOne([
             'name' => 'Standard rate',
             'rate' => 20,
@@ -51,85 +39,15 @@ class AppFixtures extends Fixture
             'rate' => 0,
         ]);
 
-        $category = CategoryFactory::createOne([
-            'name' => 'Laptops',
-            'defaultMarkup' => 10,
-            'vatRate' => $vatRate,
-            'owner' => $user,
-            'priceModel' => PriceModel::DEFAULT,
-        ]);
-
-        CategoryFactory::createMany(29, function () {
-            return [
-                'vatRate' => VatRateFactory::first(),
-                'owner' => UserFactory::random(),
-                'priceModel' => PriceModel::DEFAULT,
-            ];
-        });
-
-        $subcategory = SubcategoryFactory::createOne([
-            'name' => 'Macbook Pro',
-            'defaultMarkup' => 5,
-            'category' => $category,
-            'owner' => $user,
-            'priceModel' => PriceModel::NONE,
-        ]);
-
-        SubcategoryFactory::createMany(99, function () {
-            return [
-                'category' => CategoryFactory::random(),
-                'owner' => UserFactory::random(),
-                'priceModel' => PriceModel::NONE,
-                'defaultMarkup' => 1 === rand(1, 10) ? rand(1, 10000) / 100 : 0,
-            ];
-        });
-
-        $manufacturer = ManufacturerFactory::createOne([
-            'name' => 'Apple',
-        ]);
-
-        ManufacturerFactory::createMany(99);
-
-        $product = ProductFactory::createOne([
-            'name' => 'Macbook Pro 13"',
-            'MfrPartNumber' => 'M1MBP132024',
-            'category' => $category,
-            'subcategory' => $subcategory,
-            'manufacturer' => $manufacturer,
-            'owner' => $user,
-            'cost' => '1190.47',
-            'isActive' => true,
-            'leadTimeDays' => 7,
-            'stock' => 50,
-            'weight' => 1388,
-            'defaultMarkup' => 5,
-            'priceModel' => PriceModel::NONE,
-        ]);
-
-        ProductFactory::createMany(99, function () {
-            $randomSubcategory = SubcategoryFactory::random();
-
-            return [
-                'subcategory' => $randomSubcategory,
-                'category' => $randomSubcategory->getCategory(),
-                'manufacturer' => ManufacturerFactory::random(),
-                'owner' => UserFactory::random(),
-                'priceModel' => PriceModel::NONE,
-                'defaultMarkup' => 1 === rand(1, 10) ? rand(1, 10000) / 100 : 0,
-            ];
-        });
-
-        //  Suppliers
-
         $supplier = SupplierFactory::createOne([
-            'name' => 'Butterfly Inc',
+            'name' => 'Turtle Inc',
             'isActive' => true,
         ]);
 
         SupplierFactory::createMany(2);
 
         $supplierCategory = SupplierCategoryFactory::createOne([
-            'name' => 'Laptop computers',
+            'name' => 'Laptops',
             'supplier' => $supplier,
         ]);
 
@@ -140,7 +58,7 @@ class AppFixtures extends Fixture
         });
 
         $supplierSubcategory = SupplierSubcategoryFactory::createOne([
-            'name' => 'Macbook',
+            'name' => 'Macbook Pro',
             'supplier' => $supplier,
             'supplierCategory' => $supplierCategory,
         ]);
@@ -185,6 +103,7 @@ class AppFixtures extends Fixture
                 'supplierCategory' => $randomSubcategory->getSupplierCategory(),
                 'supplierSubcategory' => $randomSubcategory,
                 'supplierManufacturer' => SupplierManufacturerFactory::random(),
+                'isActive' => rand(1, 10) > 1,
             ];
         });
 

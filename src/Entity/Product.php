@@ -79,7 +79,6 @@ class Product
     private ?Manufacturer $manufacturer = null;
 
     #[ORM\ManyToOne]
-    #[Assert\NotNull(message: 'Please enter a product owner')]
     private ?User $owner = null;
 
     #[ORM\Column(length: 255)]
