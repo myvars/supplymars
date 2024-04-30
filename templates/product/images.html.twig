@@ -4,9 +4,9 @@
 
 {% block detail %}
 
-    <div class="p-4 space-y-4 md:space-y-6 text-sm text-gray-500 dark:text-gray-400">
-        <div class="mb-8">
-            <h1 class="mb-4 text-2xl font-semibold text-white">
+    <div class="p-3 space-y-3 text-sm text-gray-500 dark:text-gray-400">
+        <div class="mb-6">
+            <h1 class="mb-3 text-xl text-gray-900 dark:text-white">
                 Product Images
                 <span class="ms-3 text-base font-light text-sm text-gray-500 dark:text-gray-400">
                     {{ result.productImages|length }} {% if result.productImages|length == 1 %}result{% else %}results{% endif %}
@@ -33,7 +33,7 @@
             {% for productImage in result.productImages %}
                 {{ include('product_image/_product_image_card.html.twig', {productImage: productImage}) }}
             {% else %}
-                <p class="mb-1 text-2xl">No product images found</p>
+                <p class="mb-1 text-xl">No product images found</p>
             {% endfor %}
         </div>
     </div>

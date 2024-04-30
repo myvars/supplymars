@@ -9,7 +9,7 @@ use App\Entity\Product;
 use App\Entity\Subcategory;
 use App\Entity\VatRate;
 use App\EventListener\CategoryPriceUpdater;
-use App\Service\ProductPriceCalculator;
+use App\Service\Product\ProductPriceCalculator;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use PHPUnit\Framework\TestCase;
 

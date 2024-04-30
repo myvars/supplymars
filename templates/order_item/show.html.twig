@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Order Item{% endblock %}
+
+{% block body %}
+
+    <div class="p-3 space-y-3 text-sm text-gray-500 dark:text-gray-400">
+        <div class="space-y-3">
+            <ul class="p-3 pt-0 w-full space-y-3">
+                {{ include('order_item/_order_item_card.html.twig', {orderItem: result}) }}
+            </ul>
+        </div>
+        <div class="mt-4">
+            <p>
+                <a href="{{ path('app_order_index') }}"
+                   class="font-light hover:text-gray-300 dark:hover:text-white"
+                   data-turbo-frame="_top"
+                   data-turbo-prefetch="false"
+                >Back to list</a>
+            </p>
+        </div>
+    </div>
+
+{% endblock %}

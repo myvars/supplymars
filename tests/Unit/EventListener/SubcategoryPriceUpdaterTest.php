@@ -7,7 +7,7 @@ use App\Entity\PriceModel;
 use App\Entity\Product;
 use App\Entity\Subcategory;
 use App\EventListener\SubcategoryPriceUpdater;
-use App\Service\ProductPriceCalculator;
+use App\Service\Product\ProductPriceCalculator;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use PHPUnit\Framework\TestCase;
 

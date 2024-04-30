@@ -7,7 +7,7 @@ use App\Entity\Product;
 use App\Entity\Supplier;
 use App\Entity\SupplierProduct;
 use App\EventListener\SupplierStockUpdater;
-use App\Service\ActiveSourceCalculator;
+use App\Service\Product\ActiveSourceCalculator;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use PHPUnit\Framework\TestCase;
 

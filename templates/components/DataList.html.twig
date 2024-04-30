@@ -1,10 +1,10 @@
 {% props section, results %}
 
-<section class="bg-gray-50 dark:bg-gray-900 p-4">
-    <div class="mx-auto max-w-screen-xl md:px-4 lg:px-12">
+<section class="bg-gray-50 dark:bg-gray-900 p-3">
+    <div class="mx-auto max-w-screen-xl md:px-3 lg:px-12">
         {% block result_count %}
             <div id="{{ section|slug }}-result-count">
-                <h1 class="text-2xl font-semibold text-white mb-6">
+                <h1 class="text-xl text-gray-900 dark:text-white mb-3">
                     {{ section }} List
                     <span class="text-base font-light text-gray-500 dark:text-gray-400 ms-3">
                         {{ results|length }} {% if results|length == 1 %}result{% else %}results{% endif %}
@@ -13,13 +13,13 @@
             </div>
         {% endblock %}
         <div class="bg-white dark:bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
-            <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
+            <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-3 p-3">
                 <twig:SearchBox turboFrame="{{ section|slug }}-table"></twig:SearchBox>
                 <div class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
                     {% block filter %}
                         <div class="flex items-center space-x-3 w-full md:w-auto">
                             <button id="filterDropdownButton" data-dropdown-toggle="filterDropdown"
-                                    class="w-full md:w-auto space-x-1 flex items-center justify-center py-2 px-4 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-1 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
+                                    class="w-full md:w-auto space-x-1 flex items-center justify-center py-2 px-3 text-sm font-medium text-gray-900 focus:outline-none bg-white rounded-lg border border-gray-200 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:ring-1 focus:ring-gray-200 dark:focus:ring-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-700"
                                     type="button">
                                 <twig:ux:icon name="flowbite:filter-solid" class="h-4 w-4 mr-2 text-gray-400"/>
                                 Filter
@@ -44,13 +44,14 @@
                 </div>
             </div>
             <turbo-frame id="{{ section|slug }}-table" data-turbo-action="advance">
-                <div class="p-4 text-sm text-gray-500 dark:text-gray-400">
-                    <p class="p-5 mb-3 flex justify-between overflow-auto border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                <div class="p-3 text-sm text-gray-500 dark:text-gray-400">
+                    <p class="p-3 mb-3 flex justify-between overflow-auto border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                         {% block list_sort %}No sortable options{% endblock %}
                     </p>
                     <ul class="space-y-3">
                         {% for result in results %}
-                            <li class="relative p-5 text-sm text-gray-500 dark:text-gray-400 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+                            <li class="relative p-3 text-sm text-gray-500 dark:text-gray-400 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                {% block list_item_edit %}
                                 <a href="{{ path('app_'~section|lower|u.snake~'_edit', {'id': result.id }) }}"
                                    class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-gray-600 rounded-full shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600"
                                    data-turbo-prefetch="false"
@@ -58,6 +59,7 @@
                                 >
                                     <twig:ux:icon name="mynaui:edit-one" class="w-6 h-6 p-0.5"/>
                                 </a>
+                                {% endblock %}
                                 <a href="{{ path('app_'~section|lower|u.snake~'_show', {'id': result.id }) }}"
                                    data-turbo-prefetch="false"
                                    target="_top"

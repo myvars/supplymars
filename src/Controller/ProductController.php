@@ -5,8 +5,11 @@ namespace App\Controller;
 use App\Entity\Product;
 use App\Form\ProductType;
 use App\Repository\ProductRepository;
-use App\Service\CrudHelper;
-use App\Strategy\ProductCrudStrategy;
+use App\Service\Crud\CrudCreator;
+use App\Service\Crud\CrudDeleter;
+use App\Service\Crud\CrudIndexer;
+use App\Service\Crud\CrudUpdater;
+use App\Service\Crud\CrudReader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -15,64 +18,42 @@ use Symfony\Component\Routing\Attribute\Route;
 class ProductController extends AbstractController
 {
     public const SECTION = 'Product';
-    public const COLUMNS = 2;
-
-    public function __construct(
-        private readonly CrudHelper $crudHelper,
-        ProductCrudStrategy $crudStrategy
-    )
-    {
-        $this->crudHelper->setSection(self::SECTION);
-        $this->crudHelper->setStrategy($crudStrategy);
-    }
 
     #[Route('/', name: 'app_product_index', methods: ['GET'])]
-    public function index(ProductRepository $productRepository): Response
+    public function index(ProductRepository $repository, CrudIndexer $crudIndexer): Response
     {
         $sortOptions = ['id', 'name', 'cost', 'stock', 'sellPriceIncVat', 'isActive'];
 
-        return $this->crudHelper->renderIndex(
-            $productRepository,
-            $sortOptions
-        );
+        return $crudIndexer->index(self::SECTION, $repository, $sortOptions);
     }
 
     #[Route('/new', name: 'app_product_new', methods: ['GET', 'POST'])]
-    public function new(): Response
+    public function new(CrudCreator $crudCreator): Response
     {
-        return $this->crudHelper->renderCreate(
-            new Product(),
-            ProductType::class,
-            self::COLUMNS
-        );
+        return $crudCreator->create(self::SECTION, new Product(), ProductType::class);
     }
 
     #[Route('/{id}', name: 'app_product_show', methods: ['GET'])]
-    public function show(?Product $product): Response
+    public function show(?Product $product, CrudReader $crudReader): Response
     {
-        //        #[MapEntity(expr: 'repository.findFullProduct(id)')]
-        return $this->crudHelper->renderShow($product);
+        return $crudReader->read(self::SECTION, $product);
     }
 
     #[Route('/{id}/edit', name: 'app_product_edit', methods: ['GET', 'POST'])]
-    public function edit(?Product $product): Response
+    public function edit(?Product $product, CrudUpdater $crudUpdater): Response
     {
-        return $this->crudHelper->renderUpdate(
-            $product,
-            ProductType::class,
-            self::COLUMNS
-        );
+        return $crudUpdater->update(self::SECTION, $product, ProductType::class);
     }
 
     #[Route('/{id}/delete/confirm', name: 'app_product_delete_confirm', methods: ['GET'])]
-    public function deleteConfirm(?Product $product): Response
+    public function deleteConfirm(?Product $product, CrudDeleter $crudDeleter): Response
     {
-        return $this->crudHelper->renderDeleteConfirm($product);
+        return $crudDeleter->deleteConfirm(self::SECTION, $product);
     }
 
     #[Route('/{id}/delete', name: 'app_product_delete', methods: ['POST'])]
-    public function delete(?Product $product): Response
+    public function delete(?Product $product, CrudDeleter $crudDeleter): Response
     {
-        return $this->crudHelper->renderDelete($product);
+        return $crudDeleter->delete(self::SECTION, $product);
     }
 }

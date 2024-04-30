@@ -4,7 +4,7 @@ namespace App\Command;
 
 use App\Entity\Supplier;
 use App\Entity\SupplierProduct;
-use App\Service\ProductGenerator;
+use App\Service\Product\ProductGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;

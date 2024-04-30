@@ -99,12 +99,14 @@ class ProductImage
         return $this->imageOriginalName;
     }
 
-    public function setImageFile(UploadedFile $imageFile): void
+    public function setImageFile(UploadedFile $imageFile): static
     {
         $this->imageFile = $imageFile;
         $this->imageSize = $imageFile->getSize();
         $this->imageMimeType = $imageFile->getMimeType();
         $this->imageOriginalName = $imageFile->getClientOriginalName();
+
+        return $this;
     }
 
     public function getImageFile(): ?UploadedFile

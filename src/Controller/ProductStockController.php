@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Product;
-use App\Service\CrudHelper;
+use App\Service\Crud\CrudHelper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -13,16 +13,11 @@ class ProductStockController extends AbstractController
 {
     public const SECTION = 'Product';
 
-    public function __construct(private readonly CrudHelper $crudHelper)
-    {
-        $this->crudHelper->setSection(self::SECTION);
-    }
-
     #[Route('/{id}/stock', name: 'app_product_stock', methods: ['GET'])]
-    public function stock(?Product $product): Response
+    public function stock(?Product $product, CrudHelper $crudHelper): Response
     {
         if (!$product) {
-            return $this->crudHelper->renderShowEmpty(self::SECTION);
+            return $crudHelper->showEmpty(self::SECTION);
         }
 
         return $this->render('product/stock.html.twig', [

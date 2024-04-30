@@ -27,6 +27,7 @@ class AppFixtures extends Fixture
         $vatRate = VatRateFactory::createOne([
             'name' => 'Standard rate',
             'rate' => 20,
+            'isDefaultVatRate' => true,
         ]);
 
         VatRateFactory::createOne([

@@ -3,7 +3,7 @@
 namespace App\Tests\Unit\Service;
 
 use App\Entity\PriceModel;
-use App\Service\MarkupCalculator;
+use App\Service\Product\MarkupCalculator;
 use PHPUnit\Framework\TestCase;
 
 class MarkupCalculatorTest extends TestCase

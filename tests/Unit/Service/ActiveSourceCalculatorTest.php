@@ -7,7 +7,7 @@ use App\Entity\Product;
 use App\Entity\Supplier;
 use App\Entity\SupplierProduct;
 use App\Repository\ProductRepository;
-use App\Service\ActiveSourceCalculator;
+use App\Service\Product\ActiveSourceCalculator;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 

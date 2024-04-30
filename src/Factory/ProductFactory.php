@@ -5,7 +5,7 @@ namespace App\Factory;
 use App\Entity\PriceModel;
 use App\Entity\Product;
 use App\Repository\ProductRepository;
-use App\Service\ProductPriceCalculator;
+use App\Service\Product\ProductPriceCalculator;
 use Zenstruck\Foundry\ModelFactory;
 use Zenstruck\Foundry\Proxy;
 use Zenstruck\Foundry\RepositoryProxy;

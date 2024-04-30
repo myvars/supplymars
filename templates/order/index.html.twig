@@ -1,0 +1,44 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ section }} index{% endblock %}
+
+{% block body %}
+    <twig:DataList
+        section="{{ section }}"
+        results="{{ results }}"
+    >
+        <twig:block name="list_sort">
+            <twig:SortLink sortValue="id">Id</twig:SortLink>
+            <twig:SortLink sortValue="customer.fullName">Customer</twig:SortLink>
+            <twig:SortLink sortValue="status">Status</twig:SortLink>
+        </twig:block>
+
+        <twig:block name="list_item">
+            <p class="mb-1 items-center text-xl text-gray-900 dark:text-white">Order {{ '%06d'|format(result.id) }}</p>
+            <p class="mb-2 items-center text-sm text-gray-600 dark:text-gray-500">
+                <span class="text-gray-500 dark:text-gray-400">{{ result.customerOrderRef }}</span>
+            </p>
+            <p class="flex justify-between items-center">
+                <span class="me-1 text-xl font-extralight">£{{ result.totalPriceIncVat|number_format(2) }}</span>
+                    <span class="me-1 text-gray-600 dark:text-gray-500">{{ result.customer.fullName }}</span>
+                <span class="text-gray-500">{{ result.status }}</span>
+            </p>
+            <twig:block name="list_item_edit"></twig:block>
+        </twig:block>
+
+        <twig:block name="list_add">
+            <twig:Button
+                tag="a"
+                href="{{ path('app_'~section|lower|u.snake~'_new') }}"
+                class="flex items-center space-x-1 font-bold"
+                data-turbo-frame="modal"
+            >
+                <twig:ux:icon name="flowbite:circle-plus-outline" class="w-5"/>
+                <span>Add {{ section }}</span>
+            </twig:Button>
+        </twig:block>
+
+        <twig:block name="filter"></twig:block>
+    </twig:DataList>
+
+{% endblock %}

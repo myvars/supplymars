@@ -5,7 +5,11 @@ namespace App\Controller;
 use App\Entity\Subcategory;
 use App\Form\SubcategoryType;
 use App\Repository\SubcategoryRepository;
-use App\Service\CrudHelper;
+use App\Service\Crud\CrudCreator;
+use App\Service\Crud\CrudDeleter;
+use App\Service\Crud\CrudIndexer;
+use App\Service\Crud\CrudUpdater;
+use App\Service\Crud\CrudReader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -15,55 +19,41 @@ class SubcategoryController extends AbstractController
 {
     public const SECTION = 'Subcategory';
 
-    public function __construct(private readonly CrudHelper $crudHelper)
-    {
-        $this->crudHelper->setSection(self::SECTION);
-    }
-
     #[Route('/', name: 'app_subcategory_index', methods: ['GET'])]
-    public function index(SubcategoryRepository $subcategoryRepository): Response
+    public function index(SubcategoryRepository $repository, CrudIndexer $crudIndexer): Response
     {
         $sortOptions = ['id', 'name', 'category.name', 'defaultMarkup', 'isActive'];
 
-        return $this->crudHelper->renderIndex(
-            $subcategoryRepository,
-            $sortOptions
-        );
+        return $crudIndexer->index(self::SECTION, $repository, $sortOptions);
     }
 
     #[Route('/new', name: 'app_subcategory_new', methods: ['GET', 'POST'])]
-    public function new(): Response
+    public function new(CrudCreator $crudCreator): Response
     {
-        return $this->crudHelper->renderCreate(
-            new Subcategory(),
-            SubcategoryType::class
-        );
+        return $crudCreator->create(self::SECTION, new Subcategory(), SubcategoryType::class);
     }
 
     #[Route('/{id}', name: 'app_subcategory_show', methods: ['GET'])]
-    public function show(?Subcategory $subcategory): Response
+    public function show(?Subcategory $subcategory, CrudReader $crudReader): Response
     {
-        return $this->crudHelper->renderShow($subcategory);
+        return $crudReader->read(self::SECTION, $subcategory);
     }
 
     #[Route('/{id}/edit', name: 'app_subcategory_edit', methods: ['GET', 'POST'])]
-    public function edit(?Subcategory $subcategory): Response
+    public function edit(?Subcategory $subcategory, CrudUpdater $crudUpdater): Response
     {
-        return $this->crudHelper->renderUpdate(
-            $subcategory,
-            SubcategoryType::class
-        );
+        return $crudUpdater->update(self::SECTION, $subcategory, SubcategoryType::class);
     }
 
     #[Route('/{id}/delete/confirm', name: 'app_subcategory_delete_confirm', methods: ['GET'])]
-    public function deleteConfirm(?Subcategory $subcategory): Response
+    public function deleteConfirm(?Subcategory $subcategory, CrudDeleter $crudDeleter): Response
     {
-        return $this->crudHelper->renderDeleteConfirm($subcategory);
+        return $crudDeleter->deleteConfirm(self::SECTION, $subcategory);
     }
 
     #[Route('/{id}/delete', name: 'app_subcategory_delete', methods: ['POST'])]
-    public function delete(?Subcategory $subcategory): Response
+    public function delete(?Subcategory $subcategory, CrudDeleter $crudDeleter): Response
     {
-        return $this->crudHelper->renderDelete($subcategory);
+        return $crudDeleter->delete(self::SECTION, $subcategory);
     }
 }

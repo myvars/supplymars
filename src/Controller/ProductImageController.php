@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Product;
 use App\Entity\ProductImage;
-use App\Service\CrudHelper;
+use App\Service\Crud\CrudHelper;
 use App\Service\UploadHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,8 +17,9 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 #[Route('/product')]
 class ProductImageController extends AbstractController
 {
+    public const SECTION = 'Product';
+
     public function __construct(
-        private readonly CrudHelper $crudHelper,
         private readonly UploadHelper $uploadHelper,
         private readonly EntityManagerInterface $entityManager,
         #[Autowire('%app.product_uploads%')]
@@ -31,25 +32,30 @@ class ProductImageController extends AbstractController
         ?Product $product,
         EntityManagerInterface $entityManager,
         UploadHelper $uploadHelper,
+        CrudHelper $crudHelper
     ): Response {
         if (!$product) {
-            return $this->crudHelper->renderShowEmpty('Product');
+            return $crudHelper->showEmpty(self::SECTION);
         }
 
-        return $this->render('product/images.html.twig', [
-            'result' => $product,
-        ]);
+        return $this->render('product/images.html.twig', ['result' => $product]);
     }
 
     #[Route('/{id}/images/create', name: 'app_product_image_create', methods: ['POST'])]
-    public function create(Request $request, ?Product $product, ValidatorInterface $validator): Response
+    public function create(
+        Request $request,
+        ?Product $product,
+        ValidatorInterface $validator,
+        CrudHelper $crudHelper,
+    ): Response
     {
         $nextPosition = $this->getNextPosition($product);
         foreach ($request->files->get('imageFile') as $imageFile) {
-            $productImage = new ProductImage();
-            $productImage->setProduct($product);
-            $productImage->setImageFile($imageFile);
-            $productImage->setPosition($nextPosition);
+            $productImage = (new ProductImage())
+                ->setProduct($product)
+                ->setImageFile($imageFile)
+                ->setPosition($nextPosition)
+            ;
             $errors = $validator->validate($productImage);
             if (count($errors) > 0) {
                 $this->addFlash(
@@ -58,7 +64,6 @@ class ProductImageController extends AbstractController
                 );
                 continue;
             }
-
             $this->createProductImage($productImage);
             $this->addFlash(
                 'success',
@@ -68,7 +73,7 @@ class ProductImageController extends AbstractController
         }
 
         if ($request->headers->has('turbo-frame')) {
-            return $this->crudHelper->streamRefresh();
+            return $crudHelper->streamRefresh();
         }
 
         return $this->redirectToRoute('app_product_images', [
@@ -77,7 +82,11 @@ class ProductImageController extends AbstractController
     }
 
     #[Route('/images/{id}/remove', name: 'app_product_image_remove', methods: ['GET'])]
-    public function remove(Request $request, ?ProductImage $productImage): Response
+    public function remove(
+        Request $request,
+        ?ProductImage $productImage,
+        CrudHelper $crudHelper
+    ): Response
     {
         $product = $productImage->getProduct();
         $this->entityManager->remove($productImage);
@@ -88,7 +97,7 @@ class ProductImageController extends AbstractController
         );
 
         if ($request->headers->has('turbo-frame')) {
-            return $this->crudHelper->streamRefresh();
+            return $crudHelper->streamRefresh();
         }
 
         return $this->redirectToRoute('app_product_images', [
@@ -115,9 +124,7 @@ class ProductImageController extends AbstractController
             $product->getProductImages(),
             200,
             [],
-            [
-                'groups' => ['main'],
-            ]
+            ['groups' => ['main']]
         );
     }
 
@@ -132,7 +139,6 @@ class ProductImageController extends AbstractController
 
     private function getNextPosition(mixed $product): int
     {
-        return $this->entityManager->getRepository(ProductImage::class)
-            ->getNextPositionForProduct($product);
+        return $this->entityManager->getRepository(ProductImage::class)->getNextPositionForProduct($product);
     }
 }

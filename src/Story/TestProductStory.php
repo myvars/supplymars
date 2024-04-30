@@ -11,8 +11,8 @@ use App\Factory\SupplierFactory;
 use App\Factory\SupplierProductFactory;
 use App\Factory\UserFactory;
 use App\Factory\VatRateFactory;
-use App\Service\ActiveSourceCalculator;
-use App\Service\ProductPriceCalculator;
+use App\Service\Product\ActiveSourceCalculator;
+use App\Service\Product\ProductPriceCalculator;
 use Zenstruck\Foundry\Story;
 
 final class TestProductStory extends Story

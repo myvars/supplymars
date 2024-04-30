@@ -6,7 +6,7 @@ namespace App\Tests\Unit\EventListener;
 use App\Entity\Product;
 use App\Entity\SupplierProduct;
 use App\EventListener\SupplierProductStockUpdater;
-use App\Service\ActiveSourceCalculator;
+use App\Service\Product\ActiveSourceCalculator;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use PHPUnit\Framework\TestCase;
 

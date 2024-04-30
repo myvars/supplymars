@@ -8,8 +8,8 @@ use App\Entity\PriceModel;
 use App\Entity\Product;
 use App\Entity\Subcategory;
 use App\Entity\VatRate;
-use App\Service\MarkupCalculator;
-use App\Service\ProductPriceCalculator;
+use App\Service\Product\MarkupCalculator;
+use App\Service\Product\ProductPriceCalculator;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 

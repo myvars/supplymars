@@ -28,6 +28,9 @@ class VatRate
     #[Assert\PositiveOrZero(message: 'Please enter a positive or zero VAT rate')]
     private ?string $rate = null;
 
+    #[ORM\Column]
+    private bool $isDefaultVatRate = false;
+
     #[ORM\OneToMany(mappedBy: 'vatRate', targetEntity: Category::class)]
     private Collection $categories;
 
@@ -61,6 +64,18 @@ class VatRate
     public function setRate(?string $rate): static
     {
         $this->rate = $rate;
+
+        return $this;
+    }
+
+    public function isIsDefaultVatRate(): ?bool
+    {
+        return $this->isDefaultVatRate;
+    }
+
+    public function setIsDefaultVatRate(bool $isDefaultVatRate): static
+    {
+        $this->isDefaultVatRate = $isDefaultVatRate;
 
         return $this;
     }

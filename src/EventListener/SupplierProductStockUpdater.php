@@ -4,7 +4,7 @@ namespace App\EventListener;
 
 use App\Entity\Product;
 use App\Entity\SupplierProduct;
-use App\Service\ActiveSourceCalculator;
+use App\Service\Product\ActiveSourceCalculator;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;

@@ -5,7 +5,11 @@ namespace App\Controller;
 use App\Entity\Supplier;
 use App\Form\SupplierType;
 use App\Repository\SupplierRepository;
-use App\Service\CrudHelper;
+use App\Service\Crud\CrudCreator;
+use App\Service\Crud\CrudDeleter;
+use App\Service\Crud\CrudIndexer;
+use App\Service\Crud\CrudUpdater;
+use App\Service\Crud\CrudReader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -15,52 +19,41 @@ class SupplierController extends AbstractController
 {
     public const SECTION = 'Supplier';
 
-    public function __construct(private readonly CrudHelper $crudHelper)
-    {
-        $this->crudHelper->setSection(self::SECTION);
-    }
-
     #[Route('/', name: 'app_supplier_index', methods: ['GET'])]
-    public function index(SupplierRepository $supplierRepository): Response
+    public function index(SupplierRepository $repository, CrudIndexer $crudIndexer): Response
     {
         $sortOptions = ['id', 'name', 'isActive'];
 
-        return $this->crudHelper->renderIndex(
-            $supplierRepository,
-            $sortOptions
-        );
+        return $crudIndexer->index(self::SECTION, $repository, $sortOptions);
     }
 
     #[Route('/new', name: 'app_supplier_new', methods: ['GET', 'POST'])]
-    public function new(): Response
+    public function new(CrudCreator $crudCreator): Response
     {
-        return $this->crudHelper->renderCreate(new Supplier(), SupplierType::class);
+        return $crudCreator->create(self::SECTION, new Supplier(), SupplierType::class);
     }
 
     #[Route('/{id}', name: 'app_supplier_show', methods: ['GET'])]
-    public function show(?Supplier $supplier): Response
+    public function show(?Supplier $supplier, CrudReader $crudReader): Response
     {
-        return $this->crudHelper->renderShow($supplier);
+        return $crudReader->read(self::SECTION, $supplier);
     }
 
     #[Route('/{id}/edit', name: 'app_supplier_edit', methods: ['GET', 'POST'])]
-    public function edit(Supplier $supplier): Response
+    public function edit(Supplier $supplier, CrudUpdater $crudUpdater): Response
     {
-        return $this->crudHelper->renderUpdate(
-            $supplier,
-            SupplierType::class
-        );
+        return $crudUpdater->update(self::SECTION, $supplier, SupplierType::class);
     }
 
     #[Route('/{id}/delete/confirm', name: 'app_supplier_delete_confirm', methods: ['GET'])]
-    public function deleteConfirm(?Supplier $supplier): Response
+    public function deleteConfirm(?Supplier $supplier, CrudDeleter $crudDeleter): Response
     {
-        return $this->crudHelper->renderDeleteConfirm($supplier);
+        return $crudDeleter->deleteConfirm(self::SECTION, $supplier);
     }
 
     #[Route('/{id}/delete', name: 'app_supplier_delete', methods: ['POST'])]
-    public function delete(?Supplier $supplier): Response
+    public function delete(?Supplier $supplier, CrudDeleter $crudDeleter): Response
     {
-        return $this->crudHelper->renderDelete($supplier);
+        return $crudDeleter->delete(self::SECTION, $supplier);
     }
 }

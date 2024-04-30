@@ -3,8 +3,8 @@
 namespace App\Tests\Integration\EventListener;
 
 use App\Entity\ProductImage;
-use App\Service\ActiveSourceCalculator;
-use App\Service\ProductPriceCalculator;
+use App\Service\Product\ActiveSourceCalculator;
+use App\Service\Product\ProductPriceCalculator;
 use App\Service\UploadHelper;
 use App\Tests\Utilities\TestProduct;
 use Doctrine\ORM\EntityManagerInterface;

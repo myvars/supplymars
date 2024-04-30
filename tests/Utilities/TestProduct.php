@@ -3,8 +3,8 @@
 namespace App\Tests\Utilities;
 
 use App\Entity\Product;
-use App\Service\ActiveSourceCalculator;
-use App\Service\ProductPriceCalculator;
+use App\Service\Product\ActiveSourceCalculator;
+use App\Service\Product\ProductPriceCalculator;
 use App\Story\TestProductStory;
 use Doctrine\ORM\EntityManagerInterface;
 

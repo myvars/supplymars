@@ -4,17 +4,17 @@
 
 {% block detail %}
 
-    <div class="p-4 space-y-4 md:space-y-6 text-sm text-gray-500 dark:text-gray-400">
-        <div class="mb-8">
-            <h1 class="mb-4 text-2xl font-semibold text-white">
+    <div class="p-3 space-y-3 text-sm text-gray-500 dark:text-gray-400">
+        <div class="mb-6">
+            <h1 class="mb-3 text-xl text-gray-900 dark:text-white">
                 Product Stock
                 <span class="ms-3 text-base font-light text-sm text-gray-500 dark:text-gray-400">
                     {{ result.supplierProducts|length }} {% if result.supplierProducts|length == 1 %}source{% else %}sources{% endif %}
                 </span>
             </h1>
             {% if result.isActive and result.category.isActive and result.subcategory.isActive and result.activeProductSource is not null %}
-                <section class="mb-6 border border-gray-700 rounded-lg bg-white dark:bg-gray-900">
-                    <div class="px-4 py-8 lg:py-12 lg:px-6 mx-auto max-w-screen-xl text-center font-bold">
+                <section class="mb-3 border border-gray-700 rounded-lg bg-white dark:bg-gray-900">
+                    <div class="px-3 py-6 mx-auto max-w-screen-xl text-center font-bold">
                         <dl class="grid max-w-screen-md mx-auto sm:grid-cols-2 gap-8 items-center">
                             <div>
                                 <dt class="mb-2 font-light">Cost Price</dt>
@@ -34,7 +34,7 @@
             {% if result.isActive and result.category.isActive and result.subcategory.isActive and result.activeProductSource is not null %}
             {% else %}
                 <section class="bg-white dark:bg-gray-900 border border-gray-700 rounded-lg">
-                    <div class="p-4 text-center">
+                    <div class="p-3 text-center">
                         <p class="mb-2 text-2xl font-light text-red-400 dark:text-red-400">Inactive Product</p>
                         {% if result.activeProductSource is null %}
                             <p class="font-light">No Active Supplier</p>
@@ -45,14 +45,14 @@
                 </section>
             {% endif %}
         </div>
-        <div class="flex flex-wrap justify-center gap-8">
+        <div class="flex flex-wrap justify-center gap-6">
             {% for supplierProduct in result.supplierProducts %}
                 {{ include('supplier_product/_supplier_product_stock_card.html.twig', {
                     supplierProduct: supplierProduct,
                     activeProductSource: result.activeProductSource,
                 }) }}
             {% else %}
-                <p class="mb-1 text-2xl">No supplier products found</p>
+                <p class="mb-1 text-xl">No supplier products found</p>
             {% endfor %}
         </div>
     </div>

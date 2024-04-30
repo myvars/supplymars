@@ -22,6 +22,11 @@ class VatRateRepository extends ServiceEntityRepository
         parent::__construct($registry, VatRate::class);
     }
 
+    public function findDefaultVatRate(): ?VatRate
+    {
+        return $this->findOneBy(['isDefaultVatRate' => true]);
+    }
+
     public function findBySearch(?string $query, ?int $limit = null): array
     {
         $qb = $this->findBySearchQueryBuilder($query);

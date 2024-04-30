@@ -1,0 +1,289 @@
+<?php
+
+namespace App\Entity;
+
+use App\Repository\PurchaseOrderRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Component\Validator\Constraints as Assert;
+
+#[ORM\Entity(repositoryClass: PurchaseOrderRepository::class)]
+class PurchaseOrder
+{
+    use TimestampableEntity;
+
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column]
+    private ?int $id = null;
+
+    #[ORM\ManyToOne(inversedBy: 'purchaseOrders')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?CustomerOrder $customerOrder = null;
+
+    #[ORM\ManyToOne(inversedBy: 'purchaseOrders')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Supplier $supplier = null;
+
+    #[ORM\ManyToOne(inversedBy: 'purchaseOrders')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Address $shippingAddress = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: 'Please enter a billing address')]
+    private Address $billingAddress;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $orderRef = null;
+
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Please enter a shipping method')]
+    private ShippingMethod $shippingMethod;
+
+    #[ORM\Column]
+    #[Assert\NotBlank(message: 'Please enter a due date')]
+    private \DateTimeImmutable $dueDate;
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Assert\NotBlank(message: 'Please enter a shipping price')]
+    #[Assert\Range(notInRangeMessage: 'Please enter a shipping price (0 to 100000)', min: 0, max: 100000)]
+    private string $shippingPrice = '0';
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Assert\NotBlank(message: 'Please enter a shipping price inc VAT')]
+    #[Assert\Range(notInRangeMessage: 'Please enter a shipping price inc VAT (0 to 100000)', min: 0, max: 100000)]
+    private string $shippingPriceIncVat = '0';
+
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Please enter a status')]
+    private string $status = 'created';
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    private string $totalPrice = '0';
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    private string $totalPriceIncVat = '0';
+
+    #[ORM\Column]
+    private int $totalWeight = 0;
+
+    /**
+     * @var Collection<int, CustomerOrderItem>
+     */
+    #[ORM\OneToMany(mappedBy: 'purchaseOrder', targetEntity: PurchaseOrderItem::class)]
+    #[ORM\OrderBy(['id' => 'DESC'])]
+    private Collection $purchaseOrderItems;
+
+    public function __construct()
+    {
+        $this->purchaseOrderItems = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getCustomerOrder(): ?CustomerOrder
+    {
+
+        return $this->customerOrder;
+    }
+
+    public function setCustomerOrder(?CustomerOrder $customerOrder): static
+    {
+        $this->customerOrder = $customerOrder;
+
+        return $this;
+    }
+
+    public function getSupplier(): ?Supplier
+    {
+        return $this->supplier;
+    }
+
+    public function setSupplier(?Supplier $supplier): static
+    {
+        $this->supplier = $supplier;
+
+        return $this;
+    }
+
+    public function getShippingAddress(): ?Address
+    {
+        return $this->shippingAddress;
+    }
+
+    public function setShippingAddress(?Address $shippingAddress): static
+    {
+        $this->shippingAddress = $shippingAddress;
+
+        return $this;
+    }
+
+    public function getBillingAddress(): Address
+    {
+        return $this->billingAddress;
+    }
+
+    public function setBillingAddress(Address $billingAddress): static
+    {
+        $this->billingAddress = $billingAddress;
+
+        return $this;
+    }
+
+    public function getOrderRef(): ?string
+    {
+        return $this->orderRef;
+    }
+
+    public function setOrderRef(?string $orderRef): static
+    {
+        $this->orderRef = $orderRef;
+
+        return $this;
+    }
+
+    public function getShippingMethod(): ShippingMethod
+    {
+        return $this->shippingMethod;
+    }
+
+    public function setShippingMethod(ShippingMethod $shippingMethod): static
+    {
+        $this->shippingMethod = $shippingMethod;
+
+        return $this;
+    }
+
+    public function getDueDate(): \DateTimeImmutable
+    {
+        return $this->dueDate;
+    }
+
+    public function setDueDate(\DateTimeImmutable $dueDate): static
+    {
+        $this->dueDate = $dueDate;
+
+        return $this;
+    }
+
+    public function getShippingPrice(): string
+    {
+        return $this->shippingPrice;
+    }
+
+    public function setShippingPrice(string $shippingPrice): static
+    {
+        $this->shippingPrice = $shippingPrice;
+
+        return $this;
+    }
+
+    public function getShippingPriceIncVat(): string
+    {
+        return $this->shippingPriceIncVat;
+    }
+
+    public function setShippingPriceIncVat(string $shippingPriceIncVat): static
+    {
+        $this->shippingPriceIncVat = $shippingPriceIncVat;
+
+        return $this;
+    }
+
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(string $status): static
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function getTotalPrice(): string
+    {
+        return $this->totalPrice;
+    }
+
+    public function getTotalPriceIncVat(): string
+    {
+        return $this->totalPriceIncVat;
+    }
+
+    public function getTotalWeight(): int
+    {
+        return $this->totalWeight;
+    }
+
+    /**
+     * @return Collection<int, PurchaseOrderItem>
+     */
+    public function getPurchaseOrderItems(): Collection
+    {
+        return $this->purchaseOrderItems;
+    }
+
+    public function addPurchaseOrderItem(PurchaseOrderItem $purchaseOrderItem): static
+    {
+        if (!$this->purchaseOrderItems->contains($purchaseOrderItem)) {
+            $this->purchaseOrderItems->add($purchaseOrderItem);
+            $purchaseOrderItem->setPurchaseOrder($this);
+        }
+        $this->recalculateTotal();
+
+        return $this;
+    }
+
+    public function removePurchaseOrderItem(PurchaseOrderItem $purchaseOrderItem): static
+    {
+        if ($this->purchaseOrderItems->removeElement($purchaseOrderItem)) {
+            // set the owning side to null (unless already changed)
+            if ($purchaseOrderItem->getPurchaseOrder() === $this) {
+                $purchaseOrderItem->setPurchaseOrder(null);
+            }
+        }
+        $this->recalculateTotal();
+
+        return $this;
+    }
+
+    public function setShippingDetailsFromShippingMethod(ShippingMethod $shippingMethod, VatRate $vatRate): static
+    {
+        $this->setShippingMethod($shippingMethod);
+        $this->setShippingPrice($shippingMethod->getPrice());
+        $this->setShippingPriceIncVat($shippingMethod->getPriceIncVat($vatRate));
+        $this->setDueDate($shippingMethod->getDueDate());
+        $this->recalculateTotal();
+
+        return $this;
+    }
+
+    public function recalculateTotal(): void
+    {
+        $totalPrice = 0;
+        $totalPriceIncVat = 0;
+        $totalWeight = 0;
+
+        foreach ($this->purchaseOrderItems as $purchaseOrderItem) {
+            $totalPrice += $purchaseOrderItem->getTotalPrice();
+            $totalPriceIncVat += $purchaseOrderItem->getTotalPriceIncVat();
+            $totalWeight += $purchaseOrderItem->getTotalWeight();
+        }
+
+        $totalPrice += (float) $this->shippingPrice;
+        $totalPriceIncVat += (float) $this->shippingPriceIncVat;
+
+        $this->totalPrice = (string) $totalPrice;
+        $this->totalPriceIncVat = (string) $totalPriceIncVat;
+        $this->totalWeight = $totalWeight;
+    }
+}

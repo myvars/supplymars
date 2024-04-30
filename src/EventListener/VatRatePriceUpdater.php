@@ -4,7 +4,7 @@ namespace App\EventListener;
 
 use App\Entity\Product;
 use App\Entity\VatRate;
-use App\Service\ProductPriceCalculator;
+use App\Service\Product\ProductPriceCalculator;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;

@@ -6,7 +6,7 @@ namespace App\Tests\Integration\Service;
 use App\Factory\ProductFactory;
 use App\Factory\SupplierFactory;
 use App\Factory\SupplierProductFactory;
-use App\Service\ActiveSourceCalculator;
+use App\Service\Product\ActiveSourceCalculator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;

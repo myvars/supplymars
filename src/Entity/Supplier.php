@@ -38,12 +38,19 @@ class Supplier
     #[ORM\OneToMany(mappedBy: 'supplier', targetEntity: SupplierProduct::class)]
     private Collection $supplierProducts;
 
+    /**
+     * @var Collection<int, PurchaseOrder>
+     */
+    #[ORM\OneToMany(mappedBy: 'supplier', targetEntity: PurchaseOrder::class)]
+    private Collection $purchaseOrders;
+
     public function __construct()
     {
         $this->supplierCategories = new ArrayCollection();
         $this->supplierSubcategories = new ArrayCollection();
         $this->supplierManufacturers = new ArrayCollection();
         $this->supplierProducts = new ArrayCollection();
+        $this->purchaseOrders = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -189,6 +196,36 @@ class Supplier
             // set the owning side to null (unless already changed)
             if ($supplierProduct->getSupplier() === $this) {
                 $supplierProduct->setSupplier(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, PurchaseOrder>
+     */
+    public function getPurchaseOrders(): Collection
+    {
+        return $this->purchaseOrders;
+    }
+
+    public function addPurchaseOrder(PurchaseOrder $purchaseOrder): static
+    {
+        if (!$this->purchaseOrders->contains($purchaseOrder)) {
+            $this->purchaseOrders->add($purchaseOrder);
+            $purchaseOrder->setSupplier($this);
+        }
+
+        return $this;
+    }
+
+    public function removePurchaseOrder(PurchaseOrder $purchaseOrder): static
+    {
+        if ($this->purchaseOrders->removeElement($purchaseOrder)) {
+            // set the owning side to null (unless already changed)
+            if ($purchaseOrder->getSupplier() === $this) {
+                $purchaseOrder->setSupplier(null);
             }
         }
 
