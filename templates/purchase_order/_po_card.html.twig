@@ -1,0 +1,24 @@
+<div class="relative h-full bg-white border border-supplier-200 rounded-lg shadow dark:bg-supplier-800 dark:border-supplier-700">
+    <a href="{{ path('app_purchase_order_edit', {id: purchaseOrder.id})}}"
+       class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-supplier-600 rounded-full shadow-lg dark:bg-supplier-700 dark:hover:bg-supplier-600"
+       data-turbo-prefetch="false"
+       data-turbo-frame="modal"
+    >
+        <twig:ux:icon name="mynaui:edit-one" class="w-6 h-6 p-0.5" />
+    </a>
+    <div class="p-3 text-sm text-gray-500 dark:text-gray-400">
+        <h5 class="mb-2 text-xl text-gray-900 dark:text-white">PO #{{ '%06d'|format(result.id) }}</h5>
+        <div class="flex items-center justify-between">
+            <p class="me-10 text-sm">
+                {{ purchaseOrder.createdAt|date() }} |
+                <a href="{{ path('app_order_show', {id: purchaseOrder.customerOrder.id}) }}"
+                   data-turbo-frame="_top"
+                   data-turbo-prefetch="false"
+                   class="text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
+                    Order #{{ '%06d'|format(purchaseOrder.customerOrder.id) }}
+                </a>
+            </p>
+            <p class="">{{ purchaseOrder.status|title }}</p>
+        </div>
+    </div>
+</div>

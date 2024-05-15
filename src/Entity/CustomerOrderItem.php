@@ -172,6 +172,18 @@ class CustomerOrderItem
         $this->totalWeight = bcmul((string)$this->quantity, (string) $this->weight, 3);
     }
 
+    public function getOutstandingQty(): int
+    {
+        $quantity = 0;
+        foreach ($this->getPurchaseOrderItems() as $purchaseOrderItem) {
+            if (!$purchaseOrderItem->isCancelled()) {
+                $quantity += $purchaseOrderItem->getQuantity();
+            }
+        }
+
+        return max(($this->getQuantity() - $quantity), 0);
+    }
+
     /**
      * @return Collection<int, PurchaseOrderItem>
      */

@@ -321,6 +321,17 @@ class Product
         return $this->supplierProducts;
     }
 
+    public function getActiveSupplierProducts(): Collection
+    {
+        $activeSupplierProducts = new ArrayCollection();
+        foreach ($this->supplierProducts as $supplierProduct) {
+            if ($supplierProduct->isIsActive() && $supplierProduct->getSupplier()->isIsActive()) {
+                $activeSupplierProducts->add($supplierProduct);
+            }
+        }
+        return $activeSupplierProducts;
+    }
+
     public function addSupplierProduct(SupplierProduct $supplierProduct): static
     {
         if (!$this->supplierProducts->contains($supplierProduct)) {

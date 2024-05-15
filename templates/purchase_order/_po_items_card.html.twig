@@ -1,0 +1,17 @@
+<div class="relative p-3 h-full bg-white border border-supplier-200 rounded-lg shadow dark:bg-supplier-800 dark:border-supplier-700">
+    <div class="w-full flex justify-between">
+        <p class="text-gray-500 dark:text-gray-400">
+            {{ purchaseOrder.itemCount }} {% if purchaseOrder.itemCount == 1 %}item{% else %}items{% endif %}
+            <span class="ms-1">
+                {{ purchaseOrder.lineCount }} {% if purchaseOrder.lineCount == 1 %}line{% else %}lines{% endif %}
+            </span>
+        </p>
+    </div>
+    <ul class="w-full space-y-3">
+        {% for purchaseOrderItem in purchaseOrder.purchaseOrderItems %}
+            {{ include('purchase_order_item/_po_item_card.html.twig', {purchaseOrderItem: purchaseOrderItem}) }}
+        {% else %}
+            <li class="flex justify-between">No items found</li>
+        {% endfor %}
+    </ul>
+</div>

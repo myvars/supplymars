@@ -73,7 +73,7 @@ class CustomerOrder
      * @var Collection<int, CustomerOrderItem>
      */
     #[ORM\OneToMany(mappedBy: 'customerOrder', targetEntity: CustomerOrderItem::class)]
-    #[ORM\OrderBy(['id' => 'DESC'])]
+    #[ORM\OrderBy(['id' => 'ASC'])]
     private Collection $customerOrderItems;
 
     /**
@@ -277,6 +277,22 @@ class CustomerOrder
         $this->totalPrice = (string) $totalPrice;
         $this->totalPriceIncVat = (string) $totalPriceIncVat;
         $this->totalWeight = $totalWeight;
+    }
+
+    public function getLineCount(): int
+    {
+        return $this->customerOrderItems->count();
+    }
+
+    public function getItemCount(): int
+    {
+        $count = 0;
+        foreach ($this->customerOrderItems as $item) {
+            $count += $item->getQuantity();
+        }
+
+        return $count;
+
     }
 
     /**

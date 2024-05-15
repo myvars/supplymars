@@ -6,16 +6,13 @@
 
     <div class="p-3 space-y-3 text-sm text-gray-500 dark:text-gray-400">
         <div class="space-y-3">
-            {{ include('order/_order_card.html.twig', {order: result}) }}
-            {{ include('order/_order_summary_card.html.twig', {order: result}) }}
-            {{ include('order/_order_items_card.html.twig', {order: result}) }}
-            {% for purchaseOrder in result.purchaseOrders %}
-                {{ include('purchase_order/_order_po_card.html.twig', {purchaseOrder: purchaseOrder}) }}
-            {% endfor %}
+            {{ include('purchase_order/_po_card.html.twig', {purchaseOrder: result}) }}
+            {{ include('purchase_order/_po_summary_card.html.twig', {purchaseOrder: result}) }}
+            {{ include('purchase_order/_po_items_card.html.twig', {purchaseOrder: result}) }}
         </div>
         <div class="mt-4">
             <p>
-                <a href="{{ path('app_order_index') }}"
+                <a href="{{ path('app_purchase_order_index') }}"
                    class="font-light hover:text-gray-300 dark:hover:text-white"
                    data-turbo-frame="_top"
                    data-turbo-prefetch="false"

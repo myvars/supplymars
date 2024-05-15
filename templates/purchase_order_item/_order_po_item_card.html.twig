@@ -1,0 +1,41 @@
+<li class="w-full relative first:mt-3 p-3 text-sm text-gray-500 dark:text-gray-400 border border-supplier-200 rounded-lg shadow dark:bg-supplier-800 dark:border-supplier-700 hover:bg-supplier-50 dark:hover:bg-supplier-700">
+    {% block purchase_order_item_edit %}
+        <a href="{{ path('app_purchase_order_item_edit', {'id': purchaseOrderItem.id }) }}"
+           class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-supplier-600 rounded-full shadow-lg dark:bg-supplier-700 dark:hover:bg-supplier-600"
+           data-turbo-prefetch="false"
+           data-turbo-frame="modal"
+        >
+            <twig:ux:icon name="mynaui:edit-one" class="w-6 h-6 p-0.5"/>
+        </a>
+    {% endblock %}
+    <div data-controller="toggle" data-action="click->toggle#toggle">
+        <div class="flex justify-between items-center">
+            <p class="me-5 text-xs">
+                {% if purchaseOrderItem.customerOrderItem.product.productImages|length > 0 %}
+                    {% set firstImage = purchaseOrderItem.customerOrderItem.product.productImages|first %}
+                    <img class="w-auto rounded-lg"
+                         src="{{ asset(product_uploads~firstImage.imageName) | imagine_filter('my_thumbnail') }}"
+                    >
+                {% else %}
+                    <span class="flex text-center">no image</span>
+                {% endif %}
+            </p>
+            <div class="w-full">
+                <p class="mb-2 text-sm text-gray-300 dark:text-gray-200">{{ purchaseOrderItem.customerOrderItem.product.name|u.truncate(50, '...') }}</p>
+                <p class="flex justify-between items-center">
+                    <span class="me-3 text-lg font-extralight">
+                        £{{ purchaseOrderItem.customerOrderItem.priceIncVat|number_format(2) }}
+                        <span class="ms-3 text-sm">
+                            {% if purchaseOrderItem.quantity is same as purchaseOrderItem.customerOrderItem.quantity %}
+                                Qty: {{ purchaseOrderItem.quantity }}
+                            {% else %}
+                                Qty: {{ purchaseOrderItem.quantity }} of {{ purchaseOrderItem.customerOrderItem.quantity }}
+                            {% endif %}
+                        </span>
+                    </span>
+                    <span class="text-gray-500">{{ purchaseOrderItem.status }}</span>
+                </p>
+            </div>
+        </div>
+    </div>
+</li>

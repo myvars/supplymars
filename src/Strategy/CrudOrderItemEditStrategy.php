@@ -34,6 +34,8 @@ final class CrudOrderItemEditStrategy implements CrudUpdateStrategyInterface
             $entity->getPriceIncVat(),
         );
 
+        $context['customerOrderItem']->getCustomerOrder()->recalculateTotal();
+
         $this->entityManager->persist($context['customerOrderItem']);
         $this->entityManager->flush();
     }

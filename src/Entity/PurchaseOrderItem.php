@@ -85,7 +85,7 @@ class PurchaseOrderItem
         return $this->supplierProduct;
     }
 
-    public function setSupplierProduct(?SupplierProduct $supplierProduct): static
+    private function setSupplierProduct(?SupplierProduct $supplierProduct): static
     {
         $this->supplierProduct = $supplierProduct;
 
@@ -97,8 +97,17 @@ class PurchaseOrderItem
         return $this->quantity;
     }
 
-    public function setQuantity(int $quantity): static
+    public function getMaxQuantity(): int
     {
+        return $this->getCustomerOrderItem()->getOutstandingQty() + $this->getQuantity();
+    }
+
+    private function setQuantity(int $quantity): static
+    {
+        if ($quantity > $this->getMaxQuantity()) {
+            throw new \InvalidArgumentException('Quantity cannot be greater than %s', $maxQuantity);
+        }
+
         $this->quantity = $quantity;
 
         return $this;
@@ -109,7 +118,7 @@ class PurchaseOrderItem
         return $this->price;
     }
 
-    public function setPrice(string $price): static
+    private function setPrice(string $price): static
     {
         $this->price = $price;
 
@@ -121,7 +130,7 @@ class PurchaseOrderItem
         return $this->priceIncVat;
     }
 
-    public function setPriceIncVat(string $priceIncVat): static
+    private function setPriceIncVat(string $priceIncVat): static
     {
         $this->priceIncVat = $priceIncVat;
 
@@ -133,12 +142,19 @@ class PurchaseOrderItem
         return $this->weight;
     }
 
+    private function setWeight(int $weight): static
+    {
+        $this->weight = $weight;
+
+        return $this;
+    }
+
     public function getStatus(): string
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): static
+    private function setStatus(string $status): static
     {
         $this->status = $status;
 
@@ -172,10 +188,45 @@ class PurchaseOrderItem
         return $this->totalWeight;
     }
 
-    public function recalculateTotal(): void
+    public function recalculateTotal(): static
     {
         $this->totalPrice = bcmul((string) $this->quantity, $this->price, 2);
         $this->totalPriceIncVat = bcmul((string) $this->quantity, $this->priceIncVat, 2);
         $this->totalWeight = bcmul((string)$this->quantity, (string) $this->weight, 3);
+
+        return $this;
+    }
+
+    public function isCancelled(): bool
+    {
+        return $this->status === 'cancelled';
+    }
+
+    public static function createFromCustomerOrderItem(
+        CustomerOrderItem $customerOrderItem,
+        PurchaseOrder $purchaseOrder,
+        SupplierProduct $supplierProduct,
+        int $quantity
+    ): static {
+        if ($quantity <= 0) {
+            throw new \InvalidArgumentException('Quantity must be greater than 0');
+        }
+
+        return (new static())
+            ->setPurchaseOrder($purchaseOrder)
+            ->setSupplierProduct($supplierProduct)
+            ->setCustomerOrderItem($customerOrderItem)
+            ->setPrice($supplierProduct->getCost())
+            ->setPriceIncVat($supplierProduct->getCost())
+            ->setWeight($supplierProduct->getWeight())
+            ->setQuantity($quantity)
+            ->recalculateTotal();
+    }
+
+    public function updateItem(int $quantity): static
+    {
+        return $this
+            ->setQuantity($quantity)
+            ->recalculateTotal();
     }
 }

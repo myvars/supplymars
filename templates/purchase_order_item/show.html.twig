@@ -1,17 +1,14 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Order{% endblock %}
+{% block title %}Purchase Order Item{% endblock %}
 
 {% block body %}
 
     <div class="p-3 space-y-3 text-sm text-gray-500 dark:text-gray-400">
         <div class="space-y-3">
-            {{ include('order/_order_card.html.twig', {order: result}) }}
-            {{ include('order/_order_summary_card.html.twig', {order: result}) }}
-            {{ include('order/_order_items_card.html.twig', {order: result}) }}
-            {% for purchaseOrder in result.purchaseOrders %}
-                {{ include('purchase_order/_order_po_card.html.twig', {purchaseOrder: purchaseOrder}) }}
-            {% endfor %}
+            <ul class="p-3 pt-0 w-full space-y-3">
+                {{ include('purchase_order_item/_order_po_item_card.html.twig', {purchaseOrderItem: result}) }}
+            </ul>
         </div>
         <div class="mt-4">
             <p>

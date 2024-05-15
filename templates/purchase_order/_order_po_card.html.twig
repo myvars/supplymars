@@ -1,0 +1,22 @@
+<div class="relative p-3 h-full bg-white border border-supplier-200 rounded-lg shadow dark:bg-supplier-800 dark:border-supplier-700">
+    <div class="w-full flex justify-between">
+    <h1 class="text-gray-300 dark:text-gray-200">
+        {{ purchaseOrder.supplier.name }}
+        <span class="text-sm font-light text-gray-500 dark:text-gray-400 ms-2">
+            <a href="{{ path('app_purchase_order_show', {id: purchaseOrder.id}) }}"
+               data-turbo-frame="_top"
+               data-turbo-prefetch="false"
+               class="text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white"
+            >PO #{{ '%06d'|format(purchaseOrder.id) }}</a>
+        </span>
+    </h1>
+    <p>{{ purchaseOrder.status }}</p>
+    </div>
+    <ul class="w-full space-y-3">
+        {% for purchaseOrderItem in purchaseOrder.purchaseOrderItems %}
+            {{ include('purchase_order_item/_order_po_item_card.html.twig', {purchaseOrderItem: purchaseOrderItem}) }}
+        {% else %}
+            <li class="flex justify-between">No items found</li>
+        {% endfor %}
+    </ul>
+</div>

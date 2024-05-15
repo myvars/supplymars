@@ -23,6 +23,9 @@ class Supplier
     #[Assert\NotBlank(message: 'Please enter a supplier name')]
     private ?string $name = null;
 
+    #[ORM\Column(length: 20)]
+    private string $colourScheme = 'gray';
+
     #[ORM\Column]
     private bool $isActive = false;
 
@@ -67,6 +70,17 @@ class Supplier
     {
         $this->name = $name;
 
+        return $this;
+    }
+
+    public function getColourScheme(): string
+    {
+        return $this->colourScheme;
+    }
+
+    public function setColourScheme(string $colourScheme): Supplier
+    {
+        $this->colourScheme = $colourScheme;
         return $this;
     }
 

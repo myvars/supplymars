@@ -32,21 +32,14 @@ class PurchaseOrder
     #[ORM\JoinColumn(nullable: false)]
     private ?Address $shippingAddress = null;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: 'Please enter a billing address')]
-    private Address $billingAddress;
-
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $orderRef = null;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Please enter a shipping method')]
-    private ShippingMethod $shippingMethod;
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?ShippingMethod $shippingMethod = null;
 
-    #[ORM\Column]
-    #[Assert\NotBlank(message: 'Please enter a due date')]
-    private \DateTimeImmutable $dueDate;
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $dueDate = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     #[Assert\NotBlank(message: 'Please enter a shipping price')]
@@ -75,7 +68,7 @@ class PurchaseOrder
      * @var Collection<int, CustomerOrderItem>
      */
     #[ORM\OneToMany(mappedBy: 'purchaseOrder', targetEntity: PurchaseOrderItem::class)]
-    #[ORM\OrderBy(['id' => 'DESC'])]
+    #[ORM\OrderBy(['id' => 'ASC'])]
     private Collection $purchaseOrderItems;
 
     public function __construct()
@@ -106,7 +99,7 @@ class PurchaseOrder
         return $this->supplier;
     }
 
-    public function setSupplier(?Supplier $supplier): static
+    private function setSupplier(?Supplier $supplier): static
     {
         $this->supplier = $supplier;
 
@@ -125,48 +118,36 @@ class PurchaseOrder
         return $this;
     }
 
-    public function getBillingAddress(): Address
-    {
-        return $this->billingAddress;
-    }
-
-    public function setBillingAddress(Address $billingAddress): static
-    {
-        $this->billingAddress = $billingAddress;
-
-        return $this;
-    }
-
     public function getOrderRef(): ?string
     {
         return $this->orderRef;
     }
 
-    public function setOrderRef(?string $orderRef): static
+    private function setOrderRef(?string $orderRef): static
     {
         $this->orderRef = $orderRef;
 
         return $this;
     }
 
-    public function getShippingMethod(): ShippingMethod
+    public function getShippingMethod(): ?ShippingMethod
     {
         return $this->shippingMethod;
     }
 
-    public function setShippingMethod(ShippingMethod $shippingMethod): static
+    private function setShippingMethod(?ShippingMethod $shippingMethod): static
     {
         $this->shippingMethod = $shippingMethod;
 
         return $this;
     }
 
-    public function getDueDate(): \DateTimeImmutable
+    public function getDueDate(): ?\DateTimeImmutable
     {
         return $this->dueDate;
     }
 
-    public function setDueDate(\DateTimeImmutable $dueDate): static
+    private function setDueDate(?\DateTimeImmutable $dueDate): static
     {
         $this->dueDate = $dueDate;
 
@@ -178,7 +159,7 @@ class PurchaseOrder
         return $this->shippingPrice;
     }
 
-    public function setShippingPrice(string $shippingPrice): static
+    private function setShippingPrice(string $shippingPrice): static
     {
         $this->shippingPrice = $shippingPrice;
 
@@ -190,7 +171,7 @@ class PurchaseOrder
         return $this->shippingPriceIncVat;
     }
 
-    public function setShippingPriceIncVat(string $shippingPriceIncVat): static
+    private function setShippingPriceIncVat(string $shippingPriceIncVat): static
     {
         $this->shippingPriceIncVat = $shippingPriceIncVat;
 
@@ -267,7 +248,7 @@ class PurchaseOrder
         return $this;
     }
 
-    public function recalculateTotal(): void
+    public function recalculateTotal(): static
     {
         $totalPrice = 0;
         $totalPriceIncVat = 0;
@@ -285,5 +266,40 @@ class PurchaseOrder
         $this->totalPrice = (string) $totalPrice;
         $this->totalPriceIncVat = (string) $totalPriceIncVat;
         $this->totalWeight = $totalWeight;
+
+        return $this;
+    }
+
+    public function allowEdit(): bool
+    {
+        return $this->status === 'created';
+    }
+
+    public function getLineCount(): int
+    {
+        return $this->purchaseOrderItems->count();
+    }
+
+    public function getItemCount(): int
+    {
+        $count = 0;
+        foreach ($this->purchaseOrderItems as $item) {
+            $count += $item->getQuantity();
+        }
+
+        return $count;
+
+    }
+
+    public static function createFromCustomerOrder(
+        CustomerOrder $customerOrder,
+        Supplier $supplier,
+    ): static {
+        return (new static())
+            ->setCustomerOrder($customerOrder)
+            ->setSupplier($supplier)
+            ->setShippingAddress($customerOrder->getShippingAddress())
+            ->setOrderRef($customerOrder->getCustomerOrderRef())
+            ->recalculateTotal();
     }
 }

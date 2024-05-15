@@ -10,10 +10,12 @@ use App\Form\OrderItemCreateType;
 use App\Form\OrderItemEditType;
 use App\Service\Crud\CrudCreator;
 use App\Service\Crud\CrudDeleter;
+use App\Service\Crud\CrudHelper;
 use App\Service\Crud\CrudReader;
 use App\Service\Crud\CrudUpdater;
 use App\Strategy\CrudOrderItemCreateStrategy;
 use App\Strategy\CrudOrderItemEditStrategy;
+use App\Strategy\CrudPOItemCreateStrategy;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -113,5 +115,35 @@ class OrderItemController extends AbstractController
         ;
 
         return $crudDeleter->build($crudOptions);
+    }
+
+    #[Route('/item/{id}/supplier/product/{supplierProductId}/po/add', name: 'app_purchase_order_item_add', methods: ['GET'])]
+    public function addToPurchaseOrder(
+        ?CustomerOrderItem $customerOrderItem,
+        int $supplierProductId,
+        CrudHelper $crudHelper,
+        CrudPOItemCreateStrategy $crudStrategy
+    ): Response {
+        $product = $customerOrderItem->getProduct();
+        foreach($product->getSupplierProducts() as $supplierProduct) {
+            if ($supplierProduct->getId() === $supplierProductId) {
+                break;
+            }
+        }
+        try {
+            $crudStrategy->create($customerOrderItem, ['supplierProductId' => $supplierProductId]);
+        } catch (\Exception $e) {
+            $this->addFlash(
+                'danger',
+                'PO item could not be added'
+            );
+        }
+
+        $this->addFlash(
+            'success',
+            'PO item added'
+        );
+
+        return $crudHelper->streamRefresh();
     }
 }

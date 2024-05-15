@@ -24,7 +24,7 @@ class OrderController extends AbstractController
     #[Route('/', name: 'app_order_index', methods: ['GET'])]
     public function index(CustomerOrderRepository $repository, CrudIndexer $crudIndexer): Response
     {
-        $sortOptions = ['id', 'customer.fullName', 'status'];
+        $sortOptions = ['id', 'createdAt', 'customer.fullName', 'totalPriceIncVat', 'status'];
         $crudOptions = $crudIndexer->createOptions(self::SECTION, $repository, $sortOptions)
             ->setSortDefault('id')
             ->setSortDirectionDefault('DESC');

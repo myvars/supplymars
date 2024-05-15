@@ -40,7 +40,7 @@ class CustomerOrderRepository extends ServiceEntityRepository
         $qb = $this->createQueryBuilder('o');
 
         if ($query) {
-            $qb->andWhere('o.name LIKE :query')
+            $qb->andWhere('o.id LIKE :query')
                 ->setParameter('query', '%'.$query.'%');
         }
 

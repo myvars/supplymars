@@ -1,13 +1,11 @@
-<div class="relative h-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-    <div class="p-3 w-full flex justify-between">
-    <h1 class="text-gray-300 dark:text-gray-200">
-        Order Items
-        <span class="text-sm font-light text-gray-500 dark:text-gray-400 ms-2">
-            {{ order.customerOrderItems|length }}
-            {% if order.customerOrderItems|length == 1 %}result{% else %}results{% endif %}
-        </span>
-    </h1>
-
+<div class="p-3 relative h-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+    <div class="w-full flex justify-between items-center">
+        <p class="text-gray-500 dark:text-gray-400">
+            {{ order.itemCount }} {% if order.itemCount == 1 %}item{% else %}items{% endif %}
+            <span class="ms-1">
+                {{ order.lineCount }} {% if order.lineCount == 1 %}line{% else %}lines{% endif %}
+            </span>
+        </p>
     <twig:Button
         tag="a"
         href="{{ path('app_order_item_new', {id: order.id}) }}"
@@ -18,11 +16,9 @@
         <span>Add Item</span>
     </twig:Button>
     </div>
-    <ul class="p-3 pt-0 w-full space-y-3">
+    <ul class="w-full space-y-3">
         {% for orderItem in order.customerOrderItems %}
             {{ include('order_item/_order_item_card.html.twig', {orderItem: orderItem}) }}
-        {% else %}
-            <li class="flex justify-between">No items found</li>
         {% endfor %}
     </ul>
 </div>

@@ -1,4 +1,6 @@
-<li class="w-full relative p-3 text-sm text-gray-500 dark:text-gray-400 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+{% if orderItem.outstandingQty > 0 %}
+<li class="w-full relative first:mt-3 p-3 text-sm text-gray-500 dark:text-gray-400 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+    {% if orderItem.purchaseOrderItems|length is same as 0 %}
     {% block order_item_edit %}
         <a href="{{ path('app_order_item_edit', {'id': orderItem.id }) }}"
            class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-gray-600 rounded-full shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600"
@@ -8,10 +10,8 @@
             <twig:ux:icon name="mynaui:edit-one" class="w-6 h-6 p-0.5"/>
         </a>
     {% endblock %}
-    <a href="{{ path('app_product_show', {'id': orderItem.product.id }) }}"
-       data-turbo-prefetch="false"
-       target="_top"
-    >
+    {% endif %}
+    <div data-controller="toggle" data-action="click->toggle#toggle">
         <div class="flex justify-between items-center">
             <p class="me-5 text-xs">
                 {% if orderItem.product.productImages|length > 0 %}
@@ -29,11 +29,19 @@
                 <p class="flex justify-between items-center">
                     <span class="me-3 text-lg font-extralight">
                         £{{ orderItem.priceIncVat|number_format(2) }}
-                        <span class="ms-3 text-sm">Qty: {{ orderItem.quantity }}</span>
+                        <span class="ms-3 text-sm">
+                            {% if orderItem.outstandingQty is same as orderItem.quantity %}
+                                Qty: {{ orderItem.quantity }}
+                            {% else %}
+                                Qty: {{ orderItem.outstandingQty }} of {{ orderItem.quantity }}
+                            {% endif %}
+                        </span>
                     </span>
                     <span class="text-gray-500">{{ orderItem.status }}</span>
                 </p>
             </div>
         </div>
-    </a>
+        {{ include('order_item/_order_item_supplier_card.html.twig', {orderItem: orderItem}) }}
+    </div>
 </li>
+{% endif %}
