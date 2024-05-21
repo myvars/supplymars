@@ -14,7 +14,7 @@
         </twig:block>
 
         <twig:block name="list_item">
-            <p class="mb-2 items-center text-lg text-gray-900 dark:text-white">{{ result.name|u.truncate(30, '...') }}</p>
+            <p class="mb-1 items-center text-lg text-gray-900 dark:text-white">{{ result.name|u.truncate(30, '...') }}</p>
             <p class="flex justify-end items-center">
                 {% if result.isActive %}
                     <span class="text-green-500">Active</span>

@@ -1,4 +1,4 @@
-<div class="relative h-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+<div class="relative w-full h-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
     <a href="{{ path('app_vat_rate_edit', { id: vatRate.id }) }}"
        class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-gray-600 rounded-full shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600"
        data-turbo-prefetch="false"
@@ -7,13 +7,13 @@
         <twig:ux:icon name="mynaui:edit-one" class="w-6 h-6 p-0.5" />
     </a>
     <div class="p-3 text-sm text-gray-500 dark:text-gray-400">
-        <p class="mb-1 text-gray-500 dark:text-gray-500">VAT Rate</p>
-        <h5 class="mb-3 text-xl text-gray-900 dark:text-white">{{ vatRate.name|u.truncate(30, '...') }}</h5>
-        <p class="mb-2 text-xl font-extralight">
+        <p class="text-gray-500 dark:text-gray-500">VAT Rate</p>
+        <h5 class="text-xl text-gray-900 dark:text-white">{{ vatRate.name|u.truncate(30, '...') }}</h5>
+        <p class="mb-3 text-lg font-extralight">
             {{ vatRate.rate|number_format(2) }}%
             <span class="text-sm font-normal text-gray-500 dark:text-gray-400"> rate</span>
         </p>
-        <p class="me-10 text-xs">Updated {{ vatRate.updatedAt|ago }}</p>
+        <p class="me-10 text-xs text-gray-500 dark:text-gray-500">Updated {{ vatRate.updatedAt|ago }}</p>
     </div>
 </div>
 

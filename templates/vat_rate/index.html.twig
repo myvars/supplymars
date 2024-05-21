@@ -14,8 +14,8 @@
         </twig:block>
 
         <twig:block name="list_item">
-            <p class="mb-2 items-center text-lg text-gray-900 dark:text-white">{{ result.name|u.truncate(30, '...') }}</p>
-            <p class="me-1  flex justify-between items-center text-xl font-extralight">{{ result.rate|number_format(2) }}%</p>
+            <p class="mb-1 items-center text-lg text-gray-900 dark:text-white">{{ result.name|u.truncate(30, '...') }}</p>
+            <p class="me-1  flex justify-between items-center text-lg font-extralight">{{ result.rate|number_format(2) }}%</p>
         </twig:block>
 
         <twig:block name="list_add">

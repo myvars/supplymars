@@ -5,7 +5,7 @@
 {% block detail %}
 
     <div class="p-3 space-y-3 text-sm text-gray-500 dark:text-gray-400">
-        <div class="mb-6">
+        <div class="mb-3">
             <h1 class="mb-3 text-xl text-gray-900 dark:text-white">
                 Product Stock
                 <span class="ms-3 text-base font-light text-sm text-gray-500 dark:text-gray-400">
@@ -45,7 +45,7 @@
                 </section>
             {% endif %}
         </div>
-        <div class="flex flex-wrap justify-center gap-6">
+        <div class="flex flex-wrap justify-center gap-3">
             {% for supplierProduct in result.supplierProducts %}
                 {{ include('supplier_product/_supplier_product_stock_card.html.twig', {
                     supplierProduct: supplierProduct,

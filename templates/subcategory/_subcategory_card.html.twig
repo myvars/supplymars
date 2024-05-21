@@ -1,4 +1,4 @@
-<div class="relative h-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+<div class="relative h-full w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
     <a href="{{ path('app_subcategory_edit', { id: subcategory.id }) }}"
        class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-gray-600 rounded-full shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600"
        data-turbo-prefetch="false"
@@ -7,9 +7,9 @@
         <twig:ux:icon name="mynaui:edit-one" class="w-6 h-6 p-0.5" />
     </a>
     <div class="p-3 text-sm text-gray-500 dark:text-gray-400">
-        <p class="mb-1 text-gray-600 dark:text-gray-500">Subcategory</p>
-        <h5 class="mb-3 text-xl text-gray-900 dark:text-white">{{ subcategory.name|u.truncate(30, '...') }}</h5>
-        <nav class="flex mb-3" aria-label="Breadcrumb">
+        <p class="text-gray-600 dark:text-gray-500">Subcategory</p>
+        <p class="mb-1 text-xl text-gray-900 dark:text-white">{{ subcategory.name|u.truncate(30, '...') }}</p>
+        <nav class="flex mb-2" aria-label="Breadcrumb">
             <ol class="inline-flex items-center space-x-1 md:space-x-2">
                 <li>
                     <div class="flex items-center">
@@ -35,25 +35,25 @@
             </ol>
         </nav>
         {% if subcategory.defaultMarkup > 0 %}
-            <p class="mb-1 text-xl font-extralight">
+            <p class="text-lg font-extralight">
                 {{ subcategory.defaultMarkup|number_format(3) }}%
                 <span class="text-sm font-normal text-gray-500 dark:text-gray-400"> mark-up</span>
             </p>
         {% else %}
-            <p class="mb-1">No subcategory mark-up
+            <p class="font-extralight">No subcategory mark-up
         {% endif %}
         {% if subcategory.priceModel.name is same as 'NONE' %}
-            <p class="mb-3">No price model</p>
+            <p class="mb-3 font-extralight">No price model</p>
         {% else %}
-            <p class="mb-3">{{ subcategory.priceModel.getName }} price model</p>
+            <p class="mb-3 font-extralight">{{ subcategory.priceModel.getName }} price model</p>
         {% endif %}
         {% if subcategory.owner is not null %}
-            <p class="mb-1">Managed by {{ subcategory.owner.fullName }}</p>
+            <p>Managed by {{ subcategory.owner.fullName }}</p>
         {% else %}
-            <p class="mb-1">No subcategory manager</p>
+            <p>No subcategory manager</p>
         {% endif %}
         <div class="mt-3 flex items-center justify-between">
-            <p class="me-10 text-xs">Updated {{ subcategory.updatedAt|ago }}</p>
+            <p class="me-10 text-xs text-gray-600 dark:text-gray-500">Updated {{ subcategory.updatedAt|ago }}</p>
             {% if subcategory.isActive %}
                 <p class="text-green-500">Active</p>
             {% else %}
