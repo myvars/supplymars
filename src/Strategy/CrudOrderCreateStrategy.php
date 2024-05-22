@@ -35,8 +35,7 @@ final class CrudOrderCreateStrategy implements CrudCreateStrategyInterface
             ->setCustomerOrderRef($entity->getCustomerOrderRef())
             ->setBillingAddress($billingAddress)
             ->setShippingAddress($shippingAddress)
-            ->setShippingDetailsFromShippingMethod($entity->getShippingMethod(), $vatRate)
-        ;
+            ->setShippingDetailsFromShippingMethod($entity->getShippingMethod(), $vatRate);
 
         $errors = $this->validator->validate($customerOrder);
         if (count($errors) > 0) {

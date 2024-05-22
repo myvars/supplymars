@@ -35,8 +35,6 @@ final class TestProductStory extends Story
         $category = CategoryFactory::createOne([
             'name' => 'Test Category',
             'vatRate' => $vatRate,
-            'priceModel' => PriceModel::DEFAULT,
-            'defaultMarkup' => '5.000',
             'owner' => $owner,
             'isActive' => true
         ])->object();
@@ -44,8 +42,6 @@ final class TestProductStory extends Story
         $subCategory = SubcategoryFactory::createOne([
             'name' => 'Test Subcategory',
             'category' => $category,
-            'priceModel' => PriceModel::NONE,
-            'defaultMarkup' => '0.000',
             'owner' => $owner,
             'isActive' => true,
         ])->object();
@@ -60,8 +56,6 @@ final class TestProductStory extends Story
             'category' => $category,
             'subcategory' => $subCategory,
             'manufacturer' => $manufacturer,
-            'priceModel' => PriceModel::NONE,
-            'defaultMarkup' => '0.000',
             'owner' => $owner,
             'isActive' => true,
         ])->object();

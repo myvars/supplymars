@@ -99,7 +99,7 @@ class PurchaseOrder
         return $this->supplier;
     }
 
-    private function setSupplier(?Supplier $supplier): static
+    public function setSupplier(?Supplier $supplier): static
     {
         $this->supplier = $supplier;
 

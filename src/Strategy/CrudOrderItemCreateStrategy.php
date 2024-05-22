@@ -29,8 +29,7 @@ final class CrudOrderItemCreateStrategy implements CrudCreateStrategyInterface
 
         $customerOrderItem = (new CustomerOrderItem())
             ->setCustomerOrder($context['customerOrder'])
-            ->createFromProduct($product, $entity->getQuantity())
-        ;
+            ->createFromProduct($product, $entity->getQuantity());
 
         $errors = $this->validator->validate($customerOrderItem);
         if (count($errors) > 0) {

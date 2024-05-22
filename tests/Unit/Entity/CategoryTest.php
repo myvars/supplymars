@@ -65,7 +65,7 @@ class CategoryTest extends TestCase
         $category = new Category();
         $category->setIsActive(true);
 
-        $this->assertTrue($category->isIsActive());
+        $this->assertTrue($category->isActive());
     }
 
     public function testAddRemoveSubcategory(): void

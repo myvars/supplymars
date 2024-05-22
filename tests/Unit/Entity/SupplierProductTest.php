@@ -128,6 +128,6 @@ class SupplierProductTest extends TestCase
         $supplierProduct = new SupplierProduct();
         $supplierProduct->setIsActive(true);
 
-        $this->assertTrue($supplierProduct->IsisActive());
+        $this->assertTrue($supplierProduct->isActive());
     }
 }

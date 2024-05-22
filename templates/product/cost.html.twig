@@ -7,7 +7,7 @@
     <div class="p-3 space-y-3 text-sm text-gray-500 dark:text-gray-400">
         <div class="mb-3">
             <h1 class="mb-3 text-xl text-gray-900 dark:text-white">Product Cost</h1>
-            {% if result.isActive and result.category.isActive and result.subcategory.isActive and result.activeProductSource is not null %}
+            {% if result.isValidProduct %}
                 <section class="mb-3 border border-gray-700 rounded-lg bg-white dark:bg-gray-900">
                     <div class="px-6 py-6 mx-auto max-w-screen-xl text-center font-bold">
                         <dl class="grid max-w-screen-md mx-auto sm:grid-cols-3 gap-8 items-center">
@@ -38,12 +38,11 @@
                     </div>
                 </section>
             {% endif %}
-            {% if result.isActive and result.category.isActive and result.subcategory.isActive and result.activeProductSource is not null %}
-            {% else %}
+            {% if not result.isValidProduct %}
                 <section class="bg-white dark:bg-gray-900 border border-gray-700 rounded-lg">
                     <div class="p-3 text-center">
-                        <p class="mb-2 text-2xl font-light text-red-400 dark:text-red-400">Inactive Product</p>
-                        {% if result.activeProductSource is null %}
+                        <p class="mb-2 text-2xl font-light text-red-400 dark:text-red-400">Incomplete Product</p>
+                        {% if not result.hasActiveProductSource %}
                             <p class="font-light">No Active Supplier</p>
                         {% else %}
                             <p class="font-light">Inactive Category, Subcategory or Product</p>

@@ -53,7 +53,6 @@ class ProductControllerTest extends WebTestCase
         $subcategory = SubcategoryFactory::createOne(['name' => 'Test Subcategory']);
         $manufacturer = ManufacturerFactory::createOne(['name' => 'Test Manufacturer']);
         $owner = UserFactory::createOne(['fullName' => 'Test Owner']);
-        $priceModel = PriceModel::DEFAULT;
 
         $this->browser()
             ->get('/product/new')
@@ -65,7 +64,6 @@ class ProductControllerTest extends WebTestCase
             ->fillField('product[manufacturer]', $manufacturer->getId())
             ->fillField('product[owner]', $owner->getId())
             ->fillField('product[cost]','500')
-            ->fillField('product[priceModel]', $priceModel->value)
             ->fillField('product[leadTimeDays]','7')
             ->fillField('product[weight]','100')
             ->fillField('product[mfrPartNumber]','12345')
@@ -87,7 +85,6 @@ class ProductControllerTest extends WebTestCase
             ->assertSee('Please enter a subcategory')
             ->assertSee('Please enter a manufacturer')
             ->assertSee('Please enter a cost')
-            ->assertSee('Please enter a price model')
             ->assertSee('Please enter a lead time(days)')
             ->assertSee('Please enter a product weight(grams)')
             ->assertSee('Please enter a manufacturer part number');

@@ -218,7 +218,7 @@ class SupplierProduct
         return $this;
     }
 
-    public function isIsActive(): ?bool
+    public function isActive(): ?bool
     {
         return $this->isActive;
     }
@@ -228,5 +228,20 @@ class SupplierProduct
         $this->isActive = $isActive;
 
         return $this;
+    }
+
+    public function isMapped(): bool
+    {
+        return null !== $this->product;
+    }
+
+    public function hasActiveSupplier(): bool
+    {
+        return $this->supplier->isActive();
+    }
+
+    public function hasStock(): bool
+    {
+        return $this->stock > 0;
     }
 }

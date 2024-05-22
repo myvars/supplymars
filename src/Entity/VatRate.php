@@ -68,7 +68,7 @@ class VatRate
         return $this;
     }
 
-    public function isIsDefaultVatRate(): ?bool
+    public function isDefaultVatRate(): ?bool
     {
         return $this->isDefaultVatRate;
     }

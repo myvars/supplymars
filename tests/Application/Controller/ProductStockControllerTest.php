@@ -50,7 +50,7 @@ class ProductStockControllerTest extends WebTestCase
             ->get("/product/" . $product->getId() . "/stock")
             ->assertSuccessful()
             ->assertSee('Product Stock')
-            ->assertSee('Inactive Product');
+            ->assertSee('Incomplete Product');
 
     }
 
@@ -131,15 +131,15 @@ class ProductStockControllerTest extends WebTestCase
             ->assertSuccessful()
             ->assertSee('Product Stock')
             ->assertSee('1 source')
-            ->assertNotSee('Inactive Product')
+            ->assertNotSee('Incomplete Product')
             ->get("/supplier-product/" . $supplierProduct->getId() . "/status/toggle")
             ->get("/product/" . $product->getId() . "/stock")
             ->assertSuccessful()
-            ->assertSee('Inactive Product')
+            ->assertSee('Incomplete Product')
             ->get("/supplier-product/" . $supplierProduct->getId() . "/status/toggle")
             ->get("/product/" . $product->getId() . "/stock")
             ->assertSuccessful()
-            ->assertNotSee('Inactive Product');
+            ->assertNotSee('Incomplete Product');
     }
 
     public function testProductSourceStatusToggleNotFound(): void

@@ -9,7 +9,7 @@
     <div class="p-3 text-sm text-gray-500 dark:text-gray-400">
         <p class="text-gray-600 dark:text-gray-500">Subcategory</p>
         <p class="mb-1 text-lg text-gray-900 dark:text-white">{{ subcategory.name|u.truncate(30, '...') }}</p>
-        {% if subcategory.defaultMarkup > 0 %}
+        {% if subcategory.hasDefaultMarkup %}
             <p class="mb-1 text-lg font-extralight">
                 {{ subcategory.defaultMarkup|number_format(3) }}%
                 <span class="text-sm font-normal text-gray-500 dark:text-gray-400"> mark-up</span>
@@ -17,10 +17,10 @@
         {% else %}
             <p class="font-extralight">No subcategory mark-up
         {% endif %}
-        {% if subcategory.priceModel.name is same as 'NONE' %}
-            <p class="font-extralight">No price model</p>
-        {% else %}
+        {% if subcategory.hasPriceModel %}
             <p class="font-extralight">{{ subcategory.priceModel.getName }} price model</p>
+        {% else %}
+            <p class="font-extralight">No price model</p>
         {% endif %}
         <div class="mt-2 flex items-center justify-between">
             <p class="me-10 text-xs text-gray-600 dark:text-gray-500">Updated {{ subcategory.updatedAt|ago }}</p>

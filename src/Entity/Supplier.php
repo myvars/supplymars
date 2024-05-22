@@ -84,7 +84,7 @@ class Supplier
         return $this;
     }
 
-    public function isIsActive(): ?bool
+    public function isActive(): ?bool
     {
         return $this->isActive;
     }

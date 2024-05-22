@@ -22,9 +22,9 @@ class ActiveSourceCalculator
         $supplierProducts = $product->getSupplierProducts();
 
         foreach ($supplierProducts as $supplierProduct) {
-            if ($supplierProduct->getSupplier()->IsisActive()
-                && $supplierProduct->IsisActive()
-                && $supplierProduct->getStock() > 0
+            if ($supplierProduct->hasActiveSupplier()
+                && $supplierProduct->isActive()
+                && $supplierProduct->hasStock()
                 && $supplierProduct->getCost() > 0) {
                 if (!isset($activeSource)) {
                     $activeSource = $supplierProduct;
@@ -96,7 +96,7 @@ class ActiveSourceCalculator
 
     public function toggleStatus(SupplierProduct $supplierProduct): void
     {
-        $supplierProduct->setIsActive(!$supplierProduct->IsisActive());
+        $supplierProduct->setIsActive(!$supplierProduct->isActive());
         $this->entityManager->persist($supplierProduct);
         $this->flush();
     }

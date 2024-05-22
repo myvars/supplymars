@@ -4,9 +4,7 @@ namespace App\Tests\Unit\EventListener;
 
 
 use App\Entity\Category;
-use App\Entity\PriceModel;
 use App\Entity\Product;
-use App\Entity\Subcategory;
 use App\Entity\VatRate;
 use App\EventListener\CategoryPriceUpdater;
 use App\Service\Product\ProductPriceCalculator;
@@ -25,7 +23,7 @@ class CategoryPriceUpdaterTest extends TestCase
 
         $product = $this->createMock(Product::class);
         $product->method('getId')->willReturn(1);
-        $product->method('IsisActive')->willReturn(true);
+        $product->method('isActive')->willReturn(true);
 
         $category = new Category();
         $category->addProduct($product);
@@ -81,14 +79,10 @@ class CategoryPriceUpdaterTest extends TestCase
         $priceCalculatorMock = $this->createMock(ProductPriceCalculator::class);
         $eventArgsMock = $this->createMock(PreUpdateEventArgs::class);
 
-        $subcategory = $this->createMock(Subcategory::class);
-        $subcategory->method('getDefaultMarkup')->willReturn('0.000');
-
         $product = $this->createMock(Product::class);
         $product->method('getId')->willReturn(1);
-        $product->method('IsisActive')->willReturn(true);
-        $product->method('getDefaultMarkup')->willReturn('0.000');
-        $product->method('getSubcategory')->willReturn($subcategory);
+        $product->method('isActive')->willReturn(true);
+        $product->method('getActiveMarkupTarget')->willReturn('CATEGORY');
 
         $category = new Category();
         $category->addProduct($product);
@@ -109,14 +103,10 @@ class CategoryPriceUpdaterTest extends TestCase
         $priceCalculatorMock = $this->createMock(ProductPriceCalculator::class);
         $eventArgsMock = $this->createMock(PreUpdateEventArgs::class);
 
-        $subcategory = $this->createMock(Subcategory::class);
-        $subcategory->method('getDefaultMarkup')->willReturn('0.000');
-
         $product = $this->createMock(Product::class);
         $product->method('getId')->willReturn(1);
-        $product->method('IsisActive')->willReturn(true);
-        $product->method('getDefaultMarkup')->willReturn('5.000');
-        $product->method('getSubcategory')->willReturn($subcategory);
+        $product->method('isActive')->willReturn(true);
+        $product->method('getActiveMarkupTarget')->willReturn('PRODUCT');
 
         $category = new Category();
         $category->addProduct($product);
@@ -137,14 +127,10 @@ class CategoryPriceUpdaterTest extends TestCase
         $priceCalculatorMock = $this->createMock(ProductPriceCalculator::class);
         $eventArgsMock = $this->createMock(PreUpdateEventArgs::class);
 
-        $subcategory = $this->createMock(Subcategory::class);
-        $subcategory->method('getDefaultMarkup')->willReturn('5.000');
-
         $product = $this->createMock(Product::class);
         $product->method('getId')->willReturn(1);
-        $product->method('IsisActive')->willReturn(true);
-        $product->method('getDefaultMarkup')->willReturn('0.000');
-        $product->method('getSubcategory')->willReturn($subcategory);
+        $product->method('isActive')->willReturn(true);
+        $product->method('getActiveMarkupTarget')->willReturn('SUBCATEGORY');
 
         $category = new Category();
         $category->addProduct($product);
@@ -165,14 +151,10 @@ class CategoryPriceUpdaterTest extends TestCase
         $priceCalculatorMock = $this->createMock(ProductPriceCalculator::class);
         $eventArgsMock = $this->createMock(PreUpdateEventArgs::class);
 
-        $subcategory = $this->createMock(Subcategory::class);
-        $subcategory->method('getPriceModel')->willReturn(PriceModel::NONE);
-
         $product = $this->createMock(Product::class);
         $product->method('getId')->willReturn(1);
-        $product->method('IsisActive')->willReturn(true);
-        $product->method('getPriceModel')->willReturn(PriceModel::NONE);
-        $product->method('getSubcategory')->willReturn($subcategory);
+        $product->method('isActive')->willReturn(true);
+        $product->method('getActivePriceModelTarget')->willReturn('CATEGORY');
 
         $category = new Category();
         $category->addProduct($product);
@@ -193,14 +175,10 @@ class CategoryPriceUpdaterTest extends TestCase
         $priceCalculatorMock = $this->createMock(ProductPriceCalculator::class);
         $eventArgsMock = $this->createMock(PreUpdateEventArgs::class);
 
-        $subcategory = $this->createMock(Subcategory::class);
-        $subcategory->method('getPriceModel')->willReturn(PriceModel::NONE);
-
         $product = $this->createMock(Product::class);
         $product->method('getId')->willReturn(1);
-        $product->method('IsisActive')->willReturn(true);
-        $product->method('getPriceModel')->willReturn(PriceModel::PRETTY_99);
-        $product->method('getSubcategory')->willReturn($subcategory);
+        $product->method('isActive')->willReturn(true);
+        $product->method('getActivePriceModelTarget')->willReturn('PRODUCT');
 
         $category = new Category();
         $category->addProduct($product);
@@ -221,14 +199,10 @@ class CategoryPriceUpdaterTest extends TestCase
         $priceCalculatorMock = $this->createMock(ProductPriceCalculator::class);
         $eventArgsMock = $this->createMock(PreUpdateEventArgs::class);
 
-        $subcategory = $this->createMock(Subcategory::class);
-        $subcategory->method('getPriceModel')->willReturn(PriceModel::PRETTY_99);
-
         $product = $this->createMock(Product::class);
         $product->method('getId')->willReturn(1);
-        $product->method('IsisActive')->willReturn(true);
-        $product->method('getPriceModel')->willReturn(PriceModel::NONE);
-        $product->method('getSubcategory')->willReturn($subcategory);
+        $product->method('isActive')->willReturn(true);
+        $product->method('getActivePriceModelTarget')->willReturn('SUBCATEGORY');
 
         $category = new Category();
         $category->addProduct($product);

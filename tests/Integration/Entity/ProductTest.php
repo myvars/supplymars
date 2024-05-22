@@ -140,15 +140,15 @@ class ProductTest extends KernelTestCase
             ->setIsActive(true);
 
         $this->assertEquals('10.000', $product->getActiveMarkup());
-        $this->assertEquals('product', $product->getActiveMarkupTarget());
+        $this->assertEquals('PRODUCT', $product->getActiveMarkupTarget());
 
         $product->setDefaultMarkup('0.000');
         $this->assertEquals('5.000', $product->getActiveMarkup());
-        $this->assertEquals('subcategory', $product->getActiveMarkupTarget());
+        $this->assertEquals('SUBCATEGORY', $product->getActiveMarkupTarget());
 
         $subcategory->setDefaultMarkup('0.000');
         $this->assertEquals('2.000', $product->getActiveMarkup());
-        $this->assertEquals('category', $product->getActiveMarkupTarget());
+        $this->assertEquals('CATEGORY', $product->getActiveMarkupTarget());
     }
 
     public function testProductFindBySearch(): void

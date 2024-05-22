@@ -66,8 +66,6 @@ class CategoryControllerTest extends WebTestCase
             ->assertOn('/category/new')
             ->assertSee('Please enter a category name')
             ->assertSee('Please enter a VAT rate')
-            ->assertSee('Please enter a category markup %')
-            ->assertSee('Please enter a price model')
             ->assertSee('Please enter a category owner');
     }
 

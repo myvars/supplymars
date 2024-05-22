@@ -13,6 +13,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: SubcategoryRepository::class)]
 class Subcategory
 {
+    public const DEFAULT_MARKUP = '0.000';
+    public const DEFAULT_PRICE_MODEL = PriceModel::NONE;
+
     use TimestampableEntity;
 
     #[ORM\Id]
@@ -27,7 +30,7 @@ class Subcategory
     #[ORM\Column(type: 'decimal', precision: 9, scale: 3)]
     #[Assert\NotBlank(message: 'Please enter a subcategory markup %')]
     #[Assert\PositiveOrZero(message: 'Please enter a positive or zero subcategory markup %')]
-    private ?string $defaultMarkup = null;
+    private ?string $defaultMarkup = self::DEFAULT_MARKUP;
 
     #[ORM\ManyToOne(inversedBy: 'subcategories')]
     private ?User $owner = null;
@@ -39,7 +42,7 @@ class Subcategory
 
     #[ORM\Column(length: 255)]
     #[Assert\NotNull(message: 'Please enter a price model')]
-    private ?PriceModel $priceModel = null;
+    private ?PriceModel $priceModel = self::DEFAULT_PRICE_MODEL;
 
     #[ORM\Column]
     private bool $isActive = false;
@@ -121,7 +124,7 @@ class Subcategory
         return $this;
     }
 
-    public function isIsActive(): ?bool
+    public function isActive(): ?bool
     {
         return $this->isActive;
     }
@@ -131,6 +134,21 @@ class Subcategory
         $this->isActive = $isActive;
 
         return $this;
+    }
+
+    public function hasDefaultMarkup(): bool
+    {
+        return $this->defaultMarkup > 0;
+    }
+
+    public function hasOwner(): bool
+    {
+        return null !== $this->owner;
+    }
+
+    public function hasPriceModel(): bool
+    {
+        return null !== $this->priceModel && PriceModel::NONE !== $this->priceModel;
     }
 
     /**

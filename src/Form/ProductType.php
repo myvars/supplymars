@@ -70,7 +70,7 @@ class ProductType extends AbstractType
                 'class' => User::class,
                 'choice_label' => 'fullName',
                 'label' => 'Product Manager',
-                'placeholder' => 'Choose a Product Manager',
+                'placeholder' => 'No product manager',
             ])
             ->add('defaultMarkup', PercentType::class, [
                 'scale' => 3,

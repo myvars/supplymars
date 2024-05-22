@@ -39,7 +39,7 @@ class SupplierStockUpdater
 
         foreach ($this->changedSupplierProducts as $changedSupplierProduct) {
             // If supplier becomes inactive
-            if (false === $supplier->isIsActive()) {
+            if (false === $supplier->isActive()) {
                 // Get product from ActiveSource
                 if ($product = $this->activeSourceCalculator->getProductFromActiveSource($changedSupplierProduct)) {
                     $this->activeSourceCalculator->recalculateActiveSource($product, false);

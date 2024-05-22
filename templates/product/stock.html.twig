@@ -12,7 +12,7 @@
                     {{ result.supplierProducts|length }} {% if result.supplierProducts|length == 1 %}source{% else %}sources{% endif %}
                 </span>
             </h1>
-            {% if result.isActive and result.category.isActive and result.subcategory.isActive and result.activeProductSource is not null %}
+            {% if result.isValidProduct %}
                 <section class="mb-3 border border-gray-700 rounded-lg bg-white dark:bg-gray-900">
                     <div class="px-3 py-6 mx-auto max-w-screen-xl text-center font-bold">
                         <dl class="grid max-w-screen-md mx-auto sm:grid-cols-2 gap-8 items-center">
@@ -31,12 +31,11 @@
                     </div>
                 </section>
             {% endif %}
-            {% if result.isActive and result.category.isActive and result.subcategory.isActive and result.activeProductSource is not null %}
-            {% else %}
+            {% if not result.isValidProduct %}
                 <section class="bg-white dark:bg-gray-900 border border-gray-700 rounded-lg">
                     <div class="p-3 text-center">
-                        <p class="mb-2 text-2xl font-light text-red-400 dark:text-red-400">Inactive Product</p>
-                        {% if result.activeProductSource is null %}
+                        <p class="mb-2 text-2xl font-light text-red-400 dark:text-red-400">Incomplete Product</p>
+                        {% if not result.hasActiveProductSource %}
                             <p class="font-light">No Active Supplier</p>
                         {% else %}
                             <p class="font-light">Inactive Category, Subcategory or Product</p>
@@ -52,7 +51,7 @@
                     activeProductSource: result.activeProductSource,
                 }) }}
             {% else %}
-                <p class="mb-1 text-xl">No supplier products found</p>
+                <p class="p-3 text-lg font-light">No suppliers found</p>
             {% endfor %}
         </div>
     </div>

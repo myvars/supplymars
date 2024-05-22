@@ -20,8 +20,8 @@ class SubcategoryPriceUpdaterTest extends TestCase
 
         $product = $this->createMock(Product::class);
         $product->method('getId')->willReturn(1);
-        $product->method('IsisActive')->willReturn(true);
-        $product->method('getDefaultMarkup')->willReturn('0.000');
+        $product->method('isActive')->willReturn(true);
+        $product->method('getActiveMarkupTarget')->willReturn('SUBCATEGORY');
 
         $subcategory = new Subcategory();
         $subcategory->addProduct($product);
@@ -76,8 +76,8 @@ class SubcategoryPriceUpdaterTest extends TestCase
 
         $product = $this->createMock(Product::class);
         $product->method('getId')->willReturn(1);
-        $product->method('IsisActive')->willReturn(true);
-        $product->method('getDefaultMarkup')->willReturn('5.000');
+        $product->method('isActive')->willReturn(true);
+        $product->method('getActiveMarkupTarget')->willReturn('PRODUCT');
 
         $subcategory = new Subcategory();
         $subcategory->addProduct($product);
@@ -100,8 +100,8 @@ class SubcategoryPriceUpdaterTest extends TestCase
 
         $product = $this->createMock(Product::class);
         $product->method('getId')->willReturn(1);
-        $product->method('IsisActive')->willReturn(true);
-        $product->method('getPriceModel')->willReturn(PriceModel::NONE);
+        $product->method('isActive')->willReturn(true);
+        $product->method('getActivePriceModelTarget')->willReturn('SUBCATEGORY');
 
         $subcategory = new Subcategory();
         $subcategory->addProduct($product);
@@ -124,8 +124,8 @@ class SubcategoryPriceUpdaterTest extends TestCase
 
         $product = $this->createMock(Product::class);
         $product->method('getId')->willReturn(1);
-        $product->method('IsisActive')->willReturn(true);
-        $product->method('getPriceModel')->willReturn(PriceModel::DEFAULT);
+        $product->method('isActive')->willReturn(true);
+        $product->method('getActivePriceModelTarget')->willReturn('PRODUCT');
 
         $subcategory = new Subcategory();
         $subcategory->addProduct($product);

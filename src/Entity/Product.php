@@ -12,6 +12,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
 {
+    public const DEFAULT_MARKUP = '0.000';
+    public const DEFAULT_PRICE_MODEL = PriceModel::NONE;
+
     use TimestampableEntity;
 
     #[ORM\Id]
@@ -44,7 +47,7 @@ class Product
     #[ORM\Column(type: 'decimal', precision: 9, scale: 3)]
     #[Assert\NotBlank(message: 'Please enter a product markup %')]
     #[Assert\PositiveOrZero(message: 'Please enter a positive or zero product markup %')]
-    private ?string $defaultMarkup = '0';
+    private ?string $defaultMarkup = self::DEFAULT_MARKUP;
 
     #[ORM\Column(type: 'decimal', precision: 9, scale: 3)]
     #[Assert\PositiveOrZero]
@@ -83,7 +86,7 @@ class Product
 
     #[ORM\Column(length: 255)]
     #[Assert\NotNull(message: 'Please enter a price model')]
-    private ?PriceModel $priceModel = null;
+    private ?PriceModel $priceModel = self::DEFAULT_PRICE_MODEL;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?SupplierProduct $activeProductSource = null;
@@ -241,6 +244,11 @@ class Product
         return $this;
     }
 
+    public function getCategoryVatRate(): ?VatRate
+    {
+        return $this->getCategory()->getVatRate();
+    }
+
     public function getSubcategory(): ?Subcategory
     {
         return $this->subcategory;
@@ -301,7 +309,7 @@ class Product
         return $this;
     }
 
-    public function isIsActive(): bool
+    public function isActive(): bool
     {
         return $this->isActive;
     }
@@ -325,7 +333,7 @@ class Product
     {
         $activeSupplierProducts = new ArrayCollection();
         foreach ($this->supplierProducts as $supplierProduct) {
-            if ($supplierProduct->isIsActive() && $supplierProduct->getSupplier()->isIsActive()) {
+            if ($supplierProduct->isActive() && $supplierProduct->getSupplier()->isActive()) {
                 $activeSupplierProducts->add($supplierProduct);
             }
         }
@@ -352,54 +360,6 @@ class Product
         }
 
         return $this;
-    }
-
-    public function getActiveMarkup(): ?string
-    {
-        if ($this->getDefaultMarkup() > 0) {
-            return $this->getDefaultMarkup();
-        }
-        if ($this->getSubcategory()->getDefaultMarkup() > 0) {
-            return $this->getSubcategory()->getDefaultMarkup();
-        }
-
-        return $this->getCategory()->getDefaultMarkup();
-    }
-
-    public function getActiveMarkupTarget(): string
-    {
-        if ($this->getDefaultMarkup() > 0) {
-            return 'product';
-        }
-        if ($this->getSubcategory()->getDefaultMarkup() > 0) {
-            return 'subcategory';
-        }
-
-        return 'category';
-    }
-
-    public function getActivePriceModel(): ?PriceModel
-    {
-        if ('NONE' !== $this->getPriceModel()->value) {
-            return $this->getPriceModel();
-        }
-        if ('NONE' !== $this->getSubcategory()->getPriceModel()->value) {
-            return $this->getSubcategory()->getPriceModel();
-        }
-
-        return $this->getCategory()->getPriceModel();
-    }
-
-    public function getActivePriceModelTarget(): string
-    {
-        if ('NONE' !== $this->getPriceModel()->value) {
-            return 'product';
-        }
-        if ('NONE' !== $this->getSubcategory()->getPriceModel()->value) {
-            return 'subcategory';
-        }
-
-        return 'category';
     }
 
     /**
@@ -430,5 +390,91 @@ class Product
         }
 
         return $this;
+    }
+
+    public function hasDefaultMarkup(): bool
+    {
+        return $this->defaultMarkup > 0;
+    }
+
+    public function hasOwner(): bool
+    {
+        return null !== $this->owner;
+    }
+
+    public function hasPriceModel(): bool
+    {
+        return null !== $this->priceModel && PriceModel::NONE !== $this->priceModel;
+    }
+
+    public function hasActiveProductSource(): bool
+    {
+        return null !== $this->activeProductSource;
+    }
+
+    public function hasProductImage(): bool
+    {
+        return $this->productImages->count() > 0;
+    }
+
+    public function getFirstImage(): ?ProductImage
+    {
+        return $this->productImages->first();
+    }
+
+    public function getActiveMarkup(): ?string
+    {
+        if ($this->hasDefaultMarkup()) {
+            return $this->getDefaultMarkup();
+        }
+        if ($this->getSubcategory()->hasDefaultMarkup()) {
+            return $this->getSubcategory()->getDefaultMarkup();
+        }
+
+        return $this->getCategory()->getDefaultMarkup();
+    }
+
+    public function getActiveMarkupTarget(): string
+    {
+        if ($this->hasDefaultMarkup()) {
+            return 'PRODUCT';
+        }
+        if ($this->getSubcategory()->hasDefaultMarkup()) {
+            return 'SUBCATEGORY';
+        }
+
+        return 'CATEGORY';
+    }
+
+    public function getActivePriceModel(): ?PriceModel
+    {
+        if ($this->hasPriceModel()) {
+            return $this->getPriceModel();
+        }
+        if ($this->getSubcategory()->hasPriceModel()) {
+            return $this->getSubcategory()->getPriceModel();
+        }
+
+        return $this->getCategory()->getPriceModel();
+    }
+
+    public function getActivePriceModelTarget(): string
+    {
+        if ($this->hasPriceModel()) {
+            return 'PRODUCT';
+        }
+        if ($this->getSubcategory()->hasPriceModel()) {
+            return 'SUBCATEGORY';
+        }
+
+        return 'CATEGORY';
+    }
+
+    public function isValidProduct(): bool
+    {
+        return $this->isActive()
+            && $this->hasActiveProductSource()
+            && $this->getCategory()->isActive()
+            && $this->getSubcategory()->isActive();
     }
 }

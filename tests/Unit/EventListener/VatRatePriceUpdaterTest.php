@@ -20,7 +20,7 @@ class VatRatePriceUpdaterTest extends TestCase
 
         $product = $this->createMock(Product::class);
         $product->method('getId')->willReturn(1);
-        $product->method('IsisActive')->willReturn(true);
+        $product->method('isActive')->willReturn(true);
         $product->method('getDefaultMarkup')->willReturn('0.000');
 
         $category = new Category();

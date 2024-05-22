@@ -24,7 +24,7 @@ class SupplierTest extends TestCase
         $supplier = new Supplier();
         $supplier->setIsActive(true);
 
-        $this->assertTrue($supplier->isIsActive());
+        $this->assertTrue($supplier->isActive());
     }
 
     public function testAddRemoveSupplierCategory(): void

@@ -8,7 +8,7 @@
 
     </a>
     <div class="p-3 text-sm text-gray-500 dark:text-gray-400">
-        {% if supplierProduct.supplier.isActive %}
+        {% if supplierProduct.hasActiveSupplier %}
             <p class="text-sm text-gray-600 dark:text-gray-500">{{ supplierProduct.supplier.name|u.truncate(30, '...', false) }}</p>
         {% else %}
             <p class="text-sm text-red-700 dark:text-red-500">{{ supplierProduct.supplier.name|u.truncate(30, '...', false) }} : Inactive</p>
@@ -24,7 +24,7 @@
         <p class="text-sm text-gray-600 dark:text-gray-500">{{ (supplierProduct.productCode) }}</p>
         <div class="flex items-center justify-between">
             <p class="font-extralight">
-                {% if supplierProduct.stock > 0 %}
+                {% if supplierProduct.hasStock %}
                     {{ supplierProduct.stock }} in stock
                 {% else %}
                     Out of stock ({{ supplierProduct.leadTimeDays }} day lead time)

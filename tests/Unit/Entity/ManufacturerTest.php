@@ -21,7 +21,7 @@ class ManufacturerTest extends TestCase
         $manufacturer = new Manufacturer();
         $manufacturer->setIsActive(true);
 
-        $this->assertTrue($manufacturer->isIsActive());
+        $this->assertTrue($manufacturer->isActive());
     }
 
     public function testAddRemoveProduct(): void

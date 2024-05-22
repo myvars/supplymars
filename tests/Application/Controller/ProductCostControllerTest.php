@@ -61,7 +61,7 @@ class ProductCostControllerTest extends WebTestCase
             ->get("/product/" . $product->getId() . "/cost")
             ->assertSuccessful()
             ->assertSee('Product Cost')
-            ->assertSee('Inactive Product');
+            ->assertSee('Incomplete Product');
     }
 
     public function testShowProductCostWithInactiveCategory(): void
@@ -75,7 +75,7 @@ class ProductCostControllerTest extends WebTestCase
             ->get("/product/" . $product->getId() . "/cost")
             ->assertSuccessful()
             ->assertSee('Product Cost')
-            ->assertSee('Inactive Product');
+            ->assertSee('Incomplete Product');
     }
 
     public function testShowProductCostWithInactiveSubcategory(): void
@@ -89,7 +89,7 @@ class ProductCostControllerTest extends WebTestCase
             ->get("/product/" . $product->getId() . "/cost")
             ->assertSuccessful()
             ->assertSee('Product Cost')
-            ->assertSee('Inactive Product');
+            ->assertSee('Incomplete Product');
     }
 
     public function testShowProductCostWithInvalidProduct(): void

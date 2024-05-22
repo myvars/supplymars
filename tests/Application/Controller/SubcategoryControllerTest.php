@@ -67,8 +67,7 @@ class SubcategoryControllerTest extends WebTestCase
             ->assertOn('/subcategory/new')
             ->assertSee('Please enter a Subcategory name')
             ->assertSee('Please enter a category')
-            ->assertSee('Please enter a positive or zero subcategory markup %')
-            ->assertSee('Please enter a price model');
+            ->assertSee('Please enter a positive or zero subcategory markup %');
     }
 
     public function testEditSubcategory(): void

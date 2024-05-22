@@ -164,7 +164,7 @@ class ProductTest extends TestCase
         $product = new Product();
         $product->setIsActive(true);
 
-        $this->assertTrue($product->IsisActive());
+        $this->assertTrue($product->isActive());
     }
 
     public function testGetActiveMarkupAndTarget(): void
@@ -173,9 +173,11 @@ class ProductTest extends TestCase
         $category->method('getDefaultMarkup')->willReturn('2.000');
 
         $subcategory = $this->createMock(Subcategory::class);
+        $subcategory->method('hasDefaultMarkup')->willReturn(true);
         $subcategory->method('getDefaultMarkup')->willReturn('5.000');
 
         $resetSubcategory = $this->createMock(Subcategory::class);
+        $resetSubcategory->method('hasDefaultMarkup')->willReturn(false);
         $resetSubcategory->method('getDefaultMarkup')->willReturn('0.000');
 
         $product = new Product();
@@ -184,15 +186,15 @@ class ProductTest extends TestCase
         $product->setDefaultMarkup('10.000');
 
         $this->assertEquals('10.000', $product->getActiveMarkup());
-        $this->assertEquals('product', $product->getActiveMarkupTarget());
+        $this->assertEquals('PRODUCT', $product->getActiveMarkupTarget());
 
         $product->setDefaultMarkup('0.000');
         $this->assertEquals('5.000', $product->getActiveMarkup());
-        $this->assertEquals('subcategory', $product->getActiveMarkupTarget());
+        $this->assertEquals('SUBCATEGORY', $product->getActiveMarkupTarget());
 
         $product->setSubcategory($resetSubcategory);
         $this->assertEquals('2.000', $product->getActiveMarkup());
-        $this->assertEquals('category', $product->getActiveMarkupTarget());
+        $this->assertEquals('CATEGORY', $product->getActiveMarkupTarget());
     }
 
     public function testGetActivePriceModelAndTargetFromProduct(): void
@@ -201,6 +203,7 @@ class ProductTest extends TestCase
         $category->method('getPriceModel')->willReturn(PriceModel::PRETTY_99);
 
         $subcategory = $this->createMock(Subcategory::class);
+        $subcategory->method('hasPriceModel')->willReturn(true);
         $subcategory->method('getPriceModel')->willReturn(PriceModel::PRETTY_95);
 
         $product = new Product();
@@ -209,7 +212,7 @@ class ProductTest extends TestCase
         $product->setPriceModel(PriceModel::PRETTY_00);
 
         $this->assertEquals(PriceModel::PRETTY_00, $product->getActivePriceModel());
-        $this->assertEquals('product', $product->getActivePriceModelTarget());
+        $this->assertEquals('PRODUCT', $product->getActivePriceModelTarget());
     }
 
     public function testGetActivePriceModelAndTargetFromSubcategory(): void
@@ -218,6 +221,7 @@ class ProductTest extends TestCase
         $category->method('getPriceModel')->willReturn(PriceModel::PRETTY_99);
 
         $subcategory = $this->createMock(Subcategory::class);
+        $subcategory->method('hasPriceModel')->willReturn(true);
         $subcategory->method('getPriceModel')->willReturn(PriceModel::PRETTY_95);
 
         $product = new Product();
@@ -226,7 +230,7 @@ class ProductTest extends TestCase
         $product->setPriceModel(PriceModel::NONE);
 
         $this->assertEquals(PriceModel::PRETTY_95, $product->getActivePriceModel());
-        $this->assertEquals('subcategory', $product->getActivePriceModelTarget());
+        $this->assertEquals('SUBCATEGORY', $product->getActivePriceModelTarget());
     }
 
     public function testGetActivePriceModelAndTargetFromCategory(): void
@@ -235,6 +239,7 @@ class ProductTest extends TestCase
         $category->method('getPriceModel')->willReturn(PriceModel::PRETTY_99);
 
         $subcategory = $this->createMock(Subcategory::class);
+        $subcategory->method('hasPriceModel')->willReturn(false);
         $subcategory->method('getPriceModel')->willReturn(PriceModel::NONE);
 
         $product = new Product();
@@ -243,7 +248,7 @@ class ProductTest extends TestCase
         $product->setPriceModel(PriceModel::NONE);
 
         $this->assertEquals(PriceModel::PRETTY_99, $product->getActivePriceModel());
-        $this->assertEquals('category', $product->getActivePriceModelTarget());
+        $this->assertEquals('CATEGORY', $product->getActivePriceModelTarget());
     }
 
     public function testAddRemoveSupplierProduct(): void

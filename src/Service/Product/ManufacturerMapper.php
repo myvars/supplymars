@@ -29,12 +29,11 @@ class ManufacturerMapper
             return $manufacturer;
         }
 
-        $manufacturer = new Manufacturer();
-        $manufacturer->setName($supplierManufacturer->getName());
-        $manufacturer->setIsActive(true);
+        $manufacturer = (new Manufacturer())
+            ->setName($supplierManufacturer->getName())
+            ->setIsActive(true);
 
         $errors = $this->validator->validate($manufacturer);
-
         if (count($errors) > 0) {
             throw new \InvalidArgumentException((string)$errors);
         }

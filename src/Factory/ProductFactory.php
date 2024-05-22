@@ -59,9 +59,7 @@ final class ProductFactory extends ModelFactory
             'leadTimeDays' => self::faker()->randomNumber(2),
             'stock' => self::faker()->randomNumber(4),
             'weight' => self::faker()->randomNumber(4),
-            'defaultMarkup' => self::faker()->randomNumber(4) / 100,
             'markup' => self::faker()->randomNumber(4) / 100,
-            'priceModel' => PriceModel::NONE,
             'owner' => UserFactory::new(),
         ];
     }

@@ -65,7 +65,7 @@ class SubcategoryTest extends TestCase
         $subcategory = new Subcategory();
         $subcategory->setIsActive(true);
 
-        $this->assertTrue($subcategory->isIsActive());
+        $this->assertTrue($subcategory->isActive());
     }
 
     public function testAddRemoveProduct(): void

@@ -20,13 +20,13 @@ class ProductPriceCalculator
         $prettyPriceIncVat = $this->markupCalculator->calculatePrettyPrice(
             $product->getCost(),
             $product->getActiveMarkup(),
-            $product->getCategory()->getVatRate()->getRate(),
+            $product->getCategoryVatRate()->getRate(),
             $product->getActivePriceModel()
         );
         $customMarkup = $this->markupCalculator->calculateCustomMarkup(
             $product->getCost(),
             $prettyPriceIncVat,
-            $product->getCategory()->getVatRate()->getRate(),
+            $product->getCategoryVatRate()->getRate(),
         );
         $newSellPrice = $this->markupCalculator->calculateSellPrice(
             $product->getCost(),

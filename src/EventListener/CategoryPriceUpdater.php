@@ -33,20 +33,14 @@ class CategoryPriceUpdater
                 }
 
                 if ($eventArgs->hasChangedField('defaultMarkup')) {
-                    $productMarkup = floatval($product->getDefaultMarkup());
-                    $subcategoryMarkup = floatval($product->getSubcategory()->getDefaultMarkup());
-                    // If category is driving the ActiveMarkup
-                    if ($productMarkup <= 0 && $subcategoryMarkup <= 0) {
+                    if ($product->getActiveMarkupTarget() === 'CATEGORY') {
                         $this->setChangedProduct($product);
                         continue;
                     }
                 }
 
                 if ($eventArgs->hasChangedField('priceModel')) {
-                    $productPriceModel = $product->getPriceModel()->value;
-                    $subcategoryPriceModel = $product->getSubcategory()->getPriceModel()->value;
-                    // If category is driving the ActivePriceModel
-                    if ('NONE' === $productPriceModel && 'NONE' === $subcategoryPriceModel) {
+                    if ($product->getActivePriceModelTarget() === 'CATEGORY') {
                         $this->setChangedProduct($product);
                     }
                 }

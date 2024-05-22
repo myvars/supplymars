@@ -6,11 +6,10 @@
     >
         <twig:ux:icon name="mynaui:edit-one" class="w-6 h-6 p-0.5" />
     </a>
-    {% if product.productImages|length > 0 %}
-        {% set firstImage = product.productImages|first %}
+    {% if product.hasProductImage %}
         <a href="#">
             <img class="w-auto m-3 mb-0 rounded-lg"
-                 src="{{ asset(product_uploads~firstImage.imageName) | imagine_filter('medium_image') }}"
+                 src="{{ asset(product_uploads~product.getFirstImage.imageName) | imagine_filter('medium_image') }}"
                  alt=""
             >
         </a>
@@ -43,7 +42,7 @@
         <p class="mb-2 text-right">{{ product.stock }} in stock</p>
         <p>{{ product.manufacturer.name }} : {{ product.mfrPartNumber }}</p>
         <p>Product #{{ '%06d'|format(product.id) }}</p>
-        {% if product.owner is not null %}
+        {% if product.hasOwner %}
             <p>Managed by {{ product.owner.fullName }}</p>
         {% else %}
             <p>No product manager</p>

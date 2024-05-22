@@ -34,7 +34,7 @@
                 </li>
             </ol>
         </nav>
-        {% if supplierProduct.supplier.isActive %}
+        {% if supplierProduct.hasActiveSupplier %}
             <p class="mb-1 text-base text-gray-600 dark:text-gray-500">
                 {{ supplierProduct.supplier.name|u.truncate(30, '...', false) }}
                 : {{ (supplierProduct.productCode) }}
@@ -46,7 +46,7 @@
             </p>
         {% endif %}
         <p class="mb-2">
-            {% if supplierProduct.product is not null %}
+            {% if supplierProduct.isMapped %}
                 <a href="{{ path('app_product_show', {'id': supplierProduct.product.id }) }}"
                    data-turbo-frame="_top"
                    data-turbo-prefetch="false"
@@ -65,7 +65,7 @@
         <p>{{ supplierProduct.supplierManufacturer.name }} : {{ supplierProduct.mfrPartNumber }}</p>
         <div class="flex items-center justify-between">
             <p>
-                {% if supplierProduct.stock > 0 %}
+                {% if supplierProduct.hasStock %}
                     {{ supplierProduct.stock }} in stock
                 {% else %}
                     Out of stock ({{ supplierProduct.leadTimeDays }} day lead time)

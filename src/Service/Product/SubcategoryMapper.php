@@ -3,7 +3,6 @@
 namespace App\Service\Product;
 
 use App\Entity\Category;
-use App\Entity\PriceModel;
 use App\Entity\Subcategory;
 use App\Entity\SupplierProduct;
 use App\Entity\SupplierSubcategory;
@@ -12,9 +11,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class SubcategoryMapper
 {
-    public const DEFAULT_MARKUP = '0.000';
-    public const DEFAULT_PRICE_MODEL = PriceModel::NONE;
-
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly ValidatorInterface $validator
@@ -37,15 +33,12 @@ class SubcategoryMapper
             return $subcategory;
         }
 
-        $subcategory = new Subcategory();
-        $subcategory->setName($supplierSubcategory->getName());
-        $subcategory->setCategory($category);
-        $subcategory->setDefaultMarkup(self::DEFAULT_MARKUP);
-        $subcategory->setPriceModel(self::DEFAULT_PRICE_MODEL);
-        $subcategory->setIsActive(true);
+        $subcategory = (new Subcategory())
+            ->setName($supplierSubcategory->getName())
+            ->setCategory($category)
+            ->setIsActive(true);
 
         $errors = $this->validator->validate($subcategory);
-
         if (count($errors) > 0) {
             throw new \InvalidArgumentException((string)$errors);
         }

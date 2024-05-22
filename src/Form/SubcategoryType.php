@@ -41,7 +41,7 @@ class SubcategoryType extends AbstractType
                 'class' => User::class,
                 'choice_label' => 'fullName',
                 'label' => 'Subcategory Manager',
-                'placeholder' => 'Choose a Subcategory Manager',
+                'placeholder' => 'No subcategory manager',
             ])
             ->add('isActive', null, [
                 'label' => 'Active',

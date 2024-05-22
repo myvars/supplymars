@@ -9,7 +9,7 @@
     <div class="p-3 text-sm text-gray-500 dark:text-gray-400">
         <p class="text-gray-600 dark:text-gray-500">Product</p>
         <p class="mb-1 text-lg text-gray-900 dark:text-white">{{ product.name|u.truncate(30, '...') }}</p>
-        {% if product.defaultMarkup > 0 %}
+        {% if product.hasDefaultMarkup %}
             <p class="mb-1 text-lg font-extralight">
                 {{ product.defaultMarkup|number_format(3) }}%
                 <span class="font-normal text-sm text-gray-500 dark:text-gray-400"> mark-up</span>
@@ -17,10 +17,10 @@
         {% else %}
             <p class="font-extralight">No product mark-up</p>
         {% endif %}
-        {% if product.priceModel.name is same as 'NONE' %}
-            <p class="font-extralight">No price model</p>
-        {% else %}
+        {% if product.hasPriceModel %}
             <p class="font-extralight">{{ product.priceModel.getName }} price model</p>
+        {% else %}
+            <p class="font-extralight">No price model</p>
         {% endif %}
         <div class="mt-2 flex items-center justify-between">
             <p class="me-10 text-xs text-gray-600 dark:text-gray-500">Updated {{ product.updatedAt|ago }}</p>

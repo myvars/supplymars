@@ -19,7 +19,7 @@
             <p class="mb-1 items-center text-lg text-gray-900 dark:text-white">{{ result.name|u.truncate(30, '...') }}</p>
             <p class="mb-1 items-center text-sm">Product {{ '%06d'|format(result.id) }}</p>
             <p class="flex justify-between items-center">
-                {% if result.owner is not null%}
+                {% if result.hasOwner %}
                     <span class="me-1 text-gray-600 dark:text-gray-500">Managed by {{ result.owner.fullName }}</span>
                 {% else %}
                     <span class="me-1 text-gray-600 dark:text-gray-500">No product manager</span>

@@ -13,6 +13,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 class Category
 {
+    public const DEFAULT_MARKUP = '5.000';
+    public const DEFAULT_PRICE_MODEL = PriceModel::DEFAULT;
+
     use TimestampableEntity;
 
     #[ORM\Id]
@@ -27,7 +30,7 @@ class Category
     #[ORM\Column(type: 'decimal', precision: 9, scale: 3)]
     #[Assert\NotBlank(message: 'Please enter a category markup %')]
     #[Assert\PositiveOrZero(message: 'Please enter a positive or zero category markup %')]
-    private ?string $defaultMarkup = null;
+    private ?string $defaultMarkup = self::DEFAULT_MARKUP;
 
     #[ORM\ManyToOne(inversedBy: 'categories')]
     #[Assert\NotNull(message: 'Please enter a category owner')]
@@ -41,7 +44,8 @@ class Category
 
     #[ORM\Column(length: 255)]
     #[Assert\NotNull(message: 'Please enter a price model')]
-    private ?PriceModel $priceModel = null;
+    #[Assert\NotEqualTo(value: PriceModel::NONE, message: 'A category must have a price model')]
+    private ?PriceModel $priceModel = self::DEFAULT_PRICE_MODEL;
 
     #[ORM\Column]
     private bool $isActive = false;
@@ -124,7 +128,7 @@ class Category
         return $this;
     }
 
-    public function isIsActive(): bool
+    public function isActive(): bool
     {
         return $this->isActive;
     }

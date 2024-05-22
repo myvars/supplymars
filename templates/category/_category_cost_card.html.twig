@@ -9,19 +9,8 @@
     <div class="p-3 text-sm text-gray-500 dark:text-gray-400">
         <p class="text-gray-600 dark:text-gray-500">Category</p>
         <p class="mb-1 text-lg text-gray-900 dark:text-white">{{ category.name|u.truncate(30, '...') }}</p>
-        {% if category.defaultMarkup > 0 %}
-            <p class="text-lg font-extralight">
-                {{ category.defaultMarkup|number_format(3) }}%
-                <span class="font-normal text-sm text-gray-500 dark:text-gray-400"> mark-up</span>
-            </p>
-        {% else %}
-            <p class="font-extralight">No subcategory mark-up</p>
-        {% endif %}
-        {% if category.priceModel.name is same as 'NONE' %}
-            <p class="font-extralight">No price model</p>
-        {% else %}
-            <p class="font-extralight">{{ category.priceModel.getName }} price model</p>
-        {% endif %}
+        <p class="text-lg font-extralight">{{ category.defaultMarkup|number_format(3) }}%<span class="font-normal text-sm text-gray-500 dark:text-gray-400"> mark-up</span></p>
+        <p class="font-extralight">{{ category.priceModel.getName }} price model</p>
         <div class="mt-2 flex items-center justify-between">
             <p class="me-10 text-xs text-gray-600 dark:text-gray-500">Updated {{ category.updatedAt|ago }}</p>
             {% if category.isActive %}

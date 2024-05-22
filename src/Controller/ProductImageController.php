@@ -28,12 +28,8 @@ class ProductImageController extends AbstractController
     }
 
     #[Route('/{id}/images', name: 'app_product_images', methods: ['GET'])]
-    public function showProductImages(
-        ?Product $product,
-        EntityManagerInterface $entityManager,
-        UploadHelper $uploadHelper,
-        CrudHelper $crudHelper
-    ): Response {
+    public function showProductImages(?Product $product, CrudHelper $crudHelper): Response
+    {
         if (!$product) {
             return $crudHelper->showEmpty(self::SECTION);
         }
@@ -54,8 +50,8 @@ class ProductImageController extends AbstractController
             $productImage = (new ProductImage())
                 ->setProduct($product)
                 ->setImageFile($imageFile)
-                ->setPosition($nextPosition)
-            ;
+                ->setPosition($nextPosition);
+
             $errors = $validator->validate($productImage);
             if (count($errors) > 0) {
                 $this->addFlash(

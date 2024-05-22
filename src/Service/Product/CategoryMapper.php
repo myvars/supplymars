@@ -3,7 +3,6 @@
 namespace App\Service\Product;
 
 use App\Entity\Category;
-use App\Entity\PriceModel;
 use App\Entity\SupplierProduct;
 use App\Entity\User;
 use App\Entity\VatRate;
@@ -15,8 +14,6 @@ class CategoryMapper
 {
     public const DEFAULT_VAT_RATE = 'Standard rate';
     public const DEFAULT_OWNER = 'adam@admin.com';
-    public const DEFAULT_MARKUP = '5.000';
-    public const DEFAULT_PRICE_MODEL = PriceModel::DEFAULT;
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
@@ -36,16 +33,13 @@ class CategoryMapper
             return $category;
         }
 
-        $category = new Category();
-        $category->setName($supplierCategory->getName());
-        $category->setOwner($this->security->getUser() ?? $this->getOwner());
-        $category->setVatRate($this->getDefaultVatRate());
-        $category->setDefaultMarkup(self::DEFAULT_MARKUP);
-        $category->setPriceModel(self::DEFAULT_PRICE_MODEL);
-        $category->setIsActive(true);
+        $category = (new Category())
+            ->setName($supplierCategory->getName())
+            ->setOwner($this->security->getUser() ?? $this->getOwner())
+            ->setVatRate($this->getDefaultVatRate())
+            ->setIsActive(true);
 
         $errors = $this->validator->validate($category);
-
         if (count($errors) > 0) {
             throw new \InvalidArgumentException((string)$errors);
         }

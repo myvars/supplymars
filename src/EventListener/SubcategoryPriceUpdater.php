@@ -28,15 +28,13 @@ class SubcategoryPriceUpdater
 
             foreach ($products as $product) {
                 if ($eventArgs->hasChangedField('defaultMarkup')) {
-                    $productMarkup = floatval($product->getDefaultMarkup());
-                    if ($productMarkup <= 0) {
+                    if ($product->getActiveMarkupTarget() === 'SUBCATEGORY') {
                         $this->setChangedProduct($product);
                     }
                 }
 
                 if ($eventArgs->hasChangedField('priceModel')) {
-                    $productPriceModel = $product->getPriceModel()->value;
-                    if ('NONE' === $productPriceModel) {
+                    if ($product->getActivePriceModelTarget() === 'SUBCATEGORY') {
                         $this->setChangedProduct($product);
                     }
                 }
