@@ -52,7 +52,7 @@ class CustomerOrderItem
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Please enter a status')]
-    private string $status = 'created';
+    private OrderStatus $status;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private string $totalPrice = '0';
@@ -71,6 +71,7 @@ class CustomerOrderItem
 
     public function __construct()
     {
+        $this->status = OrderStatus::getDefault();
         $this->purchaseOrderItems = new ArrayCollection();
     }
 
@@ -116,16 +117,9 @@ class CustomerOrderItem
         return $this->weight;
     }
 
-    public function getStatus(): string
+    public function getStatus(): OrderStatus
     {
         return $this->status;
-    }
-
-    public function setStatus(string $status): static
-    {
-        $this->status = $status;
-
-        return $this;
     }
 
     public function getTotalPrice(): ?string
@@ -141,6 +135,11 @@ class CustomerOrderItem
     public function getTotalWeight(): ?int
     {
         return $this->totalWeight;
+    }
+
+    public function getVatRate(): VatRate
+    {
+        return $this->product->getCategory()->getVatRate();
     }
 
     public function createFromProduct(Product $product, int $quantity = 1): static
@@ -161,6 +160,24 @@ class CustomerOrderItem
         $this->price = $price;
         $this->priceIncVat = $priceIncVat;
         $this->recalculateTotal();
+
+        return $this;
+    }
+
+    public function updateStatus(OrderStatus $newStatus): static
+    {
+        if ($newStatus === $this->status) {
+            return $this;
+        }
+
+        if (!$this->status->canTransitionTo($newStatus)) {
+            throw new \LogicException(sprintf('Cannot transition from "%s" to "%s"',
+                $this->status->value,
+                $newStatus->value
+            ));
+        }
+
+        $this->status = $newStatus;
 
         return $this;
     }
@@ -197,6 +214,7 @@ class CustomerOrderItem
         if (!$this->purchaseOrderItems->contains($purchaseOrderItem)) {
             $this->purchaseOrderItems->add($purchaseOrderItem);
             $purchaseOrderItem->setCustomerOrderItem($this);
+            $this->updateStatus(OrderStatus::PROCESSING);
         }
 
         return $this;

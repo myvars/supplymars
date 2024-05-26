@@ -68,13 +68,7 @@ class ProductImageController extends AbstractController
             ++$nextPosition;
         }
 
-        if ($request->headers->has('turbo-frame')) {
-            return $crudHelper->streamRefresh();
-        }
-
-        return $this->redirectToRoute('app_product_images', [
-            'id' => $product->getId(),
-        ], Response::HTTP_SEE_OTHER);
+        return $crudHelper->redirectToRoute('app_product_images', ['id' => $product->getId()]);
     }
 
     #[Route('/images/{id}/remove', name: 'app_product_image_remove', methods: ['GET'])]
@@ -92,13 +86,7 @@ class ProductImageController extends AbstractController
             'Product Image removed!'
         );
 
-        if ($request->headers->has('turbo-frame')) {
-            return $crudHelper->streamRefresh();
-        }
-
-        return $this->redirectToRoute('app_product_images', [
-            'id' => $product->getId(),
-        ], Response::HTTP_SEE_OTHER);
+        return $crudHelper->redirectToRoute('app_product_images', ['id' => $product->getId()]);
     }
 
     #[Route('/{id}/images/reorder', name: 'app_product_image_reorder', methods: ['POST'])]

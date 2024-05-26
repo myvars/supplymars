@@ -18,7 +18,7 @@
                     Order #{{ '%06d'|format(purchaseOrder.customerOrder.id) }}
                 </a>
             </p>
-            <p class="">{{ purchaseOrder.status|title }}</p>
+            <p class="">{{ purchaseOrder.status.value|title }}</p>
         </div>
     </div>
 </div>

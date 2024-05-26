@@ -17,7 +17,7 @@ class CrudUpdater extends AbstractController
         public readonly CrudHelper $crudHelper,
         private readonly CrudUpdateOptions $crudOptions,
         #[Autowire(service: CrudUpdateStrategy::class)]
-        private readonly CrudUpdateStrategyInterface $crudStrategy
+        private readonly CrudUpdateStrategyInterface $crudStrategy,
     ) {
     }
 
@@ -38,17 +38,13 @@ class CrudUpdater extends AbstractController
                 'app_'.$this->crudHelper->snakeCase($section).'_edit', ['id' => $entity->getId()]
             ),
         ]);
-        $successResponse = $this->redirectToRoute(
-            'app_'.$this->crudHelper->snakeCase($section).'_index',
-            [],
-            Response::HTTP_SEE_OTHER
-        );
         $backLink = $this->generateUrl('app_'.$this->crudHelper->snakeCase($section).'_index');
+
         return $this->resetOptions()
             ->setSection($section)
             ->setEntity($entity)
             ->setForm($form)
-            ->setSuccessResponse($successResponse)
+            ->setSuccessLink('app_'.$this->crudHelper->snakeCase($section).'_index')
             ->setBackLink($backLink)
             ->setAllowDelete(true);
     }
@@ -71,11 +67,8 @@ class CrudUpdater extends AbstractController
                     'Can not update '.$crudOptions->getSection().'!'
                 );
             }
-            if ($this->crudHelper->getRequest()->headers->has('turbo-frame')) {
-                return $this->crudHelper->streamRefresh();
-            }
 
-            return $crudOptions->getSuccessResponse();
+            return $this->crudHelper->redirectToRoute($crudOptions->getSuccessLink());
         }
 
         return $this->render($this->crudHelper::CRUD_BASE_TEMPLATE, [

@@ -69,7 +69,7 @@ class CrudIndexer extends AbstractController
                 'Page '.$crudOptions->getPage().' could not be found!'
             );
 
-            return $this->redirectToRoute(
+            return $this->crudHelper->redirectToRoute(
                 'app_'.$this->crudHelper->snakeCase($crudOptions->getSection()).'_index',
                 [
                     'page' => 1,
@@ -78,7 +78,6 @@ class CrudIndexer extends AbstractController
                     'sortDirection' => $crudOptions->getSortDirection() ?: $crudOptions->getSortDirectionDefault(),
                     'query' => $crudOptions->getQuery(),
                 ],
-                Response::HTTP_SEE_OTHER
             );
         }
 

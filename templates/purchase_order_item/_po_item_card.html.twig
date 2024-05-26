@@ -27,7 +27,7 @@
                         £{{ purchaseOrderItem.priceIncVat|number_format(2) }}
                         <span class="ms-3 text-sm">Qty: {{ purchaseOrderItem.quantity }}</span>
                     </span>
-                    <span class="text-gray-500">{{ purchaseOrderItem.status }}</span>
+                    <span class="text-gray-500">{{ purchaseOrderItem.status.value|title }}</span>
                 </p>
             </div>
         </div>

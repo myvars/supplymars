@@ -11,7 +11,7 @@ use App\Service\Crud\CrudDeleter;
 use App\Service\Crud\CrudIndexer;
 use App\Service\Crud\CrudUpdater;
 use App\Service\Crud\CrudReader;
-use App\Strategy\CrudOrderCreateStrategy;
+use App\Strategy\CreateOrderStrategy;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -35,20 +35,18 @@ class OrderController extends AbstractController
     #[Route('/new', name: 'app_order_new', methods: ['GET', 'POST'])]
     public function new(
         CrudCreator $crudCreator,
-        CrudOrderCreateStrategy $crudStrategy,
+        CreateOrderStrategy $crudStrategy,
         OrderCreateDto $createOrderDto
     ): Response {
         $form = $this->createForm(OrderCreateType::class, $createOrderDto, [
             'action' => $this->generateUrl('app_order_new'),
         ]);
-        $successResponse = $this->redirectToRoute('app_order_index', [], Response::HTTP_SEE_OTHER);
         $crudOptions = $crudCreator->resetOptions()
             ->setSection(self::SECTION)
             ->setEntity($createOrderDto)
             ->setForm($form)
-            ->setSuccessResponse($successResponse)
-            ->setCrudStrategy($crudStrategy)
-        ;
+            ->setSuccessLink('app_order_index')
+            ->setCrudStrategy($crudStrategy);
 
         return $crudCreator->build($crudOptions);
     }

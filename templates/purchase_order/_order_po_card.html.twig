@@ -10,7 +10,7 @@
             >PO #{{ '%06d'|format(purchaseOrder.id) }}</a>
         </span>
     </h1>
-    <p>{{ purchaseOrder.status }}</p>
+    <p>{{ purchaseOrder.status.value|title }}</p>
     </div>
     <ul class="w-full space-y-3">
         {% for purchaseOrderItem in purchaseOrder.purchaseOrderItems %}

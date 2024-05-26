@@ -82,18 +82,14 @@ class ProductCostController extends AbstractController
         object $entity,
         FormInterface $form
     ): Response {
-        $successResponse = $this->redirectToRoute(
-            'app_product_cost', ['id' => $product->getId()],
-            Response::HTTP_SEE_OTHER
-        );
+        $successLink = $this->generateUrl('app_product_cost', ['id' => $product->getId()]);
         $backLink = $this->generateUrl('app_product_cost', ['id' => $product->getId()]);
         $crudOptions = $this->crudUpdater->resetOptions()
             ->setSection($section)
             ->setEntity($entity)
             ->setForm($form)
-            ->setSuccessResponse($successResponse)
-            ->setBackLink($backLink)
-        ;
+            ->setSuccessLink($successLink)
+            ->setBackLink($backLink);
 
         return $this->crudUpdater->build($crudOptions);
     }

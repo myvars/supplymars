@@ -13,9 +13,10 @@ use App\Service\Crud\CrudDeleter;
 use App\Service\Crud\CrudHelper;
 use App\Service\Crud\CrudReader;
 use App\Service\Crud\CrudUpdater;
-use App\Strategy\CrudOrderItemCreateStrategy;
-use App\Strategy\CrudOrderItemEditStrategy;
-use App\Strategy\CrudPOItemCreateStrategy;
+use App\Service\PurchaseOrder\PurchaseOrderItemCreator;
+use App\Strategy\CreateOrderItemStrategy;
+use App\Strategy\EditOrderItemStrategy;
+use App\Strategy\CreatePOItemStrategy;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -41,24 +42,23 @@ class OrderItemController extends AbstractController
     public function new(
         ?CustomerOrder $customerOrder,
         CrudCreator $crudCreator,
-        CrudOrderItemCreateStrategy $crudStrategy,
+        CreateOrderItemStrategy $crudStrategy,
     ): Response {
+        if (!$customerOrder) {
+            return $crudCreator->crudHelper->showEmpty('Order');
+        }
+
         $createOrderItemDto = OrderItemCreateDto::createFromEntity($customerOrder);
         $form = $this->createForm(OrderItemCreateType::class, $createOrderItemDto, [
             'action' => $this->generateUrl('app_order_item_new', ['id' => $customerOrder->getId()]),
         ]);
-        $successResponse = $this->redirectToRoute(
-            'app_order_show', ['id' => $customerOrder->getId()],
-            Response::HTTP_SEE_OTHER
-        );
+        $successLink = $this->generateUrl('app_order_show', ['id' => $customerOrder->getId()]);
         $crudOptions = $crudCreator->resetOptions()
             ->setSection(self::SECTION)
             ->setEntity($createOrderItemDto)
             ->setForm($form)
-            ->setSuccessResponse($successResponse)
-            ->setCrudStrategy($crudStrategy)
-            ->setCrudStrategyContext(['customerOrder' => $customerOrder])
-        ;
+            ->setSuccessLink($successLink)
+            ->setCrudStrategy($crudStrategy);
 
         return $crudCreator->build($crudOptions);
     }
@@ -67,9 +67,8 @@ class OrderItemController extends AbstractController
     public function edit(
         ?CustomerOrderItem $customerOrderItem,
         CrudUpdater $crudUpdater,
-        CrudOrderItemEditStrategy $crudStrategy,
-    ): Response
-    {
+        EditOrderItemStrategy $crudStrategy,
+    ): Response {
         if (!$customerOrderItem) {
             return $crudUpdater->crudHelper->showEmpty(self::SECTION);
         }
@@ -78,19 +77,16 @@ class OrderItemController extends AbstractController
         $form = $this->createForm(OrderItemEditType::class, $orderItemEditDto, [
             'action' => $this->generateUrl('app_order_item_edit', ['id' => $customerOrderItem->getId()]),
         ]);
-        $successResponse = $this->redirectToRoute(
-            'app_order_show', ['id' => $customerOrderItem->getCustomerOrder()->getId()],
-            Response::HTTP_SEE_OTHER
+        $successLink = $this->generateUrl(
+            'app_order_show', ['id' => $customerOrderItem->getCustomerOrder()->getId()]
         );
         $crudOptions = $crudUpdater->resetOptions()
             ->setSection(self::SECTION)
             ->setEntity($orderItemEditDto)
             ->setForm($form)
-            ->setSuccessResponse($successResponse)
+            ->setSuccessLink($successLink)
             ->setCrudStrategy($crudStrategy)
-            ->setCrudStrategyContext(['customerOrderItem' => $customerOrderItem])
-            ->setAllowDelete(true)
-        ;
+            ->setAllowDelete(true);
 
         return $crudUpdater->build($crudOptions);
     }
@@ -102,48 +98,50 @@ class OrderItemController extends AbstractController
     }
 
     #[Route('/item/{id}/delete', name: 'app_order_item_delete', methods: ['POST'])]
-    public function delete(?CustomerOrderItem $customerOrderItem, CrudDeleter $crudDeleter): Response
+    public function delete(CustomerOrderItem $customerOrderItem, CrudDeleter $crudDeleter): Response
     {
-        $successResponse =  $this->redirectToRoute(
-            'app_order_show', ['id' => $customerOrderItem->getCustomerOrder()->getId()],
-            Response::HTTP_SEE_OTHER
+        $successLink =  $this->generateUrl(
+            'app_order_show', ['id' => $customerOrderItem->getCustomerOrder()->getId()]
         );
         $crudOptions = $crudDeleter->resetOptions()
             ->setSection(self::SECTION)
             ->setEntity($customerOrderItem)
-            ->setSuccessResponse($successResponse)
-        ;
+            ->setSuccessLink($successLink);
 
         return $crudDeleter->build($crudOptions);
     }
 
-    #[Route('/item/{id}/supplier/product/{supplierProductId}/po/add', name: 'app_purchase_order_item_add', methods: ['GET'])]
+    #[Route('/item/{id}/supplier/product/{supplierProductId}/po/add',
+        name: 'app_purchase_order_item_add',
+        methods: ['GET']
+    )]
     public function addToPurchaseOrder(
         ?CustomerOrderItem $customerOrderItem,
         int $supplierProductId,
         CrudHelper $crudHelper,
-        CrudPOItemCreateStrategy $crudStrategy
+        PurchaseOrderItemCreator $purchaseOrderItemCreator
     ): Response {
-        $product = $customerOrderItem->getProduct();
-        foreach($product->getSupplierProducts() as $supplierProduct) {
-            if ($supplierProduct->getId() === $supplierProductId) {
-                break;
-            }
-        }
         try {
-            $crudStrategy->create($customerOrderItem, ['supplierProductId' => $supplierProductId]);
+            $supplierProduct = null;
+            foreach($customerOrderItem->getProduct()->getSupplierProducts() as $supplierProduct) {
+                if ($supplierProduct->getId() === $supplierProductId) {
+                    break;
+                }
+            }
+            $purchaseOrderItemCreator->create($customerOrderItem, $supplierProduct);
         } catch (\Exception $e) {
             $this->addFlash(
                 'danger',
                 'PO item could not be added'
             );
         }
-
         $this->addFlash(
             'success',
             'PO item added'
         );
 
-        return $crudHelper->streamRefresh();
+        return $crudHelper->redirectToRoute(
+            'app_order_show', ['id' => $customerOrderItem->getCustomerOrder()->getId()]
+        );
     }
 }

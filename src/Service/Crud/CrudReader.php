@@ -29,6 +29,7 @@ class CrudReader extends AbstractController
     public function createOptions(string $section, ?object $entity): CrudReadOptions
     {
         $backLink = $this->generateUrl('app_'.$this->crudHelper->snakeCase($section).'_index');
+
         return $this->resetOptions()
             ->setSection($section)
             ->setEntity($entity)

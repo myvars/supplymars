@@ -58,7 +58,7 @@ class CustomerOrder
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Please enter a status')]
-    private string $status = 'created';
+    private ?OrderStatus $status;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private string $totalPrice = '0';
@@ -84,6 +84,7 @@ class CustomerOrder
 
     public function __construct()
     {
+        $this->status = OrderStatus::getDefault();
         $this->customerOrderItems = new ArrayCollection();
         $this->purchaseOrders = new ArrayCollection();
     }
@@ -189,12 +190,12 @@ class CustomerOrder
         return $this;
     }
 
-    public function getStatus(): string
+    public function getStatus(): OrderStatus
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): static
+    public function setStatus(OrderStatus $status): static
     {
         $this->status = $status;
 

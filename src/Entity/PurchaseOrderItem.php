@@ -49,7 +49,7 @@ class PurchaseOrderItem
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Please enter a status')]
-    private string $status = 'created';
+    private PurchaseOrderStatus $status;
 
     #[ORM\ManyToOne(inversedBy: 'purchaseOrderItems')]
     private ?CustomerOrderItem $customerOrderItem = null;
@@ -62,6 +62,11 @@ class PurchaseOrderItem
 
     #[ORM\Column]
     private int $totalWeight = 0;
+
+    public function __construct()
+    {
+        $this->status = PurchaseOrderStatus::getDefault();
+    }
 
     public function getId(): ?int
     {
@@ -105,7 +110,7 @@ class PurchaseOrderItem
     private function setQuantity(int $quantity): static
     {
         if ($quantity > $this->getMaxQuantity()) {
-            throw new \InvalidArgumentException('Quantity cannot be greater than %s', $maxQuantity);
+            throw new \InvalidArgumentException('Quantity cannot be greater than %s', $this->getMaxQuantity());
         }
 
         $this->quantity = $quantity;
@@ -149,16 +154,9 @@ class PurchaseOrderItem
         return $this;
     }
 
-    public function getStatus(): string
+    public function getStatus(): PurchaseOrderStatus
     {
         return $this->status;
-    }
-
-    private function setStatus(string $status): static
-    {
-        $this->status = $status;
-
-        return $this;
     }
 
     public function getCustomerOrderItem(): ?CustomerOrderItem
@@ -199,7 +197,7 @@ class PurchaseOrderItem
 
     public function isCancelled(): bool
     {
-        return $this->status === 'cancelled';
+        return $this->status->isCancelled();
     }
 
     public static function createFromCustomerOrderItem(
@@ -228,5 +226,23 @@ class PurchaseOrderItem
         return $this
             ->setQuantity($quantity)
             ->recalculateTotal();
+    }
+
+    public function updateStatus(PurchaseOrderStatus $newStatus): static
+    {
+        if ($newStatus === $this->status) {
+            return $this;
+        }
+
+        if (!$this->status->canTransitionTo($newStatus)) {
+            throw new \LogicException(sprintf('Cannot transition from "%s" to "%s"',
+                $this->status->value,
+                $newStatus->value
+            ));
+        }
+
+        $this->status = $newStatus;
+
+        return $this;
     }
 }

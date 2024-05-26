@@ -8,7 +8,7 @@ abstract class CrudOptions
 {
     private string $section;
     private object $entity;
-    private RedirectResponse $successResponse;
+    private string $successLink;
     private ?string $backLink = null;
     private ?array $crudStrategyContext = null;
 
@@ -36,14 +36,14 @@ abstract class CrudOptions
         return $this;
     }
 
-    public function getSuccessResponse(): RedirectResponse
+    public function getSuccessLink(): string
     {
-        return $this->successResponse;
+        return $this->successLink;
     }
 
-    public function setSuccessResponse(RedirectResponse $successResponse): CrudOptions
+    public function setSuccessLink(string $successLink): CrudOptions
     {
-        $this->successResponse = $successResponse;
+        $this->successLink = $successLink;
 
         return $this;
     }

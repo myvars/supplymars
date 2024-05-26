@@ -72,9 +72,7 @@ class SupplierProductController extends AbstractController
             return $crudHelper->showEmpty(self::SECTION);
         }
 
-        return $this->render('supplier_product/remove.html.twig', [
-            'supplierProduct' => $supplierProduct,
-        ]);
+        return $this->render('supplier_product/remove.html.twig', ['supplierProduct' => $supplierProduct]);
     }
 
     #[Route('/{id}/remove', name: 'app_supplier_product_remove', methods: ['POST'])]
@@ -98,7 +96,9 @@ class SupplierProductController extends AbstractController
             );
         }
 
-        return $crudHelper->streamRefresh();
+        return $crudHelper->redirectToRoute(
+            'app_product_stock', ['id' => $supplierProduct->getProduct()->getId()]
+        );
     }
 
     #[Route('/{id}/status/toggle', name: 'app_supplier_product_toggle_status', methods: ['GET'])]
@@ -116,7 +116,9 @@ class SupplierProductController extends AbstractController
             'Supplier product status updated'
         );
 
-        return $crudHelper->streamRefresh();
+        return $crudHelper->redirectToRoute(
+            'app_product_stock', ['id' => $supplierProduct->getProduct()->getId()]
+        );
     }
 
     #[Route('/{id}/map', name: 'app_supplier_product_map', methods: ['GET'])]
@@ -137,6 +139,6 @@ class SupplierProductController extends AbstractController
             'Supplier product mapped'
         );
 
-        return $crudHelper->streamRefresh();
+        return $crudHelper->redirectToRoute('app_supplier_product_show', ['id' => $supplierProduct->getId()]);
     }
 }

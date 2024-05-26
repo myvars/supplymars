@@ -46,15 +46,10 @@ class CrudDeleter extends AbstractController
 
     public function createOptions(string $section, ?object $entity): CrudDeleteOptions
     {
-        $successResponse =  $this->redirectToRoute(
-            'app_'.$this->crudHelper->snakeCase($section).'_index',
-            [],
-            Response::HTTP_SEE_OTHER
-        );
         return $this->resetOptions()
             ->setSection($section)
             ->setEntity($entity)
-            ->setSuccessResponse($successResponse)
+            ->setSuccessLink('app_'.$this->crudHelper->snakeCase($section).'_index')
             ->setBackLink(null)
             ->setCrudStrategy($this->crudStrategy)
             ->setCrudStrategyContext(null);
@@ -79,14 +74,11 @@ class CrudDeleter extends AbstractController
                     'Can not delete '.$crudOptions->getSection().', it has dependents!'
                 );
             }
-            if ($this->crudHelper->getRequest()->headers->has('turbo-frame')) {
-                return $this->crudHelper->streamRefresh();
-            }
 
-            return $crudOptions->getSuccessResponse();
+            return $this->crudHelper->redirectToRoute($crudOptions->getSuccessLink());
         }
 
-        return $crudOptions->getSuccessResponse();
+        return $this->crudHelper->redirectToRoute($crudOptions->getSuccessLink());
     }
 
     public function resetOptions(): CrudDeleteOptions

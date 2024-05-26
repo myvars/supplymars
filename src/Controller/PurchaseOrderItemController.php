@@ -8,7 +8,7 @@ use App\Form\PurchaseOrderItemEditType;
 use App\Service\Crud\CrudDeleter;
 use App\Service\Crud\CrudReader;
 use App\Service\Crud\CrudUpdater;
-use App\Strategy\CrudPOItemEditStrategy;
+use App\Strategy\EditPOItemStrategy;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -33,28 +33,31 @@ class PurchaseOrderItemController extends AbstractController
     #[Route('/{id}/edit', name: 'app_purchase_order_item_edit', methods: ['GET', 'POST'])]
     public function edit(
         ?PurchaseOrderItem $purchaseOrderItem,
-        CrudUpdater $crudUpdater,
-        CrudPOItemEditStrategy $crudStrategy,
+        CrudUpdater        $crudUpdater,
+        EditPOItemStrategy $crudStrategy,
     ): Response
     {
+        if (!$purchaseOrderItem) {
+            return $crudUpdater->crudHelper->showEmpty(self::SECTION);
+        }
+
         $editPOItemDto = PurchaseOrderItemEditDto::createFromEntity($purchaseOrderItem);
         $form = $this->createForm(PurchaseOrderItemEditType::class, $editPOItemDto, [
-            'action' => $this->generateUrl('app_purchase_order_item_edit', ['id' => $purchaseOrderItem->getId()]),
+            'action' => $this->generateUrl(
+                'app_purchase_order_item_edit',
+                ['id' => $purchaseOrderItem->getId()]
+            ),
         ]);
 
-        $successResponse = $this->redirectToRoute(
-            'app_purchase_order_show', ['id' => $purchaseOrderItem->getPurchaseOrder()->getId()],
-            Response::HTTP_SEE_OTHER
+        $successLink = $this->generateUrl(
+            'app_purchase_order_show', ['id' => $purchaseOrderItem->getPurchaseOrder()->getId()]
         );
-
         $crudOptions = $crudUpdater->resetOptions()
             ->setSection(self::SECTION)
             ->setEntity($editPOItemDto)
             ->setForm($form)
-            ->setSuccessResponse($successResponse)
-            ->setCrudStrategy($crudStrategy)
-            ->setCrudStrategyContext(['purchaseOrderItem' => $purchaseOrderItem])
-        ;
+            ->setSuccessLink($successLink)
+            ->setCrudStrategy($crudStrategy);
 
         return $crudUpdater->build($crudOptions);
     }

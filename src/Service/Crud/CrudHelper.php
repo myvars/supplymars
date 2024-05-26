@@ -2,6 +2,7 @@
 
 namespace App\Service\Crud;
 
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -16,6 +17,7 @@ class CrudHelper
     public const CRUD_BASE_TEMPLATE = 'crud/crud.html.twig';
     public const MISSING_ENTITY_TEMPLATE = 'show_empty';
     public const TURBO_STREAM_REFRESH_TEMPLATE = 'common/turboStreamRefresh.html.twig';
+    public const REDIRECT_RESPONSE_STATUS = 303;
 
     public function __construct(
         private readonly RequestStack $requestStack,
@@ -60,13 +62,22 @@ class CrudHelper
             $section.' not found!'
         );
 
-        return new RedirectResponse(
-            $this->router->generate('app_'.$this->snakeCase($section).'_index', []),
-            Response::HTTP_SEE_OTHER
-        );
+        return $this->redirectToRoute('app_'.$this->snakeCase($section).'_index');
     }
 
-    public function streamRefresh(): Response
+    public function redirectToRoute(
+        string $route,
+        array $parameters = [],
+        int $status = self::REDIRECT_RESPONSE_STATUS
+    ): RedirectResponse|Response {
+        if ($this->requestStack->getCurrentRequest()->headers->has('turbo-frame')) {
+            return $this->streamRefresh();
+        }
+
+        return new RedirectResponse($this->router->generate($route, $parameters), $status);
+    }
+
+    private function streamRefresh(): Response
     {
         $this->requestStack->getCurrentRequest()->setRequestFormat(TurboBundle::STREAM_FORMAT);
 

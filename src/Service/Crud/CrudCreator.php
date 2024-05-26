@@ -36,16 +36,12 @@ class CrudCreator extends AbstractController
         $form = $this->createForm($formType, $entity, [
             'action' => $this->generateUrl('app_'.$this->crudHelper->snakeCase($section).'_new'),
         ]);
-        $successResponse = $this->redirectToRoute(
-            'app_'.$this->crudHelper->snakeCase($section).'_index',
-            [],
-            Response::HTTP_SEE_OTHER
-        );
+
         return $this->resetOptions()
             ->setSection($section)
             ->setEntity($entity)
             ->setForm($form)
-            ->setSuccessResponse($successResponse)
+            ->setSuccessLink('app_'.$this->crudHelper->snakeCase($section).'_index')
             ->setBackLink(null)
             ->setCrudStrategy($this->crudStrategy)
             ->setCrudStrategyContext(null);
@@ -69,11 +65,8 @@ class CrudCreator extends AbstractController
                     'Can not add '.$crudOptions->getSection().'!'
                 );
             }
-            if ($this->crudHelper->getRequest()->headers->has('turbo-frame')) {
-                return $this->crudHelper->streamRefresh();
-            }
 
-            return $crudOptions->getSuccessResponse();
+            return $this->crudHelper->redirectToRoute($crudOptions->getSuccessLink());
         }
 
         return $this->render($this->crudHelper::CRUD_BASE_TEMPLATE, [

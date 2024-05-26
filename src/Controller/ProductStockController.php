@@ -20,8 +20,6 @@ class ProductStockController extends AbstractController
             return $crudHelper->showEmpty(self::SECTION);
         }
 
-        return $this->render('product/stock.html.twig', [
-            'result' => $product,
-        ]);
+        return $this->render('product/stock.html.twig', ['result' => $product]);
     }
 }

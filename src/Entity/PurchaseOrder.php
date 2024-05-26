@@ -53,7 +53,7 @@ class PurchaseOrder
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Please enter a status')]
-    private string $status = 'created';
+    private PurchaseOrderStatus $status;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private string $totalPrice = '0';
@@ -73,6 +73,7 @@ class PurchaseOrder
 
     public function __construct()
     {
+        $this->status = PurchaseOrderStatus::getDefault();
         $this->purchaseOrderItems = new ArrayCollection();
     }
 
@@ -178,12 +179,12 @@ class PurchaseOrder
         return $this;
     }
 
-    public function getStatus(): string
+    public function getStatus(): PurchaseOrderStatus
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): static
+    public function setStatus(PurchaseOrderStatus $status): static
     {
         $this->status = $status;
 
@@ -272,7 +273,7 @@ class PurchaseOrder
 
     public function allowEdit(): bool
     {
-        return $this->status === 'created';
+        return $this->status->allowEdit();
     }
 
     public function getLineCount(): int
