@@ -2,7 +2,6 @@
 
 namespace App\Story;
 
-use App\Entity\PriceModel;
 use App\Factory\CategoryFactory;
 use App\Factory\ManufacturerFactory;
 use App\Factory\ProductFactory;

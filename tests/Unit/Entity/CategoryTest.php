@@ -2,13 +2,13 @@
 
 namespace App\Tests\Unit\Entity;
 
-use App\Entity\PriceModel;
+use App\Entity\Category;
 use App\Entity\Product;
 use App\Entity\Subcategory;
 use App\Entity\User;
 use App\Entity\VatRate;
+use App\Enum\PriceModel;
 use PHPUnit\Framework\TestCase;
-use App\Entity\Category;
 
 class CategoryTest extends TestCase
 {

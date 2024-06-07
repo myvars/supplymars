@@ -49,7 +49,7 @@ class CrudDeleter extends AbstractController
         return $this->resetOptions()
             ->setSection($section)
             ->setEntity($entity)
-            ->setSuccessLink('app_'.$this->crudHelper->snakeCase($section).'_index')
+            ->setSuccessLink($this->generateUrl('app_'.$this->crudHelper->snakeCase($section).'_index'))
             ->setBackLink(null)
             ->setCrudStrategy($this->crudStrategy)
             ->setCrudStrategyContext(null);
@@ -75,10 +75,10 @@ class CrudDeleter extends AbstractController
                 );
             }
 
-            return $this->crudHelper->redirectToRoute($crudOptions->getSuccessLink());
+            return $this->crudHelper->redirectToLink($crudOptions->getSuccessLink());
         }
 
-        return $this->crudHelper->redirectToRoute($crudOptions->getSuccessLink());
+        return $this->crudHelper->redirectTolink($crudOptions->getSuccessLink());
     }
 
     public function resetOptions(): CrudDeleteOptions

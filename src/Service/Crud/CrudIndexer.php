@@ -69,8 +69,8 @@ class CrudIndexer extends AbstractController
                 'Page '.$crudOptions->getPage().' could not be found!'
             );
 
-            return $this->crudHelper->redirectToRoute(
-                'app_'.$this->crudHelper->snakeCase($crudOptions->getSection()).'_index',
+            return $this->crudHelper->redirectToLink(
+                $this->generateUrl('app_'.$this->crudHelper->snakeCase($crudOptions->getSection()).'_index',
                 [
                     'page' => 1,
                     'limit' => $crudOptions->getLimit(),
@@ -78,7 +78,7 @@ class CrudIndexer extends AbstractController
                     'sortDirection' => $crudOptions->getSortDirection() ?: $crudOptions->getSortDirectionDefault(),
                     'query' => $crudOptions->getQuery(),
                 ],
-            );
+            ));
         }
 
         return $this->render($this->crudHelper::CRUD_BASE_TEMPLATE, [

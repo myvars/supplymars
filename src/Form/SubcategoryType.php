@@ -3,9 +3,9 @@
 namespace App\Form;
 
 use App\Entity\Category;
-use App\Entity\PriceModel;
 use App\Entity\Subcategory;
 use App\Entity\User;
+use App\Enum\PriceModel;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;

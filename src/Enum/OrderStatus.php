@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Entity;
+namespace App\Enum;
 
-enum PurchaseOrderStatus: string
+enum OrderStatus: string
 {
     case PENDING = 'PENDING';
     case PROCESSING = 'PROCESSING';
@@ -17,7 +17,7 @@ enum PurchaseOrderStatus: string
 
     public function allowEdit(): bool
     {
-        return $this === self::PENDING;
+        return $this === self::PENDING || $this === self::PROCESSING;
     }
 
     public function isCancelled(): bool
@@ -25,7 +25,7 @@ enum PurchaseOrderStatus: string
         return $this === self::CANCELLED;
     }
 
-    public function canTransitionTo(PurchaseOrderStatus $to): bool
+    public function canTransitionTo(OrderStatus $to): bool
     {
         return match ($this) {
             self::PENDING => match ($to) {

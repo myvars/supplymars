@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Entity;
+namespace App\Enum;
 
+use App\Entity\VatRate;
 use Exception;
 
 enum ShippingMethod: string

@@ -3,8 +3,8 @@
 namespace App\Tests\Integration\EventListener;
 
 
-use App\Entity\PriceModel;
 use App\Entity\Product;
+use App\Enum\PriceModel;
 use App\Factory\CategoryFactory;
 use App\Factory\VatRateFactory;
 use App\Service\Product\ActiveSourceCalculator;

@@ -3,7 +3,7 @@
 namespace App\Tests\Integration\Entity;
 
 use App\Entity\Category;
-use App\Entity\PriceModel;
+use App\Enum\PriceModel;
 use App\Factory\CategoryFactory;
 use App\Factory\UserFactory;
 use App\Factory\VatRateFactory;

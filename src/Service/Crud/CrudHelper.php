@@ -62,19 +62,18 @@ class CrudHelper
             $section.' not found!'
         );
 
-        return $this->redirectToRoute('app_'.$this->snakeCase($section).'_index');
+        return $this->redirectToLink($this->router->generate('app_'.$this->snakeCase($section).'_index'));
     }
 
-    public function redirectToRoute(
-        string $route,
-        array $parameters = [],
+    public function redirectToLink(
+        string $link,
         int $status = self::REDIRECT_RESPONSE_STATUS
     ): RedirectResponse|Response {
         if ($this->requestStack->getCurrentRequest()->headers->has('turbo-frame')) {
             return $this->streamRefresh();
         }
 
-        return new RedirectResponse($this->router->generate($route, $parameters), $status);
+        return new RedirectResponse($link, $status);
     }
 
     private function streamRefresh(): Response

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\PriceModel;
 use App\Repository\SubcategoryRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

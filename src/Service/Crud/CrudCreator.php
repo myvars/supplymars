@@ -41,7 +41,7 @@ class CrudCreator extends AbstractController
             ->setSection($section)
             ->setEntity($entity)
             ->setForm($form)
-            ->setSuccessLink('app_'.$this->crudHelper->snakeCase($section).'_index')
+            ->setSuccessLink($this->generateUrl('app_'.$this->crudHelper->snakeCase($section).'_index'))
             ->setBackLink(null)
             ->setCrudStrategy($this->crudStrategy)
             ->setCrudStrategyContext(null);
@@ -66,7 +66,7 @@ class CrudCreator extends AbstractController
                 );
             }
 
-            return $this->crudHelper->redirectToRoute($crudOptions->getSuccessLink());
+            return $this->crudHelper->redirectToLink($crudOptions->getSuccessLink());
         }
 
         return $this->render($this->crudHelper::CRUD_BASE_TEMPLATE, [

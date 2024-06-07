@@ -3,7 +3,6 @@
 namespace App\Factory;
 
 use App\Entity\Category;
-use App\Entity\PriceModel;
 use App\Repository\CategoryRepository;
 use Zenstruck\Foundry\ModelFactory;
 use Zenstruck\Foundry\Proxy;

@@ -3,11 +3,11 @@
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Category;
-use App\Entity\PriceModel;
 use App\Entity\Product;
 use App\Entity\Subcategory;
 use App\Entity\SupplierSubcategory;
 use App\Entity\User;
+use App\Enum\PriceModel;
 use PHPUnit\Framework\TestCase;
 
 class SubcategoryTest extends TestCase

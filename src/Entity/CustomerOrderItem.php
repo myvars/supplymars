@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\OrderStatus;
 use App\Repository\CustomerOrderItemRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -156,6 +157,11 @@ class CustomerOrderItem
 
     public function updateItem(int $quantity, string $price, string $priceIncVat): static
     {
+        $qtyAddedToPurchaseOrders = $this->getQtyAddedToPurchaseOrders();
+        if ($qtyAddedToPurchaseOrders > $quantity) {
+            throw new \LogicException('Cannot edit this allocated qty below %s', $qtyAddedToPurchaseOrders);
+        }
+
         $this->quantity = $quantity;
         $this->price = $price;
         $this->priceIncVat = $priceIncVat;
@@ -191,6 +197,11 @@ class CustomerOrderItem
 
     public function getOutstandingQty(): int
     {
+        return max(($this->getQuantity() - $this->getQtyAddedToPurchaseOrders()), 0);
+    }
+
+    public function getQtyAddedToPurchaseOrders(): int
+    {
         $quantity = 0;
         foreach ($this->getPurchaseOrderItems() as $purchaseOrderItem) {
             if (!$purchaseOrderItem->isCancelled()) {
@@ -198,7 +209,12 @@ class CustomerOrderItem
             }
         }
 
-        return max(($this->getQuantity() - $quantity), 0);
+        return $quantity;
+    }
+
+    public function allowEdit(): bool
+    {
+        return $this->status->allowEdit();
     }
 
     /**

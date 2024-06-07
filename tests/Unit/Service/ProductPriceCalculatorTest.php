@@ -4,10 +4,10 @@ namespace App\Tests\Unit\Service;
 
 
 use App\Entity\Category;
-use App\Entity\PriceModel;
 use App\Entity\Product;
 use App\Entity\Subcategory;
 use App\Entity\VatRate;
+use App\Enum\PriceModel;
 use App\Service\Product\MarkupCalculator;
 use App\Service\Product\ProductPriceCalculator;
 use Doctrine\ORM\EntityManagerInterface;

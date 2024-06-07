@@ -2,7 +2,7 @@
 
 namespace App\Tests\Unit\Service;
 
-use App\Entity\PriceModel;
+use App\Enum\PriceModel;
 use App\Service\Product\MarkupCalculator;
 use PHPUnit\Framework\TestCase;
 

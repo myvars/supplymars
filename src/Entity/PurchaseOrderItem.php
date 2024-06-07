@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Enum\PurchaseOrderStatus;
 use App\Repository\PurchaseOrderItemRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;

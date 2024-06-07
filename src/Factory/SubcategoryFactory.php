@@ -2,7 +2,6 @@
 
 namespace App\Factory;
 
-use App\Entity\PriceModel;
 use App\Entity\Subcategory;
 use App\Repository\SubcategoryRepository;
 use Zenstruck\Foundry\ModelFactory;

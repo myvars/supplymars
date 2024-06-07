@@ -2,7 +2,7 @@
 
 namespace App\DTO;
 
-use App\Entity\ShippingMethod;
+use App\Enum\ShippingMethod;
 use App\Validator\ValidCustomerId;
 use Symfony\Component\Validator\Constraints as Assert;
 

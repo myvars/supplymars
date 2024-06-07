@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use App\Entity\CustomerOrder;
-use App\Entity\OrderStatus;
+use App\Enum\OrderStatus;
 use Doctrine\ORM\EntityManagerInterface;
 
 class OrderFlowProcessor

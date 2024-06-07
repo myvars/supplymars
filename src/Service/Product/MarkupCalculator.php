@@ -2,7 +2,7 @@
 
 namespace App\Service\Product;
 
-use App\Entity\PriceModel;
+use App\Enum\PriceModel;
 
 class MarkupCalculator
 {

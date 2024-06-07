@@ -2,8 +2,8 @@
 
 namespace App\Tests\Integration\Entity;
 
-use App\Entity\PriceModel;
 use App\Entity\Product;
+use App\Enum\PriceModel;
 use App\Factory\CategoryFactory;
 use App\Factory\ManufacturerFactory;
 use App\Factory\ProductFactory;

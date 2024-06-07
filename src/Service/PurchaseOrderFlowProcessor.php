@@ -3,7 +3,7 @@
 namespace App\Service;
 
 use App\Entity\PurchaseOrder;
-use App\Entity\PurchaseOrderStatus;
+use App\Enum\PurchaseOrderStatus;
 use Doctrine\ORM\EntityManagerInterface;
 
 class PurchaseOrderFlowProcessor

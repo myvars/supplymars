@@ -6,15 +6,17 @@
                 {{ order.lineCount }} {% if order.lineCount == 1 %}line{% else %}lines{% endif %}
             </span>
         </p>
-    <twig:Button
-        tag="a"
-        href="{{ path('app_order_item_new', {id: order.id}) }}"
-        class="flex items-center space-x-1 font-bold"
-        data-turbo-frame="modal"
-    >
-        <twig:ux:icon name="flowbite:circle-plus-outline" class="w-4"/>
-        <span>Add Item</span>
-    </twig:Button>
+        {% if order.allowEdit %}
+        <twig:Button
+            tag="a"
+            href="{{ path('app_order_item_new', {id: order.id}) }}"
+            class="flex items-center space-x-1 font-bold"
+            data-turbo-frame="modal"
+        >
+            <twig:ux:icon name="flowbite:circle-plus-outline" class="w-4"/>
+            <span>Add Item</span>
+        </twig:Button>
+        {% endif %}
     </div>
     <ul class="w-full space-y-3">
         {% for orderItem in order.customerOrderItems %}

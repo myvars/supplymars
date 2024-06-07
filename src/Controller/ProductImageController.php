@@ -68,7 +68,9 @@ class ProductImageController extends AbstractController
             ++$nextPosition;
         }
 
-        return $crudHelper->redirectToRoute('app_product_images', ['id' => $product->getId()]);
+        return $crudHelper->redirectToLink(
+            $this->generateUrl('app_product_images', ['id' => $product->getId()])
+        );
     }
 
     #[Route('/images/{id}/remove', name: 'app_product_image_remove', methods: ['GET'])]
@@ -86,7 +88,9 @@ class ProductImageController extends AbstractController
             'Product Image removed!'
         );
 
-        return $crudHelper->redirectToRoute('app_product_images', ['id' => $product->getId()]);
+        return $crudHelper->redirectToLink(
+            $this->generateUrl('app_product_images', ['id' => $product->getId()])
+        );
     }
 
     #[Route('/{id}/images/reorder', name: 'app_product_image_reorder', methods: ['POST'])]
@@ -104,12 +108,7 @@ class ProductImageController extends AbstractController
         }
         $this->entityManager->flush();
 
-        return $this->json(
-            $product->getProductImages(),
-            200,
-            [],
-            ['groups' => ['main']]
-        );
+        return $this->json($product->getProductImages(), 200, [], ['groups' => ['main']]);
     }
 
     private function createProductImage(ProductImage $productImage): void

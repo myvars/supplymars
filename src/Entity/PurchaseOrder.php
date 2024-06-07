@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Enum\PurchaseOrderStatus;
+use App\Enum\ShippingMethod;
 use App\Repository\PurchaseOrderRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;

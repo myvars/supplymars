@@ -16,7 +16,6 @@ use App\Service\Crud\CrudUpdater;
 use App\Service\PurchaseOrder\PurchaseOrderItemCreator;
 use App\Strategy\CreateOrderItemStrategy;
 use App\Strategy\EditOrderItemStrategy;
-use App\Strategy\CreatePOItemStrategy;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -140,8 +139,8 @@ class OrderItemController extends AbstractController
             'PO item added'
         );
 
-        return $crudHelper->redirectToRoute(
-            'app_order_show', ['id' => $customerOrderItem->getCustomerOrder()->getId()]
+        return $crudHelper->redirectToLink(
+            $this->generateUrl('app_order_show', ['id' => $customerOrderItem->getCustomerOrder()->getId()])
         );
     }
 }

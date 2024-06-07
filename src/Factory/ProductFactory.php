@@ -2,7 +2,6 @@
 
 namespace App\Factory;
 
-use App\Entity\PriceModel;
 use App\Entity\Product;
 use App\Repository\ProductRepository;
 use App\Service\Product\ProductPriceCalculator;

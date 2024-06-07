@@ -3,7 +3,6 @@
 namespace App\Tests\Unit\EventListener;
 
 
-use App\Entity\PriceModel;
 use App\Entity\Product;
 use App\Entity\Subcategory;
 use App\EventListener\SubcategoryPriceUpdater;

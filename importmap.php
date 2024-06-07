@@ -65,7 +65,7 @@ return [
         'version' => '6.2.0',
     ],
     'debounce' => [
-        'version' => '2.0.0',
+        'version' => '2.1.0',
     ],
     'dropzone/dist/dropzone.css' => [
         'version' => '6.0.0-beta.2',

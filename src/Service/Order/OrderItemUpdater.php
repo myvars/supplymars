@@ -24,7 +24,12 @@ final class OrderItemUpdater
             $customerOrderItem->getVatRate()->getRate()
         );
 
-        $customerOrderItem->updateItem($dto->getQuantity(), $price, $dto->getPriceIncVat());
+        if ($dto->getQuantity() === 0) {
+            dd($customerOrderItem);
+            $this->removeCustomerOrderItem($customerOrderItem);
+        } else {
+            $customerOrderItem->updateItem($dto->getQuantity(), $price, $dto->getPriceIncVat());
+        }
         $customerOrderItem->getCustomerOrder()->recalculateTotal();
 
         $this->entityManager->persist($customerOrderItem);
@@ -36,5 +41,15 @@ final class OrderItemUpdater
     private function getCustomerOrderItem(int $id): CustomerOrderItem
     {
         return $this->entityManager->getRepository(CustomerOrderItem::class)->find($id);
+    }
+
+    private function removeCustomerOrderItem(CustomerOrderItem $customerOrderItem): void
+    {
+        if ($customerOrderItem->getQtyAddedToPurchaseOrders()) {
+            throw new \LogicException('Cannot remove item that has been added to purchase orders');
+        }
+
+        $this->entityManager->remove($customerOrderItem);
+
     }
 }

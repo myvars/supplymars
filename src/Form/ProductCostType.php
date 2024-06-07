@@ -2,8 +2,8 @@
 
 namespace App\Form;
 
-use App\Entity\PriceModel;
 use App\Entity\Product;
+use App\Enum\PriceModel;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\PercentType;

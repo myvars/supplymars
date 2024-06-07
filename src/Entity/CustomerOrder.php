@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Enum\OrderStatus;
+use App\Enum\ShippingMethod;
 use App\Repository\CustomerOrderRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -227,6 +229,10 @@ class CustomerOrder
 
     public function addCustomerOrderItem(CustomerOrderItem $customerOrderItem): static
     {
+        if (!$this->allowEdit()) {
+            throw new \LogicException('Cannot add items to an order with this status');
+        }
+
         if (!$this->customerOrderItems->contains($customerOrderItem)) {
             $this->customerOrderItems->add($customerOrderItem);
             $customerOrderItem->setCustomerOrder($this);
@@ -238,6 +244,10 @@ class CustomerOrder
 
     public function removeCustomerOrderItem(CustomerOrderItem $customerOrderItem): static
     {
+        if (!$this->allowEdit()) {
+            throw new \LogicException('Cannot remove items from an order with this status');
+        }
+
         if ($this->customerOrderItems->removeElement($customerOrderItem)) {
             // set the owning side to null (unless already changed)
             if ($customerOrderItem->getCustomerOrder() === $this) {
@@ -278,6 +288,11 @@ class CustomerOrder
         $this->totalPrice = (string) $totalPrice;
         $this->totalPriceIncVat = (string) $totalPriceIncVat;
         $this->totalWeight = $totalWeight;
+    }
+
+    public function allowEdit(): bool
+    {
+        return $this->status->allowEdit();
     }
 
     public function getLineCount(): int

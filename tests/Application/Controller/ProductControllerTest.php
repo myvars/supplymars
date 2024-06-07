@@ -2,7 +2,6 @@
 
 namespace App\Tests\Application\Controller;
 
-use App\Entity\PriceModel;
 use App\Factory\ManufacturerFactory;
 use App\Factory\ProductFactory;
 use App\Factory\SubcategoryFactory;

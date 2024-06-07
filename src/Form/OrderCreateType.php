@@ -3,7 +3,7 @@
 namespace App\Form;
 
 use App\DTO\OrderCreateDto;
-use App\Entity\ShippingMethod;
+use App\Enum\ShippingMethod;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;

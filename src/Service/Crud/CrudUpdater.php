@@ -38,14 +38,13 @@ class CrudUpdater extends AbstractController
                 'app_'.$this->crudHelper->snakeCase($section).'_edit', ['id' => $entity->getId()]
             ),
         ]);
-        $backLink = $this->generateUrl('app_'.$this->crudHelper->snakeCase($section).'_index');
 
         return $this->resetOptions()
             ->setSection($section)
             ->setEntity($entity)
             ->setForm($form)
-            ->setSuccessLink('app_'.$this->crudHelper->snakeCase($section).'_index')
-            ->setBackLink($backLink)
+            ->setSuccessLink($this->generateUrl('app_'.$this->crudHelper->snakeCase($section).'_index'))
+            ->setBackLink($this->generateUrl('app_'.$this->crudHelper->snakeCase($section).'_index'))
             ->setAllowDelete(true);
     }
 
@@ -68,7 +67,7 @@ class CrudUpdater extends AbstractController
                 );
             }
 
-            return $this->crudHelper->redirectToRoute($crudOptions->getSuccessLink());
+            return $this->crudHelper->redirectTolink($crudOptions->getSuccessLink());
         }
 
         return $this->render($this->crudHelper::CRUD_BASE_TEMPLATE, [

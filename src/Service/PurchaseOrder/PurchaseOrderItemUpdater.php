@@ -45,23 +45,29 @@ final class PurchaseOrderItemUpdater
 
         $purchaseOrder->removePurchaseOrderItem($purchaseOrderItem);
         $this->entityManager->remove($purchaseOrderItem);
+
         if ($purchaseOrder->getPurchaseOrderItems()->isEmpty()) {
-            $this->entityManager->remove($purchaseOrder);
+            $this->removePurchaseOrder($purchaseOrder);
         }
     }
 
-    public function getPurchaseOrderItem(int $id): PurchaseOrderItem
+    private function getPurchaseOrderItem(int $id): PurchaseOrderItem
     {
         return $this->entityManager->getRepository(PurchaseOrderItem::class)->find($id);
     }
 
-    public function getPurchaseOrder(PurchaseOrderItem $purchaseOrderItem): PurchaseOrder
+    private function getPurchaseOrder(PurchaseOrderItem $purchaseOrderItem): PurchaseOrder
     {
         return $purchaseOrderItem->getPurchaseOrder();
     }
 
-    public function getCustomerOrderItem(PurchaseOrderItem $purchaseOrderItem): CustomerOrderItem
+    private function getCustomerOrderItem(PurchaseOrderItem $purchaseOrderItem): CustomerOrderItem
     {
         return $purchaseOrderItem->getCustomerOrderItem();
+    }
+
+    private function removePurchaseOrder(PurchaseOrder $purchaseOrder): void
+    {
+        $this->entityManager->remove($purchaseOrder);
     }
 }

@@ -4,12 +4,12 @@ namespace App\Tests\Unit\Entity;
 
 use App\Entity\Category;
 use App\Entity\Manufacturer;
-use App\Entity\PriceModel;
 use App\Entity\Product;
 use App\Entity\ProductImage;
 use App\Entity\Subcategory;
 use App\Entity\SupplierProduct;
 use App\Entity\User;
+use App\Enum\PriceModel;
 use PHPUnit\Framework\TestCase;
 
 class ProductTest extends TestCase

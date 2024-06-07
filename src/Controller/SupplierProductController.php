@@ -96,8 +96,8 @@ class SupplierProductController extends AbstractController
             );
         }
 
-        return $crudHelper->redirectToRoute(
-            'app_product_stock', ['id' => $supplierProduct->getProduct()->getId()]
+        return $crudHelper->redirectToLink(
+            $this->generateUrl('app_product_stock', ['id' => $supplierProduct->getProduct()->getId()])
         );
     }
 
@@ -116,8 +116,8 @@ class SupplierProductController extends AbstractController
             'Supplier product status updated'
         );
 
-        return $crudHelper->redirectToRoute(
-            'app_product_stock', ['id' => $supplierProduct->getProduct()->getId()]
+        return $crudHelper->redirectToLink(
+            $this->generateUrl('app_product_stock', ['id' => $supplierProduct->getProduct()->getId()])
         );
     }
 
@@ -139,6 +139,8 @@ class SupplierProductController extends AbstractController
             'Supplier product mapped'
         );
 
-        return $crudHelper->redirectToRoute('app_supplier_product_show', ['id' => $supplierProduct->getId()]);
+        return $crudHelper->redirectToLink(
+            $this->generateUrl('app_supplier_product_show', ['id' => $supplierProduct->getId()])
+        );
     }
 }

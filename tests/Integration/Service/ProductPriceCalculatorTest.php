@@ -2,8 +2,8 @@
 
 namespace App\Tests\Integration\Service;
 
-use App\Entity\PriceModel;
 use App\Entity\Product;
+use App\Enum\PriceModel;
 use App\Service\Product\ActiveSourceCalculator;
 use App\Service\Product\ProductPriceCalculator;
 use App\Tests\Utilities\TestProduct;

@@ -2,7 +2,7 @@
 
 namespace App\Tests\Application\Controller;
 
-use App\Entity\PriceModel;
+use App\Enum\PriceModel;
 use App\Factory\CategoryFactory;
 use App\Factory\SubcategoryFactory;
 use App\Factory\UserFactory;
