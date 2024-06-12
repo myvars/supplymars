@@ -4,8 +4,133 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3b3a4438ecbc58912a18b8634262310b",
+    "content-hash": "ae681262fb92176e7b0e171f508f8b1a",
     "packages": [
+        {
+            "name": "async-aws/core",
+            "version": "1.21.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/async-aws/core.git",
+                "reference": "eb23cc59515d8d529163313bbf9e02f666e515ef"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/async-aws/core/zipball/eb23cc59515d8d529163313bbf9e02f666e515ef",
+                "reference": "eb23cc59515d8d529163313bbf9e02f666e515ef",
+                "shasum": ""
+            },
+            "require": {
+                "ext-hash": "*",
+                "ext-json": "*",
+                "ext-simplexml": "*",
+                "php": "^7.2.5 || ^8.0",
+                "psr/cache": "^1.0 || ^2.0 || ^3.0",
+                "psr/log": "^1.0 || ^2.0 || ^3.0",
+                "symfony/deprecation-contracts": "^2.1 || ^3.0",
+                "symfony/http-client": "^4.4.16 || ^5.1.7 || ^6.0 || ^7.0",
+                "symfony/http-client-contracts": "^1.1.8 || ^2.0 || ^3.0",
+                "symfony/service-contracts": "^1.0 || ^2.0 || ^3.0"
+            },
+            "conflict": {
+                "async-aws/s3": "<1.1",
+                "symfony/http-client": "5.2.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.21-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AsyncAws\\Core\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "Core package to integrate with AWS. This is a lightweight AWS SDK provider by AsyncAws.",
+            "keywords": [
+                "amazon",
+                "async-aws",
+                "aws",
+                "sdk",
+                "sts"
+            ],
+            "support": {
+                "source": "https://github.com/async-aws/core/tree/1.21.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/jderusse",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nyholm",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-02-27T14:44:12+00:00"
+        },
+        {
+            "name": "async-aws/ses",
+            "version": "1.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/async-aws/ses.git",
+                "reference": "9bf4873210cfc8b86e4abb18d1d707f9ae247ace"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/async-aws/ses/zipball/9bf4873210cfc8b86e4abb18d1d707f9ae247ace",
+                "reference": "9bf4873210cfc8b86e4abb18d1d707f9ae247ace",
+                "shasum": ""
+            },
+            "require": {
+                "async-aws/core": "^1.9",
+                "ext-json": "*",
+                "php": "^7.2.5 || ^8.0"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.8-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "AsyncAws\\Ses\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "SES client, part of the AWS SDK provided by AsyncAws.",
+            "keywords": [
+                "amazon",
+                "async-aws",
+                "aws",
+                "sdk",
+                "ses"
+            ],
+            "support": {
+                "source": "https://github.com/async-aws/ses/tree/1.8.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/jderusse",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nyholm",
+                    "type": "github"
+                }
+            ],
+            "time": "2024-05-14T07:34:42+00:00"
+        },
         {
             "name": "aws/aws-crt-php",
             "version": "v1.2.5",
@@ -62,16 +187,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.311.1",
+            "version": "3.312.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "90218b9372469babf294f97bdd764c9d47ec8a57"
+                "reference": "53b233072f707d2abfd62b0df4bc2dc27caf3274"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/90218b9372469babf294f97bdd764c9d47ec8a57",
-                "reference": "90218b9372469babf294f97bdd764c9d47ec8a57",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/53b233072f707d2abfd62b0df4bc2dc27caf3274",
+                "reference": "53b233072f707d2abfd62b0df4bc2dc27caf3274",
                 "shasum": ""
             },
             "require": {
@@ -151,9 +276,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.311.1"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.312.0"
             },
-            "time": "2024-06-06T18:05:50+00:00"
+            "time": "2024-06-10T18:04:10+00:00"
         },
         {
             "name": "babdev/pagerfanta-bundle",
@@ -2350,16 +2475,16 @@
         },
         {
             "name": "knplabs/knp-time-bundle",
-            "version": "v2.3.0",
+            "version": "v2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/KnpLabs/KnpTimeBundle.git",
-                "reference": "233a4630ea3974f63628608c2e4a26b6543ef589"
+                "reference": "93e9528415b28a19872d74b28e816045c0fd217b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/KnpLabs/KnpTimeBundle/zipball/233a4630ea3974f63628608c2e4a26b6543ef589",
-                "reference": "233a4630ea3974f63628608c2e4a26b6543ef589",
+                "url": "https://api.github.com/repos/KnpLabs/KnpTimeBundle/zipball/93e9528415b28a19872d74b28e816045c0fd217b",
+                "reference": "93e9528415b28a19872d74b28e816045c0fd217b",
                 "shasum": ""
             },
             "require": {
@@ -2419,9 +2544,9 @@
             ],
             "support": {
                 "issues": "https://github.com/KnpLabs/KnpTimeBundle/issues",
-                "source": "https://github.com/KnpLabs/KnpTimeBundle/tree/v2.3.0"
+                "source": "https://github.com/KnpLabs/KnpTimeBundle/tree/v2.4.0"
             },
-            "time": "2024-06-06T11:07:38+00:00"
+            "time": "2024-06-11T09:38:28+00:00"
         },
         {
             "name": "league/flysystem",
@@ -2991,16 +3116,16 @@
         },
         {
             "name": "oneup/flysystem-bundle",
-            "version": "4.12.1",
+            "version": "4.12.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/1up-lab/OneupFlysystemBundle.git",
-                "reference": "625175dcb65f4cdedd52d0a644683a2ebdc688d2"
+                "reference": "888cceb2ee641b0d59d5feb31a2447318c311a48"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/1up-lab/OneupFlysystemBundle/zipball/625175dcb65f4cdedd52d0a644683a2ebdc688d2",
-                "reference": "625175dcb65f4cdedd52d0a644683a2ebdc688d2",
+                "url": "https://api.github.com/repos/1up-lab/OneupFlysystemBundle/zipball/888cceb2ee641b0d59d5feb31a2447318c311a48",
+                "reference": "888cceb2ee641b0d59d5feb31a2447318c311a48",
                 "shasum": ""
             },
             "require": {
@@ -3074,9 +3199,9 @@
             ],
             "support": {
                 "issues": "https://github.com/1up-lab/OneupFlysystemBundle/issues",
-                "source": "https://github.com/1up-lab/OneupFlysystemBundle/tree/4.12.1"
+                "source": "https://github.com/1up-lab/OneupFlysystemBundle/tree/4.12.2"
             },
-            "time": "2024-04-08T13:50:27+00:00"
+            "time": "2024-06-10T12:55:36+00:00"
         },
         {
             "name": "pagerfanta/core",
@@ -4074,6 +4199,72 @@
                 "source": "https://github.com/stof/StofDoctrineExtensionsBundle/tree/v1.11.0"
             },
             "time": "2024-02-13T14:43:20+00:00"
+        },
+        {
+            "name": "symfony/amazon-mailer",
+            "version": "v7.0.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/amazon-mailer.git",
+                "reference": "9a54fa387682cb4d89da441934aa08ff8750a8ca"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/amazon-mailer/zipball/9a54fa387682cb4d89da441934aa08ff8750a8ca",
+                "reference": "9a54fa387682cb4d89da441934aa08ff8750a8ca",
+                "shasum": ""
+            },
+            "require": {
+                "async-aws/ses": "^1.0",
+                "php": ">=8.2",
+                "symfony/mailer": "^6.4|^7.0"
+            },
+            "require-dev": {
+                "symfony/http-client": "^6.4|^7.0"
+            },
+            "type": "symfony-mailer-bridge",
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Mailer\\Bridge\\Amazon\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Amazon Mailer Bridge",
+            "homepage": "https://symfony.com",
+            "support": {
+                "source": "https://github.com/symfony/amazon-mailer/tree/v7.0.8"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2024-05-31T14:55:39+00:00"
         },
         {
             "name": "symfony/asset",
@@ -8364,16 +8555,16 @@
         },
         {
             "name": "symfony/stimulus-bundle",
-            "version": "v2.17.0",
+            "version": "v2.18.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/stimulus-bundle.git",
-                "reference": "b828a32fe9f75500d26b563cc01874657162c413"
+                "reference": "9323437da427e123d8f9b76b19fa9a60a76d45a0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/stimulus-bundle/zipball/b828a32fe9f75500d26b563cc01874657162c413",
-                "reference": "b828a32fe9f75500d26b563cc01874657162c413",
+                "url": "https://api.github.com/repos/symfony/stimulus-bundle/zipball/9323437da427e123d8f9b76b19fa9a60a76d45a0",
+                "reference": "9323437da427e123d8f9b76b19fa9a60a76d45a0",
                 "shasum": ""
             },
             "require": {
@@ -8413,7 +8604,7 @@
                 "symfony-ux"
             ],
             "support": {
-                "source": "https://github.com/symfony/stimulus-bundle/tree/v2.17.0"
+                "source": "https://github.com/symfony/stimulus-bundle/tree/v2.18.0"
             },
             "funding": [
                 {
@@ -8429,7 +8620,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-04-21T10:23:35+00:00"
+            "time": "2024-06-01T17:50:20+00:00"
         },
         {
             "name": "symfony/stopwatch",
@@ -8949,12 +9140,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/ux-icons.git",
-                "reference": "baebc0841615007048fc4a7cd419c74de6b4edb0"
+                "reference": "a00140b15feb16a0d991ee04e115f2a15b0d9941"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ux-icons/zipball/baebc0841615007048fc4a7cd419c74de6b4edb0",
-                "reference": "baebc0841615007048fc4a7cd419c74de6b4edb0",
+                "url": "https://api.github.com/repos/symfony/ux-icons/zipball/a00140b15feb16a0d991ee04e115f2a15b0d9941",
+                "reference": "a00140b15feb16a0d991ee04e115f2a15b0d9941",
                 "shasum": ""
             },
             "require": {
@@ -8992,6 +9183,14 @@
             ],
             "authors": [
                 {
+                    "name": "Kevin Bond",
+                    "email": "kevinbond@gmail.com"
+                },
+                {
+                    "name": "Simon André",
+                    "email": "smn.andre@gmail.com"
+                },
+                {
                     "name": "Symfony Community",
                     "homepage": "https://symfony.com/contributors"
                 }
@@ -9021,20 +9220,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-06-04T03:54:01+00:00"
+            "time": "2024-06-07T23:22:02+00:00"
         },
         {
             "name": "symfony/ux-turbo",
-            "version": "v2.17.0",
+            "version": "v2.18.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/ux-turbo.git",
-                "reference": "7093e20d7ca599902a7d1bf4d831849fd78befdb"
+                "reference": "e447231ddcc09ab68d29047f47d31a524837dc7a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ux-turbo/zipball/7093e20d7ca599902a7d1bf4d831849fd78befdb",
-                "reference": "7093e20d7ca599902a7d1bf4d831849fd78befdb",
+                "url": "https://api.github.com/repos/symfony/ux-turbo/zipball/e447231ddcc09ab68d29047f47d31a524837dc7a",
+                "reference": "e447231ddcc09ab68d29047f47d31a524837dc7a",
                 "shasum": ""
             },
             "require": {
@@ -9045,6 +9244,7 @@
                 "symfony/flex": "<1.13"
             },
             "require-dev": {
+                "dbrekelmans/bdi": "dev-main",
                 "doctrine/doctrine-bundle": "^2.4.3",
                 "doctrine/orm": "^2.8 | 3.0",
                 "phpstan/phpstan": "^1.10",
@@ -9101,7 +9301,7 @@
                 "turbo-stream"
             ],
             "support": {
-                "source": "https://github.com/symfony/ux-turbo/tree/v2.17.0"
+                "source": "https://github.com/symfony/ux-turbo/tree/v2.18.0"
             },
             "funding": [
                 {
@@ -9117,20 +9317,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-04-22T13:58:54+00:00"
+            "time": "2024-06-01T17:56:14+00:00"
         },
         {
             "name": "symfony/ux-twig-component",
-            "version": "v2.17.0",
+            "version": "v2.18.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/ux-twig-component.git",
-                "reference": "fb3d978b7f19e9a94533a3bf30d68269908ffae1"
+                "reference": "a2122be860b9e0010638178eadb4e5ed46d1907c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ux-twig-component/zipball/fb3d978b7f19e9a94533a3bf30d68269908ffae1",
-                "reference": "fb3d978b7f19e9a94533a3bf30d68269908ffae1",
+                "url": "https://api.github.com/repos/symfony/ux-twig-component/zipball/a2122be860b9e0010638178eadb4e5ed46d1907c",
+                "reference": "a2122be860b9e0010638178eadb4e5ed46d1907c",
                 "shasum": ""
             },
             "require": {
@@ -9185,7 +9385,7 @@
                 "twig"
             ],
             "support": {
-                "source": "https://github.com/symfony/ux-twig-component/tree/v2.17.0"
+                "source": "https://github.com/symfony/ux-twig-component/tree/v2.18.0"
             },
             "funding": [
                 {
@@ -9201,7 +9401,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-04-19T16:14:05+00:00"
+            "time": "2024-06-06T23:10:35+00:00"
         },
         {
             "name": "symfony/validator",
@@ -12728,16 +12928,16 @@
         },
         {
             "name": "symfony/maker-bundle",
-            "version": "v1.59.1",
+            "version": "v1.60.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/maker-bundle.git",
-                "reference": "b87b1b25c607a8a50832395bc751c784946a0350"
+                "reference": "c305a02a22974670f359d4274c9431e1a191f559"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/maker-bundle/zipball/b87b1b25c607a8a50832395bc751c784946a0350",
-                "reference": "b87b1b25c607a8a50832395bc751c784946a0350",
+                "url": "https://api.github.com/repos/symfony/maker-bundle/zipball/c305a02a22974670f359d4274c9431e1a191f559",
+                "reference": "c305a02a22974670f359d4274c9431e1a191f559",
                 "shasum": ""
             },
             "require": {
@@ -12800,7 +13000,7 @@
             ],
             "support": {
                 "issues": "https://github.com/symfony/maker-bundle/issues",
-                "source": "https://github.com/symfony/maker-bundle/tree/v1.59.1"
+                "source": "https://github.com/symfony/maker-bundle/tree/v1.60.0"
             },
             "funding": [
                 {
@@ -12816,7 +13016,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-05-06T03:59:59+00:00"
+            "time": "2024-06-10T06:03:18+00:00"
         },
         {
             "name": "symfony/phpunit-bridge",
@@ -13223,16 +13423,16 @@
         },
         {
             "name": "zenstruck/foundry",
-            "version": "v1.37.0",
+            "version": "v1.38.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/zenstruck/foundry.git",
-                "reference": "e01d77f01d2837e568ed92d226e6e778c37319a4"
+                "reference": "fd3c763de120445878077e54c608d8d75a3cc22d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/zenstruck/foundry/zipball/e01d77f01d2837e568ed92d226e6e778c37319a4",
-                "reference": "e01d77f01d2837e568ed92d226e6e778c37319a4",
+                "url": "https://api.github.com/repos/zenstruck/foundry/zipball/fd3c763de120445878077e54c608d8d75a3cc22d",
+                "reference": "fd3c763de120445878077e54c608d8d75a3cc22d",
                 "shasum": ""
             },
             "require": {
@@ -13249,7 +13449,7 @@
                 "doctrine/mongodb-odm": "2.5.0"
             },
             "require-dev": {
-                "bamarni/composer-bin-plugin": "^1.4",
+                "bamarni/composer-bin-plugin": "^1.8",
                 "dama/doctrine-test-bundle": "^7.0|^8.0",
                 "doctrine/doctrine-bundle": "^2.5",
                 "doctrine/doctrine-migrations-bundle": "^2.2|^3.0",
@@ -13274,10 +13474,12 @@
             },
             "autoload": {
                 "files": [
-                    "src/functions.php"
+                    "src/functions.php",
+                    "src/Persistence/functions.php"
                 ],
                 "psr-4": {
-                    "Zenstruck\\Foundry\\": "src/"
+                    "Zenstruck\\Foundry\\": "src/",
+                    "Zenstruck\\Foundry\\Utils\\Rector\\": "utils/rector/src/"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -13303,7 +13505,7 @@
             ],
             "support": {
                 "issues": "https://github.com/zenstruck/foundry/issues",
-                "source": "https://github.com/zenstruck/foundry/tree/v1.37.0"
+                "source": "https://github.com/zenstruck/foundry/tree/v1.38.0"
             },
             "funding": [
                 {
@@ -13311,7 +13513,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-03-20T15:09:26+00:00"
+            "time": "2024-06-07T23:04:21+00:00"
         }
     ],
     "aliases": [],

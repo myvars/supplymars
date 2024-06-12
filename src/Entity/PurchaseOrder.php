@@ -67,7 +67,7 @@ class PurchaseOrder
     private int $totalWeight = 0;
 
     /**
-     * @var Collection<int, CustomerOrderItem>
+     * @var Collection<int, PurchaseOrderItem>
      */
     #[ORM\OneToMany(mappedBy: 'purchaseOrder', targetEntity: PurchaseOrderItem::class)]
     #[ORM\OrderBy(['id' => 'ASC'])]
@@ -186,13 +186,6 @@ class PurchaseOrder
         return $this->status;
     }
 
-    public function setStatus(PurchaseOrderStatus $status): static
-    {
-        $this->status = $status;
-
-        return $this;
-    }
-
     public function getTotalPrice(): string
     {
         return $this->totalPrice;
@@ -304,5 +297,38 @@ class PurchaseOrder
             ->setShippingAddress($customerOrder->getShippingAddress())
             ->setOrderRef($customerOrder->getCustomerOrderRef())
             ->recalculateTotal();
+    }
+
+    public function updateStatus(): void
+    {
+        if ($this->purchaseOrderItems->isEmpty()) {
+            $this->setStatus(PurchaseOrderStatus::getDefault());
+            return;
+        }
+
+        $status = PurchaseOrderStatus::DELIVERED;
+        foreach ($this->purchaseOrderItems as $item) {
+            if ($item->getStatus()->getLevel() < $status->getLevel()) {
+                $status = $item->getStatus();
+            }
+        }
+
+        if (!$this->getStatus()->canTransitionTo($status)) {
+            throw new \LogicException(sprintf('Cannot transition from "%s" to "%s"',
+                $this->getStatus()->value,
+                $status->value
+            ));
+        }
+
+        $this->setStatus($status);
+    }
+
+    private function setStatus(PurchaseOrderStatus $status): void
+    {
+        if ($this->getStatus() === $status) {
+            return;
+        }
+
+        $this->status = $status;
     }
 }

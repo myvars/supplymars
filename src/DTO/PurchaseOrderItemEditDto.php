@@ -22,7 +22,7 @@ class PurchaseOrderItemEditDto
         $this->quantity = $quantity;
     }
 
-    public static function createFromEntity(PurchaseOrderItem $purchaseOrderItem): static
+    public static function fromEntity(PurchaseOrderItem $purchaseOrderItem): static
     {
         return new static(
             $purchaseOrderItem->getId(),

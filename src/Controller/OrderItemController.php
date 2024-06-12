@@ -47,7 +47,7 @@ class OrderItemController extends AbstractController
             return $crudCreator->crudHelper->showEmpty('Order');
         }
 
-        $createOrderItemDto = OrderItemCreateDto::createFromEntity($customerOrder);
+        $createOrderItemDto = OrderItemCreateDto::fromEntity($customerOrder);
         $form = $this->createForm(OrderItemCreateType::class, $createOrderItemDto, [
             'action' => $this->generateUrl('app_order_item_new', ['id' => $customerOrder->getId()]),
         ]);
@@ -72,7 +72,7 @@ class OrderItemController extends AbstractController
             return $crudUpdater->crudHelper->showEmpty(self::SECTION);
         }
 
-        $orderItemEditDto = OrderItemEditDto::createFromEntity($customerOrderItem);
+        $orderItemEditDto = OrderItemEditDto::fromEntity($customerOrderItem);
         $form = $this->createForm(OrderItemEditType::class, $orderItemEditDto, [
             'action' => $this->generateUrl('app_order_item_edit', ['id' => $customerOrderItem->getId()]),
         ]);

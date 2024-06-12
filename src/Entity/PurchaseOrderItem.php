@@ -229,10 +229,10 @@ class PurchaseOrderItem
             ->recalculateTotal();
     }
 
-    public function updateStatus(PurchaseOrderStatus $newStatus): static
+    public function updateStatus(PurchaseOrderStatus $newStatus): void
     {
         if ($newStatus === $this->status) {
-            return $this;
+            return;
         }
 
         if (!$this->status->canTransitionTo($newStatus)) {
@@ -243,7 +243,6 @@ class PurchaseOrderItem
         }
 
         $this->status = $newStatus;
-
-        return $this;
+        $this->getPurchaseOrder()->updateStatus();
     }
 }

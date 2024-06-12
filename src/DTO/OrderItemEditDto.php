@@ -3,6 +3,7 @@
 namespace App\DTO;
 
 use App\Entity\CustomerOrderItem;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class OrderItemEditDto
@@ -26,7 +27,18 @@ class OrderItemEditDto
         $this->priceIncVat = $priceIncVat;
     }
 
-    public static function createFromEntity(CustomerOrderItem $customerOrderItem): static
+    public static function fromRequest(Request $request): static
+    {
+
+
+        return new static(
+            $customerOrderItem->getId(),
+            $customerOrderItem->getQuantity(),
+            $customerOrderItem->getPriceIncVat()
+        );
+    }
+
+    public static function fromEntity(CustomerOrderItem $customerOrderItem): static
     {
         return new static(
             $customerOrderItem->getId(),

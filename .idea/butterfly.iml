@@ -187,6 +187,9 @@
       <excludeFolder url="file://$MODULE_DIR$/vendor/dama/doctrine-test-bundle" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/zenstruck/browser" />
       <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/ux-icons" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/async-aws/core" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/async-aws/ses" />
+      <excludeFolder url="file://$MODULE_DIR$/vendor/symfony/amazon-mailer" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

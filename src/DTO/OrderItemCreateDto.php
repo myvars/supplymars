@@ -27,7 +27,7 @@ class OrderItemCreateDto
         $this->quantity = $quantity;
     }
 
-    public static function createFromEntity(CustomerOrder $customerOrder): static
+    public static function fromEntity(CustomerOrder $customerOrder): static
     {
         return new static($customerOrder->getId(), null, 1);
     }

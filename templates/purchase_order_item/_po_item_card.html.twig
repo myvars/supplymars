@@ -1,6 +1,6 @@
 <li class="w-full relative first:mt-3 p-3 text-sm text-gray-500 dark:text-gray-400 border border-supplier-200 rounded-lg shadow dark:bg-supplier-800 dark:border-supplier-700 hover:bg-supplier-50 dark:hover:bg-supplier-700">
     {% block purchase_order_item_edit %}
-        <a href="{{ path('app_purchase_order_item_edit', {'id': purchaseOrderItem.id }) }}"
+        <a href="{{ path('app_purchase_order_item_status_edit', {'id': purchaseOrderItem.id }) }}"
            class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-supplier-600 rounded-full shadow-lg dark:bg-supplier-700 dark:hover:bg-supplier-600"
            data-turbo-prefetch="false"
            data-turbo-frame="modal"

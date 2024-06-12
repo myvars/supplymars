@@ -15,6 +15,17 @@ enum PurchaseOrderStatus: string
         return self::PENDING;
     }
 
+    public function getLevel(): int
+    {
+        return match ($this) {
+            self::PENDING => 1,
+            self::PROCESSING => 2,
+            self::SHIPPED => 3,
+            self::DELIVERED => 4,
+            self::CANCELLED => 5,
+        };
+    }
+
     public function allowEdit(): bool
     {
         return $this === self::PENDING;
@@ -33,7 +44,7 @@ enum PurchaseOrderStatus: string
                 default => false,
             },
             self::PROCESSING => match ($to) {
-                self::SHIPPED, self::CANCELLED => true,
+                self::PENDING, self::SHIPPED, self::CANCELLED => true,
                 default => false,
             },
             self::SHIPPED => match ($to) {

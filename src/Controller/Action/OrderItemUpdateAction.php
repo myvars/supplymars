@@ -27,7 +27,7 @@ class OrderItemUpdateAction extends AbstractController
             return $this->crudHelper->showEmpty('Order Item');
         }
 
-        $orderItemEditDto = OrderItemEditDto::createFromEntity($customerOrderItem);
+        $orderItemEditDto = OrderItemEditDto::fromEntity($customerOrderItem);
         $form = $this->createForm(OrderItemEditType::class, $orderItemEditDto, [
             'action' => $this->generateUrl('app_order_item_edit', ['id' => $customerOrderItem->getId()]),
         ]);
@@ -41,8 +41,8 @@ class OrderItemUpdateAction extends AbstractController
                 $this->addFlash('error', 'Can not update Order Item!');
             }
 
-            return  $this->crudHelper->redirectToRoute(
-                'app_order_show', ['id' => $customerOrderItem->getCustomerOrder()->getId()],
+            return  $this->crudHelper->redirectToLink(
+                $this->generateUrl('app_order_show', ['id' => $customerOrderItem->getCustomerOrder()->getId()]),
             );
         }
 
