@@ -7,7 +7,7 @@ use Symfony\Component\Form\FormInterface;
 class CrudCreateOptions extends CrudOptions
 {
     private FormInterface $form;
-    private ?CrudCreateStrategyInterface $crudStrategy = null;
+    private ?CrudActionInterface $crudAction = null;
 
     public function getForm(): FormInterface
     {
@@ -21,14 +21,14 @@ class CrudCreateOptions extends CrudOptions
         return $this;
     }
 
-    public function getCrudStrategy(): ?CrudCreateStrategyInterface
+    public function getCrudAction(): ?CrudActionInterface
     {
-        return $this->crudStrategy;
+        return $this->crudAction;
     }
 
-    public function setCrudStrategy(?CrudCreateStrategyInterface $crudStrategy): CrudCreateOptions
+    public function setCrudAction(?CrudActionInterface $crudAction): CrudCreateOptions
     {
-        $this->crudStrategy = $crudStrategy;
+        $this->crudAction = $crudAction;
 
         return $this;
     }

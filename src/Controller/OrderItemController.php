@@ -2,20 +2,20 @@
 
 namespace App\Controller;
 
-use App\DTO\OrderItemCreateDto;
-use App\DTO\OrderItemEditDto;
+use App\DTO\CreateOrderItemDto;
+use App\DTO\EditOrderItemDto;
 use App\Entity\CustomerOrder;
 use App\Entity\CustomerOrderItem;
-use App\Form\OrderItemCreateType;
-use App\Form\OrderItemEditType;
+use App\Form\CreateOrderItemType;
+use App\Form\EditOrderItemType;
 use App\Service\Crud\CrudCreator;
 use App\Service\Crud\CrudDeleter;
 use App\Service\Crud\CrudHelper;
 use App\Service\Crud\CrudReader;
 use App\Service\Crud\CrudUpdater;
-use App\Service\PurchaseOrder\PurchaseOrderItemCreator;
-use App\Strategy\CreateOrderItemStrategy;
-use App\Strategy\EditOrderItemStrategy;
+use App\Service\Order\CreateOrderItem;
+use App\Service\Order\EditOrderItem;
+use App\Service\PurchaseOrder\CreatePurchaseOrderItem;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -41,14 +41,14 @@ class OrderItemController extends AbstractController
     public function new(
         ?CustomerOrder $customerOrder,
         CrudCreator $crudCreator,
-        CreateOrderItemStrategy $crudStrategy,
+        CreateOrderItem $crudAction,
     ): Response {
         if (!$customerOrder) {
             return $crudCreator->crudHelper->showEmpty('Order');
         }
 
-        $createOrderItemDto = OrderItemCreateDto::fromEntity($customerOrder);
-        $form = $this->createForm(OrderItemCreateType::class, $createOrderItemDto, [
+        $createOrderItemDto = CreateOrderItemDto::fromEntity($customerOrder);
+        $form = $this->createForm(CreateOrderItemType::class, $createOrderItemDto, [
             'action' => $this->generateUrl('app_order_item_new', ['id' => $customerOrder->getId()]),
         ]);
         $successLink = $this->generateUrl('app_order_show', ['id' => $customerOrder->getId()]);
@@ -57,7 +57,7 @@ class OrderItemController extends AbstractController
             ->setEntity($createOrderItemDto)
             ->setForm($form)
             ->setSuccessLink($successLink)
-            ->setCrudStrategy($crudStrategy);
+            ->setCrudAction($crudAction);
 
         return $crudCreator->build($crudOptions);
     }
@@ -66,48 +66,28 @@ class OrderItemController extends AbstractController
     public function edit(
         ?CustomerOrderItem $customerOrderItem,
         CrudUpdater $crudUpdater,
-        EditOrderItemStrategy $crudStrategy,
+        EditOrderItem $crudAction,
     ): Response {
         if (!$customerOrderItem) {
             return $crudUpdater->crudHelper->showEmpty(self::SECTION);
         }
 
-        $orderItemEditDto = OrderItemEditDto::fromEntity($customerOrderItem);
-        $form = $this->createForm(OrderItemEditType::class, $orderItemEditDto, [
-            'action' => $this->generateUrl('app_order_item_edit', ['id' => $customerOrderItem->getId()]),
+        $editOrderItemDto = EditOrderItemDto::fromEntity($customerOrderItem);
+        $form = $this->createForm(EditOrderItemType::class, $editOrderItemDto, [
+            'action' => $this->generateUrl('app_order_item_edit', ['id' => $editOrderItemDto->getId()]),
         ]);
         $successLink = $this->generateUrl(
             'app_order_show', ['id' => $customerOrderItem->getCustomerOrder()->getId()]
         );
         $crudOptions = $crudUpdater->resetOptions()
             ->setSection(self::SECTION)
-            ->setEntity($orderItemEditDto)
+            ->setEntity($editOrderItemDto)
             ->setForm($form)
             ->setSuccessLink($successLink)
-            ->setCrudStrategy($crudStrategy)
-            ->setAllowDelete(true);
+            ->setCrudAction($crudAction)
+            ->setAllowDelete(false);
 
         return $crudUpdater->build($crudOptions);
-    }
-
-    #[Route('/item/{id}/delete/confirm', name: 'app_order_item_delete_confirm', methods: ['GET'])]
-    public function deleteConfirm(?CustomerOrderItem $customerOrderItem, CrudDeleter $crudDeleter): Response
-    {
-        return $crudDeleter->deleteConfirm(self::SECTION, $customerOrderItem);
-    }
-
-    #[Route('/item/{id}/delete', name: 'app_order_item_delete', methods: ['POST'])]
-    public function delete(CustomerOrderItem $customerOrderItem, CrudDeleter $crudDeleter): Response
-    {
-        $successLink =  $this->generateUrl(
-            'app_order_show', ['id' => $customerOrderItem->getCustomerOrder()->getId()]
-        );
-        $crudOptions = $crudDeleter->resetOptions()
-            ->setSection(self::SECTION)
-            ->setEntity($customerOrderItem)
-            ->setSuccessLink($successLink);
-
-        return $crudDeleter->build($crudOptions);
     }
 
     #[Route('/item/{id}/supplier/product/{supplierProductId}/po/add',
@@ -118,7 +98,7 @@ class OrderItemController extends AbstractController
         ?CustomerOrderItem $customerOrderItem,
         int $supplierProductId,
         CrudHelper $crudHelper,
-        PurchaseOrderItemCreator $purchaseOrderItemCreator
+        CreatePurchaseOrderItem $createPurchaseOrderItem
     ): Response {
         try {
             $supplierProduct = null;
@@ -127,7 +107,7 @@ class OrderItemController extends AbstractController
                     break;
                 }
             }
-            $purchaseOrderItemCreator->create($customerOrderItem, $supplierProduct);
+            $createPurchaseOrderItem->fromOrder($customerOrderItem, $supplierProduct);
         } catch (\Exception $e) {
             $this->addFlash(
                 'danger',

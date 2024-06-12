@@ -2,9 +2,9 @@
 
 namespace App\Service\Crud;
 
+use App\Service\Crud\Core\CrudActionInterface;
 use App\Service\Crud\Core\CrudUpdateOptions;
-use App\Service\Crud\Core\CrudUpdateStrategy;
-use App\Service\Crud\Core\CrudUpdateStrategyInterface;
+use App\Service\Crud\Core\CrudUpdateAction;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,8 +16,8 @@ class CrudUpdater extends AbstractController
     public function __construct(
         public readonly CrudHelper $crudHelper,
         private readonly CrudUpdateOptions $crudOptions,
-        #[Autowire(service: CrudUpdateStrategy::class)]
-        private readonly CrudUpdateStrategyInterface $crudStrategy,
+        #[Autowire(service: CrudUpdateAction::class)]
+        private readonly CrudActionInterface $crudAction,
     ) {
     }
 
@@ -51,11 +51,11 @@ class CrudUpdater extends AbstractController
     public function build(CrudUpdateOptions $crudOptions): Response
     {
         $form = $crudOptions->getForm();
-        $crudStrategy = $crudOptions->getCrudStrategy() ?: $this->crudStrategy;
+        $crudAction = $crudOptions->getCrudAction() ?: $this->crudAction;
         $form->handleRequest($this->crudHelper->getRequest());
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $crudStrategy->update($crudOptions->getEntity(), $crudOptions->getCrudStrategyContext());
+                $crudAction->handle($crudOptions->getEntity(), $crudOptions->getCrudActionContext());
                 $this->addFlash(
                     'success',
                     $crudOptions->getSection().' updated!'

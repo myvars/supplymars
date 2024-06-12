@@ -2,16 +2,15 @@
 
 namespace App\Controller;
 
-use App\DTO\PurchaseOrderItemEditDto;
-use App\DTO\PurchaseOrderItemStatusChangeDto;
+use App\DTO\EditPurchaseOrderItemDto;
+use App\DTO\ChangePurchaseOrderItemStatusDto;
 use App\Entity\PurchaseOrderItem;
-use App\Form\PurchaseOrderItemEditType;
-use App\Form\PurchaseOrderItemStatusEditType;
-use App\Service\Crud\CrudDeleter;
+use App\Form\EditPurchaseOrderItemType;
+use App\Form\ChangePurchaseOrderItemStatusType;
 use App\Service\Crud\CrudReader;
 use App\Service\Crud\CrudUpdater;
-use App\Strategy\ChangePOItemStatusStrategy;
-use App\Strategy\EditPOItemStrategy;
+use App\Service\PurchaseOrder\ChangePurchaseOrderItemStatus;
+use App\Service\PurchaseOrder\EditPurchaseOrderItem;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -36,16 +35,16 @@ class PurchaseOrderItemController extends AbstractController
     #[Route('/{id}/edit', name: 'app_purchase_order_item_edit', methods: ['GET', 'POST'])]
     public function edit(
         ?PurchaseOrderItem $purchaseOrderItem,
-        CrudUpdater        $crudUpdater,
-        EditPOItemStrategy $crudStrategy,
+        CrudUpdater $crudUpdater,
+        EditPurchaseOrderItem $crudAction,
     ): Response
     {
         if (!$purchaseOrderItem) {
             return $crudUpdater->crudHelper->showEmpty(self::SECTION);
         }
 
-        $editPOItemDto = PurchaseOrderItemEditDto::fromEntity($purchaseOrderItem);
-        $form = $this->createForm(PurchaseOrderItemEditType::class, $editPOItemDto, [
+        $editPOItemDto = EditPurchaseOrderItemDto::fromEntity($purchaseOrderItem);
+        $form = $this->createForm(EditPurchaseOrderItemType::class, $editPOItemDto, [
             'action' => $this->generateUrl(
                 'app_purchase_order_item_edit',
                 ['id' => $purchaseOrderItem->getId()]
@@ -60,7 +59,7 @@ class PurchaseOrderItemController extends AbstractController
             ->setEntity($editPOItemDto)
             ->setForm($form)
             ->setSuccessLink($successLink)
-            ->setCrudStrategy($crudStrategy);
+            ->setCrudAction($crudAction);
 
         return $crudUpdater->build($crudOptions);
     }
@@ -69,14 +68,14 @@ class PurchaseOrderItemController extends AbstractController
     public function editStatus(
         ?PurchaseOrderItem $purchaseOrderItem,
         CrudUpdater $crudUpdater,
-        ChangePOItemStatusStrategy $crudStrategy
+        ChangePurchaseOrderItemStatus $crudAction
     ): Response {
         if (!$purchaseOrderItem) {
             return $crudUpdater->crudHelper->showEmpty(self::SECTION);
         }
 
-        $editPOItemStatusDto = PurchaseOrderItemStatusChangeDto::fromEntity($purchaseOrderItem);
-        $form = $this->createForm(PurchaseOrderItemStatusEditType::class, $editPOItemStatusDto, [
+        $changePurchaseOrderItemStatusDto = ChangePurchaseOrderItemStatusDto::fromEntity($purchaseOrderItem);
+        $form = $this->createForm(ChangePurchaseOrderItemStatusType::class, $changePurchaseOrderItemStatusDto, [
             'action' => $this->generateUrl(
                 'app_purchase_order_item_status_edit', ['id' => $purchaseOrderItem->getId()]
             ),
@@ -86,10 +85,10 @@ class PurchaseOrderItemController extends AbstractController
         );
         $crudOptions = $crudUpdater->resetOptions()
             ->setSection(self::SECTION)
-            ->setEntity($editPOItemStatusDto)
+            ->setEntity($changePurchaseOrderItemStatusDto)
             ->setForm($form)
             ->setSuccessLink($successLink)
-            ->setCrudStrategy($crudStrategy)
+            ->setCrudAction($crudAction)
             ->setAllowDelete(false);
 
         return $crudUpdater->build($crudOptions);

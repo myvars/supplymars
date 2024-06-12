@@ -2,16 +2,16 @@
 
 namespace App\Controller;
 
-use App\DTO\OrderCreateDto;
+use App\DTO\CreateOrderDto;
 use App\Entity\CustomerOrder;
-use App\Form\OrderCreateType;
+use App\Form\CreateOrderType;
 use App\Repository\CustomerOrderRepository;
 use App\Service\Crud\CrudCreator;
 use App\Service\Crud\CrudDeleter;
 use App\Service\Crud\CrudIndexer;
 use App\Service\Crud\CrudUpdater;
 use App\Service\Crud\CrudReader;
-use App\Strategy\CreateOrderStrategy;
+use App\Service\Order\CreateOrder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -35,10 +35,10 @@ class OrderController extends AbstractController
     #[Route('/new', name: 'app_order_new', methods: ['GET', 'POST'])]
     public function new(
         CrudCreator $crudCreator,
-        CreateOrderStrategy $crudStrategy,
-        OrderCreateDto $createOrderDto
+        CreateOrder $crudAction,
+        CreateOrderDto $createOrderDto
     ): Response {
-        $form = $this->createForm(OrderCreateType::class, $createOrderDto, [
+        $form = $this->createForm(CreateOrderType::class, $createOrderDto, [
             'action' => $this->generateUrl('app_order_new'),
         ]);
         $crudOptions = $crudCreator->resetOptions()
@@ -46,7 +46,7 @@ class OrderController extends AbstractController
             ->setEntity($createOrderDto)
             ->setForm($form)
             ->setSuccessLink('app_order_index')
-            ->setCrudStrategy($crudStrategy);
+            ->setCrudAction($crudAction);
 
         return $crudCreator->build($crudOptions);
     }

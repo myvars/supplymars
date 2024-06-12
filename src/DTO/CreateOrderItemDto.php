@@ -6,7 +6,7 @@ use App\Entity\CustomerOrder;
 use App\Validator\ValidProductId;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class OrderItemCreateDto
+class CreateOrderItemDto
 {
     #[Assert\NotBlank(message: 'Please enter a orderId')]
     private int $orderId;

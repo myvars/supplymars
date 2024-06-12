@@ -2,14 +2,15 @@
 
 namespace App\Service\Order;
 
-use App\DTO\OrderItemCreateDto;
+use App\DTO\CreateOrderItemDto;
 use App\Entity\CustomerOrder;
 use App\Entity\CustomerOrderItem;
 use App\Entity\Product;
+use App\Service\Crud\Core\CrudActionInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-final class OrderItemCreator
+final class CreateOrderItem implements CrudActionInterface
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
@@ -17,7 +18,13 @@ final class OrderItemCreator
     ) {
     }
 
-    public function createFromDto(OrderItemCreateDto $dto, bool $flush = true): CustomerOrderItem
+    public function handle(object $entity, ?array $context): void
+    {
+        assert($entity instanceof CreateOrderItemDto);
+        $this->fromDto($entity);
+    }
+
+    public function fromDto(CreateOrderItemDto $dto, bool $flush = true): CustomerOrderItem
     {
         $customerOrder = $this->getCustomerOrder($dto->getId());
         $product = $this->getProduct($dto->getProductId());

@@ -196,6 +196,16 @@ class PurchaseOrderItem
         return $this;
     }
 
+    public function allowEdit(): bool
+    {
+        return $this->status->allowEdit();
+    }
+
+    public function allowStatusChange(): bool
+    {
+        return $this->status !== PurchaseOrderStatus::DELIVERED && $this->status !== PurchaseOrderStatus::CANCELLED;
+    }
+
     public function isCancelled(): bool
     {
         return $this->status->isCancelled();
@@ -243,6 +253,6 @@ class PurchaseOrderItem
         }
 
         $this->status = $newStatus;
-        $this->getPurchaseOrder()->updateStatus();
+        $this->getPurchaseOrder()->generateStatus();
     }
 }

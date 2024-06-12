@@ -2,29 +2,22 @@
 
 namespace App\Form;
 
-use App\DTO\OrderItemEditDto;
+use App\DTO\EditPurchaseOrderItemDto;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class OrderItemEditType extends AbstractType
+class EditPurchaseOrderItemType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
-            ->add('quantity')
-            ->add('priceIncVat', MoneyType::class, [
-                'currency' => 'GBP',
-                'label' => 'Price Inc VAT',
-            ])
-        ;
+        $builder->add('quantity');
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => OrderItemEditDto::class,
+            'data_class' => EditPurchaseOrderItemDto::class,
         ]);
     }
 }

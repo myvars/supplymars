@@ -6,7 +6,7 @@ use App\Enum\ShippingMethod;
 use App\Validator\ValidCustomerId;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class OrderCreateDto
+class CreateOrderDto
 {
     #[Assert\NotBlank(message: 'Please enter a customer Id')]
     #[Assert\Range(notInRangeMessage: 'Please enter a valid customer Id', min: 1, max: 100000)]

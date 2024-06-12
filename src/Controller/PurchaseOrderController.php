@@ -2,15 +2,13 @@
 
 namespace App\Controller;
 
-use App\DTO\PurchaseOrderItemStatusChangeDto;
 use App\Entity\PurchaseOrder;
-use App\Form\PurchaseOrderItemStatusEditType;
+use App\Form\ChangePurchaseOrderItemStatusType;
 use App\Repository\PurchaseOrderRepository;
 use App\Service\Crud\CrudDeleter;
 use App\Service\Crud\CrudIndexer;
 use App\Service\Crud\CrudReader;
 use App\Service\Crud\CrudUpdater;
-use App\Strategy\ChangePOItemStatusStrategy;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -37,7 +35,7 @@ class PurchaseOrderController extends AbstractController
     #[Route('/{id}/edit', name: 'app_purchase_order_edit', methods: ['GET', 'POST'])]
     public function edit(?PurchaseOrder $purchaseOrder, CrudUpdater $crudUpdater): Response
     {
-        return $crudUpdater->update(self::SECTION, $purchaseOrder, PurchaseOrderItemStatusEditType::class);
+        return $crudUpdater->update(self::SECTION, $purchaseOrder, ChangePurchaseOrderItemStatusType::class);
     }
 
     #[Route('/{id}/delete/confirm', name: 'app_purchase_order_delete_confirm', methods: ['GET'])]

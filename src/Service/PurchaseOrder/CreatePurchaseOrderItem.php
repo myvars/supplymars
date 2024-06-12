@@ -11,16 +11,16 @@ use App\Entity\SupplierProduct;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-final class PurchaseOrderItemCreator
+final class CreatePurchaseOrderItem
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly ValidatorInterface $validator,
-        private readonly PurchaseOrderCreator $purchaseOrderCreator
+        private readonly CreatePurchaseOrder $purchaseOrderCreator
     ) {
     }
 
-    public function create(
+    public function fromOrder(
         CustomerOrderItem $customerOrderItem,
         SupplierProduct $supplierProduct,
         bool $flush = true
@@ -54,7 +54,7 @@ final class PurchaseOrderItemCreator
             }
         }
 
-        return $this->purchaseOrderCreator->create($customerOrder, $supplier);
+        return $this->purchaseOrderCreator->fromOrder($customerOrder, $supplier);
     }
 
     private function getEditablePurchaseOrderItem(

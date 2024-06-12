@@ -2,12 +2,14 @@
 
 namespace App\Service\Order;
 
-use App\DTO\OrderItemEditDto;
+use App\DTO\EditOrderItemDto;
+use App\Entity\CustomerOrder;
 use App\Entity\CustomerOrderItem;
+use App\Service\Crud\Core\CrudActionInterface;
 use App\Service\Product\MarkupCalculator;
 use Doctrine\ORM\EntityManagerInterface;
 
-final class OrderItemUpdater
+final class EditOrderItem implements CrudActionInterface
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
@@ -15,9 +17,20 @@ final class OrderItemUpdater
     ) {
     }
 
-    public function updateFromDto(OrderItemEditDto $dto, bool $flush = true): void
+    public function handle(object $entity, ?array $context): void
+    {
+        assert($entity instanceof EditOrderItemDto);
+        $this->fromDto($entity);
+    }
+
+    public function fromDto(EditOrderItemDto $dto, bool $flush = true): void
     {
         $customerOrderItem =  $this->getCustomerOrderItem($dto->getId());
+        $customerOrder = $this->getCustomerOrder($customerOrderItem);
+
+        if ($dto->getQuantity() < $customerOrderItem->getQtyAddedToPurchaseOrders()) {
+            return;
+        }
 
         $price = $this->markupCalculator->calculateSellPriceBeforeVat(
             $dto->getPriceIncVat(),
@@ -25,14 +38,13 @@ final class OrderItemUpdater
         );
 
         if ($dto->getQuantity() === 0) {
-            dd($customerOrderItem);
             $this->removeCustomerOrderItem($customerOrderItem);
         } else {
             $customerOrderItem->updateItem($dto->getQuantity(), $price, $dto->getPriceIncVat());
+            $this->entityManager->persist($customerOrderItem);
         }
-        $customerOrderItem->getCustomerOrder()->recalculateTotal();
+        $customerOrder->recalculateTotal();
 
-        $this->entityManager->persist($customerOrderItem);
         if ($flush) {
             $this->entityManager->flush();
         }
@@ -45,11 +57,15 @@ final class OrderItemUpdater
 
     private function removeCustomerOrderItem(CustomerOrderItem $customerOrderItem): void
     {
-        if ($customerOrderItem->getQtyAddedToPurchaseOrders()) {
-            throw new \LogicException('Cannot remove item that has been added to purchase orders');
-        }
+        $customerOrder = $this->getCustomerOrder($customerOrderItem);
+        $customerOrder->removeCustomerOrderItem($customerOrderItem);
+        $this->entityManager->persist($customerOrder);
 
         $this->entityManager->remove($customerOrderItem);
+    }
 
+    private function getCustomerOrder(CustomerOrderItem $customerOrderItem): CustomerOrder
+    {
+        return $customerOrderItem->getCustomerOrder();
     }
 }

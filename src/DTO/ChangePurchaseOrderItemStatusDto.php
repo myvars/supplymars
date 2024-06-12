@@ -7,7 +7,7 @@ use App\Enum\PurchaseOrderStatus;
 use App\Validator\ValidPOItemStatusChange;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class PurchaseOrderItemStatusChangeDto
+class ChangePurchaseOrderItemStatusDto
 {
     #[Assert\NotBlank(message: 'Please enter a purchaseOrderItemId')]
     private int $purchaseOrderItemId;

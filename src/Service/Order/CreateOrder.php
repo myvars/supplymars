@@ -2,15 +2,16 @@
 
 namespace App\Service\Order;
 
-use App\DTO\OrderCreateDto;
+use App\DTO\CreateOrderDto;
 use App\Entity\Address;
 use App\Entity\CustomerOrder;
 use App\Entity\User;
 use App\Entity\VatRate;
+use App\Service\Crud\Core\CrudActionInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-final class OrderCreator
+final class CreateOrder implements CrudActionInterface
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
@@ -18,7 +19,13 @@ final class OrderCreator
     ) {
     }
 
-    public function createFromDto(OrderCreateDto $dto, bool $flush = true): CustomerOrder
+    public function handle(object $entity, ?array $context): void
+    {
+        assert($entity instanceof CreateOrderDto);
+        $this->fromDto($entity);
+    }
+
+    public function fromDto(CreateOrderDto $dto, bool $flush = true): CustomerOrder
     {
         $customer = $this->getCustomer($dto->getCustomerId());
         $billingAddress = $this->getBillingAddress($customer);

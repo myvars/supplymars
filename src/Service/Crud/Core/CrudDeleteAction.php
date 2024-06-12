@@ -5,16 +5,16 @@ namespace App\Service\Crud\Core;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 
-#[AsAlias('app.crud.update.strategy')]
-final class CrudUpdateStrategy implements CrudUpdateStrategyInterface
+#[AsAlias('app.crud.delete.action')]
+final class CrudDeleteAction implements CrudActionInterface
 {
     public function __construct(private readonly EntityManagerInterface $entityManager)
     {
     }
 
-    public function update(object $entity, ?array $context): void
+    public function handle(object $entity, ?array $context): void
     {
-        $this->entityManager->persist($entity);
+        $this->entityManager->remove($entity);
         $this->entityManager->flush();
     }
 }

@@ -10,7 +10,7 @@ abstract class CrudOptions
     private object $entity;
     private string $successLink;
     private ?string $backLink = null;
-    private ?array $crudStrategyContext = null;
+    private ?array $crudActionContext = null;
 
     public function getSection(): string
     {
@@ -60,14 +60,14 @@ abstract class CrudOptions
         return $this;
     }
 
-    public function getCrudStrategyContext(): ?array
+    public function getCrudActionContext(): ?array
     {
-        return $this->crudStrategyContext;
+        return $this->crudActionContext;
     }
 
-    public function setCrudStrategyContext(?array $crudStrategyContext): CrudOptions
+    public function setCrudActionContext(?array $crudActionContext): CrudOptions
     {
-        $this->crudStrategyContext = $crudStrategyContext;
+        $this->crudActionContext = $crudActionContext;
 
         return $this;
     }

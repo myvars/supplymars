@@ -8,7 +8,7 @@ use App\Entity\Supplier;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-final class PurchaseOrderCreator
+final class CreatePurchaseOrder
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
@@ -16,9 +16,9 @@ final class PurchaseOrderCreator
     ) {
     }
 
-    public function create(CustomerOrder $customerOrder, Supplier $supplier, bool $flush = true): PurchaseOrder
+    public function fromOrder(CustomerOrder $customerOrder, Supplier $supplier, bool $flush = true): PurchaseOrder
     {
-        $purchaseOrder = PurchaseOrder::createFromCustomerOrder($customerOrder, $supplier);
+        $purchaseOrder = PurchaseOrder::createFromOrder($customerOrder, $supplier);
 
         $errors = $this->validator->validate($purchaseOrder);
         if (count($errors) > 0) {

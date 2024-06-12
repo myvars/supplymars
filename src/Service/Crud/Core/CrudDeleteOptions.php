@@ -4,16 +4,16 @@ namespace App\Service\Crud\Core;
 
 class CrudDeleteOptions extends CrudOptions
 {
-    private ?CrudDeleteStrategyInterface $crudStrategy = null;
+    private ?CrudActionInterface $crudAction = null;
 
-    public function getCrudStrategy(): ?CrudDeleteStrategyInterface
+    public function getCrudAction(): ?CrudActionInterface
     {
-        return $this->crudStrategy;
+        return $this->crudAction;
     }
 
-    public function setCrudStrategy(?CrudDeleteStrategyInterface $crudStrategy): CrudDeleteOptions
+    public function setCrudAction(?CrudActionInterface $crudAction): CrudDeleteOptions
     {
-        $this->crudStrategy = $crudStrategy;
+        $this->crudAction = $crudAction;
 
         return $this;
     }

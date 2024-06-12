@@ -2,21 +2,32 @@
 
 namespace App\Service\PurchaseOrder;
 
-use App\DTO\PurchaseOrderItemEditDto;
+use App\DTO\EditPurchaseOrderItemDto;
 use App\Entity\CustomerOrderItem;
 use App\Entity\PurchaseOrder;
 use App\Entity\PurchaseOrderItem;
+use App\Service\Crud\Core\CrudActionInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
-final class PurchaseOrderItemUpdater
+final class EditPurchaseOrderItem implements CrudActionInterface
 {
     public function __construct(private readonly EntityManagerInterface $entityManager)
     {
     }
 
-    public function update(PurchaseOrderItemEditDto $dto, bool $flush = true): void
+    public function handle(object $entity, ?array $context): void
+    {
+        assert($entity instanceof EditPurchaseOrderItemDto);
+        $this->fromDto($entity);
+    }
+
+    public function fromDto(EditPurchaseOrderItemDto $dto, bool $flush = true): void
     {
         $purchaseOrderItem =$this->getPurchaseOrderItem($dto->getId());
+
+        if (!$purchaseOrderItem->allowEdit()) {
+            throw new \DomainException('Purchase order item cannot be edited');
+        }
 
         if ($dto->getQuantity() === $purchaseOrderItem->getQuantity()) {
             return;

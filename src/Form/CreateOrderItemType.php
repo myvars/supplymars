@@ -2,13 +2,13 @@
 
 namespace App\Form;
 
-use App\DTO\OrderItemCreateDto;
+use App\DTO\CreateOrderItemDto;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class OrderItemCreateType extends AbstractType
+class CreateOrderItemType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -23,7 +23,7 @@ class OrderItemCreateType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => OrderItemCreateDto::class,
+            'data_class' => CreateOrderItemDto::class,
         ]);
     }
 }

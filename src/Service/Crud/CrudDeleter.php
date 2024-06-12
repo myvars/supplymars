@@ -3,8 +3,8 @@
 namespace App\Service\Crud;
 
 use App\Service\Crud\Core\CrudDeleteOptions;
-use App\Service\Crud\Core\CrudDeleteStrategy;
-use App\Service\Crud\Core\CrudDeleteStrategyInterface;
+use App\Service\Crud\Core\CrudDeleteAction;
+use App\Service\Crud\Core\CrudActionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,8 +16,8 @@ class CrudDeleter extends AbstractController
     public function __construct(
         public readonly CrudHelper $crudHelper,
         private readonly CrudDeleteOptions $crudOptions,
-        #[Autowire(service: CrudDeleteStrategy::class)]
-        private readonly CrudDeleteStrategyInterface $crudStrategy
+        #[Autowire(service: CrudDeleteAction::class)]
+        private readonly CrudActionInterface $crudAction
     ) {
     }
 
@@ -51,19 +51,19 @@ class CrudDeleter extends AbstractController
             ->setEntity($entity)
             ->setSuccessLink($this->generateUrl('app_'.$this->crudHelper->snakeCase($section).'_index'))
             ->setBackLink(null)
-            ->setCrudStrategy($this->crudStrategy)
-            ->setCrudStrategyContext(null);
+            ->setCrudAction($this->crudAction)
+            ->setCrudActionContext(null);
     }
 
     public function build(CrudDeleteOptions $crudOptions): Response
     {
-        $crudStrategy = $crudOptions->getCrudStrategy() ?: $this->crudStrategy;
+        $crudAction = $crudOptions->getCrudAction() ?: $this->crudAction;
         if ($this->isCsrfTokenValid(
             'delete'.$crudOptions->getEntity()->getId(),
             $this->crudHelper->getRequest()->get('_token'))
         ) {
             try {
-                $crudStrategy->delete($crudOptions->getEntity(), $crudOptions->getCrudStrategyContext());
+                $crudAction->handle($crudOptions->getEntity(), $crudOptions->getCrudActionContext());
                 $this->addFlash(
                     'success',
                     $crudOptions->getSection().' deleted!'

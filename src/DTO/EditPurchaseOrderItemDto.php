@@ -6,7 +6,7 @@ use App\Entity\PurchaseOrderItem;
 use App\Validator\MaxPurchaseOrderItemQty;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class PurchaseOrderItemEditDto
+class EditPurchaseOrderItemDto
 {
     #[Assert\NotBlank(message: 'Please enter a purchaseOrderItemId')]
     private int $purchaseOrderItemId;

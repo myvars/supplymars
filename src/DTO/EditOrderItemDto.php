@@ -3,16 +3,17 @@
 namespace App\DTO;
 
 use App\Entity\CustomerOrderItem;
-use Symfony\Component\HttpFoundation\Request;
+use App\Validator\MinOrderItemQty;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class OrderItemEditDto
+class EditOrderItemDto
 {
     #[Assert\NotBlank(message: 'Please enter a orderItemId')]
     private int $orderItemId;
 
     #[Assert\NotBlank(message: 'Please enter a product quantity')]
     #[Assert\Range(notInRangeMessage: 'Please enter a product quantity (0 to 100000)', min: 0, max: 100000)]
+    #[MinOrderItemQty]
     private ?int $quantity;
 
     #[Assert\NotBlank(message: 'Please enter a product price including VAT')]
@@ -25,17 +26,6 @@ class OrderItemEditDto
         $this->orderItemId = $orderItemId;
         $this->quantity = $quantity;
         $this->priceIncVat = $priceIncVat;
-    }
-
-    public static function fromRequest(Request $request): static
-    {
-
-
-        return new static(
-            $customerOrderItem->getId(),
-            $customerOrderItem->getQuantity(),
-            $customerOrderItem->getPriceIncVat()
-        );
     }
 
     public static function fromEntity(CustomerOrderItem $customerOrderItem): static

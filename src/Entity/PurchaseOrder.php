@@ -186,6 +186,15 @@ class PurchaseOrder
         return $this->status;
     }
 
+    private function setStatus(PurchaseOrderStatus $status): void
+    {
+        if ($this->status === $status) {
+            return;
+        }
+
+        $this->status = $status;
+    }
+
     public function getTotalPrice(): string
     {
         return $this->totalPrice;
@@ -287,7 +296,7 @@ class PurchaseOrder
 
     }
 
-    public static function createFromCustomerOrder(
+    public static function createFromOrder(
         CustomerOrder $customerOrder,
         Supplier $supplier,
     ): static {
@@ -299,7 +308,7 @@ class PurchaseOrder
             ->recalculateTotal();
     }
 
-    public function updateStatus(): void
+    public function generateStatus(): void
     {
         if ($this->purchaseOrderItems->isEmpty()) {
             $this->setStatus(PurchaseOrderStatus::getDefault());
@@ -321,14 +330,5 @@ class PurchaseOrder
         }
 
         $this->setStatus($status);
-    }
-
-    private function setStatus(PurchaseOrderStatus $status): void
-    {
-        if ($this->getStatus() === $status) {
-            return;
-        }
-
-        $this->status = $status;
     }
 }

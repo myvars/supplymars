@@ -2,7 +2,7 @@
 
 namespace App\Validator;
 
-use App\DTO\PurchaseOrderItemStatusChangeDto;
+use App\DTO\ChangePurchaseOrderItemStatusDto;
 use App\Entity\PurchaseOrderItem;
 use App\Repository\PurchaseOrderItemRepository;
 use Symfony\Component\Validator\Constraint;
@@ -19,7 +19,7 @@ class ValidPOItemStatusChangeValidator extends ConstraintValidator
         assert($constraint instanceof ValidPOItemStatusChange);
 
         $purchaseOrderItemStatusChangeDto = $this->context->getObject();
-        assert($purchaseOrderItemStatusChangeDto instanceof PurchaseOrderItemStatusChangeDto);
+        assert($purchaseOrderItemStatusChangeDto instanceof ChangePurchaseOrderItemStatusDto);
 
         $purchaseOrderItem = $this->purchaseOrderItemRepository->find($purchaseOrderItemStatusChangeDto->getId());
         assert($purchaseOrderItem instanceof PurchaseOrderItem);

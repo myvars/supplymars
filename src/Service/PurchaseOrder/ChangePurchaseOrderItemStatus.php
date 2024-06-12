@@ -2,21 +2,30 @@
 
 namespace App\Service\PurchaseOrder;
 
-use App\DTO\PurchaseOrderItemStatusChangeDto;
-use App\Entity\PurchaseOrder;
+use App\DTO\ChangePurchaseOrderItemStatusDto;
 use App\Entity\PurchaseOrderItem;
+use App\Service\Crud\Core\CrudActionInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
-final class PurchaseOrderItemStatusUpdater
+final class ChangePurchaseOrderItemStatus implements CrudActionInterface
 {
     public function __construct(private readonly EntityManagerInterface $entityManager)
     {
     }
 
-    public function update(PurchaseOrderItemStatusChangeDto $dto, bool $flush = true): void
+    public function handle(object $entity, ?array $context): void
+    {
+        assert($entity instanceof ChangePurchaseOrderItemStatusDto);
+        $this->fromDto($entity);
+    }
+
+    public function fromDto(ChangePurchaseOrderItemStatusDto $dto, bool $flush = true): void
     {
         $purchaseOrderItem =$this->getPurchaseOrderItem($dto->getId());
-        $purchaseOrder = $this->getPurchaseOrder($purchaseOrderItem);
+
+        if (!$purchaseOrderItem->allowEdit()) {
+            throw new \DomainException('Purchase order item cannot be edited');
+        }
 
         if ($dto->getPurchaseOrderItemStatus() === $purchaseOrderItem->getStatus()) {
             return;
@@ -33,10 +42,5 @@ final class PurchaseOrderItemStatusUpdater
     private function getPurchaseOrderItem(int $id): PurchaseOrderItem
     {
         return $this->entityManager->getRepository(PurchaseOrderItem::class)->find($id);
-    }
-
-    private function getPurchaseOrder(PurchaseOrderItem $purchaseOrderItem): PurchaseOrder
-    {
-        return $purchaseOrderItem->getPurchaseOrder();
     }
 }

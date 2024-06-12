@@ -2,7 +2,7 @@
 
 namespace App\Validator;
 
-use App\DTO\PurchaseOrderItemEditDto;
+use App\DTO\EditPurchaseOrderItemDto;
 use App\Entity\PurchaseOrderItem;
 use App\Repository\PurchaseOrderItemRepository;
 use Symfony\Component\Validator\Constraint;
@@ -23,7 +23,7 @@ class MaxPurchaseOrderItemQtyValidator extends ConstraintValidator
         }
 
         $purchaseOrderItemDto = $this->context->getObject();
-        assert($purchaseOrderItemDto instanceof PurchaseOrderItemEditDto);
+        assert($purchaseOrderItemDto instanceof EditPurchaseOrderItemDto);
 
         $purchaseOrderItem = $this->purchaseOrderItemRepository->find($purchaseOrderItemDto->getId());
         assert($purchaseOrderItem instanceof PurchaseOrderItem);

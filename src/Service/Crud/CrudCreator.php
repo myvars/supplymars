@@ -3,8 +3,8 @@
 namespace App\Service\Crud;
 
 use App\Service\Crud\Core\CrudCreateOptions;
-use App\Service\Crud\Core\CrudCreateStrategy;
-use App\Service\Crud\Core\CrudCreateStrategyInterface;
+use App\Service\Crud\Core\CrudCreateAction;
+use App\Service\Crud\Core\CrudActionInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Response;
@@ -16,8 +16,8 @@ class CrudCreator extends AbstractController
     public function __construct(
         public readonly CrudHelper $crudHelper,
         private readonly CrudCreateOptions $crudOptions,
-        #[Autowire(service: CrudCreateStrategy::class)]
-        private readonly CrudCreateStrategyInterface $crudStrategy
+        #[Autowire(service: CrudCreateAction::class)]
+        private readonly CrudActionInterface $crudAction
     ) {
     }
 
@@ -43,18 +43,18 @@ class CrudCreator extends AbstractController
             ->setForm($form)
             ->setSuccessLink($this->generateUrl('app_'.$this->crudHelper->snakeCase($section).'_index'))
             ->setBackLink(null)
-            ->setCrudStrategy($this->crudStrategy)
-            ->setCrudStrategyContext(null);
+            ->setCrudAction($this->crudAction)
+            ->setCrudActionContext(null);
     }
 
     public function build(CrudCreateOptions $crudOptions): Response
     {
         $form = $crudOptions->getForm();
-        $crudStrategy = $crudOptions->getCrudStrategy() ?: $this->crudStrategy;
+        $crudAction = $crudOptions->getCrudAction() ?: $this->crudAction;
         $form->handleRequest($this->crudHelper->getRequest());
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $crudStrategy->create($crudOptions->getEntity(), $crudOptions->getCrudStrategyContext());
+                $crudAction->handle($crudOptions->getEntity(), $crudOptions->getCrudActionContext());
                 $this->addFlash(
                     'success',
                     'New '.$crudOptions->getSection().' added!'
