@@ -295,6 +295,11 @@ class CustomerOrder
         return $this->status->allowEdit();
     }
 
+    public function allowCancel(): bool
+    {
+        return $this->status->allowCancel();
+    }
+
     public function getLineCount(): int
     {
         return $this->customerOrderItems->count();
@@ -308,7 +313,37 @@ class CustomerOrder
         }
 
         return $count;
+    }
 
+    public function generateStatus(): void
+    {
+        if ($this->customerOrderItems->isEmpty()) {
+            $this->setStatus(OrderStatus::getDefault());
+            return;
+        }
+
+        $orderStatus = OrderStatus::CANCELLED;
+        foreach ($this->customerOrderItems as $item) {
+            if ($item->getStatus()->getLevel() < $orderStatus->getLevel()) {
+                $orderStatus = $item->getStatus();
+            }
+        }
+        $this->setStatus($orderStatus);
+    }
+
+    public function cancelOrder(): void
+    {
+        foreach ($this->customerOrderItems as $item) {
+            $item->cancelItem();
+        }
+        $status = OrderStatus::CANCELLED;
+        if (!$this->status->canTransitionTo($status)) {
+            throw new \LogicException(sprintf('Cannot transition from "%s" to "%s"',
+                $this->status->value,
+                $status->value
+            ));
+        }
+        $this->setStatus($status);
     }
 
     /**

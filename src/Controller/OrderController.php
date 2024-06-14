@@ -8,9 +8,11 @@ use App\Form\CreateOrderType;
 use App\Repository\CustomerOrderRepository;
 use App\Service\Crud\CrudCreator;
 use App\Service\Crud\CrudDeleter;
+use App\Service\Crud\CrudHelper;
 use App\Service\Crud\CrudIndexer;
 use App\Service\Crud\CrudUpdater;
 use App\Service\Crud\CrudReader;
+use App\Service\Order\CancelOrder;
 use App\Service\Order\CreateOrder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -73,5 +75,24 @@ class OrderController extends AbstractController
     public function delete(?CustomerOrder $customerOrder, CrudDeleter $crudDeleter): Response
     {
         return $crudDeleter->delete(self::SECTION, $customerOrder);
+    }
+
+    #[Route('/{id}/cancel', name: 'app_order_cancel', methods: ['GET'])]
+    public function cancel(?CustomerOrder $customerOrder, CancelOrder $action, CrudHelper $crudHelper): Response
+    {
+        if (!$customerOrder) {
+            return $crudHelper->showEmpty(self::SECTION);
+        }
+
+        try {
+            $action->cancel($customerOrder);
+            $this->addFlash('success', 'Order cancelled successfully');
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Order cannot be cancelled');
+        }
+
+        return $crudHelper->redirectToLink(
+            $this->generateUrl('app_order_show', ['id' => $customerOrder->getId()])
+        );
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Enum\OrderStatus;
+use App\Enum\PurchaseOrderStatus;
 use App\Repository\CustomerOrderItemRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -123,6 +124,15 @@ class CustomerOrderItem
         return $this->status;
     }
 
+    private function setStatus(OrderStatus $status): void
+    {
+        if ($this->status === $status) {
+            return;
+        }
+
+        $this->status = $status;
+    }
+
     public function getTotalPrice(): ?string
     {
         return $this->totalPrice;
@@ -151,6 +161,7 @@ class CustomerOrderItem
         $this->price = $product->getSellPrice();
         $this->priceIncVat = $product->getSellPriceIncVat();
         $this->recalculateTotal();
+        $this->generateStatus();
 
         return $this;
     }
@@ -166,26 +177,32 @@ class CustomerOrderItem
         $this->price = $price;
         $this->priceIncVat = $priceIncVat;
         $this->recalculateTotal();
+        $this->generateStatus();
 
         return $this;
     }
 
-    public function updateStatus(OrderStatus $newStatus): static
+    public function generateStatus(): void
     {
-        if ($newStatus === $this->status) {
-            return $this;
+        if ($this->purchaseOrderItems->isEmpty()) {
+            $this->setStatus(OrderStatus::getDefault());
+            return;
         }
 
-        if (!$this->status->canTransitionTo($newStatus)) {
-            throw new \LogicException(sprintf('Cannot transition from "%s" to "%s"',
-                $this->status->value,
-                $newStatus->value
-            ));
+        if ($this->getOutstandingQty() !== 0) {
+            $this->setStatus(OrderStatus::PROCESSING);
+            return;
         }
 
-        $this->status = $newStatus;
-
-        return $this;
+        $purchaseOrderItemStatus = PurchaseOrderStatus::CANCELLED;
+        foreach ($this->purchaseOrderItems as $item) {
+            if ($item->getStatus()->getLevel() < $purchaseOrderItemStatus->getLevel()) {
+                $purchaseOrderItemStatus = $item->getStatus();
+            }
+        }
+        $orderItemStatus = OrderStatus::getMappedOrderStatusFromPurchaseOrder($purchaseOrderItemStatus);
+        $this->setStatus($orderItemStatus);
+        $this->customerOrder->generateStatus();
     }
 
     public function recalculateTotal(): void
@@ -217,6 +234,21 @@ class CustomerOrderItem
         return $this->status->allowEdit();
     }
 
+    public function cancelItem(): void
+    {
+        if ($this->getQtyAddedToPurchaseOrders()) {
+            throw new \LogicException('Cannot cancel this order item');
+        }
+        $status = OrderStatus::CANCELLED;
+        if (!$this->status->canTransitionTo($status)) {
+            throw new \LogicException(sprintf('Cannot transition from "%s" to "%s"',
+                $this->status->value,
+                $status->value
+            ));
+        }
+        $this->setStatus($status);
+    }
+
     /**
      * @return Collection<int, PurchaseOrderItem>
      */
@@ -230,7 +262,8 @@ class CustomerOrderItem
         if (!$this->purchaseOrderItems->contains($purchaseOrderItem)) {
             $this->purchaseOrderItems->add($purchaseOrderItem);
             $purchaseOrderItem->setCustomerOrderItem($this);
-            $this->updateStatus(OrderStatus::PROCESSING);
+
+            $this->generateStatus();
         }
 
         return $this;
@@ -243,6 +276,8 @@ class CustomerOrderItem
             if ($purchaseOrderItem->getCustomerOrderItem() === $this) {
                 $purchaseOrderItem->setCustomerOrderItem(null);
             }
+
+            $this->generateStatus();
         }
 
         return $this;

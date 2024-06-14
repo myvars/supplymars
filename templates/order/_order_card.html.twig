@@ -1,11 +1,13 @@
+<turbo-frame id="order_card">
 <div class="relative h-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-    <a href="{{ path('app_order_edit', {id: order.id})}}"
-       class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-gray-600 rounded-full shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600"
+    {% if order.allowEdit %}
+    <a href="{{ path('app_order_cancel', {id: result.id}) }}"
+       class="absolute -top-1.5 -right-1 p-1.5 bg-white text-gray-300 border border-gray-600 rounded-full shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600"
        data-turbo-prefetch="false"
-       data-turbo-frame="modal"
     >
-        <twig:ux:icon name="mynaui:edit-one" class="w-6 h-6 p-0.5" />
+        <twig:ux:icon name="bi:x-lg" class="w-6 h-6 p-0.5" />
     </a>
+    {% endif %}
     <div class="p-3 text-sm text-gray-500 dark:text-gray-400">
         <h5 class="mb-2 text-xl text-gray-900 dark:text-white">Order #{{ '%06d'|format(result.id) }}</h5>
         <div class="flex items-center justify-between">
@@ -19,3 +21,4 @@
         </div>
     </div>
 </div>
+</turbo-frame>

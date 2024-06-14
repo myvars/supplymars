@@ -254,5 +254,6 @@ class PurchaseOrderItem
 
         $this->status = $newStatus;
         $this->getPurchaseOrder()->generateStatus();
+        $this->getCustomerOrderItem()->generateStatus();
     }
 }

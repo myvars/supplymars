@@ -23,7 +23,7 @@ final class ChangePurchaseOrderItemStatus implements CrudActionInterface
     {
         $purchaseOrderItem =$this->getPurchaseOrderItem($dto->getId());
 
-        if (!$purchaseOrderItem->allowEdit()) {
+        if (!$purchaseOrderItem->allowStatusChange()) {
             throw new \DomainException('Purchase order item cannot be edited');
         }
 

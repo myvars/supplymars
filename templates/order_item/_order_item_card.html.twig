@@ -1,5 +1,6 @@
 {% if orderItem.outstandingQty > 0 %}
 <li class="w-full relative first:mt-3 p-3 text-sm text-gray-500 dark:text-gray-400 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
+    {% if orderItem.allowEdit %}
     {% block order_item_edit %}
         <a href="{{ path('app_order_item_edit', {'id': orderItem.id }) }}"
            class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-gray-600 rounded-full shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600"
@@ -9,6 +10,7 @@
             <twig:ux:icon name="mynaui:edit-one" class="w-6 h-6 p-0.5"/>
         </a>
     {% endblock %}
+    {% endif %}
     <div data-controller="toggle" data-action="click->toggle#toggle">
         <div class="flex justify-between items-center">
             <p class="me-5 text-xs">

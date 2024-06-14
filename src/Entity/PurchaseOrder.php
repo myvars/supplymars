@@ -304,6 +304,10 @@ class PurchaseOrder
             ->setCustomerOrder($customerOrder)
             ->setSupplier($supplier)
             ->setShippingAddress($customerOrder->getShippingAddress())
+            ->setShippingMethod($customerOrder->getShippingMethod())
+            ->setDueDate($customerOrder->getShippingMethod()->getDueDate())
+            ->setShippingPrice($customerOrder->getShippingMethod()->getPrice())
+            ->setShippingPriceIncVat($customerOrder->getShippingMethod()->getPrice())
             ->setOrderRef($customerOrder->getCustomerOrderRef())
             ->recalculateTotal();
     }
@@ -315,11 +319,15 @@ class PurchaseOrder
             return;
         }
 
-        $status = PurchaseOrderStatus::DELIVERED;
+        $status = PurchaseOrderStatus::CANCELLED;
         foreach ($this->purchaseOrderItems as $item) {
             if ($item->getStatus()->getLevel() < $status->getLevel()) {
                 $status = $item->getStatus();
             }
+        }
+
+        if ($this->getStatus() === $status) {
+            return;
         }
 
         if (!$this->getStatus()->canTransitionTo($status)) {
@@ -328,7 +336,6 @@ class PurchaseOrder
                 $status->value
             ));
         }
-
         $this->setStatus($status);
     }
 }
