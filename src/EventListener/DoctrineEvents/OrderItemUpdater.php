@@ -1,6 +1,6 @@
 <?php
 
-namespace App\EventListener;
+namespace App\EventListener\DoctrineEvents;
 
 use App\Entity\CustomerOrder;
 use App\Entity\CustomerOrderItem;

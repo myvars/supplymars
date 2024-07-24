@@ -2,8 +2,12 @@
 
 namespace App\Entity;
 
+use App\Entity\Interfaces\DomainEventProviderInterface;
+use App\Entity\Traits\DomainEventTrait;
 use App\Enum\OrderStatus;
 use App\Enum\ShippingMethod;
+use App\Event\OrderCreatedEvent;
+use App\Event\OrderStatusChangedEvent;
 use App\Repository\CustomerOrderRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,9 +17,10 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CustomerOrderRepository::class)]
-class CustomerOrder
+class CustomerOrder implements DomainEventProviderInterface
 {
     use TimestampableEntity;
+    use DomainEventTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -89,6 +94,7 @@ class CustomerOrder
         $this->status = OrderStatus::getDefault();
         $this->customerOrderItems = new ArrayCollection();
         $this->purchaseOrders = new ArrayCollection();
+        $this->raiseDomainEvent(new OrderCreatedEvent($this));
     }
 
     public function getId(): ?int
@@ -192,14 +198,17 @@ class CustomerOrder
         return $this;
     }
 
-    public function getStatus(): OrderStatus
+    public function getStatus(): ?OrderStatus
     {
         return $this->status;
     }
 
     public function setStatus(OrderStatus $status): static
     {
-        $this->status = $status;
+        if ($this->getStatus() !== $status) {
+            $this->status = $status;
+            $this->raiseDomainEvent(new OrderStatusChangedEvent($this));
+        }
 
         return $this;
     }

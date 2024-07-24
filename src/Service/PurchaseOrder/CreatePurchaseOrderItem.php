@@ -8,6 +8,7 @@ use App\Entity\PurchaseOrder;
 use App\Entity\PurchaseOrderItem;
 use App\Entity\Supplier;
 use App\Entity\SupplierProduct;
+use App\Service\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -16,27 +17,26 @@ final class CreatePurchaseOrderItem
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly ValidatorInterface $validator,
-        private readonly CreatePurchaseOrder $purchaseOrderCreator
+        private readonly CreatePurchaseOrder $purchaseOrderCreator,
+        private readonly DomainEventDispatcher $domainEventDispatcher
     ) {
     }
 
-    public function fromOrder(
-        CustomerOrderItem $customerOrderItem,
-        SupplierProduct $supplierProduct,
-        bool $flush = true
-    ): PurchaseOrderItem {
+    public function fromOrder(CustomerOrderItem $customerOrderItem, SupplierProduct $supplierProduct): PurchaseOrderItem
+    {
         $customerOrder = $this->getCustomerOrder($customerOrderItem);
         $purchaseOrder = $this->getEditablePurchaseOrder($customerOrder, $supplierProduct->getSupplier());
 
-        if ($purchaseOrderItem = $this->getEditablePurchaseOrderItem($customerOrderItem, $purchaseOrder)) {
-            $this->updatePurchaseOrderItem($purchaseOrderItem);
-        } else {
-            $purchaseOrderItem = $this->createPurchaseOrderItem($customerOrderItem, $purchaseOrder, $supplierProduct);
-        }
+        $purchaseOrderItem = $this->createPurchaseOrderItem($customerOrderItem, $purchaseOrder, $supplierProduct);
 
-        if ($flush) {
-            $this->entityManager->flush();
-        }
+        $this->entityManager->flush();
+
+        $this->domainEventDispatcher->dispatchProviderEvents([
+            $purchaseOrderItem,
+            $purchaseOrder,
+            $customerOrderItem,
+            $customerOrder
+        ]);
 
         return $purchaseOrderItem;
     }
@@ -50,11 +50,26 @@ final class CreatePurchaseOrderItem
     {
         foreach ($customerOrder->getPurchaseOrders() as $purchaseOrder) {
             if ($purchaseOrder->getSupplier() === $supplier && $purchaseOrder->allowEdit()) {
+
                 return $purchaseOrder;
             }
         }
 
         return $this->purchaseOrderCreator->fromOrder($customerOrder, $supplier);
+    }
+
+    private function createPurchaseOrderItem(
+        CustomerOrderItem $customerOrderItem,
+        PurchaseOrder $purchaseOrder,
+        SupplierProduct $supplierProduct
+    ): PurchaseOrderItem{
+        if ($purchaseOrderItem = $this->getEditablePurchaseOrderItem($customerOrderItem, $purchaseOrder)) {
+            $this->updateExistingPurchaseOrderItem($purchaseOrderItem);
+
+            return $purchaseOrderItem;
+        }
+
+        return $this->createNewPurchaseOrderItem($customerOrderItem, $purchaseOrder, $supplierProduct);
     }
 
     private function getEditablePurchaseOrderItem(
@@ -63,6 +78,7 @@ final class CreatePurchaseOrderItem
     ): ?PurchaseOrderItem {
         foreach ($purchaseOrder->getPurchaseOrderItems() as $purchaseOrderItem) {
             if ($purchaseOrderItem->getCustomerOrderItem() === $customerOrderItem) {
+
                 return $purchaseOrderItem;
             }
         }
@@ -70,14 +86,15 @@ final class CreatePurchaseOrderItem
         return null;
     }
 
-    private function updatePurchaseOrderItem(PurchaseOrderItem $purchaseOrderItem): void
+    private function updateExistingPurchaseOrderItem(PurchaseOrderItem $purchaseOrderItem): void
     {
         $purchaseOrderItem->updateItem($purchaseOrderItem->getMaxQuantity());
         $purchaseOrderItem->getPurchaseOrder()->recalculateTotal();
+
         $this->entityManager->persist($purchaseOrderItem);
     }
 
-    private function createPurchaseOrderItem(
+    private function createNewPurchaseOrderItem(
         CustomerOrderItem $customerOrderItem,
         PurchaseOrder $purchaseOrder,
         SupplierProduct $supplierProduct

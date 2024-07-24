@@ -5,7 +5,7 @@ namespace App\Tests\Unit\EventListener;
 
 use App\Entity\Product;
 use App\Entity\Subcategory;
-use App\EventListener\SubcategoryPriceUpdater;
+use App\EventListener\DoctrineEvents\SubcategoryPriceUpdater;
 use App\Service\Product\ProductPriceCalculator;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use PHPUnit\Framework\TestCase;

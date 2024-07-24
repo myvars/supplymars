@@ -1,6 +1,6 @@
 <?php
 
-namespace App\EventListener;
+namespace App\EventListener\DoctrineEvents;
 
 use App\Entity\Product;
 use App\Entity\ProductImage;

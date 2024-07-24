@@ -5,6 +5,7 @@ namespace App\Service\PurchaseOrder;
 use App\Entity\CustomerOrder;
 use App\Entity\PurchaseOrder;
 use App\Entity\Supplier;
+use App\Service\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -12,11 +13,12 @@ final class CreatePurchaseOrder
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly ValidatorInterface $validator
+        private readonly ValidatorInterface $validator,
+        private readonly DomainEventDispatcher $domainEventDispatcher
     ) {
     }
 
-    public function fromOrder(CustomerOrder $customerOrder, Supplier $supplier, bool $flush = true): PurchaseOrder
+    public function fromOrder(CustomerOrder $customerOrder, Supplier $supplier): PurchaseOrder
     {
         $purchaseOrder = PurchaseOrder::createFromOrder($customerOrder, $supplier);
 
@@ -26,9 +28,9 @@ final class CreatePurchaseOrder
         }
 
         $this->entityManager->persist($purchaseOrder);
-        if ($flush) {
-            $this->entityManager->flush();
-        }
+        $this->entityManager->flush();
+
+        $this->domainEventDispatcher->dispatchProviderEvents($purchaseOrder);
 
         return $purchaseOrder;
     }

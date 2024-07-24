@@ -6,7 +6,7 @@ namespace App\Tests\Unit\EventListener;
 use App\Entity\Category;
 use App\Entity\Product;
 use App\Entity\VatRate;
-use App\EventListener\VatRatePriceUpdater;
+use App\EventListener\DoctrineEvents\VatRatePriceUpdater;
 use App\Service\Product\ProductPriceCalculator;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use PHPUnit\Framework\TestCase;

@@ -62,12 +62,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'customer', targetEntity: CustomerOrder::class)]
     private Collection $customerOrders;
 
+    /**
+     * @var Collection<int, StatusChangeLog>
+     */
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: StatusChangeLog::class)]
+    private Collection $statusChangeLogs;
+
     public function __construct()
     {
         $this->categories = new ArrayCollection();
         $this->subcategories = new ArrayCollection();
         $this->addresses = new ArrayCollection();
         $this->customerOrders = new ArrayCollection();
+        $this->statusChangeLogs = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -283,6 +290,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($customerOrder->getCustomer() === $this) {
                 $customerOrder->setCustomer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, StatusChangeLog>
+     */
+    public function getStatusChangeLogs(): Collection
+    {
+        return $this->statusChangeLogs;
+    }
+
+    public function addStatusChangeLog(StatusChangeLog $statusChangeLog): static
+    {
+        if (!$this->statusChangeLogs->contains($statusChangeLog)) {
+            $this->statusChangeLogs->add($statusChangeLog);
+            $statusChangeLog->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStatusChangeLog(StatusChangeLog $statusChangeLog): static
+    {
+        if ($this->statusChangeLogs->removeElement($statusChangeLog)) {
+            // set the owning side to null (unless already changed)
+            if ($statusChangeLog->getUser() === $this) {
+                $statusChangeLog->setUser(null);
             }
         }
 

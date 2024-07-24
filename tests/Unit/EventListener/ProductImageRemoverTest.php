@@ -5,7 +5,7 @@ namespace App\Tests\Unit\EventListener;
 
 use App\Entity\Product;
 use App\Entity\ProductImage;
-use App\EventListener\ProductImageRemover;
+use App\EventListener\DoctrineEvents\ProductImageRemover;
 use App\Service\UploadHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;

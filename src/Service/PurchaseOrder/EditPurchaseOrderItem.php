@@ -7,43 +7,63 @@ use App\Entity\CustomerOrderItem;
 use App\Entity\PurchaseOrder;
 use App\Entity\PurchaseOrderItem;
 use App\Service\Crud\Core\CrudActionInterface;
+use App\Service\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 
 final class EditPurchaseOrderItem implements CrudActionInterface
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly DomainEventDispatcher $domainEventDispatcher
+    ) {
     }
 
     public function handle(object $entity, ?array $context): void
     {
         assert($entity instanceof EditPurchaseOrderItemDto);
+
         $this->fromDto($entity);
     }
 
-    public function fromDto(EditPurchaseOrderItemDto $dto, bool $flush = true): void
+    public function fromDto(EditPurchaseOrderItemDto $dto): void
     {
-        $purchaseOrderItem =$this->getPurchaseOrderItem($dto->getId());
+        $purchaseOrderItem = $this->getPurchaseOrderItem($dto->getId());
 
         if (!$purchaseOrderItem->allowEdit()) {
             throw new \DomainException('Purchase order item cannot be edited');
         }
 
         if ($dto->getQuantity() === $purchaseOrderItem->getQuantity()) {
+
             return;
         }
 
-        if ($dto->getQuantity() === 0) {
+        $this->editPurchaseOrderItem($purchaseOrderItem, $dto->getQuantity());
+
+        $this->entityManager->flush();
+
+        $this->domainEventDispatcher->dispatchProviderEvents([
+            $purchaseOrderItem,
+            $purchaseOrderItem->getPurchaseOrder(),
+            $purchaseOrderItem->getCustomerOrderItem(),
+            $purchaseOrderItem->getCustomerOrderItem()->getCustomerOrder()
+        ]);
+    }
+
+    private function getPurchaseOrderItem(int $id): PurchaseOrderItem
+    {
+        return $this->entityManager->getRepository(PurchaseOrderItem::class)->find($id);
+    }
+
+    private function editPurchaseOrderItem(PurchaseOrderItem $purchaseOrderItem, int $qty): void
+    {
+        if ($qty === 0) {
             $this->removePurchaseOrderItem($purchaseOrderItem);
-        } else {
-            $purchaseOrderItem->updateItem($dto->getQuantity());
-            $purchaseOrderItem->getPurchaseOrder()->recalculateTotal();
-            $this->entityManager->persist($purchaseOrderItem);
+
+            return;
         }
 
-        if ($flush) {
-            $this->entityManager->flush();
-        }
+        $this->updatePurchaseOrderItem($purchaseOrderItem, $qty);
     }
 
     private function removePurchaseOrderItem(PurchaseOrderItem $purchaseOrderItem): void
@@ -62,9 +82,12 @@ final class EditPurchaseOrderItem implements CrudActionInterface
         }
     }
 
-    private function getPurchaseOrderItem(int $id): PurchaseOrderItem
+    private function updatePurchaseOrderItem(PurchaseOrderItem $purchaseOrderItem, int $qty): void
     {
-        return $this->entityManager->getRepository(PurchaseOrderItem::class)->find($id);
+        $purchaseOrderItem->updateItem($qty);
+        $purchaseOrderItem->getPurchaseOrder()->recalculateTotal();
+
+        $this->entityManager->persist($purchaseOrderItem);
     }
 
     private function getPurchaseOrder(PurchaseOrderItem $purchaseOrderItem): PurchaseOrder

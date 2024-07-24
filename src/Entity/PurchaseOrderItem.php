@@ -2,7 +2,11 @@
 
 namespace App\Entity;
 
+use App\Entity\Interfaces\DomainEventProviderInterface;
+use App\Entity\Traits\DomainEventTrait;
 use App\Enum\PurchaseOrderStatus;
+use App\Event\PurchaseOrderItemCreatedEvent;
+use App\Event\PurchaseOrderItemStatusChangedEvent;
 use App\Repository\PurchaseOrderItemRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -10,9 +14,10 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PurchaseOrderItemRepository::class)]
-class PurchaseOrderItem
+class PurchaseOrderItem implements DomainEventProviderInterface
 {
     use TimestampableEntity;
+    use DomainEventTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -67,6 +72,7 @@ class PurchaseOrderItem
     public function __construct()
     {
         $this->status = PurchaseOrderStatus::getDefault();
+        $this->raiseDomainEvent(new PurchaseOrderItemCreatedEvent($this));
     }
 
     public function getId(): ?int
@@ -253,6 +259,7 @@ class PurchaseOrderItem
         }
 
         $this->status = $newStatus;
+        $this->raiseDomainEvent(new PurchaseOrderItemStatusChangedEvent($this));
         $this->getPurchaseOrder()->generateStatus();
         $this->getCustomerOrderItem()->generateStatus();
     }

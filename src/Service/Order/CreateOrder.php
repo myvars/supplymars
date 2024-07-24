@@ -8,6 +8,7 @@ use App\Entity\CustomerOrder;
 use App\Entity\User;
 use App\Entity\VatRate;
 use App\Service\Crud\Core\CrudActionInterface;
+use App\Service\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -15,17 +16,19 @@ final class CreateOrder implements CrudActionInterface
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly ValidatorInterface $validator
+        private readonly ValidatorInterface $validator,
+        private readonly DomainEventDispatcher $domainEventDispatcher
     ) {
     }
 
     public function handle(object $entity, ?array $context): void
     {
         assert($entity instanceof CreateOrderDto);
+
         $this->fromDto($entity);
     }
 
-    public function fromDto(CreateOrderDto $dto, bool $flush = true): CustomerOrder
+    public function fromDto(CreateOrderDto $dto): CustomerOrder
     {
         $customer = $this->getCustomer($dto->getCustomerId());
         $billingAddress = $this->getBillingAddress($customer);
@@ -45,9 +48,9 @@ final class CreateOrder implements CrudActionInterface
         }
 
         $this->entityManager->persist($customerOrder);
-        if ($flush) {
-            $this->entityManager->flush();
-        }
+        $this->entityManager->flush();
+
+        $this->domainEventDispatcher->dispatchProviderEvents($customerOrder);
 
         return $customerOrder;
     }

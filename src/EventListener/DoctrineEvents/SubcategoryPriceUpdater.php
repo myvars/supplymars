@@ -1,17 +1,17 @@
 <?php
 
-namespace App\EventListener;
+namespace App\EventListener\DoctrineEvents;
 
-use App\Entity\Category;
 use App\Entity\Product;
+use App\Entity\Subcategory;
 use App\Service\Product\ProductPriceCalculator;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\Event\PreUpdateEventArgs;
 use Doctrine\ORM\Events;
 
-#[AsEntityListener(event: Events::preUpdate, method: 'preUpdate', entity: Category::class)]
-#[AsEntityListener(event: Events::postUpdate, method: 'postUpdate', entity: Category::class)]
-class CategoryPriceUpdater
+#[AsEntityListener(event: Events::preUpdate, method: 'preUpdate', entity: Subcategory::class)]
+#[AsEntityListener(event: Events::postUpdate, method: 'postUpdate', entity: Subcategory::class)]
+class SubcategoryPriceUpdater
 {
     /** @var Product[] */
     private array $changedProducts = [];
@@ -20,27 +20,21 @@ class CategoryPriceUpdater
     {
     }
 
-    public function preUpdate(Category $category, PreUpdateEventArgs $eventArgs): void
+    public function preUpdate(Subcategory $subcategory, PreUpdateEventArgs $eventArgs): void
     {
         if ($eventArgs->hasChangedField('defaultMarkup')
-            || $eventArgs->hasChangedField('priceModel')
-            || $eventArgs->hasChangedField('vatRate')) {
-            $products = $category->getActiveProducts();
-            foreach ($products as $product) {
-                if ($eventArgs->hasChangedField('vatRate')) {
-                    $this->setChangedProduct($product);
-                    continue;
-                }
+            || $eventArgs->hasChangedField('priceModel')) {
+            $products = $subcategory->getActiveProducts();
 
+            foreach ($products as $product) {
                 if ($eventArgs->hasChangedField('defaultMarkup')) {
-                    if ($product->getActiveMarkupTarget() === 'CATEGORY') {
+                    if ($product->getActiveMarkupTarget() === 'SUBCATEGORY') {
                         $this->setChangedProduct($product);
-                        continue;
                     }
                 }
 
                 if ($eventArgs->hasChangedField('priceModel')) {
-                    if ($product->getActivePriceModelTarget() === 'CATEGORY') {
+                    if ($product->getActivePriceModelTarget() === 'SUBCATEGORY') {
                         $this->setChangedProduct($product);
                     }
                 }
@@ -48,7 +42,7 @@ class CategoryPriceUpdater
         }
     }
 
-    public function postUpdate(Category $category): void
+    public function postUpdate(Subcategory $subcategory): void
     {
         if (empty($this->changedProducts)) {
             return;

@@ -2,8 +2,12 @@
 
 namespace App\Entity;
 
+use App\Entity\Interfaces\DomainEventProviderInterface;
+use App\Entity\Traits\DomainEventTrait;
 use App\Enum\PurchaseOrderStatus;
 use App\Enum\ShippingMethod;
+use App\Event\PurchaseOrderCreatedEvent;
+use App\Event\PurchaseOrderStatusChangedEvent;
 use App\Repository\PurchaseOrderRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -13,9 +17,10 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PurchaseOrderRepository::class)]
-class PurchaseOrder
+class PurchaseOrder implements DomainEventProviderInterface
 {
     use TimestampableEntity;
+    use DomainEventTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -77,6 +82,7 @@ class PurchaseOrder
     {
         $this->status = PurchaseOrderStatus::getDefault();
         $this->purchaseOrderItems = new ArrayCollection();
+        $this->raiseDomainEvent(new PurchaseOrderCreatedEvent($this));
     }
 
     public function getId(): ?int
@@ -193,6 +199,7 @@ class PurchaseOrder
         }
 
         $this->status = $status;
+        $this->raiseDomainEvent(new PurchaseOrderStatusChangedEvent($this));
     }
 
     public function getTotalPrice(): string

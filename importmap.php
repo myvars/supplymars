@@ -55,10 +55,10 @@ return [
         'version' => '0.3.0',
     ],
     'flowbite' => [
-        'version' => '2.3.0',
+        'version' => '2.4.1',
     ],
     'flowbite/dist/flowbite.min.css' => [
-        'version' => '2.3.0',
+        'version' => '2.4.1',
         'type' => 'css',
     ],
     'stimulus-popover' => [
@@ -79,5 +79,8 @@ return [
     ],
     'sortablejs' => [
         'version' => '1.15.2',
+    ],
+    'flowbite-datepicker' => [
+        'version' => '1.3.0',
     ],
 ];

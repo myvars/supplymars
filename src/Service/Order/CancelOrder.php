@@ -4,15 +4,18 @@ namespace App\Service\Order;
 
 use App\Entity\CustomerOrder;
 use App\Enum\OrderStatus;
+use App\Service\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 
 final class CancelOrder
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly DomainEventDispatcher $domainEventDispatcher
+    ) {
     }
 
-    public function cancel(CustomerOrder $customerOrder, bool $flush = true): void
+    public function cancel(CustomerOrder $customerOrder): void
     {
         if ($customerOrder->getStatus() === OrderStatus::CANCELLED) {
             throw new \InvalidArgumentException('Order is already cancelled');
@@ -25,8 +28,8 @@ final class CancelOrder
         $customerOrder->cancelOrder();
 
         $this->entityManager->persist($customerOrder);
-        if ($flush) {
-            $this->entityManager->flush();
-        }
+        $this->entityManager->flush();
+
+        $this->domainEventDispatcher->dispatchProviderEvents($customerOrder);
     }
 }
