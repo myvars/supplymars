@@ -32,6 +32,7 @@ class CrudIndexOptions
     public function setSection(string $section): CrudIndexOptions
     {
         $this->section = $section;
+
         return $this;
     }
 
@@ -69,6 +70,7 @@ class CrudIndexOptions
         if ($sort && !in_array($sort, $this->sortOptions)) {
             throw new \InvalidArgumentException('Invalid sort option');
         }
+
         $this->sort = $sort;
 
         return $this;
@@ -82,6 +84,7 @@ class CrudIndexOptions
     public function setSortDefault(string $sortDefault): CrudIndexOptions
     {
         $this->sortDefault = $sortDefault;
+
         return $this;
     }
 
@@ -105,6 +108,7 @@ class CrudIndexOptions
     public function setSortDirectionDefault(string $sortDirectionDefault): CrudIndexOptions
     {
         $this->sortDirectionDefault = $sortDirectionDefault;
+
         return $this;
     }
 
@@ -144,6 +148,7 @@ class CrudIndexOptions
                 self::QUERY_BUILDER_METHOD.' method not found in '.$repository::class.' repository'
             );
         }
+
         $this->repository = $repository;
 
         return $this;

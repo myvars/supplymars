@@ -31,6 +31,7 @@ enum ShippingMethod: string
         if (1 !== bccomp($vatRate->getRate(), '0', 2)) {
             throw new \InvalidArgumentException('VAT Rate must be greater than 0');
         }
+
         $vatMultiplier = bcadd('1', bcdiv($vatRate->getRate(), '100', 4), 4);
 
         return $this->bcround(bcmul(self::getPrice(), $vatMultiplier, 3), 2);

@@ -17,6 +17,7 @@ class ProductStockController extends AbstractController
     public function stock(?Product $product, CrudHelper $crudHelper): Response
     {
         if (!$product) {
+
             return $crudHelper->showEmpty(self::SECTION);
         }
 

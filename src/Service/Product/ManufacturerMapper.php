@@ -19,6 +19,7 @@ class ManufacturerMapper
     public function createManufacturerFromSupplierProduct(SupplierProduct $supplierProduct): Manufacturer
     {
         $supplierManufacturer = $supplierProduct->getSupplierManufacturer();
+
         if (!$supplierManufacturer) {
             throw new \InvalidArgumentException('Supplier manufacturer is missing');
         }
@@ -56,6 +57,7 @@ class ManufacturerMapper
         Manufacturer $manufacturer
     ): void {
         if ($supplierManufacturer->getMappedManufacturer()) {
+
             return;
         }
 

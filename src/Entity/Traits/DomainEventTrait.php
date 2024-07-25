@@ -17,6 +17,7 @@ trait DomainEventTrait
     {
         $events = $this->domainEvents;
         $this->domainEvents = [];
+
         return $events;
     }
 }

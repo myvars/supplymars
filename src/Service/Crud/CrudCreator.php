@@ -24,8 +24,10 @@ class CrudCreator extends AbstractController
     public function create(string $section, ?object $entity, string $formType): Response
     {
         if (!$entity) {
+
             return $this->crudHelper->crudError($section);
         }
+
         $crudOptions = $this->createOptions($section, $entity, $formType);
 
         return $this->build($crudOptions);
@@ -51,6 +53,7 @@ class CrudCreator extends AbstractController
     {
         $form = $crudOptions->getForm();
         $crudAction = $crudOptions->getCrudAction() ?: $this->crudAction;
+
         $form->handleRequest($this->crudHelper->getRequest());
         if ($form->isSubmitted() && $form->isValid()) {
             try {

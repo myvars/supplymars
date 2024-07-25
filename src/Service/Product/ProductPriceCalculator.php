@@ -13,10 +13,8 @@ class ProductPriceCalculator
     ) {
     }
 
-    public function recalculatePrice(
-        Product $product,
-        bool $flush = true
-    ): void {
+    public function recalculatePrice(Product $product, bool $flush = true): void
+    {
         $prettyPriceIncVat = $this->markupCalculator->calculatePrettyPrice(
             $product->getCost(),
             $product->getActiveMarkup(),
@@ -49,6 +47,7 @@ class ProductPriceCalculator
         foreach ($products as $product) {
             $this->recalculatePrice($product, false);
         }
+
         $this->flush();
     }
 

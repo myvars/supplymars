@@ -69,6 +69,7 @@ class CrudHelper
         int $status = self::REDIRECT_RESPONSE_STATUS
     ): RedirectResponse|Response {
         if ($this->requestStack->getCurrentRequest()->headers->has('turbo-frame')) {
+
             return $this->streamRefresh();
         }
 

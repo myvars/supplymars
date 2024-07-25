@@ -31,6 +31,7 @@ class ProductImageController extends AbstractController
     public function showProductImages(?Product $product, CrudHelper $crudHelper): Response
     {
         if (!$product) {
+
             return $crudHelper->showEmpty(self::SECTION);
         }
 
@@ -58,13 +59,12 @@ class ProductImageController extends AbstractController
                     'error',
                     'Image could not be uploaded! Please check the file type and try again.'
                 );
+
                 continue;
             }
+
             $this->createProductImage($productImage);
-            $this->addFlash(
-                'success',
-                'New Product Image added!'
-            );
+            $this->addFlash('success', 'New Product Image added!');
             ++$nextPosition;
         }
 
@@ -81,12 +81,11 @@ class ProductImageController extends AbstractController
     ): Response
     {
         $product = $productImage->getProduct();
+
         $this->entityManager->remove($productImage);
         $this->entityManager->flush();
-        $this->addFlash(
-            'success',
-            'Product Image removed!'
-        );
+
+        $this->addFlash('success', 'Product Image removed!');
 
         return $crudHelper->redirectToLink(
             $this->generateUrl('app_product_images', ['id' => $product->getId()])
@@ -98,6 +97,7 @@ class ProductImageController extends AbstractController
     {
         $orderedIds = json_decode($request->getContent(), true);
         if (null === $orderedIds) {
+
             return $this->json(['detail' => 'Invalid body'], 400);
         }
         // from (position)=>(id) to (id)=>(position)
@@ -106,6 +106,7 @@ class ProductImageController extends AbstractController
             $newPosition = (int) $orderedIds[$productImage->getId()] + 1;
             $productImage->setPosition($newPosition);
         }
+
         $this->entityManager->flush();
 
         return $this->json($product->getProductImages(), 200, [], ['groups' => ['main']]);
@@ -116,6 +117,7 @@ class ProductImageController extends AbstractController
         $productImage->setImageName(
             $this->uploadHelper->uploadFile($productImage->getImageFile(), $this->appProductUploads)
         );
+
         $this->entityManager->persist($productImage);
         $this->entityManager->flush();
     }

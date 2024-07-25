@@ -36,6 +36,7 @@ class VatRatePriceUpdater
     public function postUpdate(VatRate $vatRate): void
     {
         if (empty($this->changedProducts)) {
+
             return;
         }
 

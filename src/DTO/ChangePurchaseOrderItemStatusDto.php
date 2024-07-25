@@ -24,10 +24,7 @@ class ChangePurchaseOrderItemStatusDto
 
     public static function fromEntity(PurchaseOrderItem $purchaseOrderItem): static
     {
-        return new static(
-            $purchaseOrderItem->getId(),
-            $purchaseOrderItem->getStatus()
-        );
+        return new static($purchaseOrderItem->getId(), $purchaseOrderItem->getStatus());
     }
 
     public function getId(): int

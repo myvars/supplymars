@@ -23,6 +23,7 @@ class UploadHelper
     {
         $originalFileName = $this->getOriginalFileName($file);
         $newFileName = $this->getNewFilename($file, $originalFileName);
+
         $this->doUpload($file, $directory, $newFileName, true);
 
         if (null !== $existingFilename) {
@@ -40,6 +41,7 @@ class UploadHelper
 
             return true;
         } catch (FilesystemException $exception) {
+
             return false;
         }
     }
@@ -71,6 +73,7 @@ class UploadHelper
     private function getOriginalFileName(File $file): string
     {
         if ($file instanceof UploadedFile) {
+
             return $file->getClientOriginalName();
         }
 

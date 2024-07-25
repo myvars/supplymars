@@ -23,6 +23,7 @@ class SubcategoryMapper
     ): Subcategory
     {
         $supplierSubcategory = $supplierProduct->getSupplierSubcategory();
+
         if (!$supplierSubcategory) {
             throw new \InvalidArgumentException('Supplier subcategory is missing');
         }
@@ -61,10 +62,12 @@ class SubcategoryMapper
         Subcategory $subcategory
     ): void {
         if ($supplierSubcategory->getMappedSubcategory()) {
+
             return;
         }
 
         $subcategory->addSupplierSubcategory($supplierSubcategory);
+
         $this->entityManager->persist($supplierSubcategory);
         $this->entityManager->flush();
     }

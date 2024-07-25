@@ -133,6 +133,7 @@ class CustomerOrderItem implements DomainEventProviderInterface
     private function setStatus(OrderStatus $status): void
     {
         if ($this->status === $status) {
+
             return;
         }
 
@@ -176,6 +177,7 @@ class CustomerOrderItem implements DomainEventProviderInterface
     public function updateItem(int $quantity, string $price, string $priceIncVat): static
     {
         $qtyAddedToPurchaseOrders = $this->getQtyAddedToPurchaseOrders();
+
         if ($qtyAddedToPurchaseOrders > $quantity) {
             throw new \LogicException('Cannot edit this allocated qty below %s', $qtyAddedToPurchaseOrders);
         }
@@ -193,11 +195,13 @@ class CustomerOrderItem implements DomainEventProviderInterface
     {
         if ($this->purchaseOrderItems->isEmpty()) {
             $this->setStatus(OrderStatus::getDefault());
+
             return;
         }
 
         if ($this->getOutstandingQty() !== 0) {
             $this->setStatus(OrderStatus::PROCESSING);
+
             return;
         }
 

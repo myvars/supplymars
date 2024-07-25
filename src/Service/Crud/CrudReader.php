@@ -21,6 +21,7 @@ class CrudReader extends AbstractController
         if (!$entity) {
             return $this->crudHelper->showEmpty($section);
         }
+
         $crudOptions = $this->createOptions($section, $entity);
 
         return $this->build($crudOptions);

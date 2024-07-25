@@ -69,6 +69,7 @@ class SupplierProductController extends AbstractController
     public function removeConfirm(?SupplierProduct $supplierProduct, CrudHelper $crudHelper): Response
     {
         if (!$supplierProduct || !$supplierProduct->getProduct()) {
+
             return $crudHelper->showEmpty(self::SECTION);
         }
 
@@ -79,6 +80,7 @@ class SupplierProductController extends AbstractController
     public function remove(Request $request, ?SupplierProduct $supplierProduct, CrudHelper $crudHelper): Response
     {
         if (!$supplierProduct || !$supplierProduct->getProduct()) {
+
             return $crudHelper->showEmpty(self::SECTION);
         }
 
@@ -90,10 +92,7 @@ class SupplierProductController extends AbstractController
             $this->activeSourceCalculator->removeMappedProduct($supplierProduct);
             $this->activeSourceCalculator->recalculateActiveSource($product);
 
-            $this->addFlash(
-                'success',
-                'Supplier product removed'
-            );
+            $this->addFlash('success', 'Supplier product removed');
         }
 
         return $crudHelper->redirectToLink(
@@ -105,16 +104,14 @@ class SupplierProductController extends AbstractController
     public function toggleStatus(?SupplierProduct $supplierProduct, CrudHelper $crudHelper): Response
     {
         if (!$supplierProduct) {
+
             return $crudHelper->showEmpty(self::SECTION);
         }
 
         $this->activeSourceCalculator->toggleStatus($supplierProduct);
         $this->activeSourceCalculator->recalculateActiveSource($supplierProduct->getProduct());
 
-        $this->addFlash(
-            'success',
-            'Supplier product status updated'
-        );
+        $this->addFlash('success', 'Supplier product status updated');
 
         return $crudHelper->redirectToLink(
             $this->generateUrl('app_product_stock', ['id' => $supplierProduct->getProduct()->getId()])
@@ -129,15 +126,13 @@ class SupplierProductController extends AbstractController
     ): Response
     {
         if (!$supplierProduct) {
+
             return $crudHelper->showEmpty(self::SECTION);
         }
 
         $productGenerator->createFromSupplierProduct($supplierProduct);
 
-        $this->addFlash(
-            'success',
-            'Supplier product mapped'
-        );
+        $this->addFlash('success', 'Supplier product mapped');
 
         return $crudHelper->redirectToLink(
             $this->generateUrl('app_supplier_product_show', ['id' => $supplierProduct->getId()])

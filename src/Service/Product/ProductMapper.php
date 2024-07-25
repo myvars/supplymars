@@ -21,8 +21,7 @@ class ProductMapper
         SupplierProduct $supplierProduct,
         Manufacturer $manufacturer,
         Subcategory $subcategory
-    ): Product
-    {
+    ): Product {
         if ($product = $this->productAlreadyExists($supplierProduct->getName())) {
             $this->mapProductToSupplier($supplierProduct, $product);
 
@@ -63,10 +62,12 @@ class ProductMapper
         Product $product
     ): void {
         if ($supplierProduct->getProduct()) {
+
             return;
         }
 
         $product->addSupplierProduct($supplierProduct);
+
         $this->entityManager->persist($supplierProduct);
         $this->entityManager->flush();
     }

@@ -24,10 +24,7 @@ class EditPurchaseOrderItemDto
 
     public static function fromEntity(PurchaseOrderItem $purchaseOrderItem): static
     {
-        return new static(
-            $purchaseOrderItem->getId(),
-            $purchaseOrderItem->getQuantity()
-        );
+        return new static($purchaseOrderItem->getId(), $purchaseOrderItem->getQuantity());
     }
 
     public function getId(): int

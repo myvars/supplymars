@@ -9,7 +9,6 @@ use App\Entity\CustomerOrderItem;
 use App\Form\CreateOrderItemType;
 use App\Form\EditOrderItemType;
 use App\Service\Crud\CrudCreator;
-use App\Service\Crud\CrudDeleter;
 use App\Service\Crud\CrudHelper;
 use App\Service\Crud\CrudReader;
 use App\Service\Crud\CrudUpdater;
@@ -44,14 +43,17 @@ class OrderItemController extends AbstractController
         CreateOrderItem $crudAction,
     ): Response {
         if (!$customerOrder) {
+
             return $crudCreator->crudHelper->showEmpty('Order');
         }
 
         $createOrderItemDto = CreateOrderItemDto::fromEntity($customerOrder);
+
         $form = $this->createForm(CreateOrderItemType::class, $createOrderItemDto, [
             'action' => $this->generateUrl('app_order_item_new', ['id' => $customerOrder->getId()]),
         ]);
         $successLink = $this->generateUrl('app_order_show', ['id' => $customerOrder->getId()]);
+
         $crudOptions = $crudCreator->resetOptions()
             ->setSection(self::SECTION)
             ->setEntity($createOrderItemDto)
@@ -69,16 +71,19 @@ class OrderItemController extends AbstractController
         EditOrderItem $crudAction,
     ): Response {
         if (!$customerOrderItem) {
+
             return $crudUpdater->crudHelper->showEmpty(self::SECTION);
         }
 
         $editOrderItemDto = EditOrderItemDto::fromEntity($customerOrderItem);
+
         $form = $this->createForm(EditOrderItemType::class, $editOrderItemDto, [
             'action' => $this->generateUrl('app_order_item_edit', ['id' => $editOrderItemDto->getId()]),
         ]);
         $successLink = $this->generateUrl(
             'app_order_show', ['id' => $customerOrderItem->getCustomerOrder()->getId()]
         );
+
         $crudOptions = $crudUpdater->resetOptions()
             ->setSection(self::SECTION)
             ->setEntity($editOrderItemDto)
@@ -104,20 +109,15 @@ class OrderItemController extends AbstractController
             $supplierProduct = null;
             foreach($customerOrderItem->getProduct()->getSupplierProducts() as $supplierProduct) {
                 if ($supplierProduct->getId() === $supplierProductId) {
+
                     break;
                 }
             }
             $createPurchaseOrderItem->fromOrder($customerOrderItem, $supplierProduct);
         } catch (\Exception $e) {
-            $this->addFlash(
-                'danger',
-                'PO item could not be added'
-            );
+            $this->addFlash('danger', 'PO item could not be added');
         }
-        $this->addFlash(
-            'success',
-            'PO item added'
-        );
+        $this->addFlash('success', 'PO item added');
 
         return $crudHelper->redirectToLink(
             $this->generateUrl('app_order_show', ['id' => $customerOrderItem->getCustomerOrder()->getId()])

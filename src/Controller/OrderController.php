@@ -27,6 +27,7 @@ class OrderController extends AbstractController
     public function index(CustomerOrderRepository $repository, CrudIndexer $crudIndexer): Response
     {
         $sortOptions = ['id', 'createdAt', 'customer.fullName', 'totalPriceIncVat', 'status'];
+
         $crudOptions = $crudIndexer->createOptions(self::SECTION, $repository, $sortOptions)
             ->setSortDefault('id')
             ->setSortDirectionDefault('DESC');
@@ -43,6 +44,7 @@ class OrderController extends AbstractController
         $form = $this->createForm(CreateOrderType::class, $createOrderDto, [
             'action' => $this->generateUrl('app_order_new'),
         ]);
+
         $crudOptions = $crudCreator->resetOptions()
             ->setSection(self::SECTION)
             ->setEntity($createOrderDto)
@@ -81,6 +83,7 @@ class OrderController extends AbstractController
     public function cancel(?CustomerOrder $customerOrder, CancelOrder $action, CrudHelper $crudHelper): Response
     {
         if (!$customerOrder) {
+
             return $crudHelper->showEmpty(self::SECTION);
         }
 

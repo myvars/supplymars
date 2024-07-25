@@ -25,11 +25,13 @@ class SupplierProductStockUpdater
 
     public function preUpdate(SupplierProduct $supplierProduct, PreUpdateEventArgs $eventArgs): void
     {
-        if ($eventArgs->hasChangedField('stock')
+        if (
+            $eventArgs->hasChangedField('stock')
             || $eventArgs->hasChangedField('cost')
             || $eventArgs->hasChangedField('leadTimeDays')
             || $eventArgs->hasChangedField('product')
-            || $eventArgs->hasChangedField('isActive')) {
+            || $eventArgs->hasChangedField('isActive')
+        ) {
             $this->setChangedSupplierProduct($supplierProduct);
         }
     }

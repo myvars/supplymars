@@ -25,6 +25,7 @@ class CategoryMapper
     public function createCategoryFromSupplierProduct(SupplierProduct $supplierProduct): Category
     {
         $supplierCategory = $supplierProduct->getSupplierCategory();
+
         if (!$supplierCategory) {
             throw new \InvalidArgumentException('Supplier category is missing');
         }

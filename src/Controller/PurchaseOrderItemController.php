@@ -40,20 +40,22 @@ class PurchaseOrderItemController extends AbstractController
     ): Response
     {
         if (!$purchaseOrderItem) {
+
             return $crudUpdater->crudHelper->showEmpty(self::SECTION);
         }
 
         $editPOItemDto = EditPurchaseOrderItemDto::fromEntity($purchaseOrderItem);
+
         $form = $this->createForm(EditPurchaseOrderItemType::class, $editPOItemDto, [
             'action' => $this->generateUrl(
                 'app_purchase_order_item_edit',
                 ['id' => $purchaseOrderItem->getId()]
             ),
         ]);
-
         $successLink = $this->generateUrl(
             'app_purchase_order_show', ['id' => $purchaseOrderItem->getPurchaseOrder()->getId()]
         );
+
         $crudOptions = $crudUpdater->resetOptions()
             ->setSection(self::SECTION)
             ->setEntity($editPOItemDto)
@@ -71,10 +73,12 @@ class PurchaseOrderItemController extends AbstractController
         ChangePurchaseOrderItemStatus $crudAction
     ): Response {
         if (!$purchaseOrderItem) {
+
             return $crudUpdater->crudHelper->showEmpty(self::SECTION);
         }
 
         $changePurchaseOrderItemStatusDto = ChangePurchaseOrderItemStatusDto::fromEntity($purchaseOrderItem);
+
         $form = $this->createForm(ChangePurchaseOrderItemStatusType::class, $changePurchaseOrderItemStatusDto, [
             'action' => $this->generateUrl(
                 'app_purchase_order_item_status_edit', ['id' => $purchaseOrderItem->getId()]
@@ -83,6 +87,7 @@ class PurchaseOrderItemController extends AbstractController
         $successLink = $this->generateUrl(
             'app_purchase_order_show', ['id' => $purchaseOrderItem->getPurchaseOrder()->getId()]
         );
+
         $crudOptions = $crudUpdater->resetOptions()
             ->setSection(self::SECTION)
             ->setEntity($changePurchaseOrderItemStatusDto)

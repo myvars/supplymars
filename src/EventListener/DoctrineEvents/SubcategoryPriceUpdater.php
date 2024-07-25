@@ -22,8 +22,7 @@ class SubcategoryPriceUpdater
 
     public function preUpdate(Subcategory $subcategory, PreUpdateEventArgs $eventArgs): void
     {
-        if ($eventArgs->hasChangedField('defaultMarkup')
-            || $eventArgs->hasChangedField('priceModel')) {
+        if ($eventArgs->hasChangedField('defaultMarkup') || $eventArgs->hasChangedField('priceModel')) {
             $products = $subcategory->getActiveProducts();
 
             foreach ($products as $product) {
@@ -45,6 +44,7 @@ class SubcategoryPriceUpdater
     public function postUpdate(Subcategory $subcategory): void
     {
         if (empty($this->changedProducts)) {
+
             return;
         }
 

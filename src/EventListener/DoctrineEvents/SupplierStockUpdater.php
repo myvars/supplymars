@@ -34,6 +34,7 @@ class SupplierStockUpdater
     public function postUpdate(Supplier $supplier): void
     {
         if (empty($this->changedSupplierProducts)) {
+
             return;
         }
 
@@ -44,6 +45,7 @@ class SupplierStockUpdater
                 if ($product = $this->activeSourceCalculator->getProductFromActiveSource($changedSupplierProduct)) {
                     $this->activeSourceCalculator->recalculateActiveSource($product, false);
                 }
+
                 continue;
             }
 
@@ -52,6 +54,7 @@ class SupplierStockUpdater
                 $this->activeSourceCalculator->recalculateActiveSource($product, true);
             }
         }
+
         $this->activeSourceCalculator->flush();
         unset($this->changedSupplierProducts);
     }

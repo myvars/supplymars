@@ -26,6 +26,7 @@ class ProductCostController extends AbstractController
     public function cost(?Product $product, CrudHelper $crudHelper): Response
     {
         if (!$product) {
+
             return $crudHelper->showEmpty(self::SECTION);
         }
 
@@ -36,6 +37,7 @@ class ProductCostController extends AbstractController
     public function costEdit(?Product $product, CrudHelper $crudHelper): Response
     {
         if (!$product) {
+
             return $crudHelper->showEmpty(self::SECTION);
         }
 
@@ -50,6 +52,7 @@ class ProductCostController extends AbstractController
     public function costCategoryEdit(?Product $product, CrudHelper $crudHelper): Response
     {
         if (!$product) {
+
             return $crudHelper->showEmpty(self::SECTION);
         }
 
@@ -65,6 +68,7 @@ class ProductCostController extends AbstractController
     public function costSubcategoryEdit(?Product $product, CrudHelper $crudHelper): Response
     {
         if (!$product) {
+
             return $crudHelper->showEmpty(self::SECTION);
         }
 
@@ -84,6 +88,7 @@ class ProductCostController extends AbstractController
     ): Response {
         $successLink = $this->generateUrl('app_product_cost', ['id' => $product->getId()]);
         $backLink = $this->generateUrl('app_product_cost', ['id' => $product->getId()]);
+
         $crudOptions = $this->crudUpdater->resetOptions()
             ->setSection($section)
             ->setEntity($entity)

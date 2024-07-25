@@ -62,7 +62,7 @@ final class CreatePurchaseOrderItem
         CustomerOrderItem $customerOrderItem,
         PurchaseOrder $purchaseOrder,
         SupplierProduct $supplierProduct
-    ): PurchaseOrderItem{
+    ): PurchaseOrderItem {
         if ($purchaseOrderItem = $this->getEditablePurchaseOrderItem($customerOrderItem, $purchaseOrder)) {
             $this->updateExistingPurchaseOrderItem($purchaseOrderItem);
 

@@ -22,18 +22,22 @@ class ActiveSourceCalculator
         $supplierProducts = $product->getSupplierProducts();
 
         foreach ($supplierProducts as $supplierProduct) {
-            if ($supplierProduct->hasActiveSupplier()
+            if (
+                $supplierProduct->hasActiveSupplier()
                 && $supplierProduct->isActive()
                 && $supplierProduct->hasStock()
-                && $supplierProduct->getCost() > 0) {
+                && $supplierProduct->getCost() > 0
+            ) {
                 if (!isset($activeSource)) {
                     $activeSource = $supplierProduct;
+
                     continue;
                 }
 
                 if ($supplierProduct->getCost() === $activeSource->getCost()
                     && $supplierProduct->getStock() <= $activeSource->getStock()
                 ) {
+
                     continue;
                 }
 
@@ -61,6 +65,7 @@ class ActiveSourceCalculator
         foreach ($products as $product) {
             $this->recalculateActiveSource($product, false);
         }
+
         $this->flush();
     }
 
@@ -90,6 +95,7 @@ class ActiveSourceCalculator
     public function removeMappedProduct(SupplierProduct $supplierProduct): void
     {
         $supplierProduct->setProduct(null);
+
         $this->entityManager->persist($supplierProduct);
         $this->flush();
     }
@@ -97,6 +103,7 @@ class ActiveSourceCalculator
     public function toggleStatus(SupplierProduct $supplierProduct): void
     {
         $supplierProduct->setIsActive(!$supplierProduct->isActive());
+
         $this->entityManager->persist($supplierProduct);
         $this->flush();
     }

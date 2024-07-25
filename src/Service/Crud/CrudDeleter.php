@@ -24,6 +24,7 @@ class CrudDeleter extends AbstractController
     public function deleteConfirm(string $section, ?object $entity): Response
     {
         if (!$entity) {
+
             return $this->crudHelper->crudError($section);
         }
 
@@ -39,6 +40,7 @@ class CrudDeleter extends AbstractController
         if (!$entity) {
             return $this->crudHelper->crudError($section);
         }
+
         $crudOptions = $this->createOptions($section, $entity);
 
         return $this->build($crudOptions);
@@ -58,6 +60,7 @@ class CrudDeleter extends AbstractController
     public function build(CrudDeleteOptions $crudOptions): Response
     {
         $crudAction = $crudOptions->getCrudAction() ?: $this->crudAction;
+
         if ($this->isCsrfTokenValid(
             'delete'.$crudOptions->getEntity()->getId(),
             $this->crudHelper->getRequest()->get('_token'))

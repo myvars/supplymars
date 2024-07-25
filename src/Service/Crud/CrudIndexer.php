@@ -36,6 +36,7 @@ class CrudIndexer extends AbstractController
         array $sortOptions = []
     ): CrudIndexOptions {
         $request = $this->crudHelper->getRequest();
+
         return $this->resetOptions()
             ->setSection($section)
             ->setRepository($repository)
@@ -52,6 +53,7 @@ class CrudIndexer extends AbstractController
     public function build(CrudIndexOptions $crudOptions): Response
     {
         $repository = $crudOptions->getRepository();
+
         try {
             $queryBuilder = $repository->findBySearchQueryBuilder(
                 $crudOptions->getQuery(),

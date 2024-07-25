@@ -28,11 +28,13 @@ class ProductGenerator
             $supplierProduct,
             $category
         );
+
         $product = $this->productMapper->createProductFromSupplierProduct(
             $supplierProduct,
             $manufacturer,
             $subcategory
         );
+
         $this->productPriceCalculator->recalculatePrice($product,true);
 
         return $product;

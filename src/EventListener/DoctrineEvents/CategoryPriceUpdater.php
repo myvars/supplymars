@@ -22,19 +22,23 @@ class CategoryPriceUpdater
 
     public function preUpdate(Category $category, PreUpdateEventArgs $eventArgs): void
     {
-        if ($eventArgs->hasChangedField('defaultMarkup')
+        if (
+            $eventArgs->hasChangedField('defaultMarkup')
             || $eventArgs->hasChangedField('priceModel')
-            || $eventArgs->hasChangedField('vatRate')) {
+            || $eventArgs->hasChangedField('vatRate')
+        ) {
             $products = $category->getActiveProducts();
             foreach ($products as $product) {
                 if ($eventArgs->hasChangedField('vatRate')) {
                     $this->setChangedProduct($product);
+
                     continue;
                 }
 
                 if ($eventArgs->hasChangedField('defaultMarkup')) {
                     if ($product->getActiveMarkupTarget() === 'CATEGORY') {
                         $this->setChangedProduct($product);
+
                         continue;
                     }
                 }
@@ -51,6 +55,7 @@ class CategoryPriceUpdater
     public function postUpdate(Category $category): void
     {
         if (empty($this->changedProducts)) {
+
             return;
         }
 
