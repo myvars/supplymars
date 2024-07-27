@@ -81,6 +81,7 @@ class Supplier
     public function setColourScheme(string $colourScheme): Supplier
     {
         $this->colourScheme = $colourScheme;
+
         return $this;
     }
 

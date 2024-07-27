@@ -34,7 +34,6 @@ final class EditPurchaseOrderItem implements CrudActionInterface
         }
 
         if ($dto->getQuantity() === $purchaseOrderItem->getQuantity()) {
-
             return;
         }
 

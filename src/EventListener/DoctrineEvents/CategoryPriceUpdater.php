@@ -55,7 +55,6 @@ class CategoryPriceUpdater
     public function postUpdate(Category $category): void
     {
         if (empty($this->changedProducts)) {
-
             return;
         }
 

@@ -83,7 +83,6 @@ class OrderController extends AbstractController
     public function cancel(?CustomerOrder $customerOrder, CancelOrder $action, CrudHelper $crudHelper): Response
     {
         if (!$customerOrder) {
-
             return $crudHelper->showEmpty(self::SECTION);
         }
 

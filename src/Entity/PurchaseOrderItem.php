@@ -248,7 +248,6 @@ class PurchaseOrderItem implements DomainEventProviderInterface
     public function updateStatus(PurchaseOrderStatus $newStatus): void
     {
         if ($newStatus === $this->status) {
-
             return;
         }
 

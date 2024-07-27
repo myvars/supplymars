@@ -32,7 +32,6 @@ final class EditOrderItem implements CrudActionInterface
         $customerOrder = $this->getCustomerOrder($customerOrderItem);
 
         if ($dto->getQuantity() < $customerOrderItem->getQtyAddedToPurchaseOrders()) {
-
             return;
         }
 

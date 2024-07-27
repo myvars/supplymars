@@ -34,7 +34,6 @@ class SupplierStockUpdater
     public function postUpdate(Supplier $supplier): void
     {
         if (empty($this->changedSupplierProducts)) {
-
             return;
         }
 

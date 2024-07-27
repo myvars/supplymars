@@ -31,7 +31,6 @@ class ProductImageController extends AbstractController
     public function showProductImages(?Product $product, CrudHelper $crudHelper): Response
     {
         if (!$product) {
-
             return $crudHelper->showEmpty(self::SECTION);
         }
 
@@ -97,7 +96,6 @@ class ProductImageController extends AbstractController
     {
         $orderedIds = json_decode($request->getContent(), true);
         if (null === $orderedIds) {
-
             return $this->json(['detail' => 'Invalid body'], 400);
         }
         // from (position)=>(id) to (id)=>(position)

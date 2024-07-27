@@ -71,7 +71,6 @@ class OrderItemController extends AbstractController
         EditOrderItem $crudAction,
     ): Response {
         if (!$customerOrderItem) {
-
             return $crudUpdater->crudHelper->showEmpty(self::SECTION);
         }
 

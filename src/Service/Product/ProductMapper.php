@@ -62,7 +62,6 @@ class ProductMapper
         Product $product
     ): void {
         if ($supplierProduct->getProduct()) {
-
             return;
         }
 

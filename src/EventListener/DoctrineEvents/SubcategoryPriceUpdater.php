@@ -44,7 +44,6 @@ class SubcategoryPriceUpdater
     public function postUpdate(Subcategory $subcategory): void
     {
         if (empty($this->changedProducts)) {
-
             return;
         }
 

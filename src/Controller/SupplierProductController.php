@@ -69,7 +69,6 @@ class SupplierProductController extends AbstractController
     public function removeConfirm(?SupplierProduct $supplierProduct, CrudHelper $crudHelper): Response
     {
         if (!$supplierProduct || !$supplierProduct->getProduct()) {
-
             return $crudHelper->showEmpty(self::SECTION);
         }
 
@@ -80,7 +79,6 @@ class SupplierProductController extends AbstractController
     public function remove(Request $request, ?SupplierProduct $supplierProduct, CrudHelper $crudHelper): Response
     {
         if (!$supplierProduct || !$supplierProduct->getProduct()) {
-
             return $crudHelper->showEmpty(self::SECTION);
         }
 
@@ -104,7 +102,6 @@ class SupplierProductController extends AbstractController
     public function toggleStatus(?SupplierProduct $supplierProduct, CrudHelper $crudHelper): Response
     {
         if (!$supplierProduct) {
-
             return $crudHelper->showEmpty(self::SECTION);
         }
 
@@ -126,7 +123,6 @@ class SupplierProductController extends AbstractController
     ): Response
     {
         if (!$supplierProduct) {
-
             return $crudHelper->showEmpty(self::SECTION);
         }
 

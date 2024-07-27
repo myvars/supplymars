@@ -133,7 +133,6 @@ class CustomerOrderItem implements DomainEventProviderInterface
     private function setStatus(OrderStatus $status): void
     {
         if ($this->status === $status) {
-
             return;
         }
 

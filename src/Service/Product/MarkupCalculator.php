@@ -13,6 +13,7 @@ class MarkupCalculator
         if (1 !== bccomp($cost, '0', 2)) {
             throw new \InvalidArgumentException('Cost must be greater than 0.');
         }
+
         if (1 !== bccomp($sellPrice, $cost, 2)) {
             throw new \InvalidArgumentException('Sell price must be greater than cost.');
         }
@@ -29,6 +30,7 @@ class MarkupCalculator
         if (1 !== bccomp($cost, '0', 2)) {
             throw new \InvalidArgumentException('Cost must be greater than 0.');
         }
+
         if (-1 === bccomp($markup, '0', 2)) {
             throw new \InvalidArgumentException('Markup must not be negative.');
         }
@@ -60,6 +62,7 @@ class MarkupCalculator
         if (1 !== bccomp($sellPriceIncVat, '0', 2)) {
             throw new \InvalidArgumentException('Sell price (inc VAT) must be greater than 0.');
         }
+
         if (-1 === bccomp($vatRate, '0', 2)) {
             throw new \InvalidArgumentException('VAT rate must not be negative.');
         }

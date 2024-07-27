@@ -62,7 +62,6 @@ class SubcategoryMapper
         Subcategory $subcategory
     ): void {
         if ($supplierSubcategory->getMappedSubcategory()) {
-
             return;
         }
 

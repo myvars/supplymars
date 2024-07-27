@@ -37,7 +37,6 @@ class ActiveSourceCalculator
                 if ($supplierProduct->getCost() === $activeSource->getCost()
                     && $supplierProduct->getStock() <= $activeSource->getStock()
                 ) {
-
                     continue;
                 }
 

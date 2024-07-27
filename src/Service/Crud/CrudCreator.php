@@ -24,7 +24,6 @@ class CrudCreator extends AbstractController
     public function create(string $section, ?object $entity, string $formType): Response
     {
         if (!$entity) {
-
             return $this->crudHelper->crudError($section);
         }
 

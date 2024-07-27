@@ -40,7 +40,6 @@ class PurchaseOrderItemController extends AbstractController
     ): Response
     {
         if (!$purchaseOrderItem) {
-
             return $crudUpdater->crudHelper->showEmpty(self::SECTION);
         }
 
@@ -73,7 +72,6 @@ class PurchaseOrderItemController extends AbstractController
         ChangePurchaseOrderItemStatus $crudAction
     ): Response {
         if (!$purchaseOrderItem) {
-
             return $crudUpdater->crudHelper->showEmpty(self::SECTION);
         }
 

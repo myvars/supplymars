@@ -26,7 +26,6 @@ class ProductCostController extends AbstractController
     public function cost(?Product $product, CrudHelper $crudHelper): Response
     {
         if (!$product) {
-
             return $crudHelper->showEmpty(self::SECTION);
         }
 
@@ -37,7 +36,6 @@ class ProductCostController extends AbstractController
     public function costEdit(?Product $product, CrudHelper $crudHelper): Response
     {
         if (!$product) {
-
             return $crudHelper->showEmpty(self::SECTION);
         }
 
@@ -52,7 +50,6 @@ class ProductCostController extends AbstractController
     public function costCategoryEdit(?Product $product, CrudHelper $crudHelper): Response
     {
         if (!$product) {
-
             return $crudHelper->showEmpty(self::SECTION);
         }
 
@@ -68,7 +65,6 @@ class ProductCostController extends AbstractController
     public function costSubcategoryEdit(?Product $product, CrudHelper $crudHelper): Response
     {
         if (!$product) {
-
             return $crudHelper->showEmpty(self::SECTION);
         }
 

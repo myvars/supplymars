@@ -426,11 +426,10 @@ class Product
     public function getActiveMarkup(): ?string
     {
         if ($this->hasDefaultMarkup()) {
-
             return $this->getDefaultMarkup();
         }
-        if ($this->getSubcategory()->hasDefaultMarkup()) {
 
+        if ($this->getSubcategory()->hasDefaultMarkup()) {
             return $this->getSubcategory()->getDefaultMarkup();
         }
 
@@ -440,11 +439,10 @@ class Product
     public function getActiveMarkupTarget(): string
     {
         if ($this->hasDefaultMarkup()) {
-
             return 'PRODUCT';
         }
-        if ($this->getSubcategory()->hasDefaultMarkup()) {
 
+        if ($this->getSubcategory()->hasDefaultMarkup()) {
             return 'SUBCATEGORY';
         }
 
@@ -454,11 +452,10 @@ class Product
     public function getActivePriceModel(): ?PriceModel
     {
         if ($this->hasPriceModel()) {
-
             return $this->getPriceModel();
         }
-        if ($this->getSubcategory()->hasPriceModel()) {
 
+        if ($this->getSubcategory()->hasPriceModel()) {
             return $this->getSubcategory()->getPriceModel();
         }
 
@@ -468,11 +465,10 @@ class Product
     public function getActivePriceModelTarget(): string
     {
         if ($this->hasPriceModel()) {
-
             return 'PRODUCT';
         }
-        if ($this->getSubcategory()->hasPriceModel()) {
 
+        if ($this->getSubcategory()->hasPriceModel()) {
             return 'SUBCATEGORY';
         }
 

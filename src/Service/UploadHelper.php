@@ -41,7 +41,6 @@ class UploadHelper
 
             return true;
         } catch (FilesystemException $exception) {
-
             return false;
         }
     }
@@ -73,7 +72,6 @@ class UploadHelper
     private function getOriginalFileName(File $file): string
     {
         if ($file instanceof UploadedFile) {
-
             return $file->getClientOriginalName();
         }
 

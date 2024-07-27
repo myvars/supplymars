@@ -328,6 +328,7 @@ class CustomerOrder implements DomainEventProviderInterface
     {
         if ($this->customerOrderItems->isEmpty()) {
             $this->setStatus(OrderStatus::getDefault());
+
             return;
         }
 

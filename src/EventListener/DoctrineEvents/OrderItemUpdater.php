@@ -35,7 +35,6 @@ class OrderItemUpdater
     public function postUpdate(CustomerOrderItem $customerOrderItem): void
     {
         if (empty($this->changedCustomerOrders)) {
-
             return;
         }
 

@@ -24,7 +24,6 @@ class CrudDeleter extends AbstractController
     public function deleteConfirm(string $section, ?object $entity): Response
     {
         if (!$entity) {
-
             return $this->crudHelper->crudError($section);
         }
 

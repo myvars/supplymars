@@ -195,7 +195,6 @@ class PurchaseOrder implements DomainEventProviderInterface
     private function setStatus(PurchaseOrderStatus $status): void
     {
         if ($this->status === $status) {
-
             return;
         }
 
@@ -336,7 +335,6 @@ class PurchaseOrder implements DomainEventProviderInterface
         }
 
         if ($this->getStatus() === $status) {
-
             return;
         }
 

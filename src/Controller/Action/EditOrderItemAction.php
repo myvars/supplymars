@@ -24,7 +24,6 @@ class EditOrderItemAction extends AbstractController
     public function __invoke(?CustomerOrderItem $customerOrderItem, Request $request): Response
     {
         if (!$customerOrderItem) {
-
             return $this->crudHelper->showEmpty('Order Item');
         }
 

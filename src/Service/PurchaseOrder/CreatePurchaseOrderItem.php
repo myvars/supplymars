@@ -50,7 +50,6 @@ final class CreatePurchaseOrderItem
     {
         foreach ($customerOrder->getPurchaseOrders() as $purchaseOrder) {
             if ($purchaseOrder->getSupplier() === $supplier && $purchaseOrder->allowEdit()) {
-
                 return $purchaseOrder;
             }
         }
@@ -78,7 +77,6 @@ final class CreatePurchaseOrderItem
     ): ?PurchaseOrderItem {
         foreach ($purchaseOrder->getPurchaseOrderItems() as $purchaseOrderItem) {
             if ($purchaseOrderItem->getCustomerOrderItem() === $customerOrderItem) {
-
                 return $purchaseOrderItem;
             }
         }

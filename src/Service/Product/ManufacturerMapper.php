@@ -57,7 +57,6 @@ class ManufacturerMapper
         Manufacturer $manufacturer
     ): void {
         if ($supplierManufacturer->getMappedManufacturer()) {
-
             return;
         }
 
