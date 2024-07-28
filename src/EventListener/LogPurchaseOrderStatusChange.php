@@ -2,23 +2,23 @@
 
 namespace App\EventListener;
 
-use App\Event\OrderItemStatusChangedEvent;
+use App\Event\PurchaseOrderStatusChangedEvent;
 use App\Service\StatusChangeLogger;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
-final class OrderItemStatusChangeListener
+final class LogPurchaseOrderStatusChange
 {
     public function __construct(private readonly StatusChangeLogger $statusChangeLogger)
     {
     }
 
     #[AsEventListener]
-    public function onOrderItemStatusChange(OrderItemStatusChangedEvent $event): void
+    public function onPurchaseOrderStatusChange(PurchaseOrderStatusChangedEvent $event): void
     {
         $this->statusChangeLogger->fromStatusChangeEvent(
             $event,
-            $event->getCustomerOrderItem()->getId(),
-            $event->getCustomerOrderItem()->getStatus()->value
+            $event->getPurchaseOrder()->getId(),
+            $event->getPurchaseOrder()->getStatus()->value
         );
     }
 }
