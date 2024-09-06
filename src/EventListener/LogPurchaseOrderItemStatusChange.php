@@ -6,9 +6,9 @@ use App\Event\PurchaseOrderItemStatusChangedEvent;
 use App\Service\StatusChangeLogger;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
-final class LogPurchaseOrderItemStatusChange
+final readonly class LogPurchaseOrderItemStatusChange
 {
-    public function __construct(private readonly StatusChangeLogger $statusChangeLogger)
+    public function __construct(private StatusChangeLogger $statusChangeLogger)
     {
     }
 

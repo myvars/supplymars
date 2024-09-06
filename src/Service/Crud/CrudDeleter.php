@@ -23,7 +23,7 @@ class CrudDeleter extends AbstractController
 
     public function deleteConfirm(string $section, ?object $entity): Response
     {
-        if (!$entity) {
+        if ($entity === null) {
             return $this->crudHelper->crudError($section);
         }
 
@@ -36,7 +36,7 @@ class CrudDeleter extends AbstractController
 
     public function delete(string $section, ?object $entity): Response
     {
-        if (!$entity) {
+        if ($entity === null) {
             return $this->crudHelper->crudError($section);
         }
 
@@ -70,7 +70,7 @@ class CrudDeleter extends AbstractController
                     'success',
                     $crudOptions->getSection().' deleted!'
                 );
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 $this->addFlash(
                     'error',
                     'Can not delete '.$crudOptions->getSection().', it has dependents!'

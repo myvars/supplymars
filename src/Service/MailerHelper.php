@@ -7,13 +7,11 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use SymfonyCasts\Bundle\ResetPassword\Model\ResetPasswordToken;
-use Twig\Environment;
 
 readonly class MailerHelper
 {
     public function __construct(
         private MailerInterface $mailer,
-        private Environment $twig,
     ) {
     }
 

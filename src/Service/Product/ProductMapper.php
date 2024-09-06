@@ -22,7 +22,8 @@ class ProductMapper
         Manufacturer $manufacturer,
         Subcategory $subcategory
     ): Product {
-        if ($product = $this->productAlreadyExists($supplierProduct->getName())) {
+        $product = $this->productAlreadyExists($supplierProduct->getName());
+        if ($product instanceof Product) {
             $this->mapProductToSupplier($supplierProduct, $product);
 
             return $product;
@@ -61,7 +62,7 @@ class ProductMapper
         SupplierProduct $supplierProduct,
         Product $product
     ): void {
-        if ($supplierProduct->getProduct()) {
+        if ($supplierProduct->getProduct() instanceof Product) {
             return;
         }
 

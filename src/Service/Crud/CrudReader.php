@@ -18,7 +18,7 @@ class CrudReader extends AbstractController
 
     public function read(string $section, ?object $entity): Response
     {
-        if (!$entity) {
+        if ($entity === null) {
             return $this->crudHelper->showEmpty($section);
         }
 

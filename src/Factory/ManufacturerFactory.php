@@ -3,31 +3,12 @@
 namespace App\Factory;
 
 use App\Entity\Manufacturer;
-use App\Repository\ManufacturerRepository;
-use Zenstruck\Foundry\ModelFactory;
-use Zenstruck\Foundry\Proxy;
-use Zenstruck\Foundry\RepositoryProxy;
+use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
- * @extends ModelFactory<Manufacturer>
- *
- * @method        Manufacturer|Proxy                     create(array|callable $attributes = [])
- * @method static Manufacturer|Proxy                     createOne(array $attributes = [])
- * @method static Manufacturer|Proxy                     find(object|array|mixed $criteria)
- * @method static Manufacturer|Proxy                     findOrCreate(array $attributes)
- * @method static Manufacturer|Proxy                     first(string $sortedField = 'id')
- * @method static Manufacturer|Proxy                     last(string $sortedField = 'id')
- * @method static Manufacturer|Proxy                     random(array $attributes = [])
- * @method static Manufacturer|Proxy                     randomOrCreate(array $attributes = [])
- * @method static ManufacturerRepository|RepositoryProxy repository()
- * @method static Manufacturer[]|Proxy[]                 all()
- * @method static Manufacturer[]|Proxy[]                 createMany(int $number, array|callable $attributes = [])
- * @method static Manufacturer[]|Proxy[]                 createSequence(iterable|callable $sequence)
- * @method static Manufacturer[]|Proxy[]                 findBy(array $attributes)
- * @method static Manufacturer[]|Proxy[]                 randomRange(int $min, int $max, array $attributes = [])
- * @method static Manufacturer[]|Proxy[]                 randomSet(int $number, array $attributes = [])
+ * @extends PersistentProxyObjectFactory<Manufacturer>
  */
-final class ManufacturerFactory extends ModelFactory
+final class ManufacturerFactory extends PersistentProxyObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
@@ -36,7 +17,11 @@ final class ManufacturerFactory extends ModelFactory
      */
     public function __construct()
     {
-        parent::__construct();
+    }
+
+    public static function class(): string
+    {
+        return Manufacturer::class;
     }
 
     /**
@@ -44,7 +29,7 @@ final class ManufacturerFactory extends ModelFactory
      *
      * @todo add your default values here
      */
-    protected function getDefaults(): array
+    protected function defaults(): array|callable
     {
         return [
             'name' => self::faker()->company(),
@@ -55,15 +40,10 @@ final class ManufacturerFactory extends ModelFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
-    protected function initialize(): self
+    protected function initialize(): static
     {
         return $this
             // ->afterInstantiate(function(Manufacturer $manufacturer): void {})
         ;
-    }
-
-    protected static function getClass(): string
-    {
-        return Manufacturer::class;
     }
 }

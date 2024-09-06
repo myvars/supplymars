@@ -101,7 +101,7 @@ class SupplierProductController extends AbstractController
     #[Route('/{id}/status/toggle', name: 'app_supplier_product_toggle_status', methods: ['GET'])]
     public function toggleStatus(?SupplierProduct $supplierProduct, CrudHelper $crudHelper): Response
     {
-        if (!$supplierProduct) {
+        if (!$supplierProduct instanceof SupplierProduct) {
             return $crudHelper->showEmpty(self::SECTION);
         }
 
@@ -122,7 +122,7 @@ class SupplierProductController extends AbstractController
         CrudHelper $crudHelper
     ): Response
     {
-        if (!$supplierProduct) {
+        if (!$supplierProduct instanceof SupplierProduct) {
             return $crudHelper->showEmpty(self::SECTION);
         }
 

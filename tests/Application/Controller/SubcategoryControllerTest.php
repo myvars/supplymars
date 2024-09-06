@@ -129,6 +129,6 @@ class SubcategoryControllerTest extends WebTestCase
     {
         $this->browser()
             ->get("/subcategory/999")
-            ->assertSee('Sorry, we can\'t find that Subcategory');
+            ->assertSee("Sorry, we can't find that Subcategory");
     }
 }

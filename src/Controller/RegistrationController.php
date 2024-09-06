@@ -53,8 +53,7 @@ class RegistrationController extends AbstractController
             $this->emailVerification($user);
 
             // do anything else you need here, like send an email
-            $this->addFlash('success', 'Your account has been created. '
-                .'Follow the link in your email to verify your account.');
+            $this->addFlash('success', 'Your account has been created. Follow the link in your email to verify your account.');
 
             return $this->redirectToRoute('app_homepage');
         }
@@ -80,8 +79,8 @@ class RegistrationController extends AbstractController
         // validate email confirmation link, sets User::isVerified=true and persists
         try {
             $this->emailVerifier->handleEmailConfirmation($request, $user);
-        } catch (VerifyEmailExceptionInterface $exception) {
-            $this->addFlash('verify_email_error', $translator->trans($exception->getReason(), [], 'VerifyEmailBundle'));
+        } catch (VerifyEmailExceptionInterface $verifyEmailException) {
+            $this->addFlash('verify_email_error', $translator->trans($verifyEmailException->getReason(), [], 'VerifyEmailBundle'));
 
             return $this->redirectToRoute('app_register');
         }
@@ -99,7 +98,7 @@ class RegistrationController extends AbstractController
     public function resendVerifyUserEmail(AuthenticationUtils $authenticationUtils): Response
     {
         // remove the login error if there is one
-        $error = $authenticationUtils->getLastAuthenticationError();
+        $authenticationUtils->getLastAuthenticationError();
 
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();

@@ -17,9 +17,10 @@ class CategoryTest extends KernelTestCase
     use Factories;
 
     private ValidatorInterface $validator;
+
     private EntityManagerInterface $entityManager;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->validator = static::getContainer()->get('validator');
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
@@ -27,8 +28,8 @@ class CategoryTest extends KernelTestCase
 
     public function testCreateReadUpdateDeleteCategory(): void
     {
-        $owner = UserFactory::createOne(['fullName' => 'Test Owner'])->object();
-        $vatRate = VatRateFactory::createOne(['name' => 'Test VatRate'])->object();
+        $owner = UserFactory::createOne(['fullName' => 'Test Owner'])->_real();
+        $vatRate = VatRateFactory::createOne(['name' => 'Test VatRate'])->_real();
 
         $category = new Category();
         $category
@@ -57,7 +58,7 @@ class CategoryTest extends KernelTestCase
 
     public function testCategoryVatRateIsMissing(): void
     {
-        $owner = UserFactory::createOne(['fullName' => 'Test Owner'])->object();
+        $owner = UserFactory::createOne(['fullName' => 'Test Owner'])->_real();
 
         $category = new Category();
         $category
@@ -74,7 +75,7 @@ class CategoryTest extends KernelTestCase
 
     public function testCategoryOwnerIsMissing(): void
     {
-        $vatRate = VatRateFactory::createOne(['name' => 'Test VatRate'])->object();
+        $vatRate = VatRateFactory::createOne(['name' => 'Test VatRate'])->_real();
 
         $category = new Category();
         $category
@@ -128,14 +129,14 @@ class CategoryTest extends KernelTestCase
      * @dataProvider getValidationTestCases
      */
     public function testCategoryValidation(
-        $name,
-        $defaultMarkup,
-        $priceModel,
-        $isActive,
-        $expected
+        string $name,
+        string $defaultMarkup,
+        ?PriceModel $priceModel,
+        bool $isActive,
+        bool $expected
     ): void {
-        $owner = UserFactory::createOne(['fullName' => 'Test Owner'])->object();
-        $vatRate = VatRateFactory::createOne(['name' => 'Test VatRate'])->object();
+        $owner = UserFactory::createOne(['fullName' => 'Test Owner'])->_real();
+        $vatRate = VatRateFactory::createOne(['name' => 'Test VatRate'])->_real();
 
         $category = new Category();
         $category
@@ -153,10 +154,10 @@ class CategoryTest extends KernelTestCase
     public function getValidationTestCases(): array
     {
         return [
-            'Succeeds when data is correct' => ['Test Category', 0.21, PriceModel::DEFAULT, true, true],
-            'Fails when name is missing' => ['', 0.21, PriceModel::DEFAULT, true, false],
-            'Fails when defaultMarkup is less than 0' => ['Test Category', -0.21, PriceModel::DEFAULT, true, false],
-            'Fails when priceModel is missing' => ['Test Category', 0.21, null, true, false],
+            'Succeeds when data is correct' => ['Test Category', '0.21', PriceModel::DEFAULT, true, true],
+            'Fails when name is missing' => ['', '0.21', PriceModel::DEFAULT, true, false],
+            'Fails when defaultMarkup is less than 0' => ['Test Category', '-0.21', PriceModel::DEFAULT, true, false],
+            'Fails when priceModel is missing' => ['Test Category', '0.21', null, true, false],
         ];
     }
 }

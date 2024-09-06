@@ -45,7 +45,7 @@ class MarkupCalculatorTest extends TestCase
 
         $this->expectException(\InvalidArgumentException::class);
 
-        $sellPrice = $this->markupCalculator->calculateSellPrice($cost, $markup);
+        $this->markupCalculator->calculateSellPrice($cost, $markup);
     }
 
     public function testCalculateSellPriceWithNegativeMarkup(): void
@@ -55,7 +55,7 @@ class MarkupCalculatorTest extends TestCase
 
         $this->expectException(\InvalidArgumentException::class);
 
-        $sellPrice = $this->markupCalculator->calculateSellPrice($cost, $markup);
+        $this->markupCalculator->calculateSellPrice($cost, $markup);
     }
 
     public function testCalculateSellPriceIncVat(): void
@@ -88,7 +88,7 @@ class MarkupCalculatorTest extends TestCase
 
         $this->expectException(\InvalidArgumentException::class);
 
-        $sellPriceBeforeVat = $this->markupCalculator->calculateSellPriceBeforeVat($sellPriceIncVat, $vatRate);
+        $this->markupCalculator->calculateSellPriceBeforeVat($sellPriceIncVat, $vatRate);
     }
 
     public function testCalculatePrettyPrice(): void

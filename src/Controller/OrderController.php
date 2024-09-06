@@ -82,14 +82,14 @@ class OrderController extends AbstractController
     #[Route('/{id}/cancel', name: 'app_order_cancel', methods: ['GET'])]
     public function cancel(?CustomerOrder $customerOrder, CancelOrder $action, CrudHelper $crudHelper): Response
     {
-        if (!$customerOrder) {
+        if (!$customerOrder instanceof CustomerOrder) {
             return $crudHelper->showEmpty(self::SECTION);
         }
 
         try {
             $action->cancel($customerOrder);
             $this->addFlash('success', 'Order cancelled successfully');
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             $this->addFlash('error', 'Order cannot be cancelled');
         }
 

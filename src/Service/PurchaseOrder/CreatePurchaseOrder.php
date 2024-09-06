@@ -9,12 +9,12 @@ use App\Service\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-final class CreatePurchaseOrder
+final readonly class CreatePurchaseOrder
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
-        private readonly ValidatorInterface $validator,
-        private readonly DomainEventDispatcher $domainEventDispatcher
+        private EntityManagerInterface $entityManager,
+        private ValidatorInterface $validator,
+        private DomainEventDispatcher $domainEventDispatcher
     ) {
     }
 

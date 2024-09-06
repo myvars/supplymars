@@ -14,6 +14,7 @@ use PHPUnit\Framework\TestCase;
 class ActiveSourceCalculatorTest extends TestCase
 {
     private EntityManagerInterface $entityManagerMock;
+
     private ProductRepository $productRepositoryMock;
 
     protected function setUp(): void

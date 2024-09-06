@@ -82,11 +82,11 @@ class SupplierProductType extends AbstractType
             ])
         ;
 
-        $builder->addDependent('supplierSubcategory', 'supplierCategory', function(DependentField $field, ?SupplierCategory $supplierCategory) {
+        $builder->addDependent('supplierSubcategory', 'supplierCategory', function(DependentField $field, ?SupplierCategory $supplierCategory): void {
             $field
                 ->add(EntityType::class, [
                     'class' => SupplierSubcategory::class,
-                    'choices' => $supplierCategory ? $supplierCategory->getSupplierSubcategories() : [],
+                    'choices' => $supplierCategory instanceof SupplierCategory ? $supplierCategory->getSupplierSubcategories() : [],
                     'choice_label' => 'name',
                     'placeholder' => 'Choose a Subcategory',
                     'priority' => 1,

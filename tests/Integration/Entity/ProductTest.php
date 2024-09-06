@@ -19,9 +19,10 @@ class ProductTest extends KernelTestCase
     use Factories;
 
     private ValidatorInterface $validator;
+
     private EntityManagerInterface $entityManager;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->validator = static::getContainer()->get('validator');
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
@@ -29,9 +30,9 @@ class ProductTest extends KernelTestCase
 
     public function testCreateReadUpdateDeleteProduct(): void
     {
-        $subcategory = SubcategoryFactory::createOne(['name' => 'Test Subcategory'])->object();
-        $manufacturer = ManufacturerFactory::createOne(['name' => 'Test Manufacturer'])->object();
-        $owner = UserFactory::createOne(['fullName' => 'Test Owner'])->object();
+        $subcategory = SubcategoryFactory::createOne(['name' => 'Test Subcategory'])->_real();
+        $manufacturer = ManufacturerFactory::createOne(['name' => 'Test Manufacturer'])->_real();
+        $owner = UserFactory::createOne(['fullName' => 'Test Owner'])->_real();
 
         $product = new Product();
         $product
@@ -67,9 +68,9 @@ class ProductTest extends KernelTestCase
 
     public function testProductCategoryIsMissing(): void
     {
-        $subcategory = SubcategoryFactory::createOne(['name' => 'Test Subcategory'])->object();
-        $manufacturer = ManufacturerFactory::createOne(['name' => 'Test Manufacturer'])->object();
-        $owner = UserFactory::createOne(['fullName' => 'Test Owner'])->object();
+        $subcategory = SubcategoryFactory::createOne(['name' => 'Test Subcategory'])->_real();
+        $manufacturer = ManufacturerFactory::createOne(['name' => 'Test Manufacturer'])->_real();
+        $owner = UserFactory::createOne(['fullName' => 'Test Owner'])->_real();
 
         $product = new Product();
         $product
@@ -92,9 +93,9 @@ class ProductTest extends KernelTestCase
 
     public function testProductSubcategoryIsMissing(): void
     {
-        $category = CategoryFactory::createOne(['name' => 'Test Category'])->object();
-        $manufacturer = ManufacturerFactory::createOne(['name' => 'Test Manufacturer'])->object();
-        $owner = UserFactory::createOne(['fullName' => 'Test Owner'])->object();
+        $category = CategoryFactory::createOne(['name' => 'Test Category'])->_real();
+        $manufacturer = ManufacturerFactory::createOne(['name' => 'Test Manufacturer'])->_real();
+        $owner = UserFactory::createOne(['fullName' => 'Test Owner'])->_real();
 
         $product = new Product();
         $product
@@ -121,13 +122,13 @@ class ProductTest extends KernelTestCase
             'name' => 'Test Category',
             'defaultMarkup' => '2.000',
             'isActive' => true
-        ])->object();
+        ])->_real();
         $subcategory = SubcategoryFactory::createOne([
             'name' => 'Test Subcategory',
             'category' => $category,
             'defaultMarkup' => '5.000',
             'isActive' => true
-        ])->object();
+        ])->_real();
 
         $product = new Product();
         $product
@@ -190,23 +191,23 @@ class ProductTest extends KernelTestCase
      * @dataProvider getValidationTestCases
      */
     public function testSupplierProductValidation(
-        $name,
-        $mfrPartNumber,
-        $stock,
-        $leadTimeDays,
-        $weight,
-        $defaultMarkup,
-        $markup,
-        $cost,
-        $sellPrice,
-        $sellPriceIncVat,
-        $priceModel,
-        $isActive,
-        $expected
+        string $name,
+        string $mfrPartNumber,
+        int $stock,
+        ?int $leadTimeDays,
+        ?int $weight,
+        ?string $defaultMarkup,
+        ?string $markup,
+        ?string $cost,
+        string $sellPrice,
+        string $sellPriceIncVat,
+        ?PriceModel $priceModel,
+        bool $isActive,
+        bool $expected
     ): void {
-        $subcategory = SubcategoryFactory::createOne(['name' => 'Test Subcategory'])->object();
-        $manufacturer = ManufacturerFactory::createOne(['name' => 'Test Manufacturer'])->object();
-        $owner = UserFactory::createOne(['fullName' => 'Test Owner'])->object();
+        $subcategory = SubcategoryFactory::createOne(['name' => 'Test Subcategory'])->_real();
+        $manufacturer = ManufacturerFactory::createOne(['name' => 'Test Manufacturer'])->_real();
+        $owner = UserFactory::createOne(['fullName' => 'Test Owner'])->_real();
 
         $product = new Product();
         $product
@@ -234,25 +235,25 @@ class ProductTest extends KernelTestCase
     {
         return [
 
-            'Succeeds when data is correct' => ['Test Product', 'Test MfrPartNumber', 1, 1, 1, 0.21, 0.21, 100, 150, 180, PriceModel::PRETTY_99, true, true],
-            'Fails when name is missing' => ['', 'Test MfrPartNumber', 1, 1, 1, 0.21, 0.21, 100, 150, 180, PriceModel::PRETTY_99, true, false],
-            'Fails when mfrPartNumber is missing' => ['Test Product', '', 1, 1, 1, 0.21, 0.21, 100, 150, 180, PriceModel::PRETTY_99, true, false],
-            'Fails when stock is less than 0' => ['Test Product', 'Test MfrPartNumber', -1, 1, 1, 0.21, 0.21, 100, 150, 180, PriceModel::PRETTY_99, true, false],
-            'Fails when stock is greater than 10000' => ['Test Product', 'Test MfrPartNumber', 10001, 1, 1, 0.21, 0.21, 100, 150, 180, PriceModel::PRETTY_99, true, false],
-            'Fails when LeadTimeDays is missing' => ['Test Product', 'Test MfrPartNumber', 1, null, 1, 0.21, 0.21, 100, 150, 180, PriceModel::PRETTY_99, true, false],
-            'Fails when leadTimeDays is less than 0' => ['Test Product', 'Test MfrPartNumber', 1, -1, 1, 0.21, 0.21, 100, 150, 180, PriceModel::PRETTY_99, true, false],
-            'Fails when LeadTimeDays is greater than 1000' => ['Test Product', 'Test MfrPartNumber', 1, 1001, 1, 0.21, 0.21, 100, 150, 180, PriceModel::PRETTY_99, true, false],
-            'Fails when weight is missing' => ['Test Product', 'Test MfrPartNumber', 1, 1, null, 0.21, 0.21, 100, 150, 180, PriceModel::PRETTY_99, true, false],
-            'Fails when weight is less than 0' => ['Test Product', 'Test MfrPartNumber', 1, 1, -1, 0.21, 0.21, 100, 150, 180, PriceModel::PRETTY_99, true, false],
-            'Fails when weight is greater than 100000' => ['Test Product', 'Test MfrPartNumber', 1, 1, 100001, 0.21, 0.21, 100, 150, 180, PriceModel::PRETTY_99, true, false],
-            'Fails when defaultMarkup is missing' => ['Test Product', 'Test MfrPartNumber', 1, 1, 1, null, 0.21, 100, 150, 180, PriceModel::PRETTY_99, true, false],
-            'Fails when defaultMarkup is less than 0' => ['Test Product', 'Test MfrPartNumber', 1, 1, 1, -0.21, 0.21, 100, 150, 180, PriceModel::PRETTY_99, true, false],
-            'Fails when markup is less than 0' => ['Test Product', 'Test MfrPartNumber', 1, 1, 1, 0.21, -0.21, 100, 150, 180, PriceModel::PRETTY_99, true, false],
-            'Fails when cost is missing' => ['Test Product', 'Test MfrPartNumber', 1, 1, 1, 0.21, 0.21, null, 150, 180, PriceModel::PRETTY_99, true, false],
-            'Fails when cost is less than 0' => ['Test Product', 'Test MfrPartNumber', 1, 1, 1, 0.21, 0.21, -100, 150, 180, PriceModel::PRETTY_99, true, false],
-            'Fails when sellPrice is less than 0' => ['Test Product', 'Test MfrPartNumber', 1, 1, 1, 0.21, 0.21, 100, -150, 180, PriceModel::PRETTY_99, true, false],
-            'Fails when SellPriceIncVat is less than 0' => ['Test Product', 'Test MfrPartNumber', 1, 1, 1, 0.21, 0.21, 100, 150, -180, PriceModel::PRETTY_99, true, false],
-            'Fails when priceModel is missing' => ['Test Product', 'Test MfrPartNumber', 1, 1, 1, 0.21, 0.21, 100, 150, 180, null, true, false],
+            'Succeeds when data is correct' => ['Test Product', 'Test MfrPartNumber', 1, 1, 1, '0.21', '0.21', '100', '150', '180', PriceModel::PRETTY_99, true, true],
+            'Fails when name is missing' => ['', 'Test MfrPartNumber', 1, 1, 1, '0.21', '0.21', '100', '150', '180', PriceModel::PRETTY_99, true, false],
+            'Fails when mfrPartNumber is missing' => ['Test Product', '', 1, 1, 1, '0.21', '0.21', '100', '150', '180', PriceModel::PRETTY_99, true, false],
+            'Fails when stock is less than 0' => ['Test Product', 'Test MfrPartNumber', -1, 1, 1, '0.21', '0.21', '100', '150', '180', PriceModel::PRETTY_99, true, false],
+            'Fails when stock is greater than 10000' => ['Test Product', 'Test MfrPartNumber', 10001, 1, 1, '0.21', '0.21', '100', '150', '180', PriceModel::PRETTY_99, true, false],
+            'Fails when LeadTimeDays is missing' => ['Test Product', 'Test MfrPartNumber', 1, null, 1, '0.21', '0.21', '100', '150', '180', PriceModel::PRETTY_99, true, false],
+            'Fails when leadTimeDays is less than 0' => ['Test Product', 'Test MfrPartNumber', 1, -1, 1, '0.21', '0.21', '100', '150', '180', PriceModel::PRETTY_99, true, false],
+            'Fails when LeadTimeDays is greater than 1000' => ['Test Product', 'Test MfrPartNumber', 1, 1001, 1, '0.21', '0.21', '100', '150', '180', PriceModel::PRETTY_99, true, false],
+            'Fails when weight is missing' => ['Test Product', 'Test MfrPartNumber', 1, 1, null, '0.21', '0.21', '100', '150', '180', PriceModel::PRETTY_99, true, false],
+            'Fails when weight is less than 0' => ['Test Product', 'Test MfrPartNumber', 1, 1, -1, '0.21', '0.21', '100', '150', '180', PriceModel::PRETTY_99, true, false],
+            'Fails when weight is greater than 100000' => ['Test Product', 'Test MfrPartNumber', 1, 1, 100001, '0.21', '0.21', '100', '150', '180', PriceModel::PRETTY_99, true, false],
+            'Fails when defaultMarkup is missing' => ['Test Product', 'Test MfrPartNumber', 1, 1, 1, null, '0.21', '100', '150', '180', PriceModel::PRETTY_99, true, false],
+            'Fails when defaultMarkup is less than 0' => ['Test Product', 'Test MfrPartNumber', 1, 1, 1, '-0.21', '0.21', '100', '150', '180', PriceModel::PRETTY_99, true, false],
+            'Fails when markup is less than 0' => ['Test Product', 'Test MfrPartNumber', 1, 1, 1, '0.21', '-0.21', '100', '150', '180', PriceModel::PRETTY_99, true, false],
+            'Fails when cost is missing' => ['Test Product', 'Test MfrPartNumber', 1, 1, 1, '0.21', '0.21', null, '150', '180', PriceModel::PRETTY_99, true, false],
+            'Fails when cost is less than 0' => ['Test Product', 'Test MfrPartNumber', 1, 1, 1, '0.21', '0.21', '-100', '150', '180', PriceModel::PRETTY_99, true, false],
+            'Fails when sellPrice is less than 0' => ['Test Product', 'Test MfrPartNumber', 1, 1, 1, '0.21', '0.21', '100', '-150', '180', PriceModel::PRETTY_99, true, false],
+            'Fails when SellPriceIncVat is less than 0' => ['Test Product', 'Test MfrPartNumber', 1, 1, 1, '0.21', '0.21', '100', '150', '-180', PriceModel::PRETTY_99, true, false],
+            'Fails when priceModel is missing' => ['Test Product', 'Test MfrPartNumber', 1, 1, 1, '0.21', '0.21', '100', '150', '180', null, true, false],
         ];
     }
 }

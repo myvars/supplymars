@@ -14,7 +14,7 @@ class ProductImageControllerTest extends WebTestCase
 
     public function testShowProductImages(): void
     {
-        $product = ProductFactory::createOne(['name' => 'Test Product'])->object();
+        $product = ProductFactory::createOne(['name' => 'Test Product'])->_real();
 
         $this->browser()
             ->get('/product/' . $product->getId() . '/images')
@@ -27,14 +27,14 @@ class ProductImageControllerTest extends WebTestCase
     {
         $this->browser()
             ->get('/product/999999/images')
-            ->assertSee('Sorry, we can\'t find that Product');
+            ->assertSee("Sorry, we can't find that Product");
     }
 
     public function testCreateRemoveImage(): void
     {
         $uploadDir = static::getContainer()->getParameter('kernel.project_dir') . '/public/'
             . static::getContainer()->getParameter('app.product_uploads');
-        $product = ProductFactory::createOne(['name' => 'Test Product'])->object();
+        $product = ProductFactory::createOne(['name' => 'Test Product'])->_real();
         $dummyImagePath = __DIR__ . '/../../Resources/dummy-image.jpg';
 
         $this->browser()
@@ -72,7 +72,7 @@ class ProductImageControllerTest extends WebTestCase
 
     public function testCreateImageWithInvalidType(): void
     {
-        $product = ProductFactory::createOne(['name' => 'Test Product'])->object();
+        $product = ProductFactory::createOne(['name' => 'Test Product'])->_real();
         $invalidImagePath = __DIR__ . '/../../Resources/invalid-image.txt';
 
         $this->browser()
@@ -114,7 +114,7 @@ class ProductImageControllerTest extends WebTestCase
 
     public function testReorderImages(): void
     {
-        $product = ProductFactory::createOne(['name' => 'Test Product'])->object();
+        $product = ProductFactory::createOne(['name' => 'Test Product'])->_real();
         $dummyImagePath = __DIR__ . '/../../Resources/dummy-image.jpg';
 
         $this->browser()
@@ -163,7 +163,7 @@ class ProductImageControllerTest extends WebTestCase
     // test for the case when the request body is not a valid JSON
     public function testReorderImagesWithInvalidBody(): void
     {
-        $product = ProductFactory::createOne(['name' => 'Test Product'])->object();
+        $product = ProductFactory::createOne(['name' => 'Test Product'])->_real();
 
         $this->browser()
             ->request('POST', '/product/' . $product->getId() . '/images/reorder', [

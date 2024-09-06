@@ -47,10 +47,10 @@ class Subcategory
     #[ORM\Column]
     private bool $isActive = false;
 
-    #[ORM\OneToMany(mappedBy: 'subcategory', targetEntity: Product::class)]
+    #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'subcategory')]
     private Collection $products;
 
-    #[ORM\OneToMany(mappedBy: 'mappedSubcategory', targetEntity: SupplierSubcategory::class)]
+    #[ORM\OneToMany(targetEntity: SupplierSubcategory::class, mappedBy: 'mappedSubcategory')]
     private Collection $supplierSubcategories;
 
     public function __construct()
@@ -143,12 +143,12 @@ class Subcategory
 
     public function hasOwner(): bool
     {
-        return null !== $this->owner;
+        return $this->owner instanceof User;
     }
 
     public function hasPriceModel(): bool
     {
-        return null !== $this->priceModel && PriceModel::NONE !== $this->priceModel;
+        return $this->priceModel instanceof PriceModel && PriceModel::NONE !== $this->priceModel;
     }
 
     /**
@@ -182,11 +182,9 @@ class Subcategory
 
     public function removeProduct(Product $product): static
     {
-        if ($this->products->removeElement($product)) {
-            // set the owning side to null (unless already changed)
-            if ($product->getSubcategory() === $this) {
-                $product->setSubcategory(null);
-            }
+        // set the owning side to null (unless already changed)
+        if ($this->products->removeElement($product) && $product->getSubcategory() === $this) {
+            $product->setSubcategory(null);
         }
 
         return $this;
@@ -212,11 +210,12 @@ class Subcategory
 
     public function removeSupplierSubcategory(SupplierSubcategory $supplierSubcategory): static
     {
-        if ($this->supplierSubcategories->removeElement($supplierSubcategory)) {
-            // set the owning side to null (unless already changed)
-            if ($supplierSubcategory->getMappedSubcategory() === $this) {
-                $supplierSubcategory->setMappedSubcategory(null);
-            }
+        // set the owning side to null (unless already changed)
+        if (
+            $this->supplierSubcategories->removeElement($supplierSubcategory)
+            && $supplierSubcategory->getMappedSubcategory() === $this
+        ) {
+            $supplierSubcategory->setMappedSubcategory(null);
         }
 
         return $this;

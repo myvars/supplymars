@@ -8,18 +8,14 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class EditPurchaseOrderItemDto
 {
-    #[Assert\NotBlank(message: 'Please enter a purchaseOrderItemId')]
-    private int $purchaseOrderItemId;
-
-    #[Assert\NotBlank(message: 'Please enter a product quantity')]
-    #[Assert\Range(notInRangeMessage: 'Please enter a product quantity (0 to 100000)', min: 00, max: 100000)]
-    #[MaxPurchaseOrderItemQty]
-    private ?int $quantity;
-
-    public function __construct(int $purchaseOrderItemId, int $quantity)
-    {
-        $this->purchaseOrderItemId = $purchaseOrderItemId;
-        $this->quantity = $quantity;
+    public function __construct(
+        #[Assert\NotBlank(message: 'Please enter a purchaseOrderItemId')]
+        private readonly int $purchaseOrderItemId,
+        #[Assert\NotBlank(message: 'Please enter a product quantity')]
+        #[Assert\Range(notInRangeMessage: 'Please enter a product quantity (0 to 100000)', min: 00, max: 100000)]
+        #[MaxPurchaseOrderItemQty]
+        private ?int $quantity = null
+    ) {
     }
 
     public static function fromEntity(PurchaseOrderItem $purchaseOrderItem): static

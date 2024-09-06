@@ -10,11 +10,11 @@ use App\Service\Crud\Core\CrudActionInterface;
 use App\Service\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 
-final class EditPurchaseOrderItem implements CrudActionInterface
+final readonly class EditPurchaseOrderItem implements CrudActionInterface
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
-        private readonly DomainEventDispatcher $domainEventDispatcher
+        private EntityManagerInterface $entityManager,
+        private DomainEventDispatcher $domainEventDispatcher
     ) {
     }
 

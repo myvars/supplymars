@@ -14,8 +14,11 @@ use Twig\Environment;
 class CrudHelper
 {
     public const CRUD_BASE_TEMPLATE = 'crud/crud.html.twig';
+
     public const MISSING_ENTITY_TEMPLATE = 'show_empty';
+
     public const TURBO_STREAM_REFRESH_TEMPLATE = 'common/turboStreamRefresh.html.twig';
+
     public const REDIRECT_RESPONSE_STATUS = 303;
 
     public function __construct(
@@ -47,7 +50,7 @@ class CrudHelper
                 'section' => $section,
                 'template' => self::MISSING_ENTITY_TEMPLATE,
             ]);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             $content = '';
         }
 
@@ -81,7 +84,7 @@ class CrudHelper
 
         try {
             $content = $this->twig->render(self::TURBO_STREAM_REFRESH_TEMPLATE, []);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             $content = '';
         }
 

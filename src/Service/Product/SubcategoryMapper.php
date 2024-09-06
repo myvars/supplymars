@@ -23,12 +23,12 @@ class SubcategoryMapper
     ): Subcategory
     {
         $supplierSubcategory = $supplierProduct->getSupplierSubcategory();
-
-        if (!$supplierSubcategory) {
+        if (!$supplierSubcategory instanceof SupplierSubcategory) {
             throw new \InvalidArgumentException('Supplier subcategory is missing');
         }
 
-        if ($subcategory = $this->subcategoryAlreadyExists($supplierSubcategory->getName())) {
+        $subcategory = $this->subcategoryAlreadyExists($supplierSubcategory->getName());
+        if ($subcategory instanceof Subcategory) {
             $this->mapSubcategoryToSupplier($supplierSubcategory, $subcategory);
 
             return $subcategory;
@@ -61,7 +61,7 @@ class SubcategoryMapper
         SupplierSubcategory $supplierSubcategory,
         Subcategory $subcategory
     ): void {
-        if ($supplierSubcategory->getMappedSubcategory()) {
+        if ($supplierSubcategory->getMappedSubcategory() instanceof Subcategory) {
             return;
         }
 

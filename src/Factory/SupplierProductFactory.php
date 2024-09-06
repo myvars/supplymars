@@ -3,31 +3,12 @@
 namespace App\Factory;
 
 use App\Entity\SupplierProduct;
-use App\Repository\SupplierProductRepository;
-use Zenstruck\Foundry\ModelFactory;
-use Zenstruck\Foundry\Proxy;
-use Zenstruck\Foundry\RepositoryProxy;
+use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
- * @extends ModelFactory<SupplierProduct>
- *
- * @method        SupplierProduct|Proxy                     create(array|callable $attributes = [])
- * @method static SupplierProduct|Proxy                     createOne(array $attributes = [])
- * @method static SupplierProduct|Proxy                     find(object|array|mixed $criteria)
- * @method static SupplierProduct|Proxy                     findOrCreate(array $attributes)
- * @method static SupplierProduct|Proxy                     first(string $sortedField = 'id')
- * @method static SupplierProduct|Proxy                     last(string $sortedField = 'id')
- * @method static SupplierProduct|Proxy                     random(array $attributes = [])
- * @method static SupplierProduct|Proxy                     randomOrCreate(array $attributes = [])
- * @method static SupplierProductRepository|RepositoryProxy repository()
- * @method static SupplierProduct[]|Proxy[]                 all()
- * @method static SupplierProduct[]|Proxy[]                 createMany(int $number, array|callable $attributes = [])
- * @method static SupplierProduct[]|Proxy[]                 createSequence(iterable|callable $sequence)
- * @method static SupplierProduct[]|Proxy[]                 findBy(array $attributes)
- * @method static SupplierProduct[]|Proxy[]                 randomRange(int $min, int $max, array $attributes = [])
- * @method static SupplierProduct[]|Proxy[]                 randomSet(int $number, array $attributes = [])
+ * @extends PersistentProxyObjectFactory<SupplierProduct>
  */
-final class SupplierProductFactory extends ModelFactory
+final class SupplierProductFactory extends PersistentProxyObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
@@ -36,7 +17,11 @@ final class SupplierProductFactory extends ModelFactory
      */
     public function __construct()
     {
-        parent::__construct();
+    }
+
+    public static function class(): string
+    {
+        return SupplierProduct::class;
     }
 
     /**
@@ -44,7 +29,7 @@ final class SupplierProductFactory extends ModelFactory
      *
      * @todo add your default values here
      */
-    protected function getDefaults(): array
+    protected function defaults(): array|callable
     {
         return [
             'name' => self::faker()->text(50),
@@ -65,15 +50,10 @@ final class SupplierProductFactory extends ModelFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
-    protected function initialize(): self
+    protected function initialize(): static
     {
         return $this
             // ->afterInstantiate(function(SupplierProduct $supplierProduct): void {})
         ;
-    }
-
-    protected static function getClass(): string
-    {
-        return SupplierProduct::class;
     }
 }

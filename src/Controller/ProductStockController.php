@@ -16,7 +16,7 @@ class ProductStockController extends AbstractController
     #[Route('/{id}/stock', name: 'app_product_stock', methods: ['GET'])]
     public function stock(?Product $product, CrudHelper $crudHelper): Response
     {
-        if (!$product) {
+        if (!$product instanceof Product) {
             return $crudHelper->showEmpty(self::SECTION);
         }
 

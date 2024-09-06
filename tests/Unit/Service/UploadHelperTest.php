@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\File\File;
 class UploadHelperTest extends TestCase
 {
     private Filesystem $filesystemMock;
+
     private UploadHelper $uploadHelper;
 
     protected function setUp(): void

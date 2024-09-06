@@ -74,7 +74,7 @@ class PurchaseOrder implements DomainEventProviderInterface
     /**
      * @var Collection<int, PurchaseOrderItem>
      */
-    #[ORM\OneToMany(mappedBy: 'purchaseOrder', targetEntity: PurchaseOrderItem::class)]
+    #[ORM\OneToMany(targetEntity: PurchaseOrderItem::class, mappedBy: 'purchaseOrder')]
     #[ORM\OrderBy(['id' => 'ASC'])]
     private Collection $purchaseOrderItems;
 
@@ -231,6 +231,7 @@ class PurchaseOrder implements DomainEventProviderInterface
             $this->purchaseOrderItems->add($purchaseOrderItem);
             $purchaseOrderItem->setPurchaseOrder($this);
         }
+
         $this->recalculateTotal();
 
         return $this;
@@ -238,12 +239,14 @@ class PurchaseOrder implements DomainEventProviderInterface
 
     public function removePurchaseOrderItem(PurchaseOrderItem $purchaseOrderItem): static
     {
-        if ($this->purchaseOrderItems->removeElement($purchaseOrderItem)) {
-            // set the owning side to null (unless already changed)
-            if ($purchaseOrderItem->getPurchaseOrder() === $this) {
-                $purchaseOrderItem->setPurchaseOrder(null);
-            }
+        // set the owning side to null (unless already changed)
+        if (
+            $this->purchaseOrderItems->removeElement($purchaseOrderItem)
+            && $purchaseOrderItem->getPurchaseOrder() === $this
+        ) {
+            $purchaseOrderItem->setPurchaseOrder(null);
         }
+
         $this->recalculateTotal();
 
         return $this;

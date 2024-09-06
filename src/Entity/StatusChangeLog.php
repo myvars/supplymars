@@ -15,44 +15,29 @@ class StatusChangeLog
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Please enter an event type')]
-    private DomainEventType $eventType;
-
-    #[ORM\Column]
-    #[Assert\NotBlank(message: 'Please enter an event type Id')]
-    #[Assert\Positive(message: 'Please enter a positive event type Id')]
-    private int $eventTypeId;
-
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Please enter a status')]
-    #[Assert\Length(max: 255, maxMessage: 'Status must be less than {{ limit }} characters')]
-    private string $status;
-
-    #[ORM\ManyToOne(inversedBy: 'statusChangeLogs')]
-    #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: 'Please enter a user')]
-    private User $user;
-
-    #[ORM\Column]
-    #[Assert\NotBlank(message: 'Please enter an event timestamp')]
-    private \DateTimeImmutable $eventTimestamp;
-
     #[ORM\Column]
     private \DateTimeImmutable $createdAt;
 
     public function __construct(
-        DomainEventType $eventType,
-        int $eventTypeId,
-        string $status,
-        User $user,
-        \DateTimeImmutable $eventTimestamp
+        #[ORM\Column(length: 255)]
+        #[Assert\NotBlank(message: 'Please enter an event type')]
+        private readonly DomainEventType $eventType,
+        #[ORM\Column]
+        #[Assert\NotBlank(message: 'Please enter an event type Id')]
+        #[Assert\Positive(message: 'Please enter a positive event type Id')]
+        private readonly int $eventTypeId,
+        #[ORM\Column(length: 255)]
+        #[Assert\NotBlank(message: 'Please enter a status')]
+        #[Assert\Length(max: 255, maxMessage: 'Status must be less than {{ limit }} characters')]
+        private readonly string $status,
+        #[ORM\ManyToOne(inversedBy: 'statusChangeLogs')]
+        #[ORM\JoinColumn(nullable: false)]
+        #[Assert\NotNull(message: 'Please enter a user')]
+        private User $user,
+        #[ORM\Column]
+        #[Assert\NotBlank(message: 'Please enter an event timestamp')]
+        private readonly \DateTimeImmutable $eventTimestamp
     ) {
-        $this->eventType = $eventType;
-        $this->eventTypeId = $eventTypeId;
-        $this->status = $status;
-        $this->user = $user;
-        $this->eventTimestamp = $eventTimestamp;
         $this->createdAt = new \DateTimeImmutable();
     }
 
@@ -79,6 +64,11 @@ class StatusChangeLog
     public function getUser(): User
     {
         return $this->user;
+    }
+
+    public function setUser(?User $user): void
+    {
+        $this->user = $user;
     }
 
     public function getEventTimestamp(): \DateTimeImmutable

@@ -25,9 +25,7 @@ class SupplierStockUpdaterTest extends TestCase
         $supplier->addSupplierProduct($supplierProduct);
 
         $eventArgsMock->method('hasChangedField')
-            ->willReturnCallback(function($fieldName) {
-                return $fieldName == 'isActive';
-            });
+            ->willReturnCallback(fn($fieldName): bool => $fieldName == 'isActive');
 
         $listener = new SupplierStockUpdater($activeSourceCalculatorMock);
         $listener->preUpdate($supplier, $eventArgsMock);
@@ -41,9 +39,7 @@ class SupplierStockUpdaterTest extends TestCase
         $eventArgsMock = $this->createMock(PreUpdateEventArgs::class);
 
         $eventArgsMock->method('hasChangedField')
-            ->willReturnCallback(function($fieldName) {
-                return $fieldName == 'none';
-            });
+            ->willReturnCallback(fn($fieldName): bool => $fieldName == 'none');
 
         $listener = new SupplierStockUpdater($activeSourceCalculatorMock);
         $listener->preUpdate(new Supplier(), $eventArgsMock);
@@ -57,9 +53,7 @@ class SupplierStockUpdaterTest extends TestCase
         $eventArgsMock = $this->createMock(PreUpdateEventArgs::class);
 
         $eventArgsMock->method('hasChangedField')
-            ->willReturnCallback(function($fieldName) {
-                return $fieldName == 'isActive';
-            });
+            ->willReturnCallback(fn($fieldName): bool => $fieldName == 'isActive');
 
         $listener = new SupplierStockUpdater($activeSourceCalculatorMock);
         $listener->preUpdate(new Supplier(), $eventArgsMock);

@@ -2,6 +2,7 @@
 
 namespace App\EventListener\DoctrineEvents;
 
+use App\Entity\Product;
 use App\Entity\Supplier;
 use App\Entity\SupplierProduct;
 use App\Service\Product\ActiveSourceCalculator;
@@ -33,7 +34,7 @@ class SupplierStockUpdater
 
     public function postUpdate(Supplier $supplier): void
     {
-        if (empty($this->changedSupplierProducts)) {
+        if ($this->changedSupplierProducts === []) {
             return;
         }
 
@@ -41,7 +42,8 @@ class SupplierStockUpdater
             // If supplier becomes inactive
             if (false === $supplier->isActive()) {
                 // Get product from ActiveSource
-                if ($product = $this->activeSourceCalculator->getProductFromActiveSource($changedSupplierProduct)) {
+                $product = $this->activeSourceCalculator->getProductFromActiveSource($changedSupplierProduct);
+                if ($product instanceof Product) {
                     $this->activeSourceCalculator->recalculateActiveSource($product, false);
                 }
 

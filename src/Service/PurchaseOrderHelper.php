@@ -2,14 +2,8 @@
 
 namespace App\Service;
 
-use Doctrine\ORM\EntityManagerInterface;
-
 class PurchaseOrderHelper
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
-    {
-    }
-
     public function createPurchaseOrder()
     {
 

@@ -16,9 +16,10 @@ class SupplierProductTest extends KernelTestCase
     use Factories;
 
     private ValidatorInterface $validator;
+
     private EntityManagerInterface $entityManager;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->validator = static::getContainer()->get('validator');
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
@@ -26,8 +27,8 @@ class SupplierProductTest extends KernelTestCase
 
     public function testCreateReadUpdateDeleteSupplierProduct(): void
     {
-        $product = ProductFactory::createOne(['name' => 'Test Product'])->object();
-        $supplier = SupplierFactory::createOne(['name' => 'Test Supplier'])->object();
+        $product = ProductFactory::createOne(['name' => 'Test Product'])->_real();
+        $supplier = SupplierFactory::createOne(['name' => 'Test Supplier'])->_real();
 
         $supplierProduct = new SupplierProduct();
         $supplierProduct
@@ -60,7 +61,7 @@ class SupplierProductTest extends KernelTestCase
 
     public function testSupplierProductSupplierIsMissing(): void
     {
-        $product = ProductFactory::createOne(['name' => 'Test Product'])->object();
+        $product = ProductFactory::createOne(['name' => 'Test Product'])->_real();
 
         $supplierProduct = new SupplierProduct();
         $supplierProduct
@@ -119,17 +120,17 @@ class SupplierProductTest extends KernelTestCase
      * @dataProvider getValidationTestCases
      */
     public function testSupplierProductValidation(
-        $name,
-        $productCode,
-        $weight,
-        $cost,
-        $stock,
-        $mfrPartNumber,
-        $leadTimeDays,
-        $isActive,
-        $expected
+        ?string $name,
+        ?string $productCode,
+        ?int $weight,
+        ?string $cost,
+        int $stock,
+        ?string $mfrPartNumber,
+        ?int $leadTimeDays,
+        bool $isActive,
+        bool $expected
     ): void {
-        $supplier = SupplierFactory::createOne(['name' => 'Test Supplier'])->object();
+        $supplier = SupplierFactory::createOne(['name' => 'Test Supplier'])->_real();
 
         $supplierProduct = new SupplierProduct();
         $supplierProduct
@@ -150,20 +151,20 @@ class SupplierProductTest extends KernelTestCase
     public function getValidationTestCases(): array
     {
         return [
-            'Succeeds when data is correct' => ['Test SupplierProduct', 'Test ProductCode', 1, 100, 1, 'Test MfrPartNumber', 1, true, true],
-            'Fails when name is missing' => ['', 'Test ProductCode', 1, 100, 1, 'Test MfrPartNumber', 1, true, false],
-            'Fails when productCode is missing' => ['Test SupplierProduct', '', 1, 100, 1, 'Test MfrPartNumber', 1, true, false],
-            'Fails when weight is missing' => ['Test SupplierProduct', 'Test ProductCode', null, 100, 1, 'Test MfrPartNumber', 1, true, false],
-            'Fails when weight is less than 0' => ['Test SupplierProduct', 'Test ProductCode', -1, 100, 1, 'Test MfrPartNumber', 1, true, false],
-            'Fails when weight is greater than 100000' => ['Test SupplierProduct', 'Test ProductCode', 100001, 100, 1, 'Test MfrPartNumber', 1, true, false],
+            'Succeeds when data is correct' => ['Test SupplierProduct', 'Test ProductCode', 1, '100', 1, 'Test MfrPartNumber', 1, true, true],
+            'Fails when name is missing' => ['', 'Test ProductCode', 1, '100', 1, 'Test MfrPartNumber', 1, true, false],
+            'Fails when productCode is missing' => ['Test SupplierProduct', '', 1, '100', 1, 'Test MfrPartNumber', 1, true, false],
+            'Fails when weight is missing' => ['Test SupplierProduct', 'Test ProductCode', null, '100', 1, 'Test MfrPartNumber', 1, true, false],
+            'Fails when weight is less than 0' => ['Test SupplierProduct', 'Test ProductCode', -1, '100', 1, 'Test MfrPartNumber', 1, true, false],
+            'Fails when weight is greater than 100000' => ['Test SupplierProduct', 'Test ProductCode', 100001, '100', 1, 'Test MfrPartNumber', 1, true, false],
             'Fails when cost is missing' => ['Test SupplierProduct', 'Test ProductCode', 1, '', 1, 'Test MfrPartNumber', 1, true, false],
-            'Fails when cost is less than 0' => ['Test SupplierProduct', 'Test ProductCode', 1, -1, 1, 'Test MfrPartNumber', 1, true, false],
-            'Fails when stock is less than 0' => ['Test SupplierProduct', 'Test ProductCode', 1, 100, -1, 'Test MfrPartNumber', 1, true, false],
-            'Fails when stock is greater than 10000' => ['Test SupplierProduct', 'Test ProductCode', 1, 100, 10001, 'Test MfrPartNumber', 1, true, false],
-            'Fails when mfrPartNumber is missing' => ['Test SupplierProduct', 'Test ProductCode', 1, 100, 1, '', 1, true, false],
-            'Fails when LeadTimeDays is missing' => ['Test SupplierProduct', 'Test ProductCode', 1, 100, 1, 'Test MfrPartNumber', null, true, false],
-            'Fails when leadTimeDays is less than 0' => ['Test SupplierProduct', 'Test ProductCode', 1, 100, 1, 'Test MfrPartNumber', -1, true, false],
-            'Fails when leadTimeDays is greater than 1000' => ['Test SupplierProduct', 'Test ProductCode', 1, 100, 1, 'Test MfrPartNumber', 1001, true, false],
+            'Fails when cost is less than 0' => ['Test SupplierProduct', 'Test ProductCode', 1, '-1', 1, 'Test MfrPartNumber', 1, true, false],
+            'Fails when stock is less than 0' => ['Test SupplierProduct', 'Test ProductCode', 1, '100', -1, 'Test MfrPartNumber', 1, true, false],
+            'Fails when stock is greater than 10000' => ['Test SupplierProduct', 'Test ProductCode', 1, '100', 10001, 'Test MfrPartNumber', 1, true, false],
+            'Fails when mfrPartNumber is missing' => ['Test SupplierProduct', 'Test ProductCode', 1, '100', 1, '', 1, true, false],
+            'Fails when LeadTimeDays is missing' => ['Test SupplierProduct', 'Test ProductCode', 1, '100', 1, 'Test MfrPartNumber', null, true, false],
+            'Fails when leadTimeDays is less than 0' => ['Test SupplierProduct', 'Test ProductCode', 1, '100', 1, 'Test MfrPartNumber', -1, true, false],
+            'Fails when leadTimeDays is greater than 1000' => ['Test SupplierProduct', 'Test ProductCode', 1, '100', 1, 'Test MfrPartNumber', 1001, true, false],
         ];
     }
 }

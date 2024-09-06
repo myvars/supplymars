@@ -130,6 +130,6 @@ class CategoryControllerTest extends WebTestCase
     {
         $this->browser()
             ->get("/category/999")
-            ->assertSee('Sorry, we can\'t find that Category');
+            ->assertSee("Sorry, we can't find that Category");
     }
 }

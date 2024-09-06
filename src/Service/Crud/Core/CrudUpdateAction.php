@@ -6,9 +6,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 
 #[AsAlias('app.crud.update.action')]
-final class CrudUpdateAction implements CrudActionInterface
+final readonly class CrudUpdateAction implements CrudActionInterface
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
+    public function __construct(private EntityManagerInterface $entityManager)
     {
     }
 

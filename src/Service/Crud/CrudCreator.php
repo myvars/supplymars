@@ -23,7 +23,7 @@ class CrudCreator extends AbstractController
 
     public function create(string $section, ?object $entity, string $formType): Response
     {
-        if (!$entity) {
+        if ($entity === null) {
             return $this->crudHelper->crudError($section);
         }
 
@@ -61,7 +61,7 @@ class CrudCreator extends AbstractController
                     'success',
                     'New '.$crudOptions->getSection().' added!'
                 );
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 $this->addFlash(
                     'error',
                     'Can not add '.$crudOptions->getSection().'!'

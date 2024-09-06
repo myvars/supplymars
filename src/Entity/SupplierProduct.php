@@ -232,7 +232,7 @@ class SupplierProduct
 
     public function isMapped(): bool
     {
-        return null !== $this->product;
+        return $this->product instanceof Product;
     }
 
     public function hasActiveSupplier(): bool

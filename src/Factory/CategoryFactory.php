@@ -3,31 +3,12 @@
 namespace App\Factory;
 
 use App\Entity\Category;
-use App\Repository\CategoryRepository;
-use Zenstruck\Foundry\ModelFactory;
-use Zenstruck\Foundry\Proxy;
-use Zenstruck\Foundry\RepositoryProxy;
+use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
- * @extends ModelFactory<Category>
- *
- * @method        Category|Proxy                     create(array|callable $attributes = [])
- * @method static Category|Proxy                     createOne(array $attributes = [])
- * @method static Category|Proxy                     find(object|array|mixed $criteria)
- * @method static Category|Proxy                     findOrCreate(array $attributes)
- * @method static Category|Proxy                     first(string $sortedField = 'id')
- * @method static Category|Proxy                     last(string $sortedField = 'id')
- * @method static Category|Proxy                     random(array $attributes = [])
- * @method static Category|Proxy                     randomOrCreate(array $attributes = [])
- * @method static CategoryRepository|RepositoryProxy repository()
- * @method static Category[]|Proxy[]                 all()
- * @method static Category[]|Proxy[]                 createMany(int $number, array|callable $attributes = [])
- * @method static Category[]|Proxy[]                 createSequence(iterable|callable $sequence)
- * @method static Category[]|Proxy[]                 findBy(array $attributes)
- * @method static Category[]|Proxy[]                 randomRange(int $min, int $max, array $attributes = [])
- * @method static Category[]|Proxy[]                 randomSet(int $number, array $attributes = [])
+ * @extends PersistentProxyObjectFactory<Category>
  */
-final class CategoryFactory extends ModelFactory
+final class CategoryFactory extends PersistentProxyObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
@@ -36,7 +17,11 @@ final class CategoryFactory extends ModelFactory
      */
     public function __construct()
     {
-        parent::__construct();
+    }
+
+    public static function class(): string
+    {
+        return Category::class;
     }
 
     /**
@@ -44,11 +29,11 @@ final class CategoryFactory extends ModelFactory
      *
      * @todo add your default values here
      */
-    protected function getDefaults(): array
+    protected function defaults(): array|callable
     {
         return [
             'isActive' => self::faker()->boolean(),
-            'name' => ucfirst(implode(' ', self::faker()->words(rand(1, 3)))),
+            'name' => ucfirst(implode(' ', self::faker()->words(random_int(1, 3)))),
             'owner' => UserFactory::new(),
             'vatRate' => VatRateFactory::new(),
         ];
@@ -57,15 +42,10 @@ final class CategoryFactory extends ModelFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
-    protected function initialize(): self
+    protected function initialize(): static
     {
         return $this
             // ->afterInstantiate(function(Category $category): void {})
         ;
-    }
-
-    protected static function getClass(): string
-    {
-        return Category::class;
     }
 }

@@ -30,9 +30,7 @@ class VatRatePriceUpdaterTest extends TestCase
         $vatRate->addCategory($category);
 
         $eventArgsMock->method('hasChangedField')
-            ->willReturnCallback(function($fieldName) {
-                return $fieldName == 'rate';
-            });
+            ->willReturnCallback(fn($fieldName): bool => $fieldName == 'rate');
 
         $listener = new VatRatePriceUpdater($priceCalculatorMock);
         $listener->preUpdate($vatRate, $eventArgsMock);
@@ -46,9 +44,7 @@ class VatRatePriceUpdaterTest extends TestCase
         $eventArgsMock = $this->createMock(PreUpdateEventArgs::class);
 
         $eventArgsMock->method('hasChangedField')
-            ->willReturnCallback(function($fieldName) {
-                return $fieldName == 'none';
-            });
+            ->willReturnCallback(fn($fieldName): bool => $fieldName == 'none');
 
         $listener = new VatRatePriceUpdater($priceCalculatorMock);
         $listener->preUpdate(new VatRate(), $eventArgsMock);
@@ -62,9 +58,7 @@ class VatRatePriceUpdaterTest extends TestCase
         $eventArgsMock = $this->createMock(PreUpdateEventArgs::class);
 
         $eventArgsMock->method('hasChangedField')
-            ->willReturnCallback(function($fieldName) {
-                return $fieldName == 'rate';
-            });
+            ->willReturnCallback(fn($fieldName): bool => $fieldName == 'rate');
 
         $listener = new VatRatePriceUpdater($priceCalculatorMock);
         $listener->preUpdate(new VatRate(), $eventArgsMock);
@@ -81,9 +75,7 @@ class VatRatePriceUpdaterTest extends TestCase
         $vatRate->addCategory(new Category());
 
         $eventArgsMock->method('hasChangedField')
-            ->willReturnCallback(function($fieldName) {
-                return $fieldName == 'rate';
-            });
+            ->willReturnCallback(fn($fieldName): bool => $fieldName == 'rate');
 
         $listener = new VatRatePriceUpdater($priceCalculatorMock);
         $listener->preUpdate($vatRate, $eventArgsMock);

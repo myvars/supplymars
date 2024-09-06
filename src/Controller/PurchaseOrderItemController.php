@@ -39,7 +39,7 @@ class PurchaseOrderItemController extends AbstractController
         EditPurchaseOrderItem $crudAction,
     ): Response
     {
-        if (!$purchaseOrderItem) {
+        if (!$purchaseOrderItem instanceof PurchaseOrderItem) {
             return $crudUpdater->crudHelper->showEmpty(self::SECTION);
         }
 
@@ -71,7 +71,7 @@ class PurchaseOrderItemController extends AbstractController
         CrudUpdater $crudUpdater,
         ChangePurchaseOrderItemStatus $crudAction
     ): Response {
-        if (!$purchaseOrderItem) {
+        if (!$purchaseOrderItem instanceof PurchaseOrderItem) {
             return $crudUpdater->crudHelper->showEmpty(self::SECTION);
         }
 

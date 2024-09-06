@@ -23,7 +23,7 @@ class EditOrderItemAction extends AbstractController
 
     public function __invoke(?CustomerOrderItem $customerOrderItem, Request $request): Response
     {
-        if (!$customerOrderItem) {
+        if (!$customerOrderItem instanceof CustomerOrderItem) {
             return $this->crudHelper->showEmpty('Order Item');
         }
 
@@ -38,7 +38,7 @@ class EditOrderItemAction extends AbstractController
             try {
                 $this->editOrderItem->handle($editOrderItemDto, null);
                 $this->addFlash('success', 'Order Item updated!');
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 $this->addFlash('error', 'Can not update Order Item!');
             }
 

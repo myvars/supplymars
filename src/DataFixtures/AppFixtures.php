@@ -16,7 +16,7 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        $user = UserFactory::createOne([
+        UserFactory::createOne([
             'fullName' => 'Adam Ashmore',
             'email' => 'adam@admin.com',
             'password' => 'letmein',
@@ -24,7 +24,7 @@ class AppFixtures extends Fixture
             'roles' => ['ROLE_ADMIN'],
         ]);
 
-        $vatRate = VatRateFactory::createOne([
+        VatRateFactory::createOne([
             'name' => 'Standard rate',
             'rate' => 20,
             'isDefaultVatRate' => true,
@@ -52,11 +52,9 @@ class AppFixtures extends Fixture
             'supplier' => $supplier,
         ]);
 
-        SupplierCategoryFactory::createMany(29, function () {
-            return [
-                'supplier' => SupplierFactory::random(),
-            ];
-        });
+        SupplierCategoryFactory::createMany(29, fn(): array => [
+            'supplier' => SupplierFactory::random(),
+        ]);
 
         $supplierSubcategory = SupplierSubcategoryFactory::createOne([
             'name' => 'Macbook Pro',
@@ -64,25 +62,21 @@ class AppFixtures extends Fixture
             'supplierCategory' => $supplierCategory,
         ]);
 
-        SupplierSubcategoryFactory::createMany(99, function () {
-            return [
-                'supplier' => SupplierFactory::random(),
-                'supplierCategory' => SupplierCategoryFactory::random(),
-            ];
-        });
+        SupplierSubcategoryFactory::createMany(99, fn(): array => [
+            'supplier' => SupplierFactory::random(),
+            'supplierCategory' => SupplierCategoryFactory::random(),
+        ]);
 
         $supplierManufacturer = SupplierManufacturerFactory::createOne([
             'name' => 'Apple',
             'supplier' => $supplier,
         ]);
 
-        SupplierManufacturerFactory::createMany(99, function () {
-            return [
-                'supplier' => SupplierFactory::random(),
-            ];
-        });
+        SupplierManufacturerFactory::createMany(99, fn(): array => [
+            'supplier' => SupplierFactory::random(),
+        ]);
 
-        $supplierProduct = SupplierProductFactory::createOne([
+        SupplierProductFactory::createOne([
             'name' => 'Macbook Pro 13"',
             'MfrPartNumber' => 'M1MBP132024',
             'supplier' => $supplier,
@@ -96,7 +90,7 @@ class AppFixtures extends Fixture
             'weight' => 1388,
         ]);
 
-        SupplierProductFactory::createMany(99, function () {
+        SupplierProductFactory::createMany(99, function (): array {
             $randomSubcategory = SupplierSubcategoryFactory::random();
 
             return [
@@ -104,7 +98,7 @@ class AppFixtures extends Fixture
                 'supplierCategory' => $randomSubcategory->getSupplierCategory(),
                 'supplierSubcategory' => $randomSubcategory,
                 'supplierManufacturer' => SupplierManufacturerFactory::random(),
-                'isActive' => rand(1, 10) > 1,
+                'isActive' => random_int(1, 10) > 1,
             ];
         });
 

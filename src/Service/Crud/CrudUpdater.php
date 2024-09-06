@@ -23,7 +23,7 @@ class CrudUpdater extends AbstractController
 
     public function update(string $section, ?object $entity, string $formType): Response
     {
-        if (!$entity) {
+        if ($entity === null) {
             return $this->crudHelper->crudError($section);
         }
 
@@ -62,7 +62,7 @@ class CrudUpdater extends AbstractController
                     'success',
                     $crudOptions->getSection().' updated!'
                 );
-            } catch (\Exception $e) {
+            } catch (\Exception) {
                 $this->addFlash(
                     'error',
                     'Can not update '.$crudOptions->getSection().'!'

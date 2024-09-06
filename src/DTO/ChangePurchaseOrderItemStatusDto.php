@@ -9,17 +9,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class ChangePurchaseOrderItemStatusDto
 {
-    #[Assert\NotBlank(message: 'Please enter a purchaseOrderItemId')]
-    private int $purchaseOrderItemId;
-
-    #[Assert\NotBlank(message: 'Please enter a PO Item status')]
-    #[ValidPOItemStatusChange]
-    private ?PurchaseOrderStatus $purchaseOrderItemStatus;
-
-    public function __construct(int $purchaseOrderItemId, PurchaseOrderStatus $purchaseOrderItemStatus)
-    {
-        $this->purchaseOrderItemId = $purchaseOrderItemId;
-        $this->purchaseOrderItemStatus = $purchaseOrderItemStatus;
+    public function __construct(
+        #[Assert\NotBlank(message: 'Please enter a purchaseOrderItemId')]
+        private readonly int $purchaseOrderItemId,
+        #[Assert\NotBlank(message: 'Please enter a PO Item status')]
+        #[ValidPOItemStatusChange]
+        private ?PurchaseOrderStatus $purchaseOrderItemStatus
+    ) {
     }
 
     public static function fromEntity(PurchaseOrderItem $purchaseOrderItem): static

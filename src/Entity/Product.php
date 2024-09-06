@@ -94,10 +94,10 @@ class Product
     #[ORM\Column]
     private bool $isActive = false;
 
-    #[ORM\OneToMany(mappedBy: 'product', targetEntity: SupplierProduct::class)]
+    #[ORM\OneToMany(targetEntity: SupplierProduct::class, mappedBy: 'product')]
     private Collection $supplierProducts;
 
-    #[ORM\OneToMany(mappedBy: 'product', targetEntity: ProductImage::class)]
+    #[ORM\OneToMany(targetEntity: ProductImage::class, mappedBy: 'product')]
     #[ORM\OrderBy(['position' => 'ASC'])]
     private Collection $productImages;
 
@@ -353,11 +353,9 @@ class Product
 
     public function removeSupplierProduct(SupplierProduct $supplierProduct): static
     {
-        if ($this->supplierProducts->removeElement($supplierProduct)) {
-            // set the owning side to null (unless already changed)
-            if ($supplierProduct->getProduct() === $this) {
-                $supplierProduct->setProduct(null);
-            }
+        // set the owning side to null (unless already changed)
+        if ($this->supplierProducts->removeElement($supplierProduct) && $supplierProduct->getProduct() === $this) {
+            $supplierProduct->setProduct(null);
         }
 
         return $this;
@@ -383,11 +381,9 @@ class Product
 
     public function removeProductImage(ProductImage $productImage): static
     {
-        if ($this->productImages->removeElement($productImage)) {
-            // set the owning side to null (unless already changed)
-            if ($productImage->getProduct() === $this) {
-                $productImage->setProduct(null);
-            }
+        // set the owning side to null (unless already changed)
+        if ($this->productImages->removeElement($productImage) && $productImage->getProduct() === $this) {
+            $productImage->setProduct(null);
         }
 
         return $this;
@@ -400,17 +396,17 @@ class Product
 
     public function hasOwner(): bool
     {
-        return null !== $this->owner;
+        return $this->owner instanceof User;
     }
 
     public function hasPriceModel(): bool
     {
-        return null !== $this->priceModel && PriceModel::NONE !== $this->priceModel;
+        return $this->priceModel instanceof PriceModel && PriceModel::NONE !== $this->priceModel;
     }
 
     public function hasActiveProductSource(): bool
     {
-        return null !== $this->activeProductSource;
+        return $this->activeProductSource instanceof SupplierProduct;
     }
 
     public function hasProductImage(): bool

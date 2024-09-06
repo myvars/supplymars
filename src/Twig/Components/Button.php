@@ -8,6 +8,7 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 final class Button
 {
     public string $variant = 'primary';
+
     public string $tag = 'button';
 
     public function getVariantClasses(): string

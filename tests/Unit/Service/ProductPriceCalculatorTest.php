@@ -16,7 +16,9 @@ use PHPUnit\Framework\TestCase;
 class ProductPriceCalculatorTest extends TestCase
 {
     private EntityManagerInterface $entityManagerMock;
+
     private MarkupCalculator $markupCalculatorMock;
+
     private ProductPriceCalculator $productPriceCalculator;
 
     protected function setUp(): void

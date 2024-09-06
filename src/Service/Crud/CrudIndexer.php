@@ -65,7 +65,7 @@ class CrudIndexer extends AbstractController
                 $crudOptions->getPage(),
                 $crudOptions->getLimit()
             );
-        } catch (OutOfRangeCurrentPageException $e) {
+        } catch (OutOfRangeCurrentPageException) {
             $this->addFlash(
                 'warning',
                 'Page '.$crudOptions->getPage().' could not be found!'

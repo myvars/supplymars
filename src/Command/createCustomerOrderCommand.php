@@ -44,7 +44,8 @@ class createCustomerOrderCommand extends Command
             return Command::FAILURE;
         }
 
-        if (!$billingAddress = $this->getDefaultBillingAddress($defaultUser)) {
+        $billingAddress = $this->getDefaultBillingAddress($defaultUser);
+        if (!$billingAddress instanceof Address) {
             $billingAddress = new Address();
             $billingAddress->setCustomer($defaultUser);
             $billingAddress->setEmail($defaultUser->getEmail());
@@ -57,7 +58,8 @@ class createCustomerOrderCommand extends Command
             $billingAddress->setDefaultBillingAddress(true);
         }
 
-        if (!$shippingAddress = $this->getDefaultShippingAddress($defaultUser)) {
+        $shippingAddress = $this->getDefaultShippingAddress($defaultUser);
+        if (!$shippingAddress instanceof Address) {
             $billingAddress->setDefaultShippingAddress(true);
             $shippingAddress = $billingAddress;
         }
@@ -72,10 +74,12 @@ class createCustomerOrderCommand extends Command
         );
         $customerOrderItem = new CustomerOrderItem();
         $customerOrderItem->createFromProduct($this->getRandomProduct());
+
         $order->addCustomerOrderItem($customerOrderItem);
 
         $customerOrderItem2 = new CustomerOrderItem();
         $customerOrderItem2->createFromProduct($this->getRandomProduct());
+
         $order->addCustomerOrderItem($customerOrderItem2);
 
         $this->entityManager->persist($billingAddress);
@@ -103,7 +107,7 @@ class createCustomerOrderCommand extends Command
 
     private function getRandomProduct(): Product
     {
-        return $this->entityManager->getRepository(Product::class)->findOneBy(['id' => rand(1,30)]);
+        return $this->entityManager->getRepository(Product::class)->findOneBy(['id' => random_int(1,30)]);
     }
 
     private function getDefaultBillingAddress(User $defaultUser): ?Address

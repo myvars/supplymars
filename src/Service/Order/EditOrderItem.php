@@ -10,12 +10,12 @@ use App\Service\DomainEventDispatcher;
 use App\Service\Product\MarkupCalculator;
 use Doctrine\ORM\EntityManagerInterface;
 
-final class EditOrderItem implements CrudActionInterface
+final readonly class EditOrderItem implements CrudActionInterface
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
-        private readonly MarkupCalculator $markupCalculator,
-        private readonly DomainEventDispatcher $domainEventDispatcher
+        private EntityManagerInterface $entityManager,
+        private MarkupCalculator $markupCalculator,
+        private DomainEventDispatcher $domainEventDispatcher
     ) {
     }
 
@@ -71,6 +71,7 @@ final class EditOrderItem implements CrudActionInterface
     {
         $customerOrder = $this->getCustomerOrder($customerOrderItem);
         $customerOrder->removeCustomerOrderItem($customerOrderItem);
+
         $this->entityManager->persist($customerOrder);
 
         $this->entityManager->remove($customerOrderItem);

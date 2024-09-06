@@ -15,6 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Category
 {
     public const DEFAULT_MARKUP = '5.000';
+
     public const DEFAULT_PRICE_MODEL = PriceModel::DEFAULT;
 
     use TimestampableEntity;
@@ -51,11 +52,11 @@ class Category
     #[ORM\Column]
     private bool $isActive = false;
 
-    #[ORM\OneToMany(mappedBy: 'category', targetEntity: Subcategory::class)]
+    #[ORM\OneToMany(targetEntity: Subcategory::class, mappedBy: 'category')]
     #[Assert\NotNull(message: 'Please enter a subcategory')]
     private Collection $subcategories;
 
-    #[ORM\OneToMany(mappedBy: 'category', targetEntity: Product::class)]
+    #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'category')]
     private Collection $products;
 
     public function __construct()
@@ -161,11 +162,9 @@ class Category
 
     public function removeSubcategory(Subcategory $subcategory): static
     {
-        if ($this->subcategories->removeElement($subcategory)) {
-            // set the owning side to null (unless already changed)
-            if ($subcategory->getCategory() === $this) {
-                $subcategory->setCategory(null);
-            }
+        // set the owning side to null (unless already changed)
+        if ($this->subcategories->removeElement($subcategory) && $subcategory->getCategory() === $this) {
+            $subcategory->setCategory(null);
         }
 
         return $this;
@@ -202,11 +201,9 @@ class Category
 
     public function removeProduct(Product $product): static
     {
-        if ($this->products->removeElement($product)) {
-            // set the owning side to null (unless already changed)
-            if ($product->getCategory() === $this) {
-                $product->setCategory(null);
-            }
+        // set the owning side to null (unless already changed)
+        if ($this->products->removeElement($product) && $product->getCategory() === $this) {
+            $product->setCategory(null);
         }
 
         return $this;

@@ -12,13 +12,13 @@ use App\Service\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-final class CreatePurchaseOrderItem
+final readonly class CreatePurchaseOrderItem
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
-        private readonly ValidatorInterface $validator,
-        private readonly CreatePurchaseOrder $purchaseOrderCreator,
-        private readonly DomainEventDispatcher $domainEventDispatcher
+        private EntityManagerInterface $entityManager,
+        private ValidatorInterface $validator,
+        private CreatePurchaseOrder $purchaseOrderCreator,
+        private DomainEventDispatcher $domainEventDispatcher
     ) {
     }
 
@@ -62,7 +62,8 @@ final class CreatePurchaseOrderItem
         PurchaseOrder $purchaseOrder,
         SupplierProduct $supplierProduct
     ): PurchaseOrderItem {
-        if ($purchaseOrderItem = $this->getEditablePurchaseOrderItem($customerOrderItem, $purchaseOrder)) {
+        $purchaseOrderItem = $this->getEditablePurchaseOrderItem($customerOrderItem, $purchaseOrder);
+        if ($purchaseOrderItem instanceof PurchaseOrderItem) {
             $this->updateExistingPurchaseOrderItem($purchaseOrderItem);
 
             return $purchaseOrderItem;

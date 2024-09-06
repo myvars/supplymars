@@ -20,7 +20,7 @@ class CreateOrderType extends AbstractType
             ])
             ->add('shippingMethod', EnumType::class, [
                 'class' => ShippingMethod::class,
-                'choice_label' => fn (ShippingMethod $shippingMethod) => $shippingMethod->getName(),
+                'choice_label' => fn (ShippingMethod $shippingMethod): string => $shippingMethod->getName(),
                 'label' => 'Shipping Method',
                 'placeholder' => 'Choose a Shipping Method',
             ])

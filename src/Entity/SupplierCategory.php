@@ -27,10 +27,10 @@ class SupplierCategory
     #[ORM\JoinColumn(nullable: false)]
     private ?Supplier $supplier = null;
 
-    #[ORM\OneToMany(mappedBy: 'supplierCategory', targetEntity: SupplierProduct::class)]
+    #[ORM\OneToMany(targetEntity: SupplierProduct::class, mappedBy: 'supplierCategory')]
     private Collection $supplierProducts;
 
-    #[ORM\OneToMany(mappedBy: 'supplierCategory', targetEntity: SupplierSubcategory::class)]
+    #[ORM\OneToMany(targetEntity: SupplierSubcategory::class, mappedBy: 'supplierCategory')]
     private Collection $supplierSubcategories;
 
     public function __construct()
@@ -88,11 +88,12 @@ class SupplierCategory
 
     public function removeSupplierProduct(SupplierProduct $supplierProduct): static
     {
-        if ($this->supplierProducts->removeElement($supplierProduct)) {
-            // set the owning side to null (unless already changed)
-            if ($supplierProduct->getSupplierCategory() === $this) {
-                $supplierProduct->setSupplierCategory(null);
-            }
+        // set the owning side to null (unless already changed)
+        if (
+            $this->supplierProducts->removeElement($supplierProduct)
+            && $supplierProduct->getSupplierCategory() === $this
+        ) {
+            $supplierProduct->setSupplierCategory(null);
         }
 
         return $this;
@@ -118,11 +119,12 @@ class SupplierCategory
 
     public function removeSupplierSubcategory(SupplierSubcategory $supplierSubcategory): static
     {
-        if ($this->supplierSubcategories->removeElement($supplierSubcategory)) {
-            // set the owning side to null (unless already changed)
-            if ($supplierSubcategory->getSupplierCategory() === $this) {
-                $supplierSubcategory->setSupplierCategory(null);
-            }
+        // set the owning side to null (unless already changed)
+        if (
+            $this->supplierSubcategories->removeElement($supplierSubcategory)
+            && $supplierSubcategory->getSupplierCategory() === $this
+        ) {
+            $supplierSubcategory->setSupplierCategory(null);
         }
 
         return $this;

@@ -14,9 +14,10 @@ class SupplierTest extends KernelTestCase
     use Factories;
 
     private ValidatorInterface $validator;
+
     private EntityManagerInterface $entityManager;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->validator = static::getContainer()->get('validator');
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
@@ -85,9 +86,9 @@ class SupplierTest extends KernelTestCase
      * @dataProvider getValidationTestCases
      */
     public function testSupplierValidation(
-        $name,
-        $isActive,
-        $expected
+        string $name,
+        bool $isActive,
+        bool $expected
     ): void {
         $supplier = new Supplier();
         $supplier

@@ -5,7 +5,9 @@ namespace App\Service\Crud\Core;
 class CrudReadOptions
 {
     private string $section;
+
     private object $entity;
+
     private ?string $backLink = null;
 
     public function getSection(): string

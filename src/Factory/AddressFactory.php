@@ -3,31 +3,12 @@
 namespace App\Factory;
 
 use App\Entity\Address;
-use App\Repository\AddressRepository;
-use Zenstruck\Foundry\ModelFactory;
-use Zenstruck\Foundry\Proxy;
-use Zenstruck\Foundry\RepositoryProxy;
+use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
- * @extends ModelFactory<Address>
- *
- * @method        Address|Proxy                     create(array|callable $attributes = [])
- * @method static Address|Proxy                     createOne(array $attributes = [])
- * @method static Address|Proxy                     find(object|array|mixed $criteria)
- * @method static Address|Proxy                     findOrCreate(array $attributes)
- * @method static Address|Proxy                     first(string $sortedField = 'id')
- * @method static Address|Proxy                     last(string $sortedField = 'id')
- * @method static Address|Proxy                     random(array $attributes = [])
- * @method static Address|Proxy                     randomOrCreate(array $attributes = [])
- * @method static AddressRepository|RepositoryProxy repository()
- * @method static Address[]|Proxy[]                 all()
- * @method static Address[]|Proxy[]                 createMany(int $number, array|callable $attributes = [])
- * @method static Address[]|Proxy[]                 createSequence(iterable|callable $sequence)
- * @method static Address[]|Proxy[]                 findBy(array $attributes)
- * @method static Address[]|Proxy[]                 randomRange(int $min, int $max, array $attributes = [])
- * @method static Address[]|Proxy[]                 randomSet(int $number, array $attributes = [])
+ * @extends PersistentProxyObjectFactory<Address>
  */
-final class AddressFactory extends ModelFactory
+final class AddressFactory extends PersistentProxyObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
@@ -36,7 +17,11 @@ final class AddressFactory extends ModelFactory
      */
     public function __construct()
     {
-        parent::__construct();
+    }
+
+    public static function class(): string
+    {
+        return Address::class;
     }
 
     /**
@@ -44,34 +29,29 @@ final class AddressFactory extends ModelFactory
      *
      * @todo add your default values here
      */
-    protected function getDefaults(): array
+    protected function defaults(): array|callable
     {
         return [
             'city' => self::faker()->city(),
             'country' => 'United Kingdom',
-            'county' => self::faker()->county(),
+            'county' => 'South Yorkshire',
             'customer' => UserFactory::new(),
             'postCode' => self::faker()->postcode(),
             'street' => self::faker()->streetAddress(),
             'phoneNumber' => self::faker()->phoneNumber(),
             'email' => self::faker()->email(),
             'fullName' => self::faker()->name(),
-            'companyName' => rand(1,5) === 1 ? self::faker()->company() : null,
+            'companyName' => random_int(1,5) === 1 ? self::faker()->company() : null,
         ];
     }
 
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
-    protected function initialize(): self
+    protected function initialize(): static
     {
         return $this
             // ->afterInstantiate(function(Address $address): void {})
         ;
-    }
-
-    protected static function getClass(): string
-    {
-        return Address::class;
     }
 }

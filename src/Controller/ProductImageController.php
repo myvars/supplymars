@@ -30,7 +30,7 @@ class ProductImageController extends AbstractController
     #[Route('/{id}/images', name: 'app_product_images', methods: ['GET'])]
     public function showProductImages(?Product $product, CrudHelper $crudHelper): Response
     {
-        if (!$product) {
+        if (!$product instanceof Product) {
             return $crudHelper->showEmpty(self::SECTION);
         }
 
@@ -74,7 +74,6 @@ class ProductImageController extends AbstractController
 
     #[Route('/images/{id}/remove', name: 'app_product_image_remove', methods: ['GET'])]
     public function remove(
-        Request $request,
         ?ProductImage $productImage,
         CrudHelper $crudHelper
     ): Response
@@ -98,6 +97,7 @@ class ProductImageController extends AbstractController
         if (null === $orderedIds) {
             return $this->json(['detail' => 'Invalid body'], 400);
         }
+
         // from (position)=>(id) to (id)=>(position)
         $orderedIds = array_flip($orderedIds);
         foreach ($product->getProductImages() as $productImage) {

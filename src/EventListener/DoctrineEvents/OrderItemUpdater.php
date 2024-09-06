@@ -15,10 +15,6 @@ class OrderItemUpdater
     /** @var CustomerOrder[] */
     private array $changedCustomerOrders = [];
 
-    public function __construct()
-    {
-    }
-
     public function preUpdate(CustomerOrderItem $customerOrderItem, PreUpdateEventArgs $eventArgs): void
     {
         if (
@@ -34,13 +30,14 @@ class OrderItemUpdater
 
     public function postUpdate(CustomerOrderItem $customerOrderItem): void
     {
-        if (empty($this->changedCustomerOrders)) {
+        if ($this->changedCustomerOrders === []) {
             return;
         }
 
         foreach ($this->changedCustomerOrders as $customerOrder) {
             $customerOrder->recalculateTotal();
         }
+
         unset($this->changedCustomerOrders);
     }
 

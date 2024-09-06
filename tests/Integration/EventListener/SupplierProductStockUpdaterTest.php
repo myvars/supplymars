@@ -16,9 +16,10 @@ class SupplierProductStockUpdaterTest extends KernelTestCase
     use Factories;
 
     private EntityManagerInterface $entityManager;
+
     private TestProduct $testProduct;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
         $this->testProduct = new TestProduct(
@@ -51,11 +52,12 @@ class SupplierProductStockUpdaterTest extends KernelTestCase
         $this->assertEquals($supplierProduct, $product->getActiveProductSource());
 
         // Change different supplier status
-        $supplierProduct2 = SupplierProductFactory::createOne(['isActive' => true])->object();
+        $supplierProduct2 = SupplierProductFactory::createOne(['isActive' => true])->_real();
         $supplierProduct2->setIsActive(false);
+
         $this->entityManager->flush();
 
-        $updatedProduct = $this->entityManager->getRepository(Product::class)->find($product->getId());
+        $this->entityManager->getRepository(Product::class)->find($product->getId());
         $this->assertEquals($supplierProduct, $product->getActiveProductSource());
     }
 }

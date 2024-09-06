@@ -34,7 +34,7 @@ class SupplierSubcategory
     #[ORM\ManyToOne(inversedBy: 'supplierSubcategories')]
     private ?Subcategory $mappedSubcategory = null;
 
-    #[ORM\OneToMany(mappedBy: 'supplierSubcategory', targetEntity: SupplierProduct::class)]
+    #[ORM\OneToMany(targetEntity: SupplierProduct::class, mappedBy: 'supplierSubcategory')]
     private Collection $supplierProducts;
 
     public function __construct()
@@ -115,11 +115,12 @@ class SupplierSubcategory
 
     public function removeSupplierProduct(SupplierProduct $supplierProduct): static
     {
-        if ($this->supplierProducts->removeElement($supplierProduct)) {
-            // set the owning side to null (unless already changed)
-            if ($supplierProduct->getSupplierSubcategory() === $this) {
-                $supplierProduct->setSupplierSubcategory(null);
-            }
+        // set the owning side to null (unless already changed)
+        if (
+            $this->supplierProducts->removeElement($supplierProduct)
+            && $supplierProduct->getSupplierSubcategory() === $this
+        ) {
+            $supplierProduct->setSupplierSubcategory(null);
         }
 
         return $this;

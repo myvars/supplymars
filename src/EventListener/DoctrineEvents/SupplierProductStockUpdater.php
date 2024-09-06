@@ -38,7 +38,7 @@ class SupplierProductStockUpdater
 
     public function postUpdate(SupplierProduct $supplierProduct): void
     {
-        if (empty($this->changedSupplierProducts)) {
+        if ($this->changedSupplierProducts === []) {
             unset($this->changedProducts);
 
             return;
@@ -51,7 +51,8 @@ class SupplierProductStockUpdater
             }
 
             // If the supplierProduct is the activeSource, we will need to recalculate the active source
-            if ($product = $this->activeSourceCalculator->getProductFromActiveSource($changedSupplierProduct)) {
+            $product = $this->activeSourceCalculator->getProductFromActiveSource($changedSupplierProduct);
+            if ($product instanceof Product) {
                 $this->setChangedProduct($product);
             }
         }
@@ -60,6 +61,7 @@ class SupplierProductStockUpdater
             $this->activeSourceCalculator->recalculateActiveSourceFromArray($this->changedProducts);
             unset($this->changedProducts);
         }
+
         unset($this->changedSupplierProducts);
     }
 

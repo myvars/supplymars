@@ -15,25 +15,26 @@ class ActiveSourceCalculatorTest extends KernelTestCase
 {
     use Factories;
     private EntityManagerInterface $entityManager;
+
     private ActiveSourceCalculator $activeSourceCalculator;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
-        $kernel = self::bootKernel();
+        self::bootKernel();
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
         $this->activeSourceCalculator = static::getContainer()->get(ActiveSourceCalculator::class);
     }
 
     public function testRecalculateActiveSource(): void
     {
-        $supplier = SupplierFactory::createOne(['isActive' => true])->object();
+        $supplier = SupplierFactory::createOne(['isActive' => true])->_real();
         $supplierProduct = SupplierProductFactory::createOne([
             'supplier' => $supplier,
             'cost' => 100,
             'stock' => 10,
             'isActive' => true,
-        ])->object();
-        $product = ProductFactory::createOne(['isActive' => true])->object();
+        ])->_real();
+        $product = ProductFactory::createOne(['isActive' => true])->_real();
         $product->addSupplierProduct($supplierProduct);
 
         $this->activeSourceCalculator->recalculateActiveSource($product);

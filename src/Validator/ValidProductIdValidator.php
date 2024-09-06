@@ -12,7 +12,7 @@ class ValidProductIdValidator extends ConstraintValidator
     {
     }
 
-    public function validate($value, Constraint $constraint)
+    public function validate($value, Constraint $constraint): void
     {
         /* @var ValidProductId $constraint */
 

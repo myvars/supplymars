@@ -14,9 +14,10 @@ class VatRateTest extends KernelTestCase
     use Factories;
 
     private ValidatorInterface $validator;
+
     private EntityManagerInterface $entityManager;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->validator = static::getContainer()->get('validator');
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
@@ -85,9 +86,9 @@ class VatRateTest extends KernelTestCase
      * @dataProvider getValidationTestCases
      */
     public function testVatRateValidation(
-        $name,
-        $rate,
-        $expected
+        string $name,
+        ?string $rate,
+        bool $expected
     ): void {
         $vatRate = new VatRate();
         $vatRate
@@ -101,10 +102,10 @@ class VatRateTest extends KernelTestCase
     public function getValidationTestCases(): array
     {
         return [
-            'Succeeds when data is correct' => ['A new vatRate', 0.21, true],
-            'Fails when name is missing' => ['', 0.21, false],
+            'Succeeds when data is correct' => ['A new vatRate', '0.21', true],
+            'Fails when name is missing' => ['', '0.21', false],
             'Fails when rate is missing' => ['A new vatRate', null, false],
-            'Fails when rate is less than 0' => ['A new vatRate', -0.21, false],
+            'Fails when rate is less than 0' => ['A new vatRate', '-0.21', false],
         ];
     }
 }

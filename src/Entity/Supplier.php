@@ -29,22 +29,22 @@ class Supplier
     #[ORM\Column]
     private bool $isActive = false;
 
-    #[ORM\OneToMany(mappedBy: 'supplier', targetEntity: SupplierCategory::class)]
+    #[ORM\OneToMany(targetEntity: SupplierCategory::class, mappedBy: 'supplier')]
     private Collection $supplierCategories;
 
-    #[ORM\OneToMany(mappedBy: 'supplier', targetEntity: SupplierSubcategory::class)]
+    #[ORM\OneToMany(targetEntity: SupplierSubcategory::class, mappedBy: 'supplier')]
     private Collection $supplierSubcategories;
 
-    #[ORM\OneToMany(mappedBy: 'supplier', targetEntity: SupplierManufacturer::class)]
+    #[ORM\OneToMany(targetEntity: SupplierManufacturer::class, mappedBy: 'supplier')]
     private Collection $supplierManufacturers;
 
-    #[ORM\OneToMany(mappedBy: 'supplier', targetEntity: SupplierProduct::class)]
+    #[ORM\OneToMany(targetEntity: SupplierProduct::class, mappedBy: 'supplier')]
     private Collection $supplierProducts;
 
     /**
      * @var Collection<int, PurchaseOrder>
      */
-    #[ORM\OneToMany(mappedBy: 'supplier', targetEntity: PurchaseOrder::class)]
+    #[ORM\OneToMany(targetEntity: PurchaseOrder::class, mappedBy: 'supplier')]
     private Collection $purchaseOrders;
 
     public function __construct()
@@ -117,11 +117,9 @@ class Supplier
 
     public function removeSupplierCategory(SupplierCategory $supplierCategory): static
     {
-        if ($this->supplierCategories->removeElement($supplierCategory)) {
-            // set the owning side to null (unless already changed)
-            if ($supplierCategory->getSupplier() === $this) {
-                $supplierCategory->setSupplier(null);
-            }
+        // set the owning side to null (unless already changed)
+        if ($this->supplierCategories->removeElement($supplierCategory) && $supplierCategory->getSupplier() === $this) {
+            $supplierCategory->setSupplier(null);
         }
 
         return $this;
@@ -147,11 +145,12 @@ class Supplier
 
     public function removeSupplierSubcategory(SupplierSubcategory $supplierSubcategory): static
     {
-        if ($this->supplierSubcategories->removeElement($supplierSubcategory)) {
-            // set the owning side to null (unless already changed)
-            if ($supplierSubcategory->getSupplier() === $this) {
-                $supplierSubcategory->setSupplier(null);
-            }
+        // set the owning side to null (unless already changed)
+        if (
+            $this->supplierSubcategories->removeElement($supplierSubcategory)
+            && $supplierSubcategory->getSupplier() === $this
+        ) {
+            $supplierSubcategory->setSupplier(null);
         }
 
         return $this;
@@ -177,11 +176,12 @@ class Supplier
 
     public function removeSupplierManufacturer(SupplierManufacturer $supplierManufacturer): static
     {
-        if ($this->supplierManufacturers->removeElement($supplierManufacturer)) {
-            // set the owning side to null (unless already changed)
-            if ($supplierManufacturer->getSupplier() === $this) {
-                $supplierManufacturer->setSupplier(null);
-            }
+        // set the owning side to null (unless already changed)
+        if (
+            $this->supplierManufacturers->removeElement($supplierManufacturer)
+            && $supplierManufacturer->getSupplier() === $this
+        ) {
+            $supplierManufacturer->setSupplier(null);
         }
 
         return $this;
@@ -207,11 +207,9 @@ class Supplier
 
     public function removeSupplierProduct(SupplierProduct $supplierProduct): static
     {
-        if ($this->supplierProducts->removeElement($supplierProduct)) {
-            // set the owning side to null (unless already changed)
-            if ($supplierProduct->getSupplier() === $this) {
-                $supplierProduct->setSupplier(null);
-            }
+        // set the owning side to null (unless already changed)
+        if ($this->supplierProducts->removeElement($supplierProduct) && $supplierProduct->getSupplier() === $this) {
+            $supplierProduct->setSupplier(null);
         }
 
         return $this;
@@ -237,11 +235,9 @@ class Supplier
 
     public function removePurchaseOrder(PurchaseOrder $purchaseOrder): static
     {
-        if ($this->purchaseOrders->removeElement($purchaseOrder)) {
-            // set the owning side to null (unless already changed)
-            if ($purchaseOrder->getSupplier() === $this) {
-                $purchaseOrder->setSupplier(null);
-            }
+        // set the owning side to null (unless already changed)
+        if ($this->purchaseOrders->removeElement($purchaseOrder) && $purchaseOrder->getSupplier() === $this) {
+            $purchaseOrder->setSupplier(null);
         }
 
         return $this;

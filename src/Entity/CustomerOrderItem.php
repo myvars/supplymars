@@ -73,7 +73,7 @@ class CustomerOrderItem implements DomainEventProviderInterface
     /**
      * @var Collection<int, PurchaseOrderItem>
      */
-    #[ORM\OneToMany(mappedBy: 'customerOrderItem', targetEntity: PurchaseOrderItem::class)]
+    #[ORM\OneToMany(targetEntity: PurchaseOrderItem::class, mappedBy: 'customerOrderItem')]
     private Collection $purchaseOrderItems;
 
     public function __construct()
@@ -210,6 +210,7 @@ class CustomerOrderItem implements DomainEventProviderInterface
                 $purchaseOrderItemStatus = $item->getStatus();
             }
         }
+
         $orderItemStatus = OrderStatus::getMappedOrderStatusFromPurchaseOrder($purchaseOrderItemStatus);
         $this->setStatus($orderItemStatus);
         $this->customerOrder->generateStatus();
@@ -246,9 +247,10 @@ class CustomerOrderItem implements DomainEventProviderInterface
 
     public function cancelItem(): void
     {
-        if ($this->getQtyAddedToPurchaseOrders()) {
+        if ($this->getQtyAddedToPurchaseOrders() !== 0) {
             throw new \LogicException('Cannot cancel this order item');
         }
+
         $status = OrderStatus::CANCELLED;
         if (!$this->status->canTransitionTo($status)) {
             throw new \LogicException(sprintf('Cannot transition from "%s" to "%s"',
@@ -256,6 +258,7 @@ class CustomerOrderItem implements DomainEventProviderInterface
                 $status->value
             ));
         }
+
         $this->setStatus($status);
     }
 

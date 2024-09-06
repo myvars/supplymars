@@ -2,6 +2,7 @@
 
 namespace App\Service\Product;
 
+use App\Entity\SupplierCategory;
 use App\Entity\Category;
 use App\Entity\SupplierProduct;
 use App\Entity\User;
@@ -13,6 +14,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 class CategoryMapper
 {
     public const DEFAULT_VAT_RATE = 'Standard rate';
+
     public const DEFAULT_OWNER = 'adam@admin.com';
 
     public function __construct(
@@ -25,12 +27,12 @@ class CategoryMapper
     public function createCategoryFromSupplierProduct(SupplierProduct $supplierProduct): Category
     {
         $supplierCategory = $supplierProduct->getSupplierCategory();
-
-        if (!$supplierCategory) {
+        if (!$supplierCategory instanceof SupplierCategory) {
             throw new \InvalidArgumentException('Supplier category is missing');
         }
 
-        if ($category = $this->categoryAlreadyExists($supplierCategory->getName())) {
+        $category = $this->categoryAlreadyExists($supplierCategory->getName());
+        if ($category instanceof Category) {
             return $category;
         }
 

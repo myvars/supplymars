@@ -2,14 +2,16 @@
 
 namespace App\Service\Crud\Core;
 
-use Symfony\Component\HttpFoundation\RedirectResponse;
-
 abstract class CrudOptions
 {
     private string $section;
+
     private object $entity;
+
     private string $successLink;
+
     private ?string $backLink = null;
+
     private ?array $crudActionContext = null;
 
     public function getSection(): string

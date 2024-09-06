@@ -23,7 +23,7 @@ return [
         'version' => '3.2.2',
     ],
     '@hotwired/turbo' => [
-        'version' => '8.0.4',
+        'version' => '8.0.5',
     ],
     'stimulus-use' => [
         'version' => '0.52.2',
@@ -55,10 +55,10 @@ return [
         'version' => '0.3.0',
     ],
     'flowbite' => [
-        'version' => '2.4.1',
+        'version' => '2.5.1',
     ],
     'flowbite/dist/flowbite.min.css' => [
-        'version' => '2.4.1',
+        'version' => '2.5.1',
         'type' => 'css',
     ],
     'stimulus-popover' => [
@@ -78,7 +78,7 @@ return [
         'version' => '6.2.0',
     ],
     'sortablejs' => [
-        'version' => '1.15.2',
+        'version' => '1.15.3',
     ],
     'flowbite-datepicker' => [
         'version' => '1.3.0',

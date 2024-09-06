@@ -6,9 +6,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 
 #[AsAlias('app.crud.delete.action')]
-final class CrudDeleteAction implements CrudActionInterface
+final readonly class CrudDeleteAction implements CrudActionInterface
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
+    public function __construct(private EntityManagerInterface $entityManager)
     {
     }
 

@@ -79,14 +79,14 @@ class CustomerOrder implements DomainEventProviderInterface
     /**
      * @var Collection<int, CustomerOrderItem>
      */
-    #[ORM\OneToMany(mappedBy: 'customerOrder', targetEntity: CustomerOrderItem::class)]
+    #[ORM\OneToMany(targetEntity: CustomerOrderItem::class, mappedBy: 'customerOrder')]
     #[ORM\OrderBy(['id' => 'ASC'])]
     private Collection $customerOrderItems;
 
     /**
      * @var Collection<int, PurchaseOrder>
      */
-    #[ORM\OneToMany(mappedBy: 'customerOrder', targetEntity: PurchaseOrder::class)]
+    #[ORM\OneToMany(targetEntity: PurchaseOrder::class, mappedBy: 'customerOrder')]
     private Collection $purchaseOrders;
 
     public function __construct()
@@ -246,6 +246,7 @@ class CustomerOrder implements DomainEventProviderInterface
             $this->customerOrderItems->add($customerOrderItem);
             $customerOrderItem->setCustomerOrder($this);
         }
+
         $this->recalculateTotal();
 
         return $this;
@@ -257,12 +258,14 @@ class CustomerOrder implements DomainEventProviderInterface
             throw new \LogicException('Cannot remove items from an order with this status');
         }
 
-        if ($this->customerOrderItems->removeElement($customerOrderItem)) {
-            // set the owning side to null (unless already changed)
-            if ($customerOrderItem->getCustomerOrder() === $this) {
-                $customerOrderItem->setCustomerOrder(null);
-            }
+        // set the owning side to null (unless already changed)
+        if (
+            $this->customerOrderItems->removeElement($customerOrderItem)
+            && $customerOrderItem->getCustomerOrder() === $this
+        ) {
+            $customerOrderItem->setCustomerOrder(null);
         }
+
         $this->recalculateTotal();
 
         return $this;
@@ -338,6 +341,7 @@ class CustomerOrder implements DomainEventProviderInterface
                 $orderStatus = $item->getStatus();
             }
         }
+
         $this->setStatus($orderStatus);
     }
 
@@ -346,6 +350,7 @@ class CustomerOrder implements DomainEventProviderInterface
         foreach ($this->customerOrderItems as $item) {
             $item->cancelItem();
         }
+
         $status = OrderStatus::CANCELLED;
         if (!$this->status->canTransitionTo($status)) {
             throw new \LogicException(sprintf('Cannot transition from "%s" to "%s"',
@@ -353,6 +358,7 @@ class CustomerOrder implements DomainEventProviderInterface
                 $status->value
             ));
         }
+
         $this->setStatus($status);
     }
 
@@ -376,11 +382,9 @@ class CustomerOrder implements DomainEventProviderInterface
 
     public function removePurchaseOrder(PurchaseOrder $purchaseOrder): static
     {
-        if ($this->purchaseOrders->removeElement($purchaseOrder)) {
-            // set the owning side to null (unless already changed)
-            if ($purchaseOrder->getCustomerOrder() === $this) {
-                $purchaseOrder->setCustomerOrder(null);
-            }
+        // set the owning side to null (unless already changed)
+        if ($this->purchaseOrders->removeElement($purchaseOrder) && $purchaseOrder->getCustomerOrder() === $this) {
+            $purchaseOrder->setCustomerOrder(null);
         }
 
         return $this;

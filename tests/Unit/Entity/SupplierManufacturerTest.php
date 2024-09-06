@@ -3,10 +3,8 @@
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Supplier;
-use App\Entity\SupplierCategory;
 use App\Entity\SupplierManufacturer;
 use App\Entity\SupplierProduct;
-use App\Entity\SupplierSubcategory;
 use PHPUnit\Framework\TestCase;
 
 class SupplierManufacturerTest extends TestCase

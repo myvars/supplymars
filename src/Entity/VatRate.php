@@ -31,7 +31,7 @@ class VatRate
     #[ORM\Column]
     private bool $isDefaultVatRate = false;
 
-    #[ORM\OneToMany(mappedBy: 'vatRate', targetEntity: Category::class)]
+    #[ORM\OneToMany(targetEntity: Category::class, mappedBy: 'vatRate')]
     private Collection $categories;
 
     public function __construct()
@@ -100,11 +100,9 @@ class VatRate
 
     public function removeCategory(Category $category): static
     {
-        if ($this->categories->removeElement($category)) {
-            // set the owning side to null (unless already changed)
-            if ($category->getVatRate() === $this) {
-                $category->setVatRate(null);
-            }
+        // set the owning side to null (unless already changed)
+        if ($this->categories->removeElement($category) && $category->getVatRate() === $this) {
+            $category->setVatRate(null);
         }
 
         return $this;

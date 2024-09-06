@@ -46,11 +46,11 @@ class createAddressCommand extends Command
             'fullName' => $defaultUser->getFullName(),
         ])->object();
 
-        if (!$this->getDefaultShippingAddress($defaultUser)) {
+        if (!$this->getDefaultShippingAddress($defaultUser) instanceof Address) {
             $address->setDefaultShippingAddress(true);
         }
 
-        if (!$this->getDefaultBillingAddress($defaultUser)) {
+        if (!$this->getDefaultBillingAddress($defaultUser) instanceof Address) {
             $address->setDefaultBillingAddress(true);
         }
 

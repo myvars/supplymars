@@ -142,6 +142,6 @@ class SupplierProductControllerTest extends WebTestCase
     {
         $this->browser()
             ->get("/supplier-product/999")
-            ->assertSee('Sorry, we can\'t find that Supplier Product');
+            ->assertSee("Sorry, we can't find that Supplier Product");
     }
 }

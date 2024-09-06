@@ -3,31 +3,12 @@
 namespace App\Factory;
 
 use App\Entity\CustomerOrder;
-use App\Repository\CustomerOrderRepository;
-use Zenstruck\Foundry\ModelFactory;
-use Zenstruck\Foundry\Proxy;
-use Zenstruck\Foundry\RepositoryProxy;
+use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
- * @extends ModelFactory<CustomerOrder>
- *
- * @method        CustomerOrder|Proxy                     create(array|callable $attributes = [])
- * @method static CustomerOrder|Proxy                     createOne(array $attributes = [])
- * @method static CustomerOrder|Proxy                     find(object|array|mixed $criteria)
- * @method static CustomerOrder|Proxy                     findOrCreate(array $attributes)
- * @method static CustomerOrder|Proxy                     first(string $sortedField = 'id')
- * @method static CustomerOrder|Proxy                     last(string $sortedField = 'id')
- * @method static CustomerOrder|Proxy                     random(array $attributes = [])
- * @method static CustomerOrder|Proxy                     randomOrCreate(array $attributes = [])
- * @method static CustomerOrderRepository|RepositoryProxy repository()
- * @method static CustomerOrder[]|Proxy[]                 all()
- * @method static CustomerOrder[]|Proxy[]                 createMany(int $number, array|callable $attributes = [])
- * @method static CustomerOrder[]|Proxy[]                 createSequence(iterable|callable $sequence)
- * @method static CustomerOrder[]|Proxy[]                 findBy(array $attributes)
- * @method static CustomerOrder[]|Proxy[]                 randomRange(int $min, int $max, array $attributes = [])
- * @method static CustomerOrder[]|Proxy[]                 randomSet(int $number, array $attributes = [])
+ * @extends PersistentProxyObjectFactory<CustomerOrder>
  */
-final class CustomerOrderFactory extends ModelFactory
+final class CustomerOrderFactory extends PersistentProxyObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
@@ -36,7 +17,11 @@ final class CustomerOrderFactory extends ModelFactory
      */
     public function __construct()
     {
-        parent::__construct();
+    }
+
+    public static function class(): string
+    {
+        return CustomerOrder::class;
     }
 
     /**
@@ -44,7 +29,7 @@ final class CustomerOrderFactory extends ModelFactory
      *
      * @todo add your default values here
      */
-    protected function getDefaults(): array
+    protected function defaults(): array|callable
     {
         return [
             'billingAddress' => AddressFactory::new(),
@@ -59,15 +44,10 @@ final class CustomerOrderFactory extends ModelFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
-    protected function initialize(): self
+    protected function initialize(): static
     {
         return $this
             // ->afterInstantiate(function(CustomerOrder $customerOrder): void {})
         ;
-    }
-
-    protected static function getClass(): string
-    {
-        return CustomerOrder::class;
     }
 }

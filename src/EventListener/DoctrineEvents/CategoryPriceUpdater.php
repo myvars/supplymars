@@ -35,18 +35,19 @@ class CategoryPriceUpdater
                     continue;
                 }
 
-                if ($eventArgs->hasChangedField('defaultMarkup')) {
-                    if ($product->getActiveMarkupTarget() === 'CATEGORY') {
-                        $this->setChangedProduct($product);
-
-                        continue;
-                    }
+                if (
+                    $eventArgs->hasChangedField('defaultMarkup')
+                    && $product->getActiveMarkupTarget() === 'CATEGORY'
+                ) {
+                    $this->setChangedProduct($product);
+                    continue;
                 }
 
-                if ($eventArgs->hasChangedField('priceModel')) {
-                    if ($product->getActivePriceModelTarget() === 'CATEGORY') {
-                        $this->setChangedProduct($product);
-                    }
+                if (
+                    $eventArgs->hasChangedField('priceModel')
+                    && $product->getActivePriceModelTarget() === 'CATEGORY'
+                ) {
+                    $this->setChangedProduct($product);
                 }
             }
         }
@@ -54,7 +55,7 @@ class CategoryPriceUpdater
 
     public function postUpdate(Category $category): void
     {
-        if (empty($this->changedProducts)) {
+        if ($this->changedProducts === []) {
             return;
         }
 

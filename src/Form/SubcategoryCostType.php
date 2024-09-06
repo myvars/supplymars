@@ -22,7 +22,7 @@ class SubcategoryCostType extends AbstractType
             ])
             ->add('priceModel', EnumType::class, [
                 'class' => PriceModel::class,
-                'choice_label' => fn (PriceModel $priceModel) => $priceModel->getName(),
+                'choice_label' => fn (PriceModel $priceModel): string => $priceModel->getName(),
                 'label' => 'Price Model',
                 'placeholder' => 'Choose a Price Model',
             ])

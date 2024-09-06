@@ -17,9 +17,10 @@ class ProductStockControllerTest extends WebTestCase
     use Factories;
 
     private ActiveSourceCalculator $activeSourceCalculator;
+
     private TestProduct $testProduct;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->activeSourceCalculator = self::getContainer()->get(ActiveSourceCalculator::class);
         $this->testProduct = new TestProduct(
@@ -58,7 +59,7 @@ class ProductStockControllerTest extends WebTestCase
     {
         $this->browser()
             ->get("/product/999/stock")
-            ->assertSee('Sorry, we can\'t find that Product');
+            ->assertSee("Sorry, we can't find that Product");
     }
 
     public function testProductStockSourceExists(): void
@@ -106,18 +107,19 @@ class ProductStockControllerTest extends WebTestCase
         $supplierProduct = $product->getActiveProductSource();
         $product->removeSupplierProduct($supplierProduct);
         $product->setActiveProductSource(null);
+
         $this->activeSourceCalculator->recalculateActiveSource($product);
 
         $this->browser()
             ->get("/supplier-product/" . $supplierProduct->getId() . "/remove")
-            ->assertSee('Sorry, we can\'t find that Supplier Product');
+            ->assertSee("Sorry, we can't find that Supplier Product");
     }
 
     public function testProductSourceRemoveNotFound(): void
     {
         $this->browser()
             ->get("/supplier-product/999/remove")
-            ->assertSee('Sorry, we can\'t find that Supplier Product');
+            ->assertSee("Sorry, we can't find that Supplier Product");
     }
 
     public function testProductSourceStatusToggle(): void
@@ -146,6 +148,6 @@ class ProductStockControllerTest extends WebTestCase
     {
         $this->browser()
             ->get("/supplier-product/999/status/toggle")
-            ->assertSee('Sorry, we can\'t find that Supplier Product');
+            ->assertSee("Sorry, we can't find that Supplier Product");
     }
 }

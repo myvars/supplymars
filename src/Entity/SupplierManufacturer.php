@@ -30,7 +30,7 @@ class SupplierManufacturer
     #[ORM\ManyToOne(inversedBy: 'supplierManufacturers')]
     private ?Manufacturer $mappedManufacturer = null;
 
-    #[ORM\OneToMany(mappedBy: 'supplierManufacturer', targetEntity: SupplierProduct::class)]
+    #[ORM\OneToMany(targetEntity: SupplierProduct::class, mappedBy: 'supplierManufacturer')]
     private Collection $supplierProducts;
 
     public function __construct()
@@ -99,11 +99,12 @@ class SupplierManufacturer
 
     public function removeSupplierProduct(SupplierProduct $supplierProduct): static
     {
-        if ($this->supplierProducts->removeElement($supplierProduct)) {
-            // set the owning side to null (unless already changed)
-            if ($supplierProduct->getSupplierManufacturer() === $this) {
-                $supplierProduct->setSupplierManufacturer(null);
-            }
+        // set the owning side to null (unless already changed)
+        if (
+            $this->supplierProducts->removeElement($supplierProduct)
+            && $supplierProduct->getSupplierManufacturer() === $this
+        ) {
+            $supplierProduct->setSupplierManufacturer(null);
         }
 
         return $this;

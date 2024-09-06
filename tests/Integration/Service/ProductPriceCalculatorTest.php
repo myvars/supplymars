@@ -16,10 +16,12 @@ class ProductPriceCalculatorTest extends KernelTestCase
     use Factories;
 
     private EntityManagerInterface $entityManager;
+
     private ProductPriceCalculator $productPriceCalculator;
+
     private TestProduct $testProduct;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
         $this->productPriceCalculator = self::getContainer()->get(ProductPriceCalculator::class);

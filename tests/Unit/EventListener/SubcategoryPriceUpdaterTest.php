@@ -26,9 +26,7 @@ class SubcategoryPriceUpdaterTest extends TestCase
         $subcategory->addProduct($product);
 
         $eventArgsMock->method('hasChangedField')
-            ->willReturnCallback(function($fieldName) {
-                return $fieldName == 'defaultMarkup';
-            });
+            ->willReturnCallback(fn($fieldName): bool => $fieldName == 'defaultMarkup');
 
         $listener = new SubcategoryPriceUpdater($priceCalculatorMock);
         $listener->preUpdate($subcategory, $eventArgsMock);
@@ -42,9 +40,7 @@ class SubcategoryPriceUpdaterTest extends TestCase
         $eventArgsMock = $this->createMock(PreUpdateEventArgs::class);
 
         $eventArgsMock->method('hasChangedField')
-            ->willReturnCallback(function($fieldName) {
-                return $fieldName == 'none';
-            });
+            ->willReturnCallback(fn($fieldName): bool => $fieldName == 'none');
 
         $listener = new SubcategoryPriceUpdater($priceCalculatorMock);
         $listener->preUpdate(new Subcategory(), $eventArgsMock);
@@ -58,9 +54,7 @@ class SubcategoryPriceUpdaterTest extends TestCase
         $eventArgsMock = $this->createMock(PreUpdateEventArgs::class);
 
         $eventArgsMock->method('hasChangedField')
-            ->willReturnCallback(function($fieldName) {
-                return $fieldName == 'defaultMarkup';
-            });
+            ->willReturnCallback(fn($fieldName): bool => $fieldName == 'defaultMarkup');
 
         $listener = new SubcategoryPriceUpdater($priceCalculatorMock);
         $listener->preUpdate(new Subcategory(), $eventArgsMock);
@@ -82,9 +76,7 @@ class SubcategoryPriceUpdaterTest extends TestCase
         $subcategory->addProduct($product);
 
         $eventArgsMock->method('hasChangedField')
-            ->willReturnCallback(function($fieldName) {
-                return $fieldName == 'defaultMarkup';
-            });
+            ->willReturnCallback(fn($fieldName): bool => $fieldName == 'defaultMarkup');
 
         $listener = new SubcategoryPriceUpdater($priceCalculatorMock);
         $listener->preUpdate($subcategory, $eventArgsMock);
@@ -106,9 +98,7 @@ class SubcategoryPriceUpdaterTest extends TestCase
         $subcategory->addProduct($product);
 
         $eventArgsMock->method('hasChangedField')
-            ->willReturnCallback(function($fieldName) {
-                return $fieldName == 'priceModel';
-            });
+            ->willReturnCallback(fn($fieldName): bool => $fieldName == 'priceModel');
 
         $listener = new SubcategoryPriceUpdater($priceCalculatorMock);
         $listener->preUpdate($subcategory, $eventArgsMock);
@@ -130,9 +120,7 @@ class SubcategoryPriceUpdaterTest extends TestCase
         $subcategory->addProduct($product);
 
         $eventArgsMock->method('hasChangedField')
-            ->willReturnCallback(function($fieldName) {
-                return $fieldName == 'priceModel';
-            });
+            ->willReturnCallback(fn($fieldName): bool => $fieldName == 'priceModel');
 
         $listener = new SubcategoryPriceUpdater($priceCalculatorMock);
         $listener->preUpdate($subcategory, $eventArgsMock);

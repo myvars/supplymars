@@ -16,9 +16,10 @@ class VatRatePriceUpdaterTest extends KernelTestCase
     use Factories;
 
     private EntityManagerInterface $entityManager;
+
     private TestProduct $testProduct;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
         $this->testProduct = new TestProduct(
@@ -49,8 +50,9 @@ class VatRatePriceUpdaterTest extends KernelTestCase
         $this->assertEquals('126.00', $product->getSellPriceIncVat());
 
         // Change different vat rate
-        $vatRate = VatRateFactory::createOne(['rate' => '5.000'])->object();
+        $vatRate = VatRateFactory::createOne(['rate' => '5.000'])->_real();
         $vatRate->setRate('10.000');
+
         $this->entityManager->flush();
 
         $updatedProduct = $this->entityManager->getRepository(Product::class)->find($product->getId());

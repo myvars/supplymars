@@ -34,3 +34,6 @@ yarn-error.log
 ###< liip/imagine-bundle ###
 
 /public/uploads/
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###

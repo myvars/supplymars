@@ -163,6 +163,6 @@ class ProductControllerTest extends WebTestCase
     {
         $this->browser()
             ->get("/product/999")
-            ->assertSee('Sorry, we can\'t find that Product');
+            ->assertSee("Sorry, we can't find that Product");
     }
 }

@@ -9,14 +9,14 @@ use App\Story\TestProductStory;
 use Doctrine\ORM\EntityManagerInterface;
 
 
-final class TestProduct
+final readonly class TestProduct
 {
     private Product $product;
 
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
-        private readonly ActiveSourceCalculator $activeSourceCalculator,
-        private readonly ProductPriceCalculator $productPriceCalculator,
+        private EntityManagerInterface $entityManager,
+        private ActiveSourceCalculator $activeSourceCalculator,
+        private ProductPriceCalculator $productPriceCalculator,
     ) {
         TestProductStory::load();
         $this->product = $this->entityManager->getRepository(Product::class)->findOneBy(['name' => 'Test Product']);

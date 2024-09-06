@@ -19,12 +19,12 @@ class ManufacturerMapper
     public function createManufacturerFromSupplierProduct(SupplierProduct $supplierProduct): Manufacturer
     {
         $supplierManufacturer = $supplierProduct->getSupplierManufacturer();
-
-        if (!$supplierManufacturer) {
+        if (!$supplierManufacturer instanceof SupplierManufacturer) {
             throw new \InvalidArgumentException('Supplier manufacturer is missing');
         }
 
-        if ($manufacturer = $this->manufacturerAlreadyExists($supplierManufacturer->getName())) {
+        $manufacturer = $this->manufacturerAlreadyExists($supplierManufacturer->getName());
+        if ($manufacturer instanceof Manufacturer) {
             $this->mapManufacturerToSupplier($supplierManufacturer, $manufacturer);
 
             return $manufacturer;
@@ -56,7 +56,7 @@ class ManufacturerMapper
         SupplierManufacturer $supplierManufacturer,
         Manufacturer $manufacturer
     ): void {
-        if ($supplierManufacturer->getMappedManufacturer()) {
+        if ($supplierManufacturer->getMappedManufacturer() instanceof Manufacturer) {
             return;
         }
 

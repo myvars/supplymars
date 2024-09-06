@@ -69,13 +69,13 @@ class Address
     /**
      * @var Collection<int, CustomerOrder>
      */
-    #[ORM\OneToMany(mappedBy: 'shippingAddress', targetEntity: CustomerOrder::class)]
+    #[ORM\OneToMany(targetEntity: CustomerOrder::class, mappedBy: 'shippingAddress')]
     private Collection $customerOrders;
 
     /**
      * @var Collection<int, PurchaseOrder>
      */
-    #[ORM\OneToMany(mappedBy: 'shippingAddress', targetEntity: PurchaseOrder::class)]
+    #[ORM\OneToMany(targetEntity: PurchaseOrder::class, mappedBy: 'shippingAddress')]
     private Collection $purchaseOrders;
 
     public function __construct()
@@ -265,11 +265,9 @@ class Address
 
     public function removeCustomerOrder(CustomerOrder $customerOrder): static
     {
-        if ($this->customerOrders->removeElement($customerOrder)) {
-            // set the owning side to null (unless already changed)
-            if ($customerOrder->getShippingAddress() === $this) {
-                $customerOrder->setShippingAddress(null);
-            }
+        // set the owning side to null (unless already changed)
+        if ($this->customerOrders->removeElement($customerOrder) && $customerOrder->getShippingAddress() === $this) {
+            $customerOrder->setShippingAddress(null);
         }
 
         return $this;
@@ -295,11 +293,9 @@ class Address
 
     public function removePurchaseOrder(PurchaseOrder $purchaseOrder): static
     {
-        if ($this->purchaseOrders->removeElement($purchaseOrder)) {
-            // set the owning side to null (unless already changed)
-            if ($purchaseOrder->getShippingAddress() === $this) {
-                $purchaseOrder->setShippingAddress(null);
-            }
+        // set the owning side to null (unless already changed)
+        if ($this->purchaseOrders->removeElement($purchaseOrder) && $purchaseOrder->getShippingAddress() === $this) {
+            $purchaseOrder->setShippingAddress(null);
         }
 
         return $this;

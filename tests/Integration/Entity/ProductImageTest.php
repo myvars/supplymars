@@ -15,9 +15,10 @@ class ProductImageTest extends KernelTestCase
     use Factories;
 
     private ValidatorInterface $validator;
+
     private EntityManagerInterface $entityManager;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->validator = static::getContainer()->get('validator');
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
@@ -25,7 +26,7 @@ class ProductImageTest extends KernelTestCase
 
     public function testCreateReadUpdateDeleteProductImage(): void
     {
-        $product = ProductFactory::createOne(['name' => 'Test Product'])->object();
+        $product = ProductFactory::createOne(['name' => 'Test Product'])->_real();
         $dummyImagePath = __DIR__ . '/../../Resources/dummy-image.jpg';
         $dummyImage = new UploadedFile($dummyImagePath, 'dummy-image.jpg', 'image/jpeg', null, true);
 
@@ -78,7 +79,7 @@ class ProductImageTest extends KernelTestCase
 
     public function testSetImageFileInvalid(): void
     {
-        $product= ProductFactory::createOne(['name' => 'Test Product'])->object();
+        $product= ProductFactory::createOne(['name' => 'Test Product'])->_real();
         $invalidImagePath = __DIR__ . '/../../Resources/invalid-image.txt';
         $invalidImage = new UploadedFile($invalidImagePath, 'invalid-image.txt', 'text/plain', null, true);
 

@@ -17,9 +17,10 @@ class SubcategoryTest extends KernelTestCase
     use Factories;
 
     private ValidatorInterface $validator;
+
     private EntityManagerInterface $entityManager;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->validator = static::getContainer()->get('validator');
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
@@ -27,8 +28,8 @@ class SubcategoryTest extends KernelTestCase
 
     public function testCreateReadUpdateDeleteSubcategory(): void
     {
-        $category = CategoryFactory::createOne(['name' => 'Test Category'])->object();
-        $owner = UserFactory::createOne(['fullName' => 'Test Owner'])->object();
+        $category = CategoryFactory::createOne(['name' => 'Test Category'])->_real();
+        $owner = UserFactory::createOne(['fullName' => 'Test Owner'])->_real();
 
         $subcategory = new Subcategory();
         $subcategory
@@ -57,7 +58,7 @@ class SubcategoryTest extends KernelTestCase
 
     public function testSubcategoryCategoryIsMissing(): void
     {
-        $owner = UserFactory::createOne(['fullName' => 'Test Owner'])->object();
+        $owner = UserFactory::createOne(['fullName' => 'Test Owner'])->_real();
 
         $subcategory = new Subcategory();
         $subcategory
@@ -111,14 +112,14 @@ class SubcategoryTest extends KernelTestCase
      * @dataProvider getValidationTestCases
      */
     public function testSubcategoryValidation(
-        $name,
-        $defaultMarkup,
-        $priceModel,
-        $isActive,
-        $expected
+        string $name,
+        string $defaultMarkup,
+        ?PriceModel $priceModel,
+        bool $isActive,
+        bool $expected
     ): void {
-        $category = CategoryFactory::createOne(['name' => 'Test Category'])->object();
-        $owner = UserFactory::createOne(['fullName' => 'Test Owner'])->object();
+        $category = CategoryFactory::createOne(['name' => 'Test Category'])->_real();
+        $owner = UserFactory::createOne(['fullName' => 'Test Owner'])->_real();
 
         $subcategory = new Subcategory();
         $subcategory
@@ -136,10 +137,10 @@ class SubcategoryTest extends KernelTestCase
     public function getValidationTestCases(): array
     {
         return [
-            'Succeeds when data is correct' => ['Test Subcategory', 0.21, PriceModel::DEFAULT, true, true],
-            'Fails when name is missing' => ['', 0.21, PriceModel::DEFAULT, true, false],
-            'Fails when defaultMarkup is less than 0' => ['Test Subcategory', -0.21, PriceModel::DEFAULT, true, false],
-            'Fails when priceModel is missing' => ['Test Subcategory', 0.21, null, true, false],
+            'Succeeds when data is correct' => ['Test Subcategory', '0.21', PriceModel::DEFAULT, true, true],
+            'Fails when name is missing' => ['', '0.21', PriceModel::DEFAULT, true, false],
+            'Fails when defaultMarkup is less than 0' => ['Test Subcategory', '-0.21', PriceModel::DEFAULT, true, false],
+            'Fails when priceModel is missing' => ['Test Subcategory', '0.21', null, true, false],
         ];
     }
 }

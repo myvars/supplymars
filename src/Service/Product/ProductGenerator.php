@@ -18,7 +18,7 @@ class ProductGenerator
 
     public function createFromSupplierProduct(SupplierProduct $supplierProduct): Product
     {
-        if ($supplierProduct->getProduct()) {
+        if ($supplierProduct->getProduct() instanceof Product) {
             throw new \InvalidArgumentException('Product already exists');
         }
 

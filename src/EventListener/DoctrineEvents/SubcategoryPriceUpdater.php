@@ -26,16 +26,18 @@ class SubcategoryPriceUpdater
             $products = $subcategory->getActiveProducts();
 
             foreach ($products as $product) {
-                if ($eventArgs->hasChangedField('defaultMarkup')) {
-                    if ($product->getActiveMarkupTarget() === 'SUBCATEGORY') {
-                        $this->setChangedProduct($product);
-                    }
+                if (
+                    $eventArgs->hasChangedField('defaultMarkup')
+                    && $product->getActiveMarkupTarget() === 'SUBCATEGORY'
+                ) {
+                    $this->setChangedProduct($product);
                 }
 
-                if ($eventArgs->hasChangedField('priceModel')) {
-                    if ($product->getActivePriceModelTarget() === 'SUBCATEGORY') {
-                        $this->setChangedProduct($product);
-                    }
+                if (
+                    $eventArgs->hasChangedField('priceModel')
+                    && $product->getActivePriceModelTarget() === 'SUBCATEGORY'
+                ) {
+                    $this->setChangedProduct($product);
                 }
             }
         }
@@ -43,7 +45,7 @@ class SubcategoryPriceUpdater
 
     public function postUpdate(Subcategory $subcategory): void
     {
-        if (empty($this->changedProducts)) {
+        if ($this->changedProducts === []) {
             return;
         }
 

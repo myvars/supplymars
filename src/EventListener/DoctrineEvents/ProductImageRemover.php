@@ -45,13 +45,14 @@ class ProductImageRemover
 
     public function postRemove(): void
     {
-        if (empty($this->changedProducts)) {
+        if ($this->changedProducts === []) {
             return;
         }
 
         foreach ($this->changedProducts as $product) {
             $this->reorderProductImages($product);
         }
+
         $this->entityManager->flush();
 
         unset($this->changedProducts);

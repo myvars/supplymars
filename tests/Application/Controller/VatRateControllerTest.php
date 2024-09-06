@@ -114,6 +114,6 @@ class VatRateControllerTest extends WebTestCase
     {
         $this->browser()
             ->get("/vat-rate/999")
-            ->assertSee('Sorry, we can\'t find that VAT Rate');
+            ->assertSee("Sorry, we can't find that VAT Rate");
     }
 }

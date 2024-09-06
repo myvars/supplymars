@@ -24,31 +24,31 @@ final class TestProductStory extends Story
 
     public function build(): void
     {
-        $owner = UserFactory::createOne(['fullName' => 'Test Owner'])->object();
+        $owner = UserFactory::createOne(['fullName' => 'Test Owner'])->_real();
 
         $vatRate = VatRateFactory::createOne([
             'name' => 'Test Vat Rate',
             'rate' => '20.000'
-        ])->object();
+        ])->_real();
 
         $category = CategoryFactory::createOne([
             'name' => 'Test Category',
             'vatRate' => $vatRate,
             'owner' => $owner,
             'isActive' => true
-        ])->object();
+        ])->_real();
 
         $subCategory = SubcategoryFactory::createOne([
             'name' => 'Test Subcategory',
             'category' => $category,
             'owner' => $owner,
             'isActive' => true,
-        ])->object();
+        ])->_real();
 
         $manufacturer = ManufacturerFactory::createOne([
             'name' => 'Test Manufacturer',
             'isActive' => true
-        ])->object();
+        ])->_real();
 
         $product = ProductFactory::createOne([
             'name' => 'Test Product',
@@ -57,12 +57,12 @@ final class TestProductStory extends Story
             'manufacturer' => $manufacturer,
             'owner' => $owner,
             'isActive' => true,
-        ])->object();
+        ])->_real();
 
         $supplier = SupplierFactory::createOne([
             'name' => 'Test Supplier',
             'isActive' => true
-        ])->object();
+        ])->_real();
 
         SupplierProductFactory::createOne([
             'name' => 'Test Supplier Product',
@@ -71,7 +71,7 @@ final class TestProductStory extends Story
             'cost' => '100.00',
             'stock' => 10,
             'isActive' => true,
-        ])->object();
+        ])->_real();
 
         $this->activeSourceCalculator->recalculateActiveSource($product);
         $this->productPriceCalculator->recalculatePrice($product);

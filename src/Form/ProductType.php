@@ -20,10 +20,6 @@ use Symfonycasts\DynamicForms\DynamicFormBuilder;
 
 class ProductType extends AbstractType
 {
-    public function __construct(
-    ) {
-    }
-
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder = new DynamicFormBuilder($builder);
@@ -55,7 +51,7 @@ class ProductType extends AbstractType
             ])
             ->add('priceModel', EnumType::class, [
                 'class' => PriceModel::class,
-                'choice_label' => fn (PriceModel $priceModel) => $priceModel->getName(),
+                'choice_label' => fn (PriceModel $priceModel): string => $priceModel->getName(),
                 'label' => 'Price Model',
                 'placeholder' => 'Choose a Price Model',
             ])
@@ -83,11 +79,11 @@ class ProductType extends AbstractType
             ])
         ;
 
-        $builder->addDependent('subcategory', 'category', function(DependentField $field, ?Category $category) {
+        $builder->addDependent('subcategory', 'category', function(DependentField $field, ?Category $category): void {
             $field
                 ->add(EntityType::class, [
                     'class' => Subcategory::class,
-                    'choices' => $category ? $category->getSubcategories() : [],
+                    'choices' => $category instanceof Category ? $category->getSubcategories() : [],
                     'choice_label' => 'name',
                     'placeholder' => 'Choose a Subcategory',
                     'priority' => 1,

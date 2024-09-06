@@ -17,9 +17,10 @@ class SubcategoryPriceUpdaterTest extends KernelTestCase
     use Factories;
 
     private EntityManagerInterface $entityManager;
+
     private TestProduct $testProduct;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
         $this->testProduct = new TestProduct(
@@ -52,10 +53,11 @@ class SubcategoryPriceUpdaterTest extends KernelTestCase
         $subcategory = SubcategoryFactory::createOne([
             'category' => $product->getCategory(),
             'defaultMarkup' => '0.000',
-        ])->object();
+        ])->_real();
 
         // Change default markup on different subcategory
         $subcategory->setDefaultMarkup('10.000');
+
         $this->entityManager->flush();
 
         $updatedProduct = $this->entityManager->getRepository(Product::class)->find($product->getId());

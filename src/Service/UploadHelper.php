@@ -40,7 +40,7 @@ class UploadHelper
             $this->uploadFilesystem->delete($path);
 
             return true;
-        } catch (FilesystemException $exception) {
+        } catch (FilesystemException) {
             return false;
         }
     }
@@ -50,7 +50,7 @@ class UploadHelper
         return $this->uploadFilesystem->publicUrl($path);
     }
 
-    private function doUpload(File $file, $directory, $fileName, bool $isPublic = true): void
+    private function doUpload(File $file, ?string $directory, string $fileName, bool $isPublic = true): void
     {
         $path = $this->createFilePath($directory, $fileName);
         $stream = fopen($file->getPathname(), 'r');
@@ -60,8 +60,8 @@ class UploadHelper
                 'visibility' => $isPublic ? Visibility::PUBLIC : Visibility::PRIVATE,
                 'mime-type' => $file->getMimeType(),
             ]);
-        } catch (FilesystemException $e) {
-            throw new CannotWriteFileException($e->getMessage());
+        } catch (FilesystemException $filesystemException) {
+            throw new CannotWriteFileException($filesystemException->getMessage());
         }
 
         if (is_resource($stream)) {
@@ -78,7 +78,7 @@ class UploadHelper
         return $file->getFilename();
     }
 
-    private function getNewFilename(File $file, $fileName): string
+    private function getNewFilename(File $file, string $fileName): string
     {
         return Urlizer::urlize(pathinfo($fileName, PATHINFO_FILENAME))
             .'-'.uniqid().'.'.$file->guessExtension();
@@ -86,6 +86,6 @@ class UploadHelper
 
     private function createFilePath(?string $directory, string $fileName): string
     {
-        return !empty($directory) ? $directory.'/'.$fileName : $fileName;
+        return $directory === null || $directory === '' || $directory === '0' ? $fileName : $directory.'/'.$fileName;
     }
 }

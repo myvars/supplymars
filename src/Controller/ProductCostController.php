@@ -25,7 +25,7 @@ class ProductCostController extends AbstractController
     #[Route('/{id}/cost', name: 'app_product_cost', methods: ['GET'])]
     public function cost(?Product $product, CrudHelper $crudHelper): Response
     {
-        if (!$product) {
+        if (!$product instanceof Product) {
             return $crudHelper->showEmpty(self::SECTION);
         }
 
@@ -35,7 +35,7 @@ class ProductCostController extends AbstractController
     #[Route('/{id}/cost/edit', name: 'app_product_cost_edit', methods: ['GET', 'POST'])]
     public function costEdit(?Product $product, CrudHelper $crudHelper): Response
     {
-        if (!$product) {
+        if (!$product instanceof Product) {
             return $crudHelper->showEmpty(self::SECTION);
         }
 
@@ -49,7 +49,7 @@ class ProductCostController extends AbstractController
     #[Route('/{id}/cost/category/edit', name: 'app_product_cost_category_edit', methods: ['GET', 'POST'])]
     public function costCategoryEdit(?Product $product, CrudHelper $crudHelper): Response
     {
-        if (!$product) {
+        if (!$product instanceof Product) {
             return $crudHelper->showEmpty(self::SECTION);
         }
 
@@ -64,7 +64,7 @@ class ProductCostController extends AbstractController
     #[Route('/{id}/cost/subcategory/edit', name: 'app_product_cost_subcategory_edit', methods: ['GET', 'POST'])]
     public function costSubcategoryEdit(?Product $product, CrudHelper $crudHelper): Response
     {
-        if (!$product) {
+        if (!$product instanceof Product) {
             return $crudHelper->showEmpty(self::SECTION);
         }
 

@@ -26,10 +26,10 @@ class Manufacturer
     #[ORM\Column]
     private bool $isActive = false;
 
-    #[ORM\OneToMany(mappedBy: 'manufacturer', targetEntity: Product::class)]
+    #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'manufacturer')]
     private Collection $products;
 
-    #[ORM\OneToMany(mappedBy: 'mappedManufacturer', targetEntity: SupplierManufacturer::class)]
+    #[ORM\OneToMany(targetEntity: SupplierManufacturer::class, mappedBy: 'mappedManufacturer')]
     private Collection $supplierManufacturers;
 
     public function __construct()
@@ -87,11 +87,9 @@ class Manufacturer
 
     public function removeProduct(Product $product): static
     {
-        if ($this->products->removeElement($product)) {
-            // set the owning side to null (unless already changed)
-            if ($product->getManufacturer() === $this) {
-                $product->setManufacturer(null);
-            }
+        // set the owning side to null (unless already changed)
+        if ($this->products->removeElement($product) && $product->getManufacturer() === $this) {
+            $product->setManufacturer(null);
         }
 
         return $this;
@@ -117,11 +115,12 @@ class Manufacturer
 
     public function removeSupplierManufacturer(SupplierManufacturer $supplierManufacturer): static
     {
-        if ($this->supplierManufacturers->removeElement($supplierManufacturer)) {
-            // set the owning side to null (unless already changed)
-            if ($supplierManufacturer->getMappedManufacturer() === $this) {
-                $supplierManufacturer->setMappedManufacturer(null);
-            }
+        // set the owning side to null (unless already changed)
+        if (
+            $this->supplierManufacturers->removeElement($supplierManufacturer)
+            && $supplierManufacturer->getMappedManufacturer() === $this
+        ) {
+            $supplierManufacturer->setMappedManufacturer(null);
         }
 
         return $this;

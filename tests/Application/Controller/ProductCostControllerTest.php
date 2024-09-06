@@ -17,9 +17,10 @@ class ProductCostControllerTest extends WebTestCase
     use Factories;
 
     private ProductPriceCalculator $productPriceCalculator;
+
     private TestProduct $testProduct;
 
-    public function setUp(): void
+    protected function setUp(): void
     {
         $this->productPriceCalculator = self::getContainer()->get(ProductPriceCalculator::class);
         $this->testProduct = new TestProduct(
@@ -55,6 +56,7 @@ class ProductCostControllerTest extends WebTestCase
         $product = $this->testProduct->create();
 
         $product->setIsActive(false);
+
         $this->productPriceCalculator->recalculatePrice($product);
 
         $this->browser()
@@ -96,7 +98,7 @@ class ProductCostControllerTest extends WebTestCase
     {
         $this->browser()
             ->get("/product/999/cost")
-            ->assertSee('Sorry, we can\'t find that Product');
+            ->assertSee("Sorry, we can't find that Product");
     }
 
     public function testEditProductCost(): void
@@ -134,7 +136,7 @@ class ProductCostControllerTest extends WebTestCase
     {
         $this->browser()
             ->get("/product/999/cost/edit")
-            ->assertSee('Sorry, we can\'t find that Product');
+            ->assertSee("Sorry, we can't find that Product");
     }
 
     public function testEditCategoryCost(): void
@@ -172,7 +174,7 @@ class ProductCostControllerTest extends WebTestCase
     {
         $this->browser()
             ->get("/product/999/cost/category/edit")
-            ->assertSee('Sorry, we can\'t find that Product');
+            ->assertSee("Sorry, we can't find that Product");
     }
 
     public function testEditSubcategoryCost(): void
@@ -210,6 +212,6 @@ class ProductCostControllerTest extends WebTestCase
     {
         $this->browser()
             ->get("/product/999/cost/subcategory/edit")
-            ->assertSee('Sorry, we can\'t find that Product');
+            ->assertSee("Sorry, we can't find that Product");
     }
 }

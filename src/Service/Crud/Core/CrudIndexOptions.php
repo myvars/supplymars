@@ -7,21 +7,35 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepositoryInterface;
 class CrudIndexOptions
 {
     public const SORT_DEFAULT = 'id';
+
     public const SORT_OPTIONS = [self::SORT_DEFAULT];
+
     public const SORT_DIRECTION_DEFAULT = 'ASC';
+
     public const LIMIT_DEFAULT = 5;
+
     public const PAGE_DEFAULT = 1;
+
     public const QUERY_BUILDER_METHOD = 'findBySearchQueryBuilder';
 
     private string $section;
+
     private ?string $query = null;
+
     private array $sortOptions = self::SORT_OPTIONS;
+
     private ?string $sort = null;
+
     private string $sortDefault = self::SORT_DEFAULT;
+
     private ?string $sortDirection = null;
+
     private string $sortDirectionDefault = self::SORT_DIRECTION_DEFAULT;
+
     private int $limit = self::LIMIT_DEFAULT;
+
     private int $page = self::PAGE_DEFAULT;
+
     private ServiceEntityRepositoryInterface $repository;
 
     public function getSection(): string

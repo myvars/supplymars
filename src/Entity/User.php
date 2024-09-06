@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, \Stringable
 {
     use TimestampableEntity;
 
@@ -42,30 +42,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $fullName = null;
 
     #[ORM\Column(type: 'boolean')]
-    private $isVerified = false;
+    private bool $isVerified = false;
 
-    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Category::class)]
+    #[ORM\OneToMany(targetEntity: Category::class, mappedBy: 'owner')]
     private Collection $categories;
 
-    #[ORM\OneToMany(mappedBy: 'owner', targetEntity: Subcategory::class)]
+    #[ORM\OneToMany(targetEntity: Subcategory::class, mappedBy: 'owner')]
     private Collection $subcategories;
 
     /**
      * @var Collection<int, Address>
      */
-    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Address::class)]
+    #[ORM\OneToMany(targetEntity: Address::class, mappedBy: 'customer')]
     private Collection $addresses;
 
     /**
      * @var Collection<int, CustomerOrder>
      */
-    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: CustomerOrder::class)]
+    #[ORM\OneToMany(targetEntity: CustomerOrder::class, mappedBy: 'customer')]
     private Collection $customerOrders;
 
     /**
      * @var Collection<int, StatusChangeLog>
      */
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: StatusChangeLog::class)]
+    #[ORM\OneToMany(targetEntity: StatusChangeLog::class, mappedBy: 'user')]
     private Collection $statusChangeLogs;
 
     public function __construct()
@@ -196,11 +196,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeCategory(Category $category): static
     {
-        if ($this->categories->removeElement($category)) {
-            // set the owning side to null (unless already changed)
-            if ($category->getOwner() === $this) {
-                $category->setOwner(null);
-            }
+        // set the owning side to null (unless already changed)
+        if ($this->categories->removeElement($category) && $category->getOwner() === $this) {
+            $category->setOwner(null);
         }
 
         return $this;
@@ -226,11 +224,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeSubcategory(Subcategory $subcategory): static
     {
-        if ($this->subcategories->removeElement($subcategory)) {
-            // set the owning side to null (unless already changed)
-            if ($subcategory->getOwner() === $this) {
-                $subcategory->setOwner(null);
-            }
+        // set the owning side to null (unless already changed)
+        if ($this->subcategories->removeElement($subcategory) && $subcategory->getOwner() === $this) {
+            $subcategory->setOwner(null);
         }
 
         return $this;
@@ -256,11 +252,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeAddress(Address $address): static
     {
-        if ($this->addresses->removeElement($address)) {
-            // set the owning side to null (unless already changed)
-            if ($address->getCustomer() === $this) {
-                $address->setCustomer(null);
-            }
+        // set the owning side to null (unless already changed)
+        if ($this->addresses->removeElement($address) && $address->getCustomer() === $this) {
+            $address->setCustomer(null);
         }
 
         return $this;
@@ -286,11 +280,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeCustomerOrder(CustomerOrder $customerOrder): static
     {
-        if ($this->customerOrders->removeElement($customerOrder)) {
-            // set the owning side to null (unless already changed)
-            if ($customerOrder->getCustomer() === $this) {
-                $customerOrder->setCustomer(null);
-            }
+        // set the owning side to null (unless already changed)
+        if ($this->customerOrders->removeElement($customerOrder) && $customerOrder->getCustomer() === $this) {
+            $customerOrder->setCustomer(null);
         }
 
         return $this;
@@ -316,11 +308,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function removeStatusChangeLog(StatusChangeLog $statusChangeLog): static
     {
-        if ($this->statusChangeLogs->removeElement($statusChangeLog)) {
-            // set the owning side to null (unless already changed)
-            if ($statusChangeLog->getUser() === $this) {
-                $statusChangeLog->setUser(null);
-            }
+        // set the owning side to null (unless already changed)
+        if ($this->statusChangeLogs->removeElement($statusChangeLog) && $statusChangeLog->getUser() === $this) {
+            $statusChangeLog->setUser(null);
         }
 
         return $this;

@@ -42,7 +42,7 @@ class OrderItemController extends AbstractController
         CrudCreator $crudCreator,
         CreateOrderItem $crudAction,
     ): Response {
-        if (!$customerOrder) {
+        if (!$customerOrder instanceof CustomerOrder) {
 
             return $crudCreator->crudHelper->showEmpty('Order');
         }
@@ -70,7 +70,7 @@ class OrderItemController extends AbstractController
         CrudUpdater $crudUpdater,
         EditOrderItem $crudAction,
     ): Response {
-        if (!$customerOrderItem) {
+        if (!$customerOrderItem instanceof CustomerOrderItem) {
             return $crudUpdater->crudHelper->showEmpty(self::SECTION);
         }
 
@@ -112,10 +112,12 @@ class OrderItemController extends AbstractController
                     break;
                 }
             }
+
             $createPurchaseOrderItem->fromOrder($customerOrderItem, $supplierProduct);
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             $this->addFlash('danger', 'PO item could not be added');
         }
+
         $this->addFlash('success', 'PO item added');
 
         return $crudHelper->redirectToLink(
