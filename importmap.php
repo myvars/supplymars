@@ -31,13 +31,6 @@ return [
     '@popperjs/core' => [
         'version' => '2.11.8',
     ],
-    'bootstrap' => [
-        'version' => '5.3.3',
-    ],
-    'bootstrap/dist/css/bootstrap.min.css' => [
-        'version' => '5.3.3',
-        'type' => 'css',
-    ],
     'aos' => [
         'version' => '2.3.4',
     ],
@@ -54,18 +47,11 @@ return [
     'turbo-view-transitions' => [
         'version' => '0.3.0',
     ],
-    'flowbite' => [
-        'version' => '2.5.1',
-    ],
-    'flowbite/dist/flowbite.min.css' => [
-        'version' => '2.5.1',
-        'type' => 'css',
-    ],
     'stimulus-popover' => [
         'version' => '6.2.0',
     ],
     'debounce' => [
-        'version' => '2.1.0',
+        'version' => '2.1.1',
     ],
     'dropzone/dist/dropzone.css' => [
         'version' => '6.0.0-beta.2',
@@ -79,6 +65,13 @@ return [
     ],
     'sortablejs' => [
         'version' => '1.15.3',
+    ],
+    'flowbite/dist/flowbite.min.css' => [
+        'version' => '2.5.1',
+        'type' => 'css',
+    ],
+    'flowbite' => [
+        'version' => '2.5.1',
     ],
     'flowbite-datepicker' => [
         'version' => '1.3.0',
