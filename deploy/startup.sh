@@ -17,7 +17,6 @@ echo "Dropping database..."
 /opt/bitnami/projects/app/bin/console doctrine:database:drop --force || true
 /opt/bitnami/projects/app/bin/console doctrine:database:create
 /opt/bitnami/projects/app/bin/console doctrine:schema:create
-/opt/bitnami/projects/app/bin/console doctrine:migrations:migrate -n
 # App specific startup options ##########################################
 # Load fixtures
 /opt/bitnami/projects/app/bin/console doctrine:fixtures:load -n --env=dev --no-debug

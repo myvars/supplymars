@@ -8,6 +8,7 @@ use App\Factory\AddressFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -18,8 +19,6 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class createAddressCommand extends Command
 {
-    public const DEFAULT_USER = 'adam@admin.com';
-
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
     ) {
@@ -28,52 +27,68 @@ class createAddressCommand extends Command
 
     protected function configure(): void
     {
+        $this->addArgument('email', InputArgument::REQUIRED, 'User email');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
-        if (!$defaultUser = $this->getDefaultUser()) {
-            $io->error('Default user found');
+        $email = $input->getArgument('email');
+
+        if (!$email) {
+            $io->note('Please provide an email');
 
             return Command::FAILURE;
         }
 
-        $address = AddressFactory::createOne([
-            'customer' => $defaultUser,
-            'email' => $defaultUser->getEmail(),
-            'fullName' => $defaultUser->getFullName(),
-        ])->object();
+        $user = $this->getUser($email);
+        if (!$user instanceof User) {
+            $io->error(sprintf('User with email \'%s\' not found', $email));
 
-        if (!$this->getDefaultShippingAddress($defaultUser) instanceof Address) {
-            $address->setDefaultShippingAddress(true);
+            return Command::FAILURE;
         }
 
-        if (!$this->getDefaultBillingAddress($defaultUser) instanceof Address) {
-            $address->setDefaultBillingAddress(true);
+        $billingAddress = $this->getDefaultBillingAddress($user);
+        if (!$billingAddress instanceof Address) {
+            $billingAddress = $this->createBillingAddress($user);
+            $billingAddress->setDefaultBillingAddress(true);
         }
 
-        $this->entityManager->persist($address);
+        $shippingAddress = $this->getDefaultShippingAddress($user);
+        if (!$shippingAddress instanceof Address) {
+            $billingAddress->setDefaultShippingAddress(true);
+        }
+
+        $this->entityManager->persist($billingAddress);
         $this->entityManager->flush();
 
-        $io->success('Address created successfully');
+        $io->success('Address updated successfully');
 
         return Command::SUCCESS;
     }
 
-    private function getDefaultUser(): User
+    private function getUser(string $email): ?User
     {
-        return $this->entityManager->getRepository(User::class)->findOneBy(['email' => self::DEFAULT_USER]);
+        return $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
     }
 
-    private function getDefaultBillingAddress(User $defaultUser): ?Address
+    private function getDefaultBillingAddress(User $user): ?Address
     {
-        return $this->entityManager->getRepository(Address::class)->findDefaultBillingAddress($defaultUser);
+        return $this->entityManager->getRepository(Address::class)->findDefaultBillingAddress($user);
     }
 
-    private function getDefaultShippingAddress(User $defaultUser): ?Address
+    private function getDefaultShippingAddress(User $user): ?Address
     {
-        return $this->entityManager->getRepository(Address::class)->findDefaultShippingAddress($defaultUser);
+        return $this->entityManager->getRepository(Address::class)->findDefaultShippingAddress($user);
+    }
+
+    private function createBillingAddress(User $user): Address
+    {
+        return AddressFactory::createOne([
+            'customer' => $user,
+            'email' => $user->getEmail(),
+            'fullName' => $user->getFullName(),
+        ])->_real();
     }
 }

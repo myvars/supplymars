@@ -11,7 +11,7 @@ read -p $'Dev Email:\n' devemailvar
 
 # Install yarn $ supervisor
 sudo apt update && sudo apt upgrade -y
-sudo apt install -y yarn supervisor
+sudo apt install -y supervisor
 
 # Install symfony cli
 wget https://get.symfony.com/cli/installer -O - | bash
