@@ -13,12 +13,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'app:import-products',
-    description: 'Create new products from a supplier products table',
+    name: 'app:create-warehouse-products',
+    description: 'Create new products from the default supplier products table',
 )]
-class ImportProductsCommand extends Command
+class createWarehouseProductsCommand extends Command
 {
-    public const DEFAULT_SUPPLIER = 'Turtle Inc';
+    public const DEFAULT_SUPPLIER_NAME = 'Turtle Inc';
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
@@ -34,28 +34,32 @@ class ImportProductsCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
+        $supplier = $this->getSupplier();
 
-        if (!$supplier = $this->getSupplier()) {
-            $io->error('Supplier not found');
+        $productCount = $this->processSupplierProducts($supplier);
+        $io->success(sprintf(
+            'Created %d products from %s supplier.', $productCount, self::DEFAULT_SUPPLIER_NAME)
+        );
 
-            return Command::FAILURE;
-        }
+        return Command::SUCCESS;
+    }
 
-        $productCount = 0;
+    private function processSupplierProducts(Supplier $supplier): int
+    {
         $supplierProducts = $this->getSupplierProducts($supplier);
+        $productCount = 0;
+
         foreach ($supplierProducts as $supplierProduct) {
             $this->productGenerator->createFromSupplierProduct($supplierProduct);
             $productCount++;
         }
 
-        $io->success('Created ' . $productCount . ' products from ' . self::DEFAULT_SUPPLIER . ' supplier.');
-
-        return Command::SUCCESS;
+        return $productCount;
     }
 
     private function getSupplier(): Supplier
     {
-        return $this->entityManager->getRepository(Supplier::class)->findOneBy(['name' => self::DEFAULT_SUPPLIER]);
+        return $this->entityManager->getRepository(Supplier::class)->findOneBy(['name' => self::DEFAULT_SUPPLIER_NAME]);
     }
 
     private function getSupplierProducts(Supplier $supplier): array

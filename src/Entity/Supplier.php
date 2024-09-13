@@ -47,6 +47,9 @@ class Supplier
     #[ORM\OneToMany(targetEntity: PurchaseOrder::class, mappedBy: 'supplier')]
     private Collection $purchaseOrders;
 
+    #[ORM\Column]
+    private bool $isWarehouse = false;
+
     public function __construct()
     {
         $this->supplierCategories = new ArrayCollection();
@@ -85,7 +88,19 @@ class Supplier
         return $this;
     }
 
-    public function isActive(): ?bool
+    public function isWarehouse(): bool
+    {
+        return $this->isWarehouse;
+    }
+
+    public function setIsWarehouse(bool $isWarehouse): static
+    {
+        $this->isWarehouse = $isWarehouse;
+
+        return $this;
+    }
+
+    public function isActive(): bool
     {
         return $this->isActive;
     }

@@ -33,6 +33,7 @@ final class SupplierFactory extends PersistentProxyObjectFactory
     {
         return [
             'name' => self::faker()->company(),
+            'isWarehouse' => false,
             'isActive' => self::faker()->boolean(),
         ];
     }

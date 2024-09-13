@@ -11,10 +11,29 @@ use App\Factory\UserFactory;
 use App\Factory\VatRateFactory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
+use Zenstruck\Foundry\Persistence\Proxy;
 
 class AppFixtures extends Fixture
 {
+    public const DEFAULT_SUPPLIER_NAME = 'Turtle Inc';
+    public const DEFAULT_SUPPLIER_PRODUCT_COUNT = 100;
+    public const EDI_SUPPLIER_COUNT = 3;
+    public const EDI_SUPPLIER_PRODUCT_COUNT = 100;
+    public const EDI_SUPPLIER_COMMON_PRODUCT_PERCENT = 50;
+
     public function load(ObjectManager $manager): void
+    {
+        $this->createUsers();
+
+        $this->createVatRates();
+
+        $warehouse = $this->createWarehouse();
+        $this->createSupplierProducts($warehouse, self::DEFAULT_SUPPLIER_PRODUCT_COUNT);
+
+        $this->createAdditionalSuppliers($warehouse);
+    }
+
+    public function createUsers(): void
     {
         UserFactory::createOne([
             'fullName' => 'Adam Ashmore',
@@ -23,85 +42,112 @@ class AppFixtures extends Fixture
             'isVerified' => true,
             'roles' => ['ROLE_ADMIN'],
         ]);
+    }
 
-        VatRateFactory::createOne([
-            'name' => 'Standard rate',
-            'rate' => 20,
-            'isDefaultVatRate' => true,
-        ]);
+    public function createVatRates(): void
+    {
+        VatRateFactory::createOne(['name' => 'Standard rate', 'rate' => 20, 'isDefaultVatRate' => true]);
+        VatRateFactory::createOne(['name' => 'Reduced rate', 'rate' => 5]);
+        VatRateFactory::createOne(['name' => 'Zero rate', 'rate' => 0]);
+    }
 
-        VatRateFactory::createOne([
-            'name' => 'Reduced rate',
-            'rate' => 5,
-        ]);
-
-        VatRateFactory::createOne([
-            'name' => 'Zero rate',
-            'rate' => 0,
-        ]);
-
-        $supplier = SupplierFactory::createOne([
-            'name' => 'Turtle Inc',
+    public function createWarehouse(): Proxy
+    {
+        return SupplierFactory::createOne([
+            'name' => self::DEFAULT_SUPPLIER_NAME,
+            'isWarehouse' => true,
             'isActive' => true,
         ]);
+    }
 
-        SupplierFactory::createMany(2);
+    public function createAdditionalSuppliers(Proxy $warehouse): void
+    {
+        if (self::EDI_SUPPLIER_COUNT < 1 || self::EDI_SUPPLIER_PRODUCT_COUNT < 1) {
+            return;
+        }
 
-        $supplierCategory = SupplierCategoryFactory::createOne([
-            'name' => 'Laptops',
-            'supplier' => $supplier,
-        ]);
+        $mappedProductCount = (int) floor(
+            self::EDI_SUPPLIER_PRODUCT_COUNT * (self::EDI_SUPPLIER_COMMON_PRODUCT_PERCENT / 100)
+        );
 
-        SupplierCategoryFactory::createMany(29, fn(): array => [
-            'supplier' => SupplierFactory::random(),
-        ]);
+        $newProductCount = self::EDI_SUPPLIER_PRODUCT_COUNT - $mappedProductCount;
 
-        $supplierSubcategory = SupplierSubcategoryFactory::createOne([
-            'name' => 'Macbook Pro',
-            'supplier' => $supplier,
-            'supplierCategory' => $supplierCategory,
-        ]);
+        for ($i = 0; $i < self::EDI_SUPPLIER_COUNT; $i++) {
+            $supplier = SupplierFactory::createOne(['isActive' => true]);
+            $this->createSupplierProducts($supplier, $newProductCount);
+            $this->createCommonProducts($warehouse, $supplier, $mappedProductCount);
+        }
+    }
 
-        SupplierSubcategoryFactory::createMany(99, fn(): array => [
-            'supplier' => SupplierFactory::random(),
-            'supplierCategory' => SupplierCategoryFactory::random(),
-        ]);
+    public function createSupplierProducts(Proxy $supplier, int $productCount): void
+    {
+        if ($productCount < 1) {
+            return;
+        }
 
-        $supplierManufacturer = SupplierManufacturerFactory::createOne([
-            'name' => 'Apple',
-            'supplier' => $supplier,
-        ]);
+        $categoryCount = max(1, intdiv($productCount, 10));
+        $manufacturerCount = max(1, intdiv($productCount, 3));
 
-        SupplierManufacturerFactory::createMany(99, fn(): array => [
-            'supplier' => SupplierFactory::random(),
-        ]);
+        SupplierManufacturerFactory::createMany($manufacturerCount, ['supplier' => $supplier]);
 
-        SupplierProductFactory::createOne([
-            'name' => 'Macbook Pro 13"',
-            'MfrPartNumber' => 'M1MBP132024',
-            'supplier' => $supplier,
-            'supplierCategory' => $supplierCategory,
-            'supplierSubcategory' => $supplierSubcategory,
-            'supplierManufacturer' => $supplierManufacturer,
-            'cost' => '1190.47',
-            'isActive' => true,
-            'leadTimeDays' => 7,
-            'stock' => 50,
-            'weight' => 1388,
-        ]);
+        $categories = SupplierCategoryFactory::createMany($categoryCount, ['supplier' => $supplier]);
 
-        SupplierProductFactory::createMany(99, function (): array {
-            $randomSubcategory = SupplierSubcategoryFactory::random();
+        foreach ($categories as $category) {
+            SupplierSubcategoryFactory::new([
+                'supplier' => $supplier,
+                'supplierCategory' => $category,
+            ])->range(1,5)->create();
+        }
+
+        SupplierProductFactory::createMany($productCount, function() use ($supplier): array {
+            $randomSubcategory = SupplierSubcategoryFactory::random([
+                'supplier' => $supplier,
+            ]);
 
             return [
-                'supplier' => $randomSubcategory->getSupplier(),
+                'supplier' => $supplier,
                 'supplierCategory' => $randomSubcategory->getSupplierCategory(),
                 'supplierSubcategory' => $randomSubcategory,
-                'supplierManufacturer' => SupplierManufacturerFactory::random(),
-                'isActive' => random_int(1, 10) > 1,
+                'supplierManufacturer' => SupplierManufacturerFactory::random(['supplier' => $supplier]),
+                'isActive' => true,
             ];
         });
+    }
 
-        $manager->flush();
+    private function createCommonProducts(Proxy $warehouse, Proxy $supplier, int $productMapCount): void
+    {
+        $commonProducts = SupplierProductFactory::randomSet($productMapCount, [
+            'supplier' => $warehouse,
+        ]);
+
+        foreach ($commonProducts as $commonProduct) {
+            $supplierCategory = SupplierCategoryFactory::findOrCreate([
+                'supplier' => $supplier,
+                'name' => $commonProduct->getSupplierCategory()->getName(),
+            ]);
+
+            $supplierSubcategory = SupplierSubcategoryFactory::findOrCreate([
+                'supplier' => $supplier,
+                'supplierCategory' => $supplierCategory,
+                'name' => $commonProduct->getSupplierSubcategory()->getName(),
+            ]);
+
+            $supplierManufacturer = SupplierManufacturerFactory::findOrCreate([
+                'supplier' => $supplier,
+                'name' => $commonProduct->getSupplierManufacturer()->getName(),
+            ]);
+
+            SupplierProductFactory::createOne([
+                'supplier' => $supplier,
+                'name' => $commonProduct->getName(),
+                'mfrPartNumber' => $commonProduct->getMfrPartNumber(),
+                'weight' => $commonProduct->getWeight(),
+                'cost' => $commonProduct->getCost() * (1 + (rand(-20, 20) / 100)),
+                'supplierCategory' => $supplierCategory,
+                'supplierSubcategory' => $supplierSubcategory,
+                'supplierManufacturer' => $supplierManufacturer,
+                'isActive' => true,
+            ]);
+        }
     }
 }
