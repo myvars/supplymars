@@ -1,9 +1,9 @@
 <div class="p-3 relative h-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
     <div class="w-full flex justify-between items-center">
         <p class="text-gray-500 dark:text-gray-400">
-            {{ order.itemCount }} {% if order.itemCount == 1 %}item{% else %}items{% endif %}
-            <span class="ms-1">
-                {{ order.lineCount }} {% if order.lineCount == 1 %}line{% else %}lines{% endif %}
+            {{ order.lineCount }} {% if order.lineCount == 1 %}line{% else %}lines{% endif %}
+            <span class="ms-1 text-grey-600 dark:text-gray-500">
+                {{ order.itemCount }} {% if order.itemCount == 1 %}item{% else %}items{% endif %}
             </span>
         </p>
         {% if order.allowEdit %}

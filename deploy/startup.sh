@@ -20,7 +20,6 @@ echo "Dropping database..."
 # App specific startup options ##########################################
 # Load fixtures
 /opt/bitnami/projects/app/bin/console doctrine:fixtures:load -n --env=dev --no-debug
-/opt/bitnami/projects/app/bin/console app:create-address adam@admin.com --env=dev --no-debug
 /opt/bitnami/projects/app/bin/console app:create-warehouse-products --env=dev --no-debug
 /opt/bitnami/projects/app/bin/console app:create-supplier-products --env=dev --no-debug
 else

@@ -2,6 +2,9 @@
 
 namespace App\DataFixtures;
 
+use App\Entity\Address;
+use App\Entity\User;
+use App\Factory\AddressFactory;
 use App\Factory\SupplierCategoryFactory;
 use App\Factory\SupplierFactory;
 use App\Factory\SupplierManufacturerFactory;
@@ -23,7 +26,7 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-        $this->createUsers();
+        $this->createUser();
 
         $this->createVatRates();
 
@@ -33,14 +36,22 @@ class AppFixtures extends Fixture
         $this->createAdditionalSuppliers($warehouse);
     }
 
-    public function createUsers(): void
+    public function createUser(): void
     {
-        UserFactory::createOne([
+        $user = UserFactory::createOne([
             'fullName' => 'Adam Ashmore',
             'email' => 'adam@admin.com',
             'password' => 'letmein',
             'isVerified' => true,
             'roles' => ['ROLE_ADMIN'],
+        ]);
+
+        AddressFactory::createOne([
+            'customer' => $user,
+            'email' => $user->getEmail(),
+            'fullName' => $user->getFullName(),
+            'defaultBillingAddress' => true,
+            'defaultShippingAddress' => true,
         ]);
     }
 
