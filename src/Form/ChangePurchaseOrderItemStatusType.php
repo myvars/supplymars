@@ -17,7 +17,7 @@ class ChangePurchaseOrderItemStatusType extends AbstractType
             ->add('purchaseOrderItemStatus', EnumType::class, [
                 'class' => PurchaseOrderStatus::class,
                 'choice_label' => fn (PurchaseOrderStatus $purchaseOrderItemStatus) => $purchaseOrderItemStatus->value,
-                'label' => 'PO Status',
+                'label' => 'PO Item Status',
                 'placeholder' => 'Choose a PO Item status',
             ])
         ;
