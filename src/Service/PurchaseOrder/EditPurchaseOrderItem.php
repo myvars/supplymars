@@ -41,6 +41,11 @@ final readonly class EditPurchaseOrderItem implements CrudActionInterface
 
         $this->entityManager->flush();
 
+        // check if the purchase order/item had been removed
+        if (!$purchaseOrderItem->getPurchaseOrder() instanceof PurchaseOrder) {
+            return;
+        }
+
         $this->domainEventDispatcher->dispatchProviderEvents([
             $purchaseOrderItem,
             $purchaseOrderItem->getPurchaseOrder(),

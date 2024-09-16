@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\CustomerOrder;
+use App\Enum\OrderStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -53,5 +54,18 @@ class CustomerOrderRepository extends ServiceEntityRepository
         }
 
         return $qb;
+    }
+
+    public function findNextOrdersToBeProcessed(int $orderCount = 1): ?array
+    {
+        return $this->createQueryBuilder('o')
+            ->leftJoin('o.purchaseOrders', 'po')
+            ->where('o.status = :status')
+            ->andWhere('po.id IS NULL')
+            ->setParameter('status', OrderStatus::PENDING)
+            ->orderBy('o.createdAt', 'ASC')
+            ->setMaxResults($orderCount)
+            ->getQuery()
+            ->getResult();
     }
 }

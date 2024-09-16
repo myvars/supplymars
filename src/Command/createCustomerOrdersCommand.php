@@ -60,6 +60,8 @@ class createCustomerOrdersCommand extends Command
 
         $ordersCreated = 0;
         for ($i = 0; $i < $orderCount; $i++) {
+            // sleep to simulate real world
+            sleep(random_int(1, intdiv(300, $orderCount)));
             $this->createOrder();
             $ordersCreated++;
         }
