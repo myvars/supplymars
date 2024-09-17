@@ -28,6 +28,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class createCustomerOrdersCommand extends Command
 {
     public const MAX_ORDER_LINES = 5;
+
     public const MAX_LINE_QTY = 5;
 
     public function __construct(
@@ -74,7 +75,7 @@ class createCustomerOrdersCommand extends Command
     public function createOrder(): void
     {
         $user = $this->getUser();
-        $billingAddress = $this->createBillingAddress($user);
+        $this->createBillingAddress($user);
         $customerOrder = $this->placeCustomerOrder($user);
         $this->addCustomerOrderItems($customerOrder);
     }
@@ -85,11 +86,6 @@ class createCustomerOrdersCommand extends Command
             return UserFactory::random()->_real();
         }
 
-        return UserFactory::createOne(['isVerified' => true])->_real();
-    }
-
-    private function createUser(): User
-    {
         return UserFactory::createOne(['isVerified' => true])->_real();
     }
 
@@ -109,6 +105,7 @@ class createCustomerOrdersCommand extends Command
         $createOrderDto = new CreateOrderDto();
         $createOrderDto->setCustomerId($user->getId());
         $createOrderDto->setCustomerOrderRef('TEST-' . sprintf('%04d', $user->getId()));
+
         $shippingMethods = ShippingMethod::cases();
         $createOrderDto->setShippingMethod($shippingMethods[array_rand($shippingMethods)]);
 
@@ -125,6 +122,7 @@ class createCustomerOrdersCommand extends Command
             $customerOrder->addCustomerOrderItem($customerOrderItem);
             $this->entityManager->persist($customerOrderItem);
         }
+
         $this->entityManager->flush();
     }
 }

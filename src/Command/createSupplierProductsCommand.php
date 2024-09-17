@@ -58,7 +58,7 @@ class createSupplierProductsCommand extends Command
             return 'inactive';
         }
 
-        if ($supplierProduct->getProduct()) {
+        if ($supplierProduct->getProduct() instanceof Product) {
             return 'skipped';
         }
 

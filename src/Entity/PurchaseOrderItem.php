@@ -69,6 +69,9 @@ class PurchaseOrderItem implements DomainEventProviderInterface
     #[ORM\Column]
     private int $totalWeight = 0;
 
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $deliveredAt = null;
+
     public function __construct()
     {
         $this->status = PurchaseOrderStatus::getDefault();
@@ -193,6 +196,18 @@ class PurchaseOrderItem implements DomainEventProviderInterface
         return $this->totalWeight;
     }
 
+    public function getDeliveredAt(): ?\DateTimeImmutable
+    {
+        return $this->deliveredAt;
+    }
+
+    public function setDeliveredAt(?\DateTimeImmutable $deliveredAt): static
+    {
+        $this->deliveredAt = $deliveredAt;
+
+        return $this;
+    }
+
     public function recalculateTotal(): static
     {
         $this->totalPrice = bcmul((string) $this->quantity, $this->price, 2);
@@ -259,6 +274,10 @@ class PurchaseOrderItem implements DomainEventProviderInterface
         }
 
         $this->status = $newStatus;
+        if ($newStatus === PurchaseOrderStatus::DELIVERED) {
+            $this->setDeliveredAt(new \DateTimeImmutable());
+        }
+
         $this->raiseDomainEvent(new PurchaseOrderItemStatusChangedEvent($this));
         $this->getPurchaseOrder()->generateStatus();
         $this->getCustomerOrderItem()->generateStatus();

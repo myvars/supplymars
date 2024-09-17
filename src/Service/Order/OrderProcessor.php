@@ -21,6 +21,11 @@ final readonly class OrderProcessor
     public function processOrder(CustomerOrder $customerOrder): void
     {
         foreach ($customerOrder->getCustomerOrderItems() as $customerOrderItem) {
+
+            if ($customerOrderItem->getOutstandingQty() <= 0) {
+                continue;
+            }
+
             $lowestCostSupplier = $this->getLowestCostSupplierProduct(
                 $customerOrderItem->getProduct(),
                 $customerOrderItem->getQuantity()
@@ -40,10 +45,11 @@ final readonly class OrderProcessor
     {
         $lowestCostSupplier = null;
         foreach ($product->getActiveSupplierProducts() as $supplierProduct) {
-            if ($supplierProduct->getStock() >= $orderItemQty) {
-                if (!isset($lowestCostSupplier) || $supplierProduct->getCost() < $lowestCostSupplier->getCost()) {
-                    $lowestCostSupplier = $supplierProduct;
-                }
+            if (
+                $supplierProduct->getStock() >= $orderItemQty
+                && (!isset($lowestCostSupplier) || $supplierProduct->getCost() < $lowestCostSupplier->getCost())
+            ) {
+                $lowestCostSupplier = $supplierProduct;
             }
         }
 

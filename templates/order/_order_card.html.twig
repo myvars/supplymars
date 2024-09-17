@@ -17,7 +17,18 @@
                     | {{ order.customerOrderRef }}
                 {% endif %}
             </p>
-            <p class="">{{ order.status.value|title }}</p>
+            <p class="flex justify-end items-center">
+            {% if order.allowEdit %}
+                <a href="{{ path('app_order_process', {id: result.id}) }}"
+                   data-turbo-frame="_top"
+                   data-turbo-prefetch="false"
+                   class="py-1 text-sm text-yellow-700 dark:text-yellow-500 hover:text-yellow-500 dark:hover:text-yellow-300"
+                >
+                    <twig:ux:icon name="f7:wand-stars" class="w-4 me-1.5" />
+                </a>
+            {% endif %}
+                {{ order.status.value|title }}
+            </p>
         </div>
     </div>
 </div>

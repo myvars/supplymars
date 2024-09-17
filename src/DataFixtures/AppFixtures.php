@@ -2,8 +2,6 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Address;
-use App\Entity\User;
 use App\Factory\AddressFactory;
 use App\Factory\SupplierCategoryFactory;
 use App\Factory\SupplierFactory;
@@ -19,9 +17,13 @@ use Zenstruck\Foundry\Persistence\Proxy;
 class AppFixtures extends Fixture
 {
     public const DEFAULT_SUPPLIER_NAME = 'Turtle Inc';
+
     public const DEFAULT_SUPPLIER_PRODUCT_COUNT = 100;
+
     public const EDI_SUPPLIER_COUNT = 3;
+
     public const EDI_SUPPLIER_PRODUCT_COUNT = 100;
+
     public const EDI_SUPPLIER_COMMON_PRODUCT_PERCENT = 50;
 
     public function load(ObjectManager $manager): void
@@ -73,7 +75,7 @@ class AppFixtures extends Fixture
 
     public function createAdditionalSuppliers(Proxy $warehouse): void
     {
-        if (self::EDI_SUPPLIER_COUNT < 1 || self::EDI_SUPPLIER_PRODUCT_COUNT < 1) {
+        if (self::EDI_SUPPLIER_PRODUCT_COUNT < 1) {
             return;
         }
 
@@ -153,7 +155,7 @@ class AppFixtures extends Fixture
                 'name' => $commonProduct->getName(),
                 'mfrPartNumber' => $commonProduct->getMfrPartNumber(),
                 'weight' => $commonProduct->getWeight(),
-                'cost' => $commonProduct->getCost() * (1 + (rand(-20, 20) / 100)),
+                'cost' => $commonProduct->getCost() * (1 + (random_int(-20, 20) / 100)),
                 'supplierCategory' => $supplierCategory,
                 'supplierSubcategory' => $supplierSubcategory,
                 'supplierManufacturer' => $supplierManufacturer,

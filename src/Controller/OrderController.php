@@ -14,6 +14,7 @@ use App\Service\Crud\CrudUpdater;
 use App\Service\Crud\CrudReader;
 use App\Service\Order\CancelOrder;
 use App\Service\Order\CreateOrder;
+use App\Service\Order\OrderProcessor;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -91,6 +92,25 @@ class OrderController extends AbstractController
             $this->addFlash('success', 'Order cancelled successfully');
         } catch (\Exception) {
             $this->addFlash('error', 'Order cannot be cancelled');
+        }
+
+        return $crudHelper->redirectToLink(
+            $this->generateUrl('app_order_show', ['id' => $customerOrder->getId()])
+        );
+    }
+
+    #[Route('/{id}/process', name: 'app_order_process', methods: ['GET'])]
+    public function process(?CustomerOrder $customerOrder, OrderProcessor $action, CrudHelper $crudHelper): Response
+    {
+        if (!$customerOrder instanceof CustomerOrder) {
+            return $crudHelper->showEmpty(self::SECTION);
+        }
+
+        try {
+            $action->processOrder($customerOrder);
+            $this->addFlash('success', 'Order processed successfully');
+        } catch (\Exception) {
+            $this->addFlash('error', 'Order cannot be processed');
         }
 
         return $crudHelper->redirectToLink(
