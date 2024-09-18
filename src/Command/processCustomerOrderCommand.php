@@ -52,10 +52,15 @@ class processCustomerOrderCommand extends Command
 
         $this->setDefaultUser();
 
+        $processedOrders = 0;
         foreach ($customerOrders as $customerOrder) {
             $this->orderProcessor->processOrder($customerOrder);
-            $io->success(sprintf('Customer order %05d processed', $customerOrder->getId()));
+            $processedOrders++;
+
+            $io->note(sprintf('Customer order %05d processed', $customerOrder->getId()));
         }
+
+        $io->success(sprintf('%d customer orders processed', $processedOrders));
 
         return Command::SUCCESS;
     }

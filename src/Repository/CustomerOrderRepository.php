@@ -58,12 +58,13 @@ class CustomerOrderRepository extends ServiceEntityRepository
 
     public function findNextOrdersToBeProcessed(int $orderCount = 1): ?array
     {
-        return $this->createQueryBuilder('o')
-            ->leftJoin('o.purchaseOrders', 'po')
-            ->where('o.status = :status')
+        return $this->createQueryBuilder('co')
+            ->leftJoin('co.purchaseOrders', 'po')
+            ->andWhere('co.status = :status')
+            ->andWhere('co.orderLock IS NULL')
             ->andWhere('po.id IS NULL')
             ->setParameter('status', OrderStatus::PENDING)
-            ->orderBy('o.createdAt', 'ASC')
+            ->orderBy('co.createdAt', 'ASC')
             ->setMaxResults($orderCount)
             ->getQuery()
             ->getResult();

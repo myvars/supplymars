@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\PurchaseOrder;
+use App\Entity\Supplier;
+use App\Enum\PurchaseOrderStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -53,5 +55,20 @@ class PurchaseOrderRepository extends ServiceEntityRepository
         }
 
         return $qb;
+    }
+
+    public function findWaitingPurchaseOrders(Supplier $supplier, int $limit = 10): array
+    {
+        return $this->createQueryBuilder('po')
+            ->leftjoin('po.customerOrder', 'co')
+            ->where('po.supplier = :supplier')
+            ->andWhere('po.status = :status')
+            ->andWhere('co.orderLock IS NULL')
+            ->setParameter('supplier', $supplier)
+            ->setParameter('status', PurchaseOrderStatus::PROCESSING)
+            ->orderBy('po.createdAt', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
     }
 }

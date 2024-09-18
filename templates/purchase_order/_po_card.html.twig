@@ -1,6 +1,9 @@
 <div class="relative h-full bg-white border border-supplier-200 rounded-lg shadow dark:bg-supplier-800 dark:border-supplier-700">
     <div class="p-3 text-sm text-gray-500 dark:text-gray-400">
-        <h5 class="mb-2 text-xl text-gray-900 dark:text-white">PO #{{ '%06d'|format(result.id) }}</h5>
+        <h5 class="mb-2 text-xl text-gray-900 dark:text-white">
+            PO #{{ '%06d'|format(result.id) }}
+            <span class="ms-2 text-gray-500 dark:text-gray-400">{{ result.supplier.name }}</span>
+        </h5>
         <div class="flex items-center justify-between">
             <p class="me-10 text-sm">
                 {{ purchaseOrder.createdAt|date() }} |
