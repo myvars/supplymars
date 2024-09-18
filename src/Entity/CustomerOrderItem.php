@@ -200,6 +200,7 @@ class CustomerOrderItem implements DomainEventProviderInterface
 
         if ($this->getOutstandingQty() !== 0) {
             $this->setStatus(OrderStatus::PROCESSING);
+            $this->customerOrder->generateStatus();
 
             return;
         }
@@ -232,7 +233,7 @@ class CustomerOrderItem implements DomainEventProviderInterface
     {
         $quantity = 0;
         foreach ($this->getPurchaseOrderItems() as $purchaseOrderItem) {
-            if (!$purchaseOrderItem->isCancelled()) {
+            if (!$purchaseOrderItem->isCancelled() && !$purchaseOrderItem->isRejected()) {
                 $quantity += $purchaseOrderItem->getQuantity();
             }
         }

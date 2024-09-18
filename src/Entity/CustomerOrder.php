@@ -89,6 +89,9 @@ class CustomerOrder implements DomainEventProviderInterface
     #[ORM\OneToMany(targetEntity: PurchaseOrder::class, mappedBy: 'customerOrder')]
     private Collection $purchaseOrders;
 
+    #[ORM\ManyToOne]
+    private ?User $orderLock = null;
+
     public function __construct()
     {
         $this->status = OrderStatus::getDefault();
@@ -226,6 +229,18 @@ class CustomerOrder implements DomainEventProviderInterface
     public function getTotalWeight(): int
     {
         return $this->totalWeight;
+    }
+
+    public function getOrderLock(): ?User
+    {
+        return $this->orderLock;
+    }
+
+    public function setOrderLock(?User $orderLock): static
+    {
+        $this->orderLock = $orderLock;
+
+        return $this;
     }
 
     /**

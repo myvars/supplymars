@@ -30,7 +30,9 @@ enum OrderStatus: string
     {
         return match ($purchaseOrderStatus) {
             PurchaseOrderStatus::PENDING => self::PENDING,
-            PurchaseOrderStatus::PROCESSING => self::PROCESSING,
+            PurchaseOrderStatus::PROCESSING,
+            PurchaseOrderStatus::ACCEPTED,
+            PurchaseOrderStatus::REJECTED => self::PROCESSING,
             PurchaseOrderStatus::SHIPPED => self::SHIPPED,
             PurchaseOrderStatus::DELIVERED => self::DELIVERED,
             PurchaseOrderStatus::CANCELLED => self::CANCELLED,

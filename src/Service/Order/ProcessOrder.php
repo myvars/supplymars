@@ -10,7 +10,7 @@ use App\Enum\PurchaseOrderStatus;
 use App\Service\PurchaseOrder\ChangePurchaseOrderItemStatus;
 use App\Service\PurchaseOrder\CreatePurchaseOrderItem;
 
-final readonly class OrderProcessor
+final readonly class ProcessOrder
 {
     public function __construct(
         private CreatePurchaseOrderItem $createPurchaseOrderItem,
@@ -21,7 +21,6 @@ final readonly class OrderProcessor
     public function processOrder(CustomerOrder $customerOrder): void
     {
         foreach ($customerOrder->getCustomerOrderItems() as $customerOrderItem) {
-
             if ($customerOrderItem->getOutstandingQty() <= 0) {
                 continue;
             }

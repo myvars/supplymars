@@ -3,7 +3,7 @@
 namespace App\Command;
 
 use App\Entity\CustomerOrder;
-use App\Service\Order\OrderProcessor;
+use App\Service\Order\ProcessOrder;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -25,9 +25,9 @@ class processCustomerOrderCommand extends Command
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly TokenStorageInterface $tokenStorage,
-        private readonly UserProviderInterface $userProvider,
-        private readonly OrderProcessor $orderProcessor,
+        private readonly TokenStorageInterface  $tokenStorage,
+        private readonly UserProviderInterface  $userProvider,
+        private readonly ProcessOrder           $orderProcessor,
     ) {
         parent::__construct();
     }

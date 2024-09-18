@@ -227,6 +227,11 @@ class PurchaseOrderItem implements DomainEventProviderInterface
         return $this->status !== PurchaseOrderStatus::DELIVERED && $this->status !== PurchaseOrderStatus::CANCELLED;
     }
 
+    public function isRejected(): bool
+    {
+        return $this->status->isRejected();
+    }
+
     public function isCancelled(): bool
     {
         return $this->status->isCancelled();

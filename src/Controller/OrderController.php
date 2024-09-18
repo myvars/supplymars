@@ -14,7 +14,8 @@ use App\Service\Crud\CrudUpdater;
 use App\Service\Crud\CrudReader;
 use App\Service\Order\CancelOrder;
 use App\Service\Order\CreateOrder;
-use App\Service\Order\OrderProcessor;
+use App\Service\Order\LockOrder;
+use App\Service\Order\ProcessOrder;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -100,7 +101,7 @@ class OrderController extends AbstractController
     }
 
     #[Route('/{id}/process', name: 'app_order_process', methods: ['GET'])]
-    public function process(?CustomerOrder $customerOrder, OrderProcessor $action, CrudHelper $crudHelper): Response
+    public function process(?CustomerOrder $customerOrder, ProcessOrder $action, CrudHelper $crudHelper): Response
     {
         if (!$customerOrder instanceof CustomerOrder) {
             return $crudHelper->showEmpty(self::SECTION);
@@ -112,6 +113,20 @@ class OrderController extends AbstractController
         } catch (\Exception) {
             $this->addFlash('error', 'Order cannot be processed');
         }
+
+        return $crudHelper->redirectToLink(
+            $this->generateUrl('app_order_show', ['id' => $customerOrder->getId()])
+        );
+    }
+
+    #[Route('/{id}/lock/toggle', name: 'app_order_lock_toggle_status', methods: ['GET'])]
+    public function toggleStatus(?CustomerOrder $customerOrder, LockOrder $action, CrudHelper $crudHelper): Response
+    {
+        if (!$customerOrder instanceof CustomerOrder) {
+            return $crudHelper->showEmpty(self::SECTION);
+        }
+
+        $action->toggleStatus($customerOrder);
 
         return $crudHelper->redirectToLink(
             $this->generateUrl('app_order_show', ['id' => $customerOrder->getId()])
