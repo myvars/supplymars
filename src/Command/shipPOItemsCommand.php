@@ -40,7 +40,7 @@ class shipPOItemsCommand extends Command
 
         $supplier = $this->supplierUtility->getRandomSupplier();
 
-        if (!$supplier) {
+        if (!$supplier instanceof Supplier) {
             $io->error('No supplier found');
 
             return Command::FAILURE;

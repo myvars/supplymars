@@ -3,8 +3,6 @@
 namespace App\Service\OrderProcessing;
 
 use App\DTO\ChangePurchaseOrderItemStatusDto;
-use App\Entity\CustomerOrder;
-use App\Entity\PurchaseOrder;
 use App\Entity\PurchaseOrderItem;
 use App\Entity\Supplier;
 use App\Enum\PurchaseOrderStatus;

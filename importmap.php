@@ -23,7 +23,7 @@ return [
         'version' => '3.2.2',
     ],
     '@hotwired/turbo' => [
-        'version' => '8.0.5',
+        'version' => '8.0.10',
     ],
     'stimulus-use' => [
         'version' => '0.52.2',
