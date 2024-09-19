@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Entity\CustomerOrder;
 use App\Service\Order\ProcessOrder;
+use App\Service\OrderProcessing\SupplierUtility;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -11,23 +12,17 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 #[AsCommand(
-    name: 'app:process-customer-order',
-    description: 'Build POs for customer order',
+    name: 'app:build-purchase-orders',
+    description: 'Build POs for customer orders',
 )]
-class processCustomerOrderCommand extends Command
+class buildPOsCommand extends Command
 {
-    public const DEFAULT_USER_EMAIL = 'adam@admin.com';
-
     public function __construct(
+        private readonly SupplierUtility $supplierUtility,
         private readonly EntityManagerInterface $entityManager,
-        private readonly TokenStorageInterface  $tokenStorage,
-        private readonly UserProviderInterface  $userProvider,
-        private readonly ProcessOrder           $orderProcessor,
+        private readonly ProcessOrder $orderProcessor,
     ) {
         parent::__construct();
     }
@@ -50,7 +45,7 @@ class processCustomerOrderCommand extends Command
             return Command::SUCCESS;
         }
 
-        $this->setDefaultUser();
+        $this->supplierUtility->setDefaultUser();
 
         $processedOrders = 0;
         foreach ($customerOrders as $customerOrder) {
@@ -68,12 +63,5 @@ class processCustomerOrderCommand extends Command
     private function getNextCustomerOrders(int $orderCount): ?array
     {
         return $this->entityManager->getRepository(CustomerOrder::class)->findNextOrdersToBeProcessed($orderCount);
-    }
-
-    public function setDefaultUser(): void
-    {
-        $user = $this->userProvider->loadUserByIdentifier(self::DEFAULT_USER_EMAIL);
-        $token = new UsernamePasswordToken($user, 'main', $user->getRoles());
-        $this->tokenStorage->setToken($token);
     }
 }

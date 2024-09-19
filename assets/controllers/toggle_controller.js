@@ -8,4 +8,8 @@ export default class extends Controller {
         console.log('Toggle')
         this.toggleableTarget.classList.toggle('hidden');
     }
+
+    preventToggle(event) {
+        event.stopPropagation();
+    }
 }

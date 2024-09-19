@@ -10,7 +10,6 @@
         </a>
     {% endblock %}
     {% endif %}
-    <div data-controller="toggle" data-action="click->toggle#toggle">
         <div class="flex justify-between items-center">
             <p class="me-5 text-xs">
                 {% if purchaseOrderItem.customerOrderItem.product.productImages|length > 0 %}
@@ -34,6 +33,13 @@
                                 Qty: {{ purchaseOrderItem.quantity }} of {{ purchaseOrderItem.customerOrderItem.quantity }}
                             {% endif %}
                         </span>
+                        <a href="{{ path('app_product_show', {'id': purchaseOrderItem.customerOrderItem.product.id }) }}"
+                           class="ms-3 text-sm hover:text-gray-500 dark:hover:text-white"
+                           data-turbo-frame="_top"
+                           data-turbo-prefetch="false"
+                        >
+                        Product #{{ '%05d'|format(purchaseOrderItem.customerOrderItem.product.id) }}
+                        </a>
                     </span>
                     <span class="text-gray-500">
                         {{ purchaseOrderItem.status.value|title }}
@@ -44,5 +50,4 @@
                 </p>
             </div>
         </div>
-    </div>
 </li>

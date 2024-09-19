@@ -28,6 +28,13 @@
                     <span class="me-3 text-lg font-extralight">
                         £{{ purchaseOrderItem.priceIncVat|number_format(2) }}
                         <span class="ms-3 text-sm">Qty: {{ purchaseOrderItem.quantity }}</span>
+                        <a href="{{ path('app_product_show', {'id': purchaseOrderItem.customerOrderItem.product.id }) }}"
+                           class="ms-3 text-sm hover:text-gray-500 dark:hover:text-white"
+                           data-turbo-frame="_top"
+                           data-turbo-prefetch="false"
+                        >
+                        Product #{{ '%05d'|format(purchaseOrderItem.customerOrderItem.product.id) }}
+                        </a>
                     </span>
                     <span class="text-gray-500">
                         {{ purchaseOrderItem.status.value|title }}

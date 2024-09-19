@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\PurchaseOrderItem;
+use App\Entity\Supplier;
+use App\Enum\PurchaseOrderStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -45,4 +47,23 @@ class PurchaseOrderItemRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findPurchaseOrderItemsByStatus(
+        Supplier $supplier,
+        PurchaseOrderStatus $status,
+        int $limit = 10
+    ): array {
+        return $this->createQueryBuilder('poi')
+            ->leftjoin('poi.purchaseOrder', 'po')
+            ->leftjoin('po.customerOrder', 'co')
+            ->where('po.supplier = :supplier')
+            ->andWhere('poi.status = :status')
+            ->andWhere('co.orderLock IS NULL')
+            ->setParameter('supplier', $supplier)
+            ->setParameter('status', $status)
+            ->orderBy('poi.createdAt', 'ASC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
+    }
 }

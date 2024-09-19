@@ -3,6 +3,8 @@
 namespace App\Repository;
 
 use App\Entity\StatusChangeLog;
+use App\Enum\DomainEventType;
+use App\Enum\PurchaseOrderStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -40,4 +42,19 @@ class StatusChangeLogRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findPoStatusChangeByStatus(int $poItemId, PurchaseOrderStatus $status): ?StatusChangeLog
+    {
+        return $this->createQueryBuilder('sc')
+            ->where('sc.eventTypeId = :poItemId')
+            ->andWhere('sc.eventType = :domainEventType')
+            ->andWhere('sc.status = :status')
+            ->setParameter('poItemId', $poItemId)
+            ->setParameter('domainEventType', DomainEventType::PURCHASE_ORDER_ITEM_STATUS_CHANGED)
+            ->setParameter('status', $status->value)
+            ->orderBy('sc.createdAt', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }
