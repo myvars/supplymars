@@ -350,9 +350,9 @@ class CustomerOrder implements DomainEventProviderInterface
             return;
         }
 
-        $orderStatus = OrderStatus::CANCELLED;
+        $orderStatus = null;
         foreach ($this->customerOrderItems as $item) {
-            if ($item->getStatus()->getLevel() < $orderStatus->getLevel()) {
+            if ($orderStatus === null || $item->getStatus()->getLevel() < $orderStatus->getLevel()) {
                 $orderStatus = $item->getStatus();
             }
         }
