@@ -15,6 +15,7 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
+use function PHPUnit\Framework\assertInstanceOf;
 
 #[ORM\Entity(repositoryClass: CustomerOrderItemRepository::class)]
 class CustomerOrderItem implements DomainEventProviderInterface
@@ -192,12 +193,14 @@ class CustomerOrderItem implements DomainEventProviderInterface
 
     public function generateStatus(): void
     {
+        // If there are no purchase order items, set the item status to default
         if ($this->purchaseOrderItems->isEmpty()) {
             $this->setStatus(OrderStatus::getDefault());
 
             return;
         }
 
+        // If there are still outstanding qty, set the item status to PROCESSING
         if ($this->getOutstandingQty() !== 0) {
             $this->setStatus(OrderStatus::PROCESSING);
             $this->customerOrder->generateStatus();
@@ -205,11 +208,24 @@ class CustomerOrderItem implements DomainEventProviderInterface
             return;
         }
 
-        $purchaseOrderItemStatus = PurchaseOrderStatus::CANCELLED;
+        $purchaseOrderItemStatus = null;
         foreach ($this->purchaseOrderItems as $item) {
-            if ($item->getStatus()->getLevel() < $purchaseOrderItemStatus->getLevel()) {
+            // Skip refunded items
+            if ($item->getStatus() === PurchaseOrderStatus::REFUNDED) {
+                continue;
+            }
+
+            if (
+                $purchaseOrderItemStatus === null
+                || $item->getStatus()->getLevel() < $purchaseOrderItemStatus->getLevel()
+            ) {
                 $purchaseOrderItemStatus = $item->getStatus();
             }
+        }
+
+        // If all items are refunded, set the purchase order item status to default
+        if ($purchaseOrderItemStatus === null) {
+            $purchaseOrderItemStatus = PurchaseOrderStatus::getDefault();
         }
 
         $orderItemStatus = OrderStatus::getMappedOrderStatusFromPurchaseOrder($purchaseOrderItemStatus);
