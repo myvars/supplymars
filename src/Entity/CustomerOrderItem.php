@@ -193,6 +193,13 @@ class CustomerOrderItem implements DomainEventProviderInterface
 
     public function generateStatus(): void
     {
+        // If the customer order is cancelled, set the item status to cancelled
+        if ($this->getCustomerOrder()->getStatus() === OrderStatus::CANCELLED) {
+            $this->setStatus(OrderStatus::CANCELLED);
+
+            return;
+        }
+
         // If there are no purchase order items, set the item status to default
         if ($this->purchaseOrderItems->isEmpty()) {
             $this->setStatus(OrderStatus::getDefault());
