@@ -62,7 +62,7 @@ class createCustomerOrdersCommand extends Command
         $ordersCreated = 0;
         for ($i = 0; $i < $orderCount; $i++) {
             // sleep to simulate real world
-            sleep(random_int(1, intdiv(300, $orderCount)));
+   //         sleep(random_int(1, intdiv(300, $orderCount)));
             $this->createOrder();
             $ordersCreated++;
         }
@@ -118,8 +118,11 @@ class createCustomerOrdersCommand extends Command
 
         foreach ($products as $product) {
             $customerOrderItem = new CustomerOrderItem();
-            $customerOrderItem->createFromProduct($product->_real(), random_int(1,self::MAX_LINE_QTY));
+            $customerOrderItem
+                ->setCustomerOrder($customerOrder)
+                ->createFromProduct($product->_real(), random_int(1,self::MAX_LINE_QTY));
             $customerOrder->addCustomerOrderItem($customerOrderItem);
+
             $this->entityManager->persist($customerOrderItem);
         }
 
