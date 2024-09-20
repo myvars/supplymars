@@ -8,6 +8,7 @@ enum PurchaseOrderStatus: string
     case PROCESSING = 'PROCESSING';
     case ACCEPTED = 'ACCEPTED';
     case REJECTED = 'REJECTED';
+    case REFUNDED = 'REFUNDED';
     case SHIPPED = 'SHIPPED';
     case DELIVERED = 'DELIVERED';
     case CANCELLED = 'CANCELLED';
@@ -24,9 +25,10 @@ enum PurchaseOrderStatus: string
             self::PROCESSING => 2,
             self::ACCEPTED => 3,
             self::REJECTED => 4,
-            self::SHIPPED => 5,
-            self::DELIVERED => 6,
-            self::CANCELLED => 7,
+            self::REFUNDED => 5,
+            self::SHIPPED => 6,
+            self::DELIVERED => 7,
+            self::CANCELLED => 8,
         };
     }
 
@@ -35,9 +37,9 @@ enum PurchaseOrderStatus: string
         return $this === self::PENDING;
     }
 
-    public function isRejected(): bool
+    public function isRefunded(): bool
     {
-        return $this === self::REJECTED;
+        return $this === self::REFUNDED;
     }
 
     public function isCancelled(): bool
@@ -61,14 +63,14 @@ enum PurchaseOrderStatus: string
                 default => false,
             },
             self::REJECTED => match ($to) {
-                self::CANCELLED => true,
+                self::REFUNDED => true,
                 default => false,
             },
             self::SHIPPED => match ($to) {
                 self::DELIVERED => true,
                 default => false,
             },
-            self::DELIVERED, self::CANCELLED => false,
+            self::REFUNDED, self::DELIVERED, self::CANCELLED => false,
         };
     }
 }

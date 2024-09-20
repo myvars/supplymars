@@ -27,7 +27,7 @@
                     <span class="me-3 text-lg font-extralight">
                         £{{ purchaseOrderItem.customerOrderItem.priceIncVat|number_format(2) }}
                         <span class="ms-3 text-sm">
-                            {% if purchaseOrderItem.isCancelled or purchaseOrderItem.isRejected or purchaseOrderItem.quantity is same as purchaseOrderItem.customerOrderItem.quantity %}
+                            {% if purchaseOrderItem.isCancelled or purchaseOrderItem.isRefunded or purchaseOrderItem.quantity is same as purchaseOrderItem.customerOrderItem.quantity %}
                                 Qty: {{ purchaseOrderItem.quantity }}
                             {% else %}
                                 Qty: {{ purchaseOrderItem.quantity }} of {{ purchaseOrderItem.customerOrderItem.quantity }}

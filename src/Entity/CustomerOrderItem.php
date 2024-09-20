@@ -233,7 +233,7 @@ class CustomerOrderItem implements DomainEventProviderInterface
     {
         $quantity = 0;
         foreach ($this->getPurchaseOrderItems() as $purchaseOrderItem) {
-            if (!$purchaseOrderItem->isCancelled() && !$purchaseOrderItem->isRejected()) {
+            if (!$purchaseOrderItem->isCancelled() && !$purchaseOrderItem->isRefunded()) {
                 $quantity += $purchaseOrderItem->getQuantity();
             }
         }
