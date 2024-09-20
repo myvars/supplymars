@@ -2,11 +2,7 @@
 
 namespace App\Command;
 
-use App\Entity\PurchaseOrderItem;
-use App\Entity\StatusChangeLog;
-use App\Entity\Supplier;
 use App\Entity\SupplierProduct;
-use App\Enum\PurchaseOrderStatus;
 use App\Service\OrderProcessing\SupplierUtility;
 use App\Service\Product\ActiveSourceCalculator;
 use Doctrine\ORM\EntityManagerInterface;

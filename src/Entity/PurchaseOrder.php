@@ -330,9 +330,9 @@ class PurchaseOrder implements DomainEventProviderInterface
             return;
         }
 
-        $status = PurchaseOrderStatus::CANCELLED;
+        $status = null;
         foreach ($this->purchaseOrderItems as $item) {
-            if ($item->getStatus()->getLevel() < $status->getLevel()) {
+            if ($status === null || $item->getStatus()->getLevel() < $status->getLevel()) {
                 $status = $item->getStatus();
             }
         }
