@@ -6,10 +6,10 @@ use App\DTO\CreateOrderDto;
 use App\Entity\Address;
 use App\Entity\CustomerOrder;
 use App\Entity\CustomerOrderItem;
+use App\Entity\Product;
 use App\Entity\User;
 use App\Enum\ShippingMethod;
 use App\Factory\AddressFactory;
-use App\Factory\ProductFactory;
 use App\Factory\UserFactory;
 use App\Service\Order\CreateOrder;
 use Doctrine\ORM\EntityManagerInterface;
@@ -62,7 +62,7 @@ class createCustomerOrdersCommand extends Command
         $ordersCreated = 0;
         for ($i = 0; $i < $orderCount; $i++) {
             // sleep to simulate real world
-   //         sleep(random_int(1, intdiv(300, $orderCount)));
+          //  sleep(random_int(1, intdiv(300, $orderCount)));
             $this->createOrder();
             $ordersCreated++;
         }
@@ -114,18 +114,23 @@ class createCustomerOrdersCommand extends Command
 
     private function addCustomerOrderItems(CustomerOrder $customerOrder): void
     {
-        $products = ProductFactory::randomSet(random_int(1, self::MAX_ORDER_LINES));
+        $products = $this->getRandomProducts(random_int(1, self::MAX_ORDER_LINES));
 
         foreach ($products as $product) {
             $customerOrderItem = new CustomerOrderItem();
             $customerOrderItem
                 ->setCustomerOrder($customerOrder)
-                ->createFromProduct($product->_real(), random_int(1,self::MAX_LINE_QTY));
+                ->createFromProduct($product, random_int(1,self::MAX_LINE_QTY));
             $customerOrder->addCustomerOrderItem($customerOrderItem);
 
             $this->entityManager->persist($customerOrderItem);
         }
 
         $this->entityManager->flush();
+    }
+
+    private function getRandomProducts(int $productCount): array
+    {
+        return $this->entityManager->getRepository(Product::class)->findRandomProducts($productCount);
     }
 }

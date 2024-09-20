@@ -68,4 +68,18 @@ class ProductRepository extends ServiceEntityRepository
 
         return $qb;
     }
+
+    public function findRandomProducts(int $limit = 10): array
+    {
+        //change the query to join on active product source
+        return $this->getEntityManager()->createQuery('
+            SELECT p FROM App\Entity\Product p
+            JOIN p.supplierProducts sp
+            WHERE p.isActive = true AND p.stock > 0 AND sp.isActive = true
+            ORDER BY RAND()
+            ')
+            ->setMaxResults($limit)
+            ->getResult();
+
+    }
 }
