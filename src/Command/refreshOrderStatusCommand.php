@@ -30,18 +30,20 @@ class refreshOrderStatusCommand extends Command
     protected function configure(): void
     {
         $this->addArgument('orderCount', InputArgument::REQUIRED, 'Number of orders to process');
+        $this->addArgument('offset', InputArgument::OPTIONAL, 'Offset to start from', 0);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $orderCount = $input->getArgument('orderCount');
+        $offset = $input->getArgument('offset');
 
         $this->supplierUtility->setDefaultUser();
 
         $io->success('Refreshing Orders');
 
-        $customerOrders = $this->getCustomerOrders($orderCount);
+        $customerOrders = $this->getCustomerOrders($orderCount, $offset);
 
         $processedCount = 0;
         $refreshedCount = 0;
@@ -61,8 +63,9 @@ class refreshOrderStatusCommand extends Command
         return Command::SUCCESS;
     }
 
-    public function getCustomerOrders(int $count): array
+    public function getCustomerOrders(int $count, int $offset): array
     {
-        return $this->entityManager->getRepository(CustomerOrder::class)->findBy([], ['createdAt' => 'ASC'], $count);
+        return $this->entityManager->getRepository(CustomerOrder::class)
+            ->findBy([], ['createdAt' => 'ASC'], $count, $offset);
     }
 }
