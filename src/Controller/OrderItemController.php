@@ -18,8 +18,10 @@ use App\Service\PurchaseOrder\CreatePurchaseOrderItem;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/order')]
+#[IsGranted('ROLE_USER')]
 class OrderItemController extends AbstractController
 {
     public const SECTION = 'Order Item';

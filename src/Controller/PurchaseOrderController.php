@@ -12,8 +12,10 @@ use App\Service\Crud\CrudUpdater;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/purchase/order')]
+#[IsGranted('ROLE_USER')]
 class PurchaseOrderController extends AbstractController
 {
     public const SECTION = 'Purchase Order';

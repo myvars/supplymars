@@ -17,8 +17,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/supplier-product')]
+#[IsGranted('ROLE_USER')]
 class SupplierProductController extends AbstractController
 {
     public const SECTION = 'Supplier Product';

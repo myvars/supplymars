@@ -13,8 +13,10 @@ use App\Service\Crud\CrudReader;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/manufacturer')]
+#[IsGranted('ROLE_USER')]
 class ManufacturerController extends AbstractController
 {
     public const SECTION = 'Manufacturer';
