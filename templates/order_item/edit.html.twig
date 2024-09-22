@@ -1,0 +1,23 @@
+{% extends 'modalBase.html.twig' %}
+
+{% block title %}Edit {{ section }}{% endblock %}
+
+{% block body %}
+    <div class="relative p-3 bg-white rounded-lg shadow dark:bg-gray-800">
+        <div class="flex justify-between items-center pb-3 mb-3 rounded-t border-b dark:border-gray-600">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                Edit {{ section }}
+            </h3>
+        </div>
+        {{ include('crud/crud.html.twig', {'template': '_form', 'button_label': 'Update '~section}) }}
+        {% if form.vars.value.allowCancel %}
+            <p class="text-sm text-gray-500 dark:text-gray-400 hover:text-yellow-600 dark:hover:text-yellow-300 mt-3">
+                <a href="{{ path('app_'~section|lower|u.snake~'_cancel', {'id': result.id}) }}"
+                   data-turbo-frame="_top"
+                   data-turbo-prefetch="false"
+                >Cancel Order Item</a>
+            </p>
+        {% endif %}
+    </div>
+{% endblock %}
+

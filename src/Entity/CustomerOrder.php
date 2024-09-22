@@ -304,13 +304,18 @@ class CustomerOrder implements DomainEventProviderInterface
         $totalWeight = 0;
 
         foreach ($this->customerOrderItems as $customerOrderItem) {
+            if ($customerOrderItem->getStatus() === OrderStatus::CANCELLED) {
+                continue;
+            }
             $totalPrice += $customerOrderItem->getTotalPrice();
             $totalPriceIncVat += $customerOrderItem->getTotalPriceIncVat();
             $totalWeight += $customerOrderItem->getTotalWeight();
         }
 
-        $totalPrice += (float) $this->shippingPrice;
-        $totalPriceIncVat += (float) $this->shippingPriceIncVat;
+        if ($this->getStatus() !== OrderStatus::CANCELLED) {
+            $totalPrice += (float)$this->shippingPrice;
+            $totalPriceIncVat += (float)$this->shippingPriceIncVat;
+        }
 
         $this->totalPrice = (string) $totalPrice;
         $this->totalPriceIncVat = (string) $totalPriceIncVat;
@@ -325,6 +330,11 @@ class CustomerOrder implements DomainEventProviderInterface
     public function allowCancel(): bool
     {
         return $this->status->allowCancel();
+    }
+
+    public function isCancelled(): bool
+    {
+        return $this->status === OrderStatus::CANCELLED;
     }
 
     public function getLineCount(): int
@@ -344,12 +354,6 @@ class CustomerOrder implements DomainEventProviderInterface
 
     public function generateStatus(): void
     {
-        if ($this->customerOrderItems->isEmpty()) {
-            $this->setStatus(OrderStatus::getDefault());
-
-            return;
-        }
-
         $orderStatus = null;
         foreach ($this->customerOrderItems as $item) {
             if ($orderStatus === null || $item->getStatus()->getLevel() < $orderStatus->getLevel()) {
@@ -357,24 +361,12 @@ class CustomerOrder implements DomainEventProviderInterface
             }
         }
 
+        if ($orderStatus === null) {
+            $orderStatus = OrderStatus::getDefault();
+        }
+
         $this->setStatus($orderStatus);
-    }
-
-    public function cancelOrder(): void
-    {
-        foreach ($this->customerOrderItems as $item) {
-            $item->cancelItem();
-        }
-
-        $status = OrderStatus::CANCELLED;
-        if (!$this->status->canTransitionTo($status)) {
-            throw new \LogicException(sprintf('Cannot transition from "%s" to "%s"',
-                $this->status->value,
-                $status->value
-            ));
-        }
-
-        $this->setStatus($status);
+        $this->recalculateTotal();
     }
 
     /**

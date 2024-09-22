@@ -9,9 +9,11 @@ use App\Entity\CustomerOrderItem;
 use App\Form\CreateOrderItemType;
 use App\Form\EditOrderItemType;
 use App\Service\Crud\CrudCreator;
+use App\Service\Crud\CrudDeleter;
 use App\Service\Crud\CrudHelper;
 use App\Service\Crud\CrudReader;
 use App\Service\Crud\CrudUpdater;
+use App\Service\Order\CancelOrderItem;
 use App\Service\Order\CreateOrderItem;
 use App\Service\Order\EditOrderItem;
 use App\Service\PurchaseOrder\CreatePurchaseOrderItem;
@@ -121,6 +123,20 @@ class OrderItemController extends AbstractController
         }
 
         $this->addFlash('success', 'PO item added');
+
+        return $crudHelper->redirectToLink(
+            $this->generateUrl('app_order_show', ['id' => $customerOrderItem->getCustomerOrder()->getId()])
+        );
+    }
+
+    #[Route('/item/{id}/cancel', name: 'app_order_item_cancel', methods: ['GET'])]
+    public function cancel(?CustomerOrderItem $customerOrderItem, CancelOrderItem $action, CrudHelper $crudHelper): Response
+    {
+        if (!$customerOrderItem instanceof CustomerOrderItem) {
+            return $crudHelper->showEmpty(self::SECTION);
+        }
+
+        $action->cancel($customerOrderItem);
 
         return $crudHelper->redirectToLink(
             $this->generateUrl('app_order_show', ['id' => $customerOrderItem->getCustomerOrder()->getId()])

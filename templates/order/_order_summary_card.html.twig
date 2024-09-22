@@ -13,11 +13,19 @@
         <p class="mb-1 text-gray-300 dark:text-gray-200">Order Summary</p>
         <div class="flex justify-between">
             <p class="mb-1 me-10">Item(s) subtotal:</p>
-            <p class="mb-1">£{{ (order.totalPrice - order.shippingPrice)|number_format(2) }}</p>
+            {% if order.isCancelled %}
+                <p class="mb-1">£0.00</p>
+            {% else %}
+                <p class="mb-1">£{{ (order.totalPrice - order.shippingPrice)|number_format(2) }}</p>
+            {% endif %}
         </div>
         <div class="flex justify-between">
             <p class="mb-1 me-10">Shipping:</p>
-            <p class="mb-1">£{{ order.shippingPrice|number_format(2) }}</p>
+            {% if order.isCancelled %}
+                <p class="mb-1">£0.00</p>
+            {% else %}
+                <p class="mb-1">£{{ order.shippingPrice|number_format(2) }}</p>
+            {% endif %}
         </div>
         <div class="flex justify-between">
             <p class="mb-1 me-10">Total before VAT:</p>

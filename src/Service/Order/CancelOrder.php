@@ -25,7 +25,15 @@ final readonly class CancelOrder
             throw new \InvalidArgumentException('Order cannot be cancelled');
         }
 
-        $customerOrder->cancelOrder();
+        foreach ($customerOrder->getCustomerOrderItems() as $customerOrderItem) {
+            $customerOrderItem->cancelItem();
+
+            $this->entityManager->persist($customerOrderItem);
+            $this->domainEventDispatcher->dispatchProviderEvents($customerOrderItem);
+        }
+
+        $customerOrder->setStatus(OrderStatus::CANCELLED);
+        $customerOrder->generateStatus();
 
         $this->entityManager->persist($customerOrder);
         $this->entityManager->flush();

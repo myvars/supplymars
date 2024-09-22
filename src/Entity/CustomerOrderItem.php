@@ -193,16 +193,15 @@ class CustomerOrderItem implements DomainEventProviderInterface
 
     public function generateStatus(): void
     {
-        // If the customer order is cancelled, set the item status to cancelled
-        if ($this->getCustomerOrder()->getStatus() === OrderStatus::CANCELLED) {
-            $this->setStatus(OrderStatus::CANCELLED);
-
+        // If the item is already cancelled, do nothing
+        if ($this->getStatus() === OrderStatus::CANCELLED) {
             return;
         }
 
         // If there are no purchase order items, set the item status to default
         if ($this->purchaseOrderItems->isEmpty()) {
             $this->setStatus(OrderStatus::getDefault());
+            $this->customerOrder->generateStatus();
 
             return;
         }
@@ -215,6 +214,11 @@ class CustomerOrderItem implements DomainEventProviderInterface
             return;
         }
 
+        $this->updateStatusBasedOnPurchaseOrderItems();
+    }
+
+    private function updateStatusBasedOnPurchaseOrderItems(): void
+    {
         $purchaseOrderItemStatus = null;
         foreach ($this->purchaseOrderItems as $item) {
             // Skip refunded items
@@ -222,10 +226,7 @@ class CustomerOrderItem implements DomainEventProviderInterface
                 continue;
             }
 
-            if (
-                $purchaseOrderItemStatus === null
-                || $item->getStatus()->getLevel() < $purchaseOrderItemStatus->getLevel()
-            ) {
+            if ($purchaseOrderItemStatus === null || $item->getStatus()->getLevel() < $purchaseOrderItemStatus->getLevel()) {
                 $purchaseOrderItemStatus = $item->getStatus();
             }
         }
@@ -239,6 +240,7 @@ class CustomerOrderItem implements DomainEventProviderInterface
         $this->setStatus($orderItemStatus);
         $this->customerOrder->generateStatus();
     }
+
 
     public function recalculateTotal(): void
     {
@@ -267,6 +269,12 @@ class CustomerOrderItem implements DomainEventProviderInterface
     public function allowEdit(): bool
     {
         return $this->status->allowEdit();
+    }
+
+    public function allowCancel(): bool
+    {
+        return $this->getQtyAddedToPurchaseOrders() === 0
+            && ($this->getStatus() === OrderStatus::PENDING || $this->getStatus() === OrderStatus::PROCESSING);
     }
 
     public function cancelItem(): void
