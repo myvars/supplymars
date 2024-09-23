@@ -14,7 +14,15 @@
                     Order #{{ '%06d'|format(purchaseOrder.customerOrder.id) }}
                 </a>
             </p>
-            <p class="">{{ purchaseOrder.status.value|title }}</p>
+            <a href="{{ path('app_purchase_order_status_log', {'id':purchaseOrder.id }) }}"
+               class="flex justify-between items-center text-grey-500 dark:hover:text-gray-800"
+               data-turbo-prefetch="false"
+               data-turbo-frame="modal"
+            >
+                <twig:StatusIcon type="{{ purchaseOrder.status.value|lower }}" class="me-1"/>
+                {{ purchaseOrder.status.value|title }}
+            </a>
+
         </div>
     </div>
 </div>

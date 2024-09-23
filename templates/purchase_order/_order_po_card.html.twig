@@ -8,7 +8,14 @@
             >PO #{{ '%06d'|format(purchaseOrder.id) }}</a>
             <span class="ms-2 text-sm text-gray-500 dark:text-gray-400">{{ purchaseOrder.supplier.name }}</span>
         </h1>
-        <p>{{ purchaseOrder.status.value|title }}</p>
+        <a href="{{ path('app_purchase_order_status_log', {'id':purchaseOrder.id }) }}"
+           class="flex justify-between items-center text-grey-500 dark:hover:text-gray-800"
+           data-turbo-prefetch="false"
+           data-turbo-frame="modal"
+        >
+            <twig:StatusIcon type="{{ purchaseOrder.status.value|lower }}" class="me-1"/>
+            {{ purchaseOrder.status.value|title }}
+        </a>
     </div>
     <ul class="w-full space-y-3">
         {% for purchaseOrderItem in purchaseOrder.purchaseOrderItems %}

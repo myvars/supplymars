@@ -45,7 +45,13 @@
                         Product #{{ '%05d'|format(orderItem.product.id) }}
                         </a>
                     </span>
-                    <span class="text-gray-500">{{ orderItem.status.value|title }}</span>
+                    <a href="{{ path('app_order_item_status_log', {'id':orderItem.id }) }}"
+                       class="text-grey-500 dark:hover:text-gray-600"
+                       data-turbo-prefetch="false"
+                       data-turbo-frame="modal"
+                    >
+                    {{ orderItem.status.value|title }}
+                    </a>
                 </p>
             </div>
         </div>

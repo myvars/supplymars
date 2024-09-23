@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\CustomerOrder;
+use App\Enum\DomainEventType;
 use App\Enum\OrderStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;

@@ -57,4 +57,16 @@ class StatusChangeLogRepository extends ServiceEntityRepository
             ->getQuery()
             ->getOneOrNullResult();
     }
+
+    public function findStatusChanges(DomainEventType $eventType, int $id): array
+    {
+        return $this->createQueryBuilder('sc')
+            ->where('sc.eventTypeId = :id')
+            ->andWhere('sc.eventType = :domainEventType')
+            ->setParameter('id', $id)
+            ->setParameter('domainEventType', $eventType->value)
+            ->orderBy('sc.createdAt', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

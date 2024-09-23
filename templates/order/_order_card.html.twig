@@ -5,7 +5,7 @@
        class="absolute -top-1.5 -right-1 p-1.5 bg-white text-gray-300 border border-gray-600 rounded-full shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600"
        data-turbo-prefetch="false"
     >
-        <twig:ux:icon name="bi:x-lg" class="w-6 h-6 p-0.5" />
+        <twig:ux:icon name="clarity:cancel-line" class="w-6 h-6 p-0.5" />
     </a>
     {% endif %}
     <div class="p-3 text-sm text-gray-500 dark:text-gray-400">
@@ -41,7 +41,13 @@
                     <twig:ux:icon name="f7:wand-stars" class="w-4 me-1.5" />
                 </a>
             {% endif %}
-                {{ order.status.value|title }}
+                <a href="{{ path('app_order_status_log', {'id':result.id }) }}"
+                   class="text-grey-500 dark:hover:text-gray-600"
+                   data-turbo-prefetch="false"
+                   data-turbo-frame="modal"
+                >
+                    {{ order.status.value|title }}
+                </a>
             </p>
         </div>
     </div>

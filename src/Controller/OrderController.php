@@ -16,6 +16,7 @@ use App\Service\Order\CancelOrder;
 use App\Service\Order\CreateOrder;
 use App\Service\Order\LockOrder;
 use App\Service\Order\ProcessOrder;
+use App\Service\StatusLogUtility;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;

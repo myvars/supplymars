@@ -8,6 +8,8 @@ use App\Enum\PurchaseOrderStatus;
 use App\Event\PurchaseOrderItemCreatedEvent;
 use App\Event\PurchaseOrderItemStatusChangedEvent;
 use App\Repository\PurchaseOrderItemRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
@@ -71,6 +73,7 @@ class PurchaseOrderItem implements DomainEventProviderInterface
 
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $deliveredAt = null;
+
 
     public function __construct()
     {

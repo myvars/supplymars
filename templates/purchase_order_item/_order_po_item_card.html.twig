@@ -42,7 +42,13 @@
                         </a>
                     </span>
                     <span class="text-gray-500">
-                        {{ purchaseOrderItem.status.value|title }}
+                        <a href="{{ path('app_purchase_order_item_status_log', {'id':purchaseOrderItem.id }) }}"
+                           class="text-grey-500 dark:hover:text-gray-800"
+                           data-turbo-prefetch="false"
+                           data-turbo-frame="modal"
+                        >
+                            {{ purchaseOrderItem.status.value|title }}
+                        </a>
                         {%  if purchaseOrderItem.status.value|lower == 'delivered' and purchaseOrderItem.deliveredAt is not null %}
                             <span class="py-1">on {{ purchaseOrderItem.deliveredAt|date("jS M Y") }}</span>
                         {% endif %}
