@@ -1,4 +1,5 @@
-<div class="flex justify-between relative h-full bg-white border border-supplier-200 rounded-lg shadow dark:bg-supplier-800 dark:border-supplier-700">
+{% set colourScheme = purchaseOrder.supplier.colourScheme %}
+<div class="flex justify-between relative h-full bg-white border border-{{ colourScheme }}-200 rounded-lg shadow dark:bg-{{ colourScheme }}-800 dark:border-{{ colourScheme }}-700">
     <div class="p-3 text-sm text-gray-500 dark:text-gray-400">
         <p class="mb-1 text-gray-300 dark:text-gray-200">Delivery Address</p>
         <p class="mb-1">{{ purchaseOrder.customerOrder.customer.fullName }}</p>

@@ -1,4 +1,5 @@
-<div class="relative p-3 h-full bg-white border border-supplier-200 rounded-lg shadow dark:bg-supplier-800 dark:border-supplier-700">
+{% set colourScheme = purchaseOrder.supplier.colourScheme %}
+<div class="relative p-3 h-full bg-white border border-{{ colourScheme }}-200 rounded-lg shadow dark:bg-{{ colourScheme }}-800 dark:border-{{ colourScheme }}-700">
     <div class="w-full flex justify-between">
         <h1 class="text-base text-gray-500 dark:text-gray-400">
             <a href="{{ path('app_purchase_order_show', {id: purchaseOrder.id}) }}"

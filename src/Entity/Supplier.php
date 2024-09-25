@@ -24,7 +24,7 @@ class Supplier
     private ?string $name = null;
 
     #[ORM\Column(length: 20)]
-    private string $colourScheme = 'gray';
+    private string $colourScheme = 'supplier1';
 
     #[ORM\Column]
     private bool $isActive = false;
