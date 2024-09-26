@@ -23,9 +23,6 @@ class Supplier
     #[Assert\NotBlank(message: 'Please enter a supplier name')]
     private ?string $name = null;
 
-    #[ORM\Column(length: 20)]
-    private string $colourScheme = 'supplier1';
-
     #[ORM\Column]
     private bool $isActive = false;
 
@@ -78,14 +75,8 @@ class Supplier
 
     public function getColourScheme(): string
     {
-        return $this->colourScheme;
-    }
-
-    public function setColourScheme(string $colourScheme): Supplier
-    {
-        $this->colourScheme = $colourScheme;
-
-        return $this;
+        // return a colour scheme based on the supplier ID
+        return 'supplier' . ($this->getId() < 5 ? $this->getId() : 1);
     }
 
     public function isWarehouse(): bool

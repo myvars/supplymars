@@ -82,6 +82,6 @@ class acceptPOsCommand extends Command
     private function realWorldPoStatusSimulator(): PurchaseOrderStatus
     {
         // Simulate real world scenario by rejecting some POs
-        return random_int(1,25) === 1 ? PurchaseOrderStatus::REJECTED : PurchaseOrderStatus::ACCEPTED;
+        return random_int(1,50) === 1 ? PurchaseOrderStatus::REJECTED : PurchaseOrderStatus::ACCEPTED;
     }
 }

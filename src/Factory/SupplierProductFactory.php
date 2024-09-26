@@ -39,7 +39,7 @@ final class SupplierProductFactory extends PersistentProxyObjectFactory
             'supplierManufacturer' => SupplierManufacturerFactory::new(),
             'mfrPartNumber' => self::faker()->numerify('PART-####'),
             'weight' => self::faker()->randomNumber(4),
-            'stock' => self::faker()->randomNumber(4),
+            'stock' => self::faker()->randomNumber(3),
             'leadTimeDays' => self::faker()->randomNumber(2),
             'cost' => self::faker()->randomNumber(5) / 100,
             'isActive' => self::faker()->boolean(),
