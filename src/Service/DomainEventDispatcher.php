@@ -16,9 +16,9 @@ class DomainEventDispatcher
     /**
      * Dispatches one or more provider events.
      *
-     * @param DomainEventProviderInterface|DomainEventProviderInterface[] $eventProviders
+     * @param object|object[] $eventProviders
      */
-    public function dispatchProviderEvents(DomainEventProviderInterface|array $eventProviders): void
+    public function dispatchProviderEvents(object|array $eventProviders): void
     {
         if (!is_array($eventProviders)) {
             $eventProviders = [$eventProviders];
@@ -26,7 +26,7 @@ class DomainEventDispatcher
 
         foreach ($eventProviders as $eventProvider) {
             if (!$eventProvider instanceof DomainEventProviderInterface) {
-                throw new \InvalidArgumentException('Provider must implement DomainEventProviderInterface');
+                continue;
             }
 
             foreach ($eventProvider->releaseDomainEvents() as $event) {

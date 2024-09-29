@@ -5,6 +5,7 @@ namespace App\Command;
 use App\Entity\Supplier;
 use App\Entity\SupplierProduct;
 use App\Factory\SupplierProductFactory;
+use App\Service\DomainEventDispatcher;
 use App\Service\OrderProcessing\SupplierUtility;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -26,7 +27,8 @@ class updateSupplierStockCommand extends Command
 
     public function __construct(
         private readonly SupplierUtility $supplierUtility,
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
+        private readonly DomainEventDispatcher $domainEventDispatcher
     ) {
         parent::__construct();
     }
@@ -70,10 +72,11 @@ class updateSupplierStockCommand extends Command
         $processedItemCount = 0;
         foreach ($supplierProducts as $supplierProduct) {
             $supplierProduct = $supplierProduct->_real();
+
             $previousStock = $supplierProduct->getStock();
             $previousCost = $supplierProduct->getCost();
-            $this->realWorldStockLevelSimulator($supplierProduct);
 
+            $this->realWorldStockLevelSimulator($supplierProduct);
             $processedItemCount++;
 
             $this->entityManager->flush();
@@ -100,8 +103,21 @@ class updateSupplierStockCommand extends Command
     private function realWorldStockLevelSimulator(SupplierProduct $supplierProduct): void
     {
         // Simulate real world stock level changes
+
+        //TODO: Add run rate logic to replenish stock
+        if ($supplierProduct->getStock() <= self::STOCK_REPLENISH_LEVEL) {
+            $this->replenishStock($supplierProduct);
+
+            return;
+        }
+
         $this->decreaseStock($supplierProduct);
-        $this->replenishStock($supplierProduct);
+    }
+
+    private function replenishStock(SupplierProduct $supplierProduct): void
+    {
+        $this->increaseStock($supplierProduct);
+        $this->changeCost($supplierProduct);
     }
 
     private function decreaseStock(SupplierProduct $supplierProduct): void
@@ -114,18 +130,20 @@ class updateSupplierStockCommand extends Command
         $stockPercent = bcdiv($supplierProduct->getStock(), self::STOCK_VARIANCE_PERCENT, 2);
         $stockChange = random_int(0, ceil($stockPercent));
         $supplierProduct->setStock($supplierProduct->getStock() - $stockChange);
+
+        $this->domainEventDispatcher->dispatchProviderEvents($supplierProduct);
     }
 
-    private function replenishStock(SupplierProduct $supplierProduct): void
+    public function increaseStock(SupplierProduct $supplierProduct): void
     {
-        //TODO: Add run rate logic to replenish stock
-        if ($supplierProduct->getStock() > self::STOCK_REPLENISH_LEVEL) {
-            return;
-        }
-
         // allow stock level to increase by random amount up to 100
         $supplierProduct->setStock($supplierProduct->getStock() + random_int(0, 100));
 
+        $this->domainEventDispatcher->dispatchProviderEvents($supplierProduct);
+    }
+
+    public function changeCost(SupplierProduct $supplierProduct): void
+    {
         // check cost is greater than 0
         if (1 !== bccomp($supplierProduct->getCost(), '0', 2)) {
             return;
@@ -135,5 +153,7 @@ class updateSupplierStockCommand extends Command
         $randomCost = bcdiv(random_int(0, bcmul($percentCost, 100, 0)), 100, 2);
         $randomCost = random_int(0, 1) === 0 ? $randomCost : -$randomCost;
         $supplierProduct->setCost(bcadd($supplierProduct->getCost(), $randomCost, 2));
+
+        $this->domainEventDispatcher->dispatchProviderEvents($supplierProduct);
     }
 }

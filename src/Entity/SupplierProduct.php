@@ -2,15 +2,20 @@
 
 namespace App\Entity;
 
+use App\Entity\Interfaces\DomainEventProviderInterface;
+use App\Entity\Traits\DomainEventTrait;
+use App\Event\SupplierProductCostChangedEvent;
+use App\Event\SupplierProductStockChangedEvent;
 use App\Repository\SupplierProductRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: SupplierProductRepository::class)]
-class SupplierProduct
+class SupplierProduct implements DomainEventProviderInterface
 {
     use TimestampableEntity;
+    use DomainEventTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -177,7 +182,12 @@ class SupplierProduct
 
     public function setStock(?int $stock): static
     {
+        if ($stock === $this->getStock()) {
+            return $this;
+        }
+
         $this->stock = $stock;
+        $this->raiseDomainEvent(new SupplierProductStockChangedEvent($this));
 
         return $this;
     }
@@ -201,7 +211,12 @@ class SupplierProduct
 
     public function setCost(?string $cost): static
     {
+        if ($cost === $this->getCost()) {
+            return $this;
+        }
+
         $this->cost = $cost;
+        $this->raiseDomainEvent(new SupplierProductCostChangedEvent($this));
 
         return $this;
     }
