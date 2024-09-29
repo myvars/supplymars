@@ -25,7 +25,7 @@ final readonly class ChangePurchaseOrderItemStatus implements CrudActionInterfac
 
     public function fromDto(ChangePurchaseOrderItemStatusDto $dto): void
     {
-        $purchaseOrderItem =$this->getPurchaseOrderItem($dto->getId());
+        $purchaseOrderItem = $this->getPurchaseOrderItem($dto->getId());
 
         if (!$purchaseOrderItem->allowStatusChange()) {
             throw new \DomainException('Purchase order item cannot be edited');

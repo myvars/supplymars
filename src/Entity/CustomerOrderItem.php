@@ -207,7 +207,7 @@ class CustomerOrderItem implements DomainEventProviderInterface
         }
 
         // If there are still outstanding qty, set the item status to PROCESSING
-        if ($this->getOutstandingQty() !== 0) {
+        if ($this->getOutstandingQty() !== 0 && $this->getQtyAddedToPurchaseOrders() !== 0) {
             $this->setStatus(OrderStatus::PROCESSING);
             $this->customerOrder->generateStatus();
 

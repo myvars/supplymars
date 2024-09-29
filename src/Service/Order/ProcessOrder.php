@@ -36,7 +36,7 @@ final readonly class ProcessOrder
         }
 
         if ($this->checkAllOrderItemsProcessed($customerOrder)) {
-            $this->changePurchaseOrderItemStatus($customerOrder, PurchaseOrderStatus::PROCESSING);
+            $this->processPurchaseOrderItem($customerOrder);
         }
     }
 
@@ -66,13 +66,17 @@ final readonly class ProcessOrder
         return true;
     }
 
-    private function changePurchaseOrderItemStatus(CustomerOrder $customerOrder, PurchaseOrderStatus $newStatus): void
+    private function processPurchaseOrderItem(CustomerOrder $customerOrder): void
     {
         foreach ($customerOrder->getPurchaseOrders() as $purchaseOrder) {
             foreach ($purchaseOrder->getPurchaseOrderItems() as $purchaseOrderItem) {
+                if ($purchaseOrderItem->getStatus() !== PurchaseOrderStatus::PENDING) {
+                    continue;
+                }
+
                 $changePurchaseOrderItemStatusDto = new ChangePurchaseOrderItemStatusDto(
                     $purchaseOrderItem->getId(),
-                    $newStatus
+                    PurchaseOrderStatus::PROCESSING
                 );
                 $this->changePurchaseOrderItemStatus->fromDto($changePurchaseOrderItemStatusDto);
             }
