@@ -54,6 +54,6 @@ final readonly class StatusLogUtility
             ->findBy([
                 'eventType' => $eventType,
                 'eventTypeId' => $eventTypeId
-            ], ['createdAt' => 'ASC']);
+            ], ['eventTimestamp' => 'ASC']);
     }
 }

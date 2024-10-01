@@ -1,0 +1,25 @@
+{% extends 'modalBase.html.twig' %}
+
+{% block title %}Cancel {{ section|title }}{% endblock %}
+
+{% block body %}
+    <div class="relative p-3 bg-white rounded-lg shadow dark:bg-gray-800">
+        <div class="flex justify-between items-center pb-3 mb-3 rounded-t border-b dark:border-gray-600">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                Cancel {{ section }}
+            </h3>
+        </div>
+        <div class="space-y-3 md:space-y-3">
+            <p class="text-sm font-light text-gray-500 dark:text-gray-400">
+                Are you sure you want to cancel this {{ section }}?
+            </p>
+            <form method="post" action="{{ path('app_'~section|lower|u.snake~'_cancel', {'id': result.id}) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete'~result.id) }}">
+                <twig:Button type="submit" variant="warning" class="w-full">Cancel</twig:Button>
+            </form>
+            <p class="text-sm font-light text-gray-500 dark:text-gray-400">
+                <a href="{{ path('app_'~section|lower|u.snake~'_index') }}" class="hover:underline">Back to order</a>
+            </p>
+        </div>
+    </div>
+{% endblock %}

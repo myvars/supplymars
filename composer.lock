@@ -187,16 +187,16 @@
         },
         {
             "name": "aws/aws-sdk-php",
-            "version": "3.322.7",
+            "version": "3.322.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/aws/aws-sdk-php.git",
-                "reference": "ea3563a7f10fa562796f712fa306c1dca41a45d7"
+                "reference": "fb5099160e49b676277ae787ff721628e5e4dd5a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/ea3563a7f10fa562796f712fa306c1dca41a45d7",
-                "reference": "ea3563a7f10fa562796f712fa306c1dca41a45d7",
+                "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/fb5099160e49b676277ae787ff721628e5e4dd5a",
+                "reference": "fb5099160e49b676277ae787ff721628e5e4dd5a",
                 "shasum": ""
             },
             "require": {
@@ -279,9 +279,9 @@
             "support": {
                 "forum": "https://forums.aws.amazon.com/forum.jspa?forumID=80",
                 "issues": "https://github.com/aws/aws-sdk-php/issues",
-                "source": "https://github.com/aws/aws-sdk-php/tree/3.322.7"
+                "source": "https://github.com/aws/aws-sdk-php/tree/3.322.8"
             },
-            "time": "2024-09-27T18:34:08+00:00"
+            "time": "2024-09-30T19:09:25+00:00"
         },
         {
             "name": "babdev/pagerfanta-bundle",
@@ -9295,12 +9295,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/ux-icons.git",
-                "reference": "cc9c8c7b721c9cdbb9c90a3e42bb2000fb2ea5ba"
+                "reference": "32cd37d9590047fe5d3a33b8778bf703e60752d3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ux-icons/zipball/cc9c8c7b721c9cdbb9c90a3e42bb2000fb2ea5ba",
-                "reference": "cc9c8c7b721c9cdbb9c90a3e42bb2000fb2ea5ba",
+                "url": "https://api.github.com/repos/symfony/ux-icons/zipball/32cd37d9590047fe5d3a33b8778bf703e60752d3",
+                "reference": "32cd37d9590047fe5d3a33b8778bf703e60752d3",
                 "shasum": ""
             },
             "require": {
@@ -9377,7 +9377,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-09-27T13:45:37+00:00"
+            "time": "2024-10-01T06:45:41+00:00"
         },
         {
             "name": "symfony/ux-turbo",
@@ -9482,12 +9482,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/ux-twig-component.git",
-                "reference": "5e05af1248d08bbc46b3ab3c507d14ae346ec348"
+                "reference": "ee18195591e46dc3d5fa65389889294bc20b9681"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ux-twig-component/zipball/5e05af1248d08bbc46b3ab3c507d14ae346ec348",
-                "reference": "5e05af1248d08bbc46b3ab3c507d14ae346ec348",
+                "url": "https://api.github.com/repos/symfony/ux-twig-component/zipball/ee18195591e46dc3d5fa65389889294bc20b9681",
+                "reference": "ee18195591e46dc3d5fa65389889294bc20b9681",
                 "shasum": ""
             },
             "require": {
@@ -9558,7 +9558,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-09-27T13:45:45+00:00"
+            "time": "2024-09-28T01:37:17+00:00"
         },
         {
             "name": "symfony/validator",
@@ -11318,16 +11318,16 @@
         },
         {
             "name": "nikic/php-parser",
-            "version": "v5.2.0",
+            "version": "v5.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nikic/PHP-Parser.git",
-                "reference": "23c79fbbfb725fb92af9bcf41065c8e9a0d49ddb"
+                "reference": "3abf7425cd284141dc5d8d14a9ee444de3345d1a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/23c79fbbfb725fb92af9bcf41065c8e9a0d49ddb",
-                "reference": "23c79fbbfb725fb92af9bcf41065c8e9a0d49ddb",
+                "url": "https://api.github.com/repos/nikic/PHP-Parser/zipball/3abf7425cd284141dc5d8d14a9ee444de3345d1a",
+                "reference": "3abf7425cd284141dc5d8d14a9ee444de3345d1a",
                 "shasum": ""
             },
             "require": {
@@ -11370,9 +11370,9 @@
             ],
             "support": {
                 "issues": "https://github.com/nikic/PHP-Parser/issues",
-                "source": "https://github.com/nikic/PHP-Parser/tree/v5.2.0"
+                "source": "https://github.com/nikic/PHP-Parser/tree/v5.3.0"
             },
-            "time": "2024-09-15T16:40:33+00:00"
+            "time": "2024-09-29T13:56:26+00:00"
         },
         {
             "name": "phar-io/manifest",

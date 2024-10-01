@@ -30,9 +30,6 @@ class SupplierStockChangeLog
     #[Assert\PositiveOrZero]
     private readonly string $cost;
 
-    #[ORM\Column]
-    private \DateTimeImmutable $createdAt;
-
     public function __construct(
         #[ORM\Column(length: 255)]
         #[Assert\NotBlank(message: 'Please enter an event type')]
@@ -44,7 +41,6 @@ class SupplierStockChangeLog
         #[Assert\NotBlank(message: 'Please enter an event timestamp')]
         private readonly \DateTimeImmutable $eventTimestamp
     ) {
-        $this->createdAt = new \DateTimeImmutable();
         $this->supplierProductId = $supplierProduct->getId();
         $this->stock = $supplierProduct->getStock();
         $this->cost = $supplierProduct->getCost();
@@ -78,10 +74,5 @@ class SupplierStockChangeLog
     public function getEventTimestamp(): \DateTimeImmutable
     {
         return $this->eventTimestamp;
-    }
-
-    public function getCreatedAt(): \DateTimeImmutable
-    {
-        return $this->createdAt;
     }
 }

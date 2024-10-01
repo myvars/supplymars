@@ -1,0 +1,9 @@
+<div class="h-full w-full border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+    <div class="p-3">
+        <p class="text-gray-600 dark:text-gray-500">Supplier products</p>
+        <p class="font-light flex justify-start items-center">
+            <span class="me-1.5 text-xl font-extralight">{{ result.supplierProducts.count }}</span>
+            {{ result.supplierProducts.count == 1 ? 'product': 'products' }} from this supplier
+        </p>
+    </div>
+</div>

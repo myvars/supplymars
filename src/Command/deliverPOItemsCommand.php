@@ -93,7 +93,7 @@ class deliverPOItemsCommand extends Command
         $startTime = (new \DateTimeImmutable())->setTime(7, 0);  // 7 AM today
         $endTime = (new \DateTimeImmutable())->setTime(21, 0);   // 9 PM today
 
-        if ($now < $startTime || $now > $endTime || $statusChangeLog->getCreatedAt() > $intervalTime) {
+        if ($now < $startTime || $now > $endTime || $statusChangeLog->getEventTimestamp() > $intervalTime) {
             return false;
         }
 

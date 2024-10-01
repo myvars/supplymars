@@ -8,6 +8,7 @@
         <p class="mb-3 text-xl text-gray-900 dark:text-white">VAT Rate</p>
         <div class="flex flex-wrap justify-center gap-3">
             {{ include('vat_rate/_vat_rate_card.html.twig', {vatRate: result}) }}
+            {{ include('vat_rate/_vat_rate_categories_card.html.twig', {vatRate: result}) }}
         </div>
         <p>
             <a href="{{ path('app_vat_rate_index') }}"

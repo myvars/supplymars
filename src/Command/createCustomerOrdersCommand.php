@@ -75,7 +75,6 @@ class createCustomerOrdersCommand extends Command
     public function createOrder(): void
     {
         $user = $this->getUser();
-        $this->createBillingAddress($user);
         $customerOrder = $this->placeCustomerOrder($user);
         $this->addCustomerOrderItems($customerOrder);
     }
@@ -86,7 +85,10 @@ class createCustomerOrdersCommand extends Command
             return UserFactory::random()->_real();
         }
 
-        return UserFactory::createOne(['isVerified' => true])->_real();
+        $user = UserFactory::createOne(['isVerified' => true])->_real();
+        $this->createBillingAddress($user);
+
+        return $user;
     }
 
     private function createBillingAddress(User $user): Address

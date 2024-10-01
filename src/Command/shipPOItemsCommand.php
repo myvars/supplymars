@@ -94,7 +94,7 @@ class shipPOItemsCommand extends Command
         $startTime = (new \DateTimeImmutable())->setTime(9, 0);  // 9 AM today
         $endTime = (new \DateTimeImmutable())->setTime(18, 0);   // 6 PM today
 
-        if ($now < $startTime || $now > $endTime || $statusChangeLog->getCreatedAt() > $intervalTime) {
+        if ($now < $startTime || $now > $endTime || $statusChangeLog->getEventTimestamp() > $intervalTime) {
             return false;
         }
 

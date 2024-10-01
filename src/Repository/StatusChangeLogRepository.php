@@ -52,7 +52,7 @@ class StatusChangeLogRepository extends ServiceEntityRepository
             ->setParameter('poItemId', $poItemId)
             ->setParameter('domainEventType', DomainEventType::PURCHASE_ORDER_ITEM_STATUS_CHANGED)
             ->setParameter('status', $status->value)
-            ->orderBy('sc.createdAt', 'DESC')
+            ->orderBy('sc.eventTimestamp', 'DESC')
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
@@ -65,7 +65,7 @@ class StatusChangeLogRepository extends ServiceEntityRepository
             ->andWhere('sc.eventType = :domainEventType')
             ->setParameter('id', $id)
             ->setParameter('domainEventType', $eventType->value)
-            ->orderBy('sc.createdAt', 'ASC')
+            ->orderBy('sc.eventTimestamp', 'ASC')
             ->getQuery()
             ->getResult();
     }

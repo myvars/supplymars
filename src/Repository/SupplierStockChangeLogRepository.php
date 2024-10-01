@@ -3,9 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\StatusChangeLog;
-use App\Entity\SupplierProduct;
 use App\Entity\SupplierStockChangeLog;
-use App\Enum\DomainEventType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 

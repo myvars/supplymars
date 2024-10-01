@@ -15,9 +15,6 @@ class StatusChangeLog
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private \DateTimeImmutable $createdAt;
-
     public function __construct(
         #[ORM\Column(length: 255)]
         #[Assert\NotBlank(message: 'Please enter an event type')]
@@ -38,7 +35,6 @@ class StatusChangeLog
         #[Assert\NotBlank(message: 'Please enter an event timestamp')]
         private readonly \DateTimeImmutable $eventTimestamp
     ) {
-        $this->createdAt = new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -74,10 +70,5 @@ class StatusChangeLog
     public function getEventTimestamp(): \DateTimeImmutable
     {
         return $this->eventTimestamp;
-    }
-
-    public function getCreatedAt(): \DateTimeImmutable
-    {
-        return $this->createdAt;
     }
 }

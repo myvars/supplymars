@@ -1,0 +1,46 @@
+{% extends 'modalBase.html.twig' %}
+
+{% block title %}Delete {{ section|title }}{% endblock %}
+
+{% block body %}
+    <div class="relative p-3 bg-white rounded-lg shadow dark:bg-gray-800">
+        <div class="flex justify-between items-center pb-3 mb-3 rounded-t border-b dark:border-gray-600">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                Delete {{ section }}
+            </h3>
+        </div>
+        <div class="space-y-3 md:space-y-3">
+            <p class="text-base text-gray-500 dark:text-white">
+                {{ result.fullName }}
+                {% if result.customerOrders.count > 0 %}
+                    <span class="ms-1 text-base font-extralight text-gray-500 dark:text-gray-400">
+                        ({{ result.customerOrders.count }} {{ result.customerOrders.count == 1 ? 'order': 'orders' }})
+                    </span>
+                {% endif %}
+                {% if result.isAdmin %}
+                    <span class="ms-2 text-base font-extralight text-red-500 dark:text-red-400">(Administrator)</span>
+                {% endif %}
+            </p>
+            {% if result.isAdmin %}
+                <p class="text-sm font-light text-red-500 dark:text-gred-400">
+                    You cannot delete an admin user.
+                </p>
+            {% elseif result.customerOrders.count > 0 %}
+                <p class="text-sm font-light text-red-500 dark:text-red-400">
+                    You cannot delete a customer with order history.
+                </p>
+            {% else %}
+                <p class="text-sm font-light text-gray-500 dark:text-gray-400">
+                    Are you sure you want to delete this {{ section }}?
+                </p>
+                <form method="post" action="{{ path('app_'~section|lower|u.snake~'_delete', {'id': result.id}) }}">
+                   <input type="hidden" name="_token" value="{{ csrf_token('delete'~result.id) }}">
+                  <twig:Button type="submit" variant="danger" class="w-full">Delete</twig:Button>
+                </form>
+            {% endif %}
+            <p class="text-sm font-light text-gray-500 dark:text-gray-400">
+                <a href="{{ path('app_'~section|lower|u.snake~'_index') }}" class="hover:underline">Back to list</a>
+            </p>
+        </div>
+    </div>
+{% endblock %}

@@ -16,7 +16,6 @@ use App\Service\Order\CancelOrder;
 use App\Service\Order\CreateOrder;
 use App\Service\Order\LockOrder;
 use App\Service\Order\ProcessOrder;
-use App\Service\StatusLogUtility;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -84,18 +83,36 @@ class OrderController extends AbstractController
         return $crudDeleter->delete(self::SECTION, $customerOrder);
     }
 
-    #[Route('/{id}/cancel', name: 'app_order_cancel', methods: ['GET'])]
+
+    #[Route('/{id}/cancel/confirm', name: 'app_order_cancel_confirm', methods: ['GET'])]
+    public function cancelConfirm(?CustomerOrder $customerOrder, CrudHelper $crudHelper): Response
+    {
+        if (!$customerOrder instanceof CustomerOrder) {
+            return $crudHelper->showEmpty(self::SECTION);
+        }
+
+        return $this->render('order/cancel.html.twig', [
+            'section' => self::SECTION,
+            'result' => $customerOrder,
+        ]);
+    }
+
+    #[Route('/{id}/cancel', name: 'app_order_cancel', methods: ['POST'])]
     public function cancel(?CustomerOrder $customerOrder, CancelOrder $action, CrudHelper $crudHelper): Response
     {
         if (!$customerOrder instanceof CustomerOrder) {
             return $crudHelper->showEmpty(self::SECTION);
         }
 
-        try {
-            $action->cancel($customerOrder);
-            $this->addFlash('success', 'Order cancelled successfully');
-        } catch (\Exception) {
-            $this->addFlash('error', 'Order cannot be cancelled');
+        if ($this->isCsrfTokenValid(
+            'delete'.$customerOrder->getId(), $crudHelper->getRequest()->get('_token'))
+        ) {
+            try {
+                $action->cancel($customerOrder);
+                $this->addFlash('success', 'Order cancelled successfully');
+            } catch (\Exception) {
+                $this->addFlash('error', 'Order cannot be cancelled');
+            }
         }
 
         return $crudHelper->redirectToLink(

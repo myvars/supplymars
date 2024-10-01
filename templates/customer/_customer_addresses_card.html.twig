@@ -1,0 +1,28 @@
+<div class="h-full w-full border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+    <div class="p-3">
+        <p class="mb-1 text-gray-600 dark:text-gray-500">
+            Customer Addresses ({{ customer.addresses.count }})
+        </p>
+        <ol class="space-y-1 text-sm text-gray-500 dark:text-gray-400">
+            {% for address in customer.addresses %}
+                <li class="flex justify-between">
+                    <div class="p-3 text-sm text-gray-500 dark:text-gray-400">
+                        {% if address.defaultBillingAddress %}
+                            <p class="mb-1 text-gray-300 dark:text-gray-200">Billing Address</p>
+                        {% elseif address.defaultShippingAddress %}
+                            <p class="mb-1 text-gray-300 dark:text-gray-200">Default Shipping Address</p>
+                        {% endif %}
+                        <p class="mb-1">{{ address.street }}</p>
+                        {% if address.street2 is not null %}
+                            <p class="mb-1">{{ address.street2 }}</p>
+                        {% endif %}
+                        <p class="mb-1">{{ address.city }}, {{ address.postCode }}</p>
+                        <p class="mb-1">{{ address.country }}</p>
+                    </div>
+                </li>
+            {% else %}
+                <li>No addresses</li>
+            {% endfor %}
+        </ol>
+    </div>
+</div>

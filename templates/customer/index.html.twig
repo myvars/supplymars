@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ section }} index{% endblock %}
+
+{% block body %}
+    <twig:DataList
+        section="{{ section }}"
+        results="{{ results }}"
+    >
+        <twig:block name="list_sort">
+            <twig:SortLink sortValue="id">Id</twig:SortLink>
+            <twig:SortLink sortValue="fullName">Name</twig:SortLink>
+            <twig:SortLink sortValue="email">Email</twig:SortLink>
+            <twig:SortLink sortValue="isVerified">Verified</twig:SortLink>
+        </twig:block>
+
+        <twig:block name="list_item">
+            <p class="mb-1 items-center text-lg text-gray-900 dark:text-white">
+                {{ result.fullName|u.truncate(30, '...') }}
+                {% if result.isAdmin %}
+                    <span class="ms-2 text-base font-extralight text-red-500 dark:text-red-400">(Administrator)</span>
+                {% endif %}
+            </p>
+            <p class="flex justify-between items-center">
+                <span class="me-1 text-lg font-extralight">{{ result.email }}</span>
+                {% if result.isVerified %}
+                <span class="text-green-500">Verified</span>
+                {% else %}
+                    <span class="text-green-500">Unverified</span>
+                {% endif %}
+            </p>
+        </twig:block>
+
+        <twig:block name="filter"></twig:block>
+    </twig:DataList>
+
+{% endblock %}

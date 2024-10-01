@@ -41,6 +41,7 @@ class StatusLogController extends AbstractController
     {
         return $this->render('status_log/log.html.twig', [
             'section' => 'Purchase Order',
+            'colourScheme' => $purchaseOrder->getSupplier()->getColourScheme(),
             'result' => $purchaseOrder,
             'statusLog' => $statusLogUtility->forPurchaseOrder($purchaseOrder),
         ]);
@@ -51,6 +52,7 @@ class StatusLogController extends AbstractController
     {
         return $this->render('status_log/log.html.twig', [
             'section' => 'Purchase Order Item',
+            'colourScheme' => $purchaseOrderItem->getPurchaseOrder()->getSupplier()->getColourScheme(),
             'result' => $purchaseOrderItem,
             'statusLog' => $statusLogUtility->forPurchaseOrderItem($purchaseOrderItem),
         ]);

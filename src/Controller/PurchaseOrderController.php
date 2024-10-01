@@ -9,7 +9,6 @@ use App\Service\Crud\CrudDeleter;
 use App\Service\Crud\CrudIndexer;
 use App\Service\Crud\CrudReader;
 use App\Service\Crud\CrudUpdater;
-use App\Service\StatusLogUtility;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
