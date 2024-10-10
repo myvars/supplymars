@@ -21,8 +21,9 @@ final readonly class CreateOrder implements CrudActionInterface
     ) {
     }
 
-    public function handle(object $entity, ?array $context): void
+    public function handle(object $crudOptions): void
     {
+        $entity = $crudOptions->getEntity();
         assert($entity instanceof CreateOrderDto);
 
         $this->fromDto($entity);

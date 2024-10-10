@@ -22,7 +22,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class updateSupplierStockCommand extends Command
 {
     public const COST_VARIANCE_PERCENT = 10;
+
     public const STOCK_VARIANCE_PERCENT = 10;
+
     public const STOCK_REPLENISH_LEVEL = 20;
 
     public function __construct(
@@ -145,14 +147,15 @@ class updateSupplierStockCommand extends Command
     public function changeCost(SupplierProduct $supplierProduct): void
     {
         // check cost is greater than 0
-        if (1 !== bccomp($supplierProduct->getCost(), '0', 2)) {
+        if (1 !== bccomp((string) $supplierProduct->getCost(), '0', 2)) {
             return;
         }
 
-        $percentCost = bcdiv($supplierProduct->getCost(), self::COST_VARIANCE_PERCENT, 2);
+        $percentCost = bcdiv((string) $supplierProduct->getCost(), self::COST_VARIANCE_PERCENT, 2);
         $randomCost = bcdiv(random_int(0, bcmul($percentCost, 100, 0)), 100, 2);
         $randomCost = random_int(0, 1) === 0 ? $randomCost : -$randomCost;
-        $supplierProduct->setCost(bcadd($supplierProduct->getCost(), $randomCost, 2));
+
+        $supplierProduct->setCost(bcadd((string) $supplierProduct->getCost(), $randomCost, 2));
 
         $this->domainEventDispatcher->dispatchProviderEvents($supplierProduct);
     }

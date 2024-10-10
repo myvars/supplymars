@@ -16,8 +16,9 @@ final readonly class ChangePurchaseOrderItemStatus implements CrudActionInterfac
     ) {
     }
 
-    public function handle(object $entity, ?array $context): void
+    public function handle(object $crudOptions): void
     {
+        $entity = $crudOptions->getEntity();
         assert($entity instanceof ChangePurchaseOrderItemStatusDto);
 
         $this->fromDto($entity);

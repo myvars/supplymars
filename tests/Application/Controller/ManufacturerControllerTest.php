@@ -3,6 +3,7 @@
 namespace App\Tests\Application\Controller;
 
 use App\Factory\ManufacturerFactory;
+use App\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
@@ -17,6 +18,7 @@ class ManufacturerControllerTest extends WebTestCase
         ManufacturerFactory::createMany(3);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get('/manufacturer/')
             ->assertSuccessful()
             ->assertSee('Manufacturer List')
@@ -28,6 +30,7 @@ class ManufacturerControllerTest extends WebTestCase
         $manufacturer = ManufacturerFactory::createone(['name' => 'Manufacturer to be shown']);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/manufacturer/" . $manufacturer->getId())
             ->assertSuccessful()
             ->assertSee('Manufacturer to be shown');
@@ -36,6 +39,7 @@ class ManufacturerControllerTest extends WebTestCase
     public function testNewManufacturer(): void
     {
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get('/manufacturer/new')
             ->assertSuccessful()
             ->fillField('manufacturer[name]','Test Manufacturer')
@@ -48,6 +52,7 @@ class ManufacturerControllerTest extends WebTestCase
     public function testNewManufacturerValidation(): void
     {
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get('/manufacturer/new')
             ->assertSuccessful()
             // Intentionally omitting form data or filling it with invalid data
@@ -61,6 +66,7 @@ class ManufacturerControllerTest extends WebTestCase
         $manufacturer = ManufacturerFactory::createone(['name' => 'Manufacturer to be edited']);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/manufacturer/" . $manufacturer->getId() . "/edit")
             ->assertSuccessful()
             ->fillField('manufacturer[name]','Edited Manufacturer')
@@ -75,6 +81,7 @@ class ManufacturerControllerTest extends WebTestCase
         $manufacturer = ManufacturerFactory::createone(['name' => 'Manufacturer to be edited']);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/manufacturer/" . $manufacturer->getId() . "/edit")
             ->assertSuccessful()
             // Intentionally filling form with invalid data
@@ -89,6 +96,7 @@ class ManufacturerControllerTest extends WebTestCase
         $manufacturer = ManufacturerFactory::createone(['name' => 'Manufacturer to be deleted']);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/manufacturer/" . $manufacturer->getId() . "/delete/confirm")
             ->assertSuccessful()
             ->assertSee('Are you sure you want to delete this Manufacturer');
@@ -99,6 +107,7 @@ class ManufacturerControllerTest extends WebTestCase
         $manufacturer = ManufacturerFactory::createone(['name' => 'Manufacturer to be deleted']);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/manufacturer/" . $manufacturer->getId() . "/delete/confirm")
             ->assertSuccessful()
             ->click('Delete')
@@ -109,6 +118,7 @@ class ManufacturerControllerTest extends WebTestCase
     public function testManufacturerNotFound(): void
     {
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/manufacturer/999")
             ->assertSee("Sorry, we can't find that Manufacturer");
     }

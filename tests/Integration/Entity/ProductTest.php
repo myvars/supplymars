@@ -2,6 +2,7 @@
 
 namespace App\Tests\Integration\Entity;
 
+use App\DTO\SearchDto\ProductSearchDto;
 use App\Entity\Product;
 use App\Enum\PriceModel;
 use App\Factory\CategoryFactory;
@@ -152,35 +153,28 @@ class ProductTest extends KernelTestCase
         $this->assertEquals('CATEGORY', $product->getActiveMarkupTarget());
     }
 
-    public function testProductFindBySearch(): void
+    public function testProductFindBySearchDto(): void
     {
         ProductFactory::createOne(['name' => 'Test Product A']);
         ProductFactory::createOne(['name' => 'Test Product B']);
 
-        $products = $this->entityManager->getRepository(Product::class)->findBySearch('Test Product', 1);
-        $this->assertCount(1, $products);
-    }
+        $searchDto = new ProductSearchDto();
+        $searchDto
+            ->setQuery('Test Product')
+            ->setSort('name')
+            ->setSortDirection('asc');
 
-    public function testProductFindBySearchQueryBuilder(): void
-    {
-        ProductFactory::createOne(['name' => 'Test Product A']);
-        ProductFactory::createOne(['name' => 'Test Product B']);
-
-        $products = $this->entityManager
-            ->getRepository(Product::class)
-            ->findBySearchQueryBuilder('Test Product', 'name', 'asc')
-            ->getQuery()
-            ->getResult();
+        $products = $this->entityManager->getRepository(Product::class)
+            ->findBySearchDto($searchDto)->getQuery()->getResult();
 
         $this->assertCount(2, $products);
         $this->assertEquals('Test Product A', $products[0]->getName());
         $this->assertEquals('Test Product B', $products[1]->getName());
 
-        $products = $this->entityManager
-            ->getRepository(Product::class)
-            ->findBySearchQueryBuilder('Test Product', 'name', 'desc')
-            ->getQuery()
-            ->getResult();
+        $searchDto->setSortDirection('desc');
+
+        $products = $this->entityManager->getRepository(Product::class)
+            ->findBySearchDto($searchDto)->getQuery()->getResult();
 
         $this->assertCount(2, $products);
         $this->assertEquals('Test Product B', $products[0]->getName());

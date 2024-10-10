@@ -2,16 +2,19 @@
 
 namespace App\Controller;
 
+use App\DTO\SearchDto\ManufacturerSearchDto;
 use App\Entity\Manufacturer;
 use App\Form\ManufacturerType;
 use App\Repository\ManufacturerRepository;
 use App\Service\Crud\CrudCreator;
 use App\Service\Crud\CrudDeleter;
-use App\Service\Crud\CrudIndexer;
-use App\Service\Crud\CrudUpdater;
 use App\Service\Crud\CrudReader;
+use App\Service\Crud\CrudSearcher;
+use App\Service\Crud\CrudUpdater;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -22,11 +25,13 @@ class ManufacturerController extends AbstractController
     public const SECTION = 'Manufacturer';
 
     #[Route('/', name: 'app_manufacturer_index', methods: ['GET'])]
-    public function index(ManufacturerRepository $repository, CrudIndexer $crudIndexer): Response
-    {
-        $sortOptions = ['id', 'name', 'isActive'];
-
-        return $crudIndexer->index(self::SECTION, $repository, $sortOptions);
+    public function index(
+        Request $request,
+        CrudSearcher $crudSearcher,
+        ManufacturerRepository $repository,
+        #[MapQueryString] ManufacturerSearchDto $dto = new ManufacturerSearchDto()
+    ): Response {
+        return $crudSearcher->search(self::SECTION, $dto, $repository, $request->query->all());
     }
 
     #[Route('/new', name: 'app_manufacturer_new', methods: ['GET', 'POST'])]

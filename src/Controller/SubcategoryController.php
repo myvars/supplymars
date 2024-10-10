@@ -2,16 +2,19 @@
 
 namespace App\Controller;
 
+use App\DTO\SearchDto\SubcategorySearchDto;
 use App\Entity\Subcategory;
 use App\Form\SubcategoryType;
 use App\Repository\SubcategoryRepository;
 use App\Service\Crud\CrudCreator;
 use App\Service\Crud\CrudDeleter;
-use App\Service\Crud\CrudIndexer;
-use App\Service\Crud\CrudUpdater;
 use App\Service\Crud\CrudReader;
+use App\Service\Crud\CrudSearcher;
+use App\Service\Crud\CrudUpdater;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -22,11 +25,13 @@ class SubcategoryController extends AbstractController
     public const SECTION = 'Subcategory';
 
     #[Route('/', name: 'app_subcategory_index', methods: ['GET'])]
-    public function index(SubcategoryRepository $repository, CrudIndexer $crudIndexer): Response
-    {
-        $sortOptions = ['id', 'name', 'category.name', 'defaultMarkup', 'isActive'];
-
-        return $crudIndexer->index(self::SECTION, $repository, $sortOptions);
+    public function index(
+        Request $request,
+        CrudSearcher $crudSearcher,
+        SubcategoryRepository $repository,
+        #[MapQueryString] SubcategorySearchDto $dto = new SubcategorySearchDto()
+    ): Response {
+        return $crudSearcher->search(self::SECTION, $dto, $repository, $request->query->all());
     }
 
     #[Route('/new', name: 'app_subcategory_new', methods: ['GET', 'POST'])]

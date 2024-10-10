@@ -2,6 +2,7 @@
 
 namespace App\Tests\Integration\Entity;
 
+use App\DTO\SearchDto\ManufacturerSearchDto;
 use App\Entity\Manufacturer;
 use App\Factory\ManufacturerFactory;
 use Doctrine\ORM\EntityManagerInterface;
@@ -46,35 +47,26 @@ class ManufacturerTest extends KernelTestCase
         $this->assertNull($manufacturer->getId());
     }
 
-    public function testManufacturerFindBySearch(): void
+    public function testManufacturerFindBySearchDto(): void
     {
         ManufacturerFactory::createOne(['name' => 'Test Manufacturer A']);
         ManufacturerFactory::createOne(['name' => 'Test Manufacturer B']);
 
-        $manufacturers = $this->entityManager->getRepository(Manufacturer::class)->findBySearch('Test Manufacturer', 1);
-        $this->assertCount(1, $manufacturers);
-    }
-
-    public function testManufacturerFindBySearchQueryBuilder(): void
-    {
-        ManufacturerFactory::createOne(['name' => 'Test Manufacturer A']);
-        ManufacturerFactory::createOne(['name' => 'Test Manufacturer B']);
-
-        $manufacturers = $this->entityManager
-            ->getRepository(Manufacturer::class)
-            ->findBySearchQueryBuilder('Test Manufacturer', 'name', 'asc')
-            ->getQuery()
-            ->getResult();
+        $searchDto = new ManufacturerSearchDto();
+        $searchDto
+            ->setQuery('Test Manufacturer')
+            ->setSort('name')
+            ->setSortDirection('asc');
+        $manufacturers = $this->entityManager->getRepository(Manufacturer::class)
+            ->findBySearchDto($searchDto)->getQuery()->getResult();
 
         $this->assertCount(2, $manufacturers);
         $this->assertEquals('Test Manufacturer A', $manufacturers[0]->getName());
         $this->assertEquals('Test Manufacturer B', $manufacturers[1]->getName());
 
-        $manufacturers = $this->entityManager
-            ->getRepository(Manufacturer::class)
-            ->findBySearchQueryBuilder('Test Manufacturer', 'name', 'desc')
-            ->getQuery()
-            ->getResult();
+        $searchDto->setSortDirection('desc');
+        $manufacturers = $this->entityManager->getRepository(Manufacturer::class)
+            ->findBySearchDto($searchDto)->getQuery()->getResult();
 
         $this->assertCount(2, $manufacturers);
         $this->assertEquals('Test Manufacturer B', $manufacturers[0]->getName());

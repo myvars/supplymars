@@ -2,9 +2,9 @@
 
 namespace App\Repository;
 
+use App\DTO\SearchDto\SearchInterface;
 use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -16,55 +16,50 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Product[]    findAll()
  * @method Product[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ProductRepository extends ServiceEntityRepository
+class ProductRepository extends ServiceEntityRepository implements SearchQueryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Product::class);
     }
 
-    /**
-     * @throws NonUniqueResultException
-     */
-/*    public function findFullProduct(?int $id = null): ?Product
+    public function findBySearchDto(SearchInterface $searchDto): QueryBuilder
     {
-        return $this->createQueryBuilder('p')
-            ->leftJoin('p.category', 'c')
-            ->leftJoin('p.subcategory', 's')
-            ->leftJoin('p.manufacturer', 'm')
-            ->leftJoin('p.vatRate', 'v')
-            ->select('p', 'c', 's', 'm', 'v')
-            ->andWhere('p.id = :id')
-            ->setParameter('id', $id)
-            ->getQuery()
-            ->getOneOrNullResult();
-    }*/
+        $sort = $searchDto->getSort() ?: $searchDto::SORT_DEFAULT;
+        $sortDirection = $searchDto->getSortDirection() ?: $searchDto::SORT_DIRECTION_DEFAULT;
 
-    public function findBySearch(?string $query, ?int $limit = null): array
-    {
-        $qb = $this->findBySearchQueryBuilder($query);
-
-        if ($limit) {
-            $qb->setMaxResults($limit);
-        }
-
-        return $qb
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findBySearchQueryBuilder(?string $query, ?string $sort = null, string $direction = 'DESC'): QueryBuilder
-    {
         $qb = $this->createQueryBuilder('p');
 
-        if ($query) {
+        if ($searchDto->getQuery()) {
             $qb->andWhere('p.name LIKE :query')
-                ->setParameter('query', '%'.$query.'%');
+                ->setParameter('query', '%'.$searchDto->getQuery().'%');
         }
 
-        if ($sort) {
-            $qb->orderBy('p.'.$sort, $direction);
+        if ($searchDto->getMfrPartNumber()) {
+            $qb->andWhere('p.mfrPartNumber = :mfrPartNumber')
+                ->setParameter('mfrPartNumber', $searchDto->getMfrPartNumber());
         }
+
+        if ($searchDto->getCategoryId()) {
+            $qb->andWhere('p.category = :categoryId')
+                ->setParameter('categoryId', $searchDto->getCategoryId());
+        }
+
+        if ($searchDto->getSubcategoryId()) {
+            $qb->andWhere('p.subcategory = :subcategoryId')
+                ->setParameter('subcategoryId', $searchDto->getSubcategoryId());
+        }
+
+        if ($searchDto->getManufacturerId()) {
+            $qb->andWhere('p.manufacturer = :manufacturerId')
+                ->setParameter('manufacturerId', $searchDto->getManufacturerId());
+        }
+
+        if ($searchDto->getInStock() !== null) {
+            $qb->andWhere($searchDto->getInStock() > 0 ? 'p.stock > 0' : 'p.stock = 0');
+        }
+
+        $qb->orderBy('p.'.$sort, $sortDirection);
 
         return $qb;
     }

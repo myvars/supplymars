@@ -1,9 +1,13 @@
 <div class="h-full w-full border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
     <div class="p-3">
-        <p class="text-gray-600 dark:text-gray-500">Products</p>
-        <p class="font-light flex justify-start items-center">
-            <span class="me-1.5 text-xl font-extralight">{{ result.products.count }}</span>
-            {{ result.products.count == 1 ? 'product': 'products' }} from this manufacturer
+        <p class="mb-1 text-gray-600 dark:text-gray-500">Products</p>
+        <p class="">
+            <a href="{{ path('app_product_index', {manufacturerId: result.id}) }}"
+               class="font-light flex justify-start items-center dark:hover:text-white"
+            >
+                <span class="me-1 font-extralight">{{ result.products.count }}</span>
+                {{ result.products.count == 1 ? 'product': 'products' }} from this manufacturer
+            </a>
         </p>
     </div>
 </div>

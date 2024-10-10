@@ -18,6 +18,21 @@ enum PurchaseOrderStatus: string
         return self::PENDING;
     }
 
+    public static function fromValue(string $value): self
+    {
+        return match ($value) {
+            'PENDING' => self::PENDING,
+            'PROCESSING' => self::PROCESSING,
+            'ACCEPTED' => self::ACCEPTED,
+            'REJECTED' => self::REJECTED,
+            'REFUNDED' => self::REFUNDED,
+            'SHIPPED' => self::SHIPPED,
+            'DELIVERED' => self::DELIVERED,
+            'CANCELLED' => self::CANCELLED,
+            default => throw new \InvalidArgumentException('Invalid OrderStatus value: ' . $value),
+        };
+    }
+
     public function getLevel(): int
     {
         return match ($this) {

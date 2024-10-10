@@ -49,12 +49,14 @@ class refreshOrderStatusCommand extends Command
         $refreshedCount = 0;
         foreach ($customerOrders as $customerOrder) {
             $refreshLog = $this->refreshOrderStatus->refresh($customerOrder);
-            if (count($refreshLog) > 0) {
+            if ($refreshLog !== []) {
                 foreach ($refreshLog as $log) {
                     $io->note($log);
                 }
+
                 $refreshedCount++;
             }
+
             $processedCount++;
         }
 

@@ -65,7 +65,7 @@ class CrudDeleter extends AbstractController
             $this->crudHelper->getRequest()->get('_token'))
         ) {
             try {
-                $crudAction->handle($crudOptions->getEntity(), $crudOptions->getCrudActionContext());
+                $crudAction->handle($crudOptions);
                 $this->addFlash(
                     'success',
                     $crudOptions->getSection().' deleted!'

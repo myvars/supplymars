@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\DTO\SearchDto\SearchInterface;
 use App\Entity\PurchaseOrder;
 use App\Entity\Supplier;
 use App\Enum\PurchaseOrderStatus;
@@ -17,42 +18,59 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method PurchaseOrder[]    findAll()
  * @method PurchaseOrder[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class PurchaseOrderRepository extends ServiceEntityRepository
+class PurchaseOrderRepository extends ServiceEntityRepository implements SearchQueryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, PurchaseOrder::class);
     }
 
-    public function findBySearch(?string $query, ?int $limit = null): array
+    public function findBySearchDto(SearchInterface $searchDto): QueryBuilder
     {
-        $qb = $this->findBySearchQueryBuilder($query);
+        $sort = $searchDto->getSort() ?: $searchDto::SORT_DEFAULT;
+        $sortDirection = $searchDto->getSortDirection() ?: $searchDto::SORT_DIRECTION_DEFAULT;
 
-        if ($limit) {
-            $qb->setMaxResults($limit);
-        }
-
-        return $qb
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findBySearchQueryBuilder(?string $query, ?string $sort = null, string $direction = 'DESC'): QueryBuilder
-    {
         $qb = $this->createQueryBuilder('p');
 
-        if ($query) {
+        if ($searchDto->getQuery()) {
             $qb->andWhere('p.id LIKE :query')
-                ->setParameter('query', '%'.$query.'%');
+                ->setParameter('query', '%' . $searchDto->getQuery() . '%');
         }
 
-        if ($sort) {
-            if (str_starts_with($sort, 'customerOrder.')) {
-                $qb->leftJoin('p.customerOrder', 'customerOrder')->orderBy($sort, $direction);
-            } else {
-                $qb->orderBy('p.'.$sort, $direction);
-            }
+        if ($searchDto->getPurchaseOrderId()) {
+            $qb->andWhere('p.id = :purchaseOrderId')
+                ->setParameter('purchaseOrderId', $searchDto->getPurchaseOrderId());
         }
+
+        if ($searchDto->getCustomerOrderId()) {
+            $qb->andWhere('p.customerOrder = :customerOrderId')
+                ->setParameter('customerOrderId', $searchDto->getCustomerOrderId());
+        }
+
+        if ($searchDto->getCustomerId()) {
+            $qb->leftJoin('p.customerOrder', 'o')
+                ->andWhere('o.customer = :customerId')
+                ->setParameter('customerId', $searchDto->getCustomerId());
+        }
+
+        if ($searchDto->getProductId()) {
+            $qb->leftJoin('p.purchaseOrderItems', 'pi')
+                ->leftJoin('pi.customerOrderItem', 'oi')
+                ->andWhere('oi.product = :productId')
+                ->setParameter('productId', $searchDto->getproductId());
+        }
+
+        if ($searchDto->getSupplierId()) {
+            $qb->andWhere('p.supplier = :supplierId')
+                ->setParameter('supplierId', $searchDto->getSupplierId());
+        }
+
+        if ($searchDto->getPurchaseOrderStatus()) {
+            $qb->andWhere('p.status = :status')
+                ->setParameter('status', $searchDto->getPurchaseOrderStatus());
+        }
+
+        $qb->orderBy('p.'.$sort, $sortDirection);
 
         return $qb;
     }

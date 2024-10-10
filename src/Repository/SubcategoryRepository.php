@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\DTO\SearchDto\SearchInterface;
 use App\Entity\Subcategory;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -15,40 +16,35 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Subcategory[]    findAll()
  * @method Subcategory[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class SubcategoryRepository extends ServiceEntityRepository
+class SubcategoryRepository extends ServiceEntityRepository implements SearchQueryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Subcategory::class);
     }
 
-    public function findBySearch(?string $query, ?int $limit = null): array
+    public function findBySearchDto(SearchInterface $searchDto): QueryBuilder
     {
-        $qb = $this->findBySearchQueryBuilder($query);
+        $sort = $searchDto->getSort() ?: $searchDto::SORT_DEFAULT;
+        $sortDirection = $searchDto->getSortDirection() ?: $searchDto::SORT_DIRECTION_DEFAULT;
 
-        if ($limit) {
-            $qb->setMaxResults($limit);
-        }
-
-        return $qb
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findBySearchQueryBuilder(?string $query, ?string $sort = null, string $direction = 'DESC'): QueryBuilder
-    {
         $qb = $this->createQueryBuilder('s');
 
-        if ($query) {
+        if ($searchDto->getQuery()) {
             $qb->andWhere('s.name LIKE :query')
-                ->setParameter('query', '%'.$query.'%');
+                ->setParameter('query', '%'.$searchDto->getQuery().'%');
+        }
+
+        if ($searchDto->getCategoryId()) {
+            $qb->andWhere('s.category = :categoryId')
+                ->setParameter('categoryId', $searchDto->getCategoryId());
         }
 
         if ($sort) {
             if (str_starts_with($sort, 'category.')) {
-                $qb->leftJoin('s.category', 'category')->orderBy($sort, $direction);
+                $qb->leftJoin('s.category', 'category')->orderBy($sort, $sortDirection);
             } else {
-                $qb->orderBy('s.'.$sort, $direction);
+                $qb->orderBy('s.'.$sort, $sortDirection);
             }
         }
 

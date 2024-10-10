@@ -2,8 +2,6 @@
 
 namespace App\Entity;
 
-use App\Entity\Interfaces\DomainEventProviderInterface;
-use App\Entity\Traits\DomainEventTrait;
 use App\Enum\PurchaseOrderStatus;
 use App\Enum\ShippingMethod;
 use App\Event\PurchaseOrderCreatedEvent;

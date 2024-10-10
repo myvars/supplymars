@@ -18,8 +18,7 @@ class EditOrderItemDto
         #[Assert\NotBlank(message: 'Please enter a product price including VAT')]
         #[Assert\Range(notInRangeMessage: 'Please enter a product price inc VAT (0 to 100000)', min: 0, max: 100000)]
         private ?string $priceIncVat,
-        private ?bool $allowCancel = false
-
+        private readonly ?bool $allowCancel = false
     ) {
     }
 

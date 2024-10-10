@@ -4,6 +4,7 @@ namespace App\Tests\Application\Controller;
 
 use App\Factory\SupplierFactory;
 use App\Factory\SupplierProductFactory;
+use App\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
@@ -18,6 +19,7 @@ class SupplierProductControllerTest extends WebTestCase
         SupplierProductFactory::createMany(3);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get('/supplier-product/')
             ->assertSuccessful()
             ->assertSee('Supplier Product List')
@@ -29,6 +31,7 @@ class SupplierProductControllerTest extends WebTestCase
         $supplierProduct = SupplierProductFactory::createOne(['name' => 'Supplier Product to be shown']);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/supplier-product/" . $supplierProduct->getId())
             ->assertSuccessful()
             ->assertSee('Supplier Product to be shown');
@@ -39,6 +42,7 @@ class SupplierProductControllerTest extends WebTestCase
         $supplier = SupplierFactory::createOne(['name' => 'Test Supplier']);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get('/supplier-product/new')
             ->assertSuccessful()
             ->fillField('supplier_product[name]','Test Supplier Product')
@@ -57,6 +61,7 @@ class SupplierProductControllerTest extends WebTestCase
     public function testNewSupplierProductValidation(): void
     {
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get('/supplier-product/new')
             ->assertSuccessful()
             // Intentionally filling form with invalid data
@@ -80,6 +85,7 @@ class SupplierProductControllerTest extends WebTestCase
         $supplierProduct = SupplierProductFactory::createOne(['name' => 'Supplier Product to be edited']);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/supplier-product/" . $supplierProduct->getId() . "/edit")
             ->assertSuccessful()
             ->fillField('supplier_product[name]','Edited Supplier Product')
@@ -93,6 +99,7 @@ class SupplierProductControllerTest extends WebTestCase
         $supplierProduct = SupplierProductFactory::createOne(['name' => 'Supplier Product to be edited']);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/supplier-product/" . $supplierProduct->getId() . "/edit")
             ->assertSuccessful()
             // Intentionally filling form with invalid data
@@ -121,6 +128,7 @@ class SupplierProductControllerTest extends WebTestCase
         $supplierProduct = SupplierProductFactory::createOne(['name' => 'Supplier Product to be deleted']);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/supplier-product/" . $supplierProduct->getId() . "/delete/confirm")
             ->assertSuccessful()
             ->assertSee('Are you sure you want to delete this Supplier Product');
@@ -131,6 +139,7 @@ class SupplierProductControllerTest extends WebTestCase
         $supplierProduct = SupplierProductFactory::createOne(['name' => 'Supplier Product to be deleted']);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/supplier-product/" . $supplierProduct->getId() . "/delete/confirm")
             ->assertSuccessful()
             ->click('Delete')
@@ -141,6 +150,7 @@ class SupplierProductControllerTest extends WebTestCase
     public function testSupplierProductNotFound(): void
     {
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/supplier-product/999")
             ->assertSee("Sorry, we can't find that Supplier Product");
     }

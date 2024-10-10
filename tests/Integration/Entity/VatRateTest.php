@@ -2,6 +2,7 @@
 
 namespace App\Tests\Integration\Entity;
 
+use App\DTO\SearchDto\VatRateSearchDto;
 use App\Entity\VatRate;
 use App\Factory\VatRateFactory;
 use Doctrine\ORM\EntityManagerInterface;
@@ -46,36 +47,26 @@ class VatRateTest extends KernelTestCase
         $this->assertNull($vatRate->getId());
     }
 
-    public function testVatRateFindBySearch(): void
+    public function testVatRateFindBySearchDto(): void
     {
         VatRateFactory::createOne(['name' => 'Test VatRate A']);
         VatRateFactory::createOne(['name' => 'Test VatRate B']);
 
-        $result = $this->entityManager->getRepository(VatRate::class)->findBySearch('Test VatRate', 1);
-        $this->assertCount(1, $result);
-        $this->assertEquals('Test VatRate A', $result[0]->getName());
-    }
-
-    public function testVatRateFindBySearchQueryBuilder(): void
-    {
-        VatRateFactory::createOne(['name' => 'Test VatRate A']);
-        VatRateFactory::createOne(['name' => 'Test VatRate B']);
-
-        $vatRates = $this->entityManager
-            ->getRepository(VatRate::class)
-            ->findBySearchQueryBuilder('Test VatRate', 'name', 'asc')
-            ->getQuery()
-            ->getResult();
+        $searchDto = new VatRateSearchDto();
+        $searchDto
+            ->setQuery('Test VatRate')
+            ->setSort('name')
+            ->setSortDirection('asc');
+        $vatRates = $this->entityManager->getRepository(VatRate::class)
+            ->findBySearchDto($searchDto)->getQuery()->getResult();
 
         $this->assertCount(2, $vatRates);
         $this->assertEquals('Test VatRate A', $vatRates[0]->getName());
         $this->assertEquals('Test VatRate B', $vatRates[1]->getName());
 
-        $vatRates = $this->entityManager
-            ->getRepository(VatRate::class)
-            ->findBySearchQueryBuilder('Test VatRate', 'name', 'desc')
-            ->getQuery()
-            ->getResult();
+        $searchDto->setSortDirection('desc');
+        $vatRates = $this->entityManager->getRepository(VatRate::class)
+            ->findBySearchDto($searchDto)->getQuery()->getResult();
 
         $this->assertCount(2, $vatRates);
         $this->assertEquals('Test VatRate B', $vatRates[0]->getName());

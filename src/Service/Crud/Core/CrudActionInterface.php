@@ -4,5 +4,5 @@ namespace App\Service\Crud\Core;
 
 interface CrudActionInterface
 {
-    public function handle(object $entity, ?array $context): void;
+    public function handle(object $crudOptions): void;
 }

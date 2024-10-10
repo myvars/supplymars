@@ -44,6 +44,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
     #[ORM\Column(type: 'boolean')]
     private bool $isVerified = false;
 
+    #[ORM\Column(type: 'boolean')]
+    private bool $isStaff = false;
+
     #[ORM\OneToMany(targetEntity: Category::class, mappedBy: 'owner')]
     private Collection $categories;
 
@@ -172,6 +175,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
     public function setIsVerified(bool $isVerified): static
     {
         $this->isVerified = $isVerified;
+
+        return $this;
+    }
+
+    public function isStaff(): bool
+    {
+        return $this->isStaff;
+    }
+
+    public function setIsStaff(bool $isStaff): User
+    {
+        $this->isStaff = $isStaff;
 
         return $this;
     }

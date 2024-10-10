@@ -20,6 +20,7 @@ class ProductControllerTest extends WebTestCase
         ProductFactory::createMany(3);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get('/product/')
             ->assertSuccessful()
             ->assertSee('Product List')
@@ -31,6 +32,7 @@ class ProductControllerTest extends WebTestCase
         ProductFactory::createOne();
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get('/product/?page=2')
             ->assertSuccessful()
             ->assertSee('Product List')
@@ -42,6 +44,7 @@ class ProductControllerTest extends WebTestCase
         $product = ProductFactory::createOne(['name' => 'Product to be shown']);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/product/" . $product->getId())
             ->assertSuccessful()
             ->assertSee('Product to be shown');
@@ -54,6 +57,7 @@ class ProductControllerTest extends WebTestCase
         $owner = UserFactory::createOne(['fullName' => 'Test Owner']);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get('/product/new')
             ->assertSuccessful()
             ->fillField('product[name]','Test Product')
@@ -74,6 +78,7 @@ class ProductControllerTest extends WebTestCase
     public function testNewProductValidation(): void
     {
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get('/product/new')
             ->assertSuccessful()
             // Intentionally filling form with invalid data
@@ -99,6 +104,7 @@ class ProductControllerTest extends WebTestCase
         ]);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/product/" . $product->getId() . "/edit")
             ->assertSuccessful()
             ->fillField('product[name]','Edited Product')
@@ -112,6 +118,7 @@ class ProductControllerTest extends WebTestCase
         $product = ProductFactory::createOne(['name' => 'Product to be edited']);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/product/" . $product->getId() . "/edit")
             ->assertSuccessful()
             // Intentionally filling form with invalid data
@@ -142,6 +149,7 @@ class ProductControllerTest extends WebTestCase
         $product = ProductFactory::createOne(['name' => 'Product to be deleted']);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/product/" . $product->getId() . "/delete/confirm")
             ->assertSuccessful()
             ->assertSee('Are you sure you want to delete this Product');
@@ -152,6 +160,7 @@ class ProductControllerTest extends WebTestCase
         $product = ProductFactory::createOne(['name' => 'Product to be deleted']);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/product/" . $product->getId() . "/delete/confirm")
             ->assertSuccessful()
             ->click('Delete')
@@ -162,6 +171,7 @@ class ProductControllerTest extends WebTestCase
     public function testProductNotFound(): void
     {
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/product/999")
             ->assertSee("Sorry, we can't find that Product");
     }

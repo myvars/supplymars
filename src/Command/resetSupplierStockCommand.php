@@ -4,7 +4,6 @@ namespace App\Command;
 
 use App\Entity\Supplier;
 use App\Entity\SupplierProduct;
-use App\Factory\SupplierProductFactory;
 use App\Service\OrderProcessing\SupplierUtility;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;

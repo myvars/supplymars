@@ -1,4 +1,13 @@
 {% block stream_success %}
     <turbo-stream action="update" target="modal"><template></template></turbo-stream>
-    <turbo-stream action="refresh" id="page-refresh"></turbo-stream>
+
+    {% if newUrl is not null %}
+    <turbo-stream action="update" target="url-refresh">
+        <template>
+            <div data-controller="auto-url-updater" data-auto-url-updater-url-value="{{ newUrl }}"></div>
+        </template>
+    </turbo-stream>
+    {% endif %}
+
+   <turbo-stream action="refresh" id="page-refresh"></turbo-stream>
 {% endblock %}

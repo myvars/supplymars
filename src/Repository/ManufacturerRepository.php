@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\DTO\SearchDto\SearchInterface;
 use App\Entity\Manufacturer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -15,38 +16,26 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Manufacturer[]    findAll()
  * @method Manufacturer[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ManufacturerRepository extends ServiceEntityRepository
+class ManufacturerRepository extends ServiceEntityRepository implements SearchQueryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Manufacturer::class);
     }
 
-    public function findBySearch(?string $query, ?int $limit = null): array
+    public function findBySearchDto(SearchInterface $searchDto): QueryBuilder
     {
-        $qb = $this->findBySearchQueryBuilder($query);
+        $sort = $searchDto->getSort() ?: $searchDto::SORT_DEFAULT;
+        $sortDirection = $searchDto->getSortDirection() ?: $searchDto::SORT_DIRECTION_DEFAULT;
 
-        if ($limit) {
-            $qb->setMaxResults($limit);
-        }
-
-        return $qb
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findBySearchQueryBuilder(?string $query, ?string $sort = null, string $direction = 'DESC'): QueryBuilder
-    {
         $qb = $this->createQueryBuilder('m');
 
-        if ($query) {
+        if ($searchDto->getQuery()) {
             $qb->andWhere('m.name LIKE :query')
-                ->setParameter('query', '%'.$query.'%');
+                ->setParameter('query', '%'.$searchDto->getQuery().'%');
         }
 
-        if ($sort) {
-            $qb->orderBy('m.'.$sort, $direction);
-        }
+        $qb->orderBy('m.'.$sort, $sortDirection);
 
         return $qb;
     }

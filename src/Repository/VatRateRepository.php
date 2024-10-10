@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\DTO\SearchDto\SearchInterface;
 use App\Entity\VatRate;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -15,7 +16,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method VatRate[]    findAll()
  * @method VatRate[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class VatRateRepository extends ServiceEntityRepository
+class VatRateRepository extends ServiceEntityRepository implements SearchQueryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -27,31 +28,19 @@ class VatRateRepository extends ServiceEntityRepository
         return $this->findOneBy(['isDefaultVatRate' => true]);
     }
 
-    public function findBySearch(?string $query, ?int $limit = null): array
+    public function findBySearchDto(SearchInterface $searchDto): QueryBuilder
     {
-        $qb = $this->findBySearchQueryBuilder($query);
+        $sort = $searchDto->getSort() ?: $searchDto::SORT_DEFAULT;
+        $sortDirection = $searchDto->getSortDirection() ?: $searchDto::SORT_DIRECTION_DEFAULT;
 
-        if ($limit) {
-            $qb->setMaxResults($limit);
-        }
-
-        return $qb
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findBySearchQueryBuilder(?string $query, ?string $sort = null, string $direction = 'DESC'): QueryBuilder
-    {
         $qb = $this->createQueryBuilder('v');
 
-        if ($query) {
+        if ($searchDto->getQuery()) {
             $qb->andWhere('v.name LIKE :query')
-                ->setParameter('query', '%'.$query.'%');
+                ->setParameter('query', '%'.$searchDto->getQuery().'%');
         }
 
-        if ($sort) {
-            $qb->orderBy('v.'.$sort, $direction);
-        }
+        $qb->orderBy('v.'.$sort, $sortDirection);
 
         return $qb;
     }

@@ -3,6 +3,7 @@
 namespace App\Tests\Application\Controller;
 
 use App\Factory\ProductFactory;
+use App\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
@@ -17,6 +18,7 @@ class ProductImageControllerTest extends WebTestCase
         $product = ProductFactory::createOne(['name' => 'Test Product'])->_real();
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get('/product/' . $product->getId() . '/images')
             ->assertSuccessful()
             ->assertSee('Product Images')
@@ -26,6 +28,7 @@ class ProductImageControllerTest extends WebTestCase
     public function testShowProductImagesNotFound() : void
     {
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get('/product/999999/images')
             ->assertSee("Sorry, we can't find that Product");
     }
@@ -38,6 +41,7 @@ class ProductImageControllerTest extends WebTestCase
         $dummyImagePath = __DIR__ . '/../../Resources/dummy-image.jpg';
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->visit('/product/' . $product->getId() . '/images')
             ->assertSuccessful()
             ->assertSee('Product Images')
@@ -56,6 +60,7 @@ class ProductImageControllerTest extends WebTestCase
             $this->assertFileExists($uploadDir . $productImage->getImageName());
 
             $this->browser()
+                ->actingAs(UserFactory::createOne()->_real())
                 ->visit('/product/images/' . $productImage->getId() . '/remove')
                 ->followRedirect()
                 ->assertSuccessful()
@@ -63,6 +68,7 @@ class ProductImageControllerTest extends WebTestCase
         }
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->visit('/product/' . $product->getId() . '/images')
             ->assertSuccessful()
             ->assertSee('Product Images')
@@ -76,6 +82,7 @@ class ProductImageControllerTest extends WebTestCase
         $invalidImagePath = __DIR__ . '/../../Resources/invalid-image.txt';
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->visit('/product/' . $product->getId() . '/images')
             ->assertSuccessful()
             ->assertSee('Product Images')
@@ -93,6 +100,7 @@ class ProductImageControllerTest extends WebTestCase
         $dummyImagePath = __DIR__ . '/../../Resources/dummy-image.jpg';
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->request('POST', '/product/999999/images/create', [
                 'headers' => [
                     'Content-Type' => 'multipart/form-data',
@@ -108,6 +116,7 @@ class ProductImageControllerTest extends WebTestCase
     public function testRemoveNonExistentImage(): void
     {
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->request('GET', '/product/images/999999/remove')
             ->assertStatus(500);
     }
@@ -118,6 +127,7 @@ class ProductImageControllerTest extends WebTestCase
         $dummyImagePath = __DIR__ . '/../../Resources/dummy-image.jpg';
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->visit('/product/' . $product->getId() . '/images')
             ->assertSuccessful()
             ->assertSee('Product Images')
@@ -137,6 +147,7 @@ class ProductImageControllerTest extends WebTestCase
         ];
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->request('POST', '/product/' . $product->getId() . '/images/reorder', [
                 'headers' => [
                     'Content-Type' => 'application/json',
@@ -153,6 +164,7 @@ class ProductImageControllerTest extends WebTestCase
 
         foreach ($productImages as $productImage) {
             $this->browser()
+                ->actingAs(UserFactory::createOne()->_real())
                 ->visit('/product/images/' . $productImage->getId() . '/remove')
                 ->followRedirect()
                 ->assertSuccessful()
@@ -166,6 +178,7 @@ class ProductImageControllerTest extends WebTestCase
         $product = ProductFactory::createOne(['name' => 'Test Product'])->_real();
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->request('POST', '/product/' . $product->getId() . '/images/reorder', [
                 'headers' => [
                     'Content-Type' => 'application/json',

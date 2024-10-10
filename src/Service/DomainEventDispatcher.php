@@ -1,7 +1,7 @@
 <?php
 namespace App\Service;
 
-use App\Entity\Interfaces\DomainEventProviderInterface;
+use App\Entity\DomainEventProviderInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 

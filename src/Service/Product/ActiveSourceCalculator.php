@@ -89,6 +89,7 @@ class ActiveSourceCalculator
     private function removeActiveProductSource(Product $product): void
     {
         $product->setActiveProductSource(null);
+        $product->setStock(0);
     }
 
     public function removeMappedProduct(SupplierProduct $supplierProduct): void

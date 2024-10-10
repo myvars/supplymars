@@ -8,11 +8,13 @@ use App\Entity\Product;
 use App\Entity\Subcategory;
 use App\Entity\User;
 use App\Enum\PriceModel;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\PercentType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfonycasts\DynamicForms\DependentField;
@@ -20,6 +22,10 @@ use Symfonycasts\DynamicForms\DynamicFormBuilder;
 
 class ProductType extends AbstractType
 {
+    public function __construct(private readonly EntityManagerInterface $entityManager)
+    {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder = new DynamicFormBuilder($builder);
@@ -67,6 +73,7 @@ class ProductType extends AbstractType
                 'choice_label' => 'fullName',
                 'label' => 'Product Manager',
                 'placeholder' => 'No product manager',
+                'choices' => $this->entityManager->getRepository(User::class)->findStaff(),
             ])
             ->add('defaultMarkup', PercentType::class, [
                 'scale' => 3,
@@ -78,6 +85,10 @@ class ProductType extends AbstractType
                 'row_attr' => ['class' => 'sm:col-span-2 mb-4'],
             ])
         ;
+
+        $builder->add('auto-update', SubmitType::class, [
+            'attr' => ['class' => 'hidden-submit-button', 'data-submit-form-target' => 'submit']
+        ]);
 
         $builder->addDependent('subcategory', 'category', function(DependentField $field, ?Category $category): void {
             $field

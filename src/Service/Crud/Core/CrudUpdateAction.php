@@ -15,8 +15,10 @@ final readonly class CrudUpdateAction implements CrudActionInterface
     ) {
     }
 
-    public function handle(object $entity, ?array $context): void
+    public function handle(object $crudOptions): void
     {
+        $entity = $crudOptions->getEntity();
+
         $this->entityManager->persist($entity);
         $this->entityManager->flush();
 

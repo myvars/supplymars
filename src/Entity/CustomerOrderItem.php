@@ -2,8 +2,6 @@
 
 namespace App\Entity;
 
-use App\Entity\Interfaces\DomainEventProviderInterface;
-use App\Entity\Traits\DomainEventTrait;
 use App\Enum\OrderStatus;
 use App\Enum\PurchaseOrderStatus;
 use App\Event\OrderItemCreatedEvent;
@@ -15,7 +13,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
-use function PHPUnit\Framework\assertInstanceOf;
 
 #[ORM\Entity(repositoryClass: CustomerOrderItemRepository::class)]
 class CustomerOrderItem implements DomainEventProviderInterface

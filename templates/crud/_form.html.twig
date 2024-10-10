@@ -7,8 +7,8 @@
 }) }}
     {{ form_widget(form, {
         'attr': {
-            'class': formColumns > 1 ? 'grid gap-x-6 gap-y-0 sm:grid-cols-'~formColumns : '',
+            'class': formColumns|default(1) > 1 ? 'grid gap-x-6 gap-y-0 sm:grid-cols-'~formColumns|default(1) : '',
         }
     }) }}
-<twig:Button data-submit-form-target="submit" type="submit" class="w-full">{{ button_label|default('Save') }}</twig:Button>
+<twig:Button type="submit" class="w-full">{{ button_label|default('Save') }}</twig:Button>
 {{ form_end(form) }}

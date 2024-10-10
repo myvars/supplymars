@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\DTO\SearchDto\SearchInterface;
 use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -20,7 +21,7 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
  * @method User[]    findAll()
  * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
+class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface, SearchQueryInterface
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -41,32 +42,29 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
-    public function findBySearch(?string $query, ?int $limit = null): array
+    public function findBySearchDto(SearchInterface $searchDto): QueryBuilder
     {
-        $qb = $this->findBySearchQueryBuilder($query);
+        $sort = $searchDto->getSort() ?: $searchDto::SORT_DEFAULT;
+        $sortDirection = $searchDto->getSortDirection() ?: $searchDto::SORT_DIRECTION_DEFAULT;
 
-        if ($limit) {
-            $qb->setMaxResults($limit);
-        }
-
-        return $qb
-            ->getQuery()
-            ->getResult();
-    }
-
-    public function findBySearchQueryBuilder(?string $query, ?string $sort = null, string $direction = 'DESC'): QueryBuilder
-    {
         $qb = $this->createQueryBuilder('u');
 
-        if ($query) {
-            $qb->andWhere('u.fullName LIKE :query')
-                ->setParameter('query', '%'.$query.'%');
+        if ($searchDto->getQuery()) {
+            $qb->andWhere('u.fullName LIKE :query OR u.email LIKE :query')
+                ->setParameter('query', '%'.$searchDto->getQuery().'%');
         }
 
-        if ($sort) {
-            $qb->orderBy('u.'.$sort, $direction);
-        }
+        $qb->orderBy('u.'.$sort, $sortDirection);
 
         return $qb;
+    }
+
+    public function findStaff(): ?array
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.isStaff = :isStaff')
+            ->setParameter('isStaff', true)
+            ->getQuery()
+            ->getResult();
     }
 }

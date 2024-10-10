@@ -3,6 +3,7 @@
 namespace App\Tests\Application\Controller;
 
 use App\Factory\ProductFactory;
+use App\Factory\UserFactory;
 use App\Service\Product\ActiveSourceCalculator;
 use App\Service\Product\ProductPriceCalculator;
 use App\Tests\Utilities\TestProduct;
@@ -35,6 +36,7 @@ class ProductCostControllerTest extends WebTestCase
         $product = ProductFactory::createOne(['name' => 'Product to be shown']);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/product/" . $product->getId() . "/cost")
             ->assertSuccessful()
             ->assertSee('Product Cost');
@@ -45,6 +47,7 @@ class ProductCostControllerTest extends WebTestCase
         $product = $this->testProduct->create();
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/product/" . $product->getId() . "/cost")
             ->assertSuccessful()
             ->assertSee('Product Cost')
@@ -60,6 +63,7 @@ class ProductCostControllerTest extends WebTestCase
         $this->productPriceCalculator->recalculatePrice($product);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/product/" . $product->getId() . "/cost")
             ->assertSuccessful()
             ->assertSee('Product Cost')
@@ -74,6 +78,7 @@ class ProductCostControllerTest extends WebTestCase
         $this->productPriceCalculator->recalculatePrice($product);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/product/" . $product->getId() . "/cost")
             ->assertSuccessful()
             ->assertSee('Product Cost')
@@ -88,6 +93,7 @@ class ProductCostControllerTest extends WebTestCase
         $this->productPriceCalculator->recalculatePrice($product);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/product/" . $product->getId() . "/cost")
             ->assertSuccessful()
             ->assertSee('Product Cost')
@@ -97,6 +103,7 @@ class ProductCostControllerTest extends WebTestCase
     public function testShowProductCostWithInvalidProduct(): void
     {
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/product/999/cost")
             ->assertSee("Sorry, we can't find that Product");
     }
@@ -109,6 +116,7 @@ class ProductCostControllerTest extends WebTestCase
         ]);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/product/" . $product->getId() . "/cost/edit")
             ->assertSuccessful()
             ->fillField('product_cost[defaultMarkup]','12.345')
@@ -122,6 +130,7 @@ class ProductCostControllerTest extends WebTestCase
         $product = ProductFactory::createOne([ 'name' => 'Test Product']);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/product/" . $product->getId() . "/cost/edit")
             ->assertSuccessful()
             ->fillField('product_cost[defaultMarkup]','-1')
@@ -135,6 +144,7 @@ class ProductCostControllerTest extends WebTestCase
     public function testEditProductCostWithInvalidProduct(): void
     {
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/product/999/cost/edit")
             ->assertSee("Sorry, we can't find that Product");
     }
@@ -147,6 +157,7 @@ class ProductCostControllerTest extends WebTestCase
         ]);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/product/" . $product->getId() . "/cost/category/edit")
             ->assertSuccessful()
             ->fillField('category_cost[defaultMarkup]','12.345')
@@ -160,6 +171,7 @@ class ProductCostControllerTest extends WebTestCase
         $product = ProductFactory::createOne([ 'name' => 'Test Product']);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/product/" . $product->getId() . "/cost/category/edit")
             ->assertSuccessful()
             ->fillField('category_cost[defaultMarkup]','-1')
@@ -173,6 +185,7 @@ class ProductCostControllerTest extends WebTestCase
     public function testEditCategoryCostWithInvalidProduct(): void
     {
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/product/999/cost/category/edit")
             ->assertSee("Sorry, we can't find that Product");
     }
@@ -185,6 +198,7 @@ class ProductCostControllerTest extends WebTestCase
         ]);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/product/" . $product->getId() . "/cost/subcategory/edit")
             ->assertSuccessful()
             ->fillField('subcategory_cost[defaultMarkup]','12.345')
@@ -198,6 +212,7 @@ class ProductCostControllerTest extends WebTestCase
         $product = ProductFactory::createOne([ 'name' => 'Test Product']);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/product/" . $product->getId() . "/cost/subcategory/edit")
             ->assertSuccessful()
             ->fillField('subcategory_cost[defaultMarkup]','-1')
@@ -211,6 +226,7 @@ class ProductCostControllerTest extends WebTestCase
     public function testEditSubcategoryCostWithInvalidProduct(): void
     {
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/product/999/cost/subcategory/edit")
             ->assertSee("Sorry, we can't find that Product");
     }

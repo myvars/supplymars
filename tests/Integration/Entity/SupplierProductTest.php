@@ -2,6 +2,7 @@
 
 namespace App\Tests\Integration\Entity;
 
+use App\DTO\SearchDto\SupplierProductSearchDto;
 use App\Entity\SupplierProduct;
 use App\Factory\ProductFactory;
 use App\Factory\SupplierFactory;
@@ -80,36 +81,26 @@ class SupplierProductTest extends KernelTestCase
         $this->assertEquals('Please enter a supplier', $result[0]->getMessage());
     }
 
-    public function testSupplierProductFindBySearch(): void
+    public function testSupplierProductFindBySearchDto(): void
     {
         SupplierProductFactory::createOne(['name' => 'Test Supplier Product A']);
         SupplierProductFactory::createOne(['name' => 'Test Supplier Product B']);
 
-        $result = $this->entityManager->getRepository(SupplierProduct::class)->findBySearch('Test Supplier Product', 1);
-        $this->assertCount(1, $result);
-        $this->assertEquals('Test Supplier Product A', $result[0]->getName());
-    }
-
-    public function testSupplierProductFindBySearchQueryBuilder(): void
-    {
-        SupplierProductFactory::createOne(['name' => 'Test Supplier Product A']);
-        SupplierProductFactory::createOne(['name' => 'Test Supplier Product B']);
-
-        $supplierProducts = $this->entityManager
-            ->getRepository(SupplierProduct::class)
-            ->findBySearchQueryBuilder('Test Supplier Product', 'name', 'asc')
-            ->getQuery()
-            ->getResult();
+        $searchDto = new SupplierProductSearchDto();
+        $searchDto
+            ->setQuery('Test Supplier Product')
+            ->setSort('name')
+            ->setSortDirection('asc');
+        $supplierProducts = $this->entityManager->getRepository(SupplierProduct::class)
+            ->findBySearchDto($searchDto)->getQuery()->getResult();
 
         $this->assertCount(2, $supplierProducts);
         $this->assertEquals('Test Supplier Product A', $supplierProducts[0]->getName());
         $this->assertEquals('Test Supplier Product B', $supplierProducts[1]->getName());
 
-        $supplierProducts = $this->entityManager
-            ->getRepository(SupplierProduct::class)
-            ->findBySearchQueryBuilder('Test Supplier Product', 'name', 'desc')
-            ->getQuery()
-            ->getResult();
+        $searchDto->setSortDirection('desc');
+        $supplierProducts = $this->entityManager->getRepository(SupplierProduct::class)
+            ->findBySearchDto($searchDto)->getQuery()->getResult();
 
         $this->assertCount(2, $supplierProducts);
         $this->assertEquals('Test Supplier Product B', $supplierProducts[0]->getName());

@@ -6,6 +6,7 @@ use App\Entity\Category;
 use App\Entity\Subcategory;
 use App\Entity\User;
 use App\Enum\PriceModel;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
@@ -15,6 +16,10 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class SubcategoryType extends AbstractType
 {
+    public function __construct(private readonly EntityManagerInterface $entityManager)
+    {
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -42,6 +47,7 @@ class SubcategoryType extends AbstractType
                 'choice_label' => 'fullName',
                 'label' => 'Subcategory Manager',
                 'placeholder' => 'No subcategory manager',
+                'choices' => $this->entityManager->getRepository(User::class)->findStaff(),
             ])
             ->add('isActive', null, [
                 'label' => 'Active',

@@ -2,16 +2,19 @@
 
 namespace App\Controller;
 
+use App\DTO\SearchDto\ProductSearchDto;
 use App\Entity\Product;
 use App\Form\ProductType;
 use App\Repository\ProductRepository;
 use App\Service\Crud\CrudCreator;
 use App\Service\Crud\CrudDeleter;
-use App\Service\Crud\CrudIndexer;
-use App\Service\Crud\CrudUpdater;
 use App\Service\Crud\CrudReader;
+use App\Service\Crud\CrudSearcher;
+use App\Service\Crud\CrudUpdater;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -22,11 +25,13 @@ class ProductController extends AbstractController
     public const SECTION = 'Product';
 
     #[Route('/', name: 'app_product_index', methods: ['GET'])]
-    public function index(ProductRepository $repository, CrudIndexer $crudIndexer): Response
-    {
-        $sortOptions = ['id', 'name', 'cost', 'stock', 'sellPriceIncVat', 'isActive'];
-
-        return $crudIndexer->index(self::SECTION, $repository, $sortOptions);
+    public function index(
+        Request $request,
+        CrudSearcher $crudSearcher,
+        ProductRepository $repository,
+        #[MapQueryString] ProductSearchDto $dto = new ProductSearchDto()
+    ): Response {
+        return $crudSearcher->search(self::SECTION, $dto, $repository, $request->query->all());
     }
 
     #[Route('/new', name: 'app_product_new', methods: ['GET', 'POST'])]

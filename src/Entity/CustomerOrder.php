@@ -2,8 +2,6 @@
 
 namespace App\Entity;
 
-use App\Entity\Interfaces\DomainEventProviderInterface;
-use App\Entity\Traits\DomainEventTrait;
 use App\Enum\OrderStatus;
 use App\Enum\ShippingMethod;
 use App\Event\OrderCreatedEvent;
@@ -307,6 +305,7 @@ class CustomerOrder implements DomainEventProviderInterface
             if ($customerOrderItem->getStatus() === OrderStatus::CANCELLED) {
                 continue;
             }
+
             $totalPrice += $customerOrderItem->getTotalPrice();
             $totalPriceIncVat += $customerOrderItem->getTotalPriceIncVat();
             $totalWeight += $customerOrderItem->getTotalWeight();

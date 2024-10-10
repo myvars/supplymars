@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Crud\Core;
+namespace App\Service\Search;
 
 use Doctrine\ORM\QueryBuilder;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;

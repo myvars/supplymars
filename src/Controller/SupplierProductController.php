@@ -2,20 +2,22 @@
 
 namespace App\Controller;
 
+use App\DTO\SearchDto\SupplierProductSearchDto;
 use App\Entity\SupplierProduct;
 use App\Form\SupplierProductType;
 use App\Repository\SupplierProductRepository;
 use App\Service\Crud\CrudCreator;
 use App\Service\Crud\CrudDeleter;
 use App\Service\Crud\CrudHelper;
-use App\Service\Crud\CrudIndexer;
 use App\Service\Crud\CrudReader;
+use App\Service\Crud\CrudSearcher;
 use App\Service\Crud\CrudUpdater;
 use App\Service\Product\ActiveSourceCalculator;
 use App\Service\Product\ProductGenerator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -30,11 +32,13 @@ class SupplierProductController extends AbstractController
     }
 
     #[Route('/', name: 'app_supplier_product_index', methods: ['GET'])]
-    public function index(SupplierProductRepository $repository, CrudIndexer $crudIndexer): Response
-    {
-        $sortOptions = ['id', 'supplier.name', 'name', 'cost', 'stock', 'isActive'];
-
-        return $crudIndexer->index(self::SECTION, $repository, $sortOptions);
+    public function index(
+        Request $request,
+        CrudSearcher $crudSearcher,
+        SupplierProductRepository $repository,
+        #[MapQueryString] SupplierProductSearchDto $dto = new SupplierProductSearchDto()
+    ): Response {
+        return $crudSearcher->search(self::SECTION, $dto, $repository, $request->query->all());
     }
 
     #[Route('/new', name: 'app_supplier_product_new', methods: ['GET', 'POST'])]

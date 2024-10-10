@@ -2,6 +2,7 @@
 
 namespace App\Tests\Integration\Entity;
 
+use App\DTO\SearchDto\SubcategorySearchDto;
 use App\Entity\Subcategory;
 use App\Enum\PriceModel;
 use App\Factory\CategoryFactory;
@@ -73,35 +74,26 @@ class SubcategoryTest extends KernelTestCase
         $this->assertEquals('Please enter a category', $result[0]->getMessage());
     }
 
-    public function testSubcategoryFindBySearch(): void
+    public function testSubcategoryFindBySearchDto(): void
     {
         SubcategoryFactory::createOne(['name' => 'Test Subcategory A']);
         SubcategoryFactory::createOne(['name' => 'Test Subcategory B']);
 
-        $subcategories = $this->entityManager->getRepository(Subcategory::class)->findBySearch('Test Subcategory', 1);
-        $this->assertCount(1, $subcategories);
-    }
-
-    public function testSubcategoryFindBySearchQueryBuilder(): void
-    {
-        SubcategoryFactory::createOne(['name' => 'Test Subcategory A']);
-        SubcategoryFactory::createOne(['name' => 'Test Subcategory B']);
-
-        $subcategories = $this->entityManager
-            ->getRepository(Subcategory::class)
-            ->findBySearchQueryBuilder('Test Subcategory', 'name', 'asc')
-            ->getQuery()
-            ->getResult();
+        $searchDto = new SubcategorySearchDto();
+        $searchDto
+            ->setQuery('Test Subcategory')
+            ->setSort('name')
+            ->setSortDirection('asc');
+        $subcategories = $this->entityManager->getRepository(Subcategory::class)
+            ->findBySearchDto($searchDto)->getQuery()->getResult();
 
         $this->assertCount(2, $subcategories);
         $this->assertEquals('Test Subcategory A', $subcategories[0]->getName());
         $this->assertEquals('Test Subcategory B', $subcategories[1]->getName());
 
-        $subcategories = $this->entityManager
-            ->getRepository(Subcategory::class)
-            ->findBySearchQueryBuilder('Test Subcategory', 'name', 'desc')
-            ->getQuery()
-            ->getResult();
+        $searchDto->setSortDirection('desc');
+        $subcategories = $this->entityManager->getRepository(Subcategory::class)
+            ->findBySearchDto($searchDto)->getQuery()->getResult();
 
         $this->assertCount(2, $subcategories);
         $this->assertEquals('Test Subcategory B', $subcategories[0]->getName());

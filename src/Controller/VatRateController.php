@@ -2,16 +2,19 @@
 
 namespace App\Controller;
 
+use App\DTO\SearchDto\VatRateSearchDto;
 use App\Entity\VatRate;
 use App\Form\VatRateType;
 use App\Repository\VatRateRepository;
 use App\Service\Crud\CrudCreator;
 use App\Service\Crud\CrudDeleter;
-use App\Service\Crud\CrudIndexer;
-use App\Service\Crud\CrudUpdater;
 use App\Service\Crud\CrudReader;
+use App\Service\Crud\CrudSearcher;
+use App\Service\Crud\CrudUpdater;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -22,11 +25,13 @@ class VatRateController extends AbstractController
     public const SECTION = 'VAT Rate';
 
     #[Route('/', name: 'app_vat_rate_index', methods: ['GET'])]
-    public function index(VatRateRepository $vatRateRepository, CrudIndexer $crudIndexer): Response
-    {
-        $sortOptions = ['id', 'name'];
-
-        return $crudIndexer->index(self::SECTION, $vatRateRepository, $sortOptions);
+    public function index(
+        Request $request,
+        CrudSearcher $crudSearcher,
+        VatRateRepository $repository,
+        #[MapQueryString] VatRateSearchDto $dto = new VatRateSearchDto()
+    ): Response {
+        return $crudSearcher->search(self::SECTION, $dto, $repository, $request->query->all());
     }
 
     #[Route('/new', name: 'app_vat_rate_new', methods: ['GET', 'POST'])]

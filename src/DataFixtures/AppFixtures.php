@@ -45,6 +45,7 @@ class AppFixtures extends Fixture
             'email' => 'adam@admin.com',
             'password' => 'letmein',
             'isVerified' => true,
+            'isStaff' => true,
             'roles' => ['ROLE_ADMIN'],
         ]);
 

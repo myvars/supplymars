@@ -20,6 +20,7 @@ class CategoryControllerTest extends WebTestCase
         CategoryFactory::createMany(3);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get('/category/')
             ->assertSuccessful()
             ->assertSee('Category List')
@@ -31,6 +32,7 @@ class CategoryControllerTest extends WebTestCase
         $category = CategoryFactory::createone(['name' => 'Category to be shown']);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/category/" . $category->getId())
             ->assertSuccessful()
             ->assertSee('Category to be shown');
@@ -43,6 +45,7 @@ class CategoryControllerTest extends WebTestCase
         $priceModel = PriceModel::DEFAULT;
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get('/category/new')
             ->assertSuccessful()
             ->fillField('category[name]','Test Category')
@@ -59,6 +62,7 @@ class CategoryControllerTest extends WebTestCase
     public function testNewCategoryValidation(): void
     {
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get('/category/new')
             ->assertSuccessful()
             // Intentionally omitting form data or filling it with invalid data
@@ -74,6 +78,7 @@ class CategoryControllerTest extends WebTestCase
         $category = CategoryFactory::createone(['name' => 'Category to be edited']);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/category/" . $category->getId() . "/edit")
             ->assertSuccessful()
             ->fillField('category[name]','Edited Category')
@@ -87,6 +92,7 @@ class CategoryControllerTest extends WebTestCase
         $category = CategoryFactory::createone(['name' => 'Category to be edited']);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/category/" . $category->getId() . "/edit")
             ->assertSuccessful()
             // Intentionally filling form with invalid data
@@ -109,6 +115,7 @@ class CategoryControllerTest extends WebTestCase
         $category = CategoryFactory::createone(['name' => 'Category to be deleted']);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/category/" . $category->getId() . "/delete/confirm")
             ->assertSuccessful()
             ->assertSee('Are you sure you want to delete this Category');
@@ -119,6 +126,7 @@ class CategoryControllerTest extends WebTestCase
         $category = CategoryFactory::createone(['name' => 'Category to be deleted']);
 
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/category/" . $category->getId() . "/delete/confirm")
             ->assertSuccessful()
             ->click('Delete')
@@ -129,6 +137,7 @@ class CategoryControllerTest extends WebTestCase
     public function testCategoryNotFound(): void
     {
         $this->browser()
+            ->actingAs(UserFactory::createOne()->_real())
             ->get("/category/999")
             ->assertSee("Sorry, we can't find that Category");
     }

@@ -2,6 +2,7 @@
 
 namespace App\Tests\Integration\Entity;
 
+use App\DTO\SearchDto\CategorySearchDto;
 use App\Entity\Category;
 use App\Enum\PriceModel;
 use App\Factory\CategoryFactory;
@@ -90,35 +91,26 @@ class CategoryTest extends KernelTestCase
         $this->assertEquals('Please enter a category owner', $result[0]->getMessage());
     }
 
-    public function testCategoryFindBySearch(): void
+    public function testCategoryFindBySearchDto(): void
     {
         CategoryFactory::createOne(['name' => 'Test Category A']);
         CategoryFactory::createOne(['name' => 'Test Category B']);
 
-        $categories = $this->entityManager->getRepository(Category::class)->findBySearch('Test Category', 1);
-        $this->assertCount(1, $categories);
-    }
-
-    public function testCategoryFindBySearchQueryBuilder(): void
-    {
-        CategoryFactory::createOne(['name' => 'Test Category A']);
-        CategoryFactory::createOne(['name' => 'Test Category B']);
-
-        $categories = $this->entityManager
-            ->getRepository(Category::class)
-            ->findBySearchQueryBuilder('Test Category', 'name', 'asc')
-            ->getQuery()
-            ->getResult();
+        $searchDto = new CategorySearchDto();
+        $searchDto
+            ->setQuery('Test Category')
+            ->setSort('name')
+            ->setSortDirection('asc');
+        $categories = $this->entityManager->getRepository(Category::class)
+            ->findBySearchDto($searchDto)->getQuery()->getResult();
 
         $this->assertCount(2, $categories);
         $this->assertEquals('Test Category A', $categories[0]->getName());
         $this->assertEquals('Test Category B', $categories[1]->getName());
 
-        $categories = $this->entityManager
-            ->getRepository(Category::class)
-            ->findBySearchQueryBuilder('Test Category', 'name', 'desc')
-            ->getQuery()
-            ->getResult();
+        $searchDto->setSortDirection('desc');
+        $categories = $this->entityManager->getRepository(Category::class)
+            ->findBySearchDto($searchDto)->getQuery()->getResult();
 
         $this->assertCount(2, $categories);
         $this->assertEquals('Test Category B', $categories[0]->getName());

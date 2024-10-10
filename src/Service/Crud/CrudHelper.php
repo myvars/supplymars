@@ -2,6 +2,7 @@
 
 namespace App\Service\Crud;
 
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -43,6 +44,15 @@ class CrudHelper
         return $this->router;
     }
 
+    public function isAutoUpdate(FormInterface $form): bool
+    {
+        if ($form->has('auto-update') === false) {
+            return false;
+        }
+
+        return $form->get('auto-update')->isClicked();
+    }
+
     public function showEmpty(string $section) : Response
     {
         try {
@@ -69,21 +79,22 @@ class CrudHelper
 
     public function redirectToLink(
         string $link,
+        bool $isUrlRefresh = false,
         int $status = self::REDIRECT_RESPONSE_STATUS
     ): RedirectResponse|Response {
         if ($this->requestStack->getCurrentRequest()->headers->has('turbo-frame')) {
-            return $this->streamRefresh();
+            return $this->streamRefresh($isUrlRefresh ? $link : null);
         }
 
         return new RedirectResponse($link, $status);
     }
 
-    private function streamRefresh(): Response
+    private function streamRefresh(string $newUrl = null): Response
     {
         $this->requestStack->getCurrentRequest()->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
         try {
-            $content = $this->twig->render(self::TURBO_STREAM_REFRESH_TEMPLATE, []);
+            $content = $this->twig->render(self::TURBO_STREAM_REFRESH_TEMPLATE, ["newUrl" => $newUrl]);
         } catch (\Exception) {
             $content = '';
         }

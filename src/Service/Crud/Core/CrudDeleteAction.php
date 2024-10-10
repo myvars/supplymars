@@ -15,8 +15,10 @@ final readonly class CrudDeleteAction implements CrudActionInterface
     ) {
     }
 
-    public function handle(object $entity, ?array $context): void
+    public function handle(object $crudOptions): void
     {
+        $entity = $crudOptions->getEntity();
+
         $this->entityManager->remove($entity);
         $this->entityManager->flush();
 

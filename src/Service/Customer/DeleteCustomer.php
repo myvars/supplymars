@@ -12,8 +12,9 @@ final readonly class DeleteCustomer implements CrudActionInterface
     {
     }
 
-    public function handle(object $entity, ?array $context): void
+    public function handle($crudOptions): void
     {
+        $entity = $crudOptions->getEntity();
         assert($entity instanceof User);
 
         $this->fromCustomer($entity);

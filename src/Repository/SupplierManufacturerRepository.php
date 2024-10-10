@@ -21,28 +21,26 @@ class SupplierManufacturerRepository extends ServiceEntityRepository
         parent::__construct($registry, SupplierManufacturer::class);
     }
 
-    //    /**
-    //     * @return SupplierManufacturer[] Returns an array of SupplierManufacturer objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('s.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    public function findSupplierManufacturers(
+        int $supplierId,
+        ?int $supplierCategoryId,
+        ?int $supplierSubcategoryId
+    ): ?array {
+        $qb = $this->createQueryBuilder('sm')
+            ->leftJoin('sm.supplierProducts', 'sp')
+            ->andWhere('sm.supplier = :supplierId')
+            ->setParameter('supplierId', $supplierId);
 
-    //    public function findOneBySomeField($value): ?SupplierManufacturer
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        if ($supplierCategoryId) {
+            $qb->andWhere('sp.supplierCategory = :supplierCategoryId')
+                ->setParameter('supplierCategoryId', $supplierCategoryId);
+        }
+
+        if ($supplierSubcategoryId) {
+            $qb->andWhere('sp.supplierSubcategory = :supplierSubcategoryId')
+                ->setParameter('supplierSubcategoryId', $supplierSubcategoryId);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }

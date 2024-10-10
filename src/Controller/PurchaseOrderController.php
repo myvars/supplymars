@@ -2,15 +2,18 @@
 
 namespace App\Controller;
 
+use App\DTO\SearchDto\PurchaseOrderSearchDto;
 use App\Entity\PurchaseOrder;
 use App\Form\ChangePurchaseOrderItemStatusType;
 use App\Repository\PurchaseOrderRepository;
 use App\Service\Crud\CrudDeleter;
-use App\Service\Crud\CrudIndexer;
 use App\Service\Crud\CrudReader;
+use App\Service\Crud\CrudSearcher;
 use App\Service\Crud\CrudUpdater;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -21,11 +24,13 @@ class PurchaseOrderController extends AbstractController
     public const SECTION = 'Purchase Order';
 
     #[Route('/', name: 'app_purchase_order_index', methods: ['GET'])]
-    public function index(PurchaseOrderRepository $repository, CrudIndexer $crudIndexer): Response
-    {
-        $sortOptions = ['id', 'createdAt', 'customerOrder.id', 'totalPriceIncVat', 'status'];
-
-        return $crudIndexer->index(self::SECTION, $repository, $sortOptions);
+    public function index(
+        Request $request,
+        CrudSearcher $crudSearcher,
+        PurchaseOrderRepository $repository,
+        #[MapQueryString] PurchaseOrderSearchDto $dto = new PurchaseOrderSearchDto()
+    ): Response {
+        return $crudSearcher->search(self::SECTION, $dto, $repository, $request->query->all());
     }
 
     #[Route('/{id}', name: 'app_purchase_order_show', methods: ['GET'])]

@@ -55,9 +55,9 @@ class CrudUpdater extends AbstractController
         $crudAction = $crudOptions->getCrudAction() ?: $this->crudAction;
 
         $form->handleRequest($this->crudHelper->getRequest());
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid() && !$this->crudHelper->isAutoUpdate($form)) {
             try {
-                $crudAction->handle($crudOptions->getEntity(), $crudOptions->getCrudActionContext());
+                $crudAction->handle($crudOptions);
                 $this->addFlash(
                     'success',
                     $crudOptions->getSection().' updated!'
@@ -70,6 +70,10 @@ class CrudUpdater extends AbstractController
             }
 
             return $this->crudHelper->redirectTolink($crudOptions->getSuccessLink());
+        }
+
+        if ($this->crudHelper->isAutoUpdate($form)) {
+            $form->clearErrors(true);
         }
 
         return $this->render($this->crudHelper::CRUD_BASE_TEMPLATE, [

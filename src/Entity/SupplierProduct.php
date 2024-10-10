@@ -2,8 +2,6 @@
 
 namespace App\Entity;
 
-use App\Entity\Interfaces\DomainEventProviderInterface;
-use App\Entity\Traits\DomainEventTrait;
 use App\Event\SupplierProductCostChangedEvent;
 use App\Event\SupplierProductStockChangedEvent;
 use App\Repository\SupplierProductRepository;
