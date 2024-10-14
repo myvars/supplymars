@@ -77,7 +77,7 @@ abstract class SearchDto implements SearchInterface
             $sortDirection = strtolower(static::SORT_DIRECTION_DEFAULT);
         }
 
-        $this->sortDirection = strtolower($sortDirection);
+        $this->sortDirection = strtolower((string) $sortDirection);
 
         return $this;
     }

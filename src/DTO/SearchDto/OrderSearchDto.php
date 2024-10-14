@@ -2,8 +2,10 @@
 
 namespace App\DTO\SearchDto;
 
+use App\Validator\DateRange;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[DateRange]
 final class OrderSearchDto extends SearchDto implements SearchFilterInterface
 {
     public const SORT_DEFAULT = 'id';
@@ -26,6 +28,12 @@ final class OrderSearchDto extends SearchDto implements SearchFilterInterface
     #[Assert\Range(notInRangeMessage: 'Please enter a valid Product Id', min: 1, max: 1000000)]
     private ?int $productId = null;
 
+    #[Assert\Date]
+    private ?string $startDate = null;
+
+    #[Assert\Date]
+    private ?string $endDate = null;
+
     private ?string $orderStatus = null;
 
     public function getSearchParams(): array
@@ -36,6 +44,8 @@ final class OrderSearchDto extends SearchDto implements SearchFilterInterface
             'customerId' => $this->customerId,
             'productId' => $this->productId,
             'orderStatus' => $this->orderStatus,
+            'startDate' => $this->startDate,
+            'endDate' => $this->endDate,
         ];
 
         if (array_filter($searchFilterParams)) {
@@ -89,6 +99,30 @@ final class OrderSearchDto extends SearchDto implements SearchFilterInterface
     public function setProductId(?int $productId): OrderSearchDto
     {
         $this->productId = $productId;
+        return $this;
+    }
+
+    public function getStartDate(): ?string
+    {
+        return $this->startDate;
+    }
+
+    public function setStartDate(?string $startDate): OrderSearchDto
+    {
+        $this->startDate = $startDate;
+
+        return $this;
+    }
+
+    public function getEndDate(): ?string
+    {
+        return $this->endDate;
+    }
+
+    public function setEndDate(?string $endDate): OrderSearchDto
+    {
+        $this->endDate = $endDate;
+
         return $this;
     }
 

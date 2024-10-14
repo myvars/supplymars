@@ -5,12 +5,15 @@ namespace App\Controller;
 use App\DTO\SearchDto\ProductSearchDto;
 use App\Entity\Product;
 use App\Form\ProductType;
+use App\Form\SearchForm\ProductSearchFilterType;
 use App\Repository\ProductRepository;
 use App\Service\Crud\CrudCreator;
 use App\Service\Crud\CrudDeleter;
+use App\Service\Crud\CrudHandler;
 use App\Service\Crud\CrudReader;
 use App\Service\Crud\CrudSearcher;
 use App\Service\Crud\CrudUpdater;
+use App\Service\Search\SearchFilter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,6 +35,27 @@ class ProductController extends AbstractController
         #[MapQueryString] ProductSearchDto $dto = new ProductSearchDto()
     ): Response {
         return $crudSearcher->search(self::SECTION, $dto, $repository, $request->query->all());
+    }
+
+    #[Route('/search/filter', name: 'app_product_search_filter', methods: ['GET', 'POST'])]
+    public function searchFilter(
+        Request $request,
+        CrudHandler $crudHandler,
+        SearchFilter $action,
+        #[MapQueryString] ProductSearchDto $dto = new ProductSearchDto()
+    ): Response {
+        $dto->setQueryString($request->getQueryString());
+        $form = $this->createForm(ProductSearchFilterType::class, $dto, [
+            'action' => $this->generateUrl('app_product_search_filter', $request->query->all()),
+        ]);
+
+        return $crudHandler->build($crudHandler->getOptions()
+            ->setTemplate('common/search_filter.html.twig')
+            ->setForm($form)
+            ->setEntity($dto)
+            ->setCrudAction($action)
+            ->setSuccessLink($this->generateUrl('app_product_index'))
+        );
     }
 
     #[Route('/new', name: 'app_product_new', methods: ['GET', 'POST'])]

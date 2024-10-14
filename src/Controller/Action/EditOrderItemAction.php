@@ -36,7 +36,7 @@ class EditOrderItemAction extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             try {
-                $this->editOrderItem->handle($editOrderItemDto, null);
+                $this->editOrderItem->handle($editOrderItemDto);
                 $this->addFlash('success', 'Order Item updated!');
             } catch (\Exception) {
                 $this->addFlash('error', 'Can not update Order Item!');

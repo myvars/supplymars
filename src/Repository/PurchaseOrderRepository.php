@@ -70,6 +70,22 @@ class PurchaseOrderRepository extends ServiceEntityRepository implements SearchQ
                 ->setParameter('status', $searchDto->getPurchaseOrderStatus());
         }
 
+        if ($searchDto->getStartDate()) {
+            $startDate = \DateTime::createFromFormat('Y-m-d', $searchDto->getStartDate());
+            if ($startDate) {
+                $qb->andWhere('p.createdAt >= :startDate')
+                    ->setParameter('startDate', $startDate->format('Y-m-d'));
+            }
+        }
+
+        if ($searchDto->getEndDate()) {
+            $endDate = \DateTime::createFromFormat('Y-m-d', $searchDto->getEndDate());
+            if ($endDate) {
+                $qb->andWhere('p.createdAt <= :endDate')
+                    ->setParameter('endDate', $endDate->format('Y-m-d'));
+            }
+        }
+
         $qb->orderBy('p.'.$sort, $sortDirection);
 
         return $qb;

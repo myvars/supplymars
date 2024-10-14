@@ -8,6 +8,7 @@ use App\Form\DataTransformer\stringToOrderStatusTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -38,6 +39,22 @@ class OrderSearchFilterType extends AbstractType
                 'choice_label' => fn (OrderStatus $orderStatus): string => $orderStatus->value,
                 'label' => 'Order Status',
                 'placeholder' => 'Any Order Status',
+            ])
+            ->add('startDate', TextType::class, [
+                'label' => 'Start Date',
+                'required' => false,
+                'attr' => [
+                    'data-controller' => 'datepicker',
+                    'placeholder' => 'yyyy-mm-dd',
+                ]
+            ])
+            ->add('endDate', TextType::class, [
+                'label' => 'End Date',
+                'required' => false,
+                'attr' => [
+                    'data-controller' => 'datepicker',
+                    'placeholder' => 'yyyy-mm-dd',
+                ]
             ])
             ->add('query', HiddenType::class)
             ->add('sort', HiddenType::class)

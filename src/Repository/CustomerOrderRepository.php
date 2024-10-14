@@ -63,6 +63,22 @@ class CustomerOrderRepository extends ServiceEntityRepository implements SearchQ
                 ->setParameter('status', $searchDto->getOrderStatus());
         }
 
+        if ($searchDto->getStartDate()) {
+            $startDate = \DateTime::createFromFormat('Y-m-d', $searchDto->getStartDate());
+            if ($startDate) {
+                $qb->andWhere('o.createdAt >= :startDate')
+                    ->setParameter('startDate', $startDate->format('Y-m-d'));
+            }
+        }
+
+        if ($searchDto->getEndDate()) {
+            $endDate = \DateTime::createFromFormat('Y-m-d', $searchDto->getEndDate());
+            if ($endDate) {
+                $qb->andWhere('o.createdAt <= :endDate')
+                    ->setParameter('endDate', $endDate->format('Y-m-d'));
+            }
+        }
+
         if (str_starts_with($sort, 'customer.')) {
             $qb->leftJoin('o.customer', 'customer')->orderBy($sort, $sortDirection);
         } else {

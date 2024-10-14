@@ -5,12 +5,15 @@ namespace App\Controller;
 use App\DTO\SearchDto\CategorySearchDto;
 use App\Entity\Category;
 use App\Form\CategoryType;
+use App\Form\SearchForm\CategorySearchFilterType;
 use App\Repository\CategoryRepository;
 use App\Service\Crud\CrudCreator;
 use App\Service\Crud\CrudDeleter;
+use App\Service\Crud\CrudHandler;
 use App\Service\Crud\CrudReader;
 use App\Service\Crud\CrudSearcher;
 use App\Service\Crud\CrudUpdater;
+use App\Service\Search\SearchFilter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -32,6 +35,27 @@ class CategoryController extends AbstractController
         #[MapQueryString] CategorySearchDto $dto = new CategorySearchDto()
     ): Response {
         return $crudSearcher->search(self::SECTION, $dto, $repository, $request->query->all());
+    }
+
+    #[Route('/search/filter', name: 'app_category_search_filter', methods: ['GET', 'POST'])]
+    public function searchFilter(
+        Request $request,
+        CrudHandler $crudHandler,
+        SearchFilter $action,
+        #[MapQueryString] CategorySearchDto $dto = new CategorySearchDto()
+    ): Response {
+        $dto->setQueryString($request->getQueryString());
+        $form = $this->createForm(CategorySearchFilterType::class, $dto, [
+            'action' => $this->generateUrl('app_category_search_filter', $request->query->all()),
+        ]);
+
+        return $crudHandler->build($crudHandler->getOptions()
+            ->setTemplate('common/search_filter.html.twig')
+            ->setForm($form)
+            ->setEntity($dto)
+            ->setCrudAction($action)
+            ->setSuccessLink($this->generateUrl('app_category_index'))
+        );
     }
 
     #[Route('/new', name: 'app_category_new', methods: ['GET', 'POST'])]

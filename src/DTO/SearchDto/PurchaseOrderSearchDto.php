@@ -2,8 +2,10 @@
 
 namespace App\DTO\SearchDto;
 
+use App\Validator\DateRange;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[DateRange]
 final class PurchaseOrderSearchDto extends SearchDto implements SearchFilterInterface
 {
     public const SORT_DEFAULT = 'id';
@@ -29,6 +31,12 @@ final class PurchaseOrderSearchDto extends SearchDto implements SearchFilterInte
     #[Assert\Range(notInRangeMessage: 'Please enter a valid Supplier Id', min: 1, max: 1000000)]
     private ?int $supplierId = null;
 
+    #[Assert\Date]
+    private ?string $startDate = null;
+
+    #[Assert\Date]
+    private ?string $endDate = null;
+
     private ?string $purchaseOrderStatus = null;
 
     public function getSearchParams(): array
@@ -40,6 +48,8 @@ final class PurchaseOrderSearchDto extends SearchDto implements SearchFilterInte
             'productId' => $this->productId,
             'supplierId' => $this->supplierId,
             'purchaseOrderStatus' => $this->purchaseOrderStatus,
+            'startDate' => $this->startDate,
+            'endDate' => $this->endDate,
         ];
 
         if (array_filter($searchFilterParams)) {
@@ -104,6 +114,30 @@ final class PurchaseOrderSearchDto extends SearchDto implements SearchFilterInte
     public function setSupplierId(?int $supplierId): PurchaseOrderSearchDto
     {
         $this->supplierId = $supplierId;
+
+        return $this;
+    }
+
+    public function getStartDate(): ?string
+    {
+        return $this->startDate;
+    }
+
+    public function setStartDate(?string $startDate): PurchaseOrderSearchDto
+    {
+        $this->startDate = $startDate;
+
+        return $this;
+    }
+
+    public function getEndDate(): ?string
+    {
+        return $this->endDate;
+    }
+
+    public function setEndDate(?string $endDate): PurchaseOrderSearchDto
+    {
+        $this->endDate = $endDate;
 
         return $this;
     }

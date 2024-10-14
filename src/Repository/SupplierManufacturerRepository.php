@@ -22,14 +22,17 @@ class SupplierManufacturerRepository extends ServiceEntityRepository
     }
 
     public function findSupplierManufacturers(
-        int $supplierId,
+        ?int $supplierId,
         ?int $supplierCategoryId,
         ?int $supplierSubcategoryId
     ): ?array {
         $qb = $this->createQueryBuilder('sm')
-            ->leftJoin('sm.supplierProducts', 'sp')
-            ->andWhere('sm.supplier = :supplierId')
-            ->setParameter('supplierId', $supplierId);
+            ->leftJoin('sm.supplierProducts', 'sp');
+
+        if ($supplierId) {
+            $qb->andWhere('sm.supplier = :supplierId')
+                ->setParameter('supplierId', $supplierId);
+        }
 
         if ($supplierCategoryId) {
             $qb->andWhere('sp.supplierCategory = :supplierCategoryId')

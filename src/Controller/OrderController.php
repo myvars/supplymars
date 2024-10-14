@@ -6,9 +6,11 @@ use App\DTO\CreateOrderDto;
 use App\DTO\SearchDto\OrderSearchDto;
 use App\Entity\CustomerOrder;
 use App\Form\CreateOrderType;
+use App\Form\SearchForm\OrderSearchFilterType;
 use App\Repository\CustomerOrderRepository;
 use App\Service\Crud\CrudCreator;
 use App\Service\Crud\CrudDeleter;
+use App\Service\Crud\CrudHandler;
 use App\Service\Crud\CrudHelper;
 use App\Service\Crud\CrudReader;
 use App\Service\Crud\CrudSearcher;
@@ -17,6 +19,7 @@ use App\Service\Order\CancelOrder;
 use App\Service\Order\CreateOrder;
 use App\Service\Order\LockOrder;
 use App\Service\Order\ProcessOrder;
+use App\Service\Search\SearchFilter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,6 +41,27 @@ class OrderController extends AbstractController
         #[MapQueryString] OrderSearchDto $dto = new OrderSearchDto()
     ): Response {
         return $crudSearcher->search(self::SECTION, $dto, $repository, $request->query->all());
+    }
+
+    #[Route('/search/filter', name: 'app_order_search_filter', methods: ['GET', 'POST'])]
+    public function searchFilter(
+        Request $request,
+        CrudHandler $crudHandler,
+        SearchFilter $action,
+        #[MapQueryString] OrderSearchDto $dto = new OrderSearchDto()
+    ): Response {
+        $dto->setQueryString($request->getQueryString());
+        $form = $this->createForm(OrderSearchFilterType::class, $dto, [
+            'action' => $this->generateUrl('app_order_search_filter', $request->query->all()),
+        ]);
+
+        return $crudHandler->build($crudHandler->getOptions()
+            ->setTemplate('common/search_filter.html.twig')
+            ->setForm($form)
+            ->setEntity($dto)
+            ->setCrudAction($action)
+            ->setSuccessLink($this->generateUrl('app_order_index'))
+        );
     }
 
     #[Route('/new', name: 'app_order_new', methods: ['GET', 'POST'])]

@@ -35,6 +35,16 @@ class CategoryRepository extends ServiceEntityRepository implements SearchQueryI
                 ->setParameter('query', '%'.$searchDto->getQuery().'%');
         }
 
+        if ($searchDto->getPriceModel()) {
+            $qb->andWhere('c.priceModel = :priceModel')
+                ->setParameter('priceModel', $searchDto->getPriceModel());
+        }
+
+        if ($searchDto->getManagerId()) {
+            $qb->andWhere('c.owner = :managerId')
+                ->setParameter('managerId', $searchDto->getManagerId());
+        }
+
         $qb->orderBy('c.'.$sort, $sortDirection);
 
         return $qb;

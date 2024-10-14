@@ -4,16 +4,19 @@ namespace App\Controller;
 
 use App\DTO\SearchDto\SupplierProductSearchDto;
 use App\Entity\SupplierProduct;
+use App\Form\SearchForm\SupplierProductSearchFilterType;
 use App\Form\SupplierProductType;
 use App\Repository\SupplierProductRepository;
 use App\Service\Crud\CrudCreator;
 use App\Service\Crud\CrudDeleter;
+use App\Service\Crud\CrudHandler;
 use App\Service\Crud\CrudHelper;
 use App\Service\Crud\CrudReader;
 use App\Service\Crud\CrudSearcher;
 use App\Service\Crud\CrudUpdater;
 use App\Service\Product\ActiveSourceCalculator;
 use App\Service\Product\ProductGenerator;
+use App\Service\Search\SearchFilter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -39,6 +42,27 @@ class SupplierProductController extends AbstractController
         #[MapQueryString] SupplierProductSearchDto $dto = new SupplierProductSearchDto()
     ): Response {
         return $crudSearcher->search(self::SECTION, $dto, $repository, $request->query->all());
+    }
+
+    #[Route('/search/filter', name: 'app_supplier_product_search_filter', methods: ['GET', 'POST'])]
+    public function searchFilter(
+        Request $request,
+        CrudHandler $crudHandler,
+        SearchFilter $action,
+        #[MapQueryString] SupplierProductSearchDto $dto = new SupplierProductSearchDto()
+    ): Response {
+        $dto->setQueryString($request->getQueryString());
+        $form = $this->createForm(SupplierProductSearchFilterType::class, $dto, [
+            'action' => $this->generateUrl('app_supplier_product_search_filter', $request->query->all()),
+        ]);
+
+        return $crudHandler->build($crudHandler->getOptions()
+            ->setTemplate('common/search_filter.html.twig')
+            ->setForm($form)
+            ->setEntity($dto)
+            ->setCrudAction($action)
+            ->setSuccessLink($this->generateUrl('app_supplier_product_index'))
+        );
     }
 
     #[Route('/new', name: 'app_supplier_product_new', methods: ['GET', 'POST'])]

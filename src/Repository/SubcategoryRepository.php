@@ -40,6 +40,16 @@ class SubcategoryRepository extends ServiceEntityRepository implements SearchQue
                 ->setParameter('categoryId', $searchDto->getCategoryId());
         }
 
+        if ($searchDto->getPriceModel()) {
+            $qb->andWhere('s.priceModel = :priceModel')
+                ->setParameter('priceModel', $searchDto->getPriceModel());
+        }
+
+        if ($searchDto->getManagerId()) {
+            $qb->andWhere('s.owner = :managerId')
+                ->setParameter('managerId', $searchDto->getManagerId());
+        }
+
         if ($sort) {
             if (str_starts_with($sort, 'category.')) {
                 $qb->leftJoin('s.category', 'category')->orderBy($sort, $sortDirection);
