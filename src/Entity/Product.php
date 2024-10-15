@@ -27,6 +27,9 @@ class Product
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
+    private ?string $description = null;
+
+    #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Please enter a manufacturer part number')]
     private ?string $mfrPartNumber = null;
 
@@ -120,6 +123,18 @@ class Product
     public function setName(?string $name): static
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
 
         return $this;
     }

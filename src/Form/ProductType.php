@@ -34,6 +34,11 @@ class ProductType extends AbstractType
             ->add('name', null, [
                 'label' => 'Product Name',
                 'row_attr' => ['class' => 'sm:col-span-2 mb-4'],
+                'priority' => 5,
+            ])
+            ->add('description', null, [
+                'label' => 'Product Description',
+                'row_attr' => ['class' => 'sm:col-span-2 mb-4'],
                 'priority' => 4,
             ])
             ->add('category', EntityType::class, [
