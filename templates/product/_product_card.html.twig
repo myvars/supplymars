@@ -1,4 +1,4 @@
-<div class="relative h-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+<div class="relative h-full w-[368px] bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
     <a href="{{ path('app_product_edit', {id: product.id}) }}"
        class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-gray-600 rounded-full shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600"
        data-turbo-prefetch="false"
@@ -38,6 +38,7 @@
                 </li>
             </ol>
         </nav>
+        <p class="mb-1">{{ product.description }}</p>
         <p class="mb-1 text-right text-xl font-extralight text-gray-500 dark:text-white">£{{ product.sellPriceIncVat|number_format(2) }} <span class="text-base">inc VAT</span></p>
         <p class="mb-2 text-right">{{ product.stock }} in stock</p>
         <p>{{ product.manufacturer.name }} : {{ product.mfrPartNumber }}</p>

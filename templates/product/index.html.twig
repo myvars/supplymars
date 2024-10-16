@@ -16,6 +16,19 @@
         </twig:block>
 
         <twig:block name="list_item">
+            <div class="flex justify-between items-center">
+                <p class="me-5 text-xs">
+                    {% if result.productImages|length > 0 %}
+                        {% set firstImage = result.productImages|first %}
+                        <img class="w-auto rounded-lg"
+                             src="{{ asset(product_uploads~firstImage.imageName) | imagine_filter('small_thumbnail') }}"
+                             alt=""
+                        >
+                    {% else %}
+                        <span class="flex text-center">no image</span>
+                    {% endif %}
+                </p>
+            <div class="w-full">
             <p class="mb-1 items-center text-lg text-gray-900 dark:text-white">{{ result.name|u.truncate(30, '...') }}</p>
             <p class="mb-1 items-center text-sm">Product {{ '%06d'|format(result.id) }}</p>
             <p class="flex justify-between items-center">
@@ -34,6 +47,8 @@
                     <span class="text-red-500">InActive</span>
                 {% endif %}
             </p>
+            </div>
+            </div>
         </twig:block>
 
         <twig:block name="list_add">

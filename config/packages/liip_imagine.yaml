@@ -22,10 +22,10 @@ liip_imagine:
     cache: flysystem_resolver
 
     filter_sets:
-        my_thumbnail:
+        small_thumbnail:
             filters:
                 thumbnail:
-                    size: [ 50, 50 ]
+                    size: [ 90, 90 ]
                     mode: outbound
                     allow_upscale: true
         large_thumbnail:

@@ -65,6 +65,7 @@ class createSupplierProductsCommand extends Command
         $product = $this->checkMfrPartNumber($supplierProduct->getMfrPartNumber());
         if ($product instanceof Product) {
             $product->addSupplierProduct($supplierProduct);
+            // TODO add category/subcategory mapping (see productGenerator)
             $this->entityManager->persist($product);
             $this->entityManager->flush();
 
