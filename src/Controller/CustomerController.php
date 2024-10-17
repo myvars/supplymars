@@ -19,7 +19,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/customer')]
-#[IsGranted('ROLE_USER')]
+#[IsGranted('ROLE_ADMIN')]
 class CustomerController extends AbstractController
 {
     public const SECTION = 'Customer';

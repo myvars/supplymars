@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}About Us{% endblock %}
+
+{% block body %}
+    <div data-controller="aos">
+        <section class="flex justify-center bg-white dark:bg-orange-400/10" style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
+            <div data-turbo-temporary class="py-8 px-4 mx-auto max-w-screen-xl sm:py-12 lg:px-6">
+                <div class="max-w-screen-md mb-10 dark:text-white" data-aos="fade-up" data-aos-duration="800">
+                    <h2 class="mb-4 text-3xl tracking-tight">About Us</h2>
+                    <p class="mb-4 sm:text-base">
+                        At {{ domain }}, we’re not just imagining the future; we’re building it. Our mission is to provide everything humanity needs to thrive on Mars, while showcasing the power of of modern web technologies.
+                    </p>
+                    <p class="mb-4 sm:text-base">
+                        With over 20 years experience in e-commerce, this project highlights deep expertise in PHP development, database design, and full-stack solutions.
+                        It reflects a career spent working with customers, stakeholders, and development teams of all sizes - providing leadership, mentoring, and helping businesses scale from startups to large, successful enterprises.
+                    </p>
+                </div>
+
+                <div class="max-w-screen-md mb-10 dark:text-white" data-aos="fade-up" data-aos-duration="800" data-aos-delay="200">
+                    <h3 class="mb-4 text-2xl">Powered by Proven Web Technologies</h3>
+                    <ul class="space-y-1 list-disc list-inside">
+                        <li>PHP 8 and Symfony for a robust, reliable back-end architecture</li>
+                        <li>Hotwire Turbo for seamless server-side rendering and fast navigation</li>
+                        <li>Tailwind CSS for fast, responsive design</li>
+                        <li>Doctrine ORM for efficient data management</li>
+                        <li>Amazon EC2 and S3 for scalable hosting and storage</li>
+                        <li>AI-Generated Content: Products and images created by AI, making each item unique</li>
+                    </ul>
+                </div>
+
+                <div class="max-w-screen-md mb-10 dark:text-white" data-aos="fade-up" data-aos-duration="800" data-aos-delay="400">
+                    <h3 class="mb-4 text-2xl">A Feature-Rich, Fun E-Commerce Demo</h3>
+                    <p>
+                        {{ domain|title }} offers a full suite of e-commerce back-end tools, including product management, supplier integration, dynamic pricing models, and order processing, all powered by real-time simulations of customer orders and supplier interactions.
+                        With built-in sales reporting and data visualizations, this project demonstrates the future of e-commerce - on Earth or Mars!
+                    </p>
+                </div>
+                <div class="mt-4 flex items-center justify-center" data-aos="fade-up" data-aos-delay="400" data-aos-duration="800">
+                    <twig:Button
+                        tag="a"
+                        href="mailto:adamashmore@me.com"
+                        class="flex items-center space-x-1 font-bold"
+                        variant="secondary"
+                    >
+                        <span>Contact Us</span>
+                    </twig:Button>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}

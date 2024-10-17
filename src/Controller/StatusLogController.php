@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/status/log')]
-#[IsGranted('ROLE_USER')]
+#[IsGranted('ROLE_ADMIN')]
 class StatusLogController extends AbstractController
 {
     #[Route('/order/{id}', name: 'app_order_status_log', methods: ['GET'])]

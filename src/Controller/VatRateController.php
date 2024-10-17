@@ -19,7 +19,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/vat-rate')]
-#[IsGranted('ROLE_USER')]
+#[IsGranted('ROLE_ADMIN')]
 class VatRateController extends AbstractController
 {
     public const SECTION = 'VAT Rate';

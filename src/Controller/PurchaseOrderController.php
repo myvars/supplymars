@@ -21,7 +21,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/purchase/order')]
-#[IsGranted('ROLE_USER')]
+#[IsGranted('ROLE_ADMIN')]
 class PurchaseOrderController extends AbstractController
 {
     public const SECTION = 'Purchase Order';

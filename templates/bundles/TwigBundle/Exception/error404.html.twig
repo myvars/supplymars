@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}About Us{% endblock %}
+
+{% block body %}
+        <section class="flex items-center justify-center mx-auto md:h-screen bg-white dark:bg-orange-400/10" style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
+            <div data-turbo-temporary class="py-8 px-4 mx-auto max-w-screen-xl sm:py-12 lg:px-6">
+                <div class="max-w-screen-md mb-10 dark:text-white">
+                    <h2 class="mb-8 text-3xl tracking-tight">404: Lost in the Martian Dust</h2>
+                    <p class="mb-4 sm:text-base">
+                        Uh-oh! It seems like you’ve wandered off course and landed in uncharted Martian territory.
+                        The page you’re looking for has drifted away in a Martian dust storm.
+                    </p>
+                </div>
+            </div>
+        </section>
+{% endblock %}

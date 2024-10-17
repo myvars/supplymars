@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}About Us{% endblock %}
+
+{% block body %}
+        <section class="flex items-center justify-center mx-auto md:h-screen bg-white dark:bg-orange-400/10" style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
+            <div data-turbo-temporary class="py-8 px-4 mx-auto max-w-screen-xl sm:py-12 lg:px-6">
+                <div class="max-w-screen-md mb-10 dark:text-white">
+                    <h2 class="mb-8 text-3xl tracking-tight">Error: Unexpected Problem on Mars</h2>
+                    <p class="mb-4 sm:text-base">
+                        Oops! It seems like something’s not quite right in the Martian colony.
+                        We’ve encountered an error, but don’t worry—our systems are recalibrating as we speak.                    </p>
+                    <p>
+                        Mars is unpredictable, but we’re working hard to get everything back on track!
+                    </p>
+                </div>
+            </div>
+        </section>
+{% endblock %}

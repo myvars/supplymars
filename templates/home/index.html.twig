@@ -6,54 +6,68 @@
 
     <div data-controller="aos">
     <section class="flex items-center justify-center mx-auto md:h-screen" id="intro"
-             style="background: url({{ asset('images/home.jpg') }}) center center no-repeat; background-size: cover;">
+             style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
         <div class="text-center">
-            <div class="pb-3 mt-4" data-aos="fade-down" data-aos-duration="800">{{ include('logo/_logo.html.twig', { logoHeight: 100 }) }}</div>
-            <h1 class="mb-5 text-2xl sm:text-4xl text-gray-900 dark:text-white" data-aos="fade-down" data-aos-delay="0">Welcome to {{ domain }}</h1>
-            <div class="mb-5 text-xl text-gray-900 dark:text-white" data-aos="fade-up" data-aos-delay="300" data-aos-duration="800">
-                <p class="mb-4">A simple e-commerce back-end demo</p>
+            <div class="pb-3 mt-4" data-aos="fade-down" data-aos-duration="800">{{ include('logo/_logo.html.twig', { logoHeight: 130 }) }}</div>
+            <h1 class="mb-5 text-4xl sm:text-4xl text-gray-900 dark:text-white" data-aos="fade-down" data-aos-delay="0">Welcome to {{ domain }}</h1>
+            <div class="mb-5 text-2xl text-gray-900 dark:text-white" data-aos="fade-up" data-aos-delay="400" data-aos-duration="800">
+                <p class="mb-4">Your One-Stop Shop for Life on the Red Planet</p>
             </div>
         </div>
     </section>
     <!--  /- END INTRO SECTION-->
 
-    <section class="bg-white dark:bg-gray-900">
-        <div class="py-8 px-4 mx-auto max-w-screen-xl sm:py-16 lg:px-6">
-            <div class="space-y-8 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-12 md:space-y-0">
-                <div data-aos="fade-up" data-aos-delay="0">
-                    <div class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary-100 lg:h-12 lg:w-12 dark:bg-primary-900">
-                        <svg class="w-5 h-5 text-primary-600 lg:w-6 lg:h-6 dark:text-primary-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 0l-2 2a1 1 0 101.414 1.414L8 10.414l1.293 1.293a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                    </div>
-                    <h3 class="mb-2 text-xl font-bold dark:text-white">Hotwire</h3>
-                    <p class="text-gray-500 dark:text-gray-400">
-                        Server-side rendering with Turbo Frames and Streams. Turbo Drive for fast navigation and form submissions.
-                        Stimulus controllers to augment HTML over-the-wire templates with just enough JS
-                        to shine!
-                    </p>
-                </div>
+    <section class="bg-white dark:bg-orange-400/10">
+        <div class="py-8 px-4 mx-auto max-w-screen-xl sm:py-8 lg:px-6" data-aos="fade-up" data-aos-duration="800">
+            <div class="max-w-screen-md mb-10">
+                <h2 class="mb-8 text-3xl tracking-tight text-gray-900 dark:text-white">Pioneering Commerce Beyond Earth</h2>
+                <p class="mb-4 text-gray-500 sm:text-base dark:text-gray-400">Whether you’re managing a Martian colony or just stocking up for your next extravehicular adventure, we’ve got you covered.
+                    {{ domain|title }} is not only your destination for everything from habitat maintenance to cutting-edge scientific equipment,
+                    it’s also a fun, fully functional demo designed to showcase e-commerce development with a modern PHP stack.
+                </p>
+                <p class="mb-4 text-gray-500 sm:text-base dark:text-gray-400">Features include:
+                </p>
+                <ul class="max-w-md space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+                    <li>Product creation and editing tools</li>
+                    <li>Supplier stock mapping and dynamic pricing models</li>
+                    <li>Full order management system</li>
+                    <li>Simulated customer and supplier behavior</li>
+                    <li>Real-time sales reporting with beautiful visualizations</li>
+                </ul>
+            </div>
+            <div class="space-y-8 md:grid md:grid-cols-2 lg:grid-cols-2 md:gap-12 md:space-y-0">
                 <div data-aos="fade-up" data-aos-delay="200">
-                    <div class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary-100 lg:h-12 lg:w-12 dark:bg-primary-900">
-                        <svg class="w-5 h-5 text-primary-600 lg:w-6 lg:h-6 dark:text-primary-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"></path></svg>
+                    <div class="flex justify-center items-center mb-2 w-10 h-10 rounded-full bg-primary-100 lg:h-12 lg:w-12 dark:bg-orange-700">
+                        <twig:ux:icon name="simple-icons:php" class="w-8 h-8" />
                     </div>
-                    <h3 class="mb-2 text-xl font-bold dark:text-white">Image Uploads</h3>
-                    <p class="text-gray-500 dark:text-gray-400">
-                        Flysystem storage library for uploads to Amazon S3. Lilp
-                        Imagine for image manipulation, thumbnails and caching. Dropzone file uploader, with sortable and editable list of uploaded files
+                    <h3 class="mb-2 text-2xl dark:text-white">Modern PHP</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        Harnessing the proven stability and performance of PHP 8 and Symfony, delivering a robust back-end architecture.
+                        LAST stack (Live Components, AssetMapper, Stimulus, and Turbo) brings simplicity and productivity to modern front-end experiences.
+                        Tailwind CSS ensures fast, responsive design with a utility-first approach for streamlined development.
                     </p>
                 </div>
                 <div data-aos="fade-up" data-aos-delay="400">
-                    <div class="flex justify-center items-center mb-4 w-10 h-10 rounded-full bg-primary-100 lg:h-12 lg:w-12 dark:bg-primary-900">
-                        <svg class="w-5 h-5 text-primary-600 lg:w-6 lg:h-6 dark:text-primary-300" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 6V5a3 3 0 013-3h2a3 3 0 013 3v1h2a2 2 0 012 2v3.57A22.952 22.952 0 0110 13a22.95 22.95 0 01-8-1.43V8a2 2 0 012-2h2zm2-1a1 1 0 011-1h2a1 1 0 011 1v1H8V5zm1 5a1 1 0 011-1h.01a1 1 0 110 2H10a1 1 0 01-1-1z" clip-rule="evenodd"></path><path d="M2 13.692V16a2 2 0 002 2h12a2 2 0 002-2v-2.308A24.974 24.974 0 0110 15c-2.796 0-5.487-.46-8-1.308z"></path></svg>
+                    <div class="flex justify-center items-center mb-2 w-10 h-10 rounded-full bg-primary-100 lg:h-12 lg:w-12 dark:bg-orange-700">
+                        <twig:ux:icon name="bi:lightning-fill" class="w-6 h-6" />
                     </div>
-                    <h3 class="mb-2 text-xl font-bold dark:text-white">LAST stack</h3>
-                    <p class="text-gray-500 dark:text-gray-400">Live Components, AssetMapper, Stimulus & Turbo - putting the joy, productivity & simplicity back into creating rich, frontend experiences
+                    <h3 class="mb-2 text-2xl dark:text-white">Hotwire Turbo</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        Turbo Frames and Streams enable fast, efficient server-side rendering, while Turbo Drive ensures smooth navigation and form submission without page reloads.
+                        Stimulus controllers enhance HTML over-the-wire templates, adding just enough JavaScript to make interactions shine!
                     </p>
                 </div>
             </div>
-            <hr class="my-10">
-            <div class="flex items-center justify-center" data-aos="fade-up" data-aos-delay="600">
-                <p>Want to know more?</p>
-                <a href="mailto:adamashmore@me.com" class="mx-4 text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-0 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800">Contact us</a>
+            <div class="mt-8 flex items-center justify-center">
+                <p class="me-2">Want to know more?</p>
+                <twig:Button
+                    tag="a"
+                    href="mailto:adamashmore@me.com"
+                    class="flex items-center space-x-1 font-bold"
+                    variant="secondary"
+                >
+                    <span>Contact Us</span>
+                </twig:Button>
             </div>
         </div>
     </section>
