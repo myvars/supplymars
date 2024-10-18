@@ -4,7 +4,6 @@
     {% block order_item_edit %}
         <a href="{{ path('app_order_item_edit', {'id': orderItem.id }) }}"
            class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-gray-600 rounded-full shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600"
-           data-turbo-prefetch="false"
            data-turbo-frame="modal"
         >
             <twig:ux:icon name="mynaui:edit-one" class="w-6 h-6 p-0.5"/>
@@ -38,8 +37,7 @@
                         </span>
                         <a href="{{ path('app_product_show', {'id': orderItem.product.id }) }}"
                            class="ms-3 text-sm hover:text-gray-500 dark:hover:text-white"
-                           data-turbo-frame="_top"
-                           data-turbo-prefetch="false"
+                           data-turbo-frame="body"
                            data-action="click->toggle#preventToggle"
                         >
                         #{{ '%05d'|format(orderItem.product.id) }}

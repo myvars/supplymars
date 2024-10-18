@@ -1,7 +1,6 @@
 <div class="relative h-full w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
     <a href="{{ path('app_subcategory_edit', { id: subcategory.id }) }}"
        class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-gray-600 rounded-full shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600"
-       data-turbo-prefetch="false"
        data-turbo-frame="modal"
     >
         <twig:ux:icon name="mynaui:edit-one" class="w-6 h-6 p-0.5" />
@@ -14,8 +13,7 @@
                 <li>
                     <div class="flex items-center">
                         <a href="{{ path('app_category_show', {id: subcategory.category.id}) }}"
-                           data-turbo-frame="_top"
-                           data-turbo-prefetch="false"
+                           data-turbo-frame="body"
                            class="text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
                             {{ subcategory.category.name|u.truncate(30, '...') }}
                         </a>
@@ -24,12 +22,9 @@
                 <li aria-current="page">
                     <div class="flex items-center">
                         <svg class="w-2 h-2 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/></svg>
-                        <a href="{{ path('app_subcategory_show', {id: subcategory.id}) }}"
-                           data-turbo-frame="_top"
-                           data-turbo-prefetch="false"
-                           class="ms-1 md:ms-2 text-sm text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
+                        <p class="ms-1 md:ms-2 text-sm text-gray-700 dark:text-gray-400">
                             {{ subcategory.name|u.truncate(30, '...') }}
-                        </a>
+                        </p>
                     </div>
                 </li>
             </ol>

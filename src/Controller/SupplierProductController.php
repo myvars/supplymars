@@ -112,11 +112,12 @@ class SupplierProductController extends AbstractController
             return $crudHelper->showEmpty(self::SECTION);
         }
 
+        $product = $supplierProduct->getProduct();
+
         if ($this->isCsrfTokenValid(
             'remove'.$supplierProduct->getId(),
             $request->request->get('_token')
         )) {
-            $product = $supplierProduct->getProduct();
             $this->activeSourceCalculator->removeMappedProduct($supplierProduct);
             $this->activeSourceCalculator->recalculateActiveSource($product);
 
@@ -124,7 +125,7 @@ class SupplierProductController extends AbstractController
         }
 
         return $crudHelper->redirectToLink(
-            $this->generateUrl('app_product_stock', ['id' => $supplierProduct->getProduct()->getId()])
+            $this->generateUrl('app_product_stock', ['id' => $product->getId()])
         );
     }
 

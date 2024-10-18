@@ -4,14 +4,12 @@
         <h1 class="text-base text-gray-500 dark:text-gray-400">
             <a href="{{ path('app_purchase_order_show', {id: purchaseOrder.id}) }}"
                data-turbo-frame="_top"
-               data-turbo-prefetch="false"
                class="hover:text-gray-700 dark:hover:text-white"
             >PO #{{ '%06d'|format(purchaseOrder.id) }}</a>
             <span class="ms-2 text-sm text-gray-500 dark:text-gray-400">{{ purchaseOrder.supplier.name }}</span>
         </h1>
         <a href="{{ path('app_purchase_order_status_log', {'id':purchaseOrder.id }) }}"
            class="flex justify-between items-center text-grey-500 dark:hover:text-gray-800"
-           data-turbo-prefetch="false"
            data-turbo-frame="modal"
         >
             <twig:StatusIcon type="{{ purchaseOrder.status.value|lower }}" class="me-1"/>

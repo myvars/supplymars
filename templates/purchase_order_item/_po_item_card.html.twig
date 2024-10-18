@@ -3,7 +3,6 @@
     {% block purchase_order_item_edit %}
         <a href="{{ path('app_purchase_order_item_status_edit', {'id': purchaseOrderItem.id }) }}"
            class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-{{ colourScheme }}-600 rounded-full shadow-lg dark:bg-{{ colourScheme }}-700 dark:hover:bg-{{ colourScheme }}-600"
-           data-turbo-prefetch="false"
            data-turbo-frame="modal"
         >
             <twig:ux:icon name="mynaui:edit-one" class="w-6 h-6 p-0.5"/>
@@ -30,8 +29,7 @@
                         <span class="ms-3 text-sm">Qty: {{ purchaseOrderItem.quantity }}</span>
                         <a href="{{ path('app_product_show', {'id': purchaseOrderItem.customerOrderItem.product.id }) }}"
                            class="ms-3 text-sm hover:text-gray-500 dark:hover:text-white"
-                           data-turbo-frame="_top"
-                           data-turbo-prefetch="false"
+                           data-turbo-frame="body"
                         >
                         Product #{{ '%05d'|format(purchaseOrderItem.customerOrderItem.product.id) }}
                         </a>
@@ -39,7 +37,6 @@
                     <span class="text-gray-500">
                         <a href="{{ path('app_purchase_order_item_status_log', {'id':purchaseOrderItem.id }) }}"
                            class="text-grey-500 dark:hover:text-gray-800"
-                           data-turbo-prefetch="false"
                            data-turbo-frame="modal"
                         >
                             {{ purchaseOrderItem.status.value|title }}

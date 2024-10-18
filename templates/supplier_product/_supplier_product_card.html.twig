@@ -1,7 +1,6 @@
 <div class="relative h-full w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
     <a href="{{ path('app_supplier_product_edit', {id: supplierProduct.id}) }}"
        class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-gray-600 rounded-full shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600"
-       data-turbo-prefetch="false"
        data-turbo-frame="modal"
     >
         <twig:ux:icon name="mynaui:edit-one" class="w-6 h-6 p-0.5" />
@@ -14,7 +13,7 @@
                 <li>
                     <div class="flex items-center">
                         <a href="#"
-                           data-turbo-frame="_top"
+                           data-turbo-frame="body"
                            data-turbo-prefetch="false"
                            class="text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
                             {{ supplierProduct.supplierCategory.name|u.truncate(30, '...') }}
@@ -25,7 +24,7 @@
                     <div class="flex items-center">
                         <svg class="w-2 h-2 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/></svg>
                         <a href="#"
-                           data-turbo-frame="_top"
+                           data-turbo-frame="body"
                            data-turbo-prefetch="false"
                            class="ms-1 md:ms-2 text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
                             {{ supplierProduct.supplierSubcategory.name|u.truncate(30, '...') }}
@@ -48,14 +47,14 @@
         <p class="mb-2">
             {% if supplierProduct.isMapped %}
                 <a href="{{ path('app_product_show', {'id': supplierProduct.product.id }) }}"
-                   data-turbo-frame="_top"
-                   data-turbo-prefetch="false"
+                   data-turbo-frame="body"
                    class="text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
                     Mapped to {{ (supplierProduct.product.name)|u.truncate(30, '...') }}
                 </a>
             {% else %}
                 <a href="{{ path('app_supplier_product_map', {'id': supplierProduct.id }) }}"
                    data-turbo-prefetch="false"
+                   data-turbo-frame="body"
                    class="flex items-center block py-1 text-sm text-yellow-700 dark:text-yellow-500 hover:text-yellow-500 dark:hover:text-yellow-300"
                 >
                     <twig:ux:icon name="f7:wand-stars" class="w-4 me-1.5" />Map Product

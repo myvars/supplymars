@@ -1,12 +1,12 @@
-{% extends 'product/_navigation.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block title %}Product Cost{% endblock %}
 
-{% block detail %}
+{% block body %}
 
-    <div class="p-3 space-y-3 text-sm text-gray-500 dark:text-gray-400">
-        <div class="mb-3">
-            <h1 class="mb-3 text-xl text-gray-900 dark:text-white">Product Cost</h1>
+    {{ include('product/_navigation.html.twig', {product: result}) }}
+    <div class="mt-4 p-3 space-y-3 text-sm text-gray-500 dark:text-gray-400">
+        <div class="mb-8">
             {% if result.isValidProduct %}
                 <section class="mb-3 border border-gray-700 rounded-lg bg-white dark:bg-gray-900">
                     <div class="px-6 py-6 mx-auto max-w-screen-xl text-center font-bold">

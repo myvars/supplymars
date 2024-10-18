@@ -9,6 +9,7 @@
                 'supplierProductId': supplierProduct.id
             }) }}"
                data-turbo-prefetch="false"
+               data-turbo-frame="body"
             >
                 <li class="p-3 dark:hover:bg-gray-800 rounded-lg">
                     <p class="text-sm text-gray-500 dark:text-gray-500">{{ supplierProduct.supplier.name|u.truncate(30, '...', false) }}</p>

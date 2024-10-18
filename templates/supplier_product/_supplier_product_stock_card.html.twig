@@ -1,7 +1,6 @@
 <div class="relative h-full w-full bg-white border {{ activeProductSource is same as supplierProduct ? 'border-green-600 dark:border-green-700' : 'border-gray-600 dark:border-gray-700' }} rounded-lg shadow dark:bg-gray-800 ">
     <a href="{{ path('app_supplier_product_remove_confirm', {'id': supplierProduct.id }) }}"
        class="absolute -top-1.5 -right-1 p-1.5 bg-white text-gray-300 border border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-full shadow-lg"
-       data-turbo-prefetch="false"
        data-turbo-frame="modal"
     >
         <twig:ux:icon name="bi:x-lg" class="w-6 h-6 p-0.5" />
@@ -15,8 +14,7 @@
         {% endif %}
         <p class="mb-1 text-xl text-gray-900 dark:text-white">
             <a href="{{ path('app_supplier_product_show', {'id': supplierProduct.id }) }}"
-               data-turbo-frame="_top"
-               data-turbo-prefetch="false"
+               data-turbo-frame="body"
                class="hover:text-blue-600 dark:hover:text-white/70">
                 {{ supplierProduct.name|u.truncate(30, '...', false) }}
             </a>
@@ -37,6 +35,7 @@
             {% if supplierProduct.isActive %}
                 <a href="{{ path('app_supplier_product_toggle_status', {'id': supplierProduct.id }) }}"
                    data-turbo-prefetch="false"
+                   data-turbo-frame="_top"
                    class="flex items-center block py-1 text-sm text-green-700 dark:text-green-500 hover:text-green-500 dark:hover:text-green-300"
                 >
                     <twig:ux:icon name="mynaui:edit-one" class="w-4 me-1.5" />Active
@@ -44,6 +43,7 @@
             {% else %}
                 <a href="{{ path('app_supplier_product_toggle_status', {'id': supplierProduct.id }) }}"
                    data-turbo-prefetch="false"
+                   data-turbo-frame="_top"
                    class="flex items-center block py-1 text-sm text-red-700 dark:text-red-500 hover:text-red-500 dark:hover:text-red-300"
                 >
                     <twig:ux:icon name="mynaui:edit-one" class="w-4 me-1.5" />Inactive

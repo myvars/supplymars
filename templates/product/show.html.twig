@@ -1,11 +1,11 @@
-{% extends 'product/_navigation.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block title %}Product Details{% endblock %}
 
-{% block detail %}
+{% block body %}
 
-    <div class="p-3 space-y-3 text-sm text-gray-500 dark:text-gray-400">
-        <h1 class="mb-3 text-xl text-gray-900 dark:text-white">Product Details</h1>
+    {{ include('product/_navigation.html.twig', {product: result}) }}
+    <div class="mt-4 p-3 space-y-3 text-sm text-gray-500 dark:text-gray-400">
         <div class="flex flex-wrap justify-center gap-8">
             {{ include('product/_product_card.html.twig', {product: result}) }}
         </div>

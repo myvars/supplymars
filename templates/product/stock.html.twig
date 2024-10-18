@@ -1,17 +1,12 @@
-{% extends 'product/_navigation.html.twig' %}
+{% extends 'base.html.twig' %}
 
-{% block title %}Product Stock{% endblock %}
+{% block title %}Product Cost{% endblock %}
 
-{% block detail %}
+{% block body %}
 
-    <div class="p-3 space-y-3 text-sm text-gray-500 dark:text-gray-400">
+    {{ include('product/_navigation.html.twig', {product: result}) }}
+    <div class="mt-4 p-3 space-y-3 text-sm text-gray-500 dark:text-gray-400">
         <div class="mb-3">
-            <h1 class="mb-3 text-xl text-gray-900 dark:text-white">
-                Product Stock
-                <span class="ms-3 text-base font-light text-sm text-gray-500 dark:text-gray-400">
-                    {{ result.supplierProducts|length }} {% if result.supplierProducts|length == 1 %}source{% else %}sources{% endif %}
-                </span>
-            </h1>
             {% if result.isValidProduct %}
                 <section class="mb-3 border border-gray-700 rounded-lg bg-white dark:bg-gray-900">
                     <div class="px-3 py-6 mx-auto max-w-screen-xl text-center font-bold">
@@ -44,6 +39,9 @@
                 </section>
             {% endif %}
         </div>
+        <p class="ms-3 text-base font-light text-sm text-gray-500 dark:text-gray-400">
+            {{ result.supplierProducts|length }} {% if result.supplierProducts|length == 1 %}source{% else %}sources{% endif %}
+        </p>
         <div class="flex flex-wrap justify-center gap-3">
             {% for supplierProduct in result.supplierProducts %}
                 {{ include('supplier_product/_supplier_product_stock_card.html.twig', {

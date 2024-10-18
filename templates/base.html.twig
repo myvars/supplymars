@@ -7,7 +7,7 @@
     <meta name="theme-color" content="#cccccc">
     {% if app.environment != 'test' %}
         <meta name="view-transition">
-        <meta name="turbo-refresh-method" content="morph">
+        <meta name="turbo-refresh-method" content="replace">
         <meta name="turbo-refresh-scroll" content="preserve">
     {% endif %}
         <title>{% block title %}Butterfly{% endblock %}</title>
@@ -101,7 +101,7 @@
 
     <!-- Make sure the main tag takes up the remaining height -->
     <main class="flex-grow bg-gray-50 dark:bg-gray-900">
-        <turbo-frame id="body" data-turbo-action="advance">
+        <turbo-frame id="body" data-turbo-action="advance" refresh="morph">
         {% block body %}{% endblock %}
         </turbo-frame>
     </main>
@@ -141,15 +141,16 @@
     <turbo-frame
         id="modal"
         data-basic-modal-target="dynamicContent"
-        data-action="turbo:before-fetch-request->basic-modal#showLoading"
+{#        data-action="turbo:before-fetch-request->basic-modal#showLoading"#}
         class="aria-busy:opacity-50 transition-opacity aria-busy:delay-700"
+        refresh="morph"
     >
         {{ include ('_frameSuccessStream.html.twig', { frame: 'modal' }) }}
     </turbo-frame>
     <twig:block name="loading_template">
-        <div class="flex justify-center items-center bg-space-pattern bg-cover rounded-lg p-20">
+{#        <div class="flex justify-center items-center bg-space-pattern bg-cover rounded-lg p-20">
             <twig:ux:icon name="icomoon-free:spinner9" class="w-10 h-10 text-gray-400/40"/>
-        </div>
+        </div>#}
     </twig:block>
 </twig:Modal>
 

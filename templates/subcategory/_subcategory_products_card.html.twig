@@ -4,6 +4,7 @@
         <p class="">
             <a href="{{ path('app_product_index', {categoryId: result.category.id, subcategoryId: result.id}) }}"
                class="font-light flex justify-start items-center dark:hover:text-white"
+               data-turbo-frame="body"
             >
                 <span class="me-1 font-extralight">{{ result.products.count }}</span>
                 {{ result.products.count == 1 ? 'product': 'products' }} in this subcategory
