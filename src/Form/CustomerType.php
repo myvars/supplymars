@@ -14,7 +14,8 @@ class CustomerType extends AbstractType
         $builder
             ->add('fullName')
             ->add('email')
-            ->add('isVerified')
+            ->add('isVerified', null, ['label' => 'Verified'])
+            ->add('isStaff', null, ['label' => 'Member of Staff'])
         ;
     }
 

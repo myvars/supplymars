@@ -7,7 +7,7 @@
     <meta name="theme-color" content="#cccccc">
     {% if app.environment != 'test' %}
         <meta name="view-transition">
-        <meta name="turbo-refresh-method" content="replace">
+        <meta name="turbo-refresh-method" content="morph">
         <meta name="turbo-refresh-scroll" content="preserve">
     {% endif %}
         <title>{% block title %}Butterfly{% endblock %}</title>
@@ -100,7 +100,11 @@
     </header>
 
     <!-- Make sure the main tag takes up the remaining height -->
-    <main class="flex-grow bg-gray-50 dark:bg-gray-900">{% block body %}{% endblock %}</main>
+    <main class="flex-grow bg-gray-50 dark:bg-gray-900">
+        <turbo-frame id="body" data-turbo-action="advance">
+        {% block body %}{% endblock %}
+        </turbo-frame>
+    </main>
 
     <!-- Footer -->
 
@@ -113,16 +117,16 @@
                 </a>
                 <ul class="flex flex-wrap items-center mb-6 text-sm font-medium text-gray-500 sm:mb-0 dark:text-gray-400">
                     <li>
-                        <a href="{{ path('app_about_page') }}" class="hover:underline me-4 md:me-6">About</a>
+                        <a href="{{ path('app_about_page') }}" data-turbo-frame="body" class="hover:underline me-4 md:me-6">About</a>
                     </li>
                     <li>
-                        <a href="{{ path('app_terms_page') }}" class="hover:underline me-4 md:me-6">T&Cs</a>
+                        <a href="{{ path('app_terms_page') }}" data-turbo-frame="body" class="hover:underline me-4 md:me-6">T&Cs</a>
                     </li>
                     <li>
-                        <a href="{{ path('app_privacy_page') }}" class="hover:underline me-4 md:me-6">Privacy Policy</a>
+                        <a href="{{ path('app_privacy_page') }}" data-turbo-frame="body" class="hover:underline me-4 md:me-6">Privacy Policy</a>
                     </li>
                     <li>
-                        <a href="{{ path('app_contact_page') }}" class="hover:underline">Contact</a>
+                        <a href="{{ path('app_contact_page') }}" data-turbo-frame="body" class="hover:underline">Contact</a>
                     </li>
                 </ul>
             </div>

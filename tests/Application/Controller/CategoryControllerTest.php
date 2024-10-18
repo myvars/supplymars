@@ -20,7 +20,7 @@ class CategoryControllerTest extends WebTestCase
         CategoryFactory::createMany(3);
 
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get('/category/')
             ->assertSuccessful()
             ->assertSee('Category List')
@@ -32,7 +32,7 @@ class CategoryControllerTest extends WebTestCase
         $category = CategoryFactory::createone(['name' => 'Category to be shown']);
 
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get("/category/" . $category->getId())
             ->assertSuccessful()
             ->assertSee('Category to be shown');
@@ -41,11 +41,11 @@ class CategoryControllerTest extends WebTestCase
     public function testNewCategory(): void
     {
         $vatRate = VatRateFactory::createOne(['name' => 'Test VatRate']);
-        $owner = UserFactory::createOne(['fullName' => 'Test Owner']);
+        $owner = UserFactory::staff();
         $priceModel = PriceModel::DEFAULT;
 
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get('/category/new')
             ->assertSuccessful()
             ->fillField('category[name]','Test Category')
@@ -62,7 +62,7 @@ class CategoryControllerTest extends WebTestCase
     public function testNewCategoryValidation(): void
     {
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get('/category/new')
             ->assertSuccessful()
             // Intentionally omitting form data or filling it with invalid data
@@ -75,10 +75,11 @@ class CategoryControllerTest extends WebTestCase
 
     public function testEditCategory(): void
     {
-        $category = CategoryFactory::createone(['name' => 'Category to be edited']);
+        $owner = UserFactory::staff();
+        $category = CategoryFactory::createone(['name' => 'Category to be edited', 'owner' => $owner]);
 
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get("/category/" . $category->getId() . "/edit")
             ->assertSuccessful()
             ->fillField('category[name]','Edited Category')
@@ -92,7 +93,7 @@ class CategoryControllerTest extends WebTestCase
         $category = CategoryFactory::createone(['name' => 'Category to be edited']);
 
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get("/category/" . $category->getId() . "/edit")
             ->assertSuccessful()
             // Intentionally filling form with invalid data
@@ -115,7 +116,7 @@ class CategoryControllerTest extends WebTestCase
         $category = CategoryFactory::createone(['name' => 'Category to be deleted']);
 
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get("/category/" . $category->getId() . "/delete/confirm")
             ->assertSuccessful()
             ->assertSee('Are you sure you want to delete this Category');
@@ -126,7 +127,7 @@ class CategoryControllerTest extends WebTestCase
         $category = CategoryFactory::createone(['name' => 'Category to be deleted']);
 
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get("/category/" . $category->getId() . "/delete/confirm")
             ->assertSuccessful()
             ->click('Delete')
@@ -137,7 +138,7 @@ class CategoryControllerTest extends WebTestCase
     public function testCategoryNotFound(): void
     {
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get("/category/999")
             ->assertSee("Sorry, we can't find that Category");
     }

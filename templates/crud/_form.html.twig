@@ -10,5 +10,9 @@
             'class': formColumns|default(1) > 1 ? 'grid gap-x-6 gap-y-0 sm:grid-cols-'~formColumns|default(1) : '',
         }
     }) }}
-<twig:Button type="submit" class="w-full">{{ button_label|default('Save') }}</twig:Button>
+<twig:Button
+    type="submit"
+    class="w-full"
+    data-turbo-frame="{{ app.request.headers.get('turbo-frame') == 'modal' ? 'modal' : '_top' }}"
+>{{ button_label|default('Save') }}</twig:Button>
 {{ form_end(form) }}

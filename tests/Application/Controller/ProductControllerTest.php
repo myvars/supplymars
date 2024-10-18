@@ -20,7 +20,7 @@ class ProductControllerTest extends WebTestCase
         ProductFactory::createMany(3);
 
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get('/product/')
             ->assertSuccessful()
             ->assertSee('Product List')
@@ -32,11 +32,11 @@ class ProductControllerTest extends WebTestCase
         ProductFactory::createOne();
 
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get('/product/?page=2')
             ->assertSuccessful()
             ->assertSee('Product List')
-            ->assertSee('Page 2 could not be found');
+            ->assertSee('Page 2 not found');
     }
 
     public function testShowProduct(): void
@@ -44,7 +44,7 @@ class ProductControllerTest extends WebTestCase
         $product = ProductFactory::createOne(['name' => 'Product to be shown']);
 
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get("/product/" . $product->getId())
             ->assertSuccessful()
             ->assertSee('Product to be shown');
@@ -54,10 +54,10 @@ class ProductControllerTest extends WebTestCase
     {
         $subcategory = SubcategoryFactory::createOne(['name' => 'Test Subcategory']);
         $manufacturer = ManufacturerFactory::createOne(['name' => 'Test Manufacturer']);
-        $owner = UserFactory::createOne(['fullName' => 'Test Owner']);
+$owner = UserFactory::staff();
 
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get('/product/new')
             ->assertSuccessful()
             ->fillField('product[name]','Test Product')
@@ -67,8 +67,6 @@ class ProductControllerTest extends WebTestCase
             ->fillField('product[manufacturer]', $manufacturer->getId())
             ->fillField('product[owner]', $owner->getId())
             ->fillField('product[cost]','500')
-            ->fillField('product[leadTimeDays]','7')
-            ->fillField('product[weight]','100')
             ->fillField('product[mfrPartNumber]','12345')
             ->click('Create Product')
             ->assertOn('/product/')
@@ -78,7 +76,7 @@ class ProductControllerTest extends WebTestCase
     public function testNewProductValidation(): void
     {
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get('/product/new')
             ->assertSuccessful()
             // Intentionally filling form with invalid data
@@ -89,8 +87,6 @@ class ProductControllerTest extends WebTestCase
             ->assertSee('Please enter a subcategory')
             ->assertSee('Please enter a manufacturer')
             ->assertSee('Please enter a cost')
-            ->assertSee('Please enter a lead time(days)')
-            ->assertSee('Please enter a product weight(grams)')
             ->assertSee('Please enter a manufacturer part number');
     }
 
@@ -104,7 +100,7 @@ class ProductControllerTest extends WebTestCase
         ]);
 
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get("/product/" . $product->getId() . "/edit")
             ->assertSuccessful()
             ->fillField('product[name]','Edited Product')
@@ -118,7 +114,7 @@ class ProductControllerTest extends WebTestCase
         $product = ProductFactory::createOne(['name' => 'Product to be edited']);
 
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get("/product/" . $product->getId() . "/edit")
             ->assertSuccessful()
             // Intentionally filling form with invalid data
@@ -127,9 +123,6 @@ class ProductControllerTest extends WebTestCase
             ->fillField('product[subcategory]', '')
             ->fillField('product[manufacturer]', '')
             ->fillField('product[cost]','')
-            ->fillField('product[priceModel]', '')
-            ->fillField('product[leadTimeDays]','')
-            ->fillField('product[weight]','')
             ->fillField('product[mfrPartNumber]','')
             ->click('Update Product')
             ->assertOn("/product/" . $product->getId() . "/edit")
@@ -138,9 +131,6 @@ class ProductControllerTest extends WebTestCase
             ->assertSee('Please enter a subcategory')
             ->assertSee('Please enter a manufacturer')
             ->assertSee('Please enter a cost')
-            ->assertSee('Please enter a price model')
-            ->assertSee('Please enter a lead time(days)')
-            ->assertSee('Please enter a product weight(grams)')
             ->assertSee('Please enter a manufacturer part number');
     }
 
@@ -149,7 +139,7 @@ class ProductControllerTest extends WebTestCase
         $product = ProductFactory::createOne(['name' => 'Product to be deleted']);
 
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get("/product/" . $product->getId() . "/delete/confirm")
             ->assertSuccessful()
             ->assertSee('Are you sure you want to delete this Product');
@@ -160,7 +150,7 @@ class ProductControllerTest extends WebTestCase
         $product = ProductFactory::createOne(['name' => 'Product to be deleted']);
 
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get("/product/" . $product->getId() . "/delete/confirm")
             ->assertSuccessful()
             ->click('Delete')
@@ -171,7 +161,7 @@ class ProductControllerTest extends WebTestCase
     public function testProductNotFound(): void
     {
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get("/product/999")
             ->assertSee("Sorry, we can't find that Product");
     }

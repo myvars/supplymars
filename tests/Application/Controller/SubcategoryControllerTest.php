@@ -20,7 +20,7 @@ class SubcategoryControllerTest extends WebTestCase
         SubcategoryFactory::createMany(3);
 
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get('/subcategory/')
             ->assertSuccessful()
             ->assertSee('Subcategory List')
@@ -32,7 +32,7 @@ class SubcategoryControllerTest extends WebTestCase
         $subcategory = SubcategoryFactory::createOne(['name' => 'Test Subcategory']);
 
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get("/subcategory/" . $subcategory->getId())
             ->assertSuccessful()
             ->assertSee('Test Subcategory');
@@ -41,11 +41,11 @@ class SubcategoryControllerTest extends WebTestCase
     public function testNewSubcategory(): void
     {
         $category = CategoryFactory::createOne(['name' => 'Test Category']);
-        $owner = UserFactory::createOne(['fullName' => 'Test Owner']);
+$owner = UserFactory::staff();
         $priceModel = PriceModel::DEFAULT;
 
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get('/subcategory/new')
             ->assertSuccessful()
             ->fillField('subcategory[name]','Test Subcategory')
@@ -62,7 +62,7 @@ class SubcategoryControllerTest extends WebTestCase
     public function testNewSubcategoryValidation(): void
     {
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get('/subcategory/new')
             ->assertSuccessful()
             // Intentionally filling form with invalid data
@@ -79,7 +79,7 @@ class SubcategoryControllerTest extends WebTestCase
         $subcategory = SubcategoryFactory::createOne(['name' => 'Subcategory to be edited']);
 
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get("/subcategory/" . $subcategory->getId() . "/edit")
             ->assertSuccessful()
             ->fillField('subcategory[name]','Edited Subcategory')
@@ -93,7 +93,7 @@ class SubcategoryControllerTest extends WebTestCase
         $subcategory = SubcategoryFactory::createOne(['name' => 'Subcategory to be edited']);
 
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get("/subcategory/" . $subcategory->getId() . "/edit")
             ->assertSuccessful()
             // Intentionally filling form with invalid data
@@ -114,7 +114,7 @@ class SubcategoryControllerTest extends WebTestCase
         $subcategory = SubcategoryFactory::createone(['name' => 'Subcategory to be deleted']);
 
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get("/subcategory/" . $subcategory->getId() . "/delete/confirm")
             ->assertSuccessful()
             ->assertSee('Are you sure you want to delete this Subcategory');
@@ -125,7 +125,7 @@ class SubcategoryControllerTest extends WebTestCase
         $subcategory = SubcategoryFactory::createone(['name' => 'Subcategory to be deleted']);
 
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get("/subcategory/" . $subcategory->getId() . "/delete/confirm")
             ->assertSuccessful()
             ->click('Delete')
@@ -136,7 +136,7 @@ class SubcategoryControllerTest extends WebTestCase
     public function testSubcategoryNotFound(): void
     {
         $this->browser()
-            ->actingAs(UserFactory::createOne()->_real())
+            ->actingAs(UserFactory::staff())
             ->get("/subcategory/999")
             ->assertSee("Sorry, we can't find that Subcategory");
     }

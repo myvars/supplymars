@@ -54,4 +54,9 @@ final class UserFactory extends PersistentProxyObjectFactory
             })
         ;
     }
+
+    public static function staff(): User
+    {
+        return self::new()->create(['fullName' => 'Staff Member', 'isStaff' => true])->_real();
+    }
 }

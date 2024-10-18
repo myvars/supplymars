@@ -75,7 +75,7 @@
                                 {% endblock %}
                                 <a href="{{ path('app_'~section|lower|u.snake~'_show', {'id': result.id }) }}"
                                    data-turbo-prefetch="false"
-                                   target="_top"
+                                   data-turbo-frame="body"
                                 >
                                     {% block list_item %}{% endblock %}
                                 </a>

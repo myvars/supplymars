@@ -7,13 +7,10 @@ use App\Entity\Manufacturer;
 use App\Entity\Product;
 use App\Entity\Subcategory;
 use App\Entity\User;
-use App\Enum\PriceModel;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
-use Symfony\Component\Form\Extension\Core\Type\PercentType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -33,12 +30,10 @@ class ProductType extends AbstractType
         $builder
             ->add('name', null, [
                 'label' => 'Product Name',
-                'row_attr' => ['class' => 'sm:col-span-2 mb-4'],
                 'priority' => 5,
             ])
             ->add('description', null, [
                 'label' => 'Product Description',
-                'row_attr' => ['class' => 'sm:col-span-2 mb-4'],
                 'priority' => 4,
             ])
             ->add('category', EntityType::class, [
@@ -48,24 +43,24 @@ class ProductType extends AbstractType
                 'attr' => ['data-action' => 'change->submit-form#submitForm'],
                 'priority' => 3,
             ])
-            ->add('leadTimeDays', null, [
-                'label' => 'Lead Time (days)',
-                'priority' => 2,
-            ])
-            ->add('weight', null, [
-                'label' => 'Weight (grams)',
-            ])
+//            ->add('leadTimeDays', null, [
+//                'label' => 'Lead Time (days)',
+//                'priority' => 2,
+//            ])
+//            ->add('weight', null, [
+//                'label' => 'Weight (grams)',
+//            ])
             ->add('manufacturer', EntityType::class, [
                 'class' => Manufacturer::class,
                 'choice_label' => 'name',
                 'placeholder' => 'Choose a Manufacturer',
             ])
-            ->add('priceModel', EnumType::class, [
-                'class' => PriceModel::class,
-                'choice_label' => fn (PriceModel $priceModel): string => $priceModel->getName(),
-                'label' => 'Price Model',
-                'placeholder' => 'Choose a Price Model',
-            ])
+//            ->add('priceModel', EnumType::class, [
+//                'class' => PriceModel::class,
+//                'choice_label' => fn (PriceModel $priceModel): string => $priceModel->getName(),
+//                'label' => 'Price Model',
+//                'placeholder' => 'Choose a Price Model',
+//            ])
             ->add('mfrPartNumber', null, [
                 'label' => 'Manufacturer Part Number',
             ])
@@ -80,14 +75,13 @@ class ProductType extends AbstractType
                 'placeholder' => 'No product manager',
                 'choices' => $this->entityManager->getRepository(User::class)->findStaff(),
             ])
-            ->add('defaultMarkup', PercentType::class, [
-                'scale' => 3,
-                'type' => 'integer',
-                'label' => 'Product Markup %',
-            ])
+//            ->add('defaultMarkup', PercentType::class, [
+//                'scale' => 3,
+//                'type' => 'integer',
+//                'label' => 'Product Markup %',
+//            ])
             ->add('isActive', null, [
                 'label' => 'Active',
-                'row_attr' => ['class' => 'sm:col-span-2 mb-4'],
             ])
         ;
 
@@ -102,7 +96,7 @@ class ProductType extends AbstractType
                     'choices' => $category instanceof Category ? $category->getSubcategories() : [],
                     'choice_label' => 'name',
                     'placeholder' => 'Choose a Subcategory',
-                    'priority' => 1,
+                    'priority' => 2,
                 ]);
         });
     }

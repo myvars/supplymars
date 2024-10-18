@@ -31,17 +31,16 @@ class SupplierProductType extends AbstractType
         $builder
             ->add('name', null, [
                 'label' => 'Product Name',
-                'row_attr' => ['class' => 'sm:col-span-2 mb-4'],
                 'priority' => 6,
+            ])
+            ->add('productCode', null, [
+                'label' => 'Product Code',
+                'priority' => 5,
             ])
             ->add('supplier', EntityType::class, [
                 'class' => Supplier::class,
                 'choice_label' => 'name',
                 'placeholder' => 'Choose a Supplier',
-                'priority' => 5,
-            ])
-            ->add('productCode', null, [
-                'label' => 'Product Code',
                 'priority' => 4,
             ])
             ->add('supplierCategory', EntityType::class, [
@@ -51,27 +50,27 @@ class SupplierProductType extends AbstractType
                 'attr' => ['data-action' => 'change->submit-form#submitForm'],
                 'priority' => 3,
             ])
-            ->add('mfrPartNumber', null, [
-                'label' => 'Manufacturer Part Number',
-                'priority' => 2,
-            ])
-            ->add('leadTimeDays', null, [
-                'label' => 'Lead Time (days)',
-            ])
             ->add('supplierManufacturer', EntityType::class, [
                 'class' => SupplierManufacturer::class,
                 'choice_label' => 'name',
                 'placeholder' => 'Choose a Manufacturer',
+                'priority' => 1,
             ])
-            ->add('stock', null, [
-                'label' => 'Stock Level',
-            ])
-            ->add('weight', null, [
-                'label' => 'Weight (grams)',
+            ->add('mfrPartNumber', null, [
+                'label' => 'Manufacturer Part Number',
             ])
             ->add('cost', MoneyType::class, [
                 'currency' => 'GBP',
                 'label' => 'Cost',
+            ])
+            ->add('stock', null, [
+                'label' => 'Stock Level',
+            ])
+            ->add('leadTimeDays', null, [
+                'label' => 'Lead Time (days)',
+            ])
+            ->add('weight', null, [
+                'label' => 'Weight (grams)',
             ])
             ->add('product', TextType::class, [
                 'label' => 'Mapped Product Id',
@@ -79,7 +78,6 @@ class SupplierProductType extends AbstractType
             ])
             ->add('isActive', null, [
                 'label' => 'Active',
-                'row_attr' => ['class' => 'sm:col-span-2 mb-4'],
             ])
         ;
 
@@ -94,7 +92,7 @@ class SupplierProductType extends AbstractType
                     'choices' => $supplierCategory instanceof SupplierCategory ? $supplierCategory->getSupplierSubcategories() : [],
                     'choice_label' => 'name',
                     'placeholder' => 'Choose a Subcategory',
-                    'priority' => 1,
+                    'priority' => 2,
                 ]);
         });
 

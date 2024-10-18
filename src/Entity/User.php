@@ -188,6 +188,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
     {
         $this->isStaff = $isStaff;
 
+        if ($isStaff) {
+            $this->roles[] = 'ROLE_ADMIN';
+        } else {
+            $key = array_search('ROLE_ADMIN', $this->roles, true);
+            if ($key !== false) {
+                unset($this->roles[$key]);
+            }
+        }
+
         return $this;
     }
 

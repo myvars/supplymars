@@ -26,7 +26,7 @@ class Product
     #[Assert\NotBlank(message: 'Please enter a product name')]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
 
     #[ORM\Column(length: 255)]
@@ -40,12 +40,12 @@ class Product
     #[ORM\Column]
     #[Assert\NotNull(message: 'Please enter a lead time(days)')]
     #[Assert\Range(notInRangeMessage: 'Please enter a lead time (0 to 1000)', min: 0, max: 1000)]
-    private ?int $leadTimeDays = null;
+    private ?int $leadTimeDays = 7;
 
     #[ORM\Column]
     #[Assert\NotNull(message: 'Please enter a product weight(grams)')]
     #[Assert\Range(notInRangeMessage: 'Please enter a product weight (0 to 100000)', min: 0, max: 100000)]
-    private ?int $weight = null;
+    private ?int $weight = 0;
 
     #[ORM\Column(type: 'decimal', precision: 9, scale: 3)]
     #[Assert\NotBlank(message: 'Please enter a product markup %')]
