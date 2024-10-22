@@ -3,44 +3,55 @@
 {% block title %}{{ section }} index{% endblock %}
 
 {% block body %}
-    <twig:DataList
+    <twig:Search
         section="{{ section }}"
         results="{{ results }}"
     >
-        <twig:block name="list_sort">
-            <twig:SortLink sortValue="id">Id</twig:SortLink>
-            <twig:SortLink sortValue="name">Category</twig:SortLink>
-            <twig:SortLink sortValue="defaultMarkup">Markup</twig:SortLink>
-            <twig:SortLink sortValue="isActive">Status</twig:SortLink>
+        <twig:block name="sort">
+            <twig:Card>
+                <div class="flex justify-between overflow-auto">
+                    <twig:SortLink sortValue="id">Id</twig:SortLink>
+                    <twig:SortLink sortValue="name">Category</twig:SortLink>
+                    <twig:SortLink sortValue="defaultMarkup">Markup</twig:SortLink>
+                    <twig:SortLink sortValue="isActive">Status</twig:SortLink>
+                </div>
+            </twig:Card>
         </twig:block>
 
         <twig:block name="list_item">
-            <p class="mb-1 items-center text-lg text-gray-900 dark:text-white">{{ result.name|u.truncate(30, '...') }}</p>
-            <p class="flex justify-between items-center">
-                <span class="me-1 text-gray-600 dark:text-gray-500">Managed by {{ result.owner.fullName }}</span>
-                <span class="me-1 text-lg font-extralight">{{ result.defaultMarkup|number_format(3) }}%
+            <twig:Card
+                editLink="{{ path('app_category_edit', {'id': result.id }) }}"
+                showLink="{{ path('app_category_show', {'id': result.id }) }}"
+            >
+                <p class="mb-1 items-center text-lg text-gray-900 dark:text-white">
+                    {{ result.name|u.truncate(30, '...') }}
+                </p>
+                <p class="flex justify-between items-center">
+                    <span class="me-1 text-gray-600 dark:text-gray-500">Managed by {{ result.owner.fullName }}</span>
+                    <span class="me-1 text-lg font-extralight">{{ result.defaultMarkup|number_format(3) }}%
                     <span class="me-1 font-normal text-sm text-nowrap text-gray-500 dark:text-gray-400"> mark-up</span>
                 </span>
-                {% if result.isActive %}
-                    <span class="text-green-500">Active</span>
-                {% else %}
-                    <span class="text-red-500">InActive</span>
-                {% endif %}
-            </p>
+                    {% if result.isActive %}
+                        <span class="text-green-500">Active</span>
+                    {% else %}
+                        <span class="text-red-500">InActive</span>
+                    {% endif %}
+                </p>
+            </twig:Card>
         </twig:block>
 
-        <twig:block name="list_add">
+        <twig:block name="add">
             <twig:Button
                 tag="a"
-                href="{{ path('app_'~section|lower|u.snake~'_new') }}"
+                href="{{ path('app_category_new') }}"
                 class="flex items-center space-x-1 font-bold"
                 data-turbo-frame="modal"
             >
                 <twig:ux:icon name="flowbite:circle-plus-outline" class="w-5"/>
-                <span>Add {{ section }}</span>
+                <span>Create Category</span>
             </twig:Button>
         </twig:block>
 
-    </twig:DataList>
+    </twig:Search>
 
 {% endblock %}

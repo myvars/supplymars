@@ -1,0 +1,79 @@
+{% props section, results %}
+
+<div class="mx-auto max-w-screen-xl p-3">
+    {% block result_count %}
+        <div id="{{ section|slug }}-result-count">
+            <h1 class="text-xl text-gray-900 dark:text-white">
+                {{ section }} List
+                <span class="text-base font-light text-gray-500 dark:text-gray-400 ms-3">
+                        {{ results|length }} {% if results|length == 1 %}result{% else %}results{% endif %}
+                    </span>
+            </h1>
+        </div>
+    {% endblock %}
+    <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-3 py-3">
+        <div class="w-full md:w-1/2">
+            <form data-controller="searchbox"
+                  data-turbo-frame="{{ section|slug }}-table"
+                  data-turbo-action="replace"
+                  data-searchbox-base-path-value="{{ path('app_'~section|lower|u.snake~'_index') }}"
+            >
+                <div class="relative w-full">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
+                    </div>
+                    {% block filter %}
+                        <a href="{{ path('app_'~section|lower|u.snake~'_search_filter', app.request.query.all) }}"
+                           class="absolute inset-y-0 right-0 flex items-center pr-3 flex"
+                           data-turbo-frame="modal"
+                           id="{{ section|slug }}-search-filter">
+                            {% if app.request.query.get('filter') %}
+                                <twig:ux:icon name="mynaui:filter" class="h-6 w-6 text-yellow-400 hover:text-yellow-200"/>
+                            {% else %}
+                                <twig:ux:icon name="mynaui:filter" class="h-6 w-6 text-gray-400 hover:text-gray-200"/>
+                            {% endif %}
+                        </a>
+                    {% endblock %}
+                    <input
+                        type="text"
+                        name="query"
+                        value="{{ app.request.query.get('query') }}"
+                        data-searchbox-target="queryInput"
+                        data-action="input->searchbox#debouncedQueryInputChanged"
+                        aria-label="Search"
+                        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                        placeholder="Search"
+                    >
+                </div>
+            </form>
+        </div>
+        <div
+            class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
+            {% block add %}{% endblock %}
+        </div>
+    </div>
+
+    <turbo-frame id="{{ section|slug }}-table" data-turbo-action="advance">
+        {% block sort %}No sortable options{% endblock %}
+        <ul class="space-y-3">
+            {% for result in results %}
+                <li class="first:mt-3">{% block list_item %}{% endblock %}</li>
+            {% else %}
+                <li class="flex justify-between">No records found</li>
+            {% endfor %}
+        </ul>
+        <twig:Pagination pager="{{ results }}"></twig:Pagination>
+
+        <turbo-stream action="replace" target="{{ section|slug }}-result-count">
+            <template>
+                {{ block('result_count') }}
+            </template>
+        </turbo-stream>
+
+        <turbo-stream action="replace" target="{{ section|slug }}-search-filter">
+            <template>
+                {{ block('filter') }}
+            </template>
+        </turbo-stream>
+    </turbo-frame>
+</div>

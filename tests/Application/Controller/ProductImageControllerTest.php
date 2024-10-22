@@ -21,8 +21,7 @@ class ProductImageControllerTest extends WebTestCase
             ->actingAs(UserFactory::staff())
             ->get('/product/' . $product->getId() . '/images')
             ->assertSuccessful()
-            ->assertSee('Product Images')
-            ->assertSee('0 results');
+            ->assertSee('0 Product Images');
     }
 
     public function testShowProductImagesNotFound() : void
@@ -45,12 +44,12 @@ class ProductImageControllerTest extends WebTestCase
             ->visit('/product/' . $product->getId() . '/images')
             ->assertSuccessful()
             ->assertSee('Product Images')
-            ->assertSee('0 results')
+            ->assertSee('0 Product Images')
             ->attachFile('imageFile[]', [$dummyImagePath, $dummyImagePath])
             ->click('Upload')
             ->assertSuccessful()
             ->assertSee('New Product Image added!')
-            ->assertSee('2 results');
+            ->assertSee('2 Product Images');
 
         $productImages = $product->getProductImages();
         $this->assertCount(2, $productImages);
@@ -71,8 +70,7 @@ class ProductImageControllerTest extends WebTestCase
             ->actingAs(UserFactory::staff())
             ->visit('/product/' . $product->getId() . '/images')
             ->assertSuccessful()
-            ->assertSee('Product Images')
-            ->assertSee('0 results');
+            ->assertSee('0 Product Images');
     }
 
 
@@ -86,12 +84,12 @@ class ProductImageControllerTest extends WebTestCase
             ->visit('/product/' . $product->getId() . '/images')
             ->assertSuccessful()
             ->assertSee('Product Images')
-            ->assertSee('0 results')
+            ->assertSee('0 Product Images')
             ->attachFile('imageFile[]', [$invalidImagePath])
             ->click('Upload')
             ->assertSuccessful()
             ->assertSee('Image could not be uploaded! Please check the file type and try again.')
-            ->assertSee('0 results');
+            ->assertSee('0 Product Images');
     }
 
     // test for the case when the product does not exist
@@ -131,12 +129,12 @@ class ProductImageControllerTest extends WebTestCase
             ->visit('/product/' . $product->getId() . '/images')
             ->assertSuccessful()
             ->assertSee('Product Images')
-            ->assertSee('0 results')
+            ->assertSee('0 Product Images')
             ->attachFile('imageFile[]', [$dummyImagePath, $dummyImagePath])
             ->click('Upload')
             ->assertSuccessful()
             ->assertSee('New Product Image added!')
-            ->assertSee('2 results');
+            ->assertSee('2 Product Images');
 
         $productImages = $product->getProductImages();
         $this->assertCount(2, $productImages);

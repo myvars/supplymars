@@ -22,7 +22,7 @@
                                 Out of stock ({{ supplierProduct.leadTimeDays }} day lead time)
                             {% endif %}
                         </p>
-                        <p class="text-xs font-extralight">£{{ supplierProduct.cost|number_format(2) }}</p>
+                        <p class="text-xs font-extralight">{{ supplierProduct.cost|format_currency('GBP') }}</p>
                     </div>
                 </li>
             </a>

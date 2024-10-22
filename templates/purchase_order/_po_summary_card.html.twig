@@ -1,38 +1,40 @@
 {% set colourScheme = purchaseOrder.supplier.colourScheme %}
-<div class="flex justify-between relative h-full bg-white border border-{{ colourScheme }}-200 rounded-lg shadow dark:bg-{{ colourScheme }}-800 dark:border-{{ colourScheme }}-700">
-    <div class="p-3 text-sm text-gray-500 dark:text-gray-400">
-        <p class="mb-1 text-gray-300 dark:text-gray-200">Delivery Address</p>
-        <p class="mb-1">{{ purchaseOrder.customerOrder.customer.fullName }}</p>
-        <p class="mb-1">{{ purchaseOrder.customerOrder.shippingAddress.street }}</p>
-        {% if purchaseOrder.customerOrder.shippingAddress.street2 is not null %}
-            <p class="mb-1">{{ purchaseOrder.customerOrder.shippingAddress.street2 }}</p>
-        {% endif %}
-        <p class="mb-1">{{ purchaseOrder.customerOrder.shippingAddress.city }},
-            {{ purchaseOrder.customerOrder.shippingAddress.postCode }}
-        </p>
-        <p class="mb-1">{{ purchaseOrder.customerOrder.shippingAddress.country }}</p>
+<twig:Card colour="{{ colourScheme }}">
+    <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400">
+        <div>
+            <p class="mb-1 text-gray-300 dark:text-gray-200">Delivery Address</p>
+            <p class="mb-1">{{ purchaseOrder.customerOrder.customer.fullName }}</p>
+            <p class="mb-1">{{ purchaseOrder.customerOrder.shippingAddress.street }}</p>
+            {% if purchaseOrder.customerOrder.shippingAddress.street2 is not null %}
+                <p class="mb-1">{{ purchaseOrder.customerOrder.shippingAddress.street2 }}</p>
+            {% endif %}
+            <p class="mb-1">{{ purchaseOrder.customerOrder.shippingAddress.city }},
+                {{ purchaseOrder.customerOrder.shippingAddress.postCode }}
+            </p>
+            <p class="mb-1">{{ purchaseOrder.customerOrder.shippingAddress.country }}</p>
+        </div>
+        <div>
+            <p class="mb-1 text-gray-300 dark:text-gray-200">PO Summary</p>
+            <div class="flex justify-between">
+                <p class="mb-1 me-10">Item(s) subtotal:</p>
+                <p class="mb-1">{{ (purchaseOrder.totalPrice - purchaseOrder.shippingPrice)|format_currency('GBP') }}</p>
+            </div>
+            <div class="flex justify-between">
+                <p class="mb-1 me-10">Shipping:</p>
+                <p class="mb-1">{{ purchaseOrder.shippingPrice|format_currency('GBP') }}</p>
+            </div>
+            <div class="flex justify-between">
+                <p class="mb-1 me-10">Total before VAT:</p>
+                <p class="mb-1">{{ purchaseOrder.totalPrice|format_currency('GBP') }}</p>
+            </div>
+            <div class="flex justify-between">
+                <p class="mb-1 me-10">VAT:</p>
+                <p class="mb-1">{{ (purchaseOrder.totalPriceIncVat - purchaseOrder.totalPrice)|format_currency('GBP') }}</p>
+            </div>
+            <div class="flex justify-between text-gray-300 dark:text-gray-200">
+                <p class="mb-1 me-10">Grand Total:</p>
+                <p class="mb-1">{{ purchaseOrder.totalPriceIncVat|format_currency('GBP') }}</p>
+            </div>
+        </div>
     </div>
-    <div class="p-3 text-sm text-gray-500 dark:text-gray-400">
-        <p class="mb-1 text-gray-300 dark:text-gray-200">PO Summary</p>
-        <div class="flex justify-between">
-            <p class="mb-1 me-10">Item(s) subtotal:</p>
-            <p class="mb-1">£{{ (purchaseOrder.totalPrice - purchaseOrder.shippingPrice)|number_format(2) }}</p>
-        </div>
-        <div class="flex justify-between">
-            <p class="mb-1 me-10">Shipping:</p>
-            <p class="mb-1">£{{ purchaseOrder.shippingPrice|number_format(2) }}</p>
-        </div>
-        <div class="flex justify-between">
-            <p class="mb-1 me-10">Total before VAT:</p>
-            <p class="mb-1">£{{ purchaseOrder.totalPrice|number_format(2) }}</p>
-        </div>
-        <div class="flex justify-between">
-            <p class="mb-1 me-10">VAT:</p>
-            <p class="mb-1">£{{ (purchaseOrder.totalPriceIncVat - purchaseOrder.totalPrice)|number_format(2)}}</p>
-        </div>
-        <div class="flex justify-between text-gray-300 dark:text-gray-200">
-            <p class="mb-1 me-10">Grand Total:</p>
-            <p class="mb-1">£{{ purchaseOrder.totalPriceIncVat|number_format(2) }}</p>
-        </div>
-    </div>
-</div>
+</twig:Card>

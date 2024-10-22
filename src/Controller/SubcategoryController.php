@@ -50,7 +50,7 @@ class SubcategoryController extends AbstractController
         ]);
 
         return $crudHandler->build($crudHandler->getOptions()
-            ->setTemplate('common/search_filter.html.twig')
+            ->setTemplate($dto::TEMPLATE)
             ->setForm($form)
             ->setEntity($dto)
             ->setCrudAction($action)

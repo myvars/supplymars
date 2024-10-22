@@ -5,32 +5,33 @@
 {% block body %}
 
     {{ include('product/_navigation.html.twig', {product: result}) }}
-    <div class="mt-4 p-3 space-y-3 text-sm text-gray-500 dark:text-gray-400">
-        <div class="mb-8">
+
+    <div class="p-3 space-y-3 text-sm text-gray-500 dark:text-gray-400">
+        <twig:Card padding="p-0">
             {% if result.isValidProduct %}
-                <section class="mb-3 border border-gray-700 rounded-lg bg-white dark:bg-gray-900">
-                    <div class="px-6 py-6 mx-auto max-w-screen-xl text-center font-bold">
-                        <dl class="grid max-w-screen-md mx-auto sm:grid-cols-3 gap-8 items-center">
-                            <div>
-                                <dt class="mb-2 font-light">Cost Price</dt>
-                                <dd class="text-3xl text-gray-600 dark:text-gray-500">£{{ result.cost|number_format(2) }}</dd>
-                            </div>
-                            <div>
-                                <dt class="mb-2 font-light">Sell Price</dt>
-                                <dd class="text-3xl text-gray-900 dark:text-white">£{{ result.sellPrice|number_format(2) }}</dd>
-                            </div>
-                            <div>
-                                <dt class="mb-2 font-light">Sell Price Inc VAT</dt>
-                                <dd class="text-3xl text-gray-900 dark:text-white">£{{ result.sellPriceIncVat|number_format(2) }}</dd>
-                            </div>
-                        </dl>
+                <section class="rounded-lg bg-white dark:bg-gray-900">
+                    <div class="p-3 flex justify-around text-center font-light">
+                        <div>
+                            <p class="mb-2">Cost Price</p>
+                            <p class="text-3xl font-bold text-gray-600 dark:text-gray-500">
+                                {{ result.cost|format_currency('GBP') }}</p>
+                        </div>
+                        <div>
+                            <p class="mb-2">Sell Price</p>
+                            <p class="text-3xl font-bold text-gray-900 dark:text-white">
+                                {{ result.sellPrice|format_currency('GBP') }}</p>
+                        </div>
+                        <div>
+                            <p class="mb-2">Sell Price Inc VAT</p>
+                            <p class="text-3xl font-bold text-gray-900 dark:text-white">
+                                {{ result.sellPriceIncVat|format_currency('GBP') }}</p>
+                        </div>
                     </div>
-                </section>
-                <section class="border border-gray-700 rounded-lg bg-white dark:bg-gray-900">
                     <div class="p-3 text-center">
-                        <p class="mb-2 font-light">Mark-up</p>
-                        <p class="mb-2 text-2xl font-light text-gray-700 dark:text-white">{{ result.markup|number_format(3) }}%</p>
-                        <p class="text-sm font-light text-gray-600 dark:text-gray-500">
+                        <p class="mb-2">Mark-up</p>
+                        <p class="mb-2 text-2xl text-gray-700 dark:text-white">{{ result.markup|number_format(3) }}
+                            %</p>
+                        <p class="text-gray-600 dark:text-gray-500">
                             {{ result.category.vatRate.name|title }} VAT |
                             {{ result.activePriceModelTarget|title }} price model |
                             {{ result.activeMarkupTarget|title }} mark-up
@@ -50,7 +51,7 @@
                     </div>
                 </section>
             {% endif %}
-        </div>
+        </twig:Card>
         <div class="flex flex-wrap justify-center gap-3">
             {{ include('category/_category_cost_card.html.twig', {category: result.category}) }}
             {{ include('subcategory/_subcategory_cost_card.html.twig', {subcategory: result.subcategory}) }}

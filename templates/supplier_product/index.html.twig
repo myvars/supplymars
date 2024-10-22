@@ -3,48 +3,58 @@
 {% block title %}{{ section }} index{% endblock %}
 
 {% block body %}
-    <twig:DataList
+    <twig:Search
         section="{{ section }}"
         results="{{ results }}"
     >
-        <twig:block name="list_sort">
-            <twig:SortLink sortValue="id">Id</twig:SortLink>
-            <twig:SortLink sortValue="name">Product</twig:SortLink>
-            <twig:SortLink sortValue="supplier.name">Supplier</twig:SortLink>
-            <twig:SortLink sortValue="stock">Stock</twig:SortLink>
-            <twig:SortLink sortValue="cost">Cost</twig:SortLink>
-            <twig:SortLink sortValue="isActive">Status</twig:SortLink>
+        <twig:block name="sort">
+            <twig:Card>
+                <div class="flex justify-between overflow-auto">
+                    <twig:SortLink sortValue="id">Id</twig:SortLink>
+                    <twig:SortLink sortValue="name">Product</twig:SortLink>
+                    <twig:SortLink sortValue="supplier.name">Supplier</twig:SortLink>
+                    <twig:SortLink sortValue="stock">Stock</twig:SortLink>
+                    <twig:SortLink sortValue="cost">Cost</twig:SortLink>
+                    <twig:SortLink sortValue="isActive">Status</twig:SortLink>
+                </div>
+            </twig:Card>
         </twig:block>
 
         <twig:block name="list_item">
-            <p class="mb-1 items-center text-lg text-gray-900 dark:text-white">{{ result.name|u.truncate(30, '...') }}</p>
-            <p class="mb-1 items-center">
-                <span class="text-sm text-gray-600 dark:text-gray-500">{{ result.supplier.name|u.truncate(30, '...') }}</span>
-            </p>
-            <p class="flex justify-between items-center">
-                <span>{{ result.productCode }}</span>
-                <span class="font-extralight">{{ result.stock }} stock</span>
-                <span class="text-lg font-extralight">£{{ result.cost|number_format(2) }}</span>
-                {% if result.isActive %}
-                    <span class="text-green-500">Active</span>
-                {% else %}
-                    <span class="text-red-500">InActive</span>
-                {% endif %}
-            </p>
+            <twig:Card
+                editLink="{{ path('app_supplier_product_edit', {'id': result.id }) }}"
+                showLink="{{ path('app_supplier_product_show', {'id': result.id }) }}"
+            >
+                <p class="mb-1 items-center text-lg text-gray-900 dark:text-white">{{ result.name|u.truncate(30, '...') }}</p>
+                <p class="mb-1 items-center">
+                    <span
+                        class="text-sm text-gray-600 dark:text-gray-500">{{ result.supplier.name|u.truncate(30, '...') }}</span>
+                </p>
+                <p class="flex justify-between items-center">
+                    <span>{{ result.productCode }}</span>
+                    <span class="font-extralight">{{ result.stock }} stock</span>
+                    <span class="text-lg font-extralight">{{ result.cost|format_currency('GBP') }}</span>
+                    {% if result.isActive %}
+                        <span class="text-green-500">Active</span>
+                    {% else %}
+                        <span class="text-red-500">InActive</span>
+                    {% endif %}
+                </p>
+            </twig:Card>
         </twig:block>
 
-        <twig:block name="list_add">
+        <twig:block name="add">
             <twig:Button
                 tag="a"
-                href="{{ path('app_'~section|lower|u.snake~'_new') }}"
+                href="{{ path('app_supplier_product_new') }}"
                 class="flex items-center space-x-1 font-bold"
                 data-turbo-frame="modal"
             >
                 <twig:ux:icon name="flowbite:circle-plus-outline" class="w-5"/>
-                <span>Add {{ section }}</span>
+                <span>Add Supplier Product</span>
             </twig:Button>
         </twig:block>
 
-    </twig:DataList>
+    </twig:Search>
 
 {% endblock %}

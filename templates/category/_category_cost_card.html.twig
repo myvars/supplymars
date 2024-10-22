@@ -1,22 +1,16 @@
-<div class="relative h-full w-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-    <a href="{{ path('app_product_cost_category_edit', {'id': category.id }) }}"
-       class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-gray-600 rounded-full shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600"
-       data-turbo-frame="modal"
-    >
-        <twig:ux:icon name="mynaui:edit-one" class="w-6 h-6 p-0.5" />
-    </a>
-    <div class="p-3 text-sm text-gray-500 dark:text-gray-400">
-        <p class="text-gray-600 dark:text-gray-500">Category</p>
-        <p class="mb-1 text-lg text-gray-900 dark:text-white">{{ category.name|u.truncate(30, '...') }}</p>
-        <p class="text-lg font-extralight">{{ category.defaultMarkup|number_format(3) }}%<span class="font-normal text-sm text-gray-500 dark:text-gray-400"> mark-up</span></p>
-        <p class="font-extralight">{{ category.priceModel.getName }} price model</p>
-        <div class="mt-2 flex items-center justify-between">
-            <p class="me-10 text-xs text-gray-600 dark:text-gray-500">Updated {{ category.updatedAt|ago }}</p>
-            {% if category.isActive %}
-                <p class="text-green-500">Active</p>
-            {% else %}
-                <p class="text-red-500">InActive</p>
-            {% endif %}
-        </div>
+<twig:Card editLink="{{ path('app_product_cost_category_edit', {'id': category.id }) }}" title="Category">
+    <p class="mb-1 text-lg text-gray-900 dark:text-white">{{ category.name|u.truncate(30, '...') }}</p>
+    <p class="text-lg font-extralight">
+        {{ category.defaultMarkup|number_format(3) }}%
+        <span class="font-normal text-sm"> mark-up</span>
+    </p>
+    <p class="font-extralight">{{ category.priceModel.getName }} price model</p>
+    <div class="mt-2 flex items-center justify-between">
+        <p class="me-10 text-xs text-gray-600 dark:text-gray-500">Updated {{ category.updatedAt|ago }}</p>
+        {% if category.isActive %}
+            <p class="text-green-500">Active</p>
+        {% else %}
+            <p class="text-red-500">InActive</p>
+        {% endif %}
     </div>
-</div>
+</twig:Card>

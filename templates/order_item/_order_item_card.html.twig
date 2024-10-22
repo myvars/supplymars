@@ -1,33 +1,26 @@
-{% if orderItem.outstandingQty > 0 %}
-<li class="w-full relative first:mt-3 text-sm text-gray-500 dark:text-gray-400 border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700">
-    {% if orderItem.allowEdit %}
-    {% block order_item_edit %}
-        <a href="{{ path('app_order_item_edit', {'id': orderItem.id }) }}"
-           class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-gray-600 rounded-full shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600"
-           data-turbo-frame="modal"
-        >
-            <twig:ux:icon name="mynaui:edit-one" class="w-6 h-6 p-0.5"/>
-        </a>
-    {% endblock %}
-    {% endif %}
-    <div data-controller="toggle" data-action="click->toggle#toggle">
-        <div class="flex justify-between items-center">
-            <p class="me-1 text-xs">
-                {% if orderItem.product.productImages|length > 0 %}
-                    {% set firstImage = orderItem.product.productImages|first %}
-                    <img class="w-auto h-auto rounded-s-lg"
-                         src="{{ asset(product_uploads~firstImage.imageName) | imagine_filter('small_thumbnail') }}"
-                         alt=""
-                    >
-                {% else %}
-                    <span class="p-5 flex text-center">no image</span>
-                {% endif %}
-            </p>
-            <div class="w-full p-3">
-                <p class="mb-2 text-sm text-gray-300 dark:text-gray-200">{{ orderItem.product.name|u.truncate(50, '...') }}</p>
-                <p class="flex justify-between items-center">
+<li class="first:mt-3">
+    <twig:Card
+        editLink="{{ orderItem.allowEdit ? path('app_order_item_edit', {'id': orderItem.id }) : null }}"
+        padding="p-0"
+    >
+        <div data-controller="toggle" data-action="click->toggle#toggle">
+            <div class="flex justify-between items-center rounded-lg dark:bg-gray-800 dark:hover:bg-gray-700">
+                <p class="me-1 text-xs">
+                    {% if orderItem.product.productImages|length > 0 %}
+                        {% set firstImage = orderItem.product.productImages|first %}
+                        <img class="w-auto h-auto rounded-s-lg"
+                             src="{{ asset(product_uploads~firstImage.imageName) | imagine_filter('small_thumbnail') }}"
+                             alt=""
+                        >
+                    {% else %}
+                        <span class="p-5 flex text-center">no image</span>
+                    {% endif %}
+                </p>
+                <div class="w-full p-3">
+                    <p class="mb-2 text-sm text-gray-300 dark:text-gray-200">{{ orderItem.product.name|u.truncate(50, '...') }}</p>
+                    <p class="flex justify-between items-center">
                     <span class="me-3 text-lg font-extralight">
-                        £{{ orderItem.priceIncVat|number_format(2) }}
+                        {{ orderItem.priceIncVat|format_currency('GBP') }}
                         <span class="ms-3 text-sm">
                             {% if orderItem.outstandingQty is same as orderItem.quantity %}
                                 Qty: {{ orderItem.quantity }}
@@ -38,22 +31,18 @@
                         <a href="{{ path('app_product_show', {'id': orderItem.product.id }) }}"
                            class="ms-3 text-sm hover:text-gray-500 dark:hover:text-white"
                            data-turbo-frame="body"
-                           data-action="click->toggle#preventToggle"
-                        >
-                        #{{ '%05d'|format(orderItem.product.id) }}
-                        </a>
+                           data-action="click->toggle#toggle"
+                        >#{{ '%05d'|format(orderItem.product.id) }}</a>
                     </span>
-                    <a href="{{ path('app_order_item_status_log', {'id':orderItem.id }) }}"
-                       class="text-grey-500 dark:hover:text-gray-600"
-                       data-turbo-prefetch="false"
-                       data-turbo-frame="modal"
-                    >
-                    {{ orderItem.status.value|title }}
-                    </a>
-                </p>
+                        <a href="{{ path('app_order_item_status_log', {'id':orderItem.id }) }}"
+                           class="text-grey-500 dark:hover:text-gray-600"
+                           data-turbo-frame="modal"
+                           data-action="click->toggle#toggle"
+                        >{{ orderItem.status.value|title }}</a>
+                    </p>
+                </div>
             </div>
+            {{ include('order_item/_order_item_supplier_card.html.twig', {orderItem: orderItem}) }}
         </div>
-        {{ include('order_item/_order_item_supplier_card.html.twig', {orderItem: orderItem}) }}
-    </div>
+    </twig:Card>
 </li>
-{% endif %}

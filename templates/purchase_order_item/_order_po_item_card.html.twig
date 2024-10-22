@@ -1,30 +1,25 @@
-<li class="w-full relative first:mt-3 text-sm text-gray-500 dark:text-gray-400 border border-{{ colourScheme }}-200 rounded-lg shadow dark:bg-gray-800 dark:border-{{ colourScheme }}-700 dark:hover:bg-gray-700">
-    {%  if purchaseOrderItem.allowEdit %}
-    {% block purchase_order_item_edit %}
-        <a href="{{ path('app_purchase_order_item_edit', {'id': purchaseOrderItem.id }) }}"
-           class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-gray-600 rounded-full shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600"
-           data-turbo-frame="modal"
-        >
-            <twig:ux:icon name="mynaui:edit-one" class="w-6 h-6 p-0.5"/>
-        </a>
-    {% endblock %}
-    {% endif %}
-        <div class="flex justify-between items-center">
-            <p class="me-1 text-xs">
-                {% if purchaseOrderItem.customerOrderItem.product.productImages|length > 0 %}
-                    {% set firstImage = purchaseOrderItem.customerOrderItem.product.productImages|first %}
-                    <img class="w-auto rounded-s-lg"
-                         src="{{ asset(product_uploads~firstImage.imageName) | imagine_filter('small_thumbnail') }}"
-                    >
-                {% else %}
-                    <span class="p-5 flex text-center">no image</span>
-                {% endif %}
-            </p>
-            <div class="w-full p-3">
-                <p class="mb-2 text-sm text-gray-300 dark:text-gray-200">{{ purchaseOrderItem.customerOrderItem.product.name|u.truncate(50, '...') }}</p>
-                <p class="flex justify-between items-center">
+<li class="first:mt-3">
+<twig:Card
+           editLink="{{ purchaseOrderItem.allowEdit ? path('app_purchase_order_item_edit', {'id': purchaseOrderItem.id }) : null }}"
+           padding="p-0"
+           borderColour="{{ colourScheme }}"
+>
+    <div class="flex justify-between items-center rounded-lg dark:bg-gray-800 dark:hover:bg-gray-700">
+        <p class="me-1 text-xs">
+            {% if purchaseOrderItem.customerOrderItem.product.productImages|length > 0 %}
+                {% set firstImage = purchaseOrderItem.customerOrderItem.product.productImages|first %}
+                <img class="w-auto rounded-s-lg"
+                     src="{{ asset(product_uploads~firstImage.imageName) | imagine_filter('small_thumbnail') }}"
+                >
+            {% else %}
+                <span class="p-5 flex text-center">no image</span>
+            {% endif %}
+        </p>
+        <div class="w-full p-3">
+            <p class="mb-2 text-sm text-gray-300 dark:text-gray-200">{{ purchaseOrderItem.customerOrderItem.product.name|u.truncate(50, '...') }}</p>
+            <p class="flex justify-between items-center">
                     <span class="me-3 text-lg font-extralight">
-                        £{{ purchaseOrderItem.customerOrderItem.priceIncVat|number_format(2) }}
+                        {{ purchaseOrderItem.customerOrderItem.priceIncVat|format_currency('GBP') }}
                         <span class="ms-3 text-sm">
                             {% if purchaseOrderItem.isCancelled or purchaseOrderItem.isRefunded or purchaseOrderItem.quantity is same as purchaseOrderItem.customerOrderItem.quantity %}
                                 Qty: {{ purchaseOrderItem.quantity }}
@@ -39,7 +34,7 @@
                         Product #{{ '%05d'|format(purchaseOrderItem.customerOrderItem.product.id) }}
                         </a>
                     </span>
-                    <span class="text-gray-500">
+                <span class="text-gray-500">
                         <a href="{{ path('app_purchase_order_item_status_log', {'id':purchaseOrderItem.id }) }}"
                            class="text-grey-500 dark:hover:text-gray-800"
                            data-turbo-frame="modal"
@@ -50,7 +45,8 @@
                             <span class="py-1">on {{ purchaseOrderItem.deliveredAt|date("jS M Y") }}</span>
                         {% endif %}
                     </span>
-                </p>
-            </div>
+            </p>
         </div>
+    </div>
+</twig:Card>
 </li>

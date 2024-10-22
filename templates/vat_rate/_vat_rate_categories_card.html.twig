@@ -1,9 +1,6 @@
-<div class="h-full w-full border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-    <div class="p-3">
-        <p class="text-gray-600 dark:text-gray-500">Categories</p>
-        <p class="font-light flex justify-start items-center">
-            <span class="me-1.5 text-xl font-extralight">{{ result.categories.count }}</span>
-            {{ result.categories.count == 1 ? 'category': 'categories' }} with this VAT rate
-        </p>
-    </div>
-</div>
+<twig:Card title="Categories">
+    <p class="font-light flex justify-start items-center">
+        <span class="me-1.5 text-xl font-extralight">{{ result.categories.count }}</span>
+        {{ result.categories.count == 1 ? 'category': 'categories' }} with this VAT rate
+    </p>
+</twig:Card>

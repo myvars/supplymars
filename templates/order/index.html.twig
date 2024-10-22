@@ -3,48 +3,54 @@
 {% block title %}{{ section }} index{% endblock %}
 
 {% block body %}
-    <twig:DataList
+    <twig:Search
         section="{{ section }}"
         results="{{ results }}"
     >
-        <twig:block name="list_sort">
-            <twig:SortLink sortValue="id">Order</twig:SortLink>
-            <twig:SortLink sortValue="createdAt">Created</twig:SortLink>
-            <twig:SortLink sortValue="customer.fullName">Customer</twig:SortLink>
-            <twig:SortLink sortValue="totalPriceIncVat">Total</twig:SortLink>
-            <twig:SortLink sortValue="status">Status</twig:SortLink>
+        <twig:block name="sort">
+            <twig:Card>
+                <div class="flex justify-between overflow-auto">
+                    <twig:SortLink sortValue="id">Order</twig:SortLink>
+                    <twig:SortLink sortValue="createdAt">Created</twig:SortLink>
+                    <twig:SortLink sortValue="customer.fullName">Customer</twig:SortLink>
+                    <twig:SortLink sortValue="totalPriceIncVat">Total</twig:SortLink>
+                    <twig:SortLink sortValue="status">Status</twig:SortLink>
+                </div>
+            </twig:Card>
         </twig:block>
 
         <twig:block name="list_item">
-            <div class="flex justify-between items-center">
-                <p class="mb-1 items-center text-xl text-gray-900 dark:text-white">Order #{{ '%06d'|format(result.id) }}</p>
-                <p class="text-lg font-extralight"> £{{ result.totalPriceIncVat|number_format(2) }}</p>
-            </div>
-            <p class="mb-1 text-sm">
-                {{ result.createdAt|date('jS M Y H:i') }}
-                {% if result.customerOrderRef is not null %}
-                    - {{ result.customerOrderRef }}
-                {% endif %}
-            </p>
-            <div class="flex justify-between items-center text-gray-600 dark:text-gray-500">
-                <p>{{ result.customer.fullName }}</p>
-                <p>{{ result.status.value|title }}</p>
-            </div>
-            <twig:block name="list_item_edit"></twig:block>
+            <twig:Card showLink="{{ path('app_order_show', {'id': result.id }) }}">
+                <div class="flex justify-between items-center">
+                    <p class="mb-1 items-center text-xl text-gray-900 dark:text-white">Order
+                        #{{ '%06d'|format(result.id) }}</p>
+                    <p class="text-lg font-extralight"> {{ result.totalPriceIncVat|format_currency('GBP') }}</p>
+                </div>
+                <p class="mb-1 text-sm">
+                    {{ result.createdAt|date('jS M Y H:i') }}
+                    {% if result.customerOrderRef is not null %}
+                        - {{ result.customerOrderRef }}
+                    {% endif %}
+                </p>
+                <div class="flex justify-between items-center text-gray-600 dark:text-gray-500">
+                    <p>{{ result.customer.fullName }}</p>
+                    <p>{{ result.status.value|title }}</p>
+                </div>
+            </twig:Card>
         </twig:block>
 
-        <twig:block name="list_add">
+        <twig:block name="add">
             <twig:Button
                 tag="a"
-                href="{{ path('app_'~section|lower|u.snake~'_new') }}"
+                href="{{ path('app_order_new') }}"
                 class="flex items-center space-x-1 font-bold"
                 data-turbo-frame="modal"
             >
                 <twig:ux:icon name="flowbite:circle-plus-outline" class="w-5"/>
-                <span>Create {{ section }}</span>
+                <span>Create Order</span>
             </twig:Button>
         </twig:block>
 
-    </twig:DataList>
+    </twig:Search>
 
 {% endblock %}

@@ -1,4 +1,4 @@
-<div class="p-3 relative h-full bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+<twig:Card>
     <div class="w-full flex justify-between items-center">
         <p class="text-gray-500 dark:text-gray-400">
             {{ order.lineCount }} {% if order.lineCount == 1 %}line{% else %}lines{% endif %}
@@ -7,20 +7,22 @@
             </span>
         </p>
         {% if order.allowEdit %}
-        <twig:Button
-            tag="a"
-            href="{{ path('app_order_item_new', {id: order.id}) }}"
-            class="flex items-center space-x-1 font-bold"
-            data-turbo-frame="modal"
-        >
-            <twig:ux:icon name="flowbite:circle-plus-outline" class="w-4"/>
-            <span>Add Item</span>
-        </twig:Button>
+            <twig:Button
+                tag="a"
+                href="{{ path('app_order_item_new', {id: order.id}) }}"
+                class="flex items-center space-x-1 font-bold"
+                data-turbo-frame="modal"
+            >
+                <twig:ux:icon name="flowbite:circle-plus-outline" class="w-4"/>
+                <span>Add Item</span>
+            </twig:Button>
         {% endif %}
     </div>
     <ul class="w-full space-y-3">
         {% for orderItem in order.customerOrderItems %}
-            {{ include('order_item/_order_item_card.html.twig', {orderItem: orderItem}) }}
+            {% if orderItem.outstandingQty > 0 %}
+                {{ include('order_item/_order_item_card.html.twig', {orderItem: orderItem}) }}
+            {% endif %}
         {% endfor %}
     </ul>
-</div>
+</twig:Card>

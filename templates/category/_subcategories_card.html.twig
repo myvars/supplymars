@@ -1,22 +1,19 @@
-<div class="h-full w-full border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
-    <div class="p-3">
-        <p class="mb-1 text-gray-600 dark:text-gray-500">Subcategories</p>
-        <ul class="space-y-1 text-sm text-gray-500 dark:text-gray-400">
-            {% for subcategory in subcategories %}
-                <li class="flex justify-between py-1">
-                    <a href="{{ path('app_subcategory_show', {'id': subcategory.id }) }}"
-                       class="me-10 dark:hover:text-white"
-                       data-turbo-frame="body"
-                    >{{ subcategory.name|u.truncate(30, '...') }}</a>
-                    {% if subcategory.isActive %}
-                        <span class="text-green-500">Active</span>
-                    {% else %}
-                        <span class="text-red-500">Inactive</span>
-                    {% endif %}
-                </li>
-            {% else %}
-                <li>No subcategories</li>
-            {% endfor %}
-        </ul>
-    </div>
-</div>
+<twig:Card title="Subcategories">
+    <ul class="space-y-1">
+        {% for subcategory in subcategories %}
+            <li class="flex justify-between py-1">
+                <a href="{{ path('app_subcategory_show', {'id': subcategory.id }) }}"
+                   class="me-10 dark:hover:text-white"
+                   data-turbo-frame="body"
+                >{{ subcategory.name|u.truncate(30, '...') }}</a>
+                {% if subcategory.isActive %}
+                    <span class="text-green-500">Active</span>
+                {% else %}
+                    <span class="text-red-500">Inactive</span>
+                {% endif %}
+            </li>
+        {% else %}
+            <li>No subcategories</li>
+        {% endfor %}
+    </ul>
+</twig:Card>

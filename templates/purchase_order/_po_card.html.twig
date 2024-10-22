@@ -1,27 +1,25 @@
 {% set colourScheme = result.supplier.colourScheme %}
-<div class="relative h-full bg-white border border-{{ colourScheme }}-200 rounded-lg shadow dark:bg-{{ colourScheme }}-800 dark:border-{{ colourScheme }}-700">
-    <div class="p-3 text-sm text-gray-500 dark:text-gray-400">
-        <h5 class="mb-2 text-xl text-gray-900 dark:text-white">
-            PO #{{ '%06d'|format(result.id) }}
-            <span class="ms-2 text-gray-500 dark:text-gray-400">{{ result.supplier.name }}</span>
-        </h5>
-        <div class="flex items-center justify-between">
-            <p class="me-10 text-sm">
-                {{ purchaseOrder.createdAt|date('jS M Y H:i') }} -
-                <a href="{{ path('app_order_show', {id: purchaseOrder.customerOrder.id}) }}"
-                   data-turbo-frame="body"
-                   class="text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
-                    Order #{{ '%06d'|format(purchaseOrder.customerOrder.id) }}
-                </a>
-            </p>
-            <a href="{{ path('app_purchase_order_status_log', {'id':purchaseOrder.id }) }}"
-               class="flex justify-between items-center text-grey-500 dark:hover:text-gray-800"
-               data-turbo-frame="modal"
-            >
-                <twig:StatusIcon type="{{ purchaseOrder.status.value|lower }}" class="me-1"/>
-                {{ purchaseOrder.status.value|title }}
+<twig:Card colour="{{ colourScheme }}">
+    <h5 class="mb-2 text-xl text-gray-900 dark:text-white">
+        PO #{{ '%06d'|format(result.id) }}
+        <span class="ms-2 text-gray-500 dark:text-gray-400">{{ result.supplier.name }}</span>
+    </h5>
+    <div class="flex items-center justify-between">
+        <p class="me-10 text-sm">
+            {{ purchaseOrder.createdAt|date('jS M Y H:i') }} -
+            <a href="{{ path('app_order_show', {id: purchaseOrder.customerOrder.id}) }}"
+               data-turbo-frame="body"
+               class="text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
+                Order #{{ '%06d'|format(purchaseOrder.customerOrder.id) }}
             </a>
+        </p>
+        <a href="{{ path('app_purchase_order_status_log', {'id':purchaseOrder.id }) }}"
+           class="flex justify-between items-center text-grey-500 dark:hover:text-gray-800"
+           data-turbo-frame="modal"
+        >
+            <twig:StatusIcon type="{{ purchaseOrder.status.value|lower }}" class="me-1"/>
+            {{ purchaseOrder.status.value|title }}
+        </a>
 
-        </div>
     </div>
-</div>
+</twig:Card>

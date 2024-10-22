@@ -4,19 +4,9 @@
 
 {% block body %}
 
-    <div class="p-3 space-y-3 text-sm text-gray-500 dark:text-gray-400">
-        <h1 class="mb-3 text-xl text-gray-900 dark:text-white">Manufacturer</h1>
-        <div class="flex flex-wrap justify-center gap-3">
-            {{ include('manufacturer/_manufacturer_card.html.twig', {manufacturer: result}) }}
-            {{ include('manufacturer/_manufacturer_products_card.html.twig', {manufacturer: result}) }}
-        </div>
-        <p>
-            <a href="{{ path('app_manufacturer_index') }}"
-               class="font-light hover:text-gray-300 dark:hover:text-white"
-               data-turbo-frame="_top"
-               data-turbo-prefetch="false"
-            >Back to list</a>
-        </p>
+    <div class="p-3 space-y-3">
+        {{ include('manufacturer/_manufacturer_card.html.twig', {manufacturer: result}) }}
+        {{ include('manufacturer/_manufacturer_products_card.html.twig', {manufacturer: result}) }}
     </div>
 
 {% endblock %}

@@ -59,7 +59,7 @@
                             <a href="{{ path('app_forgot_password_request') }}" class="text-sm font-medium text-primary-600 hover:underline dark:text-primary-500">Forgot password?</a>
                         </div>
                         <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-                        <twig:Button type="submit" class="w-full">Sign in</twig:Button>
+                        <twig:Button type="submit" class="w-full" data-turbo-frame="_top">Sign in</twig:Button>
                         <p class="text-sm font-light text-gray-500 dark:text-gray-400">
                             Don’t have an account yet?
                             <a

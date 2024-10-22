@@ -3,29 +3,26 @@
 {% block title %}Edit {{ section }}{% endblock %}
 
 {% block body %}
-    <div class="relative p-3 bg-white rounded-lg shadow dark:bg-gray-800">
-        <div class="flex justify-between items-center pb-3 mb-3 rounded-t border-b dark:border-gray-600">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                Edit {{ section }}
-            </h3>
-        </div>
+
+    <twig:Dialog title="Edit {{ section }}">
         {{ include('crud/crud.html.twig', {'template': '_form', 'button_label': 'Update '~section}) }}
         {% if allowDelete %}
-        <hr class="h-px my-6 bg-gray-200 border-0 dark:bg-gray-700">
-        <twig:Button
-            tag="a"
-            href="{{ path('app_'~section|lower|u.snake~'_delete_confirm', {'id': result.id}) }}"
-            type="submit"
-            variant="danger"
-            class="w-full">
-            Delete
-        </twig:Button>
+            <hr class="h-px my-6 bg-gray-200 border-0 dark:bg-gray-700">
+            <twig:Button
+                tag="a"
+                href="{{ path('app_'~section|lower|u.snake~'_delete_confirm', {'id': result.id}) }}"
+                type="submit"
+                variant="danger"
+                class="w-full">
+                Delete
+            </twig:Button>
         {% endif %}
         {% if backLink is not null %}
             <p class="text-sm font-light text-gray-500 dark:text-gray-400 mt-3">
                 <a href="{{ backLink }}" class="hover:underline">Back to list</a>
             </p>
         {% endif %}
-    </div>
+    </twig:Dialog>
+
 {% endblock %}
 

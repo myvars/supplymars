@@ -1,16 +1,13 @@
-<li class="w-full relative first:mt-3 text-sm text-gray-500 dark:text-gray-400 border border-{{ colourScheme }}-200 rounded-lg shadow dark:bg-gray-800 dark:border-{{ colourScheme }}-700 dark:hover:bg-gray-700">
-    {% if purchaseOrderItem.allowStatusChange %}
-    {% block purchase_order_item_edit %}
-        <a href="{{ path('app_purchase_order_item_status_edit', {'id': purchaseOrderItem.id }) }}"
-           class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border border-{{ colourScheme }}-600 rounded-full shadow-lg dark:bg-{{ colourScheme }}-700 dark:hover:bg-{{ colourScheme }}-600"
-           data-turbo-frame="modal"
-        >
-            <twig:ux:icon name="mynaui:edit-one" class="w-6 h-6 p-0.5"/>
-        </a>
-    {% endblock %}
-    {% endif %}
-    <div data-controller="toggle" data-action="click->toggle#toggle">
-        <div class="flex justify-between items-center">
+{% if colourScheme is not defined %}
+    {% set colourScheme = purchaseOrderItem.purchaseOrder.supplier.colourScheme %}
+{% endif %}
+<li class="first:mt-3">
+    <twig:Card
+        editLink="{{ purchaseOrderItem.allowStatusChange ? path('app_purchase_order_item_status_edit', {'id': purchaseOrderItem.id }) : null }}"
+        padding="p-0"
+        colour="{{ colourScheme }}"
+    >
+        <div class="flex justify-between items-center rounded-lg dark:bg-gray-800 hover:dark:bg-gray-700">
             <p class="me-1 text-xs">
                 {% if purchaseOrderItem.customerOrderItem.product.productImages|length > 0 %}
                     {% set firstImage = purchaseOrderItem.customerOrderItem.product.productImages|first %}
@@ -25,7 +22,7 @@
                 <p class="mb-2 text-sm text-gray-300 dark:text-gray-200">{{ purchaseOrderItem.supplierProduct.name|u.truncate(50, '...') }}</p>
                 <p class="flex justify-between items-center">
                     <span class="me-3 text-lg font-extralight">
-                        £{{ purchaseOrderItem.priceIncVat|number_format(2) }}
+                        {{ purchaseOrderItem.priceIncVat|format_currency('GBP') }}
                         <span class="ms-3 text-sm">Qty: {{ purchaseOrderItem.quantity }}</span>
                         <a href="{{ path('app_product_show', {'id': purchaseOrderItem.customerOrderItem.product.id }) }}"
                            class="ms-3 text-sm hover:text-gray-500 dark:hover:text-white"
@@ -48,5 +45,5 @@
                 </p>
             </div>
         </div>
-    </div>
+    </twig:Card>
 </li>

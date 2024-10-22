@@ -5,18 +5,9 @@
 {% block body %}
 
     {{ include('product/_navigation.html.twig', {product: result}) }}
-    <div class="mt-4 p-3 space-y-3 text-sm text-gray-500 dark:text-gray-400">
+    <div class="mt-4 p-3 space-y-3">
         <div class="flex flex-wrap justify-center gap-8">
             {{ include('product/_product_card.html.twig', {product: result}) }}
-        </div>
-        <div class="mt-3">
-            <p>
-                <a href="{{ path('app_product_index') }}"
-                   class="font-light hover:text-gray-300 dark:hover:text-white"
-                   data-turbo-frame="_top"
-                   data-turbo-prefetch="false"
-                >Back to list</a>
-            </p>
         </div>
     </div>
 

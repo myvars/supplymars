@@ -3,34 +3,44 @@
 {% block title %}{{ section }} index{% endblock %}
 
 {% block body %}
-    <twig:DataList
+    <twig:Search
         section="{{ section }}"
         results="{{ results }}"
     >
-        <twig:block name="list_sort">
-            <twig:SortLink sortValue="id">Id</twig:SortLink>
-            <twig:SortLink sortValue="name">Name</twig:SortLink>
-            <twig:SortLink sortValue="rate">VAT Rate</twig:SortLink>
+        <twig:block name="sort">
+            <twig:Card>
+                <div class="flex justify-between overflow-auto">
+                    <twig:SortLink sortValue="id">Id</twig:SortLink>
+                    <twig:SortLink sortValue="name">Name</twig:SortLink>
+                    <twig:SortLink sortValue="rate">VAT Rate</twig:SortLink>
+                </div>
+            </twig:Card>
         </twig:block>
 
         <twig:block name="list_item">
-            <p class="mb-1 items-center text-lg text-gray-900 dark:text-white">{{ result.name|u.truncate(30, '...') }}</p>
-            <p class="me-1  flex justify-between items-center text-lg font-extralight">{{ result.rate|number_format(2) }}%</p>
+            <twig:Card
+                editLink="{{ path('app_vat_rate_edit', {'id': result.id }) }}"
+                showLink="{{ path('app_vat_rate_show', {'id': result.id }) }}"
+            >
+                <p class="mb-1 items-center text-lg text-gray-900 dark:text-white">{{ result.name|u.truncate(30, '...') }}</p>
+                <p class="me-1  flex justify-between items-center text-lg font-extralight">{{ result.rate|number_format(2) }}
+                    %</p>
+            </twig:Card>
         </twig:block>
 
-        <twig:block name="list_add">
+        <twig:block name="add">
             <twig:Button
                 tag="a"
-                href="{{ path('app_'~section|lower|u.snake~'_new') }}"
+                href="{{ path('app_vat_rate_new') }}"
                 class="flex items-center space-x-1 font-bold"
                 data-turbo-frame="modal"
             >
                 <twig:ux:icon name="flowbite:circle-plus-outline" class="w-5"/>
-                <span>Add {{ section }}</span>
+                <span>Create Vat Rate</span>
             </twig:Button>
         </twig:block>
 
         <twig:block name="filter"></twig:block>
-    </twig:DataList>
+    </twig:Search>
 
 {% endblock %}
