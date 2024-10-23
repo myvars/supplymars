@@ -23,7 +23,7 @@ return [
         'version' => '3.2.2',
     ],
     '@hotwired/turbo' => [
-        'version' => '8.0.10',
+        'version' => '8.0.12',
     ],
     'stimulus-use' => [
         'version' => '0.52.2',
@@ -51,7 +51,7 @@ return [
         'version' => '6.2.0',
     ],
     'debounce' => [
-        'version' => '2.1.1',
+        'version' => '2.2.0',
     ],
     'dropzone/dist/dropzone.css' => [
         'version' => '6.0.0-beta.2',

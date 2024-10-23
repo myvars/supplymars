@@ -11,7 +11,7 @@ export default class extends Controller {
 
     initialize() {
         // Create a debounced version of the queryInputChanged method
-        this.debouncedQueryInputChanged = debounce(this.queryInputChanged.bind(this), 300);
+        this.debouncedQueryInputChanged = debounce(this.queryInputChanged.bind(this), 200);
     }
 
     connect() {

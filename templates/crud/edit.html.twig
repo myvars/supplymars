@@ -7,7 +7,7 @@
     <twig:Dialog title="Edit {{ section }}">
         {{ include('crud/crud.html.twig', {'template': '_form', 'button_label': 'Update '~section}) }}
         {% if allowDelete %}
-            <hr class="h-px my-6 bg-gray-200 border-0 dark:bg-gray-700">
+            <hr class="my-6 h-px border-0 bg-gray-200 dark:bg-gray-700">
             <twig:Button
                 tag="a"
                 href="{{ path('app_'~section|lower|u.snake~'_delete_confirm', {'id': result.id}) }}"
@@ -18,7 +18,7 @@
             </twig:Button>
         {% endif %}
         {% if backLink is not null %}
-            <p class="text-sm font-light text-gray-500 dark:text-gray-400 mt-3">
+            <p class="mt-3 text-sm font-light text-gray-500 dark:text-gray-400">
                 <a href="{{ backLink }}" class="hover:underline">Back to list</a>
             </p>
         {% endif %}

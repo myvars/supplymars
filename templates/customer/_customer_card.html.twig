@@ -1,13 +1,13 @@
 <twig:Card editLink="{{ path('app_customer_edit', {id: customer.id})}}" title="Customer">
-    <p class="mb-1 text-xl text-gray-900 dark:text-white">
-        {{ customer.fullName|u.truncate(30, '...') }}
+    <p class="mb-2 text-xl text-gray-900 line-clamp-1 dark:text-white">
+        {{ customer.fullName }}
         {% if result.isAdmin %}
-            <span class="ms-2 text-base font-extralight text-red-500 dark:text-red-400">(Administrator)</span>
+            <span class="text-base font-extralight text-red-500 ms-1 dark:text-red-400">(Administrator)</span>
         {% endif %}
     </p>
-    <p class="font-extralight">{{ customer.email }}</p>
-    <div class="mt-3 flex items-center justify-between">
-        <p class="me-10 text-xs text-gray-600 dark:text-gray-500">Updated {{ customer.updatedAt|ago }}</p>
+    <p>{{ customer.email }}</p>
+    <div class="mt-2 flex items-center justify-between">
+        <p class="text-xs text-gray-600 me-10 dark:text-gray-500">Updated {{ customer.updatedAt|ago }}</p>
         {% if customer.isVerified %}
             <p class="text-green-500">Verified</p>
         {% else %}

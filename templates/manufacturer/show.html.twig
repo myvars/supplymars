@@ -1,12 +1,14 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Manufacturer{% endblock %}
+{% block title %}Manufacturer Details{% endblock %}
 
 {% block body %}
 
-    <div class="p-3 space-y-3">
+    <div class="m-3 space-y-3">
         {{ include('manufacturer/_manufacturer_card.html.twig', {manufacturer: result}) }}
-        {{ include('manufacturer/_manufacturer_products_card.html.twig', {manufacturer: result}) }}
+        {% if result.products.count > 0 %}
+            {{ include('manufacturer/_manufacturer_products_card.html.twig', {manufacturer: result}) }}
+        {% endif %}
     </div>
 
 {% endblock %}

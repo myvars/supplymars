@@ -24,6 +24,10 @@ final readonly class CreatePurchaseOrderItem
 
     public function fromOrder(CustomerOrderItem $customerOrderItem, SupplierProduct $supplierProduct): PurchaseOrderItem
     {
+        if (!$customerOrderItem->allowEdit()) {
+            throw new \InvalidArgumentException('Order item cannot be edited');
+        }
+
         $customerOrder = $this->getCustomerOrder($customerOrderItem);
         $purchaseOrder = $this->getEditablePurchaseOrder($customerOrder, $supplierProduct->getSupplier());
 

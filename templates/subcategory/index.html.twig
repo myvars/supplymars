@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ section }} index{% endblock %}
+{% block title %}Subcategory Search{% endblock %}
 
 {% block body %}
     <twig:Search
@@ -24,27 +24,20 @@
                 editLink="{{ path('app_subcategory_edit', {'id': result.id }) }}"
                 showLink="{{ path('app_subcategory_show', {'id': result.id }) }}"
             >
-                <p class="mb-1 items-center text-lg text-gray-900 dark:text-white">{{ result.name|u.truncate(30, '...') }}</p>
-                <p class="mb-1 items-center text-sm text-gray-600 dark:text-gray-500">
-                    Category:
-                    <span
-                        class="text-gray-500 dark:text-gray-400">{{ result.category.name|u.truncate(30, '...') }}</span>
+                <p class="text-lg text-gray-900 line-clamp-1 dark:text-white">{{ result.name }}</p>
+                <p class="mb-1 line-clamp-1">Found in {{ result.category.name }}</p>
+                <p class="text-base font-extralight text-nowrap">
+                    {{ result.defaultMarkup|number_format(3) }}%
+                    <span class="text-sm"> mark-up</span>
                 </p>
-                <p class="flex justify-between items-center">
-                    {% if result.hasOwner %}
-                        <span
-                            class="me-1 text-gray-600 dark:text-gray-500">Managed by {{ result.owner.fullName }}</span>
-                    {% else %}
-                        <span class="me-1 text-gray-600 dark:text-gray-500">No subcategory manager</span>
-                    {% endif %}
-                    {% if result.hasDefaultMarkup %}
-                        <span class="me-1 text-lg font-extralight">{{ result.defaultMarkup|number_format(3) }}%
-                        <span
-                            class="me-1 font-normal text-sm text-nowrap text-gray-500 dark:text-gray-400"> mark-up</span>
+                <p class="mt-1 flex items-center justify-between">
+                    <span class="text-gray-600 me-1 dark:text-gray-500">
+                        {% if result.hasOwner %}
+                            Managed by {{ result.owner.fullName }}
+                        {% else %}
+                            No subcategory manager
+                        {% endif %}
                     </span>
-                    {% else %}
-                        No subcategory mark-up
-                    {% endif %}
                     {% if result.isActive %}
                         <span class="text-green-500">Active</span>
                     {% else %}
@@ -58,7 +51,7 @@
             <twig:Button
                 tag="a"
                 href="{{ path('app_subcategory_new') }}"
-                class="flex items-center space-x-1 font-bold"
+                class="flex items-center font-bold space-x-1"
                 data-turbo-frame="modal"
             >
                 <twig:ux:icon name="flowbite:circle-plus-outline" class="w-5"/>

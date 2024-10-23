@@ -1,10 +1,10 @@
 {% set colourScheme = purchaseOrder.supplier.colourScheme %}
 <twig:Card colour="{{ colourScheme }}">
-    <p class="text-gray-500 dark:text-gray-400">
-        {{ purchaseOrder.itemCount }} {% if purchaseOrder.itemCount == 1 %}item{% else %}items{% endif %}
-        <span class="ms-1">
-                {{ purchaseOrder.lineCount }} {% if purchaseOrder.lineCount == 1 %}line{% else %}lines{% endif %}
-            </span>
+    <p class="text-gray-500 dark:text-gray-300">
+        {{ purchaseOrder.lineCount }} {% if purchaseOrder.lineCount == 1 %}line{% else %}lines{% endif %}
+        <span class="ms-1 text-grey-600 dark:text-gray-400">
+            {{ purchaseOrder.itemCount }} {% if purchaseOrder.itemCount == 1 %}item{% else %}items{% endif %}
+        </span>
     </p>
     <ul class="w-full space-y-3">
         {% for purchaseOrderItem in purchaseOrder.purchaseOrderItems %}

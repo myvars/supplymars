@@ -7,7 +7,7 @@
     <twig:Dialog title="Create new {{ section }}">
         {{ include('crud/crud.html.twig', {'template': '_form', 'button_label': 'Create '~section}) }}
         {% if backLink is not null %}
-            <p class="text-sm font-light text-gray-500 dark:text-gray-400 mt-3">
+            <p class="mt-3 text-sm font-light text-gray-500 dark:text-gray-400">
                 <a href="{{ backLink }}" class="hover:underline">Back to list</a>
             </p>
         {% endif %}

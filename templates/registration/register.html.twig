@@ -3,12 +3,12 @@
 {% block title %}Sign Up{% endblock %}
 
 {% block body %}
-    <section class="md:h-screen rounded-lg bg-gray-50 dark:bg-gray-900" style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
-        <div class="flex flex-col items-center px-6 py-8 mx-auto lg:py-0">
+    <section class="rounded-lg bg-gray-50 dark:bg-gray-900 md:h-screen" style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
+        <div class="mx-auto flex flex-col items-center px-6 py-8 lg:py-0">
             <div
-                class="w-full bg-white rounded-lg shadow dark:border md:m-10 sm:max-w-md xl:p-0 dark:bg-gray-800 dark:border-gray-700">
-                <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
-                    <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
+                class="w-full rounded-lg bg-white shadow dark:border dark:border-gray-700 dark:bg-gray-800 sm:max-w-md md:m-10 xl:p-0">
+                <div class="p-6 space-y-4 sm:p-8 md:space-y-6">
+                    <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white md:text-2xl">
                         Create an account
                     </h1>
                     {% for flash_error in app.flashes('verify_email_error') %}
@@ -24,11 +24,11 @@
                     {{ form_row(registrationForm.email) }}
                     {{ form_row(registrationForm.plainPassword) }}
                     <div class="mb-3">
-                        <div class="flex items-center mr-4">
+                        <div class="mr-4 flex items-center">
                             <input type="checkbox" id="registration_form_agreeTerms"
                                    name="{{ field_name(registrationForm.agreeTerms) }}"
                                    required="required"
-                                   class="rounded w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                                   class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
                                    value="{{ field_value(registrationForm.agreeTerms) }}">
                             <label class="ml-2 text-sm font-light text-gray-500 dark:text-gray-400"
                                    for="registration_form_agreeTerms">
@@ -45,7 +45,7 @@
                             {{ form_errors(registrationForm.agreeTerms) }}
                         </div>
                     </div>
-                    <twig:Button type="submit" class="w-full">Create account</twig:Button>
+                    <twig:Button type="submit" class="w-full" data-turbo-frame="_top">Create account</twig:Button>
                     <p class="text-sm font-light text-gray-500 dark:text-gray-400">
                         Already have an account?
                         <a

@@ -1,13 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Category{% endblock %}
+{% block title %}Category Details{% endblock %}
 
 {% block body %}
 
-    <div class="p-3 space-y-3">
+    <div class="m-3 space-y-3">
         {{ include('category/_category_card.html.twig', {category: result}) }}
-        {{ include('category/_category_products_card.html.twig', {category: result}) }}
-        {{ include('category/_subcategories_card.html.twig', {subcategories: result.subcategories}) }}
+        {% if result.products.count > 0 %}
+            {{ include('category/_category_products_card.html.twig', {category: result}) }}
+        {% endif %}
+        {% if result.subcategories.count > 0 %}
+            {{ include('category/_subcategories_card.html.twig', {subcategories: result.subcategories}) }}
+        {% endif %}
     </div>
 
 {% endblock %}

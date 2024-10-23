@@ -1,24 +1,24 @@
-<div class="flex justify-center text-sm font-medium text-center text-gray-500 dark:text-gray-400 dark:border-gray-700">
-    <ul class="flex flex-wrap -mb-px">
+<div class="mb-5 flex justify-center text-center text-sm font-medium text-gray-500 dark:border-gray-700 dark:text-gray-400">
+    <ul class="-mb-px flex flex-wrap">
         <li class="me-2">
             <a href="{{ path('app_product_show', { id: result.id }) }}"
-               class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300">
-                Product Details
+               class="inline-block p-3 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 {{ app.request.get('_route') == 'app_product_show' ? 'active dark:text-gray-300 dark:border-gray-300' : '' }}">
+                <span class="hidden md:inline">Product </span>Details
             </a>
         </li>
         <li class="me-2">
-            <a href="{{ path('app_product_stock', { id: result.id }) }}" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300">
-                Product Stock
+            <a href="{{ path('app_product_stock', { id: result.id }) }}" class="inline-block p-3 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 {{ app.request.get('_route') == 'app_product_stock' ? 'active dark:text-gray-300 dark:border-gray-300' : '' }}">
+                <span class="hidden md:inline">Product </span>Stock
             </a>
         </li>
         <li class="me-2">
-            <a href="{{ path('app_product_cost', { id: result.id }) }}" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300">
-                Product Cost
+            <a href="{{ path('app_product_cost', { id: result.id }) }}" class="inline-block p-3 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 {{ app.request.get('_route') == 'app_product_cost' ? 'active dark:text-gray-300 dark:border-gray-300' : '' }}">
+                <span class="hidden md:inline">Product </span>Cost
             </a>
         </li>
         <li class="me-2">
-            <a href="{{ path('app_product_images', { id: result.id }) }}" class="inline-block p-4 border-b-2 border-transparent rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300">
-                Product Images
+            <a href="{{ path('app_product_images', { id: result.id }) }}" class="inline-block p-3 border-b-2 border-transparent  hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 {{ app.request.get('_route') == 'app_product_images' ? 'active dark:text-gray-300 dark:border-gray-300' : '' }}">
+                <span class="hidden md:inline">Product </span>Images
             </a>
         </li>
     </ul>

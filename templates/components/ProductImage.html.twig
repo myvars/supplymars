@@ -1,0 +1,21 @@
+{% if this.showLink%}
+    <a href="{{ this.showLink }}" data-turbo-frame="body">
+{% endif %}
+<div {{ attributes.defaults({
+    'class': 'relative z-0 overflow-hidden flex items-center justify-center '~this.getImageClasses,
+}) }}
+>
+    {% if this.imageName %}
+    <img
+        class="relative z-0 inset-0 object-cover {{ this.style }} {{ this.imageClasses }}"
+        loading="lazy"
+        src="{{ asset(product_uploads~this.imageName)|imagine_filter(this.filter) }}"
+        alt="{{ this.alt }}"
+    >
+    {% else %}
+        <span class="text-center text-xs text-gray-500 dark:text-gray-400">no image</span>
+    {% endif %}
+</div>
+{% if this.showLink %}
+    </a>
+{% endif %}

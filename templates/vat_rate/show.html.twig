@@ -1,10 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}VAT Rate{% endblock %}
+{% block title %}VAT Rate Details{% endblock %}
 
 {% block body %}
 
-    <div class="p-3 space-y-3">
+    <div class="m-3 space-y-3">
         {{ include('vat_rate/_vat_rate_card.html.twig', {vatRate: result}) }}
         {{ include('vat_rate/_vat_rate_categories_card.html.twig', {vatRate: result}) }}
     </div>

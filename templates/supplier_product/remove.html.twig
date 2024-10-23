@@ -5,11 +5,9 @@
 {% block body %}
 
     <twig:Dialog title="Remove Supplier Product">
-        <p class="mb-1 text-sm text-gray-500 dark:text-gray-500">
-            {{ supplierProduct.supplier.name|u.truncate(30, '...', false) }}
-        </p>
-        <p class="mb-3 text-xl text-gray-900 dark:text-white">{{ supplierProduct.productCode }}</p>
-        <p class="mb-2">{{ supplierProduct.name|u.truncate(30, '...', false) }}</p>
+        <p class="mb-1 text-sm text-gray-500 dark:text-gray-500">{{ supplierProduct.supplier.name }}</p>
+        <p class="text-xl text-gray-900 line-clamp-1 dark:text-white">{{ supplierProduct.name }}</p>
+        <p class="mb-4">{{ supplierProduct.productCode }}</p>
         <p class="mb-4 font-light">
             Are you sure you want to remove this supplier product?
         </p>

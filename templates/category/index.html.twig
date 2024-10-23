@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ section }} index{% endblock %}
+{% block title %}Category Search{% endblock %}
 
 {% block body %}
     <twig:Search
@@ -23,14 +23,13 @@
                 editLink="{{ path('app_category_edit', {'id': result.id }) }}"
                 showLink="{{ path('app_category_show', {'id': result.id }) }}"
             >
-                <p class="mb-1 items-center text-lg text-gray-900 dark:text-white">
-                    {{ result.name|u.truncate(30, '...') }}
+                <p class="mb-1 text-lg text-gray-900 line-clamp-1 dark:text-white">{{ result.name }}</p>
+                <p class="text-base font-extralight text-nowrap">
+                    {{ result.defaultMarkup|number_format(3) }}%
+                    <span class="text-sm"> mark-up</span>
                 </p>
-                <p class="flex justify-between items-center">
-                    <span class="me-1 text-gray-600 dark:text-gray-500">Managed by {{ result.owner.fullName }}</span>
-                    <span class="me-1 text-lg font-extralight">{{ result.defaultMarkup|number_format(3) }}%
-                    <span class="me-1 font-normal text-sm text-nowrap text-gray-500 dark:text-gray-400"> mark-up</span>
-                </span>
+                <p class="mt-1 flex items-center justify-between">
+                    <span class="text-gray-600 me-1 dark:text-gray-500">Managed by {{ result.owner.fullName }}</span>
                     {% if result.isActive %}
                         <span class="text-green-500">Active</span>
                     {% else %}
@@ -44,7 +43,7 @@
             <twig:Button
                 tag="a"
                 href="{{ path('app_category_new') }}"
-                class="flex items-center space-x-1 font-bold"
+                class="flex items-center font-bold space-x-1"
                 data-turbo-frame="modal"
             >
                 <twig:ux:icon name="flowbite:circle-plus-outline" class="w-5"/>

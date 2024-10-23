@@ -5,8 +5,8 @@
 {% block body %}
     <div data-controller="aos">
         <section class="flex justify-center bg-white dark:bg-orange-400/10" style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
-            <div class="py-8 px-4 mx-auto max-w-screen-xl sm:py-12 lg:px-6">
-                <div class="max-w-screen-md mb-10 dark:text-white">
+            <div class="mx-auto max-w-screen-xl px-4 py-8 sm:py-12 lg:px-6">
+                <div class="mb-10 max-w-screen-md dark:text-white">
                     <h2 class="mb-8 text-3xl tracking-tight">Privacy Policy</h2>
 
                     <p class="mb-4 sm:text-base">
@@ -17,7 +17,7 @@
                     <p class="mb-4 sm:text-sm">
                         For the purpose of guest login, we collect the following information:
                     </p>
-                    <ul class="mb-4 space-y-1 list-disc list-inside">
+                    <ul class="mb-4 list-inside list-disc space-y-1">
                         <li><strong>Name</strong>: Used to personalize the guest login experience.</li>
                         <li><strong>Email</strong>: Required for account creation and identification.</li>
                         <li><strong>Password</strong>: Securely stored and encrypted, used for login authentication.</li>
@@ -69,7 +69,7 @@
                         <twig:Button
                             tag="a"
                             href="mailto:adamashmore@me.com"
-                            class="flex items-center space-x-1 font-bold"
+                            class="flex items-center font-bold space-x-1"
                             variant="secondary"
                         >
                             <span>Contact Us</span>

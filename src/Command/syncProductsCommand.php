@@ -49,9 +49,11 @@ class syncProductsCommand extends Command
                 if ($supplierProduct->getName() !== $product->getName()) {
                     $supplierProduct->setName($product->getName());
                 }
+
                 if ($supplierProduct->getSupplierCategory()->getname() !== $product->getCategory()->getName()) {
                     $supplierProduct->getSupplierCategory()->setName($product->getCategory()->getName());
                 }
+
                 if ($supplierProduct->getSupplierSubcategory()->getname() !== $product->getSubcategory()->getName()) {
                     $supplierProduct->getSupplierSubcategory()->setName($product->getSubcategory()->getName());
                 }

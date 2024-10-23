@@ -35,6 +35,11 @@ class CategoryRepository extends ServiceEntityRepository implements SearchQueryI
                 ->setParameter('query', '%'.$searchDto->getQuery().'%');
         }
 
+        if ($searchDto->getVatRateId()) {
+            $qb->andWhere('c.vatRate = :vatRateId')
+                ->setParameter('vatRateId', $searchDto->getVatRateId());
+        }
+
         if ($searchDto->getPriceModel()) {
             $qb->andWhere('c.priceModel = :priceModel')
                 ->setParameter('priceModel', $searchDto->getPriceModel());

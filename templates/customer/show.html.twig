@@ -1,13 +1,15 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Customers{% endblock %}
+{% block title %}Customer Details{% endblock %}
 
 {% block body %}
 
-    <div class="p-3 space-y-3">
+    <div class="m-3 space-y-3">
         {{ include('customer/_customer_card.html.twig', {customer: result}) }}
         {{ include('customer/_customer_orders_card.html.twig', {customer: result}) }}
-        {{ include('customer/_customer_addresses_card.html.twig', {customer: result}) }}
+        {% if result.addresses.count > 0 %}
+            {{ include('customer/_customer_addresses_card.html.twig', {customer: result}) }}
+        {% endif %}
     </div>
 
 {% endblock %}

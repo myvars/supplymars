@@ -1,21 +1,25 @@
-<div class="relative bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700"
-     data-id="{{ productImage.id }}"
->
-    <a href="{{ path('app_product_image_remove', {id: productImage.id}) }}"
-       class="absolute -top-1.5 -right-1 p-1.5 bg-white text-gray-300 border border-gray-600 rounded-full shadow-lg dark:bg-gray-700 dark:hover:bg-gray-600"
-       data-turbo-prefetch="false"
-    >
-        <twig:ux:icon name="bi:x-lg" class="w-6 h-6 p-0.5"/>
-    </a>
-    <img class="w-60 mx-auto rounded-lg"
-         src="{{ asset(product_uploads~productImage.imageName) | imagine_filter('large_thumbnail') }}"
-         alt=""
-    >
-    <div class="p-3">
-        <h5 class="mb-2 font-bold text-gray-300 dark:text-white">{{ productImage.imageName|u.truncate(25, '...') }}</h5>
-        <div class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-500">
-            <p>Uploaded {{ productImage.createdAt|ago }}</p>
-            <p>{{ (productImage.imageSize/1000)|number_format(1) }}Kb</p>
+<div data-id="{{ productImage.id }}">
+    <twig:Card padding="p-0">
+        <twig:block name="cardImage">
+            <twig:ProductImage
+                imageName="{{ productImage.imageName }}"
+                filter="large_thumbnail"
+                alt="{{ productImage.imageName }}"
+                style="rounded-t-lg"
+            ></twig:ProductImage>
+        </twig:block>
+        <a href="{{ path('app_product_image_remove', {id: productImage.id}) }}"
+           class="absolute -right-1 rounded-full border border-gray-600 bg-white text-gray-300 shadow-lg -top-1.5 p-1.5 dark:bg-gray-700 dark:hover:bg-gray-600"
+           data-turbo-prefetch="false"
+        >
+            <twig:ux:icon name="bi:x-lg" class="h-6 w-6 p-0.5"/>
+        </a>
+        <div class="p-3">
+            <h5 class="mb-2 font-bold text-gray-300 dark:text-white">{{ productImage.imageName|u.truncate(25, '...') }}</h5>
+            <div class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-500">
+                <p>Uploaded {{ productImage.createdAt|ago }}</p>
+                <p>{{ (productImage.imageSize/1000)|number_format(1) }}Kb</p>
+            </div>
         </div>
-    </div>
+    </twig:Card>
 </div>

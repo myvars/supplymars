@@ -55,7 +55,11 @@ class RegistrationController extends AbstractController
             // do anything else you need here, like send an email
             $this->addFlash('success', 'Your account has been created. Follow the link in your email to verify your account.');
 
-            return $this->redirectToRoute('app_homepage');
+            return $userAuthenticator->authenticateUser(
+                $user,
+                $this->formLoginAuthenticator,
+                $request
+            );
         }
 
         return $this->render('registration/register.html.twig', [

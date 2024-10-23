@@ -1,34 +1,35 @@
-<twig:Card editLink="{{ order.allowEdit ? path('app_order_cancel_confirm', {id: result.id}) : null}}" editIcon="bi:x-lg">
+<twig:Card editLink="{{ order.allowEdit ? path('app_order_cancel_confirm', {id: result.id}) : null }}"
+           editIcon="bi:x-lg">
     <h5 class="mb-2 flex items-center text-xl text-gray-900 dark:text-white">
         Order #{{ '%06d'|format(result.id) }}
         <a href="{{ path('app_order_lock_toggle_status', {id: result.id}) }}"
            data-turbo-frame="body"
            data-turbo-prefetch="false"
-           class="ms-3 flex items-center text-base text-gray-500 dark:text-gray-400 hover:text-yellow-600 dark:hover:text-yellow-300"
+           class="flex items-center text-base text-gray-500 ms-3 hover:text-yellow-600 dark:text-gray-400 dark:hover:text-yellow-300"
         >
             {% if result.orderLock is not null %}
-                <twig:ux:icon name="flowbite:lock-solid" class="w-4 me-1" />
+                <twig:ux:icon name="flowbite:lock-solid" class="w-4 me-1"/>
                 <span class="text-sm">{{ result.orderLock.fullName }}</span>
             {% else %}
-                <twig:ux:icon name="flowbite:lock-open-solid" class="w-4 me-1.5" />
+                <twig:ux:icon name="flowbite:lock-open-solid" class="w-4 me-1.5"/>
             {% endif %}
         </a>
     </h5>
     <div class="flex items-center justify-between">
-        <p class="me-10 text-sm">
+        <p class="text-sm me-10">
             {{ order.createdAt|date('jS M Y H:i') }}
             {% if order.customerOrderRef is not null %}
-                - {{ order.customerOrderRef }}
+                <span class="hidden md:inline"> - {{ order.customerOrderRef }}</span>
             {% endif %}
         </p>
-        <p class="flex justify-end items-center">
+        <p class="flex items-center justify-end">
             {% if order.allowEdit %}
                 <a href="{{ path('app_order_process', {id: result.id}) }}"
                    data-turbo-frame="body"
                    data-turbo-prefetch="false"
-                   class="py-1 text-sm text-yellow-700 dark:text-yellow-500 hover:text-yellow-500 dark:hover:text-yellow-300"
+                   class="py-1 text-sm text-yellow-700 hover:text-yellow-500 dark:text-yellow-500 dark:hover:text-yellow-300"
                 >
-                    <twig:ux:icon name="f7:wand-stars" class="w-4 me-1.5" />
+                    <twig:ux:icon name="f7:wand-stars" class="w-4 me-1.5"/>
                 </a>
             {% endif %}
             <a href="{{ path('app_order_status_log', {'id':result.id }) }}"

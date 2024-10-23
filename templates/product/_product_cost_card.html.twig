@@ -1,20 +1,23 @@
 <twig:Card editLink="{{ path('app_product_cost_edit', {id: product.id}) }}" title="Product">
-    <p class="mb-1 text-lg text-gray-900 dark:text-white">{{ product.name|u.truncate(30, '...') }}</p>
-    {% if product.hasDefaultMarkup %}
-        <p class="mb-1 text-lg font-extralight">
-            {{ product.defaultMarkup|number_format(3) }}%
-            <span class="font-normal"> mark-up</span>
-        </p>
-    {% else %}
-        <p class="font-extralight">No product mark-up</p>
-    {% endif %}
-    {% if product.hasPriceModel %}
-        <p class="font-extralight">{{ product.priceModel.getName }} price model</p>
-    {% else %}
-        <p class="font-extralight">No price model</p>
-    {% endif %}
+    <p class="mb-2 text-lg text-gray-900 line-clamp-1 dark:text-white">{{ product.name }}</p>
+    <ul class="list-inside list-disc">
+        <li>
+            {% if product.hasDefaultMarkup %}
+                {{ product.defaultMarkup|number_format(3) }}% mark-up
+            {% else %}
+                No product mark-up
+            {% endif %}
+        </li>
+        <li>
+            {% if product.hasPriceModel %}
+                {{ product.priceModel.getName }} price model
+            {% else %}
+                No product price model
+            {% endif %}
+        </li>
+    </ul>
     <div class="mt-2 flex items-center justify-between">
-        <p class="me-10 text-xs text-gray-600 dark:text-gray-500">Updated {{ product.updatedAt|ago }}</p>
+        <p class="text-xs text-gray-600 me-10 dark:text-gray-500">Updated {{ product.updatedAt|ago }}</p>
         {% if product.isActive %}
             <p class="text-green-500">Active</p>
         {% else %}

@@ -1,11 +1,9 @@
 <twig:Card title="Products">
-    <p>
-        <a href="{{ path('app_product_index', {categoryId: result.id}) }}"
-           class="font-light flex justify-start items-center dark:hover:text-white"
-           data-turbo-frame="body"
-        >
-            <span class="me-1 font-extralight">{{ result.products.count }}</span>
-            {{ result.products.count == 1 ? 'product': 'products' }} in this category
-        </a>
-    </p>
+    <a href="{{ path('app_product_index', {categoryId: result.id}) }}"
+       class="flex items-center justify-start dark:hover:text-white"
+       data-turbo-frame="body"
+    >
+        <span class="me-1">{{ result.products.count }}</span>
+        {{ result.products.count == 1 ? 'product': 'products' }} in this category
+    </a>
 </twig:Card>

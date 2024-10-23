@@ -1,10 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Order Item{% endblock %}
+{% block title %}Order Item Details{% endblock %}
 
 {% block body %}
 
-    <div class="p-3 space-y-3">
+    <div class="m-3 space-y-3">
         <ul class="w-full space-y-3">
             {{ include('order_item/_order_item_card.html.twig', {orderItem: result}) }}
         </ul>

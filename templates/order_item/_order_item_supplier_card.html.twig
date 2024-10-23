@@ -1,6 +1,6 @@
 <ul
     data-toggle-target="toggleable"
-    class="w-full space-y-3  dark:bg-gray-900/80 rounded-b-lg hidden"
+    class="hidden w-full space-y-3 last:rounded-b-lg dark:bg-gray-900/80"
 >
     {% if orderItem.outstandingQty > 0 %}
         {% for supplierProduct in orderItem.product.activeSupplierProducts %}
@@ -11,25 +11,25 @@
                data-turbo-prefetch="false"
                data-turbo-frame="body"
             >
-                <li class="p-3 dark:hover:bg-gray-800 rounded-lg">
-                    <p class="text-sm text-gray-500 dark:text-gray-500">{{ supplierProduct.supplier.name|u.truncate(30, '...', false) }}</p>
-                    <div class="flex justify-between items-center">
-                        <p class="text-xs text-gray-300 dark:text-gray-200">{{ (supplierProduct.productCode) }}</p>
-                        <p class="text-xs font-extralight">
-                            {% if supplierProduct.stock > 0 %}
+                <li class="flex items-center justify-between rounded-lg p-3 text-sm dark:hover:bg-gray-700">
+                    <div>
+                        <p class="mb-1 text-gray-500 line-clamp-1 dark:text-gray-500">{{ supplierProduct.supplier.name }}</p>
+                        <p class="text-xs">{{ (supplierProduct.productCode) }}</p>
+                    </div>
+                    <div>
+                        <p class="mb-1 text-right font-extralight text-gray-500 dark:text-white">{{ supplierProduct.cost|format_currency('GBP') }}</p>
+                        <p class="text-right text-xs">
+                            {% if supplierProduct.hasStock %}
                                 {{ supplierProduct.stock }} in stock
                             {% else %}
                                 Out of stock ({{ supplierProduct.leadTimeDays }} day lead time)
                             {% endif %}
                         </p>
-                        <p class="text-xs font-extralight">{{ supplierProduct.cost|format_currency('GBP') }}</p>
                     </div>
                 </li>
             </a>
         {% else %}
-            <p class="pt-2 p-3 text-sm text-center text-gray-500 dark:text-gray-500">No suppliers found</p>
+            <p class="p-3 pt-2 text-center text-sm text-gray-500 dark:text-gray-500">No suppliers found</p>
         {% endfor %}
-    {% else %}
-        <p class="pt-2 p-3 text-sm text-center text-gray-500 dark:text-gray-500">Items already sourced</p>
     {% endif %}
 </ul>

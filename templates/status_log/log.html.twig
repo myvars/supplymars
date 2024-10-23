@@ -5,7 +5,7 @@
 {% block body %}
 
     <twig:Dialog title="Status Log">
-        <ol class="relative text-gray-500 border-s border-gray-200 dark:border-gray-700 dark:text-gray-400">
+        <ol class="relative border-gray-200 text-gray-500 border-s dark:border-gray-700 dark:text-gray-400">
             <li class="mb-10 ms-6">
                 <span
                     class="absolute flex items-center justify-center w-8 h-8 bg-{{ colourScheme | default('gray') }}-700 rounded-full -start-4 ring-4 ring-white dark:ring-gray-800 dark:bg-{{ colourScheme | default('gray') }}-700">
@@ -15,14 +15,14 @@
                 <p class="text-sm font-extralight text-gray-400 dark:text-gray-400">{{ result.createdAt|date('jS M Y H:i') }}</p>
             </li>
             {% for status in statusLog %}
-                <li class="mb-10 last:mb-0 ms-6">
+                <li class="mb-10 ms-6 last:mb-0">
                     <span
-                        class="absolute flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full -start-4 ring-4 ring-white dark:ring-gray-800 dark:bg-gray-700">
+                        class="absolute flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 ring-4 ring-white -start-4 dark:bg-gray-700 dark:ring-gray-800">
                         <twig:StatusIcon type="{{ status.status|lower }}"/>
                     </span>
                     <h3 class="font-medium leading-tight mb-0.5">
                         {{ status.status|title }}
-                        <span class="ms-0.5 text-xs font-extralight text-gray-500 dark:text-gray-500">
+                        <span class="text-xs font-extralight text-gray-500 ms-0.5 dark:text-gray-500">
                             after {{ result.createdAt|date_diff_seconds(status.eventTimestamp)|duration }}
                         </span>
                     </h3>

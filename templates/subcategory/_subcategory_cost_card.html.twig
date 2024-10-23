@@ -1,20 +1,23 @@
 <twig:Card editLink="{{ path('app_product_cost_subcategory_edit', {'id': subcategory.id }) }}" title="Subcategory">
-    <p class="mb-1 text-lg text-gray-900 dark:text-white">{{ subcategory.name|u.truncate(30, '...') }}</p>
-    {% if subcategory.hasDefaultMarkup %}
-    <p class="mb-1 text-lg font-extralight">
-        {{ subcategory.defaultMarkup|number_format(3) }}%
-        <span class="text-sm font-normal"> mark-up</span>
-    </p>
-{% else %}
-    <p class="font-extralight">No subcategory mark-up
-        {% endif %}
-        {% if subcategory.hasPriceModel %}
-    <p class="font-extralight">{{ subcategory.priceModel.getName }} price model</p>
-{% else %}
-    <p class="font-extralight">No price model</p>
-    {% endif %}
+    <p class="mb-2 text-lg text-gray-900 line-clamp-1 dark:text-white">{{ subcategory.name }}</p>
+    <ul class="list-inside list-disc">
+        <li>
+            {% if subcategory.hasDefaultMarkup %}
+                {{ subcategory.defaultMarkup|number_format(3) }}% mark-up
+            {% else %}
+                No subcategory mark-up
+            {% endif %}
+        </li>
+        <li>
+            {% if subcategory.hasPriceModel %}
+                {{ subcategory.priceModel.getName }} price model
+            {% else %}
+                No subcategory price model
+            {% endif %}
+        </li>
+    </ul>
     <div class="mt-2 flex items-center justify-between">
-        <p class="me-10 text-xs text-gray-600 dark:text-gray-500">Updated {{ subcategory.updatedAt|ago }}</p>
+        <p class="text-xs text-gray-600 me-10 dark:text-gray-500">Updated {{ subcategory.updatedAt|ago }}</p>
         {% if subcategory.isActive %}
             <p class="text-green-500">Active</p>
         {% else %}

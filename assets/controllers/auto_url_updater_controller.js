@@ -10,7 +10,6 @@ export default class extends Controller {
 
         if (newUrl) {
             history.replaceState(history.state, '', newUrl); // Update the URL without navigation
-            console.log("URL updated to: ", newUrl);
         }
     }
 }

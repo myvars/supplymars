@@ -1,11 +1,9 @@
 <twig:Card title="Orders">
-    <p>
-        <a href="{{ path('app_order_index', {customerId: result.id}) }}"
-           class="font-light flex justify-start items-center dark:hover:text-white"
-           data-turbo-frame="body"
-        >
-            <span class="me-1 font-extralight">{{ result.customerOrders.count }}</span>
-            {{ result.customerOrders.count == 1 ? 'order': 'orders' }} from this customer
-        </a>
-    </p>
+    <a href="{{ path('app_order_index', {customerId: result.id}) }}"
+       class="flex items-center justify-start dark:hover:text-white"
+       data-turbo-frame="body"
+    >
+        <span class="me-1">{{ result.customerOrders.count }}</span>
+        {{ result.customerOrders.count == 1 ? 'order': 'orders' }} from this customer
+    </a>
 </twig:Card>

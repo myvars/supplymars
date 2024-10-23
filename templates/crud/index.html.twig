@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ section }} index{% endblock %}
+{% block title %}{{ section }} Search{% endblock %}
 
 {% block body %}
     <twig:Search
@@ -25,7 +25,7 @@
             <twig:Button
                 tag="a"
                 href="{{ path('app_'~section|lower|u.snake~'_new') }}"
-                class="flex items-center space-x-1 font-bold"
+                class="flex items-center font-bold space-x-1"
                 data-turbo-frame="modal"
             >
                 <twig:ux:icon name="flowbite:circle-plus-outline" class="w-5"/>

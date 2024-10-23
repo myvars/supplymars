@@ -1,12 +1,14 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Subcategory{% endblock %}
+{% block title %}Subcategory Details{% endblock %}
 
 {% block body %}
 
-    <div class="p-3 space-y-3">
+    <div class="m-3 space-y-3">
         {{ include('subcategory/_subcategory_card.html.twig', {subcategory: result}) }}
-        {{ include('subcategory/_subcategory_products_card.html.twig', {subcategory: result}) }}
+        {% if result.products.count > 0 %}
+            {{ include('subcategory/_subcategory_products_card.html.twig', {subcategory: result}) }}
+        {% endif %}
     </div>
 
 {% endblock %}

@@ -2,42 +2,32 @@ import { Controller } from '@hotwired/stimulus';
 import { Drawer } from 'flowbite';
 
 export default class extends Controller {
-
     static values = {
         drawerId: String,
     };
 
     connect() {
-
         const $targetEl = document.getElementById(this.drawerIdValue);
 
         const options = {
             placement: 'left',
             backdrop: true,
             bodyScrolling: false,
-            edge: false,
-            edgeOffset: '',
-            backdropClasses:
-                'bg-gray-900/50 dark:bg-gray-900/80 fixed inset-0 z-30',
+            backdropClasses: 'bg-gray-900/50 dark:bg-gray-900/80 fixed inset-0 z-30',
             onHide: () => {
-//                console.log('drawer is hidden');
+                console.log('Drawer is hidden');
             },
             onShow: () => {
-//                console.log('drawer is shown');
+                console.log('Drawer is shown');
             },
             onToggle: () => {
-//                console.log('drawer has been toggled');
+                console.log('Drawer has been toggled');
             },
         };
 
-        // instance options object
-        const instanceOptions = {
-            id: this.drawerIdValue,
-            override: true
-        };
-
-        if (this.drawer === undefined) {
-            this.drawer = new Drawer($targetEl, options, instanceOptions);
+        // Initialize the Drawer only if it hasn't been initialized yet
+        if (!this.drawer) {
+            this.drawer = new Drawer($targetEl, options);
         }
     }
 

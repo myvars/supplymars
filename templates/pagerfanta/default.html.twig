@@ -34,7 +34,10 @@
         bg-white text-gray-500 border-gray-300 hover:bg-gray-100 hover:text-gray-700
         dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700 dark:hover:bg-gray-700 dark:hover:text-white
         transition ease-in-out duration-150"
-    >{{- block('previous_page_message') -}}</a>
+    >
+        <span class="hidden md:inline">Previous</span>
+        <span class="md:hidden">&lt</span>
+    </a>
 {%- endblock previous_page_link -%}
 
 {%- block previous_page_link_disabled -%}
@@ -43,7 +46,10 @@
             bg-white text-gray-700 border-gray-300
             dark:bg-gray-800 dark:text-gray-600 dark:border-gray-700
             cursor-default"
-        >{{- block('previous_page_message') -}}</span>
+        >
+        <span class="hidden md:inline">Previous</span>
+        <span class="md:hidden">&lt</span>
+        </span>
     </span>
 {%- endblock previous_page_link_disabled -%}
 
@@ -55,7 +61,10 @@
         bg-white text-gray-500 border-gray-300 hover:bg-gray-100 hover:text-gray-700
         dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700 dark:hover:bg-gray-700 dark:hover:text-white
         transition ease-in-out duration-150"
-    >{{- block('next_page_message') -}}</a>
+    >
+        <span class="hidden md:inline">Next</span>
+        <span class="md:hidden">&gt</span>
+    </a>
 {%- endblock next_page_link -%}
 
 {%- block next_page_link_disabled -%}
@@ -63,7 +72,10 @@
         <span class="flex items-center justify-center text-sm h-full py-2 px-3 ml-0 rounded-r-lg border
         bg-white text-gray-700 border-gray-300 dark:bg-gray-800 dark:text-gray-600 dark:border-gray-700
         cursor-default"
-        >{{- block('next_page_message') -}}</span>
+        >
+        <span class="hidden md:inline">Next</span>
+        <span class="md:hidden">&gt</span>
+        </span>
     </span>
 {%- endblock next_page_link_disabled -%}
 
@@ -76,3 +88,4 @@
         >&hellip;</span>
     </span>
 {%- endblock ellipsis -%}
+

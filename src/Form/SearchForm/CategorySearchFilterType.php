@@ -4,8 +4,10 @@ namespace App\Form\SearchForm;
 
 use App\DTO\SearchDto\CategorySearchDto;
 use App\Entity\User;
+use App\Entity\VatRate;
 use App\Enum\PriceModel;
 use App\Form\DataTransformer\IdToManagerTransformer;
+use App\Form\DataTransformer\IdToVatRateTransformer;
 use App\Form\DataTransformer\stringToPriceModelTransformer;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -19,6 +21,7 @@ class CategorySearchFilterType extends AbstractType
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
+        private readonly IdToVatRateTransformer $idToVatRateTransformer,
         private readonly IdToManagerTransformer $idToManagerTransformer,
         private readonly stringToPriceModelTransformer $stringToPriceModelTransformer
     ) {
@@ -27,6 +30,12 @@ class CategorySearchFilterType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+            ->add('vatRateId', EntityType::class, [
+                'label' => 'Vat Rate',
+                'class' => VatRate::class,
+                'choice_label' => 'name',
+                'placeholder' => 'Any Vat Rate',
+            ])
             ->add('priceModel', EnumType::class, [
                 'class' => PriceModel::class,
                 'choice_label' => fn (PriceModel $priceModel): string => $priceModel->getName(),
@@ -47,6 +56,8 @@ class CategorySearchFilterType extends AbstractType
             ->add('limit', HiddenType::class)
         ;
 
+        $builder->get('vatRateId')
+            ->addModelTransformer($this->idToVatRateTransformer);
         $builder->get('priceModel')
             ->addModelTransformer($this->stringToPriceModelTransformer);
         $builder->get('managerId')

@@ -1,41 +1,29 @@
-{% props
-    width = 'w-full',
-    colour = 'gray',
-    borderColour = null,
-    editLink = null,
-    showLink = null,
-    editIcon = 'mynaui:edit-one',
-    title = null,
-    padding = 'p-3', %}
-
 <div {{ attributes.defaults({
-    'class': 'relative h-full '~width~' bg-white border border-'~(borderColour ? borderColour : colour)~
-    '-200 rounded-lg shadow dark:bg-'~colour~'-800 dark:border-'~(borderColour ? borderColour : colour)~'-700',
+    'class': width~' relative h-full rounded-lg '~this.getBackgroundClasses~' '~this.getBorderClasses,
 }) }}
 >
     {% if editLink %}
         <a href="{{ editLink }}"
-           class="absolute -top-1.5 -right-1 p-1.5 bg-white text-yellow-500 border
-           border-{{ colour }}-600 rounded-full shadow-lg dark:bg-{{ colour }}-700 dark:hover:bg-{{ colour }}-600"
+           class="absolute z-10 -top-1.5 -right-1 p-1.5 text-yellow-500 rounded-full shadow-lg {{ this.getEditLinkClasses }}"
            data-turbo-frame="modal"
         >
-            <twig:ux:icon name="{{ editIcon }}" class="w-6 h-6 p-0.5"/>
+            <twig:ux:icon name="{{ editIcon }}" class="h-6 w-6 p-0.5"/>
         </a>
     {% endif %}
     {% block cardImage %}{% endblock %}
 
     {% if showLink %}
-    <div class="rounded-lg dark:bg-gray-800 dark:hover:bg-gray-700">
-        <a href="{{ showLink }}" data-turbo-frame="body">
-            {% endif %}
+    <a href="{{ showLink }}" data-turbo-frame="body" >
+        <div class="relative rounded-lg transition-colors {{ this.getBackgroundClasses }} dark:hover:bg-gray-600">
+    {% endif %}
             <div class="{{ padding }} text-sm text-gray-500 dark:text-gray-400">
                 {% if title %}
                     <p class="mb-1 text-gray-600 dark:text-gray-500">{{ title }}</p>
                 {% endif %}
                 {% block content %}{% endblock %}
             </div>
-            {% if showLink %}
-        </a>
-    </div>
+    {% if showLink %}
+        </div>
+    </a>
     {% endif %}
 </div>

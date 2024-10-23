@@ -31,14 +31,14 @@ liip_imagine:
         medium_thumbnail:
             filters:
                 thumbnail:
-                    size: [ 150, 150 ]
+                    size: [ 130, 130 ]
                     mode: outbound
                     allow_upscale: true
 
         large_thumbnail:
             filters:
                 thumbnail:
-                    size: [ 200, 200 ]
+                    size: [ 230, 230 ]
                     mode: outbound
                     allow_upscale: true
         medium_image:

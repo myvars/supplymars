@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ section }} index{% endblock %}
+{% block title %}Customer Search{% endblock %}
 
 {% block body %}
     <twig:Search
@@ -23,16 +23,16 @@
                 editLink="{{ path('app_customer_edit', {'id': result.id }) }}"
                 showLink="{{ path('app_customer_show', {'id': result.id }) }}"
             >
-                <p class="mb-1 items-center text-lg text-gray-900 dark:text-white">
-                    {{ result.fullName|u.truncate(30, '...') }}
+                <p class="mb-1 text-lg text-gray-900 line-clamp-1 dark:text-white">
+                    {{ result.fullName }}
                     {% if result.isAdmin %}
                         <span
-                            class="ms-2 text-base font-extralight text-red-500 dark:text-red-400">(Administrator)
+                            class="text-base font-extralight text-red-500 ms-1 dark:text-red-400">(Administrator)
                         </span>
                     {% endif %}
                 </p>
-                <p class="flex justify-between items-center">
-                    <span class="me-1 text-lg font-extralight">{{ result.email }}</span>
+                <p class="mt-1 flex items-center justify-between">
+                    <span class="text-base font-extralight me-1">{{ result.email }}</span>
                     {% if result.isVerified %}
                         <span class="text-green-500">Verified</span>
                     {% else %}

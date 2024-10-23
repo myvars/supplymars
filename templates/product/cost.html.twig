@@ -6,22 +6,22 @@
 
     {{ include('product/_navigation.html.twig', {product: result}) }}
 
-    <div class="p-3 space-y-3 text-sm text-gray-500 dark:text-gray-400">
+    <div class="m-3 text-sm text-gray-500 space-y-3 dark:text-gray-400">
         <twig:Card padding="p-0">
             {% if result.isValidProduct %}
-                <section class="rounded-lg bg-white dark:bg-gray-900">
-                    <div class="p-3 flex justify-around text-center font-light">
-                        <div>
+                <section class="m-1 rounded-lg bg-white dark:bg-gray-900">
+                    <div class="flex flex-wrap justify-around text-center font-light">
+                        <div class="p-3">
                             <p class="mb-2">Cost Price</p>
                             <p class="text-3xl font-bold text-gray-600 dark:text-gray-500">
                                 {{ result.cost|format_currency('GBP') }}</p>
                         </div>
-                        <div>
+                        <div class="p-3">
                             <p class="mb-2">Sell Price</p>
                             <p class="text-3xl font-bold text-gray-900 dark:text-white">
                                 {{ result.sellPrice|format_currency('GBP') }}</p>
                         </div>
-                        <div>
+                        <div class="p-3">
                             <p class="mb-2">Sell Price Inc VAT</p>
                             <p class="text-3xl font-bold text-gray-900 dark:text-white">
                                 {{ result.sellPriceIncVat|format_currency('GBP') }}</p>
@@ -40,16 +40,14 @@
                 </section>
             {% endif %}
             {% if not result.isValidProduct %}
-                <section class="bg-white dark:bg-gray-900 border border-gray-700 rounded-lg">
-                    <div class="p-3 text-center">
-                        <p class="mb-2 text-2xl font-light text-red-400 dark:text-red-400">Incomplete Product</p>
-                        {% if not result.hasActiveProductSource %}
-                            <p class="font-light">No Active Supplier</p>
-                        {% else %}
-                            <p class="font-light">Inactive Category, Subcategory or Product</p>
-                        {% endif %}
-                    </div>
-                </section>
+                <div class="m-1 rounded-lg bg-white p-3 text-center font-light dark:bg-gray-900">
+                    <p class="mb-2 text-2xl text-red-400 dark:text-red-400">Incomplete Product</p>
+                    {% if not result.hasActiveProductSource %}
+                        <p>No Active Supplier</p>
+                    {% else %}
+                        <p>Inactive Category, Subcategory or Product</p>
+                    {% endif %}
+                </div>
             {% endif %}
         </twig:Card>
         <div class="flex flex-wrap justify-center gap-3">

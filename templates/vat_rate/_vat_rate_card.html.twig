@@ -1,12 +1,8 @@
 <twig:Card editLink="{{ path('app_vat_rate_edit', { id: vatRate.id }) }}" title="VAT Rate">
-    <h5 class="text-xl text-gray-900 dark:text-white">{{ vatRate.name|u.truncate(30, '...') }}</h5>
-    <p class="mb-3 text-lg font-extralight">
+    <p class="mb-2 text-xl text-gray-900 line-clamp-1 dark:text-white">{{ vatRate.name }}</p>
+    <p class="text-lg font-extralight">
         {{ vatRate.rate|number_format(2) }}%
-        <span class="text-sm font-normal"> rate</span>
+        <span class="text-sm"> rate</span>
     </p>
-    <p class="me-10 text-xs text-gray-600 dark:text-gray-500">Updated {{ vatRate.updatedAt|ago }}</p>
+    <p class="mt-2 text-xs text-gray-600 me-10 dark:text-gray-500">Updated {{ vatRate.updatedAt|ago }}</p>
 </twig:Card>
-
-
-
-

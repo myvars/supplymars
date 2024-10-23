@@ -1,8 +1,8 @@
 <twig:Card>
-    <div class="w-full flex justify-between items-center">
-        <p class="text-gray-500 dark:text-gray-400">
+    <div class="flex w-full items-center justify-between">
+        <p class="text-gray-500 dark:text-gray-300">
             {{ order.lineCount }} {% if order.lineCount == 1 %}line{% else %}lines{% endif %}
-            <span class="ms-1 text-grey-600 dark:text-gray-500">
+            <span class="ms-1 text-grey-600 dark:text-gray-400">
                 {{ order.itemCount }} {% if order.itemCount == 1 %}item{% else %}items{% endif %}
             </span>
         </p>
@@ -10,7 +10,7 @@
             <twig:Button
                 tag="a"
                 href="{{ path('app_order_item_new', {id: order.id}) }}"
-                class="flex items-center space-x-1 font-bold"
+                class="flex items-center font-bold space-x-1"
                 data-turbo-frame="modal"
             >
                 <twig:ux:icon name="flowbite:circle-plus-outline" class="w-4"/>

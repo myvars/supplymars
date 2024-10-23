@@ -98,6 +98,7 @@ class Product
     private bool $isActive = false;
 
     #[ORM\OneToMany(targetEntity: SupplierProduct::class, mappedBy: 'product')]
+    #[ORM\OrderBy(['cost' => 'ASC'])]
     private Collection $supplierProducts;
 
     #[ORM\OneToMany(targetEntity: ProductImage::class, mappedBy: 'product')]

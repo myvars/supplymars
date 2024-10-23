@@ -1,10 +1,10 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Order{% endblock %}
+{% block title %}Purchase Order Details{% endblock %}
 
 {% block body %}
 
-    <div class="p-3 space-y-3">
+    <div class="m-3 space-y-3">
         {{ include('purchase_order/_po_card.html.twig', {purchaseOrder: result}) }}
         {{ include('purchase_order/_po_summary_card.html.twig', {purchaseOrder: result}) }}
         {{ include('purchase_order/_po_items_card.html.twig', {purchaseOrder: result}) }}
