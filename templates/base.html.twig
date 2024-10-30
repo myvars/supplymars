@@ -44,11 +44,11 @@
                 <div class="flex items-center space-x-3 rtl:space-x-reverse md:space-x-0 md:order-2">
                     {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
                         <button type="button"
-                                class="flex rounded-full bg-gray-800 text-sm focus:ring-4 focus:ring-gray-300 md:me-0 dark:focus:ring-gray-600"
+                                class="flex rounded-full text-sm md:me-0"
                                 id="user-menu-button" aria-expanded="false" data-dropdown-toggle="user-dropdown"
                                 data-dropdown-placement="bottom">
                             <span class="sr-only">Open user menu</span>
-                            <img class="h-8 w-8 rounded-full" src="{{ asset('images/avatar.png') }}" alt="user photo">
+                            <img class="h-6 w-6" src="{{ asset('images/avatar.png') }}" alt="user photo">
                         </button>
                         <!-- Dropdown menu -->
                         <div
