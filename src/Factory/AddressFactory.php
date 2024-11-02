@@ -31,18 +31,44 @@ final class AddressFactory extends PersistentProxyObjectFactory
      */
     protected function defaults(): array|callable
     {
+        $cityData = $this->marsCity();
+
         return [
-            'city' => self::faker()->city(),
-            'country' => 'United Kingdom',
-            'county' => 'South Yorkshire',
+            'city' => $cityData['name'],
+            'country' => 'Mars Colony',
+            'county' => 'Red Zone',
             'customer' => UserFactory::new(),
-            'postCode' => self::faker()->postcode(),
+            'postCode' => $cityData['sectorCode'] . '-' . random_int(10, 50),
             'street' => self::faker()->streetAddress(),
             'phoneNumber' => self::faker()->phoneNumber(),
             'email' => self::faker()->email(),
             'fullName' => self::faker()->name(),
             'companyName' => random_int(1,5) === 1 ? self::faker()->company() : null,
         ];
+    }
+
+    // Helper function to randomly select a Mars city and its sector code
+    protected function marsCity(): array
+    {
+        $marsCities = [
+            ['name' => 'Olympia', 'sectorCode' => 'OM'],
+            ['name' => 'Vallis', 'sectorCode' => 'VM'],
+            ['name' => 'Gale', 'sectorCode' => 'GC'],
+            ['name' => 'Elysium', 'sectorCode' => 'EP'],
+            ['name' => 'Red Dune', 'sectorCode' => 'RD'],
+            ['name' => 'Crimson', 'sectorCode' => 'CP'],
+            ['name' => 'Ironhold', 'sectorCode' => 'ID'],
+            ['name' => 'Arcadia', 'sectorCode' => 'AP'],
+            ['name' => 'Amazonis', 'sectorCode' => 'AS'],
+            ['name' => 'Hellas', 'sectorCode' => 'HB'],
+            ['name' => 'Isidis', 'sectorCode' => 'IP'],
+            ['name' => 'Noctis', 'sectorCode' => 'NL'],
+            ['name' => 'Cydonia', 'sectorCode' => 'CY'],
+            ['name' => 'Tharsis', 'sectorCode' => 'TH'],
+            ['name' => 'Utopia', 'sectorCode' => 'UP'],
+        ];
+
+        return $marsCities[array_rand($marsCities)];
     }
 
     /**
