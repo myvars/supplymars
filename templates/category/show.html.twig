@@ -12,6 +12,7 @@
         {% if result.subcategories.count > 0 %}
             {{ include('category/_subcategories_card.html.twig', {subcategories: result.subcategories}) }}
         {% endif %}
+        {{ include('category/_category_product_sales_card.html.twig', {category: result}) }}
     </div>
 
 {% endblock %}

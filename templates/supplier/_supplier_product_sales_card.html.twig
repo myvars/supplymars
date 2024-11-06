@@ -1,0 +1,7 @@
+<twig:Card colour="{{ supplier.colourScheme }}">
+    <turbo-frame
+        id="sales"
+        src="{{ path('app_product_sales_list', { supplier_id: result.id }) }}"
+        refresh="morph"
+    ></turbo-frame>
+</twig:Card>

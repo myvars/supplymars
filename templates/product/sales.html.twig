@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Product Sales{% endblock %}
+
+{% block body %}
+
+    {{ include('product/_navigation.html.twig', {product: result}) }}
+
+    <turbo-frame
+        id="sales"
+        src="{{ path('app_product_sales_list', { product_id: result.id }) }}"
+        data-turbo-action="advance"
+        refresh="morph"
+    ></turbo-frame>
+
+{% endblock %}

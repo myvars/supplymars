@@ -9,6 +9,7 @@
         {% if result.products.count > 0 %}
             {{ include('subcategory/_subcategory_products_card.html.twig', {subcategory: result}) }}
         {% endif %}
+        {{ include('subcategory/_subcategory_product_sales_card.html.twig', {subcategory: result}) }}
     </div>
 
 {% endblock %}

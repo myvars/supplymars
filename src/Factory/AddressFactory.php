@@ -48,7 +48,7 @@ final class AddressFactory extends PersistentProxyObjectFactory
     }
 
     // Helper function to randomly select a Mars city and its sector code
-    protected function marsCity(): array
+    private function marsCity(): array
     {
         $marsCities = [
             ['name' => 'Olympia', 'sectorCode' => 'OM'],

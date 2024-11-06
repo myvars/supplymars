@@ -9,6 +9,7 @@
         {% if result.supplierProducts.count > 0 %}
             {{ include('supplier/_supplier_products_card.html.twig', {supplier: result}) }}
         {% endif %}
+        {{ include('supplier/_supplier_product_sales_card.html.twig', {supplier: result}) }}
     </div>
 
 {% endblock %}
