@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\DTO\SearchDto\SearchInterface;
 use App\Entity\Product;
+use App\Enum\PurchaseOrderStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;

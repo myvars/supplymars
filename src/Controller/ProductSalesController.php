@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\DTO\ProductSalesFilterDto;
 use App\Form\ProductSalesFilterType;
+use App\Repository\ProductSalesRepository;
 use App\Repository\PurchaseOrderItemRepository;
 use App\Service\Crud\CrudHandler;
 use App\Service\Sales\SalesFilter;
@@ -22,7 +23,7 @@ class ProductSalesController extends AbstractController
 
     #[Route('/best', name: 'app_product_sales_list', methods: ['GET'])]
     public function best(
-        PurchaseOrderItemRepository $repository,
+        ProductSalesRepository $repository,
         #[MapQueryString] ProductSalesFilterDto $dto = new ProductSalesFilterDto()
     ): Response {
 
