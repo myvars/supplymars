@@ -1,0 +1,11 @@
+<div class="flex justify-end text-xs uppercase text-gray-700 space-x-2 dark:text-gray-400">
+    {% set durations = { 'today': 'TODAY', 'last7': 'LAST 7', 'last30': 'LAST 30', 'mtd': 'MTD' } %}
+    {% for key, label in durations %}
+        <a href="{{ path(app.current_route, app.request.query.all|merge({'duration': key})) }}"
+           class="hover:text-gray-400 dark:hover:text-gray-300 {{ app.request.query.get('duration') == key or (key == 'last30' and not app.request.query.get('duration')) ? 'text-gray-400 dark:text-gray-300' : '' }}"
+        >
+            {{ label }}
+        </a>
+        {% if not loop.last %}<span>|</span>{% endif %}
+    {% endfor %}
+</div>

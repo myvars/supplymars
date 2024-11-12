@@ -289,6 +289,19 @@ class Product
         return $this;
     }
 
+    public function getDefaultOwner(): ?User
+    {
+        if ($this->getOwner() instanceof User) {
+            return $this->getOwner();
+        }
+
+        if ($this->getSubcategory()->getOwner() instanceof User) {
+            return $this->getSubcategory()->getOwner();
+        }
+
+        return $this->getCategory()->getOwner();
+    }
+
     public function getOwner(): ?User
     {
         return $this->owner;

@@ -2,10 +2,10 @@
 
 namespace App\Repository;
 
-use App\DTO\ProductSalesFilterDto;
 use App\Entity\PurchaseOrderItem;
 use App\Entity\Supplier;
 use App\Enum\PurchaseOrderStatus;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -43,7 +43,7 @@ class PurchaseOrderItemRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function calculateProductSales(\DateTime $startDate, \DateTime $endDate): array
+    public function calculateProductSales(DateTime $startDate, DateTime $endDate): array
     {
         return $this->createQueryBuilder('poi')
             ->select('p.id AS productId, s.id AS supplierId')

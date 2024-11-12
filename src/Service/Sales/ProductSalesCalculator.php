@@ -15,17 +15,17 @@ class ProductSalesCalculator
     {
     }
 
-    public function calculateForDate(string $date): void
+    public function process(string $date): void
     {
-        $this->removeExistingProductSales($date);
-
         $sales = $this->getPurchaseOrderItemSales($date);
+
+        $this->removeExistingProductSales($date);
 
         foreach ($sales as $sale) {
             $product = $this->entityManager->getRepository(Product::class)->find($sale['productId']);
             $supplier = $this->entityManager->getRepository(Supplier::class)->find($sale['supplierId']);
 
-            if ($product) {
+            if ($product !== null) {
                 $productSales = ProductSales::create(
                     $product,
                     $supplier,
@@ -37,6 +37,7 @@ class ProductSalesCalculator
                 $this->entityManager->persist($productSales);
             }
         }
+
         $this->entityManager->flush();
     }
 
@@ -47,16 +48,8 @@ class ProductSalesCalculator
             ->calculateProductSales(new DateTime($date), new DateTime($date . ' 23:59:59'));
     }
 
-    public function getProductSalesByDate(string $date): array
-    {
-        return $this->entityManager->getRepository(ProductSales::class)->findBy(['dateString' => $date]);
-    }
-
     private function removeExistingProductSales(string $date): void
     {
-        foreach ($this->getProductSalesByDate($date) as $productSale) {
-            $this->entityManager->remove($productSale);
-        }
-        $this->entityManager->flush();
+        $this->entityManager->getRepository(ProductSales::class)->deleteByDate($date);
     }
 }

@@ -1,0 +1,18 @@
+<div
+    class="mb-3 flex flex-wrap justify-around rounded-lg bg-white text-center font-light dark:border-gray-700 dark:bg-gray-900">
+    <div class="px-6 py-4">
+        <p class="mb-2">Sales Qty</p>
+        <p class="text-xl font-bold text-gray-900 dark:text-white">
+            {{ summary.salesQty }}</p>
+    </div>
+    <div class="px-6 py-4">
+        <p class="mb-2">Sales Value</p>
+        <p class="text-xl font-bold text-gray-900 dark:text-white">
+            {{ summary.salesValue|format_currency('GBP', { max_fraction_digit:0 }) }}</p>
+    </div>
+    <div class="px-6 py-4">
+        <p class="mb-2">Sales Profit</p>
+        <p class="text-xl font-bold text-gray-900 dark:text-white">
+            {{ summary.salesProfit|format_currency('GBP', { max_fraction_digit:0 }) }}</p>
+    </div>
+</div>

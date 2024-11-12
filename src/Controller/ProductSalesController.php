@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\DTO\ProductSalesFilterDto;
 use App\Form\ProductSalesFilterType;
 use App\Repository\ProductSalesRepository;
-use App\Repository\PurchaseOrderItemRepository;
+use App\Repository\ProductSalesSummaryRepository;
 use App\Service\Crud\CrudHandler;
 use App\Service\Sales\SalesFilter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,12 +23,14 @@ class ProductSalesController extends AbstractController
 
     #[Route('/best', name: 'app_product_sales_list', methods: ['GET'])]
     public function best(
-        ProductSalesRepository $repository,
+        ProductSalesRepository $salesRepository,
+        ProductSalesSummaryRepository $summaryRepository,
         #[MapQueryString] ProductSalesFilterDto $dto = new ProductSalesFilterDto()
     ): Response {
 
         return $this->render('sales/sales_list.html.twig', [
-            'results' => $repository->findBySalesDto($dto)
+            'summary' => $summaryRepository->findProductSalesSummary($dto),
+            'results' => $salesRepository->findProductSalesBySalesDto($dto),
         ]);
     }
 

@@ -8,9 +8,9 @@ final class ProductSalesFilterDto
 {
     public const TEMPLATE = 'common/sales_filter.html.twig';
 
-    public const SORT_DEFAULT = 'salesQuantity';
+    public const SORT_DEFAULT = 'salesQty';
 
-    public const SORT_OPTIONS = ['salesQuantity', 'salesValue', 'salesProfit'];
+    public const SORT_OPTIONS = ['salesQty', 'salesValue', 'salesProfit'];
 
     public const SORT_DIRECTION_DEFAULT = 'DESC';
 
@@ -24,7 +24,7 @@ final class ProductSalesFilterDto
 
     private ?string $sort = null;
 
-    private ?string $duration = null;
+    private string $duration = self::DURATION_DEFAULT;
 
     private ?string $sortDirection = null;
 
@@ -215,5 +215,29 @@ final class ProductSalesFilterDto
         $this->endDate = $endDate;
 
         return $this;
+    }
+
+    public function getSingleSalesType(): ?array
+    {
+        $identifiers = [
+            'product' => $this->productId,
+            'category' => $this->categoryId,
+            'subcategory' => $this->subcategoryId,
+            'manufacturer' => $this->manufacturerId,
+            'supplier' => $this->supplierId,
+        ];
+
+        // Filter to get only non-null values
+        $nonEmptyIdentifiers = array_filter($identifiers, fn($value): bool => !is_null($value));
+
+        if (count($nonEmptyIdentifiers) === 1) {
+            $salesType = array_key_first($nonEmptyIdentifiers);
+            return [
+                'salesType' => $salesType,
+                'salesTypeId' => $nonEmptyIdentifiers[$salesType],
+            ];
+        }
+
+        return null;
     }
 }

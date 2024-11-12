@@ -4,8 +4,11 @@ namespace App\Repository;
 
 use App\DTO\ProductSalesFilterDto;
 use App\Entity\ProductSales;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use InvalidArgumentException;
 
 /**
  * @extends ServiceEntityRepository<ProductSales>
@@ -17,18 +20,24 @@ class ProductSalesRepository extends ServiceEntityRepository
         parent::__construct($registry, ProductSales::class);
     }
 
-    public function findBySalesDto(ProductSalesFilterDto $salesFilterDto): array
+    public function findProductSalesBySalesDto(ProductSalesFilterDto $salesFilterDto): array
     {
         $sort = $salesFilterDto->getSort() ?: $salesFilterDto::SORT_DEFAULT;
-        $duration = $salesFilterDto->getDuration() ?: $salesFilterDto::DURATION_DEFAULT;
         $sortDirection = $salesFilterDto->getSortDirection() ?: $salesFilterDto::SORT_DIRECTION_DEFAULT;
+        $startDate = $this->getDurationStartDate($salesFilterDto->getDuration());
+        $endDate = (new DateTime('+1 day'))->format('Y-m-d');
 
-        $qb = $this->createQueryBuilder('ps')
-            ->select('p.id, p.name')
-            ->addSelect('SUM(ps.salesQty) AS salesQuantity')
-            ->addSelect('SUM(ps.salesValue) AS salesValue')
-            ->addSelect('SUM(ps.salesValue - ps.salesCost) AS salesProfit')
-            ->join('ps.product' , 'p');
+        if ($salesFilterDto->getStartDate()) {
+            $startDate = DateTime::createFromFormat('Y-m-d', $salesFilterDto->getStartDate())
+                ->format('Y-m-d');
+        }
+
+        if ($salesFilterDto->getEndDate()) {
+            $endDate = DateTime::createFromFormat('Y-m-d', $salesFilterDto->getEndDate())
+                ->format('Y-m-d');
+        }
+
+        $qb = $this->getProductSalesQuery($startDate, $endDate)->addSelect('p.id, p.name');
 
         if ($salesFilterDto->getProductId()) {
             $qb->andWhere('ps.product = :productId')
@@ -55,43 +64,67 @@ class ProductSalesRepository extends ServiceEntityRepository
                 ->setParameter('supplierId', $salesFilterDto->getSupplierId());
         }
 
-        if (!$salesFilterDto->getStartDate() && !$salesFilterDto->getEndDate()) {
-            $qb->andWhere('ps.salesDate >= :startDate')
-                ->setParameter('startDate', $this->getDurationStartDate($duration));
-        }
-
-        if ($salesFilterDto->getStartDate()) {
-            $startDate = \DateTime::createFromFormat('Y-m-d', $salesFilterDto->getStartDate());
-            if ($startDate) {
-                $qb->andWhere('ps.salesDate >= :startDate')
-                    ->setParameter('startDate', $startDate->format('Y-m-d'));
-            }
-        }
-
-        if ($salesFilterDto->getEndDate()) {
-            $endDate = \DateTime::createFromFormat('Y-m-d', $salesFilterDto->getEndDate());
-            if ($endDate) {
-                $qb->andWhere('ps.salesDate <= :endDate')
-                    ->setParameter('endDate', $endDate->format('Y-m-d'));
-            }
-        }
-
         return $qb
             ->groupBy('p.id')
             ->orderBy($sort, $sortDirection)
             ->setMaxResults($salesFilterDto::LIMIT_DEFAULT)
-            ->getQuery()
-            ->getResult();
+            ->getQuery()->getResult();
+    }
+
+    public function calculateSalesBySalesType(
+        string $salesType,
+        string $startDate,
+        string $endDate,
+        string $dateString
+    ): array {
+        $qb = $this->getProductSalesQuery($startDate, $endDate)
+            ->addSelect("DATE_FORMAT(ps.salesDate, :dateString) AS dateString")
+            ->setParameter('dateString', $dateString)
+            ->groupBy('dateString, salesId');
+
+        match ($salesType) {
+            'product' => $qb->addSelect('p.id AS salesId, p.name'),
+            'category' => $qb->join('p.category', 'c')->addSelect('c.id AS salesId, c.name'),
+            'subcategory' => $qb->join('p.subcategory', 's')->addSelect('s.id AS salesId, s.name'),
+            'manufacturer' => $qb->join('p.manufacturer', 'm')->addSelect('m.id AS salesId, m.name'),
+            'supplier' => $qb->join('ps.supplier', 's')->addSelect('s.id AS salesId, s.name'),
+            default => throw new \InvalidArgumentException('Unknown entity: ' . $salesType),
+        };
+
+        return $qb->getQuery()->getResult();
+    }
+
+    private function getProductSalesQuery(string $startDate, string $endDate): QueryBuilder
+    {
+        return $this->createQueryBuilder('ps')
+            ->select('SUM(ps.salesQty) AS salesQty')
+            ->addSelect('SUM(ps.salesValue) AS salesValue')
+            ->addSelect('SUM(ps.salesCost) AS salesCost')
+            ->addSelect('SUM(ps.salesValue - ps.salesCost) AS salesProfit')
+            ->join('ps.product', 'p')
+            ->andWhere('ps.salesDate between :startDate and :endDate')
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate);
+    }
+
+    public function deleteByDate(string $date): void
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->delete()
+            ->where('p.dateString = :date')
+            ->setParameter('date', $date);
+
+        $qb->getQuery()->execute();
     }
 
     private function getDurationStartDate(string $duration): string
     {
         return match ($duration) {
-            'last30' => (new \DateTime('-30 day'))->format('Y-m-d'),
-            'last7' => (new \DateTime('-7 day'))->format('Y-m-d'),
-            'today' => (new \DateTime())->format('Y-m-d'),
-            'mtd' => (new \DateTime())->format('Y-m-01'),
-            default => throw new \InvalidArgumentException('Invalid duration'),
+            'last30' => (new DateTime('-30 day'))->format('Y-m-d'),
+            'last7' => (new DateTime('-7 day'))->format('Y-m-d'),
+            'today' => (new DateTime())->format('Y-m-d'),
+            'mtd' => (new DateTime())->format('Y-m-01'),
+            default => throw new InvalidArgumentException('Invalid duration'),
         };
     }
 }
