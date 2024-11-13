@@ -77,6 +77,9 @@ return [
         'version' => '1.3.0',
     ],
     'chart.js' => [
-        'version' => '3.9.1',
+        'version' => '4.4.6',
+    ],
+    '@kurkle/color' => [
+        'version' => '0.3.2',
     ],
 ];
