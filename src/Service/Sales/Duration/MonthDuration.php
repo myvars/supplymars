@@ -21,4 +21,9 @@ class MonthDuration implements DurationInterface
     {
         return '%Y-%m-01';
     }
+
+    public function hasDurationRange(): bool
+    {
+        return true;
+    }
 }

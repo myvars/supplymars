@@ -22,7 +22,7 @@ final class ProductSalesFilterDto
 
     private ?string $queryString = null;
 
-    private ?string $sort = null;
+    private string $sort = self::SORT_DEFAULT;
 
     private string $duration = self::DURATION_DEFAULT;
 

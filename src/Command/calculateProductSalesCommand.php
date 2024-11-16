@@ -49,7 +49,9 @@ class calculateProductSalesCommand extends Command
 
         $io->success(sprintf("Processed sales data for %d days", $dayCount));
 
-        $this->runTheProductSalesSummaryCommand($output);
+        if ($dayOffset === 0) {
+            $this->runTheProductSalesSummaryCommand($output);
+        }
 
         return Command::SUCCESS;
     }

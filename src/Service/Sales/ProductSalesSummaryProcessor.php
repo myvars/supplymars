@@ -13,12 +13,17 @@ class ProductSalesSummaryProcessor
     {
     }
 
-    public function process(string $salesType, string $duration, string $startDate, string $dateString): void
-    {
+    public function process(
+        string $salesType,
+        string $duration,
+        string $startDate,
+        string $dateString,
+        bool $durationRange
+    ): void {
         $endDate = (new DateTime('+1 day'))->format('Y-m-d');
         $sales = $this->getSales($salesType, $startDate, $endDate, $dateString);
 
-        $this->removeExistingSummary($salesType, $duration);
+        $this->removeExistingSummary($salesType, $duration, $durationRange ? $startDate : null);
 
         foreach ($sales as $sale) {
                 $productSalesSummary = ProductSalesSummary::create(
@@ -42,9 +47,9 @@ class ProductSalesSummaryProcessor
             ->calculateSalesBySalesType($salesType, $startDate, $endDate, $dateString);
     }
 
-    public function removeExistingSummary(string $salesType, string $duration): void
+    public function removeExistingSummary(string $salesType, string $duration, ?string $dateString): void
     {
         $this->entityManager->getRepository(ProductSalesSummary::class)
-            ->deleteBySalesTypeAndDuration($salesType, $duration);
+            ->deleteBySalesTypeAndDuration($salesType, $duration, $dateString);
     }
 }

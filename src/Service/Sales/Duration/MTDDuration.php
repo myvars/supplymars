@@ -17,4 +17,9 @@ class MTDDuration implements DurationInterface
     {
         return $this->getStartDate();
     }
+
+    public function hasDurationRange(): bool
+    {
+        return false;
+    }
 }

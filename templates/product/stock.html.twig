@@ -7,35 +7,9 @@
     {{ include('product/_navigation.html.twig', {product: result}) }}
 
     <div class="m-3 text-sm text-gray-500 space-y-3 dark:text-gray-400">
-        <twig:Card padding="p-0">
-            {% if result.isValidProduct %}
-                <div class="m-1 flex flex-wrap justify-around rounded-lg text-center font-light dark:bg-gray-900">
-                    <div class="m-3">
-                        <p class="mb-2">Cost Price</p>
-                        <p class="mb-2 text-3xl font-bold text-gray-600 dark:text-gray-500">
-                            {{ result.cost|format_currency('GBP') }}</p>
-                        <p class="text-gray-600 dark:text-gray-500">
-                            using {{ result.activeProductSource.supplier.name }}</p>
-                    </div>
-                    <div class="m-3">
-                        <p class="mb-2">Stock</p>
-                        <p class="mb-2 text-3xl font-bold text-gray-900 dark:text-white">{{ result.stock }}</p>
-                        <p class="text-gray-600 dark:text-gray-500">
-                            updated {{ result.activeProductSource.updatedAt|ago }}</p>
-                    </div>
-                </div>
-            {% endif %}
-            {% if not result.isValidProduct %}
-                <div class="m-1 rounded-lg bg-white p-3 text-center font-light dark:bg-gray-900">
-                    <p class="mb-2 text-2xl text-red-400 dark:text-red-400">Incomplete Product</p>
-                    {% if not result.hasActiveProductSource %}
-                        <p>No Active Supplier</p>
-                    {% else %}
-                        <p>Inactive Category, Subcategory or Product</p>
-                    {% endif %}
-                </div>
-            {% endif %}
-        </twig:Card>
+
+        {{ include('product/_product_inventory_card.html.twig', {result: result, type: 'stock'}) }}
+
         <div class="flex flex-wrap justify-center gap-3">
             {% for supplierProduct in result.supplierProducts %}
                 {{ include('supplier_product/_supplier_product_stock_card.html.twig', {

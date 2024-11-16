@@ -17,4 +17,9 @@ class Last7Duration implements DurationInterface
     {
         return $this->getStartDate();
     }
+
+    public function hasDurationRange(): bool
+    {
+        return false;
+    }
 }

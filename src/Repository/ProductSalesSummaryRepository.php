@@ -6,6 +6,7 @@ use App\DTO\ProductSalesFilterDto;
 use App\Entity\ProductSales;
 use App\Entity\ProductSalesSummary;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -26,22 +27,44 @@ class ProductSalesSummaryRepository extends ServiceEntityRepository
             return null;
         }
 
+        return $this->getProductSalesSummaryQuery($singleSalesType['salesTypeId'], $singleSalesType['salesType'])
+            ->setParameter('duration', $dto->getDuration())
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    public function findProductSalesSummaryRange(ProductSalesFilterDto $dto): ?array
+    {
+        $singleSalesType = $dto->getSingleSalesType();
+
+        if ($singleSalesType === null) {
+            return null;
+        }
+
+        return $this->getProductSalesSummaryQuery($singleSalesType['salesTypeId'], $singleSalesType['salesType'])
+            ->setParameter('duration', $dto->getDuration() === 'mtd' ? 'month' : 'day')
+            ->orderBy('ps.salesDate', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getProductSalesSummaryQuery(int $salesTypeId, string $salesType): QueryBuilder
+    {
         return $this->createQueryBuilder('ps')
-            ->select('ps.salesQty')
+            ->select('ps.salesDate')
+            ->addSelect('ps.salesQty')
             ->addSelect('ps.salesValue')
             ->addSelect('ps.salesCost')
             ->addSelect('(ps.salesValue - ps.salesCost) AS salesProfit')
             ->andWhere('ps.salesId = :salesId')
             ->andWhere('ps.salesType = :salesType')
             ->andWhere('ps.duration = :duration')
-            ->setParameter('salesId', $singleSalesType['salesTypeId'])
-            ->setParameter('salesType', $singleSalesType['salesType'])
-            ->setParameter('duration', $dto->getDuration())
-            ->getQuery()
-            ->getOneOrNullResult();
+            ->setParameter('salesId', $salesTypeId)
+            ->setParameter('salesType', $salesType);
+
     }
 
-    public function deleteBySalesTypeAndDuration(string $salesType, string $duration): void
+    public function deleteBySalesTypeAndDuration(string $salesType, string $duration, ?string $dateString): void
     {
         $qb = $this->createQueryBuilder('p')
             ->delete()
@@ -49,6 +72,11 @@ class ProductSalesSummaryRepository extends ServiceEntityRepository
             ->andWhere('p.duration = :duration')
             ->setParameter('salesType', $salesType)
             ->setParameter('duration', $duration);
+
+        if ($dateString !== null) {
+            $qb->andWhere('p.dateString = :dateString')
+                ->setParameter('dateString', $dateString);
+        }
 
         $qb->getQuery()->execute();
     }

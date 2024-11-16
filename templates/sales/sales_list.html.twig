@@ -6,6 +6,7 @@
 
     <twig:Card>
         <turbo-frame id="sales">
+
             {% if summary %}
                 <div class="mb-3 flex items-center justify-between">
                     <div class="flex items-center justify-start">
@@ -16,7 +17,16 @@
                     </div>
                     {{ include('sales/_sales_durations.html.twig') }}
                 </div>
+
+                {% if chart %}
+                    <div
+                        class="mb-3 flex flex-wrap justify-around rounded-lg bg-white text-center font-light dark:border-gray-700 dark:bg-gray-900">
+                        {{ render_chart(chart) }}
+                    </div>
+                {% endif %}
+
                 {{ include('sales/_sales_summary.html.twig', {summary: summary}) }}
+
             {% endif %}
             <div class="flex items-center justify-between">
                 <p class="text-gray-600 dark:text-gray-500">
@@ -27,6 +37,7 @@
                     {{ include('sales/_sales_durations.html.twig') }}
                 {% endif %}
             </div>
+
             <div class="relative mt-3 overflow-x-auto shadow-md sm:rounded-lg">
                 <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
                     <thead class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">

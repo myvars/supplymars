@@ -1,0 +1,57 @@
+<twig:Card padding="p-0">
+    {% if result.isValidProduct %}
+        <div class="m-1 flex flex-wrap justify-around rounded-lg text-center font-light dark:bg-gray-900">
+            <div
+                class="m-3 grid grid-cols-2 grid-rows-3 items-center gap-5 md:grid-cols-4 md:grid-rows-2 md:items-start md:gap-x-14">
+                <div>
+                    <p class="mb-1">Cost Price</p>
+                    <p class="mb-1 text-3xl font-bold text-gray-600 {{ type == 'cost' ? 'dark:text-gray-500' : 'dark:text-gray-200' }}">
+                        {{ result.cost|format_currency('GBP') }}</p>
+                    <p class="text-gray-600 dark:text-gray-500">
+                        {{ result.activeProductSource.supplier.name }}</p>
+                </div>
+                <div>
+                    <p class="mb-1">Stock</p>
+                    <p class="mb-1 text-3xl font-bold text-gray-900 {{ type == 'cost' ? 'dark:text-gray-500' : 'dark:text-white' }}">{{ result.stock }}</p>
+                    <p class="text-gray-600 dark:text-gray-500">
+                        {{ result.activeProductSource.updatedAt|ago }}</p>
+                </div>
+                <div>
+                    <p class="mb-1">Sell Price</p>
+                    <p class="text-3xl font-bold text-gray-900 {{ type == 'cost' ? 'dark:text-white' : 'dark:text-gray-400' }}">
+                        {{ result.sellPrice|format_currency('GBP') }}</p>
+                </div>
+                <div>
+                    <p class="mb-1">Sell Price Inc VAT</p>
+                    <p class="text-3xl font-bold text-gray-900 {{ type == 'cost' ? 'dark:text-white' : 'dark:text-gray-400' }}">
+                        {{ result.sellPriceIncVat|format_currency('GBP') }}</p>
+                </div>
+                <div class="col-span-2 md:col-span-4">
+                    <p class="mb-1">Mark-up</p>
+                    <p class="mb-1 text-2xl text-gray-700 dark:text-white">{{ result.markup|number_format(3) }}%</p>
+                    <p class="hidden text-gray-600 dark:text-gray-500 md:inline">
+                        {{ result.category.vatRate.name|title }} VAT |
+                        {{ result.activePriceModelTarget|title }} price model |
+                        {{ result.activeMarkupTarget|title }} mark-up
+                    </p>
+                    <p class="text-xs text-gray-600 dark:text-gray-500 md:hidden md:text-sm">
+                        {{ result.category.vatRate.name|title }} VAT
+                    </p>
+                    <p class="text-xs text-gray-600 dark:text-gray-500 md:hidden md:text-sm">
+                        {{ result.activePriceModelTarget|title }} price model |
+                        {{ result.activeMarkupTarget|title }} mark-up
+                    </p>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="m-1 rounded-lg bg-white p-3 text-center font-light dark:bg-gray-900">
+            <p class="mb-2 text-2xl text-red-400 dark:text-red-400">Incomplete Product</p>
+            {% if not result.hasActiveProductSource %}
+                <p>No Active Supplier</p>
+            {% else %}
+                <p>Inactive Category, Subcategory or Product</p>
+            {% endif %}
+        </div>
+    {% endif %}
+</twig:Card>

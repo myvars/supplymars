@@ -21,11 +21,17 @@ class ProductSalesSummarizer
     {
         foreach ($this->durations as $durationType => $duration) {
             foreach ($this->salesTypes as $salesType) {
+                // Skip day duration for product sales since it is already processed
+                if ($durationType === 'day' && $salesType === 'product') {
+                    continue;
+                }
+
                 $this->processor->process(
                     $salesType,
                     $durationType,
                     $duration->getStartDate($rebuild),
-                    $duration->getDateString()
+                    $duration->getDateString(),
+                    $rebuild ? false : $duration->hasDurationRange()
                 );
             }
         }

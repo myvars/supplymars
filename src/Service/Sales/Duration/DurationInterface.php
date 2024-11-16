@@ -10,4 +10,6 @@ interface DurationInterface
     public function getStartDate(bool $rebuild): string;
 
     public function getDateString(): string;
+
+    public function hasDurationRange(): bool;
 }

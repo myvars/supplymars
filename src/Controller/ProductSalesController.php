@@ -7,6 +7,7 @@ use App\Form\ProductSalesFilterType;
 use App\Repository\ProductSalesRepository;
 use App\Repository\ProductSalesSummaryRepository;
 use App\Service\Crud\CrudHandler;
+use App\Service\Sales\ProductSalesChartBuilder;
 use App\Service\Sales\SalesFilter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,14 +22,16 @@ class ProductSalesController extends AbstractController
 {
     public const SECTION = 'Product Sales';
 
-    #[Route('/best', name: 'app_product_sales_list', methods: ['GET'])]
+    #[Route('/', name: 'app_product_sales_list', methods: ['GET'])]
     public function best(
         ProductSalesRepository $salesRepository,
         ProductSalesSummaryRepository $summaryRepository,
+        ProductSalesChartBuilder $chartBuilder,
         #[MapQueryString] ProductSalesFilterDto $dto = new ProductSalesFilterDto()
     ): Response {
 
         return $this->render('sales/sales_list.html.twig', [
+            'chart' => $chartBuilder->build($dto),
             'summary' => $summaryRepository->findProductSalesSummary($dto),
             'results' => $salesRepository->findProductSalesBySalesDto($dto),
         ]);
