@@ -8,7 +8,6 @@ use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
-use InvalidArgumentException;
 
 /**
  * @extends ServiceEntityRepository<ProductSales>
@@ -24,8 +23,8 @@ class ProductSalesRepository extends ServiceEntityRepository
     {
         $sort = $salesFilterDto->getSort() ?: $salesFilterDto::SORT_DEFAULT;
         $sortDirection = $salesFilterDto->getSortDirection() ?: $salesFilterDto::SORT_DIRECTION_DEFAULT;
-        $startDate = $this->getDurationStartDate($salesFilterDto->getDuration());
-        $endDate = (new DateTime('+1 day'))->format('Y-m-d');
+        $startDate = $salesFilterDto->getDuration()->getStartDate();
+        $endDate = $salesFilterDto->getDuration()->getEndDate();
 
         if ($salesFilterDto->getStartDate()) {
             $startDate = DateTime::createFromFormat('Y-m-d', $salesFilterDto->getStartDate())
@@ -115,16 +114,5 @@ class ProductSalesRepository extends ServiceEntityRepository
             ->setParameter('date', $date);
 
         $qb->getQuery()->execute();
-    }
-
-    private function getDurationStartDate(string $duration): string
-    {
-        return match ($duration) {
-            'last30' => (new DateTime('-30 day'))->format('Y-m-d'),
-            'last7' => (new DateTime('-7 day'))->format('Y-m-d'),
-            'today' => (new DateTime())->format('Y-m-d'),
-            'mtd' => (new DateTime())->format('Y-m-01'),
-            default => throw new InvalidArgumentException('Invalid duration'),
-        };
     }
 }

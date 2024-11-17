@@ -35,9 +35,9 @@ class ProductSalesSummary
     }
 
     public static function create(
-        int $salesId,
         string $salesType,
         string $duration,
+        int $salesId,
         string $dateString,
         int $salesQty,
         string $salesCost,

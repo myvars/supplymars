@@ -2,6 +2,7 @@
 
 namespace App\DTO;
 
+use App\Enum\Duration;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final class ProductSalesFilterDto
@@ -14,17 +15,13 @@ final class ProductSalesFilterDto
 
     public const SORT_DIRECTION_DEFAULT = 'DESC';
 
-    public const DURATION_OPTIONS = ['last30', 'last7', 'mtd', 'today'];
-
-    public const DURATION_DEFAULT = 'last30';
-
     public const LIMIT_DEFAULT = 10;
 
     private ?string $queryString = null;
 
     private string $sort = self::SORT_DEFAULT;
 
-    private string $duration = self::DURATION_DEFAULT;
+    private Duration $duration = Duration::LAST_30;
 
     private ?string $sortDirection = null;
 
@@ -55,7 +52,7 @@ final class ProductSalesFilterDto
         $salesFilterParams = [
             'sort' => $this->sort,
             'sortDirection' => $this->sortDirection,
-            'duration' => $this->duration,
+            'duration' => $this->duration->value,
             'limit' => self::LIMIT_DEFAULT,
             'productId' => $this->productId,
             'categoryId' => $this->categoryId,
@@ -117,18 +114,18 @@ final class ProductSalesFilterDto
         return $this;
     }
 
-    public function getDuration(): ?string
+    public function getDuration(): ?Duration
     {
         return $this->duration;
     }
 
     public function setDuration(?string $duration): ProductSalesFilterDto
     {
-        if (!in_array($duration, self::DURATION_OPTIONS)) {
-            $duration = self::DURATION_DEFAULT;
+        if (!Duration::isValid($duration)) {
+            $duration = Duration::default()->value;
         }
 
-        $this->duration = $duration;
+        $this->duration = Duration::from($duration);
 
         return $this;
     }

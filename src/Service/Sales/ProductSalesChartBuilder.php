@@ -4,6 +4,7 @@ namespace App\Service\Sales;
 
 use App\DTO\ProductSalesFilterDto;
 use App\Entity\ProductSalesSummary;
+use App\Enum\Duration;
 use DateInterval;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
@@ -26,7 +27,7 @@ class ProductSalesChartBuilder
 
     public function build(ProductSalesFilterDto $dto): ?Chart
     {
-        $salesData = $this->getSalesData($dto);
+        $salesData = $this->getSalesRangeData($dto);
         if ($salesData === null) {
             return null;
         }
@@ -76,41 +77,41 @@ class ProductSalesChartBuilder
             ]);
     }
 
-    private function getSalesData(ProductSalesFilterDto $dto): ?array
+    private function getSalesRangeData(ProductSalesFilterDto $dto): ?array
     {
-        $salesData = $this->entityManager->getRepository(ProductSalesSummary::class)->findProductSalesSummaryRange($dto);
-        if ($salesData === null) {
+        $singleSalesType = $dto->getSingleSalesType();
+        if ($singleSalesType === null) {
             return null;
         }
 
-        $labelFormat = $this->getLabelFormat($dto->getDuration());
+        if ($dto->getDuration()->value === 'mtd') {
+            $rangeDuration = Duration::MONTH;
+            $startDate = Duration::MONTH->getStartDate(true);
+        } else {
+            $rangeDuration = Duration::DAY;
+            $startDate = $dto->getDuration()->getStartDate();
+        }
 
         $dateRange = $this->generateDateRange(
-            $salesData[0]['salesDate'],
+            new \DateTimeImmutable($startDate),
             new \DateTimeImmutable(),
-            $labelFormat,
-            $this->getGranularity($dto->getDuration())
+            $dto->getDuration()->getChartLabelFormat(),
+            $dto->getDuration()->getChartGranularity()
         );
 
-        return $this->mergeSalesData($dateRange, $salesData, $labelFormat, $dto->getSort());
-    }
+        $salesData = $this->entityManager->getRepository(ProductSalesSummary::class)->findProductSalesSummaryRange(
+            $singleSalesType['salesTypeId'],
+            $singleSalesType['salesType'],
+            $rangeDuration->value,
+            $startDate
+        );
 
-    private function getLabelFormat(string $duration): string
-    {
-        return match ($duration) {
-            'week' => 'W Y',
-            'month', 'mtd' => 'M Y',
-            default => 'd M'
-        };
-    }
-
-    private function getGranularity(string $duration): string
-    {
-        return match ($duration) {
-            'week' => '+1 week',
-            'month', 'mtd' => '+1 month',
-            default => '+1 day'
-        };
+        return $this->mergeSalesData(
+            $dateRange,
+            $salesData,
+            $dto->getDuration()->getChartLabelFormat(),
+            $dto->getSort()
+        );
     }
 
     private function generateDateRange(

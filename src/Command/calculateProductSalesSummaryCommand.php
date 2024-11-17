@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Service\Sales\ProductSalesSummarizer;
+use App\Service\Sales\ProductSalesSummaryCalculator;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -16,7 +16,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class calculateProductSalesSummaryCommand extends Command
 {
-    public function __construct(private readonly ProductSalesSummarizer $productSalesSummarizer)
+    public function __construct(private readonly ProductSalesSummaryCalculator $productSalesSummaryCalculator)
     {
         parent::__construct();
     }
@@ -33,7 +33,7 @@ class calculateProductSalesSummaryCommand extends Command
 
         $io->info("Calculating sales summary");
 
-        $this->productSalesSummarizer->summarize($rebuild);
+        $this->productSalesSummaryCalculator->process($rebuild);
 
         $io->success("Sales summary calculation completed");
 

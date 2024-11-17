@@ -28,21 +28,22 @@ class ProductSalesSummaryRepository extends ServiceEntityRepository
         }
 
         return $this->getProductSalesSummaryQuery($singleSalesType['salesTypeId'], $singleSalesType['salesType'])
-            ->setParameter('duration', $dto->getDuration())
+            ->setParameter('duration', $dto->getDuration()->value)
             ->getQuery()
             ->getOneOrNullResult();
     }
 
-    public function findProductSalesSummaryRange(ProductSalesFilterDto $dto): ?array
-    {
-        $singleSalesType = $dto->getSingleSalesType();
+    public function findProductSalesSummaryRange(
+        string $salesTypeId,
+        string $salesType,
+        string $duration,
+        string $startDate
+    ): ?array {
 
-        if ($singleSalesType === null) {
-            return null;
-        }
-
-        return $this->getProductSalesSummaryQuery($singleSalesType['salesTypeId'], $singleSalesType['salesType'])
-            ->setParameter('duration', $dto->getDuration() === 'mtd' ? 'month' : 'day')
+        return $this->getProductSalesSummaryQuery($salesTypeId, $salesType)
+            ->setParameter('duration', $duration)
+            ->andWhere('ps.salesDate >= :startDate')
+            ->setParameter('startDate', $startDate)
             ->orderBy('ps.salesDate', 'ASC')
             ->getQuery()
             ->getResult();
