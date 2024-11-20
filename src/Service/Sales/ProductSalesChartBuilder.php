@@ -2,11 +2,11 @@
 
 namespace App\Service\Sales;
 
-use App\DTO\ProductSalesFilterDto;
-use App\Entity\ProductSalesSummary;
-use App\Enum\Duration;
+use App\Enum\SalesDuration;
+use App\Enum\SalesType;
+use App\Repository\ProductSalesRepository;
+use App\Repository\ProductSalesSummaryRepository;
 use DateInterval;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
 
@@ -20,24 +20,44 @@ class ProductSalesChartBuilder
     private const CHART_BORDER_COLOR = '#991b1b';
 
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
+        private readonly ProductSalesRepository $productSalesRepository,
+        private readonly ProductSalesSummaryRepository $productSalesSummaryRepository,
         private readonly ChartBuilderInterface  $chartBuilder
     ) {
     }
 
-    public function build(ProductSalesFilterDto $dto): ?Chart
-    {
-        $salesData = $this->getSalesRangeData($dto);
-        if ($salesData === null) {
+    public function build(
+        int $salesTypeId,
+        SalesType $salesType,
+        SalesDuration $salesDuration,
+        string $salesMetric
+    ): ?Chart {
+        $salesData = $this->getSalesData($salesTypeId, $salesType, $salesDuration);
+        if (empty($salesData)) {
             return null;
         }
 
-        $dataLabel = str_replace('sales', '', $dto->getSort());
+        $dateRange = $this->generateDateRange(
+            new \DateTimeImmutable($this->getSalesRangeStartDate($salesDuration)),
+            new \DateTimeImmutable(),
+            $salesDuration->getChartLabelFormat(),
+            $salesDuration->getChartGranularity()
+        );
 
-        return $this->buildChart($salesData, $dataLabel);
+        $mergedData = $this->mergeSalesData(
+            $dateRange,
+            $salesData,
+            $salesDuration->getChartLabelFormat(),
+            $salesMetric
+        );
+
+        $dataLabel = str_replace('sales', '', $salesMetric);
+        $isCurrency = in_array($dataLabel, ['Value', 'Profit']);
+
+        return $this->buildChart($mergedData, $dataLabel, $isCurrency);
     }
 
-    private function buildChart(array $data, string $dataLabel): Chart
+    private function buildChart(array $data, string $dataLabel, bool $isCurrency = false): Chart
     {
         return $this->chartBuilder
             ->createChart(self::CHART_TYPE)
@@ -58,6 +78,7 @@ class ProductSalesChartBuilder
                 ],
             ])
             ->setOptions([
+                'maintainAspectRatio' => false,
                 'scales' => [
                     'x' => [
                         'grid' => [
@@ -68,6 +89,7 @@ class ProductSalesChartBuilder
                         'beginAtZero' => true,
                         'grid' => [
                             'color' => '#ffffff10',
+                            'currency' => $isCurrency
                         ],
                     ],
                 ],
@@ -77,40 +99,26 @@ class ProductSalesChartBuilder
             ]);
     }
 
-    private function getSalesRangeData(ProductSalesFilterDto $dto): ?array
-    {
-        $singleSalesType = $dto->getSingleSalesType();
-        if ($singleSalesType === null) {
-            return null;
+    public function getSalesData(
+        int $salesTypeId,
+        SalesType $salesType,
+        SalesDuration $salesDuration
+    ): array{
+        $salesRangeDuration = $this->getSalesRangeDuration($salesDuration);
+
+        if ($salesType === SalesType::PRODUCT && $salesRangeDuration === SalesDuration::DAY) {
+            return $this->productSalesRepository->findProductSalesRange(
+                $salesTypeId,
+                $salesDuration->getStartDate(),
+                $salesDuration->getEndDate()
+            );
         }
 
-        if ($dto->getDuration()->value === 'mtd') {
-            $rangeDuration = Duration::MONTH;
-            $startDate = Duration::MONTH->getStartDate(true);
-        } else {
-            $rangeDuration = Duration::DAY;
-            $startDate = $dto->getDuration()->getStartDate();
-        }
-
-        $dateRange = $this->generateDateRange(
-            new \DateTimeImmutable($startDate),
-            new \DateTimeImmutable(),
-            $dto->getDuration()->getChartLabelFormat(),
-            $dto->getDuration()->getChartGranularity()
-        );
-
-        $salesData = $this->entityManager->getRepository(ProductSalesSummary::class)->findProductSalesSummaryRange(
-            $singleSalesType['salesTypeId'],
-            $singleSalesType['salesType'],
-            $rangeDuration->value,
-            $startDate
-        );
-
-        return $this->mergeSalesData(
-            $dateRange,
-            $salesData,
-            $dto->getDuration()->getChartLabelFormat(),
-            $dto->getSort()
+        return $this->productSalesSummaryRepository->findProductSalesSummaryRange(
+            $salesTypeId,
+            $salesType,
+            $salesRangeDuration,
+            $this->getSalesRangeStartDate($salesDuration)
         );
     }
 
@@ -124,19 +132,24 @@ class ProductSalesChartBuilder
             throw new \InvalidArgumentException('Start date must be less than or equal to end date.');
         }
 
+        $dateRange = [];
         $period = new \DatePeriod($startDate, DateInterval::createFromDateString($granularity), $endDate);
         foreach ($period as $date) {
             $dateRange[$date->format($labelFormat)] = 0;
         }
 
-        return $dateRange ?? [];
+        return $dateRange;
     }
 
 
-    private function mergeSalesData(array $dateRange, array $salesData, string $labelFormat, string $metric): array
-    {
+    private function mergeSalesData(
+        array $dateRange,
+        array $salesData,
+        string $labelFormat,
+        string $salesMetric
+    ): array {
         foreach ($salesData as $entry) {
-            $salesDataByDate[$entry['salesDate']->format($labelFormat)] = $entry[$metric];
+            $salesDataByDate[$entry['salesDate']->format($labelFormat)] = $entry[$salesMetric];
         }
 
         foreach (array_keys($dateRange) as $date) {
@@ -144,5 +157,23 @@ class ProductSalesChartBuilder
         }
 
         return $dateRange;
+    }
+
+    private function getSalesRangeDuration($salesDuration): SalesDuration
+    {
+        if ($salesDuration === SalesDuration::MTD) {
+            return SalesDuration::MONTH;
+        }
+
+        return SalesDuration::DAY;
+    }
+
+    private function getSalesRangeStartDate($salesDuration): string
+    {
+        if ($salesDuration === SalesDuration::MTD) {
+            return SalesDuration::MONTH->getStartDate(true);
+        }
+
+        return $salesDuration->getStartDate();
     }
 }

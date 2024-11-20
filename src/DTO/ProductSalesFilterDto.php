@@ -2,7 +2,8 @@
 
 namespace App\DTO;
 
-use App\Enum\Duration;
+use App\Enum\SalesDuration;
+use App\Enum\SalesType;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final class ProductSalesFilterDto
@@ -21,7 +22,7 @@ final class ProductSalesFilterDto
 
     private string $sort = self::SORT_DEFAULT;
 
-    private Duration $duration = Duration::LAST_30;
+    private SalesDuration $duration = SalesDuration::LAST_30;
 
     private ?string $sortDirection = null;
 
@@ -114,18 +115,18 @@ final class ProductSalesFilterDto
         return $this;
     }
 
-    public function getDuration(): ?Duration
+    public function getDuration(): ?SalesDuration
     {
         return $this->duration;
     }
 
     public function setDuration(?string $duration): ProductSalesFilterDto
     {
-        if (!Duration::isValid($duration)) {
-            $duration = Duration::default()->value;
+        if (!SalesDuration::isValid($duration)) {
+            $duration = SalesDuration::default()->value;
         }
 
-        $this->duration = Duration::from($duration);
+        $this->duration = SalesDuration::from($duration);
 
         return $this;
     }
@@ -230,7 +231,7 @@ final class ProductSalesFilterDto
         if (count($nonEmptyIdentifiers) === 1) {
             $salesType = array_key_first($nonEmptyIdentifiers);
             return [
-                'salesType' => $salesType,
+                'salesType' => SalesType::from($salesType),
                 'salesTypeId' => $nonEmptyIdentifiers[$salesType],
             ];
         }

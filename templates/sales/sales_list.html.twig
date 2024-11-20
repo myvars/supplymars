@@ -7,7 +7,7 @@
     <twig:Card>
         <turbo-frame id="sales">
 
-            {% if summary %}
+            {% if summary is not null %}
                 <div class="mb-3 flex items-center justify-between">
                     <div class="flex items-center justify-start">
                         <p class="text-gray-600 dark:text-gray-500">
@@ -20,17 +20,19 @@
 
                 {% if chart %}
                     <div
-                        class="mb-3 flex flex-wrap justify-around rounded-lg bg-white text-center font-light dark:border-gray-700 dark:bg-gray-900">
-                        {{ render_chart(chart) }}
+                        class="mb-3 flex flex-wrap justify-around rounded-lg bg-white text-center font-light dark:border-gray-700 dark:bg-gray-900 h-64 md:h-auto">
+                        {{ render_chart(chart, {'data-controller': 'chart', 'class': 'w-full h-full'}) }}
                     </div>
                 {% endif %}
 
                 {{ include('sales/_sales_summary.html.twig', {summary: summary}) }}
 
             {% endif %}
-            <div class="flex items-center justify-between">
+
+            {% if sales %}
+            <div class="mt-3 flex items-center justify-between">
                 <p class="text-gray-600 dark:text-gray-500">
-                    <span class="hidden md:inline">Top 10 Products</span>
+                    <span class="hidden md:inline">Top Products</span>
                     <span class="md:hidden">Sales</span>
                 </p>
                 {% if not summary %}
@@ -63,37 +65,32 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {% for result in results %}
+                    {% for sale in sales %}
                         <tr class="border-b odd:bg-white even:bg-gray-50 dark:border-gray-700 odd:dark:bg-gray-900 even:dark:bg-gray-800">
                             <th scope="row"
                                 class="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-gray-300">
-                                <a href="{{ path('app_product_show', {'id': result.id }) }}"
+                                <a href="{{ path('app_product_show', {'id': sale.id }) }}"
                                    class="dark:hover:text-white"
                                    data-turbo-frame="body"
                                 >
-                                    {{ result.name|slug.truncate(30, '...') }}
+                                    {{ sale.name|slug.truncate(30, '...') }}
                                 </a>
                             </th>
                             <td class="px-6 py-4 text-center">
-                                {{ result.salesQty }}
+                                {{ sale.salesQty }}
                             </td>
                             <td class="px-6 py-4 text-right">
-                                {{ result.salesValue|format_currency('GBP', { max_fraction_digit:0 }) }}
+                                {{ sale.salesValue|format_currency('GBP', { max_fraction_digit:0 }) }}
                             </td>
                             <td class="px-6 py-4 text-right">
-                                {{ result.salesProfit|format_currency('GBP', { max_fraction_digit:0 }) }}
-                            </td>
-                        </tr>
-                    {% else %}
-                        <tr>
-                            <td colspan="4" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
-                                No sales data available
+                                {{ sale.salesProfit|format_currency('GBP', { max_fraction_digit:0 }) }}
                             </td>
                         </tr>
                     {% endfor %}
                     </tbody>
                 </table>
             </div>
+            {% endif %}
         </turbo-frame>
     </twig:Card>
 

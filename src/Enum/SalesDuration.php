@@ -4,7 +4,7 @@ namespace App\Enum;
 
 use DateTime;
 
-enum Duration: string
+enum SalesDuration: string
 {
     case TODAY = 'today';
     case LAST_7 = 'last7';
@@ -30,11 +30,11 @@ enum Duration: string
 
         return match ($this) {
             self::TODAY => $now->format('Y-m-d'),
-            self::LAST_7 => $now->modify('-7 days')->format('Y-m-d'),
-            self::LAST_30 => $now->modify('-30 days')->format('Y-m-d'),
+            self::LAST_7 => $now->modify('-6 days')->format('Y-m-d'),
+            self::LAST_30 => $now->modify('-29 days')->format('Y-m-d'),
             self::MTD => $now->format('Y-m-01'),
             self::DAY => $rebuildRange ?
-                $now->modify('-30 days')->format('Y-m-d')
+                $now->modify('-29 days')->format('Y-m-d')
                 : $now->format('Y-m-d'),
             self::MONTH => $rebuildRange
                 ? $now->modify('-12 months')->format('Y-m-01')

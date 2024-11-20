@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Enum\SalesDuration;
+use App\Enum\SalesType;
 use App\Repository\ProductSalesSummaryRepository;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
@@ -16,10 +18,10 @@ class ProductSalesSummary
         private readonly int $salesId,
         #[ORM\Id]
         #[ORM\Column(length: 50)]
-        private readonly string $salesType,
+        private readonly SalesType $salesType,
         #[ORM\Id]
-        #[ORM\Column(length: 10)]
-        private readonly string $duration,
+        #[ORM\Column(length: 50)]
+        private readonly SalesDuration $duration,
         #[ORM\Id]
         #[ORM\Column(length: 10)]
         private readonly string $dateString,
@@ -35,15 +37,24 @@ class ProductSalesSummary
     }
 
     public static function create(
-        string $salesType,
-        string $duration,
+        SalesType $salesType,
+        SalesDuration $duration,
         int $salesId,
         string $dateString,
         int $salesQty,
         string $salesCost,
         string $salesValue,
     ): self{
-        return new self($salesId, $salesType, $duration, $dateString, $salesQty, $salesCost, $salesValue, new DateTimeImmutable($dateString));
+        return new self(
+            $salesId,
+            $salesType,
+            $duration,
+            $dateString,
+            $salesQty,
+            $salesCost,
+            $salesValue,
+            new DateTimeImmutable($dateString)
+        );
     }
 
     public function getSalesId(): ?int
@@ -51,12 +62,12 @@ class ProductSalesSummary
         return $this->salesId;
     }
 
-    public function getSalesType(): ?string
+    public function getSalesType(): ?SalesType
     {
         return $this->salesType;
     }
 
-    public function getDuration(): ?string
+    public function getDuration(): ?SalesDuration
     {
         return $this->duration;
     }

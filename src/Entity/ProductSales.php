@@ -40,7 +40,15 @@ class ProductSales
         string $salesCost,
         string $salesValue,
     ): self{
-        return new self($product, $supplier, $dateString, $salesQty, $salesCost, $salesValue, new \DateTimeImmutable($dateString));
+        return new self(
+            $product,
+            $supplier,
+            $dateString,
+            $salesQty,
+            $salesCost,
+            $salesValue,
+            new \DateTimeImmutable($dateString)
+        );
     }
 
     public function getProduct(): ?Product

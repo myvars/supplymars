@@ -10,6 +10,7 @@ use App\Repository\ProductRepository;
 use App\Service\Crud\CrudCreator;
 use App\Service\Crud\CrudDeleter;
 use App\Service\Crud\CrudHandler;
+use App\Service\Crud\CrudHelper;
 use App\Service\Crud\CrudReader;
 use App\Service\Crud\CrudSearcher;
 use App\Service\Crud\CrudUpdater;
@@ -56,6 +57,16 @@ class ProductController extends AbstractController
             ->setCrudAction($action)
             ->setSuccessLink($this->generateUrl('app_product_index'))
         );
+    }
+
+    #[Route('/{id}/sales', name: 'app_product_sales', methods: ['GET'])]
+    public function sales(?Product $product, CrudHelper $crudHelper): Response
+    {
+        if (!$product instanceof Product) {
+            return $crudHelper->showEmpty(self::SECTION);
+        }
+
+        return $this->render('product/sales.html.twig', ['result' => $product]);
     }
 
     #[Route('/new', name: 'app_product_new', methods: ['GET', 'POST'])]

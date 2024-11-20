@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\DTO\ProductSalesFilterDto;
 use App\Entity\ProductSales;
+use App\Enum\SalesType;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -71,23 +72,24 @@ class ProductSalesRepository extends ServiceEntityRepository
     }
 
     public function calculateSalesBySalesType(
-        string $salesType,
+        SalesType $salesType,
         string $startDate,
         string $endDate,
         string $dateString
-    ): array {
+    ): array
+    {
         $qb = $this->getProductSalesQuery($startDate, $endDate)
             ->addSelect("DATE_FORMAT(ps.salesDate, :dateString) AS dateString")
             ->setParameter('dateString', $dateString)
             ->groupBy('dateString, salesId');
 
-        match ($salesType) {
+        match ($salesType->value) {
             'product' => $qb->addSelect('p.id AS salesId, p.name'),
             'category' => $qb->join('p.category', 'c')->addSelect('c.id AS salesId, c.name'),
             'subcategory' => $qb->join('p.subcategory', 's')->addSelect('s.id AS salesId, s.name'),
             'manufacturer' => $qb->join('p.manufacturer', 'm')->addSelect('m.id AS salesId, m.name'),
             'supplier' => $qb->join('ps.supplier', 's')->addSelect('s.id AS salesId, s.name'),
-            default => throw new \InvalidArgumentException('Unknown entity: ' . $salesType),
+            default => throw new \InvalidArgumentException('Unknown entity: ' . $salesType->value),
         };
 
         return $qb->getQuery()->getResult();
@@ -106,13 +108,23 @@ class ProductSalesRepository extends ServiceEntityRepository
             ->setParameter('endDate', $endDate);
     }
 
+    public function findProductSalesRange(int $productId, string $startDate, string $endDate): array
+    {
+        return $this->getProductSalesQuery($startDate, $endDate)
+            ->addSelect('ps.salesDate')
+            ->andWhere('ps.product = :productId')
+            ->setParameter('productId', $productId)
+            ->groupBy('ps.salesDate')
+            ->orderBy('ps.salesDate', 'ASC')
+            ->getQuery()->getResult();
+    }
+
     public function deleteByDate(string $date): void
     {
         $qb = $this->createQueryBuilder('p')
             ->delete()
             ->where('p.dateString = :date')
-            ->setParameter('date', $date);
-
-        $qb->getQuery()->execute();
+            ->setParameter('date', $date)
+            ->getQuery()->execute();
     }
 }

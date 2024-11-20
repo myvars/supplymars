@@ -17,8 +17,13 @@
             </a>
         </li>
         <li class="me-2">
-            <a href="{{ path('app_product_images', { id: result.id }) }}" class="inline-block p-3 border-b-2 border-transparent  hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 {{ app.request.get('_route') == 'app_product_images' ? 'active dark:text-gray-300 dark:border-gray-300' : '' }}">
+            <a href="{{ path('app_product_images', { id: result.id }) }}" class="inline-block p-3 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 {{ app.request.get('_route') == 'app_product_images' ? 'active dark:text-gray-300 dark:border-gray-300' : '' }}">
                 <span class="hidden md:inline">Product </span>Images
+            </a>
+        </li>
+        <li class="me-2">
+            <a href="{{ path('app_product_sales', { id: result.id }) }}" class="inline-block p-3 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 {{ app.request.get('_route') == 'app_product_sales' ? 'active dark:text-gray-300 dark:border-gray-300' : '' }}">
+                <span class="hidden md:inline">Product </span>Sales
             </a>
         </li>
     </ul>
