@@ -39,7 +39,7 @@ export default class extends Controller {
     // Configures the Y-axis ticks based on the specified type (currency or percent)
     configureYAxis(config, type) {
         config.options.scales.y.ticks = {
-            callback: (value) => this.formatValue(value, type), // Format the tick values
+            callback: (value) => this.formatValue(value, type, false),  // Axis formatting
         };
     }
 
@@ -50,36 +50,41 @@ export default class extends Controller {
             callbacks: {
                 label: (tooltipItem) => {
                     const value = tooltipItem.raw;
-                    return this.formatValue(value, type);
+                    return this.formatValue(value, type, true); // Tooltip formatting
                 },
             },
         };
     }
 
-    // Formats a value as currency or percentage based on the specified type
-    formatValue(value, type) {
-        const numericValue = Number(value); // Ensure the value is treated as a number
+    formatValue(value, type, isTooltip) {
+        const numericValue = Number(value); // Ensure value is treated as a number
         if (isNaN(numericValue)) {
-            return 'N/A'; // Return 'N/A' if the value is invalid
+            return 'N/A'; // Handle invalid values
         }
 
-        // Handle currency formatting
         if (type === 'currency') {
             const currency = this.constructor.currencySymbol;
-            if (numericValue >= 1_000_000) {
-                return `${currency}${(numericValue / 1_000_000).toFixed(1)}M`; // Format millions
-            } else if (numericValue >= 1_000) {
-                return `${currency}${(numericValue / 1_000).toFixed(0)}k`; // Format thousands
+
+            if (isTooltip) {
+                // Tooltip: Round to the nearest pound and add the currency symbol
+                return `${currency}${Math.round(numericValue).toLocaleString()}`;
             }
-            return `${currency}${Math.round(numericValue).toLocaleString()}`; // Format smaller values
+
+            // Axis: Apply formatting for large values
+            if (numericValue >= 1_000_000) {
+                return `${currency}${(numericValue / 1_000_000).toFixed(1)}M`;
+            } else if (numericValue >= 1_000) {
+                return `${currency}${(numericValue / 1_000).toFixed(0)}k`;
+            }
+            return `${currency}${Math.round(numericValue).toLocaleString()}`;
         }
 
-        // Handle percentage formatting
         if (type === 'percent') {
+            // Percentage formatting for both tooltip and axis
             return `${numericValue.toFixed(2)}%`; // Format with two decimal places
         }
 
-        // Return the numeric value as a fallback (e.g., for unformatted data)
+        // Default fallback for unhandled types
         return numericValue;
     }
 }
