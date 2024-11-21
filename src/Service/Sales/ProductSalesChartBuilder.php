@@ -12,7 +12,6 @@ use Symfony\UX\Chartjs\Model\Chart;
 
 class ProductSalesChartBuilder
 {
-
     private const CHART_TYPE = Chart::TYPE_BAR;
 
     private const CHART_COLOR = '#991b1b90';
@@ -33,7 +32,7 @@ class ProductSalesChartBuilder
         string $salesMetric
     ): ?Chart {
         $salesData = $this->getSalesData($salesTypeId, $salesType, $salesDuration);
-        if (empty($salesData)) {
+        if ($salesData === []) {
             return null;
         }
 
@@ -52,12 +51,13 @@ class ProductSalesChartBuilder
         );
 
         $dataLabel = str_replace('sales', '', $salesMetric);
-        $isCurrency = in_array($dataLabel, ['Value', 'Profit']);
+        $isCurrency = in_array($dataLabel, ['Cost', 'Profit']);
+        $isPercentage = $dataLabel === 'Margin';
 
-        return $this->buildChart($mergedData, $dataLabel, $isCurrency);
+        return $this->buildChart($mergedData, $dataLabel, $isCurrency, $isPercentage);
     }
 
-    private function buildChart(array $data, string $dataLabel, bool $isCurrency = false): Chart
+    private function buildChart(array $data, string $dataLabel, bool $isCurrency=false, bool $isPercentage=false): Chart
     {
         return $this->chartBuilder
             ->createChart(self::CHART_TYPE)
@@ -89,7 +89,8 @@ class ProductSalesChartBuilder
                         'beginAtZero' => true,
                         'grid' => [
                             'color' => '#ffffff10',
-                            'currency' => $isCurrency
+                            'currency' => $isCurrency,
+                            'percent' => $isPercentage,
                         ],
                     ],
                 ],
@@ -159,7 +160,7 @@ class ProductSalesChartBuilder
         return $dateRange;
     }
 
-    private function getSalesRangeDuration($salesDuration): SalesDuration
+    private function getSalesRangeDuration(SalesDuration $salesDuration): SalesDuration
     {
         if ($salesDuration === SalesDuration::MTD) {
             return SalesDuration::MONTH;
@@ -168,7 +169,7 @@ class ProductSalesChartBuilder
         return SalesDuration::DAY;
     }
 
-    private function getSalesRangeStartDate($salesDuration): string
+    private function getSalesRangeStartDate(SalesDuration $salesDuration): string
     {
         if ($salesDuration === SalesDuration::MTD) {
             return SalesDuration::MONTH->getStartDate(true);

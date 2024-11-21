@@ -12,7 +12,7 @@ final class ProductSalesFilterDto
 
     public const SORT_DEFAULT = 'salesQty';
 
-    public const SORT_OPTIONS = ['salesQty', 'salesValue', 'salesProfit'];
+    public const SORT_OPTIONS = ['salesQty', 'salesCost', 'salesProfit', 'salesMargin'];
 
     public const SORT_DIRECTION_DEFAULT = 'DESC';
 

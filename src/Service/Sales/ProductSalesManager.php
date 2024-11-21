@@ -31,7 +31,7 @@ class ProductSalesManager
 
         $sales = $this->salesRepository->findProductSalesBySalesDto($this->dto);
 
-        return empty($sales) ? null : $sales;
+        return $sales === [] ? null : $sales;
     }
 
     public function getSummary(): ?array

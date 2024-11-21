@@ -4,10 +4,7 @@ namespace App\Controller;
 
 use App\DTO\ProductSalesFilterDto;
 use App\Form\ProductSalesFilterType;
-use App\Repository\ProductSalesRepository;
-use App\Repository\ProductSalesSummaryRepository;
 use App\Service\Crud\CrudHandler;
-use App\Service\Sales\ProductSalesChartBuilder;
 use App\Service\Sales\ProductSalesManager;
 use App\Service\Sales\SalesFilter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
