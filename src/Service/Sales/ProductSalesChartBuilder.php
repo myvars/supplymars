@@ -3,6 +3,7 @@
 namespace App\Service\Sales;
 
 use App\Enum\SalesDuration;
+use App\Enum\SalesMetric;
 use App\Enum\SalesType;
 use App\Repository\ProductSalesRepository;
 use App\Repository\ProductSalesSummaryRepository;
@@ -13,10 +14,6 @@ use Symfony\UX\Chartjs\Model\Chart;
 class ProductSalesChartBuilder
 {
     private const CHART_TYPE = Chart::TYPE_BAR;
-
-    private const CHART_COLOR = '#991b1b90';
-
-    private const CHART_BORDER_COLOR = '#991b1b';
 
     public function __construct(
         private readonly ProductSalesRepository $productSalesRepository,
@@ -29,7 +26,7 @@ class ProductSalesChartBuilder
         int $salesTypeId,
         SalesType $salesType,
         SalesDuration $salesDuration,
-        string $salesMetric
+        SalesMetric $salesMetric
     ): ?Chart {
         $salesData = $this->getSalesData($salesTypeId, $salesType, $salesDuration);
         if ($salesData === []) {
@@ -47,17 +44,13 @@ class ProductSalesChartBuilder
             $dateRange,
             $salesData,
             $salesDuration->getChartLabelFormat(),
-            $salesMetric
+            $salesMetric->value
         );
 
-        $dataLabel = str_replace('sales', '', $salesMetric);
-        $isCurrency = in_array($dataLabel, ['Cost', 'Profit']);
-        $isPercentage = $dataLabel === 'Margin';
-
-        return $this->buildChart($mergedData, $dataLabel, $isCurrency, $isPercentage);
+        return $this->buildChart($mergedData, $salesMetric);
     }
 
-    private function buildChart(array $data, string $dataLabel, bool $isCurrency=false, bool $isPercentage=false): Chart
+    private function buildChart(array $data, SalesMetric $salesMetric): Chart
     {
         return $this->chartBuilder
             ->createChart(self::CHART_TYPE)
@@ -65,10 +58,10 @@ class ProductSalesChartBuilder
                 'labels' => array_keys($data),
                 'datasets' => [
                     [
-                        'label' => ucfirst($dataLabel),
+                        'label' => ucfirst($salesMetric->getDataLabel()),
                         'data' => array_values($data),
-                        'backgroundColor' => self::CHART_COLOR,
-                        'borderColor' => self::CHART_BORDER_COLOR,
+                        'backgroundColor' => $salesMetric->getChartColors()['color'],
+                        'borderColor' => $salesMetric->getChartColors()['borderColor'],
                         'borderWidth' => 1,
                         'borderRadius' => [
                             'topLeft' => 3,
@@ -89,8 +82,8 @@ class ProductSalesChartBuilder
                         'beginAtZero' => true,
                         'grid' => [
                             'color' => '#ffffff10',
-                            'currency' => $isCurrency,
-                            'percent' => $isPercentage,
+                            'currency' => $salesMetric->isCurrency(),
+                            'percent' => $salesMetric->isPercentage(),
                         ],
                     ],
                 ],

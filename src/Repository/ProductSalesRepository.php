@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\DTO\ProductSalesFilterDto;
 use App\Entity\ProductSales;
 use App\Enum\SalesType;
-use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -22,22 +21,10 @@ class ProductSalesRepository extends ServiceEntityRepository
 
     public function findProductSalesBySalesDto(ProductSalesFilterDto $salesFilterDto): array
     {
-        $sort = $salesFilterDto->getSort() ?: $salesFilterDto::SORT_DEFAULT;
-        $sortDirection = $salesFilterDto->getSortDirection() ?: $salesFilterDto::SORT_DIRECTION_DEFAULT;
-        $startDate = $salesFilterDto->getDuration()->getStartDate();
-        $endDate = $salesFilterDto->getDuration()->getEndDate();
-
-        if ($salesFilterDto->getStartDate()) {
-            $startDate = DateTime::createFromFormat('Y-m-d', $salesFilterDto->getStartDate())
-                ->format('Y-m-d');
-        }
-
-        if ($salesFilterDto->getEndDate()) {
-            $endDate = DateTime::createFromFormat('Y-m-d', $salesFilterDto->getEndDate())
-                ->format('Y-m-d');
-        }
-
-        $qb = $this->getProductSalesQuery($startDate, $endDate)->addSelect('p.id, p.name');
+        $qb = $this->getProductSalesQuery(
+            $salesFilterDto->getDuration()->getStartDate(),
+            $salesFilterDto->getDuration()->getEndDate()
+        )->addSelect('p.id, p.name');
 
         if ($salesFilterDto->getProductId()) {
             $qb->andWhere('ps.product = :productId')
@@ -66,16 +53,16 @@ class ProductSalesRepository extends ServiceEntityRepository
 
         return $qb
             ->groupBy('p.id')
-            ->orderBy($sort, $sortDirection)
+            ->orderBy($salesFilterDto->getSort()->value, $salesFilterDto->getSortDirection())
             ->setMaxResults($salesFilterDto::LIMIT_DEFAULT)
             ->getQuery()->getResult();
     }
 
     public function calculateSalesBySalesType(
         SalesType $salesType,
-        string    $startDate,
-        string    $endDate,
-        string    $dateString
+        string $startDate,
+        string $endDate,
+        string $dateString
     ): array
     {
         $qb = $this->getProductSalesQuery($startDate, $endDate)

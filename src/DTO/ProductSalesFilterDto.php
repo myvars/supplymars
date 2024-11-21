@@ -3,6 +3,7 @@
 namespace App\DTO;
 
 use App\Enum\SalesDuration;
+use App\Enum\SalesMetric;
 use App\Enum\SalesType;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -10,21 +11,15 @@ final class ProductSalesFilterDto
 {
     public const TEMPLATE = 'common/sales_filter.html.twig';
 
-    public const SORT_DEFAULT = 'salesQty';
-
-    public const SORT_OPTIONS = ['salesQty', 'salesCost', 'salesProfit', 'salesMargin'];
-
-    public const SORT_DIRECTION_DEFAULT = 'DESC';
-
     public const LIMIT_DEFAULT = 10;
 
     private ?string $queryString = null;
 
-    private string $sort = self::SORT_DEFAULT;
+    private SalesMetric $sort = SalesMetric::QTY;
 
     private SalesDuration $duration = SalesDuration::LAST_30;
 
-    private ?string $sortDirection = null;
+    private string $sortDirection = 'desc';
 
     #[Assert\Range(notInRangeMessage: 'Please enter a valid Product Id', min: 1, max: 1000000)]
     private ?int $productId = null;
@@ -51,7 +46,7 @@ final class ProductSalesFilterDto
     public function getSalesFilterParams(): array
     {
         $salesFilterParams = [
-            'sort' => $this->sort,
+            'sort' => $this->sort->value,
             'sortDirection' => $this->sortDirection,
             'duration' => $this->duration->value,
             'limit' => self::LIMIT_DEFAULT,
@@ -83,18 +78,18 @@ final class ProductSalesFilterDto
         return $this;
     }
 
-    public function getSort(): ?string
+    public function getSort(): ?SalesMetric
     {
         return $this->sort;
     }
 
     public function setSort(?string $sort): ProductSalesFilterDto
     {
-        if (!in_array($sort, self::SORT_OPTIONS)) {
-            $sort = self::SORT_DEFAULT;
+        if (!SalesMetric::isValid($sort)) {
+            $sort = SalesMetric::default()->value;
         }
 
-        $this->sort = $sort;
+        $this->sort = SalesMetric::from($sort);
 
         return $this;
     }
@@ -107,7 +102,7 @@ final class ProductSalesFilterDto
     public function setSortDirection(?string $sortDirection): ProductSalesFilterDto
     {
         if (!in_array(strtoupper((string) $sortDirection), ['ASC', 'DESC'])) {
-            $sortDirection = strtolower(self::SORT_DIRECTION_DEFAULT);
+            $sortDirection = 'DESC';
         }
 
         $this->sortDirection = strtolower((string) $sortDirection);
