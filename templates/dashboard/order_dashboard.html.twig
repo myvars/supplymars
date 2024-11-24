@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Order Dashboard{% endblock %}
+
+{% block body %}
+
+    <twig:Card>
+        <turbo-frame id="sales">
+
+            {% if summary is not null %}
+                <div class="mb-3 flex items-center justify-between">
+                    <div class="flex items-center justify-start">
+                        <p class="text-gray-600 dark:text-gray-500">Order Summary</p>
+                    </div>
+                    {{ include('dashboard/_sales_durations.html.twig') }}
+                </div>
+
+                {{ include('dashboard/_order_summary.html.twig', {summary: summary}) }}
+
+                {% if orderSalesChart %}
+                    <div
+                        class="mt-3 flex h-64 flex-wrap justify-around rounded-lg bg-white text-center font-light dark:border-gray-700 dark:bg-gray-900 md:h-auto">
+                        {{ render_chart(orderSalesChart, {'data-controller': 'bar_chart', 'class': 'w-full h-full'}) }}
+                    </div>
+                {% endif %}
+
+                {% if orderProgressChart %}
+                    <div class="my-3 flex items-center justify-start">
+                        <p class="text-gray-600 dark:text-gray-500">Order Progress</p>
+                    </div>
+                    <div
+                        class="flex h-64 flex-wrap justify-around rounded-lg bg-white text-center font-light dark:border-gray-700 dark:bg-gray-900 md:h-auto">
+                        {{ render_chart(orderProgressChart, {'data-controller': 'doughnut_chart', 'class': ''}) }}
+                    </div>
+                {% endif %}
+
+            {% endif %}
+
+        </turbo-frame>
+    </twig:Card>
+
+{% endblock %}

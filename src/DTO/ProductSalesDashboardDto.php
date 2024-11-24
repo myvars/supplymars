@@ -3,23 +3,19 @@
 namespace App\DTO;
 
 use App\Enum\SalesDuration;
-use App\Enum\SalesMetric;
+use App\Enum\ProductSalesMetric;
 use App\Enum\SalesType;
 use Symfony\Component\Validator\Constraints as Assert;
 
-final class ProductSalesFilterDto
+final class ProductSalesDashboardDto
 {
-    public const TEMPLATE = 'common/sales_filter.html.twig';
-
     public const LIMIT_DEFAULT = 10;
 
-    private ?string $queryString = null;
+    private string $sortDirection = 'desc';
 
-    private SalesMetric $sort = SalesMetric::QTY;
+    private ProductSalesMetric $sort = ProductSalesMetric::QTY;
 
     private SalesDuration $duration = SalesDuration::LAST_30;
-
-    private string $sortDirection = 'desc';
 
     #[Assert\Range(notInRangeMessage: 'Please enter a valid Product Id', min: 1, max: 1000000)]
     private ?int $productId = null;
@@ -36,60 +32,18 @@ final class ProductSalesFilterDto
     #[Assert\Range(notInRangeMessage: 'Please enter a valid Supplier Id', min: 1, max: 1000000)]
     private ?int $supplierId = null;
 
-    #[Assert\Date]
-    private ?string $startDate = null;
-
-    #[Assert\Date]
-    private ?string $endDate = null;
-
-
-    public function getSalesFilterParams(): array
-    {
-        $salesFilterParams = [
-            'sort' => $this->sort->value,
-            'sortDirection' => $this->sortDirection,
-            'duration' => $this->duration->value,
-            'limit' => self::LIMIT_DEFAULT,
-            'productId' => $this->productId,
-            'categoryId' => $this->categoryId,
-            'subcategoryId' => $this->subcategoryId,
-            'manufacturerId' => $this->manufacturerId,
-            'supplierId' => $this->supplierId,
-            'startDate' => $this->startDate,
-            'endDate' => $this->endDate,
-        ];
-
-        if (array_filter($salesFilterParams)) {
-            $salesFilterParams['filter'] = 'on';
-        }
-
-        return $salesFilterParams;
-    }
-
-    public function getQueryString(): ?string
-    {
-        return $this->queryString;
-    }
-
-    public function setQueryString(?string $queryString): ProductSalesFilterDto
-    {
-        $this->queryString = $queryString;
-
-        return $this;
-    }
-
-    public function getSort(): ?SalesMetric
+    public function getSort(): ?ProductSalesMetric
     {
         return $this->sort;
     }
 
-    public function setSort(?string $sort): ProductSalesFilterDto
+    public function setSort(?string $sort): ProductSalesDashboardDto
     {
-        if (!SalesMetric::isValid($sort)) {
-            $sort = SalesMetric::default()->value;
+        if (!ProductSalesMetric::isValid($sort)) {
+            $sort = ProductSalesMetric::default()->value;
         }
 
-        $this->sort = SalesMetric::from($sort);
+        $this->sort = ProductSalesMetric::from($sort);
 
         return $this;
     }
@@ -99,7 +53,7 @@ final class ProductSalesFilterDto
         return $this->sortDirection;
     }
 
-    public function setSortDirection(?string $sortDirection): ProductSalesFilterDto
+    public function setSortDirection(?string $sortDirection): ProductSalesDashboardDto
     {
         if (!in_array(strtoupper((string) $sortDirection), ['ASC', 'DESC'])) {
             $sortDirection = 'DESC';
@@ -115,7 +69,7 @@ final class ProductSalesFilterDto
         return $this->duration;
     }
 
-    public function setDuration(?string $duration): ProductSalesFilterDto
+    public function setDuration(?string $duration): ProductSalesDashboardDto
     {
         if (!SalesDuration::isValid($duration)) {
             $duration = SalesDuration::default()->value;
@@ -131,7 +85,7 @@ final class ProductSalesFilterDto
         return $this->productId;
     }
 
-    public function setProductId(?int $productId): ProductSalesFilterDto
+    public function setProductId(?int $productId): ProductSalesDashboardDto
     {
         $this->productId = $productId;
 
@@ -143,7 +97,7 @@ final class ProductSalesFilterDto
         return $this->categoryId;
     }
 
-    public function setCategoryId(?int $categoryId): ProductSalesFilterDto
+    public function setCategoryId(?int $categoryId): ProductSalesDashboardDto
     {
         $this->categoryId = $categoryId;
 
@@ -155,7 +109,7 @@ final class ProductSalesFilterDto
         return $this->subcategoryId;
     }
 
-    public function setSubcategoryId(?int $subcategoryId): ProductSalesFilterDto
+    public function setSubcategoryId(?int $subcategoryId): ProductSalesDashboardDto
     {
         $this->subcategoryId = $subcategoryId;
 
@@ -167,7 +121,7 @@ final class ProductSalesFilterDto
         return $this->manufacturerId;
     }
 
-    public function setManufacturerId(?int $manufacturerId): ProductSalesFilterDto
+    public function setManufacturerId(?int $manufacturerId): ProductSalesDashboardDto
     {
         $this->manufacturerId = $manufacturerId;
 
@@ -179,33 +133,9 @@ final class ProductSalesFilterDto
         return $this->supplierId;
     }
 
-    public function setSupplierId(?int $supplierId): ProductSalesFilterDto
+    public function setSupplierId(?int $supplierId): ProductSalesDashboardDto
     {
         $this->supplierId = $supplierId;
-
-        return $this;
-    }
-
-    public function getStartDate(): ?string
-    {
-        return $this->startDate;
-    }
-
-    public function setStartDate(?string $startDate): ProductSalesFilterDto
-    {
-        $this->startDate = $startDate;
-
-        return $this;
-    }
-
-    public function getEndDate(): ?string
-    {
-        return $this->endDate;
-    }
-
-    public function setEndDate(?string $endDate): ProductSalesFilterDto
-    {
-        $this->endDate = $endDate;
 
         return $this;
     }

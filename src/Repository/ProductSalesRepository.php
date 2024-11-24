@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\DTO\ProductSalesFilterDto;
+use App\DTO\ProductSalesDashboardDto;
 use App\Entity\ProductSales;
 use App\Enum\SalesType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -19,7 +19,7 @@ class ProductSalesRepository extends ServiceEntityRepository
         parent::__construct($registry, ProductSales::class);
     }
 
-    public function findProductSalesBySalesDto(ProductSalesFilterDto $salesFilterDto): array
+    public function findProductSalesByDto(ProductSalesDashboardDto $salesFilterDto): array
     {
         $qb = $this->getProductSalesQuery(
             $salesFilterDto->getDuration()->getStartDate(),
@@ -63,8 +63,7 @@ class ProductSalesRepository extends ServiceEntityRepository
         string $startDate,
         string $endDate,
         string $dateString
-    ): array
-    {
+    ): array {
         $qb = $this->getProductSalesQuery($startDate, $endDate)
             ->addSelect("DATE_FORMAT(ps.salesDate, :dateString) AS dateString")
             ->setParameter('dateString', $dateString)

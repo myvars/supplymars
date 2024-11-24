@@ -84,6 +84,12 @@ class OrderController extends AbstractController
         return $crudCreator->build($crudOptions);
     }
 
+    #[Route('/dashboard', name: 'app_order_show_dashboard')]
+    public function dashboard(): Response
+    {
+        return $this->render('order/dashboard.html.twig');
+    }
+
     #[Route('/{id}', name: 'app_order_show', methods: ['GET'])]
     public function show(?CustomerOrder $customerOrder, CrudReader $crudReader): Response
     {

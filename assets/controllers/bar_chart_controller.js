@@ -19,17 +19,11 @@ export default class extends Controller {
         const config = event.detail?.config;
 
         const yScaleOptions = config?.options?.scales?.y?.grid;
-        const isCurrency = yScaleOptions?.currency || false; // Check if currency formatting is enabled
-        const isPercent = yScaleOptions?.percent || false; // Check if percentage formatting is enabled
+        const yAxisType = yScaleOptions?.axisType || false; // Check Y axis data type
 
         // Configure the chart based on the formatting type
-        if (isCurrency) {
-            this.configureYAxis(config, 'currency');
-            this.configureTooltip(config, 'currency');
-        } else if (isPercent) {
-            this.configureYAxis(config, 'percent');
-            this.configureTooltip(config, 'percent');
-        }
+        this.configureYAxis(config, yAxisType);
+        this.configureTooltip(config, yAxisType);
     };
 
     onConnect = (event) => {
@@ -37,32 +31,32 @@ export default class extends Controller {
     };
 
     // Configures the Y-axis ticks based on the specified type (currency or percent)
-    configureYAxis(config, type) {
+    configureYAxis(config, yAxisType) {
         config.options.scales.y.ticks = {
-            callback: (value) => this.formatValue(value, type, false),  // Axis formatting
+            callback: (value) => this.formatValue(value, yAxisType, false),  // Axis formatting
         };
     }
 
     // Configures the tooltip labels based on the specified type (currency or percent)
-    configureTooltip(config, type) {
+    configureTooltip(config, yAxisType) {
         config.options.plugins = config.options.plugins || {}; // Ensure the plugins object exists
         config.options.plugins.tooltip = {
             callbacks: {
                 label: (tooltipItem) => {
                     const value = tooltipItem.raw;
-                    return this.formatValue(value, type, true); // Tooltip formatting
+                    return this.formatValue(value, yAxisType, true); // Tooltip formatting
                 },
             },
         };
     }
 
-    formatValue(value, type, isTooltip) {
+    formatValue(value, yAxisType, isTooltip) {
         const numericValue = Number(value); // Ensure value is treated as a number
         if (isNaN(numericValue)) {
             return 'N/A'; // Handle invalid values
         }
 
-        if (type === 'currency') {
+        if (yAxisType === 'currency') {
             const currency = this.constructor.currencySymbol;
 
             if (isTooltip) {
@@ -79,7 +73,7 @@ export default class extends Controller {
             return `${currency}${Math.round(numericValue).toLocaleString()}`;
         }
 
-        if (type === 'percent') {
+        if (yAxisType === 'percentage') {
             // Percentage formatting for both tooltip and axis
             return `${numericValue.toFixed(2)}%`; // Format with two decimal places
         }

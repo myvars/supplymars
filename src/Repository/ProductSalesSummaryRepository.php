@@ -2,7 +2,6 @@
 
 namespace App\Repository;
 
-use App\Entity\ProductSales;
 use App\Entity\ProductSalesSummary;
 use App\Enum\SalesDuration;
 use App\Enum\SalesType;
@@ -11,7 +10,7 @@ use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<ProductSales>
+ * @extends ServiceEntityRepository<ProductSalesSummary>
  */
 class ProductSalesSummaryRepository extends ServiceEntityRepository
 {

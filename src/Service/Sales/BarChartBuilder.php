@@ -3,54 +3,39 @@
 namespace App\Service\Sales;
 
 use App\Enum\SalesDuration;
-use App\Enum\SalesMetric;
-use App\Enum\SalesType;
-use App\Repository\ProductSalesRepository;
-use App\Repository\ProductSalesSummaryRepository;
+use App\Enum\SalesMetricInterface;
 use DateInterval;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
 
-class ProductSalesChartBuilder
+class BarChartBuilder
 {
     private const CHART_TYPE = Chart::TYPE_BAR;
 
-    public function __construct(
-        private readonly ProductSalesRepository $productSalesRepository,
-        private readonly ProductSalesSummaryRepository $productSalesSummaryRepository,
-        private readonly ChartBuilderInterface  $chartBuilder
-    ) {
+    public function __construct(private readonly ChartBuilderInterface $chartBuilder)
+    {
     }
 
-    public function build(
-        int $salesTypeId,
-        SalesType $salesType,
-        SalesDuration $salesDuration,
-        SalesMetric $salesMetric
-    ): ?Chart {
-        $salesData = $this->getSalesData($salesTypeId, $salesType, $salesDuration);
-        if ($salesData === []) {
-            return null;
-        }
-
+    public function create(array $salesData, SalesDuration $salesDuration, SalesMetricInterface $salesMetric): Chart
+    {
         $dateRange = $this->generateDateRange(
-            new \DateTimeImmutable($this->getSalesRangeStartDate($salesDuration)),
+            new \DateTimeImmutable(static::getSalesRangeStartDate($salesDuration)),
             new \DateTimeImmutable(),
             $salesDuration->getChartLabelFormat(),
             $salesDuration->getChartGranularity()
         );
 
-        $mergedData = $this->mergeSalesData(
+        $chartData =  $this->mergeSalesData(
             $dateRange,
             $salesData,
             $salesDuration->getChartLabelFormat(),
-            $salesMetric->value
+            $salesMetric->getValue()
         );
 
-        return $this->buildChart($mergedData, $salesMetric);
+        return $this->buildChart($chartData, $salesMetric);
     }
 
-    private function buildChart(array $data, SalesMetric $salesMetric): Chart
+    private function buildChart(array $data, SalesMetricInterface $salesMetric): Chart
     {
         return $this->chartBuilder
             ->createChart(self::CHART_TYPE)
@@ -82,8 +67,7 @@ class ProductSalesChartBuilder
                         'beginAtZero' => true,
                         'grid' => [
                             'color' => '#ffffff10',
-                            'currency' => $salesMetric->isCurrency(),
-                            'percent' => $salesMetric->isPercentage(),
+                            'axisType' => $salesMetric->getYAxisType(),
                         ],
                     ],
                 ],
@@ -91,29 +75,6 @@ class ProductSalesChartBuilder
                     'padding' => 20
                 ],
             ]);
-    }
-
-    public function getSalesData(
-        int $salesTypeId,
-        SalesType $salesType,
-        SalesDuration $salesDuration
-    ): array{
-        $salesRangeDuration = $this->getSalesRangeDuration($salesDuration);
-
-        if ($salesType === SalesType::PRODUCT && $salesRangeDuration === SalesDuration::DAY) {
-            return $this->productSalesRepository->findProductSalesRange(
-                $salesTypeId,
-                $salesDuration->getStartDate(),
-                $salesDuration->getEndDate()
-            );
-        }
-
-        return $this->productSalesSummaryRepository->findProductSalesSummaryRange(
-            $salesTypeId,
-            $salesType,
-            $salesRangeDuration,
-            $this->getSalesRangeStartDate($salesDuration)
-        );
     }
 
     private function generateDateRange(
@@ -135,7 +96,6 @@ class ProductSalesChartBuilder
         return $dateRange;
     }
 
-
     private function mergeSalesData(
         array $dateRange,
         array $salesData,
@@ -153,7 +113,7 @@ class ProductSalesChartBuilder
         return $dateRange;
     }
 
-    private function getSalesRangeDuration(SalesDuration $salesDuration): SalesDuration
+    public static function getSalesRangeDuration(SalesDuration $salesDuration): SalesDuration
     {
         if ($salesDuration === SalesDuration::MTD) {
             return SalesDuration::MONTH;
@@ -162,7 +122,7 @@ class ProductSalesChartBuilder
         return SalesDuration::DAY;
     }
 
-    private function getSalesRangeStartDate(SalesDuration $salesDuration): string
+    public static function getSalesRangeStartDate(SalesDuration $salesDuration): string
     {
         if ($salesDuration === SalesDuration::MTD) {
             return SalesDuration::MONTH->getStartDate(true);

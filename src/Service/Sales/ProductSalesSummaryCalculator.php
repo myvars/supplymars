@@ -32,9 +32,9 @@ class ProductSalesSummaryCalculator
 
     public function processProductSalesType(ProductSalesTypeDto $dto): void
     {
-        $this->removeExistingSummary($dto);
-
         $sales = $this->getSales($dto);
+
+        $this->removeExistingSummary($dto);
 
         foreach ($sales as $sale) {
             $productSalesSummary = ProductSalesSummary::create(

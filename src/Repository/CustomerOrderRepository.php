@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\DTO\SearchDto\SearchInterface;
 use App\Entity\CustomerOrder;
 use App\Enum\OrderStatus;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -98,6 +99,39 @@ class CustomerOrderRepository extends ServiceEntityRepository implements SearchQ
             ->setParameter('status', OrderStatus::PENDING)
             ->orderBy('co.createdAt', 'ASC')
             ->setMaxResults($orderCount)
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function calculateOrderSales(DateTime $startDate, DateTime $endDate): array
+    {
+        return $this->createQueryBuilder('co')
+            ->select('DATE_FORMAT(co.createdAt, :dateString) AS dateString')
+            ->setParameter('dateString', '%Y-%m-%d')
+            ->addSelect('count(co.id) as orderCount')
+            ->addSelect('SUM(co.totalPrice) AS orderValue')
+            ->andWhere('co.status != :status')
+            ->setParameter('status', OrderStatus::CANCELLED)
+            ->andWhere('co.createdAt between :startDate and :endDate')
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate)
+            ->groupBy('dateString')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function calculateOrderSalesByStatus(DateTime $startDate, DateTime $endDate): array
+    {
+        return $this->createQueryBuilder('co')
+            ->select('co.status')
+            ->addSelect('count(co.id) as orderCount')
+            ->addSelect('SUM(co.totalPrice) AS orderValue')
+            ->andWhere('co.status != :status')
+            ->setParameter('status', OrderStatus::CANCELLED)
+            ->andWhere('co.createdAt between :startDate and :endDate')
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate)
+            ->groupBy('co.status')
             ->getQuery()
             ->getResult();
     }

@@ -40,6 +40,17 @@ enum OrderStatus: string
         };
     }
 
+    public function getChartColor(): string
+    {
+        return match ($this) {
+            self::PENDING => '#991b1b90', // Muted golden yellow
+            self::PROCESSING => '#eab30890', // Muted burnt orange
+            self::SHIPPED => '#05966990', // Muted forest green
+            self::DELIVERED => '#0284c790', // Muted teal blue
+            self::CANCELLED => '#b91c1c90', // Muted deep red
+        };
+    }
+
     public function allowEdit(): bool
     {
         return $this === self::PENDING || $this === self::PROCESSING;

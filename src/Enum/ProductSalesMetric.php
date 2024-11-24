@@ -2,7 +2,7 @@
 
 namespace App\Enum;
 
-enum SalesMetric: string
+enum ProductSalesMetric: string implements SalesMetricInterface
 {
     case QTY = 'salesQty';
     case COST = 'salesCost';
@@ -19,6 +19,11 @@ enum SalesMetric: string
     {
         // check if the duration is a case->value in the list of cases
         return in_array($metric, array_column(self::cases(), 'value'), true);
+    }
+
+    public function getValue(): string
+    {
+        return $this->value;
     }
 
     public function getDataLabel(): string
@@ -43,19 +48,12 @@ enum SalesMetric: string
         };
     }
 
-    public function isCurrency(): bool
+    public function getYAxisType(): ?string
     {
         return match ($this) {
-            self::COST, self::VALUE, self::PROFIT => true,
-            default => false,
-        };
-    }
-
-    public function isPercentage(): bool
-    {
-        return match ($this) {
-            self::MARGIN => true,
-            default => false,
+            self::COST, self::VALUE, self::PROFIT => 'currency',
+            self::MARGIN => 'percentage',
+            default => null,
         };
     }
 }
