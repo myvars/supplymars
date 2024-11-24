@@ -48,8 +48,8 @@ class OrderDashboardManager
     public function getOrderProgressChart(): ?Chart
     {
         $salesData = $this->orderRepository->calculateOrderSalesByStatus(
-            Datetime::createFromFormat('Y-m-d', $this->dto->getDuration()->getStartDate()),
-            DateTime::createFromFormat('Y-m-d', $this->dto->getDuration()->getEndDate()),
+            new DateTime($this->dto->getDuration()->getStartDate()),
+            new DateTime($this->dto->getDuration()->getEndDate()),
         );
         if ($salesData === []) {
             return null;
