@@ -1,38 +1,52 @@
 <?php
 
-namespace App\Service\Sales;
+namespace App\Service\Dashboard\Report;
 
-use App\DTO\OrderSalesDashboardDto;
+use App\DTO\OrderSummaryReportDto;
 use App\Repository\CustomerOrderRepository;
 use App\Repository\OrderSalesSummaryRepository;
+use App\Service\Dashboard\BarChartBuilder;
+use App\Service\Dashboard\DoughnutChartBuilder;
 use DateTime;
+use Symfony\Component\DependencyInjection\Attribute\AsTaggedItem;
 use Symfony\UX\Chartjs\Model\Chart;
 
-class OrderDashboardManager
+#[AsTaggedItem('order-summary', priority: 10)]
+final class OrderSummaryReport implements ReportInterface
 {
-    private readonly OrderSalesDashboardDto $dto;
+    private readonly OrderSummaryReportDto $dto;
 
     public function __construct(
-        private readonly CustomerOrderRepository $orderRepository,
+        private readonly CustomerOrderRepository     $orderRepository,
         private readonly OrderSalesSummaryRepository $summaryRepository,
-        private readonly BarChartBuilder $barChartBuilder,
-        private readonly DoughnutChartBuilder $doughnutChartBuilder
+        private readonly BarChartBuilder             $barChartBuilder,
+        private readonly DoughnutChartBuilder        $doughnutChartBuilder
     ) {
     }
 
-    public function createFromDto(OrderSalesDashboardDto $dto): void
+    public function build(object $dto): ?array
     {
+        if (!$dto instanceof OrderSummaryReportDto) {
+            throw new \InvalidArgumentException('Invalid DTO');
+        }
+
         $this->dto = $dto;
+
+        return [
+            'summary' => $this->getSummary(),
+            'orderSalesChart' => $this->getOrderSalesChart(),
+            'orderProgressChart' => $this->getOrderProgressChart(),
+        ];
     }
 
-    public function getSummary(): ?array
+    private function getSummary(): ?array
     {
         $summary = $this->summaryRepository->findOrderSalesSummary($this->dto->getDuration());
 
         return $summary ?? [];
     }
 
-    public function getOrderSalesChart(): ?Chart
+    private function getOrderSalesChart(): ?Chart
     {
         $salesData = $this->summaryRepository->findOrderSalesSummaryRange(
             $this->barChartBuilder::getSalesRangeDuration($this->dto->getDuration()),
@@ -45,9 +59,9 @@ class OrderDashboardManager
         return $this->barChartBuilder->create($salesData, $this->dto->getDuration(), $this->dto->getSort());
     }
 
-    public function getOrderProgressChart(): ?Chart
+    private function getOrderProgressChart(): ?Chart
     {
-        $salesData = $this->orderRepository->calculateOrderSalesByStatus(
+        $salesData = $this->orderRepository->findOrderSalesByStatus(
             new DateTime($this->dto->getDuration()->getStartDate()),
             new DateTime($this->dto->getDuration()->getEndDate()),
         );

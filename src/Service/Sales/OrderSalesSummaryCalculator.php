@@ -2,10 +2,10 @@
 
 namespace App\Service\Sales;
 
-use App\DTO\OrderSalesTypeDto;
 use App\Entity\OrderSales;
 use App\Entity\OrderSalesSummary;
 use App\Enum\SalesDuration;
+use App\ValueObject\OrderSalesType;
 use Doctrine\ORM\EntityManagerInterface;
 
 class OrderSalesSummaryCalculator
@@ -16,23 +16,24 @@ class OrderSalesSummaryCalculator
 
     public function process(bool $rebuild = false): void
     {
-        foreach (SalesDuration::cases() as $duration) {
-            $this->processOrderSalesType(OrderSalesTypeDto::create($duration, $rebuild));
+        foreach (SalesDuration::cases() as $salesDuration) {
+            $this->processOrderSalesType(OrderSalesType::create($salesDuration, $rebuild));
         }
     }
 
-    public function processOrderSalesType(OrderSalesTypeDto $dto): void
+    private function processOrderSalesType(OrderSalesType $orderSalesType): void
     {
-        $sales = $this->getSales($dto);
+        $sales = $this->getOrderSalesSummary($orderSalesType);
 
-        $this->removeExistingSummary($dto);
+        $this->removeExistingSummary($orderSalesType);
 
         foreach ($sales as $sale) {
             $orderSalesSummary = OrderSalesSummary::create(
-                $dto->getDuration(),
+                $orderSalesType,
                 $sale['dateString'],
                 $sale['orderCount'],
                 $sale['orderValue'],
+                $sale['averageOrderValue']
             );
             $this->entityManager->persist($orderSalesSummary);
         }
@@ -40,20 +41,15 @@ class OrderSalesSummaryCalculator
         $this->entityManager->flush();
     }
 
-    public function getSales(OrderSalesTypeDto $dto): ?array
+    private function getOrderSalesSummary(OrderSalesType $orderSalesType): ?array
     {
-        return $this->entityManager->getRepository(OrderSales::class)->calculateSales(
-            $dto->getStartDate(),
-            $dto->getEndDate(),
-            $dto->getDateString()
-        );
+        return $this->entityManager->getRepository(OrderSales::class)
+            ->findOrderSalesSummary($orderSalesType);
     }
 
-    public function removeExistingSummary(OrderSalesTypeDto $dto): void
+    private function removeExistingSummary(OrderSalesType $orderSalesType): void
     {
-        $this->entityManager->getRepository(OrderSalesSummary::class)->deleteByDuration(
-            $dto->getDuration()->value,
-            $dto->getRangeStartDate()
-        );
+        $this->entityManager->getRepository(OrderSalesSummary::class)
+            ->deleteByOrderSalesType($orderSalesType);
     }
 }

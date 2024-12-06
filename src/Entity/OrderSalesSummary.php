@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Enum\SalesDuration;
 use App\Repository\OrderSalesSummaryRepository;
+use App\ValueObject\OrderSalesType;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -22,26 +23,29 @@ class OrderSalesSummary
         private readonly int $orderCount,
         #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
         private readonly string $orderValue,
+        #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+        private readonly string $averageOrderValue,
         #[ORM\Column(type: Types::DATE_IMMUTABLE)]
         private readonly \DateTimeImmutable $salesDate
     ) {
     }
 
     public static function create(
-        SalesDuration $duration,
+        OrderSalesType $orderSalesType,
         string $dateString,
         int $orderCount,
         string $orderValue,
+        string $averageOrderValue
     ): self{
         return new self(
-            $duration,
+            $orderSalesType->getDuration(),
             $dateString,
             $orderCount,
             $orderValue,
+            $averageOrderValue,
             new DateTimeImmutable($dateString)
         );
     }
-
 
     public function getDuration(): ?SalesDuration
     {
@@ -66,5 +70,10 @@ class OrderSalesSummary
     public function getSalesDate(): ?DateTimeImmutable
     {
         return $this->salesDate;
+    }
+
+    public function getAverageOrderValue(): string
+    {
+        return $this->averageOrderValue;
     }
 }

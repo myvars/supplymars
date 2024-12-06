@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\DTO\SearchDto\OverdueOrderSearchDto;
 use App\DTO\SearchDto\SearchInterface;
 use App\Entity\CustomerOrder;
 use App\Enum\OrderStatus;
@@ -103,36 +104,71 @@ class CustomerOrderRepository extends ServiceEntityRepository implements SearchQ
             ->getResult();
     }
 
-    public function calculateOrderSales(DateTime $startDate, DateTime $endDate): array
+    public function findOrderSalesByDate(DateTime $startDate, DateTime $endDate): array
     {
-        return $this->createQueryBuilder('co')
-            ->select('DATE_FORMAT(co.createdAt, :dateString) AS dateString')
+        return $this->getOrderSales($startDate, $endDate)
+            ->addSelect('DATE_FORMAT(co.createdAt, :dateString) AS dateString')
             ->setParameter('dateString', '%Y-%m-%d')
-            ->addSelect('count(co.id) as orderCount')
-            ->addSelect('SUM(co.totalPrice) AS orderValue')
-            ->andWhere('co.status != :status')
-            ->setParameter('status', OrderStatus::CANCELLED)
-            ->andWhere('co.createdAt between :startDate and :endDate')
-            ->setParameter('startDate', $startDate)
-            ->setParameter('endDate', $endDate)
             ->groupBy('dateString')
             ->getQuery()
             ->getResult();
     }
 
-    public function calculateOrderSalesByStatus(DateTime $startDate, DateTime $endDate): array
+    public function findOrderSalesByStatus(DateTime $startDate, DateTime $endDate): array
+    {
+        return $this->getOrderSales($startDate, $endDate)
+            ->addSelect('co.status')
+            ->groupBy('co.status')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getOrderSales(DateTime $startDate, DateTime $endDate): QueryBuilder
     {
         return $this->createQueryBuilder('co')
-            ->select('co.status')
-            ->addSelect('count(co.id) as orderCount')
+            ->select('count(co.id) as orderCount')
             ->addSelect('SUM(co.totalPrice) AS orderValue')
+            ->addSelect('SUM(co.totalPrice) / count(co.id) AS averageOrderValue')
             ->andWhere('co.status != :status')
             ->setParameter('status', OrderStatus::CANCELLED)
             ->andWhere('co.createdAt between :startDate and :endDate')
             ->setParameter('startDate', $startDate)
-            ->setParameter('endDate', $endDate)
-            ->groupBy('co.status')
+            ->setParameter('endDate', $endDate);
+    }
+
+    public function findOverdueOrders(OverdueOrderSearchDto $dto): QueryBuilder
+    {
+        $sort = $dto->getSort() ?: $dto::SORT_DEFAULT;
+        $sortDirection = $dto->getSortDirection() ?: $dto::SORT_DIRECTION_DEFAULT;
+        $startDate = new DateTime($dto->getDuration()->getStartDate());
+
+        $qb = $this->getOverdueOrders($startDate)
+            ->select('co, DATE_DIFF(CURRENT_DATE(), co.dueDate) AS HIDDEN overdueDays');
+
+        if (str_starts_with($sort, 'customer.')) {
+            $qb->leftJoin('co.customer', 'customer')->orderBy($sort, $sortDirection);
+        } else {
+            $qb->orderBy('co.'.$sort, $sortDirection);
+        }
+
+        return $qb;
+    }
+
+    public function findOverdueOrdersSummary(DateTime $startDate): ?array
+    {
+        return $this->getOverdueOrders($startDate)
+            ->select('COUNT(co.id) AS orderCount, SUM(co.totalPrice) AS orderValue')
             ->getQuery()
-            ->getResult();
+            ->getOneOrNullResult();
+    }
+
+    public function getOverdueOrders(DateTime $startDate): QueryBuilder
+    {
+        return $this->createQueryBuilder('co')
+            ->andWhere('co.createdAt >= :startDate')
+            ->setParameter('startDate', $startDate)
+            ->andWhere('co.status NOT IN (:excludedStatuses)')
+            ->setParameter('excludedStatuses', [OrderStatus::CANCELLED, OrderStatus::DELIVERED])
+            ->andWhere('co.dueDate < CURRENT_DATE()');
     }
 }

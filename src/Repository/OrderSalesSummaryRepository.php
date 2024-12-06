@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\OrderSalesSummary;
 use App\Enum\SalesDuration;
+use App\ValueObject\OrderSalesType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -43,19 +44,20 @@ class OrderSalesSummaryRepository extends ServiceEntityRepository
             ->select('os.salesDate')
             ->addSelect('os.orderCount')
             ->addSelect('os.orderValue')
+            ->addSelect('os.averageOrderValue')
             ->andWhere('os.duration = :duration');
-
     }
 
-    public function deleteByDuration(string $duration, ?string $dateString): void
+    public function deleteByOrderSalesType(OrderSalesType $orderSalesType): void
     {
         $qb = $this->createQueryBuilder('os')
             ->delete()
             ->where('os.duration = :duration')
-            ->setParameter('duration', $duration);
+            ->setParameter('duration', $orderSalesType->getDuration()->value);
 
-        if ($dateString !== null) {
-            $qb->andWhere('os.dateString = :dateString')->setParameter('dateString', $dateString);
+        if ($orderSalesType->getRangeStartDate() !== null) {
+            $qb->andWhere('os.dateString = :dateString')
+                ->setParameter('dateString', $orderSalesType->getRangeStartDate());
         }
 
         $qb->getQuery()->execute();

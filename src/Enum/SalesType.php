@@ -9,4 +9,5 @@ enum SalesType: string
     case SUBCATEGORY = 'subcategory';
     case MANUFACTURER = 'manufacturer';
     case SUPPLIER = 'supplier';
+    case ALL = 'all';
 }

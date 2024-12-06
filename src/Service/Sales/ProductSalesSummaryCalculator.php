@@ -2,11 +2,11 @@
 
 namespace App\Service\Sales;
 
-use App\DTO\ProductSalesTypeDto;
 use App\Entity\ProductSales;
 use App\Entity\ProductSalesSummary;
 use App\Enum\SalesDuration;
 use App\Enum\SalesType;
+use App\ValueObject\ProductSalesType;
 use Doctrine\ORM\EntityManagerInterface;
 
 class ProductSalesSummaryCalculator
@@ -17,29 +17,28 @@ class ProductSalesSummaryCalculator
 
     public function process(bool $rebuild = false): void
     {
-        foreach (SalesDuration::cases() as $duration) {
+        foreach (SalesDuration::cases() as $salesDuration) {
 
             foreach (SalesType::cases() as $salesType) {
                 // Skip day duration for product sales since it is already processed
-                if ($duration === SalesDuration::DAY && $salesType === SalesType::PRODUCT) {
+                if ($salesDuration === SalesDuration::DAY && $salesType === SalesType::PRODUCT) {
                     continue;
                 }
 
-                $this->processProductSalesType(ProductSalesTypeDto::create($salesType, $duration, $rebuild));
+                $this->processProductSalesType(ProductSalesType::create($salesType, $salesDuration, $rebuild));
             }
         }
     }
 
-    public function processProductSalesType(ProductSalesTypeDto $dto): void
+    private function processProductSalesType(ProductSalesType $productSalesType): void
     {
-        $sales = $this->getSales($dto);
+        $sales = $this->getSales($productSalesType);
 
-        $this->removeExistingSummary($dto);
+        $this->removeExistingSummary($productSalesType);
 
         foreach ($sales as $sale) {
             $productSalesSummary = ProductSalesSummary::create(
-                $dto->getSalesType(),
-                $dto->getDuration(),
+                $productSalesType,
                 $sale['salesId'],
                 $sale['dateString'],
                 $sale['salesQty'],
@@ -52,22 +51,15 @@ class ProductSalesSummaryCalculator
         $this->entityManager->flush();
     }
 
-    public function getSales(ProductSalesTypeDto $dto): ?array
+    private function getSales(ProductSalesType $productSalesType): ?array
     {
-        return $this->entityManager->getRepository(ProductSales::class)->calculateSalesBySalesType(
-            $dto->getSalesType(),
-            $dto->getStartDate(),
-            $dto->getEndDate(),
-            $dto->getDateString()
-        );
+        return $this->entityManager->getRepository(ProductSales::class)
+            ->findProductSalesSummary($productSalesType);
     }
 
-    public function removeExistingSummary(ProductSalesTypeDto $dto): void
+    private function removeExistingSummary(ProductSalesType $productSalesType): void
     {
-        $this->entityManager->getRepository(ProductSalesSummary::class)->deleteBySalesTypeAndDuration(
-            $dto->getSalesType()->value,
-            $dto->getDuration()->value,
-            $dto->getRangeStartDate()
-        );
+        $this->entityManager->getRepository(ProductSalesSummary::class)
+            ->deleteByProductSalesType($productSalesType);
     }
 }

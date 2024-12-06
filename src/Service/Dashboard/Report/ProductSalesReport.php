@@ -1,17 +1,20 @@
 <?php
 
-namespace App\Service\Sales;
+namespace App\Service\Dashboard\Report;
 
-use App\DTO\ProductSalesDashboardDto;
+use App\DTO\ProductSalesReportDto;
 use App\Enum\SalesDuration;
 use App\Enum\SalesType;
 use App\Repository\ProductSalesRepository;
 use App\Repository\ProductSalesSummaryRepository;
+use App\Service\Dashboard\BarChartBuilder;
+use Symfony\Component\DependencyInjection\Attribute\AsTaggedItem;
 use Symfony\UX\Chartjs\Model\Chart;
 
-class ProductSalesDashboardManager
+#[AsTaggedItem('product-sales')]
+final class ProductSalesReport implements ReportInterface
 {
-    private readonly ProductSalesDashboardDto $dto;
+    private readonly ProductSalesReportDto $dto;
 
     public function __construct(
         private readonly ProductSalesRepository $salesRepository,
@@ -20,12 +23,23 @@ class ProductSalesDashboardManager
     ) {
     }
 
-    public function createFromDto(ProductSalesDashboardDto $dto): void
+    public function build(object $dto): ?array
     {
+        if (!$dto instanceof ProductSalesReportDto) {
+            throw new \InvalidArgumentException('Invalid DTO');
+        }
+
         $this->dto = $dto;
+
+        return [
+            'type' => $this->dto->getSingleSalesType()['salesType']->value,
+            'sales' => $this->getSales(),
+            'summary' => $this->getSummary(),
+            'productSalesChart' => $this->getProductSalesChart(),
+        ];
     }
 
-    public function getSales(): ?array
+    private function getSales(): ?array
     {
         if ($this->dto->getProductId() !== null) {
             return null;
@@ -36,7 +50,7 @@ class ProductSalesDashboardManager
         return $sales === [] ? null : $sales;
     }
 
-    public function getSummary(): ?array
+    private function getSummary(): ?array
     {
         $singleSalesType = $this->dto->getSingleSalesType();
         if ($singleSalesType === null) {
@@ -52,7 +66,7 @@ class ProductSalesDashboardManager
         return $summary ?? [];
     }
 
-    public function getProductSalesChart(): ?Chart
+    private function getProductSalesChart(): ?Chart
     {
         $singleSalesType = $this->dto->getSingleSalesType();
         if ($singleSalesType === null) {

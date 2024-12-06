@@ -5,7 +5,7 @@ namespace App\DTO;
 use App\Enum\OrderSalesMetric;
 use App\Enum\SalesDuration;
 
-final class OrderSalesDashboardDto
+final class OrderSummaryReportDto
 {
     private string $sortDirection = 'desc';
 
@@ -19,7 +19,7 @@ final class OrderSalesDashboardDto
         return $this->sort;
     }
 
-    public function setSort(?string $sort): OrderSalesDashboardDto
+    public function setSort(?string $sort): OrderSummaryReportDto
     {
         if (!OrderSalesMetric::isValid($sort)) {
             $sort = OrderSalesMetric::default()->value;
@@ -35,7 +35,7 @@ final class OrderSalesDashboardDto
         return $this->sortDirection;
     }
 
-    public function setSortDirection(?string $sortDirection): OrderSalesDashboardDto
+    public function setSortDirection(?string $sortDirection): OrderSummaryReportDto
     {
         if (!in_array(strtoupper((string) $sortDirection), ['ASC', 'DESC'])) {
             $sortDirection = 'DESC';
@@ -51,7 +51,7 @@ final class OrderSalesDashboardDto
         return $this->duration;
     }
 
-    public function setDuration(?string $duration): OrderSalesDashboardDto
+    public function setDuration(?string $duration): OrderSummaryReportDto
     {
         if (!SalesDuration::isValid($duration)) {
             $duration = SalesDuration::default()->value;

@@ -20,7 +20,12 @@ class OrderSalesCalculator
         $this->removeExistingOrderSales($date);
 
         foreach ($sales as $sale) {
-            $orderSales = OrderSales::create($date, $sale['orderCount'], $sale['orderValue']);
+            $orderSales = OrderSales::create(
+                $date,
+                $sale['orderCount'],
+                $sale['orderValue'],
+                $sale['averageOrderValue']
+            );
             $this->entityManager->persist($orderSales);
         }
 
@@ -29,13 +34,13 @@ class OrderSalesCalculator
 
     private function getOrderSales(string $date): array
     {
-        return $this->entityManager
-            ->getRepository(CustomerOrder::class)
-            ->calculateOrderSales(new DateTime($date), (new DateTime($date))->modify('+ 1 day'));
+        return $this->entityManager->getRepository(CustomerOrder::class)
+            ->findOrderSalesByDate(new DateTime($date), (new DateTime($date))->modify('+ 1 day'));
     }
 
     private function removeExistingOrderSales(string $date): void
     {
-        $this->entityManager->getRepository(OrderSales::class)->deleteByDate($date);
+        $this->entityManager->getRepository(OrderSales::class)
+            ->deleteByDate($date);
     }
 }

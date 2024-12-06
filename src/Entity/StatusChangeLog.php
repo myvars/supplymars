@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: StatusChangeLogRepository::class)]
+#[ORM\Index(columns: ["event_type_id", "event_type", "status"])]
 class StatusChangeLog
 {
     #[ORM\Id]

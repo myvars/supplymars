@@ -1,0 +1,92 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Overdue Orders{% endblock %}
+
+{% block body %}
+
+    <turbo-frame id="reports">
+        <twig:Card>
+            {% if report.summary is not null %}
+                <div class="mb-3 flex items-center justify-between">
+                    <div class="flex items-center justify-start">
+                        <a href="{{ path('app_dashboard') }}"
+                           class="flex items-center text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+                           data-turbo-frame="body"
+                        >
+                            <twig:ux:icon name="ic:sharp-bar-chart" class="h-5 w-5 me-1"/>
+                            Overdue Orders
+                        </a>
+                    </div>
+                    {{ include('dashboard/_sales_durations.html.twig') }}
+                </div>
+
+                {{ include('dashboard/_overdue_orders_summary.html.twig', {summary: report.summary}) }}
+            {% endif %}
+
+            {% if report.overdue.count > 0 %}
+                <div class="relative mt-3 overflow-x-auto shadow-md sm:rounded-lg">
+                    <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
+                        <thead class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">
+                                <div class="flex justify-start">
+                                    <twig:SortLink sortValue="id">Order No</twig:SortLink>
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                <div class="flex justify-center">
+                                    <twig:SortLink sortValue="customer.fullName">Customer</twig:SortLink>
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                <div class="flex justify-center">
+                                    <twig:SortLink sortValue="dueDate">Overdue</twig:SortLink>
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                <div class="flex justify-center">
+                                    <twig:SortLink sortValue="status">Status</twig:SortLink>
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                <div class="flex justify-end">
+                                    <twig:SortLink sortValue="totalPrice">Total</twig:SortLink>
+                                </div>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for order in report.overdue %}
+                            <tr class="border-b odd:bg-white even:bg-gray-50 dark:border-gray-700 odd:dark:bg-gray-900 even:dark:bg-gray-800">
+                                <th scope="row"
+                                    class="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-gray-300">
+                                    <a href="{{ path('app_order_show', {'id': order.id }) }}"
+                                       class="dark:hover:text-white"
+                                       data-turbo-frame="body"
+                                    >
+                                        Order #{{ '%06d'|format(order.id) }}
+                                    </a>
+                                </th>
+                                <td class="px-6 py-4 text-center">
+                                    {{ order.customer.fullName }}
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    {{ order.dueDate|ago }}
+                                </td>
+                                <td class="px-6 py-4 text-center">
+                                    {{ order.status.value|title }}
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    {{ order.totalPrice|format_currency('GBP', { max_fraction_digit:0 }) }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <twig:Pagination pager="{{ report.overdue }}"></twig:Pagination>
+            {% endif %}
+        </twig:Card>
+    </turbo-frame>
+
+{% endblock %}

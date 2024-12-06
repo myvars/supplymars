@@ -7,7 +7,7 @@ use App\Enum\ProductSalesMetric;
 use App\Enum\SalesType;
 use Symfony\Component\Validator\Constraints as Assert;
 
-final class ProductSalesDashboardDto
+final class ProductSalesReportDto
 {
     public const LIMIT_DEFAULT = 10;
 
@@ -37,7 +37,7 @@ final class ProductSalesDashboardDto
         return $this->sort;
     }
 
-    public function setSort(?string $sort): ProductSalesDashboardDto
+    public function setSort(?string $sort): ProductSalesReportDto
     {
         if (!ProductSalesMetric::isValid($sort)) {
             $sort = ProductSalesMetric::default()->value;
@@ -53,7 +53,7 @@ final class ProductSalesDashboardDto
         return $this->sortDirection;
     }
 
-    public function setSortDirection(?string $sortDirection): ProductSalesDashboardDto
+    public function setSortDirection(?string $sortDirection): ProductSalesReportDto
     {
         if (!in_array(strtoupper((string) $sortDirection), ['ASC', 'DESC'])) {
             $sortDirection = 'DESC';
@@ -69,7 +69,7 @@ final class ProductSalesDashboardDto
         return $this->duration;
     }
 
-    public function setDuration(?string $duration): ProductSalesDashboardDto
+    public function setDuration(?string $duration): ProductSalesReportDto
     {
         if (!SalesDuration::isValid($duration)) {
             $duration = SalesDuration::default()->value;
@@ -85,7 +85,7 @@ final class ProductSalesDashboardDto
         return $this->productId;
     }
 
-    public function setProductId(?int $productId): ProductSalesDashboardDto
+    public function setProductId(?int $productId): ProductSalesReportDto
     {
         $this->productId = $productId;
 
@@ -97,7 +97,7 @@ final class ProductSalesDashboardDto
         return $this->categoryId;
     }
 
-    public function setCategoryId(?int $categoryId): ProductSalesDashboardDto
+    public function setCategoryId(?int $categoryId): ProductSalesReportDto
     {
         $this->categoryId = $categoryId;
 
@@ -109,7 +109,7 @@ final class ProductSalesDashboardDto
         return $this->subcategoryId;
     }
 
-    public function setSubcategoryId(?int $subcategoryId): ProductSalesDashboardDto
+    public function setSubcategoryId(?int $subcategoryId): ProductSalesReportDto
     {
         $this->subcategoryId = $subcategoryId;
 
@@ -121,7 +121,7 @@ final class ProductSalesDashboardDto
         return $this->manufacturerId;
     }
 
-    public function setManufacturerId(?int $manufacturerId): ProductSalesDashboardDto
+    public function setManufacturerId(?int $manufacturerId): ProductSalesReportDto
     {
         $this->manufacturerId = $manufacturerId;
 
@@ -133,7 +133,7 @@ final class ProductSalesDashboardDto
         return $this->supplierId;
     }
 
-    public function setSupplierId(?int $supplierId): ProductSalesDashboardDto
+    public function setSupplierId(?int $supplierId): ProductSalesReportDto
     {
         $this->supplierId = $supplierId;
 
@@ -152,6 +152,13 @@ final class ProductSalesDashboardDto
 
         // Filter to get only non-null values
         $nonEmptyIdentifiers = array_filter($identifiers, fn($value): bool => !is_null($value));
+
+        if (count($nonEmptyIdentifiers) === 0) {
+            return [
+                'salesType' => SalesType::ALL,
+                'salesTypeId' => 1,
+            ];
+        }
 
         if (count($nonEmptyIdentifiers) === 1) {
             $salesType = array_key_first($nonEmptyIdentifiers);

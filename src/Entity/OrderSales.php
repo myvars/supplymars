@@ -17,6 +17,8 @@ class OrderSales
         private readonly int $orderCount,
         #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
         private readonly string $orderValue,
+        #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+        private readonly string $averageOrderValue,
         #[ORM\Column(type: Types::DATE_IMMUTABLE)]
         private readonly \DateTimeImmutable $salesDate
     ) {
@@ -26,11 +28,13 @@ class OrderSales
         string $dateString,
         int $orderCount,
         string $orderValue,
+        string $averageOrderValue
     ): self{
         return new self(
             $dateString,
             $orderCount,
             $orderValue,
+            $averageOrderValue,
             new \DateTimeImmutable($dateString)
         );
     }
@@ -53,5 +57,10 @@ class OrderSales
     public function getSalesDate(): ?\DateTimeImmutable
     {
         return $this->salesDate;
+    }
+
+    public function getAverageOrderValue(): string
+    {
+        return $this->averageOrderValue;
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\OrderSales;
+use App\ValueObject\OrderSalesType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -17,11 +18,11 @@ class OrderSalesRepository extends ServiceEntityRepository
         parent::__construct($registry, OrderSales::class);
     }
 
-    public function calculateSales(string $startDate, string $endDate, string $dateString): array
+    public function findOrderSalesSummary(OrderSalesType $orderSalesType): array
     {
-        return $this->getOrderSalesQuery($startDate, $endDate)
+        return $this->getOrderSalesQuery($orderSalesType->getStartDate(), $orderSalesType->getEndDate())
             ->addSelect("DATE_FORMAT(os.salesDate, :dateString) AS dateString")
-            ->setParameter('dateString', $dateString)
+            ->setParameter('dateString', $orderSalesType->getDateString())
             ->groupBy('dateString')
             ->getQuery()->getResult();
     }
@@ -32,6 +33,7 @@ class OrderSalesRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('os')
             ->select('SUM(os.orderCount) AS orderCount')
             ->addSelect('SUM(os.orderValue) AS orderValue')
+            ->addSelect('(SUM(os.orderValue) / SUM(os.orderCount)) AS averageOrderValue')
             ->andWhere('os.salesDate between :startDate and :endDate')
             ->setParameter('startDate', $startDate)
             ->setParameter('endDate', $endDate);

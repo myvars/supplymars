@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block body %}
+
+    <div class="m-3 space-y-3">
+        <turbo-frame id="reports" refresh="morph">
+            <div class="flex items-center justify-center text-sm text-gray-600 dark:text-gray-500 m-1">
+                <twig:ux:icon name="ic:sharp-bar-chart" class="h-5 w-5 me-1"/>
+                Dashboard
+            </div>
+            <div class="flex justify-center rounded-b-lg text-center font-light dark:bg-gray-900">
+                <ul class="m-8 grid grid-cols-1 gap-8">
+                    {% for report in reports %}
+                        <li>
+                            <a href="{{ path('app_dashboard_'~report|replace({'-': '_'})) }}"
+                               class="block text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-3 text-center dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800">
+                                {{ report|replace({'-': ' '})|capitalize }}
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </turbo-frame>
+    </div>
+
+{% endblock %}

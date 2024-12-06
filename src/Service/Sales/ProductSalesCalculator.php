@@ -50,6 +50,7 @@ class ProductSalesCalculator
 
     private function removeExistingProductSales(string $date): void
     {
-        $this->entityManager->getRepository(ProductSales::class)->deleteByDate($date);
+        $this->entityManager->getRepository(ProductSales::class)
+            ->deleteByDate($date);
     }
 }

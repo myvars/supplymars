@@ -4,39 +4,45 @@
 
 {% block body %}
 
-    <twig:Card>
-        <turbo-frame id="sales">
+        <turbo-frame id="reports">
 
-            {% if summary is not null %}
+            <twig:Card>
+            {% if report.summary is not null %}
                 <div class="mb-3 flex items-center justify-between">
                     <div class="flex items-center justify-start">
-                        <p class="text-gray-600 dark:text-gray-500">Order Summary</p>
+                        <a href="{{ path('app_dashboard') }}"
+                           class="flex items-center text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+                           data-turbo-frame="body"
+                        >
+                            <twig:ux:icon name="ic:sharp-bar-chart" class="h-5 w-5 me-1"/>
+                            Order Summary
+                        </a>
                     </div>
                     {{ include('dashboard/_sales_durations.html.twig') }}
                 </div>
 
-                {{ include('dashboard/_order_summary.html.twig', {summary: summary}) }}
+                {{ include('dashboard/_order_sales_summary.html.twig', {summary: report.summary}) }}
 
-                {% if orderSalesChart %}
+                {% if report.orderSalesChart %}
                     <div
                         class="mt-3 flex h-64 flex-wrap justify-around rounded-lg bg-white text-center font-light dark:border-gray-700 dark:bg-gray-900 md:h-auto">
-                        {{ render_chart(orderSalesChart, {'data-controller': 'bar_chart', 'class': 'w-full h-full'}) }}
+                        {{ render_chart(report.orderSalesChart, {'data-controller': 'bar_chart', 'class': 'w-full h-full'}) }}
                     </div>
                 {% endif %}
 
-                {% if orderProgressChart %}
+                {% if report.orderProgressChart %}
                     <div class="my-3 flex items-center justify-start">
                         <p class="text-gray-600 dark:text-gray-500">Order Progress</p>
                     </div>
                     <div
                         class="flex h-64 flex-wrap justify-around rounded-lg bg-white text-center font-light dark:border-gray-700 dark:bg-gray-900 md:h-auto">
-                        {{ render_chart(orderProgressChart, {'data-controller': 'doughnut_chart', 'class': ''}) }}
+                        {{ render_chart(report.orderProgressChart, {'data-controller': 'doughnut_chart', 'class': ''}) }}
                     </div>
                 {% endif %}
 
             {% endif %}
+            </twig:Card>
 
         </turbo-frame>
-    </twig:Card>
 
 {% endblock %}

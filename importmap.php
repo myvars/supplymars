@@ -64,7 +64,7 @@ return [
         'version' => '6.2.0',
     ],
     'sortablejs' => [
-        'version' => '1.15.4',
+        'version' => '1.15.6',
     ],
     'flowbite/dist/flowbite.min.css' => [
         'version' => '2.5.2',
@@ -77,7 +77,7 @@ return [
         'version' => '1.3.0',
     ],
     'chart.js' => [
-        'version' => '4.4.6',
+        'version' => '4.4.7',
     ],
     '@kurkle/color' => [
         'version' => '0.3.4',

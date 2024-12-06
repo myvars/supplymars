@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Enum\SalesDuration;
 use App\Enum\SalesType;
 use App\Repository\ProductSalesSummaryRepository;
+use App\ValueObject\ProductSalesType;
 use DateTimeImmutable;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -36,9 +37,9 @@ class ProductSalesSummary
     ) {
     }
 
+
     public static function create(
-        SalesType $salesType,
-        SalesDuration $duration,
+        ProductSalesType $productSalesType,
         int $salesId,
         string $dateString,
         int $salesQty,
@@ -47,8 +48,8 @@ class ProductSalesSummary
     ): self{
         return new self(
             $salesId,
-            $salesType,
-            $duration,
+            $productSalesType->getSalesType(),
+            $productSalesType->getDuration(),
             $dateString,
             $salesQty,
             $salesCost,

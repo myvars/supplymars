@@ -4,38 +4,47 @@
 
 {% block body %}
 
-    <twig:Card>
-        <turbo-frame id="sales">
-
-            {% if summary is not null %}
+    <turbo-frame id="reports">
+        <twig:Card>
+            {% if report.summary is not null %}
                 <div class="mb-3 flex items-center justify-between">
                     <div class="flex items-center justify-start">
-                        <p class="text-gray-600 dark:text-gray-500">
-                            <span class="hidden md:inline">Product Sales</span>
-                            <span class="md:hidden">Sales</span>
-                        </p>
+                        {% if report.type == 'all' %}
+                        <a href="{{ path('app_dashboard') }}"
+                           class="flex items-center text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
+                           data-turbo-frame="body"
+                        >
+                            <twig:ux:icon name="ic:sharp-bar-chart" class="h-5 w-5 me-1"/>
+                            Product Sales
+                        </a>
+                        {% else %}
+                            <p class="text-gray-600 dark:text-gray-500">
+                                <span class="hidden md:inline">{{ report.type|title }} Sales</span>
+                                <span class="md:hidden">Sales</span>
+                            </p>
+                        {% endif %}
                     </div>
                     {{ include('dashboard/_sales_durations.html.twig') }}
                 </div>
 
-                {{ include('dashboard/_product_sales_summary.html.twig', {summary: summary}) }}
+                {{ include('dashboard/_product_sales_summary.html.twig', {summary: report.summary}) }}
 
-                {% if productSalesChart %}
+                {% if report.productSalesChart %}
                     <div
                         class="mt-3 flex h-64 flex-wrap justify-around rounded-lg bg-white text-center font-light dark:border-gray-700 dark:bg-gray-900 md:h-auto">
-                        {{ render_chart(productSalesChart, {'data-controller': 'bar_chart', 'class': 'w-full h-full'}) }}
+                        {{ render_chart(report.productSalesChart, {'data-controller': 'bar_chart', 'class': 'w-full h-full'}) }}
                     </div>
                 {% endif %}
 
             {% endif %}
 
-            {% if sales %}
+            {% if report.sales %}
                 <div class="mt-3 flex items-center justify-between">
                     <p class="text-gray-600 dark:text-gray-500">
                         <span class="hidden md:inline">Top Products</span>
                         <span class="md:hidden">Sales</span>
                     </p>
-                    {% if not summary %}
+                    {% if not report.summary %}
                         {{ include('dashboard/_sales_durations.html.twig') }}
                     {% endif %}
                 </div>
@@ -63,14 +72,14 @@
                                 </div>
                             </th>
                             <th scope="col" class="px-6 py-3">
-                                <div class="flex justify-end">
+                                <div class="flex justify-center">
                                     <twig:SortLink sortValue="salesMargin">Margin</twig:SortLink>
                                 </div>
                             </th>
                         </tr>
                         </thead>
                         <tbody>
-                        {% for sale in sales %}
+                        {% for sale in report.sales %}
                             <tr class="border-b odd:bg-white even:bg-gray-50 dark:border-gray-700 odd:dark:bg-gray-900 even:dark:bg-gray-800">
                                 <th scope="row"
                                     class="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-gray-300">
@@ -99,7 +108,7 @@
                     </table>
                 </div>
             {% endif %}
-        </turbo-frame>
-    </twig:Card>
+        </twig:Card>
+    </turbo-frame>
 
 {% endblock %}

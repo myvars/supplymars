@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Sales;
+namespace App\Service\Dashboard;
 
 use App\Enum\OrderStatus;
 use App\Enum\SalesDuration;

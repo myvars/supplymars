@@ -1,0 +1,24 @@
+<div
+    class="flex flex-wrap justify-around rounded-lg bg-white text-center font-light dark:border-gray-700 dark:bg-gray-900">
+
+    <div class="w-full px-6 py-4 md:w-auto">
+        <a href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'dueDate', 'sortDirection': 'asc'})) }}"
+           class="hover:text-gray-400 dark:hover:text-gray-300"
+        >
+            <p class="mb-1">Overdue Order Count</p>
+            <p class="text-xl font-bold text-gray-900 dark:text-gray-300">
+                {{ summary.orderCount|default(0) }}
+            </p>
+        </a>
+    </div>
+    <div class="w-full px-6 py-4 md:w-auto">
+        <a href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'totalPrice', 'sortDirection': 'desc'})) }}"
+           class="hover:text-gray-400 dark:hover:text-gray-300"
+        >
+            <p class="mb-1">Overdue Order Value</p>
+            <p class="text-xl font-bold text-gray-900 dark:text-gray-300">
+                {{ summary.orderValue|default(0)|format_currency('GBP', { max_fraction_digit:0 }) }}
+            </p>
+        </a>
+    </div>
+</div>

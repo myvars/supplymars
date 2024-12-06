@@ -12,7 +12,9 @@
         {% if result.subcategories.count > 0 %}
             {{ include('category/_subcategories_card.html.twig', {subcategories: result.subcategories}) }}
         {% endif %}
-        {{ include('category/_category_product_sales_card.html.twig', {category: result}) }}
+        {{ include('dashboard/_dashboard_card.html.twig', {
+            dashboardSrc: path('app_dashboard_product_sales', {category_id: result.id})
+        }) }}
     </div>
 
 {% endblock %}

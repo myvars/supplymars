@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\ProductSalesSummary;
 use App\Enum\SalesDuration;
 use App\Enum\SalesType;
+use App\ValueObject\ProductSalesType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -59,17 +60,18 @@ class ProductSalesSummaryRepository extends ServiceEntityRepository
 
     }
 
-    public function deleteBySalesTypeAndDuration(string $salesType, string $duration, ?string $dateString): void
+    public function deleteByProductSalesType(ProductSalesType $productSalesType): void
     {
         $qb = $this->createQueryBuilder('p')
             ->delete()
             ->where('p.salesType = :salesType')
             ->andWhere('p.duration = :duration')
-            ->setParameter('salesType', $salesType)
-            ->setParameter('duration', $duration);
+            ->setParameter('salesType', $productSalesType->getSalesType()->value)
+            ->setParameter('duration', $productSalesType->getDuration()->value);
 
-        if ($dateString !== null) {
-            $qb->andWhere('p.dateString = :dateString')->setParameter('dateString', $dateString );
+        if ($productSalesType->getRangeStartDate() !== null) {
+            $qb->andWhere('p.dateString = :dateString')
+                ->setParameter('dateString', $productSalesType->getRangeStartDate() );
         }
 
         $qb->getQuery()->execute();

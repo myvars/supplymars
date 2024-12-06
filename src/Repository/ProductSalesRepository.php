@@ -2,9 +2,10 @@
 
 namespace App\Repository;
 
-use App\DTO\ProductSalesDashboardDto;
+use App\DTO\ProductSalesReportDto;
 use App\Entity\ProductSales;
 use App\Enum\SalesType;
+use App\ValueObject\ProductSalesType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -19,7 +20,7 @@ class ProductSalesRepository extends ServiceEntityRepository
         parent::__construct($registry, ProductSales::class);
     }
 
-    public function findProductSalesByDto(ProductSalesDashboardDto $salesFilterDto): array
+    public function findProductSalesByDto(ProductSalesReportDto $salesFilterDto): array
     {
         $qb = $this->getProductSalesQuery(
             $salesFilterDto->getDuration()->getStartDate(),
@@ -58,24 +59,22 @@ class ProductSalesRepository extends ServiceEntityRepository
             ->getQuery()->getResult();
     }
 
-    public function calculateSalesBySalesType(
-        SalesType $salesType,
-        string $startDate,
-        string $endDate,
-        string $dateString
-    ): array {
-        $qb = $this->getProductSalesQuery($startDate, $endDate)
+    public function findProductSalesSummary(ProductSalesType $productSalesType): array
+    {
+        $qb = $this->getProductSalesQuery($productSalesType->getStartDate(), $productSalesType->getEndDate())
             ->addSelect("DATE_FORMAT(ps.salesDate, :dateString) AS dateString")
-            ->setParameter('dateString', $dateString)
+            ->setParameter('dateString', $productSalesType->getDateString())
             ->groupBy('dateString, salesId');
 
-        match ($salesType->value) {
+        $salesTypeValue = $productSalesType->getSalesType()->value;
+        match ($salesTypeValue) {
             'product' => $qb->addSelect('p.id AS salesId, p.name'),
             'category' => $qb->join('p.category', 'c')->addSelect('c.id AS salesId, c.name'),
             'subcategory' => $qb->join('p.subcategory', 's')->addSelect('s.id AS salesId, s.name'),
             'manufacturer' => $qb->join('p.manufacturer', 'm')->addSelect('m.id AS salesId, m.name'),
             'supplier' => $qb->join('ps.supplier', 's')->addSelect('s.id AS salesId, s.name'),
-            default => throw new \InvalidArgumentException('Unknown entity: ' . $salesType->value),
+            'all' => $qb->addSelect('1 AS salesId, \'all\' AS name'),
+            default => throw new \InvalidArgumentException('Unknown entity: ' . $salesTypeValue),
         };
 
         return $qb->getQuery()->getResult();

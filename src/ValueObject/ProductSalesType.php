@@ -1,24 +1,31 @@
 <?php
 
-namespace App\DTO;
+namespace App\ValueObject;
 
 use App\Enum\SalesDuration;
+use App\Enum\SalesType;
 
-class OrderSalesTypeDto
+class ProductSalesType
 {
     private function __construct(
+        private readonly SalesType $salesType,
         private readonly SalesDuration $duration,
         private readonly bool $rebuildRange
     ) {
     }
 
-    public static function create(SalesDuration $duration, bool $rebuildRange = false): self
+    public static function create(SalesType $salesType, SalesDuration $duration, bool $rebuildRange = false): self
     {
         if ($duration->getStartDate($rebuildRange) > $duration->getEndDate()) {
             throw new \InvalidArgumentException('Start date must be less than end date');
         }
 
-        return new self($duration, $rebuildRange);
+        return new self($salesType, $duration, $rebuildRange);
+    }
+
+    public function getSalesType(): SalesType
+    {
+        return $this->salesType;
     }
 
     public function getDuration(): SalesDuration

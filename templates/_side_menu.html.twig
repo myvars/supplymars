@@ -19,7 +19,7 @@
                 <button type="button" class="flex w-full items-center rounded-lg p-2 text-base font-normal text-gray-900 transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-products" data-collapse-toggle="dropdown-products">
                     <twig:ux:icon name="ri:box-3-fill" class="h-5 w-5 text-gray-400"/>
                     <span class="ml-3 flex-1 whitespace-nowrap text-left">Products</span>
-                    <svg aria-hidden="true" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    <twig:ux:icon name="mingcute:down-line" class="h-5 w-5"/>
                 </button>
                 <ul id="dropdown-products" class="hidden py-2 space-y-2">
                     <li>
@@ -86,7 +86,7 @@
                 <button type="button" class="flex w-full items-center rounded-lg p-2 text-base font-normal text-gray-900 transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-suppliers" data-collapse-toggle="dropdown-suppliers">
                     <twig:ux:icon name="bxs:factory" class="h-5 w-5 text-gray-400"/>
                     <span class="ml-3 flex-1 whitespace-nowrap text-left">Suppliers</span>
-                    <svg aria-hidden="true" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    <twig:ux:icon name="mingcute:down-line" class="h-5 w-5"/>
                 </button>
                 <ul id="dropdown-suppliers" class="hidden py-2 space-y-2">
                     <li>
@@ -106,26 +106,20 @@
                 </ul>
             </li>
             <li>
-                <button type="button" class="flex w-full items-center rounded-lg p-2 text-base font-normal text-gray-900 transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-dashboards" data-collapse-toggle="dropdown-dashboards">
+                <a href="{{ path('app_dashboard') }}"
+                   class="flex items-center rounded-lg p-2 text-base text-gray-900 font-small group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                   data-turbo-frame="body"
+                   data-action="basic-drawer#close"
+                >
                     <twig:ux:icon name="ic:sharp-bar-chart" class="h-5 w-5 text-gray-400"/>
-                    <span class="ml-3 flex-1 whitespace-nowrap text-left">Dashboards</span>
-                    <svg aria-hidden="true" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
-                </button>
-                <ul id="dropdown-dashboards" class="hidden py-2 space-y-2">
-                    <li>
-                        <a href="{{ path('app_order_show_dashboard') }}"
-                           class="flex w-full items-center rounded-lg p-2 pl-11 text-base font-normal text-gray-900 transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
-                           data-turbo-frame="body"
-                           data-action="basic-drawer#close"
-                        >Orders</a>
-                    </li>
-                </ul>
+                    <span class="ml-3 flex-1 whitespace-nowrap text-left">Dashboard</span>
+                </a>
             </li>
             <li>
                 <button type="button" class="flex w-full items-center rounded-lg p-2 text-base font-normal text-gray-900 transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-admin" data-collapse-toggle="dropdown-admin">
                     <twig:ux:icon name="flowbite:cog-solid" class="h-5 w-5 text-gray-400"/>
                     <span class="ml-3 flex-1 whitespace-nowrap text-left">Admin</span>
-                    <svg aria-hidden="true" class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
+                    <twig:ux:icon name="mingcute:down-line" class="h-5 w-5"/>
                 </button>
                 <ul id="dropdown-admin" class="hidden py-2 space-y-2">
                     <li>

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Sales;
+namespace App\Service\Dashboard;
 
 use App\Enum\SalesDuration;
 use App\Enum\SalesMetricInterface;

@@ -2,10 +2,10 @@
 
 namespace App\Controller;
 
-use App\DTO\OrderSalesDashboardDto;
-use App\DTO\ProductSalesDashboardDto;
-use App\Service\Sales\OrderDashboardManager;
-use App\Service\Sales\ProductSalesDashboardManager;
+use App\DTO\OrderSummaryReportDto;
+use App\DTO\ProductSalesReportDto;
+use App\DTO\SearchDto\OverdueOrderSearchDto;
+use App\Service\Dashboard\ReportHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
@@ -16,31 +16,41 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 class DashboardController extends AbstractController
 {
-    #[Route('/products', name: 'app_product_sales_dashboard', methods: ['GET'])]
-    public function products(
-        ProductSalesDashboardManager $dashboardManager,
-        #[MapQueryString] ProductSalesDashboardDto $dto = new ProductSalesDashboardDto()
-    ): Response {
-        $dashboardManager->createFromDto($dto);
-
-        return $this->render('dashboard/product_sales_dashboard.html.twig', [
-            'sales' => $dashboardManager->getSales(),
-            'summary' => $dashboardManager->getSummary(),
-            'productSalesChart' => $dashboardManager->getProductSalesChart(),
+    #[Route('/', name: 'app_dashboard')]
+    public function show(ReportHandler $handler): Response
+    {
+        return $this->render('dashboard/show.html.twig', [
+            'reports' => $handler->reports(),
         ]);
     }
 
-    #[Route('/orders', name: 'app_orders_dashboard', methods: ['GET'])]
-    public function orders(
-        OrderDashboardManager $dashboardManager,
-        #[MapQueryString] OrderSalesDashboardDto $dto = new OrderSalesDashboardDto()
+    #[Route('/report/product/sales', name: 'app_dashboard_product_sales', methods: ['GET'])]
+    public function productSales(
+        ReportHandler $handler,
+        #[MapQueryString] ProductSalesReportDto $dto = new ProductSalesReportDto()
     ): Response {
-        $dashboardManager->createFromDto($dto);
+        return $this->render('dashboard/product_sales.html.twig', [
+            'report' => $handler->build('product-sales', $dto),
+        ]);
+    }
 
-        return $this->render('dashboard/order_dashboard.html.twig', [
-            'summary' => $dashboardManager->getSummary(),
-            'orderSalesChart' => $dashboardManager->getOrderSalesChart(),
-            'orderProgressChart' => $dashboardManager->getOrderProgressChart(),
+    #[Route('/report/order/summary', name: 'app_dashboard_order_summary', methods: ['GET'])]
+    public function orderSummary(
+        ReportHandler $handler,
+        #[MapQueryString] OrderSummaryReportDto $dto = new OrderSummaryReportDto()
+    ): Response {
+        return $this->render('dashboard/order_summary.html.twig', [
+            'report' => $handler->build('order-summary', $dto),
+        ]);
+    }
+
+    #[Route('/report/overdue/orders', name: 'app_dashboard_overdue_orders', methods: ['GET'])]
+    public function overdueOrders(
+        ReportHandler $handler,
+        #[MapQueryString] OverdueOrderSearchDto $dto = new OverdueOrderSearchDto()
+    ): Response {
+        return $this->render('dashboard/overdue_orders.html.twig', [
+            'report' => $handler->build('overdue-orders', $dto),
         ]);
     }
 }
