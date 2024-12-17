@@ -26,7 +26,7 @@ return [
         'version' => '8.0.12',
     ],
     'stimulus-use' => [
-        'version' => '0.52.2',
+        'version' => '0.52.3',
     ],
     '@popperjs/core' => [
         'version' => '2.11.8',

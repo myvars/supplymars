@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\DTO\ProductSalesReportDto;
 use App\Entity\ProductSales;
+use App\Enum\ProductSalesMetric;
 use App\Enum\SalesType;
 use App\ValueObject\ProductSalesType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -56,7 +57,23 @@ class ProductSalesRepository extends ServiceEntityRepository
             ->groupBy('p.id')
             ->orderBy($salesFilterDto->getSort()->value, $salesFilterDto->getSortDirection())
             ->setMaxResults($salesFilterDto::LIMIT_DEFAULT)
-            ->getQuery()->getResult();
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function findLatestProductSales(ProductSalesType $productSalesType, int $limit = 10): array
+    {
+        $qb = $this->getProductSalesQuery(
+            $productSalesType->getDuration()->getStartDate(),
+            $productSalesType->getDuration()->getEndDate()
+        )->addSelect('p.id, p.name');
+
+        return $qb
+            ->groupBy('p.id')
+            ->orderBy('salesQty', 'desc')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
     }
 
     public function findProductSalesSummary(ProductSalesType $productSalesType): array
@@ -77,7 +94,8 @@ class ProductSalesRepository extends ServiceEntityRepository
             default => throw new \InvalidArgumentException('Unknown entity: ' . $salesTypeValue),
         };
 
-        return $qb->getQuery()->getResult();
+        return $qb->getQuery()
+            ->getResult();
     }
 
     private function getProductSalesQuery(string $startDate, string $endDate): QueryBuilder
@@ -102,7 +120,8 @@ class ProductSalesRepository extends ServiceEntityRepository
             ->setParameter('productId', $productId)
             ->groupBy('ps.salesDate')
             ->orderBy('ps.salesDate', 'ASC')
-            ->getQuery()->getResult();
+            ->getQuery()
+            ->getResult();
     }
 
     public function deleteByDate(string $date): void
@@ -111,6 +130,7 @@ class ProductSalesRepository extends ServiceEntityRepository
             ->delete()
             ->where('p.dateString = :date')
             ->setParameter('date', $date)
-            ->getQuery()->execute();
+            ->getQuery()
+            ->execute();
     }
 }

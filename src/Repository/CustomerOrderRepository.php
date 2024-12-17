@@ -6,6 +6,7 @@ use App\DTO\SearchDto\OverdueOrderSearchDto;
 use App\DTO\SearchDto\SearchInterface;
 use App\Entity\CustomerOrder;
 use App\Enum\OrderStatus;
+use App\Enum\SalesDuration;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -170,5 +171,16 @@ class CustomerOrderRepository extends ServiceEntityRepository implements SearchQ
             ->andWhere('co.status NOT IN (:excludedStatuses)')
             ->setParameter('excludedStatuses', [OrderStatus::CANCELLED, OrderStatus::DELIVERED])
             ->andWhere('co.dueDate < CURRENT_DATE()');
+    }
+
+    public function findLatestOrders(DateTime $startDate, int $limit = 10): array
+    {
+        return $this->createQueryBuilder('co')
+            ->andWhere('co.createdAt >= :startDate')
+            ->setParameter('startDate', $startDate)
+            ->orderBy('co.createdAt', 'DESC')
+            ->setMaxResults($limit)
+            ->getQuery()
+            ->getResult();
     }
 }

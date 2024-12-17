@@ -6,22 +6,186 @@
 
     <div class="m-3 space-y-3">
         <turbo-frame id="reports" refresh="morph">
-            <div class="flex items-center justify-center text-sm text-gray-600 dark:text-gray-500 m-1">
-                <twig:ux:icon name="ic:sharp-bar-chart" class="h-5 w-5 me-1"/>
-                Dashboard
-            </div>
-            <div class="flex justify-center rounded-b-lg text-center font-light dark:bg-gray-900">
-                <ul class="m-8 grid grid-cols-1 gap-8">
-                    {% for report in reports %}
-                        <li>
-                            <a href="{{ path('app_dashboard_'~report|replace({'-': '_'})) }}"
-                               class="block text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm px-5 py-3 text-center dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800">
-                                {{ report|replace({'-': ' '})|capitalize }}
-                            </a>
-                        </li>
-                    {% endfor %}
-                </ul>
-            </div>
+            <twig:Card>
+                <div class="mb-3 flex justify-center text-lg">Order Overview - Today</div>
+                <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+
+                    <a href="{{ path('app_dashboard_order_summary', {'duration': 'today'}) }}">
+                        <div class="flex flex-col justify-around items-center h-full rounded-lg bg-white text-center font-light dark:border-gray-700 dark:bg-gray-900 p-3">
+                            <div class="w-full p-3">
+                                <twig:KpiCard
+                                    title="Order Count"
+                                    value="{{ report.orderSalesSummary.orderCount|default(0) }}"
+                                    compare="{{ report.orderSalesCompareSummary.orderCount|default(null) }}"
+                                    valueType="count"
+                                />
+                            </div>
+                            <div class="w-full p-3 md:p-0">
+                                <twig:KpiCard
+                                    title="Order Value"
+                                    value="{{ report.orderSalesSummary.orderValue|default(0) }}"
+                                    compare="{{ report.orderSalesCompareSummary.orderValue|default(null)  }}"
+                                    valueType="currency"
+                                />
+                            </div>
+                            <div class="w-full p-3">
+                                <twig:KpiCard
+                                    title="Average Order Value"
+                                    value="{{ report.orderSalesSummary.averageOrderValue|default(0) }}"
+                                    compare="{{report.orderSalesCompareSummary.averageOrderValue|default(null) }}"
+                                    valueType="currency"
+                                />
+                            </div>
+                        </div>
+                    </a>
+
+                    <div class="relative mt-3 overflow-x-auto shadow-md sm:rounded-lg">
+                        <span class="flex justify-center">Latest Orders</span>
+                        <table class="mt-3 w-full text-left text-sm text-gray-500 dark:text-gray-400">
+                            <thead
+                                class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">
+                                    Customer
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    <div class="flex justify-end">Total</div>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for order in report.latestOrders %}
+                                <tr class="border-b odd:bg-white even:bg-gray-50 dark:border-gray-700 odd:dark:bg-gray-900 even:dark:bg-gray-800">
+                                    <th scope="row"
+                                        class="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-gray-300">
+                                        <a href="{{ path('app_order_show', {'id': order.id }) }}"
+                                           class="dark:hover:text-white"
+                                           data-turbo-frame="body"
+                                        >
+                                            {{ order.customer.fullName }}
+                                        </a>
+                                    </th>
+                                    <td class="px-6 py-4 text-right">
+                                        {{ order.totalPrice|format_currency('GBP', { max_fraction_digit:0 }) }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                </div>
+            </twig:Card>
+
+            <twig:Card class="mt-3">
+                <div class="mb-3 flex justify-center text-lg">Sales Overview - Today</div>
+                <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+
+                    <a href="{{ path('app_dashboard_product_sales', {'duration': 'today'}) }}"
+                       class="block hover:text-gray-400 dark:hover:text-gray-300">
+                        <div class="flex flex-col justify-around items-center h-full rounded-lg bg-white text-center font-light dark:border-gray-700 dark:bg-gray-900 p-3">
+                            <div class="w-full p-3">
+                                <twig:KpiCard
+                                    title="Sales Cost"
+                                    value="{{ report.productSalesSummary.salesCost|default(0) }}"
+                                    compare="{{ report.productSalesCompareSummary.salesCost|default(null) }}"
+                                    valueType="currency"
+                                />
+                            </div>
+                            <div class="w-full p-3 md:p-0">
+                                <twig:KpiCard
+                                    title="Sales Profit"
+                                    value="{{ report.productSalesSummary.salesProfit|default(0) }}"
+                                    compare="{{ report.productSalesCompareSummary.salesProfit|default(null) }}"
+                                    valueType="currency"
+                                />
+                            </div>
+                            <div class="w-full p-3">
+                                <twig:KpiCard
+                                    title="Gross Margin"
+                                    value="{{ report.productSalesSummary.salesMargin|default(0) }}"
+                                    compare="{{ report.productSalesCompareSummary.salesMargin|default(null) }}"
+                                    valueType="percentage"
+                                    maxFractionDigits="2"
+                                />
+                            </div>
+                        </div>
+                    </a>
+
+                    <div class="relative mt-3 overflow-x-auto shadow-md sm:rounded-lg">
+                        <span class="flex justify-center">Top Products</span>
+                        <table class="mt-3 w-full text-left text-sm text-gray-500 dark:text-gray-400">
+                            <thead
+                                class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+                            <tr>
+                                <th scope="col" class="px-6 py-3">
+                                    Product name
+                                </th>
+                                <th scope="col" class="px-6 py-3">
+                                    <div class="flex justify-end">Qty</div>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for sale in report.latestProductSales %}
+                                <tr class="border-b odd:bg-white even:bg-gray-50 dark:border-gray-700 odd:dark:bg-gray-900 even:dark:bg-gray-800">
+                                    <th scope="row"
+                                        class="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-gray-300">
+                                        <a href="{{ path('app_product_show', {'id': sale.id }) }}"
+                                           class="dark:hover:text-white"
+                                           data-turbo-frame="body"
+                                        >
+                                            {{ sale.name|slug.truncate(30, '...') }}
+                                        </a>
+                                    </th>
+                                    <td class="px-6 py-4 text-right">
+                                        {{ sale.salesQty }}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </twig:Card>
+
+            <twig:Card class="mt-3">
+                <div class="mb-3 flex justify-center text-lg">Action Required</div>
+                <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+
+                    <a href="{{ path('app_dashboard_overdue_orders', {'duration': 'last30'}) }}"
+                       class="block hover:text-gray-400 dark:hover:text-gray-300"
+                    >
+                        <div
+                            class="flex flex-wrap justify-around rounded-lg bg-white text-center font-light dark:border-gray-700 dark:bg-gray-900">
+                            <div class="w-full px-6 py-4 md:w-auto">
+                                <twig:KpiCard
+                                    title="Overdue Orders"
+                                    value="{{ report.overdueOrderSummary.orderCount|default(0) }}"
+                                    valueType="count"
+                                />
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="{{ path('app_purchase_order_index', {'purchaseOrderStatus': 'rejected'}) }}"
+                       class="block hover:text-gray-400 dark:hover:text-gray-300"
+                       data-turbo-frame="body"
+                    >
+                        <div
+                            class="flex flex-wrap justify-around rounded-lg bg-white text-center font-light dark:border-gray-700 dark:bg-gray-900">
+                            <div class="w-full px-6 py-4 md:w-auto">
+                                <twig:kpiCard
+                                    title="Rejected POs"
+                                    value="{{ report.rejectedPoSummary.poCount|default(0) }}"
+                                    valueType="count"
+                                />
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+            </twig:Card>
         </turbo-frame>
     </div>
 

@@ -7,6 +7,7 @@ use DateTime;
 enum SalesDuration: string
 {
     case TODAY = 'today';
+    case WEEK_AGO = 'weekAgo';
     case LAST_7 = 'last7';
     case LAST_30 = 'last30';
     case MTD = 'mtd';
@@ -30,6 +31,7 @@ enum SalesDuration: string
 
         return match ($this) {
             self::TODAY => $now->format('Y-m-d'),
+            self::WEEK_AGO => $now->modify('-7 days')->format('Y-m-d'),
             self::LAST_7 => $now->modify('-6 days')->format('Y-m-d'),
             self::LAST_30 => $now->modify('-29 days')->format('Y-m-d'),
             self::MTD => $now->format('Y-m-01'),
@@ -44,13 +46,16 @@ enum SalesDuration: string
 
     public function getEndDate(): string
     {
-        return (new DateTime('+1 day'))->format('Y-m-d');
+        return match ($this) {
+            self::WEEK_AGO => (new DateTime())->modify('-7 days')->format('Y-m-d H:i:s'),
+            default => (new DateTime('+1 day'))->format('Y-m-d'),
+        };
     }
 
     public function getDateStringFormat(bool $rebuildRange = false): string
     {
         return match ($this) {
-            self::TODAY, self::LAST_7, self::LAST_30, self::MTD => $this->getStartDate($rebuildRange),
+            self::TODAY, self::WEEK_AGO, self::LAST_7, self::LAST_30, self::MTD => $this->getStartDate($rebuildRange),
             self::DAY => '%Y-%m-%d',
             self::MONTH => '%Y-%m-01',
         };

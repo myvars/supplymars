@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\DTO\OrderSummaryReportDto;
 use App\DTO\ProductSalesReportDto;
 use App\DTO\SearchDto\OverdueOrderSearchDto;
+use App\Service\Dashboard\DashboardViewer;
 use App\Service\Dashboard\ReportHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,10 +18,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class DashboardController extends AbstractController
 {
     #[Route('/', name: 'app_dashboard')]
-    public function show(ReportHandler $handler): Response
+    public function show(DashboardViewer $dashboardViewer): Response
     {
         return $this->render('dashboard/show.html.twig', [
-            'reports' => $handler->reports(),
+            'report' => $dashboardViewer->build(),
         ]);
     }
 

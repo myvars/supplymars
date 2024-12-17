@@ -6,6 +6,7 @@ use App\DTO\SearchDto\SearchInterface;
 use App\Entity\PurchaseOrder;
 use App\Entity\Supplier;
 use App\Enum\PurchaseOrderStatus;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -104,5 +105,17 @@ class PurchaseOrderRepository extends ServiceEntityRepository implements SearchQ
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
+    }
+
+    public function findRejectedPoSummary(DateTime $startDate): array
+    {
+        return $this->createQueryBuilder('po')
+            ->select('COUNT(po.id) as poCount')
+            ->where('po.status = :status')
+            ->setParameter('status', PurchaseOrderStatus::REJECTED)
+            ->andWhere('po.createdAt >= :startDate')
+            ->setParameter('startDate', $startDate)
+            ->getQuery()
+            ->getSingleResult();
     }
 }
