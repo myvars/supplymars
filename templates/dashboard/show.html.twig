@@ -10,7 +10,7 @@
             <twig:Card>
                 <div class="mb-3 flex justify-center text-lg text-gray-900 dark:text-gray-300">Order Overview</div>
 
-                <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+                <div class="items-center grid grid-cols-1 gap-3 md:grid-cols-2">
                     <a href="{{ path('app_dashboard_order_summary', {'duration': 'today'}) }}">
                         <div class="w-full rounded p-3 font-light dark:border-gray-700 dark:bg-gray-900">
                             <twig:KpiCard
@@ -38,7 +38,7 @@
                         </div>
                     </a>
 
-                    <div class="relative mt-3 overflow-x-auto shadow-md sm:rounded">
+                    <div class="relative overflow-x-auto shadow-md sm:rounded">
                         <span class="flex justify-center text-sm">Today's Latest Orders</span>
                         <table class="mt-3 w-full text-left text-sm text-gray-500 dark:text-gray-400">
                             <thead class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
@@ -54,7 +54,7 @@
                             <tbody>
                             {% for order in report.latestOrders %}
                                 <tr class="border-b odd:bg-white even:bg-gray-50 dark:border-gray-700 odd:dark:bg-gray-900 even:dark:bg-gray-800">
-                                    <th scope="row" class="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-gray-300">
+                                    <th scope="row" class="whitespace-nowrap px-6 py-3 font-medium text-gray-900 dark:text-gray-300">
                                         <a href="{{ path('app_order_show', {'id': order.id }) }}"
                                            class="dark:hover:text-white"
                                            data-turbo-frame="body"
@@ -62,7 +62,7 @@
                                             {{ order.customer.fullName }}
                                         </a>
                                     </th>
-                                    <td class="px-6 py-4 text-right">
+                                    <td class="px-6 py-3 text-right">
                                         {{ order.totalPrice|format_currency('GBP', { max_fraction_digit:0 }) }}
                                     </td>
                                 </tr>
@@ -77,7 +77,7 @@
             <twig:Card class="mt-3">
                 <div class="mb-3 flex justify-center text-lg text-gray-900 dark:text-gray-300">Sales Overview</div>
 
-                <div class="grid grid-cols-1 gap-3 md:grid-cols-2">
+                <div class="items-center grid grid-cols-1 gap-3 md:grid-cols-2">
                     <a href="{{ path('app_dashboard_product_sales', {'duration': 'today'}) }}"
                        class="block hover:text-gray-400 dark:hover:text-gray-300">
                         <div class="w-full rounded p-3 font-light dark:border-gray-700 dark:bg-gray-900">
@@ -107,7 +107,7 @@
                         </div>
                     </a>
 
-                    <div class="relative mt-3 overflow-x-auto shadow-md sm:rounded">
+                    <div class="relative overflow-x-auto shadow-md sm:rounded">
                         <span class="flex justify-center text-sm">Today's Top Products</span>
                         <table class="mt-3 w-full text-left text-sm text-gray-500 dark:text-gray-400">
                             <thead class="bg-gray-50 text-xs uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
@@ -123,15 +123,15 @@
                             <tbody>
                             {% for sale in report.latestProductSales %}
                                 <tr class="border-b odd:bg-white even:bg-gray-50 dark:border-gray-700 odd:dark:bg-gray-900 even:dark:bg-gray-800">
-                                    <th scope="row" class="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-gray-300">
+                                    <th scope="row" class="whitespace-nowrap px-6 py-3 font-medium text-gray-900 dark:text-gray-300">
                                         <a href="{{ path('app_product_show', {'id': sale.id }) }}"
                                            class="dark:hover:text-white"
                                            data-turbo-frame="body"
                                         >
-                                            {{ sale.name|slug.truncate(30, '...') }}
+                                            {{ sale.name|slug.truncate(27, '...') }}
                                         </a>
                                     </th>
-                                    <td class="px-6 py-4 text-right">
+                                    <td class="px-6 py-3 text-right">
                                         {{ sale.salesQty }}
                                     </td>
                                 </tr>
