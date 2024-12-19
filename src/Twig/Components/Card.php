@@ -26,8 +26,8 @@ final class Card
     public function getBackgroundClasses(): string
     {
         return match ($this->colour) {
-            'gray' => 'bg-gradient-to-tr from-slate-300 to-slate-100 dark:from-gray-800 dark:to-gray-600',
-            'supplier1' => 'bg-gradient-to-tr from-supplier1-300 to-supplier1-200 dark:from-supplier1-900 dark:to-supplier1-600',
+            'gray' => 'bg-gradient-to-tr from-slate-300 to-slate-100 dark:from-gray-700 dark:to-gray-600',
+            'supplier1' => 'bg-gradient-to-tr from-supplier1-300 to-supplier1-200 dark:from-supplier1-900 dark:to-supplier1-800',
             'supplier2' => 'bg-gradient-to-tr from-supplier2-300 to-supplier2-200 dark:from-supplier2-900 dark:to-supplier2-600',
             'supplier3' => 'bg-gradient-to-tr from-supplier3-300 to-supplier3-200 dark:from-supplier3-900 dark:to-supplier3-600',
             'supplier4' => 'bg-gradient-to-tr from-supplier4-300 to-supplier4-200 dark:from-supplier4-900 dark:to-supplier4-600',

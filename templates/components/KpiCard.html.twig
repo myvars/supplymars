@@ -21,17 +21,17 @@
 <div class="flex flex-col items-center justify-center">
 
     <div class="flex items-center text-sm text-gray-500">
-        <span class="text-base text-gray-500 dark:text-gray-400">{{ title }}</span>
+        <span class="text-sm text-gray-500 dark:text-gray-400">{{ title }}</span>
     </div>
 
-    <div class="flex items-center text-4xl font-bold text-gray-900 dark:text-gray-300">
+    <div class="flex items-center text-2xl font-bold text-gray-900 dark:text-gray-300">
         {{ _self.formatValue(value, valueType, format, maxFractionDigits) }}
         {% if compare is not null %}
             {% set difference = value - compare %}
             {% if difference > 0 %}
-                <span class="text-green-500"><twig:ux:icon name="bxs:up-arrow" class="h-10 w-10 ms-1.5" /></span>
+                <span class="text-green-500"><twig:ux:icon name="bxs:up-arrow" class="h-6 w-6 ms-1.5" /></span>
             {% elseif difference < 0 %}
-                <span class="text-red-500"><twig:ux:icon name="bxs:down-arrow" class="h-10 w-10 ms-1.5" /></span>
+                <span class="text-red-500"><twig:ux:icon name="bxs:down-arrow" class="h-6 w-6 ms-1.5" /></span>
             {% endif %}
         {% endif %}
 
@@ -42,7 +42,7 @@
         {% set percentage = (compare != 0) ? ((difference / compare) * 100)|round(2) : 0 %}
         {% set color = difference > 0 ? 'text-green-500' : (difference < 0 ? 'text-red-500' : 'text-gray-500') %}
 
-        <div class="mt-1 text-sm font-medium {{ color }}">
+        <div class="text-sm font-medium {{ color }}">
             {{ difference > 0 ? '+' : '' }}{{ difference|number_format(valueType != 'percentage' ? 0 : 2) }}
             ({{ percentage > 0 ? '+' : '' }}{{ percentage|number_format(2) }}%)
         </div>

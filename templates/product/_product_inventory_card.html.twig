@@ -1,6 +1,6 @@
 <twig:Card padding="p-0">
     {% if result.isValidProduct %}
-        <div class="m-1 flex flex-wrap justify-around rounded-lg text-center font-light dark:bg-gray-900">
+        <div class="m-1 flex flex-wrap justify-around rounded text-center font-light dark:bg-gray-900">
             <div
                 class="m-3 grid grid-cols-2 grid-rows-3 items-center gap-5 md:grid-cols-4 md:grid-rows-2 md:items-start md:gap-x-14">
                 <div>
@@ -45,7 +45,7 @@
             </div>
         </div>
     {% else %}
-        <div class="m-1 rounded-lg bg-white p-3 text-center font-light dark:bg-gray-900">
+        <div class="m-1 rounded bg-white p-3 text-center font-light dark:bg-gray-900">
             <p class="mb-2 text-2xl text-red-400 dark:text-red-400">Incomplete Product</p>
             {% if not result.hasActiveProductSource %}
                 <p>No Active Supplier</p>

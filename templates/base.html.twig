@@ -30,7 +30,7 @@
                 <div class="flex items-center justify-end">
                     <button id="navigationButton"
                             type="button"
-                            class="inline-flex h-10 w-10 items-center justify-center rounded-lg p-2 text-sm text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
+                            class="inline-flex h-10 w-10 items-center justify-center rounded p-2 text-sm text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600"
                             data-action="click->basic-drawer#open"
                     >
                         <span class="sr-only">Open side menu</span>
@@ -52,7 +52,7 @@
                         </button>
                         <!-- Dropdown menu -->
                         <div
-                            class="z-50 my-3 hidden list-none rounded-lg bg-white text-base shadow divide-y divide-gray-100 dark:divide-gray-600 dark:bg-gray-700"
+                            class="z-50 my-3 hidden list-none rounded bg-white text-base shadow divide-y divide-gray-100 dark:divide-gray-600 dark:bg-gray-700"
                             id="user-dropdown">
                             <div class="px-3 py-3">
                                 <span
@@ -143,7 +143,7 @@
         {{ include ('_frameSuccessStream.html.twig', { frame: 'modal' }) }}
     </turbo-frame>
     <twig:block name="loading_template">
-        {#        <div class="flex items-center justify-center rounded-lg bg-cover p-20 bg-space-pattern">
+        {#        <div class="flex items-center justify-center rounded bg-cover p-20 bg-space-pattern">
             <twig:ux:icon name="icomoon-free:spinner9" class="h-10 w-10 text-gray-400/40"/>
         </div> #}
     </twig:block>
