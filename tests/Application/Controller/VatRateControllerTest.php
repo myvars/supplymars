@@ -21,7 +21,7 @@ class VatRateControllerTest extends WebTestCase
             ->actingAs(UserFactory::staff())
             ->get('/vat-rate/')
             ->assertSuccessful()
-            ->assertSee('VAT Rate List')
+            ->assertSee('VAT Rate Search')
             ->assertSee('3 results');
     }
 

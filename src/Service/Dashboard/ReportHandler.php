@@ -7,11 +7,11 @@ use App\Service\Dashboard\Report\ReportInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 use Symfony\Contracts\Service\ServiceCollectionInterface;
 
-final class ReportHandler
+final readonly class ReportHandler
 {
     public function __construct(
         #[AutowireLocator(ReportInterface::class, indexAttribute: 'key')]
-        private readonly ServiceCollectionInterface $reports,
+        private ServiceCollectionInterface $reports,
     ) {
     }
 

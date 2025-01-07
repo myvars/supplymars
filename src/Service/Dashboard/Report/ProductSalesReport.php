@@ -12,14 +12,14 @@ use Symfony\Component\DependencyInjection\Attribute\AsTaggedItem;
 use Symfony\UX\Chartjs\Model\Chart;
 
 #[AsTaggedItem('product-sales')]
-final class ProductSalesReport implements ReportInterface
+final readonly class ProductSalesReport implements ReportInterface
 {
-    private readonly ProductSalesReportDto $dto;
+    private ProductSalesReportDto $dto;
 
     public function __construct(
-        private readonly ProductSalesRepository $salesRepository,
-        private readonly ProductSalesSummaryRepository $summaryRepository,
-        private readonly BarChartBuilder $barChartBuilder,
+        private ProductSalesRepository $salesRepository,
+        private ProductSalesSummaryRepository $summaryRepository,
+        private BarChartBuilder $barChartBuilder,
     ) {
     }
 

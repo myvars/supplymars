@@ -23,7 +23,7 @@ class SubcategoryControllerTest extends WebTestCase
             ->actingAs(UserFactory::staff())
             ->get('/subcategory/')
             ->assertSuccessful()
-            ->assertSee('Subcategory List')
+            ->assertSee('Subcategory Search')
             ->assertSee('3 results');
     }
 

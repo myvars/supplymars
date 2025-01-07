@@ -23,7 +23,7 @@ class CategoryControllerTest extends WebTestCase
             ->actingAs(UserFactory::staff())
             ->get('/category/')
             ->assertSuccessful()
-            ->assertSee('Category List')
+            ->assertSee('Category Search')
             ->assertSee('3 results');
     }
 

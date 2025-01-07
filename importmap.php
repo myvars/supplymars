@@ -74,7 +74,7 @@ return [
         'version' => '2.5.2',
     ],
     'flowbite-datepicker' => [
-        'version' => '1.3.0',
+        'version' => '1.3.2',
     ],
     'chart.js' => [
         'version' => '4.4.7',

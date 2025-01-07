@@ -23,7 +23,7 @@ class ProductControllerTest extends WebTestCase
             ->actingAs(UserFactory::staff())
             ->get('/product/')
             ->assertSuccessful()
-            ->assertSee('Product List')
+            ->assertSee('Product Search')
             ->assertSee('3 results');
     }
 
@@ -35,7 +35,7 @@ class ProductControllerTest extends WebTestCase
             ->actingAs(UserFactory::staff())
             ->get('/product/?page=2')
             ->assertSuccessful()
-            ->assertSee('Product List')
+            ->assertSee('Product Search')
             ->assertSee('Page 2 not found');
     }
 

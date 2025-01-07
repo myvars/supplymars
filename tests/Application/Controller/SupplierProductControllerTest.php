@@ -22,7 +22,7 @@ class SupplierProductControllerTest extends WebTestCase
             ->actingAs(UserFactory::staff())
             ->get('/supplier-product/')
             ->assertSuccessful()
-            ->assertSee('Supplier Product List')
+            ->assertSee('Supplier Product Search')
             ->assertSee('3 results');
     }
 

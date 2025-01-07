@@ -21,7 +21,7 @@ class SupplierControllerTest extends WebTestCase
             ->actingAs(UserFactory::staff())
             ->get('/supplier/')
             ->assertSuccessful()
-            ->assertSee('Supplier List')
+            ->assertSee('Supplier Search')
             ->assertSee('3 results');
     }
 

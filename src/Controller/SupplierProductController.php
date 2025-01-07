@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Product;
 use App\DTO\SearchDto\SupplierProductSearchDto;
 use App\Entity\SupplierProduct;
 use App\Form\SearchForm\SupplierProductSearchFilterType;
@@ -98,7 +99,7 @@ class SupplierProductController extends AbstractController
     #[Route('/{id}/remove', name: 'app_supplier_product_remove_confirm', methods: ['GET'])]
     public function removeConfirm(?SupplierProduct $supplierProduct, CrudHelper $crudHelper): Response
     {
-        if (!$supplierProduct || !$supplierProduct->getProduct()) {
+        if (!$supplierProduct instanceof SupplierProduct || !$supplierProduct->getProduct() instanceof Product) {
             return $crudHelper->showEmpty(self::SECTION);
         }
 
@@ -108,7 +109,7 @@ class SupplierProductController extends AbstractController
     #[Route('/{id}/remove', name: 'app_supplier_product_remove', methods: ['POST'])]
     public function remove(Request $request, ?SupplierProduct $supplierProduct, CrudHelper $crudHelper): Response
     {
-        if (!$supplierProduct || !$supplierProduct->getProduct()) {
+        if (!$supplierProduct instanceof SupplierProduct || !$supplierProduct->getProduct() instanceof Product) {
             return $crudHelper->showEmpty(self::SECTION);
         }
 

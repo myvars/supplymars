@@ -12,15 +12,15 @@ use Symfony\Component\DependencyInjection\Attribute\AsTaggedItem;
 use Symfony\UX\Chartjs\Model\Chart;
 
 #[AsTaggedItem('order-summary', priority: 10)]
-final class OrderSummaryReport implements ReportInterface
+final readonly class OrderSummaryReport implements ReportInterface
 {
-    private readonly OrderSummaryReportDto $dto;
+    private OrderSummaryReportDto $dto;
 
     public function __construct(
-        private readonly CustomerOrderRepository     $orderRepository,
-        private readonly OrderSalesSummaryRepository $summaryRepository,
-        private readonly BarChartBuilder             $barChartBuilder,
-        private readonly DoughnutChartBuilder        $doughnutChartBuilder
+        private CustomerOrderRepository     $orderRepository,
+        private OrderSalesSummaryRepository $summaryRepository,
+        private BarChartBuilder             $barChartBuilder,
+        private DoughnutChartBuilder        $doughnutChartBuilder
     ) {
     }
 

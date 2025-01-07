@@ -24,6 +24,7 @@ class ProductSalesSummaryCalculator
                 if ($salesDuration === SalesDuration::DAY && $salesType === SalesType::PRODUCT) {
                     continue;
                 }
+
                 // Skip week ago duration for product sales
                 if ($salesDuration === SalesDuration::WEEK_AGO && $salesType === SalesType::PRODUCT) {
                     continue;

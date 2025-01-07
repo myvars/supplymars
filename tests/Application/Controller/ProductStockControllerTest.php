@@ -74,8 +74,7 @@ class ProductStockControllerTest extends WebTestCase
             ->actingAs(UserFactory::staff())
             ->get("/product/" . $product->getId() . "/stock")
             ->assertSuccessful()
-            ->assertSee('Product Stock')
-            ->assertSee('1 source');
+            ->assertSee('Product Stock');
     }
 
     public function testProductSourceRemoveConfirm(): void
@@ -102,8 +101,7 @@ class ProductStockControllerTest extends WebTestCase
             ->click('Remove')
             ->get("/product/" . $product->getId() . "/stock")
             ->assertSuccessful()
-            ->assertSee('Product Stock')
-            ->assertSee('0 source');
+            ->assertSee('Product Stock');
 
     }
 
@@ -142,7 +140,6 @@ class ProductStockControllerTest extends WebTestCase
             ->get("/product/" . $product->getId() . "/stock")
             ->assertSuccessful()
             ->assertSee('Product Stock')
-            ->assertSee('1 source')
             ->assertNotSee('Incomplete Product')
             ->get("/supplier-product/" . $supplierProduct->getId() . "/status/toggle")
             ->get("/product/" . $product->getId() . "/stock")

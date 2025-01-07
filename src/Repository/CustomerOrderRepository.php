@@ -6,7 +6,6 @@ use App\DTO\SearchDto\OverdueOrderSearchDto;
 use App\DTO\SearchDto\SearchInterface;
 use App\Entity\CustomerOrder;
 use App\Enum\OrderStatus;
-use App\Enum\SalesDuration;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;

@@ -12,14 +12,14 @@ use App\Repository\PurchaseOrderRepository;
 use App\ValueObject\ProductSalesType;
 use DateTime;
 
-final class DashboardViewer
+final readonly class DashboardViewer
 {
     public function __construct(
-        private readonly OrderSalesSummaryRepository $orderSummaryRepository,
-        private readonly ProductSalesSummaryRepository $productSummaryRepository,
-        private readonly CustomerOrderRepository $orderRepository,
-        private readonly PurchaseOrderRepository $purchaseOrderRepository,
-        private readonly ProductSalesRepository $productSalesRepository,
+        private OrderSalesSummaryRepository $orderSummaryRepository,
+        private ProductSalesSummaryRepository $productSummaryRepository,
+        private CustomerOrderRepository $orderRepository,
+        private PurchaseOrderRepository $purchaseOrderRepository,
+        private ProductSalesRepository $productSalesRepository,
     ) {
     }
 

@@ -21,7 +21,7 @@ class ManufacturerControllerTest extends WebTestCase
             ->actingAs(UserFactory::staff())
             ->get('/manufacturer/')
             ->assertSuccessful()
-            ->assertSee('Manufacturer List')
+            ->assertSee('Manufacturer Search')
             ->assertSee('3 results');
     }
 

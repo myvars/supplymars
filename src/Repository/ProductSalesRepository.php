@@ -4,8 +4,6 @@ namespace App\Repository;
 
 use App\DTO\ProductSalesReportDto;
 use App\Entity\ProductSales;
-use App\Enum\ProductSalesMetric;
-use App\Enum\SalesType;
 use App\ValueObject\ProductSalesType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -90,7 +88,7 @@ class ProductSalesRepository extends ServiceEntityRepository
             'subcategory' => $qb->join('p.subcategory', 's')->addSelect('s.id AS salesId, s.name'),
             'manufacturer' => $qb->join('p.manufacturer', 'm')->addSelect('m.id AS salesId, m.name'),
             'supplier' => $qb->join('ps.supplier', 's')->addSelect('s.id AS salesId, s.name'),
-            'all' => $qb->addSelect('1 AS salesId, \'all\' AS name'),
+            'all' => $qb->addSelect("1 AS salesId, 'all' AS name"),
             default => throw new \InvalidArgumentException('Unknown entity: ' . $salesTypeValue),
         };
 

@@ -153,7 +153,7 @@ final class ProductSalesReportDto
         // Filter to get only non-null values
         $nonEmptyIdentifiers = array_filter($identifiers, fn($value): bool => !is_null($value));
 
-        if (count($nonEmptyIdentifiers) === 0) {
+        if ($nonEmptyIdentifiers === []) {
             return [
                 'salesType' => SalesType::ALL,
                 'salesTypeId' => 1,
