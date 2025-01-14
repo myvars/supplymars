@@ -1,5 +1,5 @@
-import * as Turbo from '@hotwired/turbo';
 import './bootstrap.js';
+import * as Turbo from '@hotwired/turbo';
 import './styles/app.css';
 import 'aos/dist/aos.css'
 import { shouldPerformTransition, performTransition } from 'turbo-view-transitions';
