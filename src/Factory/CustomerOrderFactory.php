@@ -3,6 +3,8 @@
 namespace App\Factory;
 
 use App\Entity\CustomerOrder;
+use App\Enum\OrderStatus;
+use App\Enum\ShippingMethod;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -36,8 +38,8 @@ final class CustomerOrderFactory extends PersistentProxyObjectFactory
             'customer' => UserFactory::new(),
             'dueDate' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'shippingAddress' => AddressFactory::new(),
-            'shippingMethod' => self::faker()->text(20),
-            'status' => self::faker()->text(20),
+            'shippingMethod' => ShippingMethod::THREE_DAY,
+            'status' => OrderStatus::getDefault(),
         ];
     }
 

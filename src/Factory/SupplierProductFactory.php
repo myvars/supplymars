@@ -33,17 +33,17 @@ final class SupplierProductFactory extends PersistentProxyObjectFactory
     {
         return [
             'name' => self::faker()->text(50),
-            'productCode' => self::faker()->regexify('[A-Z]{2}[0-4]{5}'),
+            'supplier' => SupplierFactory::new(),
             'supplierCategory' => SupplierCategoryFactory::new(),
             'supplierSubcategory' => SupplierSubcategoryFactory::new(),
             'supplierManufacturer' => SupplierManufacturerFactory::new(),
+            'productCode' => self::faker()->regexify('[A-Z]{2}[0-4]{5}'),
             'mfrPartNumber' => self::faker()->numerify('PART-####'),
             'weight' => self::faker()->randomNumber(4),
             'stock' => self::faker()->randomNumber(3),
             'leadTimeDays' => self::faker()->randomNumber(2),
             'cost' => self::faker()->randomNumber(5) / 100,
             'isActive' => self::faker()->boolean(),
-            'supplier' => SupplierFactory::new(),
         ];
     }
 
