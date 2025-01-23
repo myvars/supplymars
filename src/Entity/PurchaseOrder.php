@@ -118,7 +118,7 @@ class PurchaseOrder implements DomainEventProviderInterface
         return $this->shippingAddress;
     }
 
-    public function setShippingAddress(?Address $shippingAddress): static
+    public function setShippingAddress(Address $shippingAddress): static
     {
         $this->shippingAddress = $shippingAddress;
 

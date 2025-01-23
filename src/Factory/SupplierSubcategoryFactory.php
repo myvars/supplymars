@@ -3,6 +3,7 @@
 namespace App\Factory;
 
 use App\Entity\SupplierSubcategory;
+use Zenstruck\Foundry\LazyValue;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -31,10 +32,12 @@ final class SupplierSubcategoryFactory extends PersistentProxyObjectFactory
      */
     protected function defaults(): array|callable
     {
+        $supplier = LazyValue::memoize(fn() => SupplierFactory::createOne());
+
         return [
             'name' => ucfirst(implode(' ', self::faker()->words(random_int(1, 3)))),
-            'supplier' => SupplierFactory::new(),
-            'supplierCategory' => SupplierCategoryFactory::new(),
+            'supplier' => $supplier,
+            'supplierCategory' => SupplierCategoryFactory::new()->with(['supplier' => $supplier]),
         ];
     }
 

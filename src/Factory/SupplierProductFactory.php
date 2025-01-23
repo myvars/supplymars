@@ -3,6 +3,7 @@
 namespace App\Factory;
 
 use App\Entity\SupplierProduct;
+use Zenstruck\Foundry\LazyValue;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -31,18 +32,24 @@ final class SupplierProductFactory extends PersistentProxyObjectFactory
      */
     protected function defaults(): array|callable
     {
+        $supplier = LazyValue::memoize(fn() => SupplierFactory::new());
+        $supplierCategory = LazyValue::memoize(fn() => SupplierCategoryFactory::new()->with(['supplier' => $supplier]));
+        $supplierSubcategory = LazyValue::memoize(fn() => SupplierSubcategoryFactory::new()->with(['supplier' => $supplier, 'supplierCategory' => $supplierCategory]));
+        $supplierManufacturer = LazyValue::memoize(fn() => SupplierManufacturerFactory::new()->with(['supplier' => $supplier]));
+
         return [
             'name' => self::faker()->text(50),
-            'supplier' => SupplierFactory::new(),
-            'supplierCategory' => SupplierCategoryFactory::new(),
-            'supplierSubcategory' => SupplierSubcategoryFactory::new(),
-            'supplierManufacturer' => SupplierManufacturerFactory::new(),
             'productCode' => self::faker()->regexify('[A-Z]{2}[0-4]{5}'),
+            'supplier' => $supplier,
+            'supplierCategory' => $supplierCategory,
+            'supplierSubcategory' => $supplierSubcategory,
+            'supplierManufacturer' => $supplierManufacturer,
             'mfrPartNumber' => self::faker()->numerify('PART-####'),
             'weight' => self::faker()->randomNumber(4),
             'stock' => self::faker()->randomNumber(3),
             'leadTimeDays' => self::faker()->randomNumber(2),
             'cost' => self::faker()->randomNumber(5) / 100,
+            'product' => ProductFactory::new(),
             'isActive' => self::faker()->boolean(),
         ];
     }

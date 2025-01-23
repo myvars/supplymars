@@ -3,6 +3,7 @@
 namespace App\Factory;
 
 use App\Entity\CustomerOrderItem;
+use Zenstruck\Foundry\Object\Instantiator;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -31,15 +32,8 @@ final class CustomerOrderItemFactory extends PersistentProxyObjectFactory
      */
     protected function defaults(): array|callable
     {
-        $product = ProductFactory::new()->create();
-
         return [
-            'customerOrder' => CustomerOrderFactory::new(),
-            'product' => ProductFactory::new(),
-            'quantity' => self::faker()->randomNumber(1),
-            'price' => $product->getSellPrice(),
-            'priceIncVat' => $product->getSellPriceIncVat(),
-            'weight' => self::faker()->randomNumber(),
+            'customerOrder' => CustomerOrderFactory::new()
         ];
     }
 
@@ -49,7 +43,11 @@ final class CustomerOrderItemFactory extends PersistentProxyObjectFactory
     protected function initialize(): static
     {
         return $this
-            // ->afterInstantiate(function(CustomerOrderItem $customerOrderItem): void {})
-        ;
+            ->instantiateWith(Instantiator::withConstructor()->allowExtra())
+            ->afterInstantiate(function(CustomerOrderItem $customerOrderItem, array $attributes): void {
+                $product = $attributes['product'] ?? ProductFactory::new()->create()->_real();
+                $quantity = $attributes['quantity'] ?? self::faker()->randomNumber(1);
+                $customerOrderItem->createFromProduct($product, $quantity);
+            });
     }
 }

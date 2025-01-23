@@ -20,10 +20,11 @@ class SupplierCategory
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotNull(message: 'Please enter a category name')]
+    #[Assert\NotBlank(message: 'Please enter a category name')]
     private ?string $name = null;
 
     #[ORM\ManyToOne(inversedBy: 'supplierCategories')]
+    #[Assert\NotNull(message: 'Please enter a supplier')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Supplier $supplier = null;
 

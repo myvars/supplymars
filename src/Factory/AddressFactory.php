@@ -44,6 +44,9 @@ final class AddressFactory extends PersistentProxyObjectFactory
             'email' => self::faker()->email(),
             'fullName' => self::faker()->name(),
             'companyName' => random_int(1,5) === 1 ? self::faker()->company() : null,
+            'street2' => random_int(1,5) === 1 ? self::faker()->streetName() : null,
+            'isDefaultShippingAddress' => false,
+            'isDefaultBillingAddress' => false,
         ];
     }
 

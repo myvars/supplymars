@@ -32,10 +32,12 @@ final class CategoryFactory extends PersistentProxyObjectFactory
     protected function defaults(): array|callable
     {
         return [
-            'isActive' => self::faker()->boolean(),
+            'defaultMarkup' => Category::DEFAULT_MARKUP,
             'name' => ucfirst(implode(' ', self::faker()->words(random_int(1, 3)))),
             'owner' => UserFactory::new(),
+            'priceModel' => Category::DEFAULT_PRICE_MODEL,
             'vatRate' => VatRateFactory::new(),
+            'isActive' => self::faker()->boolean(),
         ];
     }
 
@@ -49,3 +51,4 @@ final class CategoryFactory extends PersistentProxyObjectFactory
         ;
     }
 }
+

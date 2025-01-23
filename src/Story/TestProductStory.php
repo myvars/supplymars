@@ -24,7 +24,7 @@ final class TestProductStory extends Story
 
     public function build(): void
     {
-        $owner = UserFactory::createOne(['fullName' => 'Test Owner'])->_real();
+        $owner = UserFactory::new()->staff()->create()->_real();
 
         $vatRate = VatRateFactory::createOne([
             'name' => 'Test Vat Rate',

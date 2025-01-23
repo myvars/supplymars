@@ -34,8 +34,9 @@ final class UserFactory extends PersistentProxyObjectFactory
     {
         return [
             'email' => self::faker()->email(),
-            'fullName' => self::faker()->firstName().' '.self::faker()->lastName(),
+            'roles' => [],
             'password' => self::faker()->password(),
+            'fullName' => self::faker()->firstName() . ' ' . self::faker()->lastName(),
             'isVerified' => true,
             'isStaff' => false,
         ];
@@ -51,12 +52,12 @@ final class UserFactory extends PersistentProxyObjectFactory
                 if ($user->getPassword() !== '' && $user->getPassword() !== '0') {
                     $user->setPassword($this->passwordEncoder->hashPassword($user, $user->getPassword()));
                 }
-            })
-        ;
+            });
     }
 
-    public static function staff(): User
+    public function staff(): self
     {
-        return self::new()->create(['fullName' => 'Staff Member', 'isStaff' => true])->_real();
+        return $this->with(['fullName' => 'Staff Member', 'isStaff' => true]);
     }
 }
+

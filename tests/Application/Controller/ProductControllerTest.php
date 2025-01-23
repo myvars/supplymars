@@ -20,7 +20,7 @@ class ProductControllerTest extends WebTestCase
         ProductFactory::createMany(3);
 
         $this->browser()
-            ->actingAs(UserFactory::staff())
+            ->actingAs(UserFactory::new()->staff()->create())
             ->get('/product/')
             ->assertSuccessful()
             ->assertSee('Product Search')
@@ -32,7 +32,7 @@ class ProductControllerTest extends WebTestCase
         ProductFactory::createOne();
 
         $this->browser()
-            ->actingAs(UserFactory::staff())
+            ->actingAs(UserFactory::new()->staff()->create())
             ->get('/product/?page=2')
             ->assertSuccessful()
             ->assertSee('Product Search')
@@ -44,7 +44,7 @@ class ProductControllerTest extends WebTestCase
         $product = ProductFactory::createOne(['name' => 'Product to be shown']);
 
         $this->browser()
-            ->actingAs(UserFactory::staff())
+            ->actingAs(UserFactory::new()->staff()->create())
             ->get("/product/" . $product->getId())
             ->assertSuccessful()
             ->assertSee('Product to be shown');
@@ -54,10 +54,10 @@ class ProductControllerTest extends WebTestCase
     {
         $subcategory = SubcategoryFactory::createOne(['name' => 'Test Subcategory']);
         $manufacturer = ManufacturerFactory::createOne(['name' => 'Test Manufacturer']);
-$owner = UserFactory::staff();
+$owner = UserFactory::new()->staff()->create();
 
         $this->browser()
-            ->actingAs(UserFactory::staff())
+            ->actingAs(UserFactory::new()->staff()->create())
             ->get('/product/new')
             ->assertSuccessful()
             ->fillField('product[name]','Test Product')
@@ -76,7 +76,7 @@ $owner = UserFactory::staff();
     public function testNewProductValidation(): void
     {
         $this->browser()
-            ->actingAs(UserFactory::staff())
+            ->actingAs(UserFactory::new()->staff()->create())
             ->get('/product/new')
             ->assertSuccessful()
             // Intentionally filling form with invalid data
@@ -100,7 +100,7 @@ $owner = UserFactory::staff();
         ]);
 
         $this->browser()
-            ->actingAs(UserFactory::staff())
+            ->actingAs(UserFactory::new()->staff()->create())
             ->get("/product/" . $product->getId() . "/edit")
             ->assertSuccessful()
             ->fillField('product[name]','Edited Product')
@@ -114,7 +114,7 @@ $owner = UserFactory::staff();
         $product = ProductFactory::createOne(['name' => 'Product to be edited']);
 
         $this->browser()
-            ->actingAs(UserFactory::staff())
+            ->actingAs(UserFactory::new()->staff()->create())
             ->get("/product/" . $product->getId() . "/edit")
             ->assertSuccessful()
             // Intentionally filling form with invalid data
@@ -139,7 +139,7 @@ $owner = UserFactory::staff();
         $product = ProductFactory::createOne(['name' => 'Product to be deleted']);
 
         $this->browser()
-            ->actingAs(UserFactory::staff())
+            ->actingAs(UserFactory::new()->staff()->create())
             ->get("/product/" . $product->getId() . "/delete/confirm")
             ->assertSuccessful()
             ->assertSee('Are you sure you want to delete this Product');
@@ -150,7 +150,7 @@ $owner = UserFactory::staff();
         $product = ProductFactory::createOne(['name' => 'Product to be deleted']);
 
         $this->browser()
-            ->actingAs(UserFactory::staff())
+            ->actingAs(UserFactory::new()->staff()->create())
             ->get("/product/" . $product->getId() . "/delete/confirm")
             ->assertSuccessful()
             ->click('Delete')
@@ -161,7 +161,7 @@ $owner = UserFactory::staff();
     public function testProductNotFound(): void
     {
         $this->browser()
-            ->actingAs(UserFactory::staff())
+            ->actingAs(UserFactory::new()->staff()->create())
             ->get("/product/999")
             ->assertSee("Sorry, we can't find that Product");
     }

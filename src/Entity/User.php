@@ -24,7 +24,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
-    #[Assert\NotBlank(message: 'Please enter an email')]
+    #[Assert\NotBlank(message: 'Please enter a valid email')]
     #[Assert\Email]
     private ?string $email = null;
 
@@ -311,7 +311,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
     {
         // set the owning side to null (unless already changed)
         if ($this->customerOrders->removeElement($customerOrder) && $customerOrder->getCustomer() === $this) {
-            $customerOrder->setCustomer(null);
+
         }
 
         return $this;
@@ -339,7 +339,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
     {
         // set the owning side to null (unless already changed)
         if ($this->statusChangeLogs->removeElement($statusChangeLog) && $statusChangeLog->getUser() === $this) {
-            $statusChangeLog->setUser(null);
+
         }
 
         return $this;

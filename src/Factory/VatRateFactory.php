@@ -47,4 +47,9 @@ final class VatRateFactory extends PersistentProxyObjectFactory
             // ->afterInstantiate(function(VatRate $vatRate): void {})
         ;
     }
+
+    public function standard(): self
+    {
+        return $this->with(['name' => 'Standard Vat Rate', 'rate' => '20.00', 'isDefaultVatRate' => true]);
+    }
 }

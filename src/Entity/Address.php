@@ -46,10 +46,6 @@ class Address
     private ?string $country = null;
 
     #[ORM\Column(length: 20, nullable: true)]
-    #[Assert\Regex(
-        pattern: '/^(\+44|0)\d{10,14}$/',
-        message: 'Please enter a valid phone number'
-    )]
     private ?string $phoneNumber = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -226,7 +222,7 @@ class Address
         return $this->isDefaultShippingAddress;
     }
 
-    public function setDefaultShippingAddress(bool $isDefaultShippingAddress): static
+    public function setIsDefaultShippingAddress(bool $isDefaultShippingAddress): static
     {
         $this->isDefaultShippingAddress = $isDefaultShippingAddress;
 
@@ -238,7 +234,7 @@ class Address
         return $this->isDefaultBillingAddress;
     }
 
-    public function setDefaultBillingAddress(bool $isDefaultBillingAddress): static
+    public function setIsDefaultBillingAddress(bool $isDefaultBillingAddress): static
     {
         $this->isDefaultBillingAddress = $isDefaultBillingAddress;
 
@@ -267,7 +263,7 @@ class Address
     {
         // set the owning side to null (unless already changed)
         if ($this->customerOrders->removeElement($customerOrder) && $customerOrder->getShippingAddress() === $this) {
-            $customerOrder->setShippingAddress(null);
+
         }
 
         return $this;
@@ -295,7 +291,7 @@ class Address
     {
         // set the owning side to null (unless already changed)
         if ($this->purchaseOrders->removeElement($purchaseOrder) && $purchaseOrder->getShippingAddress() === $this) {
-            $purchaseOrder->setShippingAddress(null);
+
         }
 
         return $this;

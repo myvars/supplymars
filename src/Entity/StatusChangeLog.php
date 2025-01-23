@@ -18,10 +18,8 @@ class StatusChangeLog
 
     public function __construct(
         #[ORM\Column(length: 255)]
-        #[Assert\NotBlank(message: 'Please enter an event type')]
         private readonly DomainEventType $eventType,
         #[ORM\Column]
-        #[Assert\NotBlank(message: 'Please enter an event type Id')]
         #[Assert\Positive(message: 'Please enter a positive event type Id')]
         private readonly int $eventTypeId,
         #[ORM\Column(length: 255)]
@@ -30,10 +28,8 @@ class StatusChangeLog
         private readonly string $status,
         #[ORM\ManyToOne(inversedBy: 'statusChangeLogs')]
         #[ORM\JoinColumn(nullable: false)]
-        #[Assert\NotNull(message: 'Please enter a user')]
         private User $user,
         #[ORM\Column]
-        #[Assert\NotBlank(message: 'Please enter an event timestamp')]
         private readonly \DateTimeImmutable $eventTimestamp
     ) {
     }
@@ -63,7 +59,7 @@ class StatusChangeLog
         return $this->user;
     }
 
-    public function setUser(?User $user): void
+    public function setUser(User $user): void
     {
         $this->user = $user;
     }

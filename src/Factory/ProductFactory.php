@@ -3,6 +3,7 @@
 namespace App\Factory;
 
 use App\Entity\Product;
+use Zenstruck\Foundry\LazyValue;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -31,19 +32,26 @@ final class ProductFactory extends PersistentProxyObjectFactory
      */
     protected function defaults(): array|callable
     {
+        $category = LazyValue::memoize(fn() => CategoryFactory::CreateOne());
+
         return [
-            'name' => self::faker()->text(100),
+            'name' => ucfirst(implode(' ', self::faker()->words(random_int(1, 3)))),
+            'description' => ucfirst(implode(' ', self::faker()->words(random_int(5, 10)))),
             'MfrPartNumber' => self::faker()->regexify('[A-Z]{4}[0-4]{4}'),
-            'category' => CategoryFactory::new(),
-            'subcategory' => SubcategoryFactory::new(),
-            'manufacturer' => ManufacturerFactory::new(),
-            'cost' => self::faker()->randomNumber(5) / 100,
-            'isActive' => self::faker()->boolean(),
-            'leadTimeDays' => self::faker()->randomNumber(2),
             'stock' => self::faker()->randomNumber(4),
+            'leadTimeDays' => self::faker()->randomNumber(2),
             'weight' => self::faker()->randomNumber(4),
-            'markup' => self::faker()->randomNumber(4) / 100,
+            'defaultMarkup' => Product::DEFAULT_MARKUP,
+            'markup' => '0',
+            'priceModel' => Product::DEFAULT_PRICE_MODEL,
+            'cost' => self::faker()->randomNumber(5) / 100,
+            'sellPrice' => '0',
+            'sellPriceIncVat' => '0',
+            'category' => $category,
+            'subcategory' => SubcategoryFactory::new()->with(['category' => $category]),
+            'manufacturer' => ManufacturerFactory::new(),
             'owner' => UserFactory::new(),
+            'isActive' => self::faker()->boolean(),
         ];
     }
 

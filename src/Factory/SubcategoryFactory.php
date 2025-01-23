@@ -33,9 +33,11 @@ final class SubcategoryFactory extends PersistentProxyObjectFactory
     {
         return [
             'name' => ucfirst(implode(' ', self::faker()->words(random_int(1, 3)))),
-            'isActive' => self::faker()->boolean(),
-            'category' => CategoryFactory::new(),
+            'defaultMarkup' => Subcategory::DEFAULT_MARKUP,
             'owner' => UserFactory::new(),
+            'priceModel' => Subcategory::DEFAULT_PRICE_MODEL,
+            'category' => CategoryFactory::new(),
+            'isActive' => self::faker()->boolean(),
         ];
     }
 

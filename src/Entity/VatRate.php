@@ -26,7 +26,7 @@ class VatRate
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
     #[Assert\NotBlank(message: 'Please enter a VAT rate %')]
     #[Assert\PositiveOrZero(message: 'Please enter a positive or zero VAT rate')]
-    private ?string $rate = null;
+    private ?string $rate = '0.000';
 
     #[ORM\Column]
     private bool $isDefaultVatRate = false;
@@ -68,7 +68,7 @@ class VatRate
         return $this;
     }
 
-    public function isDefaultVatRate(): ?bool
+    public function isDefaultVatRate(): bool
     {
         return $this->isDefaultVatRate;
     }

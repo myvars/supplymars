@@ -5,6 +5,7 @@ namespace App\Factory;
 use App\Entity\CustomerOrder;
 use App\Enum\OrderStatus;
 use App\Enum\ShippingMethod;
+use Zenstruck\Foundry\LazyValue;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -33,12 +34,14 @@ final class CustomerOrderFactory extends PersistentProxyObjectFactory
      */
     protected function defaults(): array|callable
     {
+        $shippingMethod = LazyValue::memoize(fn() => self::faker()->randomElement(ShippingMethod::cases()));
+
         return [
-            'billingAddress' => AddressFactory::new(),
             'customer' => UserFactory::new(),
-            'dueDate' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
             'shippingAddress' => AddressFactory::new(),
-            'shippingMethod' => ShippingMethod::THREE_DAY,
+            'billingAddress' => AddressFactory::new(),
+            'customerOrderRef' => self::faker()->word(),
+            'shippingMethod' => $shippingMethod,
             'status' => OrderStatus::getDefault(),
         ];
     }
@@ -49,7 +52,12 @@ final class CustomerOrderFactory extends PersistentProxyObjectFactory
     protected function initialize(): static
     {
         return $this
-            // ->afterInstantiate(function(CustomerOrder $customerOrder): void {})
-        ;
+            ->afterInstantiate(function (CustomerOrder $customerOrder): void {
+                $customerOrder->setShippingDetailsFromShippingMethod(
+                    $customerOrder->getShippingMethod(),
+                    VatRateFactory::new()->standard()->create()
+                );
+            });
     }
 }
+

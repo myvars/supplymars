@@ -13,6 +13,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
 {
+    public const DEFAULT_MARKUP = '0.000';
+
     public const DEFAULT_PRICE_MODEL = PriceModel::NONE;
 
     use TimestampableEntity;
@@ -50,7 +52,7 @@ class Product
     #[ORM\Column(type: 'decimal', precision: 9, scale: 3)]
     #[Assert\NotBlank(message: 'Please enter a product markup %')]
     #[Assert\PositiveOrZero(message: 'Please enter a positive or zero product markup %')]
-    private ?string $defaultMarkup = '0';
+    private ?string $defaultMarkup = self::DEFAULT_MARKUP;
 
     #[ORM\Column(type: 'decimal', precision: 9, scale: 3)]
     #[Assert\PositiveOrZero]

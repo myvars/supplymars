@@ -36,7 +36,7 @@ class ProductStockControllerTest extends WebTestCase
         $product = ProductFactory::createOne(['name' => 'Product to be shown']);
 
         $this->browser()
-            ->actingAs(UserFactory::staff())
+            ->actingAs(UserFactory::new()->staff()->create())
             ->get("/product/" . $product->getId() . "/stock")
             ->assertSuccessful()
             ->assertSee('Product Stock');
@@ -50,7 +50,7 @@ class ProductStockControllerTest extends WebTestCase
         ]);
 
         $this->browser()
-            ->actingAs(UserFactory::staff())
+            ->actingAs(UserFactory::new()->staff()->create())
             ->get("/product/" . $product->getId() . "/stock")
             ->assertSuccessful()
             ->assertSee('Product Stock')
@@ -61,7 +61,7 @@ class ProductStockControllerTest extends WebTestCase
     public function testShowProductStockWithInvalidProduct(): void
     {
         $this->browser()
-            ->actingAs(UserFactory::staff())
+            ->actingAs(UserFactory::new()->staff()->create())
             ->get("/product/999/stock")
             ->assertSee("Sorry, we can't find that Product");
     }
@@ -71,7 +71,7 @@ class ProductStockControllerTest extends WebTestCase
         $product = $this->testProduct->create();
 
         $this->browser()
-            ->actingAs(UserFactory::staff())
+            ->actingAs(UserFactory::new()->staff()->create())
             ->get("/product/" . $product->getId() . "/stock")
             ->assertSuccessful()
             ->assertSee('Product Stock');
@@ -84,7 +84,7 @@ class ProductStockControllerTest extends WebTestCase
         $supplierProduct = $product->getActiveProductSource();
 
         $this->browser()
-            ->actingAs(UserFactory::staff())
+            ->actingAs(UserFactory::new()->staff()->create())
             ->get("/supplier-product/" . $supplierProduct->getId() . "/remove")
             ->assertSee('Are you sure you want to remove this supplier product?');
     }
@@ -96,7 +96,7 @@ class ProductStockControllerTest extends WebTestCase
         $supplierProduct = $product->getActiveProductSource();
 
         $this->browser()
-            ->actingAs(UserFactory::staff())
+            ->actingAs(UserFactory::new()->staff()->create())
             ->get("/supplier-product/" . $supplierProduct->getId() . "/remove")
             ->click('Remove')
             ->get("/product/" . $product->getId() . "/stock")
@@ -116,7 +116,7 @@ class ProductStockControllerTest extends WebTestCase
         $this->activeSourceCalculator->recalculateActiveSource($product);
 
         $this->browser()
-            ->actingAs(UserFactory::staff())
+            ->actingAs(UserFactory::new()->staff()->create())
             ->get("/supplier-product/" . $supplierProduct->getId() . "/remove")
             ->assertSee("Sorry, we can't find that Supplier Product");
     }
@@ -124,7 +124,7 @@ class ProductStockControllerTest extends WebTestCase
     public function testProductSourceRemoveNotFound(): void
     {
         $this->browser()
-            ->actingAs(UserFactory::staff())
+            ->actingAs(UserFactory::new()->staff()->create())
             ->get("/supplier-product/999/remove")
             ->assertSee("Sorry, we can't find that Supplier Product");
     }
@@ -136,7 +136,7 @@ class ProductStockControllerTest extends WebTestCase
         $supplierProduct = $product->getActiveProductSource();
 
         $this->browser()
-            ->actingAs(UserFactory::staff())
+            ->actingAs(UserFactory::new()->staff()->create())
             ->get("/product/" . $product->getId() . "/stock")
             ->assertSuccessful()
             ->assertSee('Product Stock')
@@ -154,7 +154,7 @@ class ProductStockControllerTest extends WebTestCase
     public function testProductSourceStatusToggleNotFound(): void
     {
         $this->browser()
-            ->actingAs(UserFactory::staff())
+            ->actingAs(UserFactory::new()->staff()->create())
             ->get("/supplier-product/999/status/toggle")
             ->assertSee("Sorry, we can't find that Supplier Product");
     }
