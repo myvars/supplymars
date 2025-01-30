@@ -1,12 +1,10 @@
 <?php
 
-namespace App\Service\Crud\Core;
+namespace App\Service\Crud\Common;
 
 use App\Service\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 
-#[AsAlias('app.crud.delete.action')]
 final readonly class CrudDeleteAction implements CrudActionInterface
 {
     public function __construct(
@@ -15,10 +13,13 @@ final readonly class CrudDeleteAction implements CrudActionInterface
     ) {
     }
 
-    public function handle(object $crudOptions): void
+    public function handle(CrudOptions $crudOptions): void
     {
-        $entity = $crudOptions->getEntity();
+        $this->delete($crudOptions->getEntity());
+    }
 
+    private function delete(object $entity): void
+    {
         $this->entityManager->remove($entity);
         $this->entityManager->flush();
 

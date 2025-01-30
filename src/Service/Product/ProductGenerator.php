@@ -4,8 +4,10 @@ namespace App\Service\Product;
 
 use App\Entity\Product;
 use App\Entity\SupplierProduct;
+use App\Service\Crud\Common\CrudActionInterface;
+use App\Service\Crud\Common\CrudOptions;
 
-class ProductGenerator
+final class ProductGenerator implements CrudActionInterface
 {
     public function __construct(
         private readonly CategoryMapper $categoryMapper,
@@ -14,6 +16,16 @@ class ProductGenerator
         private readonly ProductMapper $productMapper,
         private readonly ProductPriceCalculator $productPriceCalculator
     ) {
+    }
+
+    public function handle(CrudOptions $crudOptions): void
+    {
+        $supplierProduct = $crudOptions->getEntity();
+        if (!$supplierProduct instanceof SupplierProduct) {
+            throw new \InvalidArgumentException('Entity must be an instance of SupplierProduct');
+        }
+
+        $this->createFromSupplierProduct($supplierProduct);
     }
 
     public function createFromSupplierProduct(SupplierProduct $supplierProduct): Product

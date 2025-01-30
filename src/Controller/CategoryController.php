@@ -9,7 +9,6 @@ use App\Form\SearchForm\CategorySearchFilterType;
 use App\Repository\CategoryRepository;
 use App\Service\Crud\CrudCreator;
 use App\Service\Crud\CrudDeleter;
-use App\Service\Crud\CrudHandler;
 use App\Service\Crud\CrudReader;
 use App\Service\Crud\CrudSearcher;
 use App\Service\Crud\CrudUpdater;
@@ -30,17 +29,17 @@ class CategoryController extends AbstractController
     #[Route('/', name: 'app_category_index', methods: ['GET'])]
     public function index(
         Request $request,
-        CrudSearcher $crudSearcher,
+        CrudSearcher $handler,
         CategoryRepository $repository,
         #[MapQueryString] CategorySearchDto $dto = new CategorySearchDto()
     ): Response {
-        return $crudSearcher->search(self::SECTION, $dto, $repository, $request->query->all());
+        return $handler->search(self::SECTION, $dto, $repository, $request->query->all());
     }
 
     #[Route('/search/filter', name: 'app_category_search_filter', methods: ['GET', 'POST'])]
     public function searchFilter(
         Request $request,
-        CrudHandler $crudHandler,
+        CrudUpdater $handler,
         SearchFilter $action,
         #[MapQueryString] CategorySearchDto $dto = new CategorySearchDto()
     ): Response {
@@ -49,42 +48,53 @@ class CategoryController extends AbstractController
             'action' => $this->generateUrl('app_category_search_filter', $request->query->all()),
         ]);
 
-        return $crudHandler->build($crudHandler->getOptions()
-            ->setTemplate($dto::TEMPLATE)
-            ->setForm($form)
-            ->setEntity($dto)
-            ->setCrudAction($action)
-            ->setSuccessLink($this->generateUrl('app_category_index'))
+        return $handler->build(
+            $handler->setDefaults()
+                ->setTemplate($dto::TEMPLATE)
+                ->setForm($form)
+                ->setEntity($dto)
+                ->setCrudAction($action)
+                ->setSuccessLink(
+                    $this->generateUrl('app_category_index')
+                )
         );
     }
 
     #[Route('/new', name: 'app_category_new', methods: ['GET', 'POST'])]
-    public function new(CrudCreator $crudCreator): Response
+    public function new(CrudCreator $handler): Response
     {
-        return $crudCreator->create(self::SECTION, new Category(), CategoryType::class);
+        return $handler->create(self::SECTION, new Category(), CategoryType::class);
     }
 
     #[Route('/{id}', name: 'app_category_show', methods: ['GET'])]
-    public function show(?Category $category, CrudReader $crudReader): Response
-    {
-        return $crudReader->read(self::SECTION, $category);
+    public function show(
+        Category $category,
+        CrudReader $handler
+    ): Response {
+        return $handler->read(self::SECTION, $category);
     }
 
     #[Route('/{id}/edit', name: 'app_category_edit', methods: ['GET', 'POST'])]
-    public function edit(?Category $category, CrudUpdater $crudUpdater): Response
-    {
-        return $crudUpdater->update(self::SECTION, $category, CategoryType::class);
+    public function edit(
+        Category $category,
+        CrudUpdater $handler
+    ): Response {
+        return $handler->update(self::SECTION, $category, CategoryType::class);
     }
 
     #[Route('/{id}/delete/confirm', name: 'app_category_delete_confirm', methods: ['GET'])]
-    public function deleteConfirm(?Category $category, CrudDeleter $crudDeleter): Response
-    {
-        return $crudDeleter->deleteConfirm(self::SECTION, $category);
+    public function deleteConfirm(
+        Category $category,
+        CrudDeleter $handler
+    ): Response {
+        return $handler->deleteConfirm(self::SECTION, $category);
     }
 
     #[Route('/{id}/delete', name: 'app_category_delete', methods: ['POST'])]
-    public function delete(?Category $category, CrudDeleter $crudDeleter): Response
-    {
-        return $crudDeleter->delete(self::SECTION, $category);
+    public function delete(
+        Category $category,
+        CrudDeleter $handler
+    ): Response {
+        return $handler->delete(self::SECTION, $category);
     }
 }

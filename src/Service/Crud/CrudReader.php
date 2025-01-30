@@ -2,52 +2,50 @@
 
 namespace App\Service\Crud;
 
-use App\Service\Crud\Core\CrudReadOptions;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Service\Crud\Common\BaseCrudHandler;
+use App\Service\Crud\Common\CrudHelper;
+use App\Service\Crud\Common\CrudOptions;
 use Symfony\Component\HttpFoundation\Response;
 
-class CrudReader extends AbstractController
+class CrudReader extends BaseCrudHandler
 {
     public const TEMPLATE = 'show';
 
     public function __construct(
         public readonly CrudHelper $crudHelper,
-        private readonly CrudReadOptions $crudOptions,
+        private readonly CrudOptions $crudOptions,
     ) {
+        parent::__construct($crudHelper);
     }
 
     public function read(string $section, ?object $entity): Response
     {
-        if ($entity === null) {
-            return $this->crudHelper->showEmpty($section);
-        }
-
-        $crudOptions = $this->createOptions($section, $entity);
-
-        return $this->build($crudOptions);
+        return $this->process($section, $entity);
     }
 
-    public function createOptions(string $section, ?object $entity): CrudReadOptions
+    public function setDefaults(): CrudOptions
     {
-        $backLink = $this->generateUrl('app_'.$this->crudHelper->snakeCase($section).'_index');
+        return $this->crudOptions::create()
+            ->setTemplate(self::TEMPLATE);
+    }
 
-        return $this->resetOptions()
+    public function setup(string $section, object $entity, string $formType=''): CrudOptions
+    {
+        return $this->setDefaults()
             ->setSection($section)
             ->setEntity($entity)
-            ->setBackLink($backLink);
+            ->setBackLink(
+                $this->generateUrl('app_'.$this->crudHelper->snakeCase($section).'_index')
+            );
     }
 
-    public function build(CrudReadOptions $crudOptions): Response
+    public function build(CrudOptions $crudOptions): Response
     {
         return $this->render($this->crudHelper::CRUD_BASE_TEMPLATE, [
             'section' => $crudOptions->getSection(),
-            'template' => self::TEMPLATE,
+            'template' => $crudOptions->getTemplate(),
             'result' => $crudOptions->getEntity(),
+            'backLink' => $crudOptions->getBackLink(),
         ]);
-    }
-
-    public function resetOptions(): CrudReadOptions
-    {
-        return $this->crudOptions::create();
     }
 }

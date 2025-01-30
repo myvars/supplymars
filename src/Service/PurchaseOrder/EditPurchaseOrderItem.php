@@ -6,7 +6,8 @@ use App\DTO\EditPurchaseOrderItemDto;
 use App\Entity\CustomerOrderItem;
 use App\Entity\PurchaseOrder;
 use App\Entity\PurchaseOrderItem;
-use App\Service\Crud\Core\CrudActionInterface;
+use App\Service\Crud\Common\CrudActionInterface;
+use App\Service\Crud\Common\CrudOptions;
 use App\Service\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -18,12 +19,14 @@ final readonly class EditPurchaseOrderItem implements CrudActionInterface
     ) {
     }
 
-    public function handle(object $crudOptions): void
+    public function handle(CrudOptions $crudOptions): void
     {
-        $entity = $crudOptions->getEntity();
-        assert($entity instanceof EditPurchaseOrderItemDto);
+        $dto = $crudOptions->getEntity();
+        if (!$dto instanceof EditPurchaseOrderItemDto) {
+            throw new \InvalidArgumentException('Entity must be an instance of EditPurchaseOrderItemDto');
+        }
 
-        $this->fromDto($entity);
+        $this->fromDto($dto);
     }
 
     public function fromDto(EditPurchaseOrderItemDto $dto): void

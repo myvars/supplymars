@@ -6,10 +6,8 @@ use App\Entity\Product;
 use App\Form\CategoryCostType;
 use App\Form\ProductCostType;
 use App\Form\SubcategoryCostType;
-use App\Service\Crud\CrudHelper;
 use App\Service\Crud\CrudUpdater;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -20,80 +18,77 @@ class ProductCostController extends AbstractController
 {
     public const SECTION = 'Product';
 
-    public function __construct(private readonly CrudUpdater $crudUpdater)
-    {
-    }
-
     #[Route('/{id}/cost', name: 'app_product_cost', methods: ['GET'])]
-    public function cost(?Product $product, CrudHelper $crudHelper): Response
+    public function cost(Product $product): Response
     {
-        if (!$product instanceof Product) {
-            return $crudHelper->showEmpty(self::SECTION);
-        }
-
         return $this->render('product/cost.html.twig', ['result' => $product]);
     }
 
     #[Route('/{id}/cost/edit', name: 'app_product_cost_edit', methods: ['GET', 'POST'])]
-    public function costEdit(?Product $product, CrudHelper $crudHelper): Response
-    {
-        if (!$product instanceof Product) {
-            return $crudHelper->showEmpty(self::SECTION);
-        }
-
+    public function costEdit(
+        Product $product,
+        CrudUpdater $handler
+    ): Response {
         $form = $this->createForm(ProductCostType::class, $product, [
             'action' => $this->generateUrl('app_product_cost_edit', ['id' => $product->getId()]),
         ]);
 
-        return $this->changeProductCost('Product Cost', $product, $product, $form);
+        return $handler->build(
+            $handler->setDefaults()
+                ->setSection('Product Cost')
+                ->setEntity($product)
+                ->setForm($form)
+                ->setSuccessFlash('Product Cost updated!')
+                ->setErrorFlash('Can not update Product Cost!')
+                ->setSuccessLink(
+                    $this->generateUrl('app_product_cost', ['id' => $product->getId()])
+                )
+        );
     }
 
     #[Route('/{id}/cost/category/edit', name: 'app_product_cost_category_edit', methods: ['GET', 'POST'])]
-    public function costCategoryEdit(?Product $product, CrudHelper $crudHelper): Response
-    {
-        if (!$product instanceof Product) {
-            return $crudHelper->showEmpty(self::SECTION);
-        }
-
+    public function costCategoryEdit(
+        Product $product,
+        CrudUpdater $handler
+    ): Response {
         $category = $product->getCategory();
         $form = $this->createForm(CategoryCostType::class, $category, [
             'action' => $this->generateUrl('app_product_cost_category_edit', ['id' => $product->getId()]),
         ]);
 
-        return $this->changeProductCost('Category Cost', $product, $category, $form);
+        return $handler->build(
+            $handler->setDefaults()
+                ->setSection('Category Cost')
+                ->setEntity($category)
+                ->setForm($form)
+                ->setSuccessFlash('Category Cost updated!')
+                ->setErrorFlash('Can not update Category Cost!')
+                ->setSuccessLink(
+                    $this->generateUrl('app_product_cost', ['id' => $product->getId()])
+                )
+        );
     }
 
     #[Route('/{id}/cost/subcategory/edit', name: 'app_product_cost_subcategory_edit', methods: ['GET', 'POST'])]
-    public function costSubcategoryEdit(?Product $product, CrudHelper $crudHelper): Response
-    {
-        if (!$product instanceof Product) {
-            return $crudHelper->showEmpty(self::SECTION);
-        }
-
+    public function costSubcategoryEdit(
+        Product $product,
+        CrudUpdater $handler
+    ): Response {
         $subcategory = $product->getSubcategory();
         $form = $this->createForm(SubcategoryCostType::class, $subcategory, [
             'action' => $this->generateUrl('app_product_cost_subcategory_edit', ['id' => $product->getId()]),
         ]);
 
-        return $this->changeProductCost('Subcategory Cost', $product, $subcategory, $form);
-    }
-
-    private function changeProductCost(
-        string $section,
-        Product $product,
-        object $entity,
-        FormInterface $form
-    ): Response {
-        $successLink = $this->generateUrl('app_product_cost', ['id' => $product->getId()]);
-        $backLink = $this->generateUrl('app_product_cost', ['id' => $product->getId()]);
-
-        $crudOptions = $this->crudUpdater->resetOptions()
-            ->setSection($section)
-            ->setEntity($entity)
-            ->setForm($form)
-            ->setSuccessLink($successLink)
-            ->setBackLink($backLink);
-
-        return $this->crudUpdater->build($crudOptions);
+        return $handler->build(
+            $handler->setDefaults()
+                ->setSection('Subcategory Cost')
+                ->setEntity($subcategory)
+                ->setForm($form)
+                ->setSuccessFlash('Subcategory Cost updated!')
+                ->setErrorFlash('Can not update Subcategory Cost!')
+                ->setSuccessLink(
+                    $this->generateUrl('app_product_cost', ['id' => $product->getId()])
+                )
+        );
     }
 }

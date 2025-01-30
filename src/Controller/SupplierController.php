@@ -27,40 +27,48 @@ class SupplierController extends AbstractController
     #[Route('/', name: 'app_supplier_index', methods: ['GET'])]
     public function index(
         Request $request,
-        CrudSearcher $crudSearcher,
+        CrudSearcher $handler,
         SupplierRepository $repository,
         #[MapQueryString] SupplierSearchDto $dto = new SupplierSearchDto()
     ): Response {
-        return $crudSearcher->search(self::SECTION, $dto, $repository, $request->query->all());
+        return $handler->search(self::SECTION, $dto, $repository, $request->query->all());
     }
 
     #[Route('/new', name: 'app_supplier_new', methods: ['GET', 'POST'])]
-    public function new(CrudCreator $crudCreator): Response
+    public function new(CrudCreator $handler): Response
     {
-        return $crudCreator->create(self::SECTION, new Supplier(), SupplierType::class);
+        return $handler->create(self::SECTION, new Supplier(), SupplierType::class);
     }
 
     #[Route('/{id}', name: 'app_supplier_show', methods: ['GET'])]
-    public function show(?Supplier $supplier, CrudReader $crudReader): Response
-    {
-        return $crudReader->read(self::SECTION, $supplier);
+    public function show(
+        Supplier $supplier,
+        CrudReader $handler
+    ): Response {
+        return $handler->read(self::SECTION, $supplier);
     }
 
     #[Route('/{id}/edit', name: 'app_supplier_edit', methods: ['GET', 'POST'])]
-    public function edit(Supplier $supplier, CrudUpdater $crudUpdater): Response
-    {
-        return $crudUpdater->update(self::SECTION, $supplier, SupplierType::class);
+    public function edit(
+        Supplier $supplier,
+        CrudUpdater $handler
+    ): Response {
+        return $handler->update(self::SECTION, $supplier, SupplierType::class);
     }
 
     #[Route('/{id}/delete/confirm', name: 'app_supplier_delete_confirm', methods: ['GET'])]
-    public function deleteConfirm(?Supplier $supplier, CrudDeleter $crudDeleter): Response
-    {
-        return $crudDeleter->deleteConfirm(self::SECTION, $supplier);
+    public function deleteConfirm(
+        Supplier $supplier,
+        CrudDeleter $handler
+    ): Response {
+        return $handler->deleteConfirm(self::SECTION, $supplier);
     }
 
     #[Route('/{id}/delete', name: 'app_supplier_delete', methods: ['POST'])]
-    public function delete(?Supplier $supplier, CrudDeleter $crudDeleter): Response
-    {
-        return $crudDeleter->delete(self::SECTION, $supplier);
+    public function delete(
+        Supplier $supplier,
+        CrudDeleter $handler
+    ): Response {
+        return $handler->delete(self::SECTION, $supplier);
     }
 }

@@ -17,8 +17,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class StatusLogController extends AbstractController
 {
     #[Route('/order/{id}', name: 'app_order_status_log', methods: ['GET'])]
-    public function orderStatusLog(?CustomerOrder $customerOrder, StatusLogUtility $statusLogUtility): Response
-    {
+    public function orderStatusLog(
+        CustomerOrder $customerOrder,
+        StatusLogUtility $statusLogUtility
+    ): Response {
         return $this->render('status_log/log.html.twig', [
             'section' => 'Customer Order',
             'result' => $customerOrder,
@@ -27,8 +29,10 @@ class StatusLogController extends AbstractController
     }
 
     #[Route('/order/item/{id}', name: 'app_order_item_status_log', methods: ['GET'])]
-    public function orderItemStatusLog(?CustomerOrderItem $customerOrderItem, StatusLogUtility $statusLogUtility): Response
-    {
+    public function orderItemStatusLog(
+        CustomerOrderItem $customerOrderItem,
+        StatusLogUtility $statusLogUtility
+    ): Response {
         return $this->render('status_log/log.html.twig', [
             'section' => 'Customer Order Item',
             'result' => $customerOrderItem,
@@ -37,8 +41,10 @@ class StatusLogController extends AbstractController
     }
 
     #[Route('/purchase/order/{id}', name: 'app_purchase_order_status_log', methods: ['GET'])]
-    public function poStatusLog(?PurchaseOrder $purchaseOrder, StatusLogUtility $statusLogUtility): Response
-    {
+    public function poStatusLog(
+        PurchaseOrder $purchaseOrder,
+        StatusLogUtility $statusLogUtility
+    ): Response {
         return $this->render('status_log/log.html.twig', [
             'section' => 'Purchase Order',
             'colourScheme' => $purchaseOrder->getSupplier()->getColourScheme(),
@@ -48,8 +54,10 @@ class StatusLogController extends AbstractController
     }
 
     #[Route('/purchase/order/item/{id}', name: 'app_purchase_order_item_status_log', methods: ['GET'])]
-    public function poItemStatusLog(?PurchaseOrderItem $purchaseOrderItem, StatusLogUtility $statusLogUtility): Response
-    {
+    public function poItemStatusLog(
+        PurchaseOrderItem $purchaseOrderItem,
+        StatusLogUtility $statusLogUtility
+    ): Response {
         return $this->render('status_log/log.html.twig', [
             'section' => 'Purchase Order Item',
             'colourScheme' => $purchaseOrderItem->getPurchaseOrder()->getSupplier()->getColourScheme(),

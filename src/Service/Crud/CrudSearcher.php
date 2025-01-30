@@ -4,8 +4,10 @@ namespace App\Service\Crud;
 
 use App\DTO\SearchDto\SearchInterface;
 use App\Repository\SearchQueryInterface;
+use App\Service\Crud\Common\CrudHelper;
 use App\Service\Search\Paginator;
 use Pagerfanta\Exception\OutOfRangeCurrentPageException;
+use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -26,28 +28,33 @@ class CrudSearcher extends AbstractController
         ?array $queryParams,
     ): Response {
         try {
-            $queryBuilder = $searchQuery->findBySearchDto($searchDto);
-            $pager = $this->paginator->createPagination(
-                $queryBuilder,
-                $searchDto->getPage() ?: 1,
-                $searchDto->getLimit() ?: $searchDto::LIMIT_DEFAULT
-            );
+            $searchResults = $this->getSearchResults($searchDto, $searchQuery);
         } catch (OutOfRangeCurrentPageException) {
-            $this->addFlash(
-                'warning',
-                'Page '. $searchDto->getPage() .' not found!'
-            );
+            $this->addFlash('warning', 'Page '. $searchDto->getPage() .' not found!');
 
-            return $this->crudHelper->redirectToLink($this->generateUrl(
+            return $this->crudHelper->redirectToLink(
+                $this->generateUrl(
                     'app_'.$this->crudHelper->snakeCase($section).'_index',
                     array_merge($queryParams, ['page' => 1])
-            ));
+                )
+            );
         }
 
         return $this->render($this->crudHelper::CRUD_BASE_TEMPLATE, [
             'section' => $section,
             'template' => self::TEMPLATE,
-            'results' => $pager,
+            'results' => $searchResults,
         ]);
+    }
+
+    private function getSearchResults(
+        SearchInterface $searchDto,
+        SearchQueryInterface $searchQuery
+    ): Pagerfanta {
+        return $this->paginator->createPagination(
+            $searchQuery->findBySearchDto($searchDto),
+            $searchDto->getPage() ?: 1,
+            $searchDto->getLimit() ?: $searchDto::LIMIT_DEFAULT
+        );
     }
 }

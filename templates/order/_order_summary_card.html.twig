@@ -15,7 +15,7 @@
             <div class="flex justify-between">
                 <p class="me-10">Item(s)<span class="hidden md:inline"> subtotal</span>:</p>
                 {% if order.isCancelled %}
-                    <p>0.00|format_currency('GBP')</p>
+                    <p>{{ 0.00|format_currency('GBP') }}</p>
                 {% else %}
                     <p>{{ (order.totalPrice - order.shippingPrice)|format_currency('GBP') }}</p>
                 {% endif %}
@@ -23,7 +23,7 @@
             <div class="flex justify-between">
                 <p class="me-10">Shipping:</p>
                 {% if order.isCancelled %}
-                    <p>0.00|format_currency('GBP')</p>
+                    <p>{{ 0.00|format_currency('GBP') }}</p>
                 {% else %}
                     <p>{{ order.shippingPrice|format_currency('GBP') }}</p>
                 {% endif %}

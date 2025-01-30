@@ -8,11 +8,13 @@ use App\Entity\PurchaseOrder;
 use App\Entity\PurchaseOrderItem;
 use App\Entity\Supplier;
 use App\Entity\SupplierProduct;
+use App\Service\Crud\Common\CrudActionInterface;
+use App\Service\Crud\Common\CrudOptions;
 use App\Service\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-final readonly class CreatePurchaseOrderItem
+final readonly class CreatePurchaseOrderItem implements CrudActionInterface
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
@@ -22,8 +24,36 @@ final readonly class CreatePurchaseOrderItem
     ) {
     }
 
-    public function fromOrder(CustomerOrderItem $customerOrderItem, SupplierProduct $supplierProduct): PurchaseOrderItem
+    public function handle(CrudOptions $crudOptions): void
     {
+        $customerOrderItem = $crudOptions->getEntity();
+        if (!$customerOrderItem instanceof CustomerOrderItem) {
+            throw new \InvalidArgumentException('Entity must be instance of CustomerOrderItem');
+        }
+
+        $supplierProductId = $crudOptions->getCrudActionContext()['supplierProductId'] ?? null;
+        if (null === $supplierProductId) {
+            throw new \InvalidArgumentException('Supplier product ID is required');
+        }
+
+        $matchedSupplierProduct = null;
+        foreach($customerOrderItem->getProduct()->getSupplierProducts() as $supplierProduct) {
+            if ($supplierProduct->getId() === $supplierProductId) {
+                $matchedSupplierProduct = $supplierProduct;
+                break;
+            }
+        }
+        if (!$matchedSupplierProduct instanceof SupplierProduct) {
+            throw new \InvalidArgumentException('Supplier product not found');
+        }
+
+        $this->fromOrder($customerOrderItem, $matchedSupplierProduct);
+    }
+
+    public function fromOrder(
+        CustomerOrderItem $customerOrderItem,
+        SupplierProduct $supplierProduct
+    ): PurchaseOrderItem {
         if (!$customerOrderItem->allowEdit()) {
             throw new \InvalidArgumentException('Order item cannot be edited');
         }
@@ -50,8 +80,10 @@ final readonly class CreatePurchaseOrderItem
         return $customerOrderItem->getCustomerOrder();
     }
 
-    private function getEditablePurchaseOrder(CustomerOrder $customerOrder, Supplier $supplier): PurchaseOrder
-    {
+    private function getEditablePurchaseOrder(
+        CustomerOrder $customerOrder,
+        Supplier $supplier
+    ): PurchaseOrder {
         foreach ($customerOrder->getPurchaseOrders() as $purchaseOrder) {
             if ($purchaseOrder->getSupplier() === $supplier && $purchaseOrder->allowEdit()) {
                 return $purchaseOrder;

@@ -27,40 +27,48 @@ class ManufacturerController extends AbstractController
     #[Route('/', name: 'app_manufacturer_index', methods: ['GET'])]
     public function index(
         Request $request,
-        CrudSearcher $crudSearcher,
+        CrudSearcher $handler,
         ManufacturerRepository $repository,
         #[MapQueryString] ManufacturerSearchDto $dto = new ManufacturerSearchDto()
     ): Response {
-        return $crudSearcher->search(self::SECTION, $dto, $repository, $request->query->all());
+        return $handler->search(self::SECTION, $dto, $repository, $request->query->all());
     }
 
     #[Route('/new', name: 'app_manufacturer_new', methods: ['GET', 'POST'])]
-    public function new(CrudCreator $crudCreator): Response
+    public function new(CrudCreator $handler): Response
     {
-        return $crudCreator->create(self::SECTION, new Manufacturer(), ManufacturerType::class);
+        return $handler->create(self::SECTION, new Manufacturer(), ManufacturerType::class);
     }
 
     #[Route('/{id}', name: 'app_manufacturer_show', methods: ['GET'])]
-    public function show(?Manufacturer $manufacturer, CrudReader $crudReader): Response
-    {
-        return $crudReader->read(self::SECTION, $manufacturer);
+    public function show(
+        Manufacturer $manufacturer,
+        CrudReader $handler
+    ): Response {
+        return $handler->read(self::SECTION, $manufacturer);
     }
 
     #[Route('/{id}/edit', name: 'app_manufacturer_edit', methods: ['GET', 'POST'])]
-    public function edit(?Manufacturer $manufacturer, CrudUpdater $crudUpdater): Response
-    {
-        return $crudUpdater->update(self::SECTION, $manufacturer, ManufacturerType::class);
+    public function edit(
+        Manufacturer $manufacturer,
+        CrudUpdater $handler
+    ): Response {
+        return $handler->update(self::SECTION, $manufacturer, ManufacturerType::class);
     }
 
     #[Route('/{id}/delete/confirm', name: 'app_manufacturer_delete_confirm', methods: ['GET'])]
-    public function deleteConfirm(?Manufacturer $manufacturer, CrudDeleter $crudDeleter): Response
-    {
-        return $crudDeleter->deleteConfirm(self::SECTION, $manufacturer);
+    public function deleteConfirm(
+        Manufacturer $manufacturer,
+        CrudDeleter $handler
+    ): Response {
+        return $handler->deleteConfirm(self::SECTION, $manufacturer);
     }
 
     #[Route('/{id}/delete', name: 'app_manufacturer_delete', methods: ['POST'])]
-    public function delete(?Manufacturer $manufacturer, CrudDeleter $crudDeleter): Response
-    {
-        return $crudDeleter->delete(self::SECTION, $manufacturer);
+    public function delete(
+        Manufacturer $manufacturer,
+        CrudDeleter $handler
+    ): Response {
+        return $handler->delete(self::SECTION, $manufacturer);
     }
 }

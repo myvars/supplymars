@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Service\Crud\Core;
+namespace App\Service\Crud\Common;
 
 use App\Service\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 
-#[AsAlias('app.crud.create.action')]
-final readonly class CrudCreateAction implements CrudActionInterface
+final readonly class CrudUpdateAction implements CrudActionInterface
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
@@ -15,10 +13,13 @@ final readonly class CrudCreateAction implements CrudActionInterface
     ) {
     }
 
-    public function handle(object $crudOptions): void
+    public function handle(CrudOptions $crudOptions): void
     {
-        $entity = $crudOptions->getEntity();
+        $this->update($crudOptions->getEntity());
+    }
 
+    private function update(object $entity): void
+    {
         $this->entityManager->persist($entity);
         $this->entityManager->flush();
 

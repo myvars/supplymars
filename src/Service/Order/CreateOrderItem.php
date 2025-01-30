@@ -6,7 +6,8 @@ use App\DTO\CreateOrderItemDto;
 use App\Entity\CustomerOrder;
 use App\Entity\CustomerOrderItem;
 use App\Entity\Product;
-use App\Service\Crud\Core\CrudActionInterface;
+use App\Service\Crud\Common\CrudActionInterface;
+use App\Service\Crud\Common\CrudOptions;
 use App\Service\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -20,12 +21,14 @@ final readonly class CreateOrderItem implements CrudActionInterface
     ) {
     }
 
-    public function handle(object $crudOptions): void
+    public function handle(CrudOptions $crudOptions): void
     {
-        $entity = $crudOptions->getEntity();
-        assert($entity instanceof CreateOrderItemDto);
+        $dto = $crudOptions->getEntity();
+        if (!$dto instanceof CreateOrderItemDto) {
+            throw new \InvalidArgumentException('Entity must be an instance of CreateOrderItemDto');
+        }
 
-        $this->fromDto($entity);
+        $this->fromDto($dto);
     }
 
     public function fromDto(CreateOrderItemDto $dto): CustomerOrderItem

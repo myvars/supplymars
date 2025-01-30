@@ -7,7 +7,8 @@ use App\Entity\Address;
 use App\Entity\CustomerOrder;
 use App\Entity\User;
 use App\Entity\VatRate;
-use App\Service\Crud\Core\CrudActionInterface;
+use App\Service\Crud\Common\CrudActionInterface;
+use App\Service\Crud\Common\CrudOptions;
 use App\Service\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -21,12 +22,14 @@ final readonly class CreateOrder implements CrudActionInterface
     ) {
     }
 
-    public function handle(object $crudOptions): void
+    public function handle(CrudOptions $crudOptions): void
     {
-        $entity = $crudOptions->getEntity();
-        assert($entity instanceof CreateOrderDto);
+        $dto = $crudOptions->getEntity();
+        if (!$dto instanceof CreateOrderDto) {
+            throw new \InvalidArgumentException('Entity must be an instance of CreateOrderDto');
+        }
 
-        $this->fromDto($entity);
+        $this->fromDto($dto);
     }
 
     public function fromDto(CreateOrderDto $dto): CustomerOrder

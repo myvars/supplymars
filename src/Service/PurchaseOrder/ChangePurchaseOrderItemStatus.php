@@ -4,7 +4,8 @@ namespace App\Service\PurchaseOrder;
 
 use App\DTO\ChangePurchaseOrderItemStatusDto;
 use App\Entity\PurchaseOrderItem;
-use App\Service\Crud\Core\CrudActionInterface;
+use App\Service\Crud\Common\CrudActionInterface;
+use App\Service\Crud\Common\CrudOptions;
 use App\Service\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -16,12 +17,14 @@ final readonly class ChangePurchaseOrderItemStatus implements CrudActionInterfac
     ) {
     }
 
-    public function handle(object $crudOptions): void
+    public function handle(CrudOptions $crudOptions): void
     {
-        $entity = $crudOptions->getEntity();
-        assert($entity instanceof ChangePurchaseOrderItemStatusDto);
+        $dto = $crudOptions->getEntity();
+        if (!$dto instanceof ChangePurchaseOrderItemStatusDto) {
+            throw new \InvalidArgumentException('Entity must be instance of ChangePurchaseOrderItemStatusDto');
+        }
 
-        $this->fromDto($entity);
+        $this->fromDto($dto);
     }
 
     public function fromDto(ChangePurchaseOrderItemStatusDto $dto): void

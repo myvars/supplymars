@@ -3,11 +3,12 @@
 namespace App\Service\Search;
 
 use App\DTO\SearchDto\SearchFilterInterface;
-use App\Service\Crud\Core\CrudActionInterface;
+use App\Service\Crud\Common\CrudActionInterface;
+use App\Service\Crud\Common\CrudOptions;
 
 final readonly class SearchFilter implements CrudActionInterface
 {
-    public function handle(object $crudOptions): void
+    public function handle(CrudOptions $crudOptions): void
     {
         $entity = $crudOptions->getEntity();
 
@@ -26,7 +27,8 @@ final readonly class SearchFilter implements CrudActionInterface
             $entity->getSearchParams()
         ));
 
-        $newSuccessLink = $parsedSuccessLink['path'] . ($mergedQueryString !== '' && $mergedQueryString !== '0' ? '?' . $mergedQueryString : '');
+        $newSuccessLink = $parsedSuccessLink['path']
+            .($mergedQueryString !== '' && $mergedQueryString !== '0' ? '?'.$mergedQueryString : '');
 
         $crudOptions
             ->setIsUrlRefresh(true)

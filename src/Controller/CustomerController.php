@@ -24,46 +24,49 @@ class CustomerController extends AbstractController
 {
     public const SECTION = 'Customer';
 
-    public function __construct(private readonly CrudDeleter $crudDeleter)
-    {
-    }
-
     #[Route('/', name: 'app_customer_index', methods: ['GET'])]
     public function index(
         Request $request,
-        CrudSearcher $crudSearcher,
+        CrudSearcher $handler,
         UserRepository $repository,
         #[MapQueryString] CustomerSearchDto $dto = new CustomerSearchDto()
     ): Response {
-        return $crudSearcher->search(self::SECTION, $dto, $repository, $request->query->all());
+        return $handler->search(self::SECTION, $dto, $repository, $request->query->all());
     }
 
     #[Route('/{id}', name: 'app_customer_show', methods: ['GET'])]
-    public function show(?User $customer, CrudReader $crudReader): Response
-    {
-        return $crudReader->read(self::SECTION, $customer);
+    public function show(
+        User $customer,
+        CrudReader $handler
+    ): Response{
+        return $handler->read(self::SECTION, $customer);
     }
 
     #[Route('/{id}/edit', name: 'app_customer_edit', methods: ['GET', 'POST'])]
-    public function edit(?User $customer, CrudUpdater $crudUpdater): Response
-    {
-        return $crudUpdater->update(self::SECTION, $customer, CustomerType::class);
+    public function edit(
+        User $customer,
+        CrudUpdater $handler
+    ): Response {
+        return $handler->update(self::SECTION, $customer, CustomerType::class);
     }
 
     #[Route('/{id}/delete/confirm', name: 'app_customer_delete_confirm', methods: ['GET'])]
-    public function deleteConfirm(?User $customer, CrudDeleter $crudDeleter): Response
-    {
-        return $crudDeleter->deleteConfirm(self::SECTION, $customer);
+    public function deleteConfirm(
+        User $customer,
+        CrudDeleter $handler
+    ): Response {
+        return $handler->deleteConfirm(self::SECTION, $customer);
     }
 
     #[Route('/{id}/delete', name: 'app_customer_delete', methods: ['POST'])]
     public function delete(
-        ?User $customer,
-        CrudDeleter $crudDeleter,
+        User  $customer,
+        CrudDeleter $handler,
         DeleteCustomer $crudAction
     ): Response {
-        return $this->crudDeleter->build(
-            $this->crudDeleter->createOptions(self::SECTION, $customer)->setCrudAction($crudAction)
+        return $handler->build(
+            $handler->setup(self::SECTION, $customer)
+                ->setCrudAction($crudAction)
         );
     }
 }

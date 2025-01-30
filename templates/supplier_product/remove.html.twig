@@ -5,14 +5,14 @@
 {% block body %}
 
     <twig:Dialog title="Remove Supplier Product">
-        <p class="mb-1 text-sm text-gray-500 dark:text-gray-500">{{ supplierProduct.supplier.name }}</p>
-        <p class="text-xl text-gray-900 line-clamp-1 dark:text-white">{{ supplierProduct.name }}</p>
-        <p class="mb-4">{{ supplierProduct.productCode }}</p>
+        <p class="mb-1 text-sm text-gray-500 dark:text-gray-500">{{ result.supplier.name }}</p>
+        <p class="text-xl text-gray-900 line-clamp-1 dark:text-white">{{ result.name }}</p>
+        <p class="mb-4">{{ result.productCode }}</p>
         <p class="mb-4 font-light">
             Are you sure you want to remove this supplier product?
         </p>
-        <form method="post" action="{{ path('app_supplier_product_remove', {'id': supplierProduct.id}) }}">
-            <input type="hidden" name="_token" value="{{ csrf_token('remove'~supplierProduct.id) }}">
+        <form method="post" action="{{ path('app_supplier_product_remove', {'id': result.id}) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete'~result.id) }}">
             <twig:Button type="submit" variant="warning" class="w-full">Remove</twig:Button>
         </form>
     </twig:Dialog>

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Crud;
+namespace App\Service\Crud\Common;
 
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -53,12 +53,19 @@ class CrudHelper
         return $form->get('auto-update')->isClicked();
     }
 
+    public function autoUpdateClearErrors(FormInterface $form): void
+    {
+        if ($this->isAutoUpdate($form)) {
+            $form->clearErrors(true);
+        }
+    }
+
     public function showEmpty(string $section) : Response
     {
         try {
             $content = $this->twig->render(self::CRUD_BASE_TEMPLATE, [
                 'section' => $section,
-                'template' => self::MISSING_ENTITY_TEMPLATE,
+                'template' => self::MISSING_ENTITY_TEMPLATE
             ]);
         } catch (\Exception) {
             $content = '';
@@ -69,12 +76,14 @@ class CrudHelper
 
     public function crudError(string $section): Response
     {
-        $this->requestStack->getSession()->getFlashBag()->add(
-            'warning',
-            $section.' not found!'
-        );
+        $this->requestStack
+            ->getSession()
+            ->getFlashBag()
+            ->add('warning', $section.' not found!');
 
-        return $this->redirectToLink($this->router->generate('app_'.$this->snakeCase($section).'_index'));
+        return $this->redirectToLink(
+            $this->router->generate('app_'.$this->snakeCase($section).'_index')
+        );
     }
 
     public function redirectToLink(
@@ -82,16 +91,22 @@ class CrudHelper
         bool $isUrlRefresh = false,
         int $status = self::REDIRECT_RESPONSE_STATUS
     ): RedirectResponse|Response {
-        if ($this->requestStack->getCurrentRequest()->headers->has('turbo-frame')) {
+        if ($this->requestStack
+            ->getCurrentRequest()
+            ->headers
+            ->has('turbo-frame')
+        ) {
             return $this->streamRefresh($isUrlRefresh ? $link : null);
         }
 
         return new RedirectResponse($link, $status);
     }
 
-    private function streamRefresh(string $newUrl = null): Response
+    private function streamRefresh(?string $newUrl = null): Response
     {
-        $this->requestStack->getCurrentRequest()->setRequestFormat(TurboBundle::STREAM_FORMAT);
+        $this->requestStack
+            ->getCurrentRequest()
+            ->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
         try {
             $content = $this->twig->render(self::TURBO_STREAM_REFRESH_TEMPLATE, ["newUrl" => $newUrl]);

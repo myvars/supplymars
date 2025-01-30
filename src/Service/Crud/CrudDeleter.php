@@ -2,23 +2,25 @@
 
 namespace App\Service\Crud;
 
-use App\Service\Crud\Core\CrudDeleteOptions;
-use App\Service\Crud\Core\CrudDeleteAction;
-use App\Service\Crud\Core\CrudActionInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Service\Crud\Common\BaseCrudHandler;
+use App\Service\Crud\Common\CrudActionInterface;
+use App\Service\Crud\Common\CrudDeleteAction;
+use App\Service\Crud\Common\CrudHelper;
+use App\Service\Crud\Common\CrudOptions;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Response;
 
-class CrudDeleter extends AbstractController
+class CrudDeleter extends BaseCrudHandler
 {
     public const TEMPLATE = 'delete';
 
     public function __construct(
         public readonly CrudHelper $crudHelper,
-        private readonly CrudDeleteOptions $crudOptions,
+        private readonly CrudOptions $crudOptions,
         #[Autowire(service: CrudDeleteAction::class)]
-        private readonly CrudActionInterface $crudAction
+        private readonly CrudActionInterface $defaultCrudAction
     ) {
+        parent::__construct($crudHelper);
     }
 
     public function deleteConfirm(string $section, ?object $entity): Response
@@ -36,55 +38,38 @@ class CrudDeleter extends AbstractController
 
     public function delete(string $section, ?object $entity): Response
     {
-        if ($entity === null) {
-            return $this->crudHelper->crudError($section);
-        }
-
-        $crudOptions = $this->createOptions($section, $entity);
-
-        return $this->build($crudOptions);
+        return $this->process($section, $entity);
     }
 
-    public function createOptions(string $section, ?object $entity): CrudDeleteOptions
+    public function setDefaults(): CrudOptions
     {
-        return $this->resetOptions()
-            ->setSection($section)
-            ->setEntity($entity)
-            ->setSuccessLink($this->generateUrl('app_'.$this->crudHelper->snakeCase($section).'_index'))
+        return $this->crudOptions::create()
             ->setBackLink(null)
-            ->setCrudAction($this->crudAction)
+            ->setCrudAction($this->defaultCrudAction)
             ->setCrudActionContext(null);
     }
 
-    public function build(CrudDeleteOptions $crudOptions): Response
+    public function setup(string $section, object $entity, string $formType=''): CrudOptions
     {
-        $crudAction = $crudOptions->getCrudAction() ?: $this->crudAction;
-
-        if ($this->isCsrfTokenValid(
-            'delete'.$crudOptions->getEntity()->getId(),
-            $this->crudHelper->getRequest()->get('_token'))
-        ) {
-            try {
-                $crudAction->handle($crudOptions);
-                $this->addFlash(
-                    'success',
-                    $crudOptions->getSection().' deleted!'
-                );
-            } catch (\Exception) {
-                $this->addFlash(
-                    'error',
-                    'Can not delete '.$crudOptions->getSection().', it has dependents!'
-                );
-            }
-
-            return $this->crudHelper->redirectToLink($crudOptions->getSuccessLink());
-        }
-
-        return $this->crudHelper->redirectTolink($crudOptions->getSuccessLink());
+        return $this->setDefaults()
+            ->setSection($section)
+            ->setEntity($entity)
+            ->setSuccessFlash($section.' deleted!')
+            ->setErrorFlash('Can not delete '.$section.', it has dependents!')
+            ->setSuccessLink(
+                $this->generateUrl('app_'.$this->crudHelper->snakeCase($section).'_index')
+            );
     }
 
-    public function resetOptions(): CrudDeleteOptions
+    public function build(CrudOptions $crudOptions): Response
     {
-        return $this->crudOptions::create();
+        if ($this->isCsrfTokenValid(
+            'delete'.$crudOptions->getEntity()->getId(),
+            $this->crudHelper->getRequest()->get('_token')
+        )) {
+            return $this->handle($crudOptions);
+        }
+
+        return $this->crudHelper->redirectTolink($crudOptions->getSuccessLink(), $crudOptions->isUrlRefresh());
     }
 }

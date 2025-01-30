@@ -4,15 +4,27 @@ namespace App\Service\Order;
 
 use App\Entity\CustomerOrderItem;
 use App\Enum\OrderStatus;
+use App\Service\Crud\Common\CrudActionInterface;
+use App\Service\Crud\Common\CrudOptions;
 use App\Service\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 
-final readonly class CancelOrderItem
+final readonly class CancelOrderItem implements CrudActionInterface
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
         private DomainEventDispatcher $domainEventDispatcher
     ) {
+    }
+
+    public function handle(CrudOptions $crudOptions): void
+    {
+        $customerOrderItem = $crudOptions->getEntity();
+        if (!$customerOrderItem instanceof CustomerOrderItem) {
+            throw new \InvalidArgumentException('Entity must be an instance of CustomerOrderItem');
+        }
+
+        $this->cancel($customerOrderItem);
     }
 
     public function cancel(CustomerOrderItem $customerOrderItem): void

@@ -2,93 +2,83 @@
 
 namespace App\Service\Crud;
 
-use App\Service\Crud\Core\CrudActionInterface;
-use App\Service\Crud\Core\CrudUpdateOptions;
-use App\Service\Crud\Core\CrudUpdateAction;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Service\Crud\Common\BaseCrudHandler;
+use App\Service\Crud\Common\CrudActionInterface;
+use App\Service\Crud\Common\CrudHelper;
+use App\Service\Crud\Common\CrudOptions;
+use App\Service\Crud\Common\CrudUpdateAction;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Response;
 
-class CrudUpdater extends AbstractController
+class CrudUpdater extends BaseCrudHandler
 {
     public const TEMPLATE = 'edit';
 
     public function __construct(
         public readonly CrudHelper $crudHelper,
-        private readonly CrudUpdateOptions $crudOptions,
+        private readonly CrudOptions $crudOptions,
         #[Autowire(service: CrudUpdateAction::class)]
-        private readonly CrudActionInterface $crudAction,
+        private readonly CrudActionInterface $defaultCrudAction,
     ) {
+        parent::__construct($crudHelper);
     }
 
     public function update(string $section, ?object $entity, string $formType): Response
     {
-        if ($entity === null) {
-            return $this->crudHelper->crudError($section);
-        }
-
-        $crudOptions = $this->createOptions($section, $entity, $formType);
-
-        return $this->build($crudOptions);
+        return $this->process($section, $entity, $formType);
     }
 
-    public function createOptions(string $section, ?object $entity, string $formType): CrudUpdateOptions
+    public function setDefaults(): CrudOptions
+    {
+        return $this->crudOptions::create()
+            ->setTemplate(self::TEMPLATE)
+            ->setCrudAction($this->defaultCrudAction);
+    }
+
+    public function setup(string $section, object $entity, string $formType=''): CrudOptions
     {
         $form = $this->createForm($formType, $entity, [
             'action' => $this->generateUrl(
-                'app_'.$this->crudHelper->snakeCase($section).'_edit', ['id' => $entity->getId()]
-            ),
-        ]);
+                'app_'.$this->crudHelper->snakeCase($section) . '_edit',
+                ['id' => $entity->getId()]
+            )]
+        );
 
-        return $this->resetOptions()
+        return $this->setDefaults()
             ->setSection($section)
             ->setEntity($entity)
             ->setForm($form)
-            ->setSuccessLink($this->generateUrl('app_'.$this->crudHelper->snakeCase($section).'_index'))
-            ->setBackLink($this->generateUrl('app_'.$this->crudHelper->snakeCase($section).'_index'))
-            ->setAllowDelete(true);
+            ->setAllowDelete(true)
+            ->setSuccessFlash($section.' updated!')
+            ->setErrorFlash('Can not update '.$section.'!')
+            ->setSuccessLink(
+                $this->generateUrl('app_'.$this->crudHelper->snakeCase($section).'_index')
+            )
+            ->setBackLink(
+                $this->generateUrl('app_'.$this->crudHelper->snakeCase($section).'_index')
+            );
     }
 
-    public function build(CrudUpdateOptions $crudOptions): Response
+    public function build(CrudOptions $crudOptions): Response
     {
         $form = $crudOptions->getForm();
-        $crudAction = $crudOptions->getCrudAction() ?: $this->crudAction;
 
         $form->handleRequest($this->crudHelper->getRequest());
         if ($form->isSubmitted() && $form->isValid() && !$this->crudHelper->isAutoUpdate($form)) {
-            try {
-                $crudAction->handle($crudOptions);
-                $this->addFlash(
-                    'success',
-                    $crudOptions->getSection().' updated!'
-                );
-            } catch (\Exception) {
-                $this->addFlash(
-                    'error',
-                    'Can not update '.$crudOptions->getSection().'!'
-                );
-            }
-
-            return $this->crudHelper->redirectTolink($crudOptions->getSuccessLink());
+            return $this->handle($crudOptions);
         }
 
-        if ($this->crudHelper->isAutoUpdate($form)) {
-            $form->clearErrors(true);
-        }
+        $this->crudHelper->autoUpdateClearErrors($form);
 
-        return $this->render($this->crudHelper::CRUD_BASE_TEMPLATE, [
-            'section' => $crudOptions->getSection(),
-            'template' => self::TEMPLATE,
-            'result' => $crudOptions->getEntity(),
-            'form' => $form,
-            'backLink' => $crudOptions->getBackLink(),
-            'allowDelete' => $crudOptions->isAllowDelete(),
-            'formColumns' => 1
-        ]);
-    }
-
-    public function resetOptions(): CrudUpdateOptions
-    {
-        return $this->crudOptions::create();
+        return $this->render(
+            $this->crudHelper::CRUD_BASE_TEMPLATE, [
+                'section' => $crudOptions->getSection(),
+                'template' => $crudOptions->getTemplate(),
+                'result' => $crudOptions->getEntity(),
+                'backLink' => $crudOptions->getBackLink(),
+                'form' => $form,
+                'allowDelete' => $crudOptions->isAllowDelete()
+            ]
+        );
     }
 }

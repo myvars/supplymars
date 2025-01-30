@@ -65,6 +65,8 @@ class createCustomerOrdersCommand extends Command
             sleep(random_int(1, intdiv(300, $orderCount)));
             $this->createOrder();
             $ordersCreated++;
+
+            $this->entityManager->clear();
         }
 
         $io->success(sprintf('Created %d customer orders', $ordersCreated));
@@ -97,8 +99,8 @@ class createCustomerOrdersCommand extends Command
             'customer' => $user,
             'email' => $user->getEmail(),
             'fullName' => $user->getFullName(),
-            'defaultBillingAddress' => true,
-            'defaultShippingAddress' => true,
+            'isDefaultBillingAddress' => true,
+            'isDefaultShippingAddress' => true,
         ])->_real();
     }
 

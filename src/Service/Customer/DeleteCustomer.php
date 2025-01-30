@@ -3,7 +3,8 @@
 namespace App\Service\Customer;
 
 use App\Entity\User;
-use App\Service\Crud\Core\CrudActionInterface;
+use App\Service\Crud\Common\CrudActionInterface;
+use App\Service\Crud\Common\CrudOptions;
 use Doctrine\ORM\EntityManagerInterface;
 
 final readonly class DeleteCustomer implements CrudActionInterface
@@ -12,12 +13,14 @@ final readonly class DeleteCustomer implements CrudActionInterface
     {
     }
 
-    public function handle($crudOptions): void
+    public function handle(CrudOptions $crudOptions): void
     {
-        $entity = $crudOptions->getEntity();
-        assert($entity instanceof User);
+        $customer = $crudOptions->getEntity();
+        if (!$customer instanceof User) {
+            throw new \InvalidArgumentException('Entity must be an instance of User');
+        }
 
-        $this->fromCustomer($entity);
+        $this->fromCustomer($customer);
     }
 
     public function fromCustomer(User $customer): void
@@ -31,7 +34,6 @@ final readonly class DeleteCustomer implements CrudActionInterface
         }
 
         foreach ($customer->getAddresses() as $address) {
-
             $customer->removeAddress($address);
             $this->entityManager->remove($address);
         }

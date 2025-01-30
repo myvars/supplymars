@@ -9,7 +9,7 @@ use App\Entity\CustomerOrderItem;
 use App\Form\CreateOrderItemType;
 use App\Form\EditOrderItemType;
 use App\Service\Crud\CrudCreator;
-use App\Service\Crud\CrudHelper;
+use App\Service\Crud\CrudHandler;
 use App\Service\Crud\CrudReader;
 use App\Service\Crud\CrudUpdater;
 use App\Service\Order\CancelOrderItem;
@@ -34,67 +34,57 @@ class OrderItemController extends AbstractController
     }
 
     #[Route('/item/{id}', name: 'app_order_item_show', methods: ['GET'])]
-    public function show(?CustomerOrderItem $customerOrderItem, CrudReader $crudReader): Response
-    {
-        return $crudReader->read(self::SECTION, $customerOrderItem);
+    public function show(
+        CustomerOrderItem $customerOrderItem,
+        CrudReader $handler
+    ): Response {
+        return $handler->read(self::SECTION, $customerOrderItem);
     }
 
     #[Route('/{id}/item/new', name: 'app_order_item_new', methods: ['GET', 'POST'])]
     public function new(
-        ?CustomerOrder $customerOrder,
-        CrudCreator $crudCreator,
+        CustomerOrder $customerOrder,
+        CrudCreator $handler,
         CreateOrderItem $crudAction,
     ): Response {
-        if (!$customerOrder instanceof CustomerOrder) {
-
-            return $crudCreator->crudHelper->showEmpty('Order');
-        }
-
         $createOrderItemDto = CreateOrderItemDto::fromEntity($customerOrder);
-
         $form = $this->createForm(CreateOrderItemType::class, $createOrderItemDto, [
             'action' => $this->generateUrl('app_order_item_new', ['id' => $customerOrder->getId()]),
         ]);
-        $successLink = $this->generateUrl('app_order_show', ['id' => $customerOrder->getId()]);
 
-        $crudOptions = $crudCreator->resetOptions()
-            ->setSection(self::SECTION)
-            ->setEntity($createOrderItemDto)
-            ->setForm($form)
-            ->setSuccessLink($successLink)
-            ->setCrudAction($crudAction);
-
-        return $crudCreator->build($crudOptions);
+        return $handler->build(
+            $handler->setDefaults()
+                ->setSection(self::SECTION)
+                ->setEntity($createOrderItemDto)
+                ->setForm($form)
+                ->setCrudAction($crudAction)
+                ->setSuccessLink(
+                    $this->generateUrl('app_order_show', ['id' => $customerOrder->getId()])
+                )
+        );
     }
 
     #[Route('/item/{id}/edit', name: 'app_order_item_edit', methods: ['GET', 'POST'])]
     public function edit(
-        ?CustomerOrderItem $customerOrderItem,
-        CrudUpdater $crudUpdater,
+        CustomerOrderItem $orderItem,
+        CrudUpdater $handler,
         EditOrderItem $crudAction,
     ): Response {
-        if (!$customerOrderItem instanceof CustomerOrderItem) {
-            return $crudUpdater->crudHelper->showEmpty(self::SECTION);
-        }
-
-        $editOrderItemDto = EditOrderItemDto::fromEntity($customerOrderItem);
-
+        $editOrderItemDto = EditOrderItemDto::fromEntity($orderItem);
         $form = $this->createForm(EditOrderItemType::class, $editOrderItemDto, [
             'action' => $this->generateUrl('app_order_item_edit', ['id' => $editOrderItemDto->getId()]),
         ]);
-        $successLink = $this->generateUrl(
-            'app_order_show', ['id' => $customerOrderItem->getCustomerOrder()->getId()]
+
+        return $handler->build(
+            $handler->setDefaults()
+                ->setSection(self::SECTION)
+                ->setEntity($editOrderItemDto)
+                ->setForm($form)
+                ->setCrudAction($crudAction)
+                ->setSuccessLink(
+                    $this->generateUrl('app_order_show', ['id' => $orderItem->getCustomerOrder()->getId()])
+                )
         );
-
-        $crudOptions = $crudUpdater->resetOptions()
-            ->setSection(self::SECTION)
-            ->setEntity($editOrderItemDto)
-            ->setForm($form)
-            ->setSuccessLink($successLink)
-            ->setCrudAction($crudAction)
-            ->setAllowDelete(false);
-
-        return $crudUpdater->build($crudOptions);
     }
 
     #[Route('/item/{id}/supplier/product/{supplierProductId}/po/add',
@@ -102,43 +92,41 @@ class OrderItemController extends AbstractController
         methods: ['GET']
     )]
     public function addToPurchaseOrder(
-        ?CustomerOrderItem $customerOrderItem,
+        CustomerOrderItem $customerOrderItem,
         int $supplierProductId,
-        CrudHelper $crudHelper,
-        CreatePurchaseOrderItem $createPurchaseOrderItem
+        CrudHandler $handler,
+        CreatePurchaseOrderItem $action,
     ): Response {
-        try {
-            $supplierProduct = null;
-            foreach($customerOrderItem->getProduct()->getSupplierProducts() as $supplierProduct) {
-                if ($supplierProduct->getId() === $supplierProductId) {
-
-                    break;
-                }
-            }
-
-            $createPurchaseOrderItem->fromOrder($customerOrderItem, $supplierProduct);
-        } catch (\Exception) {
-            $this->addFlash('danger', 'PO item could not be added');
-        }
-
-        $this->addFlash('success', 'PO item added');
-
-        return $crudHelper->redirectToLink(
-            $this->generateUrl('app_order_show', ['id' => $customerOrderItem->getCustomerOrder()->getId()])
+        return $handler->build(
+            $handler->setDefaults()
+                ->setEntity($customerOrderItem)
+                ->setCrudAction($action)
+                ->setCrudActionContext(['supplierProductId' => $supplierProductId])
+                ->setSuccessFlash('PO item added')
+                ->setErrorFlash('PO item could not be added')
+                ->setSuccessLink(
+                    $this->generateUrl('app_order_show', [
+                        'id' => $customerOrderItem->getCustomerOrder()->getId()
+                    ])
+                )
         );
     }
 
     #[Route('/item/{id}/cancel', name: 'app_order_item_cancel', methods: ['GET'])]
-    public function cancel(?CustomerOrderItem $customerOrderItem, CancelOrderItem $action, CrudHelper $crudHelper): Response
-    {
-        if (!$customerOrderItem instanceof CustomerOrderItem) {
-            return $crudHelper->showEmpty(self::SECTION);
-        }
-
-        $action->cancel($customerOrderItem);
-
-        return $crudHelper->redirectToLink(
-            $this->generateUrl('app_order_show', ['id' => $customerOrderItem->getCustomerOrder()->getId()])
+    public function cancel(
+        CustomerOrderItem $customerOrderItem,
+        CrudHandler $handler,
+        CancelOrderItem $action,
+    ): Response {
+        return $handler->build(
+            $handler->setDefaults()
+                ->setEntity($customerOrderItem)
+                ->setCrudAction($action)
+                ->setSuccessFlash('Order item cancelled')
+                ->setErrorFlash('Order item cannot be cancelled')
+                ->setSuccessLink(
+                    $this->generateUrl('app_order_show', ['id' => $customerOrderItem->getCustomerOrder()->getId()])
+                )
         );
     }
 }
