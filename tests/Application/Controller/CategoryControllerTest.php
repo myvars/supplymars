@@ -140,6 +140,6 @@ class CategoryControllerTest extends WebTestCase
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
             ->get("/category/999")
-            ->assertSee("Sorry, we can't find that Category");
+            ->assertStatus(404);
     }
 }

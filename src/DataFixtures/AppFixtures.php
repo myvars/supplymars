@@ -53,8 +53,8 @@ class AppFixtures extends Fixture
             'customer' => $user,
             'email' => $user->getEmail(),
             'fullName' => $user->getFullName(),
-            'defaultBillingAddress' => true,
-            'defaultShippingAddress' => true,
+            'isDefaultBillingAddress' => true,
+            'isDefaultShippingAddress' => true,
         ]);
     }
 

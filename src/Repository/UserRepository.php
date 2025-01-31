@@ -67,4 +67,15 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getQuery()
             ->getResult();
     }
+
+    public function getRandomUser(): ?User
+    {
+        // Execute a raw SQL query to fetch a single random user ID
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = 'SELECT id FROM user ORDER BY RAND() LIMIT 1';
+        $userId = $conn->fetchOne($sql);
+
+        // Fetch the user entity by its ID
+        return $this->find($userId);
+    }
 }

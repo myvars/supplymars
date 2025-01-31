@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Command;
+namespace App\Command\Utilities;
 
 use App\Entity\Product;
 use App\Service\OrderProcessing\SupplierUtility;

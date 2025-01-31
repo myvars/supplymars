@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\DTO\SearchDto\SearchInterface;
+use App\Entity\Supplier;
 use App\Entity\SupplierProduct;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -77,5 +78,16 @@ class SupplierProductRepository extends ServiceEntityRepository implements Searc
         }
 
         return $qb;
+    }
+
+    public function findRandomSupplierProducts(Supplier $supplier, int $itemCount): array
+    {
+        return $this->createQueryBuilder('sp')
+            ->where('sp.supplier = :supplier')
+            ->setParameter('supplier', $supplier)
+            ->setMaxResults($itemCount)
+            ->addOrderBy('RAND()')
+            ->getQuery()
+            ->getResult();
     }
 }

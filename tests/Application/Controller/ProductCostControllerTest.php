@@ -105,7 +105,7 @@ class ProductCostControllerTest extends WebTestCase
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
             ->get("/product/999/cost")
-            ->assertSee("Sorry, we can't find that Product");
+            ->assertStatus(404);
     }
 
     public function testEditProductCost(): void
@@ -146,7 +146,7 @@ class ProductCostControllerTest extends WebTestCase
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
             ->get("/product/999/cost/edit")
-            ->assertSee("Sorry, we can't find that Product");
+            ->assertStatus(404);
     }
 
     public function testEditCategoryCost(): void
@@ -187,7 +187,7 @@ class ProductCostControllerTest extends WebTestCase
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
             ->get("/product/999/cost/category/edit")
-            ->assertSee("Sorry, we can't find that Product");
+            ->assertStatus(404);
     }
 
     public function testEditSubcategoryCost(): void
@@ -228,6 +228,6 @@ class ProductCostControllerTest extends WebTestCase
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
             ->get("/product/999/cost/subcategory/edit")
-            ->assertSee("Sorry, we can't find that Product");
+            ->assertStatus(404);
     }
 }

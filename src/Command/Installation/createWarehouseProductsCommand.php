@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Command;
+namespace App\Command\Installation;
 
 use App\Entity\Supplier;
 use App\Entity\SupplierProduct;

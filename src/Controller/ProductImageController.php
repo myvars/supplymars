@@ -32,17 +32,23 @@ class ProductImageController extends AbstractController
         ProductImageCreator $action
     ): Response
     {
-        return $handler->build(
+        $response = $handler->build(
             $handler->setDefaults()
                 ->setEntity($product)
                 ->setCrudAction($action)
                 ->setCrudActionContext(['imageFiles' => $request->files->get('imageFile')])
                 ->setSuccessFlash('Product Image(s) added!')
-                ->setErrorFlash('Can not add Product Image!')
+                ->setErrorFlash('Image could not be uploaded!')
                 ->setSuccessLink(
                     $this->generateUrl('app_product_images', ['id' => $product->getId()])
                 )
         );
+
+        if ($request->isXmlHttpRequest()) {
+            return $this->json($product->getProductImages(), 200, [], ['groups' => ['main']]);
+        }
+
+        return $response;
     }
 
     #[Route('/images/{id}/remove', name: 'app_product_image_remove', methods: ['GET'])]

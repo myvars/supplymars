@@ -63,7 +63,7 @@ class ProductStockControllerTest extends WebTestCase
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
             ->get("/product/999/stock")
-            ->assertSee("Sorry, we can't find that Product");
+            ->assertStatus(404);
     }
 
     public function testProductStockSourceExists(): void
@@ -85,7 +85,7 @@ class ProductStockControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
-            ->get("/supplier-product/" . $supplierProduct->getId() . "/remove")
+            ->get("/supplier-product/" . $supplierProduct->getId() . "/remove/confirm")
             ->assertSee('Are you sure you want to remove this supplier product?');
     }
 
@@ -97,7 +97,7 @@ class ProductStockControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
-            ->get("/supplier-product/" . $supplierProduct->getId() . "/remove")
+            ->get("/supplier-product/" . $supplierProduct->getId() . "/remove/confirm")
             ->click('Remove')
             ->get("/product/" . $product->getId() . "/stock")
             ->assertSuccessful()
@@ -117,16 +117,16 @@ class ProductStockControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
-            ->get("/supplier-product/" . $supplierProduct->getId() . "/remove")
-            ->assertSee("Sorry, we can't find that Supplier Product");
+            ->get("/supplier-product/" . $supplierProduct->getId() . "/remove/confirm")
+            ->assertStatus(500);
     }
 
     public function testProductSourceRemoveNotFound(): void
     {
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
-            ->get("/supplier-product/999/remove")
-            ->assertSee("Sorry, we can't find that Supplier Product");
+            ->get("/supplier-product/999/remove/confirm")
+            ->assertStatus(404);
     }
 
     public function testProductSourceStatusToggle(): void
@@ -156,6 +156,6 @@ class ProductStockControllerTest extends WebTestCase
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
             ->get("/supplier-product/999/status/toggle")
-            ->assertSee("Sorry, we can't find that Supplier Product");
+            ->assertStatus(404);
     }
 }

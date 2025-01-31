@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Command;
+namespace App\Command\OrderProcessing;
 
 use App\Entity\PurchaseOrder;
-use App\Entity\Supplier;
 use App\Enum\PurchaseOrderStatus;
+use App\Service\Order\ProcessOrder;
 use App\Service\OrderProcessing\SupplierUtility;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -15,14 +15,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'app:accept-purchase-orders',
-    description: 'Accept/Reject purchase orders',
+    name: 'app:refund-purchase-orders',
+    description: 'Refund/Rebuild purchase orders',
 )]
-class acceptPOsCommand extends Command
+class refundPOsCommand extends Command
 {
     public function __construct(
         private readonly SupplierUtility $supplierUtility,
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
+        private readonly ProcessOrder $action
     ) {
         parent::__construct();
     }
@@ -37,31 +38,23 @@ class acceptPOsCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $poCount = $input->getArgument('poCount');
 
-        $supplier = $this->supplierUtility->getRandomSupplier();
-
-        if (!$supplier instanceof Supplier) {
-            $io->error('No supplier found');
-
-            return Command::FAILURE;
-        }
-
         $this->supplierUtility->setDefaultUser();
 
-        $io->success(sprintf('Processing purchase orders for supplier %s', $supplier->getName()));
-
-        $purchaseOrders = $this->getWaitingPurchaseOrders($supplier, $poCount);
+        $purchaseOrders = $this->getRejectedPurchaseOrders($poCount);
 
         $processedPoCount = 0;
         foreach ($purchaseOrders as $purchaseOrder) {
-            $newStatus = $this->realWorldPoStatusSimulator();
+            $newStatus = PurchaseOrderStatus::REFUNDED;
 
             foreach ($purchaseOrder->getPurchaseOrderItems() as $purchaseOrderItem) {
                 $this->supplierUtility->changePurchaseOrderItemStatus(
                     $purchaseOrderItem,
-                    PurchaseOrderStatus::PROCESSING,
+                    PurchaseOrderStatus::REJECTED,
                     $newStatus
                 );
             }
+
+            $this->action->processOrder($purchaseOrder->getCustomerOrder());
 
             $processedPoCount++;
 
@@ -73,15 +66,10 @@ class acceptPOsCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function getWaitingPurchaseOrders(Supplier $supplier, int $poCount): ?array
+    private function getRejectedPurchaseOrders(int $poCount): ?array
     {
-        return $this->entityManager->getRepository(PurchaseOrder::class)
-            ->findWaitingPurchaseOrders($supplier, $poCount);
-    }
-
-    private function realWorldPoStatusSimulator(): PurchaseOrderStatus
-    {
-        // Simulate real world scenario by rejecting some POs
-        return random_int(1,50) === 1 ? PurchaseOrderStatus::REJECTED : PurchaseOrderStatus::ACCEPTED;
+        return $this->entityManager->getRepository(PurchaseOrder::class)->findBy([
+            'status' => PurchaseOrderStatus::REJECTED
+        ], null, $poCount);
     }
 }

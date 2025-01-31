@@ -14,7 +14,7 @@ class ChangePurchaseOrderItemStatusDto
         private readonly int $purchaseOrderItemId,
         #[Assert\NotBlank(message: 'Please enter a PO Item status')]
         #[ValidPOItemStatusChange]
-        private readonly ?PurchaseOrderStatus $purchaseOrderItemStatus
+        private ?PurchaseOrderStatus $purchaseOrderItemStatus
     ) {
     }
 
@@ -31,5 +31,12 @@ class ChangePurchaseOrderItemStatusDto
     public function getPurchaseOrderItemStatus(): ?PurchaseOrderStatus
     {
         return $this->purchaseOrderItemStatus;
+    }
+
+    public function setPurchaseOrderItemStatus(?PurchaseOrderStatus $purchaseOrderItemStatus): static
+    {
+        $this->purchaseOrderItemStatus = $purchaseOrderItemStatus;
+
+        return $this;
     }
 }

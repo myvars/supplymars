@@ -163,6 +163,6 @@ $owner = UserFactory::new()->staff()->create();
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
             ->get("/product/999")
-            ->assertSee("Sorry, we can't find that Product");
+            ->assertStatus(404);
     }
 }

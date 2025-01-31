@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Command;
+namespace App\Command\SalesProcessing;
 
-use App\Service\Sales\ProductSalesSummaryCalculator;
+use App\Service\Sales\OrderSalesSummaryCalculator;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -11,12 +11,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'app:calculate-product-sales-summary',
-    description: 'Calculate product sales summary',
+    name: 'app:calculate-order-sales-summary',
+    description: 'Calculate order sales summary',
 )]
-class calculateProductSalesSummaryCommand extends Command
+class calculateOrderSalesSummaryCommand extends Command
 {
-    public function __construct(private readonly ProductSalesSummaryCalculator $productSalesSummaryCalculator)
+    public function __construct(private readonly OrderSalesSummaryCalculator $orderSalesSummaryCalculator)
     {
         parent::__construct();
     }
@@ -31,9 +31,9 @@ class calculateProductSalesSummaryCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $rebuild = (int)$input->getArgument('rebuild');
 
-        $io->info("Calculating product sales summary");
+        $io->info("Calculating order sales summary");
 
-        $this->productSalesSummaryCalculator->process($rebuild);
+        $this->orderSalesSummaryCalculator->process($rebuild);
 
         $io->success("Sales summary calculation completed");
 

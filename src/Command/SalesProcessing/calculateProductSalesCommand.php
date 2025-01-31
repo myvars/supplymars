@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Command;
+namespace App\Command\SalesProcessing;
 
-use App\Service\Sales\OrderSalesCalculator;
+use App\Service\Sales\ProductSalesCalculator;
+use DateTime;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -10,17 +11,16 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use DateTime;
 
 #[AsCommand(
-    name: 'app:calculate-order-sales',
-    description: 'Calculate order sales',
+    name: 'app:calculate-product-sales',
+    description: 'Calculate product sales',
 )]
-class calculateOrderSalesCommand extends Command
+class calculateProductSalesCommand extends Command
 {
     private const DATE_FORMAT = 'Y-m-d';
 
-    public function __construct(private readonly OrderSalesCalculator $orderSalesCalculator)
+    public function __construct(private readonly ProductSalesCalculator $productSalesCalculator)
     {
         parent::__construct();
     }
@@ -44,21 +44,21 @@ class calculateOrderSalesCommand extends Command
             $startDate = (new DateTime('-' . ($day + $dayOffset) . ' day'))->format(self::DATE_FORMAT);
             $io->note(sprintf("Processing sales for %s", $startDate));
 
-            $this->orderSalesCalculator->process($startDate);
+            $this->productSalesCalculator->process($startDate);
         }
 
         $io->success(sprintf("Processed sales data for %d days", $dayCount));
 
         if ($dayOffset === 0) {
-            $this->runTheOrderSalesSummaryCommand($output);
+            $this->runTheProductSalesSummaryCommand($output);
         }
 
         return Command::SUCCESS;
     }
 
-    public function runTheOrderSalesSummaryCommand(OutputInterface $output): void
+    public function runTheProductSalesSummaryCommand(OutputInterface $output): void
     {
-        $orderSalesSummaryInput = new ArrayInput(['command' => 'app:calculate-order-sales-summary']);
-        $this->getApplication()->doRun($orderSalesSummaryInput, $output);
+        $productSalesSummaryInput = new ArrayInput(['command' => 'app:calculate-product-sales-summary']);
+        $this->getApplication()->doRun($productSalesSummaryInput, $output);
     }
 }

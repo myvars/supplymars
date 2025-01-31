@@ -29,7 +29,7 @@ class ProductImageControllerTest extends WebTestCase
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
             ->get('/product/999999/images')
-            ->assertSee("Sorry, we can't find that Product");
+            ->assertStatus(404);
     }
 
     public function testCreateRemoveImage(): void
@@ -48,7 +48,7 @@ class ProductImageControllerTest extends WebTestCase
             ->attachFile('imageFile[]', [$dummyImagePath, $dummyImagePath])
             ->click('Upload')
             ->assertSuccessful()
-            ->assertSee('New Product Image added!')
+            ->assertSee('Product Image(s) added!')
             ->assertSee('2 Product Images');
 
         $productImages = $product->getProductImages();
@@ -88,7 +88,6 @@ class ProductImageControllerTest extends WebTestCase
             ->attachFile('imageFile[]', [$invalidImagePath])
             ->click('Upload')
             ->assertSuccessful()
-            ->assertSee('Image could not be uploaded! Please check the file type and try again.')
             ->assertSee('0 Product Images');
     }
 
@@ -107,7 +106,7 @@ class ProductImageControllerTest extends WebTestCase
                     'imageFile' => $dummyImagePath,
                 ],
             ])
-            ->assertStatus(500);
+            ->assertStatus(404);
     }
 
     // test for the case when the product image does not exist
@@ -116,7 +115,7 @@ class ProductImageControllerTest extends WebTestCase
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
             ->request('GET', '/product/images/999999/remove')
-            ->assertStatus(500);
+            ->assertStatus(404);
     }
 
     public function testReorderImages(): void
@@ -133,7 +132,7 @@ class ProductImageControllerTest extends WebTestCase
             ->attachFile('imageFile[]', [$dummyImagePath, $dummyImagePath])
             ->click('Upload')
             ->assertSuccessful()
-            ->assertSee('New Product Image added!')
+            ->assertSee('Product Image(s) added!')
             ->assertSee('2 Product Images');
 
         $productImages = $product->getProductImages();

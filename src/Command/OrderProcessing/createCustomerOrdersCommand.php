@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Command;
+namespace App\Command\OrderProcessing;
 
 use App\DTO\CreateOrderDto;
 use App\Entity\Address;
@@ -84,7 +84,7 @@ class createCustomerOrdersCommand extends Command
     private function getUser(): User
     {
         if (random_int(0, 2) === 0) {
-            return UserFactory::random()->_real();
+            return $this->entityManager->getRepository(User::class)->getRandomUser();
         }
 
         $user = UserFactory::createOne(['isVerified' => true])->_real();

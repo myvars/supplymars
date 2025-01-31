@@ -33,7 +33,8 @@ final class CustomerOrderItemFactory extends PersistentProxyObjectFactory
     protected function defaults(): array|callable
     {
         return [
-            'customerOrder' => CustomerOrderFactory::new()
+            'customerOrder' => CustomerOrderFactory::new(),
+            'product' => ProductFactory::new(),
         ];
     }
 

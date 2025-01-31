@@ -67,11 +67,11 @@ return [
         'version' => '1.15.6',
     ],
     'flowbite/dist/flowbite.min.css' => [
-        'version' => '2.5.2',
+        'version' => '3.1.1',
         'type' => 'css',
     ],
     'flowbite' => [
-        'version' => '2.5.2',
+        'version' => '3.1.1',
     ],
     'flowbite-datepicker' => [
         'version' => '1.3.2',

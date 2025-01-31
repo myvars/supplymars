@@ -119,6 +119,6 @@ class SupplierControllerTest extends WebTestCase
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
             ->get("/supplier/999")
-            ->assertSee("Sorry, we can't find that Supplier");
+            ->assertStatus(404);
     }
 }

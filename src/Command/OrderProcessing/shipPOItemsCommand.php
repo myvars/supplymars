@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Command;
+namespace App\Command\OrderProcessing;
 
 use App\Entity\PurchaseOrderItem;
 use App\Entity\StatusChangeLog;

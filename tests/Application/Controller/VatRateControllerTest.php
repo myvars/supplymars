@@ -124,6 +124,6 @@ class VatRateControllerTest extends WebTestCase
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
             ->get("/vat-rate/999")
-            ->assertSee("Sorry, we can't find that VAT Rate");
+            ->assertStatus(404);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Command;
+namespace App\Command\Utilities;
 
 use App\Entity\CustomerOrder;
 use App\Service\Order\RefreshOrderStatus;

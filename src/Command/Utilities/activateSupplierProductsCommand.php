@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Command;
+namespace App\Command\Utilities;
 
 use App\Entity\SupplierProduct;
 use App\Service\OrderProcessing\SupplierUtility;
-use App\Service\Product\ActiveSourceCalculator;
+use App\Service\SupplierProduct\ChangeMappedProductStatus;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -22,7 +22,7 @@ class activateSupplierProductsCommand extends Command
     public function __construct(
         private readonly SupplierUtility $supplierUtility,
         private readonly EntityManagerInterface $entityManager,
-        private readonly ActiveSourceCalculator $activeSourceCalculator
+        private readonly ChangeMappedProductStatus $changeMappedProductStatus
     ) {
         parent::__construct();
     }
@@ -46,12 +46,10 @@ class activateSupplierProductsCommand extends Command
         $processedItemCount = 0;
         foreach ($supplierProducts as $supplierProduct) {
 
-            $this->activeSourceCalculator->toggleStatus($supplierProduct);
-            $this->activeSourceCalculator->recalculateActiveSource($supplierProduct->getProduct());
-
+            $this->changeMappedProductStatus->toggleMappedProductStatus($supplierProduct);
             $processedItemCount++;
 
-            $io->note(sprintf('Activating Supplier: %s, ProductCode: %d, Mapped Product ID: %d',
+            $io->note(sprintf('Activating Supplier: %s, Supplier Product ID: %d, Mapped Product ID: %d',
                 $supplierProduct->getSupplier()->getName(),
                 $supplierProduct->getId(),
                 $supplierProduct->getProduct()->getId()

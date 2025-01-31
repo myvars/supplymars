@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Command;
+namespace App\Command\InventoryProcessing;
 
 use App\Entity\Supplier;
 use App\Entity\SupplierProduct;
-use App\Factory\SupplierProductFactory;
 use App\Service\DomainEventDispatcher;
 use App\Service\OrderProcessing\SupplierUtility;
 use Doctrine\ORM\EntityManagerInterface;
@@ -73,8 +72,6 @@ class updateSupplierStockCommand extends Command
 
         $processedItemCount = 0;
         foreach ($supplierProducts as $supplierProduct) {
-            $supplierProduct = $supplierProduct->_real();
-
             $previousStock = $supplierProduct->getStock();
             $previousCost = $supplierProduct->getCost();
 
@@ -99,7 +96,8 @@ class updateSupplierStockCommand extends Command
 
     private function getRandomSupplierProducts(Supplier $supplier, int $itemCount): ?array
     {
-        return SupplierProductFactory::randomSet($itemCount, ['supplier' => $supplier]);
+        return $this->entityManager->getRepository(SupplierProduct::class)
+            ->findRandomSupplierProducts($supplier, $itemCount);
     }
 
     private function realWorldStockLevelSimulator(SupplierProduct $supplierProduct): void

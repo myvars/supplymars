@@ -3,9 +3,11 @@
 namespace App\Factory;
 
 use App\Entity\CustomerOrder;
+use App\Entity\VatRate;
 use App\Enum\OrderStatus;
 use App\Enum\ShippingMethod;
 use Zenstruck\Foundry\LazyValue;
+use Zenstruck\Foundry\Object\Instantiator;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -43,6 +45,7 @@ final class CustomerOrderFactory extends PersistentProxyObjectFactory
             'customerOrderRef' => self::faker()->word(),
             'shippingMethod' => $shippingMethod,
             'status' => OrderStatus::getDefault(),
+            'vatRate' => VatRateFactory::new()->standard(),
         ];
     }
 
@@ -52,10 +55,11 @@ final class CustomerOrderFactory extends PersistentProxyObjectFactory
     protected function initialize(): static
     {
         return $this
-            ->afterInstantiate(function (CustomerOrder $customerOrder): void {
+            ->instantiateWith(Instantiator::withConstructor()->allowExtra())
+            ->afterInstantiate(function (CustomerOrder $customerOrder, array $attributes): void {
                 $customerOrder->setShippingDetailsFromShippingMethod(
                     $customerOrder->getShippingMethod(),
-                    VatRateFactory::new()->standard()->create()
+                    $attributes['vatRate']
                 );
             });
     }

@@ -138,6 +138,6 @@ $owner = UserFactory::new()->staff()->create();
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
             ->get("/subcategory/999")
-            ->assertSee("Sorry, we can't find that Subcategory");
+            ->assertStatus(404);
     }
 }

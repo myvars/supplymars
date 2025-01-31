@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Command;
+namespace App\Command\Utilities;
 
 use App\Entity\Supplier;
 use App\Entity\SupplierProduct;
@@ -38,7 +38,7 @@ class resetSupplierStockCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $supplierId = $input->getArgument('supplierId');
 
-        if (self::MAX_STOCK_LEVEL <0 ) {
+        if (self::MAX_STOCK_LEVEL < 0 ) {
             $io->error('Max stock level must be greater than 0');
 
             return Command::FAILURE;

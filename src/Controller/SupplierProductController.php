@@ -103,11 +103,15 @@ class SupplierProductController extends AbstractController
         return $handler->delete(self::SECTION, $supplierProduct);
     }
 
-    #[Route('/{id}/remove', name: 'app_supplier_product_remove_confirm', methods: ['GET'])]
+    #[Route('/{id}/remove/confirm', name: 'app_supplier_product_remove_confirm', methods: ['GET'])]
     public function removeConfirm(
         SupplierProduct $supplierProduct,
         CrudReader $handler
     ): Response {
+        if (!$supplierProduct->getProduct() instanceof Product) {
+            throw new \InvalidArgumentException('Supplier product must be mapped to a product');
+        }
+
         return $handler->build(
             $handler->setDefaults()
                 ->setEntity($supplierProduct)

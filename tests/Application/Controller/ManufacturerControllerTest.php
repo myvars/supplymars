@@ -120,6 +120,6 @@ class ManufacturerControllerTest extends WebTestCase
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
             ->get("/manufacturer/999")
-            ->assertSee("Sorry, we can't find that Manufacturer");
+            ->assertStatus(404);
     }
 }
