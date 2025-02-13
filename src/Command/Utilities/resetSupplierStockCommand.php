@@ -19,7 +19,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class resetSupplierStockCommand extends Command
 {
-    public const MAX_STOCK_LEVEL = 300;
+    public const int MAX_STOCK_LEVEL = 300;
 
     public function __construct(
         private readonly SupplierUtility $supplierUtility,

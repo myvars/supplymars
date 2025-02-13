@@ -2,14 +2,14 @@
 
 namespace App\Factory;
 
-use App\Entity\CustomerOrderItem;
+use App\Entity\PurchaseOrder;
 use Zenstruck\Foundry\LazyValue;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<CustomerOrderItem>
+ * @extends PersistentProxyObjectFactory<PurchaseOrder>
  */
-final class CustomerOrderItemFactory extends PersistentProxyObjectFactory
+final class PurchaseOrderFactory extends PersistentProxyObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
@@ -22,7 +22,7 @@ final class CustomerOrderItemFactory extends PersistentProxyObjectFactory
 
     public static function class(): string
     {
-        return CustomerOrderItem::class;
+        return PurchaseOrder::class;
     }
 
     /**
@@ -32,13 +32,12 @@ final class CustomerOrderItemFactory extends PersistentProxyObjectFactory
      */
     protected function defaults(): array|callable
     {
-        $customerOrder = LazyValue::memoize(fn() => CustomerOrderFactory::new()->create());
-        $product = LazyValue::memoize(fn() => ProductFactory::new()->create());
+        $supplier = LazyValue::memoize(fn() => SupplierFactory::new());
+        $customerOrder = LazyValue::memoize(fn() => CustomerOrderFactory::new());
 
         return [
             'customerOrder' => $customerOrder,
-            'product' => $product,
-            'quantity' => 1,
+            'supplier' => $supplier,
         ];
     }
 
@@ -48,10 +47,9 @@ final class CustomerOrderItemFactory extends PersistentProxyObjectFactory
     protected function initialize(): static
     {
         return $this->instantiateWith(function (array $attributes) {
-            return CustomerOrderItem::createFromProduct(
+            return PurchaseOrder::createFromOrder(
                 $attributes['customerOrder'],
-                $attributes['product'],
-                $attributes['quantity']
+                $attributes['supplier']
             );
         });
     }

@@ -47,10 +47,10 @@ final readonly class CreatePurchaseOrderItem implements CrudActionInterface
             throw new \InvalidArgumentException('Supplier product not found');
         }
 
-        $this->fromOrder($customerOrderItem, $matchedSupplierProduct);
+        $this->fromOrderItem($customerOrderItem, $matchedSupplierProduct);
     }
 
-    public function fromOrder(
+    public function fromOrderItem(
         CustomerOrderItem $customerOrderItem,
         SupplierProduct $supplierProduct
     ): PurchaseOrderItem {
@@ -146,10 +146,6 @@ final readonly class CreatePurchaseOrderItem implements CrudActionInterface
             throw new \InvalidArgumentException((string)$errors);
         }
 
-        $purchaseOrder->addPurchaseOrderItem($purchaseOrderItem);
-        $customerOrderItem->addPurchaseOrderItem($purchaseOrderItem);
-
-        $this->entityManager->persist($customerOrderItem);
         $this->entityManager->persist($purchaseOrderItem);
 
         return $purchaseOrderItem;

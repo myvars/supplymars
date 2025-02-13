@@ -27,7 +27,6 @@ final readonly class CreatePurchaseOrder
             throw new \InvalidArgumentException((string)$errors);
         }
 
-        $customerOrder->addPurchaseOrder($purchaseOrder);
         $this->entityManager->persist($purchaseOrder);
         $this->entityManager->flush();
 

@@ -7,7 +7,7 @@ use App\Enum\DomainEventType;
 
 class OrderCreatedEvent extends DomainEvent
 {
-    public const EVENT_TYPE = DomainEventType::ORDER_CREATED;
+    public const DomainEventType EVENT_TYPE = DomainEventType::ORDER_CREATED;
 
     public function __construct(private readonly CustomerOrder $customerOrder)
     {

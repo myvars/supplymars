@@ -20,7 +20,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 class PurchaseOrderItemController extends AbstractController
 {
-    public const SECTION = 'Purchase Order Item';
+    public const string SECTION = 'Purchase Order Item';
 
     #[Route('/', name: 'app_purchase_order_item_index', methods: ['GET'])]
     public function index(): Response
@@ -52,6 +52,11 @@ class PurchaseOrderItemController extends AbstractController
                 ->setSuccessLink(
                     $this->generateUrl('app_purchase_order_show', [
                         'id' => $purchaseOrderItem->getPurchaseOrder()->getId()
+                    ])
+                )
+                ->setSafetyLink(
+                    $this->generateUrl('app_order_show', [
+                        'id' => $purchaseOrderItem->getPurchaseOrder()->getCustomerOrder()->getId()
                     ])
                 )
         );

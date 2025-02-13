@@ -34,7 +34,7 @@ final class StatusChangeLogFactory extends PersistentProxyObjectFactory
     {
         return [
             'eventType' => self::faker()->randomElement(DomainEventType::cases()),
-            'eventTypeId' => self::faker()->randomNumber(),
+            'eventTypeId' => self::faker()->numberBetween(1, 100),
             'status' => self::faker()->text(255),
             'user' => UserFactory::new(),
             'eventTimestamp' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),

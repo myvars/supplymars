@@ -36,16 +36,16 @@ final readonly class CreateOrderItem implements CrudActionInterface
         $customerOrder = $this->getCustomerOrder($dto->getId());
         $product = $this->getProduct($dto->getProductId());
 
-        $customerOrderItem = (new CustomerOrderItem())
-            ->setCustomerOrder($customerOrder)
-            ->createFromProduct($product, $dto->getQuantity());
+        $customerOrderItem = CustomerOrderItem::createFromProduct(
+            $customerOrder,
+            $product,
+            $dto->getQuantity()
+        );
 
         $errors = $this->validator->validate($customerOrderItem);
         if (count($errors) > 0) {
             throw new \InvalidArgumentException((string)$errors);
         }
-
-        $customerOrder->addCustomerOrderItem($customerOrderItem);
 
         $this->entityManager->persist($customerOrderItem);
         $this->entityManager->flush();

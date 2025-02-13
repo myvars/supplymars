@@ -4,7 +4,7 @@ namespace App\DTO\SearchDto;
 
 abstract class SearchDto implements SearchInterface
 {
-    public const TEMPLATE = 'common/search_filter.html.twig';
+    public const string TEMPLATE = 'common/search_filter.html.twig';
 
     private ?string $queryString = null;
 

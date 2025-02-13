@@ -13,9 +13,9 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class CategoryMapper
 {
-    public const DEFAULT_VAT_RATE = 'Standard rate';
+    public const string DEFAULT_VAT_RATE = 'Standard rate';
 
-    public const DEFAULT_OWNER = 'adam@admin.com';
+    public const string DEFAULT_OWNER = 'adam@admin.com';
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,

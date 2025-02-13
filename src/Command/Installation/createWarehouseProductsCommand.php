@@ -18,7 +18,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class createWarehouseProductsCommand extends Command
 {
-    public const DEFAULT_SUPPLIER_NAME = 'Turtle Inc';
+    public const string DEFAULT_SUPPLIER_NAME = 'Turtle Inc';
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,

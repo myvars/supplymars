@@ -7,7 +7,7 @@ use App\Enum\DomainEventType;
 
 class PurchaseOrderStatusChangedEvent extends DomainEvent
 {
-    public const EVENT_TYPE = DomainEventType::PURCHASE_ORDER_STATUS_CHANGED;
+    public const DomainEventType EVENT_TYPE = DomainEventType::PURCHASE_ORDER_STATUS_CHANGED;
 
     public function __construct(private readonly PurchaseOrder $purchaseOrder)
     {

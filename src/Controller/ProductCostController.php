@@ -16,7 +16,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 class ProductCostController extends AbstractController
 {
-    public const SECTION = 'Product';
+    public const string SECTION = 'Product';
 
     #[Route('/{id}/cost', name: 'app_product_cost', methods: ['GET'])]
     public function cost(Product $product): Response

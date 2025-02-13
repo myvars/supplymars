@@ -7,7 +7,7 @@ use App\Enum\DomainEventType;
 
 class SupplierProductStockChangedEvent extends DomainEvent
 {
-    public const EVENT_TYPE = DomainEventType::SUPPLIER_PRODUCT_STOCK_CHANGED;
+    public const DomainEventType EVENT_TYPE = DomainEventType::SUPPLIER_PRODUCT_STOCK_CHANGED;
 
     public function __construct(private readonly SupplierProduct $supplierProduct)
     {

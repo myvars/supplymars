@@ -22,7 +22,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 class SupplierController extends AbstractController
 {
-    public const SECTION = 'Supplier';
+    public const string SECTION = 'Supplier';
 
     #[Route('/', name: 'app_supplier_index', methods: ['GET'])]
     public function index(

@@ -44,7 +44,7 @@ final readonly class CancelOrder implements CrudActionInterface
             $this->domainEventDispatcher->dispatchProviderEvents($customerOrderItem);
         }
 
-        $customerOrder->setStatus(OrderStatus::CANCELLED);
+        $customerOrder->cancelOrder();
         $customerOrder->generateStatus();
 
         $this->entityManager->persist($customerOrder);

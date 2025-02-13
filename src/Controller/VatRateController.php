@@ -22,7 +22,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 class VatRateController extends AbstractController
 {
-    public const SECTION = 'VAT Rate';
+    public const string SECTION = 'VAT Rate';
 
     #[Route('/', name: 'app_vat_rate_index', methods: ['GET'])]
     public function index(

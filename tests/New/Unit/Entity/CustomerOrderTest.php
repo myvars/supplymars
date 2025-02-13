@@ -14,42 +14,68 @@ use PHPUnit\Framework\TestCase;
 
 class CustomerOrderTest extends TestCase
 {
-    public function testSettersAndGetters(): void
+    public function testCreateFromCustomer(): void
     {
         $customer = $this->createMock(User::class);
-        $shippingAddress = $this->createMock(Address::class);
-        $billingAddress = $this->createMock(Address::class);
-        $shippingMethod = ShippingMethod::NEXT_DAY;
-        $dueDate = new \DateTimeImmutable();
-        $status = OrderStatus::getDefault();
+        $address = $this->createMock(Address::class);
+        $customer->method('getShippingAddress')->willReturn($address);
+        $customer->method('getBillingAddress')->willReturn($address);
+        $vatRate = $this->createMock(VatRate::class);
+        $vatRate->method('getRate')->willReturn('20.00');
 
-        $order = (new CustomerOrder())
-            ->setCustomer($customer)
-            ->setShippingAddress($shippingAddress)
-            ->setBillingAddress($billingAddress)
-            ->setShippingMethod($shippingMethod)
-            ->setDueDate($dueDate)
-            ->setShippingPrice('10.00')
-            ->setShippingPriceIncVat('12.00')
-            ->setCustomerOrderRef('123')
-            ->setOrderLock($customer)
-            ->setStatus($status);
+        $order = CustomerOrder::createFromCustomer(
+            $customer,
+            ShippingMethod::NEXT_DAY,
+            $vatRate,
+            'TEST-123'
+        );
 
         $this->assertSame($customer, $order->getCustomer());
-        $this->assertSame($shippingAddress, $order->getShippingAddress());
-        $this->assertSame($billingAddress, $order->getBillingAddress());
-        $this->assertSame($shippingMethod, $order->getShippingMethod());
-        $this->assertSame($dueDate, $order->getDueDate());
-        $this->assertEquals('10.00', $order->getShippingPrice());
-        $this->assertEquals('12.00', $order->getShippingPriceIncVat());
-        $this->assertEquals('123', $order->getCustomerOrderRef());
-        $this->assertSame($customer, $order->getOrderLock());
-        $this->assertSame($status, $order->getStatus());
+        $this->assertSame($address, $order->getShippingAddress());
+        $this->assertSame($address, $order->getBillingAddress());
+        $this->assertEquals(ShippingMethod::NEXT_DAY, $order->getShippingMethod());
+        $this->assertEquals('TEST-123', $order->getCustomerOrderRef());
+    }
+
+    public function testCreateFromOrderWithInvalidBillingAddress(): void
+    {
+        $customer = $this->createMock(User::class);
+        $address = $this->createMock(Address::class);
+        $customer->method('getShippingAddress')->willReturn($address);
+        $customer->method('getBillingAddress')->willReturn(null);
+        $vatRate = $this->createMock(VatRate::class);
+        $vatRate->method('getRate')->willReturn('20.00');
+
+        $this->expectException(\TypeError::class);
+        CustomerOrder::createFromCustomer(
+            $customer,
+            ShippingMethod::NEXT_DAY,
+            $vatRate,
+            'TEST-123'
+        );
+    }
+
+    public function testCreateFromOrderWithInvalidShippingAddress(): void
+    {
+        $customer = $this->createMock(User::class);
+        $address = $this->createMock(Address::class);
+        $customer->method('getShippingAddress')->willReturn(null);
+        $customer->method('getBillingAddress')->willReturn($address);
+        $vatRate = $this->createMock(VatRate::class);
+        $vatRate->method('getRate')->willReturn('20.00');
+
+        $this->expectException(\TypeError::class);
+        CustomerOrder::createFromCustomer(
+            $customer,
+            ShippingMethod::NEXT_DAY,
+            $vatRate,
+            'TEST-123'
+        );
     }
 
     public function testAddCustomerOrderItem(): void
     {
-        $order = new CustomerOrder();
+        $order = $this->createCustomerOrder();
         $item = $this->createMock(CustomerOrderItem::class);
 
         $item->method('getStatus')->willReturn(OrderStatus::getDefault());
@@ -64,9 +90,39 @@ class CustomerOrderTest extends TestCase
         $this->assertTrue($order->getCustomerOrderItems()->contains($item));
     }
 
+    public function testAddCustomerOrderItemWithInvalidQty(): void
+    {
+        $order = $this->createCustomerOrder();
+
+        $item = $this->createMock(CustomerOrderItem::class);
+        $item->method('getTotalPrice')->willReturn('-100');
+        $item->method('getTotalPriceIncVat')->willReturn('120');
+        $item->method('getTotalWeight')->willReturn(10);
+        $item->method('getStatus')->willReturn(OrderStatus::getDefault());
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('The total price must be greater than 0');
+        $order->addCustomerOrderItem($item);
+    }
+
+    public function testAddCustomerOrderItemWithInvalidWeight(): void
+    {
+        $order = $this->createCustomerOrder();
+
+        $item = $this->createMock(CustomerOrderItem::class);
+        $item->method('getTotalPrice')->willReturn('100');
+        $item->method('getTotalPriceIncVat')->willReturn('120');
+        $item->method('getTotalWeight')->willReturn(-1);
+        $item->method('getStatus')->willReturn(OrderStatus::getDefault());
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('The total weight must be greater than 0');
+        $order->addCustomerOrderItem($item);
+    }
+
     public function testRemoveCustomerOrderItem(): void
     {
-        $order = new CustomerOrder();
+        $order = $this->createCustomerOrder();
         $item = $this->createMock(CustomerOrderItem::class);
 
         $item->method('getStatus')->willReturn(OrderStatus::getDefault());
@@ -79,49 +135,47 @@ class CustomerOrderTest extends TestCase
             ->method('getCustomerOrder')
             ->willReturn($order);
 
-        $item->expects($this->once())
-            ->method('setCustomerOrder')
-            ->with(null);
-
         $order->removeCustomerOrderItem($item);
         $this->assertCount(0, $order->getCustomerOrderItems());
     }
 
     public function testAddCustomerOrderItemWhenAllowEditIsFalse(): void
     {
-        $order = $this->getMockBuilder(CustomerOrder::class)
-            ->onlyMethods(['allowEdit'])
-            ->getMock();
-
-        $order->method('allowEdit')->willReturn(false);
+        $order = $this->createCustomerOrder();
 
         $item = $this->createMock(CustomerOrderItem::class);
+        $item->method('getTotalPrice')->willReturn('100');
+        $item->method('getTotalPriceIncVat')->willReturn('120');
+        $item->method('getTotalWeight')->willReturn(10);
+        $item->method('getStatus')->willReturn(OrderStatus::DELIVERED);
+        $order->addCustomerOrderItem($item);
+        $order->cancelOrder();
 
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage('Cannot add items to an order with this status');
-
         $order->addCustomerOrderItem($item);
     }
 
     public function testRemoveCustomerOrderItemWhenAllowEditIsFalse(): void
     {
-        $order = $this->getMockBuilder(CustomerOrder::class)
-            ->onlyMethods(['allowEdit'])
-            ->getMock();
-
-        $order->method('allowEdit')->willReturn(false);
+        $order = $this->createCustomerOrder();
 
         $item = $this->createMock(CustomerOrderItem::class);
+        $item->method('getTotalPrice')->willReturn('100');
+        $item->method('getTotalPriceIncVat')->willReturn('120');
+        $item->method('getTotalWeight')->willReturn(10);
+        $item->method('getStatus')->willReturn(OrderStatus::DELIVERED);
+        $order->addCustomerOrderItem($item);
+        $order->cancelOrder();
 
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage('Cannot remove items from an order with this status');
-
         $order->removeCustomerOrderItem($item);
     }
 
     public function testAddPurchaseOrder(): void
     {
-        $order = new CustomerOrder();
+        $order = $this->createCustomerOrder();
         $purchaseOrder = $this->createMock(PurchaseOrder::class);
 
         $purchaseOrder->expects($this->once())
@@ -136,7 +190,7 @@ class CustomerOrderTest extends TestCase
 
     public function testRemovePurchaseOrder(): void
     {
-        $order = new CustomerOrder();
+        $order = $this->createCustomerOrder();
         $purchaseOrder = $this->createMock(PurchaseOrder::class);
 
         $order->addPurchaseOrder($purchaseOrder);
@@ -157,7 +211,8 @@ class CustomerOrderTest extends TestCase
 
     public function testRecalculateTotal(): void
     {
-        $order = new CustomerOrder();
+        $order = $this->createCustomerOrder();
+
         $item1 = $this->createMock(CustomerOrderItem::class);
         $item2 = $this->createMock(CustomerOrderItem::class);
 
@@ -176,66 +231,57 @@ class CustomerOrderTest extends TestCase
 
         $order->recalculateTotal();
 
-        $this->assertEquals('300', $order->getTotalPrice());
-        $this->assertEquals('360', $order->getTotalPriceIncVat());
+        $this->assertEquals('309.99', $order->getTotalPrice());
+        $this->assertEquals('371.99', $order->getTotalPriceIncVat());
         $this->assertEquals(30, $order->getTotalWeight());
     }
 
-    public function testSetShippingDetailsFromShippingMethod(): void
+    public function testLockOrder(): void
     {
-        $order = new CustomerOrder();
-        $shippingMethod = ShippingMethod::NEXT_DAY;
-        $vatRate = $this->createMock(VatRate::class);
+        $staff = $this->createMock(User::class);
+        $order = $this->createCustomerOrder();
+        $order->lockOrder($staff);
 
-        $vatRate->method('getRate')->willReturn('0.20');
-
-        $order->setShippingDetailsFromShippingMethod($shippingMethod, $vatRate);
-
-        $this->assertSame($shippingMethod, $order->getShippingMethod());
-        $this->assertEquals(ShippingMethod::NEXT_DAY->getPrice(), $order->getShippingPrice());
-        $this->assertEquals(ShippingMethod::NEXT_DAY->getPriceIncVat($vatRate), $order->getShippingPriceIncVat());
-        $this->assertInstanceOf(\DateTimeImmutable::class, $order->getDueDate());
+        $this->assertEquals('TEST-123', $order->getCustomerOrderRef());
+        $this->assertSame($staff, $order->getOrderLock());
     }
 
     public function testAllowEdit(): void
     {
-        $order = new CustomerOrder();
+        $order = $this->createCustomerOrder();
 
         $this->assertTrue($order->allowEdit());
 
-        $status = OrderStatus::SHIPPED;
-        $order->setStatus($status);
+        $order->cancelOrder();
 
         $this->assertFalse($order->allowEdit());
     }
 
     public function testAllowCancel(): void
     {
-        $order = new CustomerOrder();
+        $order = $this->createCustomerOrder();
 
         $this->assertTrue($order->allowCancel());
 
-        $status = OrderStatus::SHIPPED;
-        $order->setStatus($status);
+        $order->cancelOrder();
 
         $this->assertFalse($order->allowCancel());
     }
 
     public function testIsCancelled(): void
     {
-        $order = new CustomerOrder();
+        $order = $this->createCustomerOrder();
 
         $this->assertFalse($order->isCancelled());
 
-        $status = OrderStatus::CANCELLED;
-        $order->setStatus($status);
+        $order->cancelOrder();
 
         $this->assertTrue($order->isCancelled());
     }
 
     public function testGetLineCount(): void
     {
-        $order = new CustomerOrder();
+        $order = $this->createCustomerOrder();
 
         $item1 = $this->createMock(CustomerOrderItem::class);
         $item2 = $this->createMock(CustomerOrderItem::class);
@@ -251,7 +297,7 @@ class CustomerOrderTest extends TestCase
 
     public function testGetItemCount(): void
     {
-        $order = new CustomerOrder();
+        $order = $this->createCustomerOrder();
         $item1 = $this->createMock(CustomerOrderItem::class);
         $item2 = $this->createMock(CustomerOrderItem::class);
 
@@ -266,5 +312,20 @@ class CustomerOrderTest extends TestCase
         $this->assertEquals(3, $order->getItemCount());
     }
 
+    private function createCustomerOrder(): CustomerOrder
+    {
+        $customer = $this->createMock(User::class);
+        $address = $this->createMock(Address::class);
+        $customer->method('getShippingAddress')->willReturn($address);
+        $customer->method('getBillingAddress')->willReturn($address);
+        $vatRate = $this->createMock(VatRate::class);
+        $vatRate->method('getRate')->willReturn('20.00');
 
+        return CustomerOrder::createFromCustomer(
+            $customer,
+            ShippingMethod::NEXT_DAY,
+            $vatRate,
+            'TEST-123'
+        );
+    }
 }

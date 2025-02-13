@@ -18,7 +18,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class calculateProductSalesCommand extends Command
 {
-    private const DATE_FORMAT = 'Y-m-d';
+    private const string DATE_FORMAT = 'Y-m-d';
 
     public function __construct(private readonly ProductSalesCalculator $productSalesCalculator)
     {

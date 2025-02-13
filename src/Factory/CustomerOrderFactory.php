@@ -3,11 +3,8 @@
 namespace App\Factory;
 
 use App\Entity\CustomerOrder;
-use App\Entity\VatRate;
-use App\Enum\OrderStatus;
 use App\Enum\ShippingMethod;
 use Zenstruck\Foundry\LazyValue;
-use Zenstruck\Foundry\Object\Instantiator;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -36,16 +33,21 @@ final class CustomerOrderFactory extends PersistentProxyObjectFactory
      */
     protected function defaults(): array|callable
     {
+        $customer = LazyValue::memoize(fn() => UserFactory::new()->create());
+        $billingAddress = LazyValue::memoize(fn() => AddressFactory::new([
+            'customer' => $customer,
+            'isDefaultBillingAddress' => true,
+            'isDefaultShippingAddress' => true
+        ])->create()->_real());
         $shippingMethod = LazyValue::memoize(fn() => self::faker()->randomElement(ShippingMethod::cases()));
+        $vatRate = LazyValue::memoize(fn() => VatRateFactory::new()->standard());
 
         return [
-            'customer' => UserFactory::new(),
-            'shippingAddress' => AddressFactory::new(),
-            'billingAddress' => AddressFactory::new(),
-            'customerOrderRef' => self::faker()->word(),
+            'customer' => $customer,
+            'billingAddress' => $billingAddress,
             'shippingMethod' => $shippingMethod,
-            'status' => OrderStatus::getDefault(),
-            'vatRate' => VatRateFactory::new()->standard(),
+            'vatRate' => $vatRate,
+            'customerOrderRef' => self::faker()->word(),
         ];
     }
 
@@ -54,14 +56,14 @@ final class CustomerOrderFactory extends PersistentProxyObjectFactory
      */
     protected function initialize(): static
     {
-        return $this
-            ->instantiateWith(Instantiator::withConstructor()->allowExtra())
-            ->afterInstantiate(function (CustomerOrder $customerOrder, array $attributes): void {
-                $customerOrder->setShippingDetailsFromShippingMethod(
-                    $customerOrder->getShippingMethod(),
-                    $attributes['vatRate']
-                );
-            });
+        return $this->instantiateWith(function (array $attributes) {
+            return CustomerOrder::createFromCustomer(
+                $attributes['customer'],
+                $attributes['shippingMethod'],
+                $attributes['vatRate'],
+                $attributes['customerOrderRef']
+            );
+        });
     }
 }
 

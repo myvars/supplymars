@@ -12,7 +12,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 class ProductStockController extends AbstractController
 {
-    public const SECTION = 'Product';
+    public const string SECTION = 'Product';
 
     #[Route('/{id}/stock', name: 'app_product_stock', methods: ['GET'])]
     public function stock(Product $product): Response

@@ -196,10 +196,6 @@ class SupplierTest extends TestCase
             ->method('getSupplier')
             ->willReturn($supplier);
 
-        $purchaseOrder->expects($this->once())
-            ->method('setSupplier')
-            ->with(null);
-
         $supplier->removePurchaseOrder($purchaseOrder);
         $this->assertCount(0, $supplier->getPurchaseOrders());
     }

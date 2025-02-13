@@ -243,7 +243,7 @@ class Supplier
     {
         // set the owning side to null (unless already changed)
         if ($this->purchaseOrders->removeElement($purchaseOrder) && $purchaseOrder->getSupplier() === $this) {
-            $purchaseOrder->setSupplier(null);
+
         }
 
         return $this;

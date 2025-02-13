@@ -29,7 +29,7 @@ final readonly class LockOrder implements CrudActionInterface
 
     public function toggleStatus(CustomerOrder $customerOrder): void
     {
-        $customerOrder->setOrderLock(
+        $customerOrder->lockOrder(
             $customerOrder->getOrderLock() instanceof User ? null : $this->security->getUser()
         );
 

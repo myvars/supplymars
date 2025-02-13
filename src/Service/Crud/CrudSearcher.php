@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CrudSearcher extends AbstractController
 {
-    public const TEMPLATE = 'index';
+    public const string TEMPLATE = 'index';
 
     public function __construct(
         public readonly CrudHelper $crudHelper,

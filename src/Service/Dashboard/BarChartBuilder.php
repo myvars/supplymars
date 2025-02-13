@@ -10,7 +10,7 @@ use Symfony\UX\Chartjs\Model\Chart;
 
 class BarChartBuilder
 {
-    private const CHART_TYPE = Chart::TYPE_BAR;
+    private const string CHART_TYPE = Chart::TYPE_BAR;
 
     public function __construct(private readonly ChartBuilderInterface $chartBuilder)
     {

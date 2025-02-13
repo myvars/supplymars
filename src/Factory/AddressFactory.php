@@ -3,6 +3,7 @@
 namespace App\Factory;
 
 use App\Entity\Address;
+use Zenstruck\Foundry\LazyValue;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -32,12 +33,13 @@ final class AddressFactory extends PersistentProxyObjectFactory
     protected function defaults(): array|callable
     {
         $cityData = $this->marsCity();
+        $customer = LazyValue::memoize(fn() => UserFactory::new()->create());
 
         return [
             'city' => $cityData['name'],
             'country' => 'Mars Colony',
             'county' => 'Red Zone',
-            'customer' => UserFactory::new(),
+            'customer' => $customer,
             'postCode' => $cityData['sectorCode'] . '-' . random_int(10, 50),
             'street' => self::faker()->streetAddress(),
             'phoneNumber' => self::faker()->phoneNumber(),

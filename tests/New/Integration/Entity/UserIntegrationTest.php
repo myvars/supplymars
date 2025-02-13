@@ -166,7 +166,12 @@ class UserIntegrationTest extends KernelTestCase
     public function testAddCustomerOrderToUser()
     {
         $user = UserFactory::createOne()->_real();
-        $customerOrder = CustomerOrderFactory::createOne(['customer' => $user])->_real();
+        $address = AddressFactory::createOne([
+            'customer' => $user,
+            'isDefaultBillingAddress' => true,
+            'isDefaultShippingAddress' => true
+        ]);
+        $customerOrder = CustomerOrderFactory::createOne(['customer' => $user, 'billingAddress' => $address])->_real();
 
         $this->assertTrue($user->getCustomerOrders()->contains($customerOrder));
         $this->assertSame($user, $customerOrder->getCustomer());
@@ -175,7 +180,12 @@ class UserIntegrationTest extends KernelTestCase
     public function testRemoveCustomerOrderFromUser()
     {
         $user = UserFactory::createOne()->_real();
-        $customerOrder = CustomerOrderFactory::createOne(['customer' => $user])->_real();
+        $address = AddressFactory::createOne([
+            'customer' => $user,
+            'isDefaultBillingAddress' => true,
+            'isDefaultShippingAddress' => true
+        ]);
+        $customerOrder = CustomerOrderFactory::createOne(['customer' => $user, 'billingAddress' => $address])->_real();
 
         $user->removeCustomerOrder($customerOrder);
 
@@ -185,7 +195,12 @@ class UserIntegrationTest extends KernelTestCase
     public function testReAddCustomerOrderToUser()
     {
         $user = UserFactory::createOne()->_real();
-        $customerOrder = CustomerOrderFactory::createOne(['customer' => $user])->_real();
+        $address = AddressFactory::createOne([
+            'customer' => $user,
+            'isDefaultBillingAddress' => true,
+            'isDefaultShippingAddress' => true
+        ]);
+        $customerOrder = CustomerOrderFactory::createOne(['customer' => $user, 'billingAddress' => $address])->_real();
 
         $user->removeCustomerOrder($customerOrder);
         $user->addCustomerOrder($customerOrder);

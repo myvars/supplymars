@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CrudUpdater extends BaseCrudHandler
 {
-    public const TEMPLATE = 'edit';
+    public const string TEMPLATE = 'edit';
 
     public function __construct(
         public readonly CrudHelper $crudHelper,

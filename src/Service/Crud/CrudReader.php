@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CrudReader extends BaseCrudHandler
 {
-    public const TEMPLATE = 'show';
+    public const string TEMPLATE = 'show';
 
     public function __construct(
         public readonly CrudHelper $crudHelper,

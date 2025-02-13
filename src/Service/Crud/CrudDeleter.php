@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class CrudDeleter extends BaseCrudHandler
 {
-    public const TEMPLATE = 'delete';
+    public const string TEMPLATE = 'delete';
 
     public function __construct(
         public readonly CrudHelper $crudHelper,

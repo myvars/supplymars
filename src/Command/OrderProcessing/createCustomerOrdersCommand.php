@@ -27,9 +27,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class createCustomerOrdersCommand extends Command
 {
-    public const MAX_ORDER_LINES = 5;
+    public const int MAX_ORDER_LINES = 5;
 
-    public const MAX_LINE_QTY = 5;
+    public const int MAX_LINE_QTY = 5;
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
@@ -84,18 +84,21 @@ class createCustomerOrdersCommand extends Command
     private function getUser(): User
     {
         if (random_int(0, 2) === 0) {
-            return $this->entityManager->getRepository(User::class)->getRandomUser();
+            $user = $this->entityManager->getRepository(User::class)->getRandomUser();
+        } else {
+            $user = UserFactory::createOne(['isVerified' => true])->_real();
         }
 
-        $user = UserFactory::createOne(['isVerified' => true])->_real();
-        $this->createBillingAddress($user);
+        if (!$user->getBillingAddress() instanceof Address) {
+            $this->createBillingAddress($user);
+        }
 
         return $user;
     }
 
-    private function createBillingAddress(User $user): Address
+    private function createBillingAddress(User $user): void
     {
-        return AddressFactory::createOne([
+        AddressFactory::createOne([
             'customer' => $user,
             'email' => $user->getEmail(),
             'fullName' => $user->getFullName(),
@@ -121,11 +124,11 @@ class createCustomerOrdersCommand extends Command
         $products = $this->getRandomProducts(random_int(1, self::MAX_ORDER_LINES));
 
         foreach ($products as $product) {
-            $customerOrderItem = new CustomerOrderItem();
-            $customerOrderItem
-                ->setCustomerOrder($customerOrder)
-                ->createFromProduct($product, random_int(1,self::MAX_LINE_QTY));
-            $customerOrder->addCustomerOrderItem($customerOrderItem);
+            $customerOrderItem = CustomerOrderItem::createFromProduct(
+                $customerOrder,
+                $product,
+                random_int(1, self::MAX_LINE_QTY)
+            );
 
             $this->entityManager->persist($customerOrderItem);
         }

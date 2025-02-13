@@ -111,17 +111,27 @@ class AddressIntegrationTest extends KernelTestCase
 
     public function testAddCustomerOrderToAddress()
     {
-        $address = AddressFactory::createOne()->_real();
-        $customerOrder = CustomerOrderFactory::createOne(['shippingAddress' => $address])->_real();
+        $user = UserFactory::createOne();
+        $address = AddressFactory::createOne([
+            'customer' => $user,
+            'isDefaultBillingAddress' => true,
+            'isDefaultShippingAddress' => true
+        ])->_real();
+        $customerOrder = CustomerOrderFactory::createOne(['customer' => $user, 'billingAddress' => $address])->_real();
 
         $this->assertTrue($address->getCustomerOrders()->contains($customerOrder));
-        $this->assertSame($address, $customerOrder->getShippingAddress());
+        $this->assertSame($address, $customerOrder->getBillingAddress());
     }
 
     public function testRemoveCustomerOrderFromAddress()
     {
-        $address = AddressFactory::createOne()->_real();
-        $customerOrder = CustomerOrderFactory::createOne(['shippingAddress' => $address])->_real();
+        $user = UserFactory::createOne();
+        $address = AddressFactory::createOne([
+            'customer' => $user,
+            'isDefaultBillingAddress' => true,
+            'isDefaultShippingAddress' => true
+        ])->_real();
+        $customerOrder = CustomerOrderFactory::createOne(['customer' => $user, 'billingAddress' => $address])->_real();
 
         $address->removeCustomerOrder($customerOrder);
 

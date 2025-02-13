@@ -14,7 +14,7 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class SupplierUtility {
 
-    public const DEFAULT_USER_EMAIL = 'adam@admin.com';
+    public const string DEFAULT_USER_EMAIL = 'adam@admin.com';
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,

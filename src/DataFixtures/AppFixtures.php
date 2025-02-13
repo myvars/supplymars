@@ -16,15 +16,15 @@ use Zenstruck\Foundry\Persistence\Proxy;
 
 class AppFixtures extends Fixture
 {
-    public const DEFAULT_SUPPLIER_NAME = 'Turtle Inc';
+    public const string DEFAULT_SUPPLIER_NAME = 'Turtle Inc';
 
-    public const DEFAULT_SUPPLIER_PRODUCT_COUNT = 100;
+    public const int DEFAULT_SUPPLIER_PRODUCT_COUNT = 100;
 
-    public const EDI_SUPPLIER_COUNT = 3;
+    public const int EDI_SUPPLIER_COUNT = 3;
 
-    public const EDI_SUPPLIER_PRODUCT_COUNT = 100;
+    public const int EDI_SUPPLIER_PRODUCT_COUNT = 100;
 
-    public const EDI_SUPPLIER_COMMON_PRODUCT_PERCENT = 50;
+    public const int EDI_SUPPLIER_COMMON_PRODUCT_PERCENT = 50;
 
     public function load(ObjectManager $manager): void
     {

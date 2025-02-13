@@ -43,7 +43,7 @@ final readonly class ProcessOrder implements CrudActionInterface
             );
 
             if ($lowestCostSupplier instanceof SupplierProduct) {
-                $this->createPurchaseOrderItem->fromOrder($customerOrderItem, $lowestCostSupplier);
+                $this->createPurchaseOrderItem->fromOrderItem($customerOrderItem, $lowestCostSupplier);
             }
         }
 

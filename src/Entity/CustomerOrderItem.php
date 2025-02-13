@@ -27,45 +27,43 @@ class CustomerOrderItem implements DomainEventProviderInterface
 
     #[ORM\ManyToOne(inversedBy: 'customerOrderItems')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: 'Please enter a customer order')]
-    private ?CustomerOrder $customerOrder = null;
+    private CustomerOrder $customerOrder;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: 'Please enter a product')]
-    private ?Product $product = null;
+    private Product $product;
 
     #[ORM\Column]
-    #[Assert\NotBlank(message: 'Please enter a product quantity')]
-    #[Assert\Range(notInRangeMessage: 'Please enter a product quantity (0 to 100000)', min: 0, max: 100000)]
+    #[Assert\Range(notInRangeMessage: 'Quantity must be between {{ min }} and {{ max }}', min: 1, max: 10000)]
     private int $quantity = 0;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    #[Assert\NotBlank(message: 'Please enter a product price')]
-    #[Assert\Range(notInRangeMessage: 'Please enter a product price (0 to 100000)', min: 0, max: 100000)]
+    #[Assert\Range(notInRangeMessage: 'Price must be between {{ min }} and {{ max }}', min: 0, max: 10000000)]
     private string $price = '0';
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    #[Assert\NotBlank(message: 'Please enter a product price including VAT')]
-    #[Assert\Range(notInRangeMessage: 'Please enter a product price inc VAT (0 to 100000)', min: 0, max: 100000)]
+    #[Assert\Range(notInRangeMessage: 'Price inc VAT must be between {{ min }} and {{ max }}', min: 0, max: 10000000)]
     private string $priceIncVat = '0';
 
     #[ORM\Column]
-    #[Assert\NotBlank(message: 'Please enter a product weight')]
-    #[Assert\Range(notInRangeMessage: 'Please enter a product weight (0 to 100000)', min: 0, max: 100000)]
+    #[Assert\Range(notInRangeMessage: 'Weight must be between {{ min }} and {{ max }}', min: 0, max: 10000000)]
     private int $weight = 0;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Please enter a status')]
     private OrderStatus $status;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Assert\Range(notInRangeMessage: 'Total price must be between {{ min }} and {{ max }}', min: 0, max: 10000000)]
     private string $totalPrice = '0';
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Assert\Range(
+        notInRangeMessage: 'Total price inc VAT must be between {{ min }} and {{ max }}', min: 0, max: 10000000
+    )]
     private string $totalPriceIncVat = '0';
 
     #[ORM\Column]
+    #[Assert\Range(notInRangeMessage: 'Total weight must be between {{ min }} and {{ max }}', min: 0, max: 100000000)]
     private int $totalWeight = 0;
 
     /**
@@ -74,7 +72,7 @@ class CustomerOrderItem implements DomainEventProviderInterface
     #[ORM\OneToMany(targetEntity: PurchaseOrderItem::class, mappedBy: 'customerOrderItem')]
     private Collection $purchaseOrderItems;
 
-    public function __construct()
+    private function __construct()
     {
         $this->status = OrderStatus::getDefault();
         $this->purchaseOrderItems = new ArrayCollection();
@@ -86,21 +84,28 @@ class CustomerOrderItem implements DomainEventProviderInterface
         return $this->id;
     }
 
-    public function getCustomerOrder(): ?CustomerOrder
+    public function getCustomerOrder(): CustomerOrder
     {
         return $this->customerOrder;
     }
 
-    public function setCustomerOrder(?CustomerOrder $customerOrder): static
+    public function setCustomerOrder(CustomerOrder $customerOrder): static
     {
         $this->customerOrder = $customerOrder;
 
         return $this;
     }
 
-    public function getProduct(): ?Product
+    public function getProduct(): Product
     {
         return $this->product;
+    }
+
+    private function setProduct(Product $product): static
+    {
+        $this->product = $product;
+
+        return $this;
     }
 
     public function getQuantity(): int
@@ -108,9 +113,31 @@ class CustomerOrderItem implements DomainEventProviderInterface
         return $this->quantity;
     }
 
+    private function setQuantity(int $quantity): static
+    {
+        if ($quantity < 1) {
+            throw new \InvalidArgumentException("The quantity must be positive");
+        }
+
+        $this->quantity = $quantity;
+
+        return $this;
+    }
+
     public function getPrice(): ?string
     {
         return $this->price;
+    }
+
+    private function setPrice(string $price): static
+    {
+        if ((float)$price < 0) {
+            throw new \InvalidArgumentException("The price must greater than 0");
+        }
+
+        $this->price = $price;
+
+        return $this;
     }
 
     public function getPriceIncVat(): ?string
@@ -118,9 +145,31 @@ class CustomerOrderItem implements DomainEventProviderInterface
         return $this->priceIncVat;
     }
 
+    private function setPriceIncVat(string $priceIncVat): static
+    {
+        if ((float)$priceIncVat < 0) {
+            throw new \InvalidArgumentException("The price inc VAT must greater than 0");
+        }
+
+        $this->priceIncVat = $priceIncVat;
+
+        return $this;
+    }
+
     public function getWeight(): ?int
     {
         return $this->weight;
+    }
+
+    private function setWeight(int $weight): static
+    {
+        if ($weight < 0) {
+            throw new \InvalidArgumentException("The weight must be greater than 0");
+        }
+
+        $this->weight = $weight;
+
+        return $this;
     }
 
     public function getStatus(): OrderStatus
@@ -128,14 +177,14 @@ class CustomerOrderItem implements DomainEventProviderInterface
         return $this->status;
     }
 
-    private function setStatus(OrderStatus $status): void
+    private function setStatus(OrderStatus $status): static
     {
-        if ($this->status === $status) {
-            return;
+        if ($this->status !== $status) {
+            $this->status = $status;
+            $this->raiseDomainEvent(new OrderItemStatusChangedEvent($this));
         }
 
-        $this->status = $status;
-        $this->raiseDomainEvent(new OrderItemStatusChangedEvent($this));
+        return $this;
     }
 
     public function getTotalPrice(): ?string
@@ -143,9 +192,31 @@ class CustomerOrderItem implements DomainEventProviderInterface
         return $this->totalPrice;
     }
 
+    private function setTotalPrice(string $totalPrice): static
+    {
+        if ((float)$totalPrice < 0) {
+            throw new \InvalidArgumentException("The total price must be greater than 0");
+        }
+
+        $this->totalPrice = $totalPrice;
+
+        return $this;
+    }
+
     public function getTotalPriceIncVat(): ?string
     {
         return $this->totalPriceIncVat;
+    }
+
+    private function setTotalPriceIncVat(string $totalPriceIncVat): static
+    {
+        if ((float)$totalPriceIncVat < 0) {
+            throw new \InvalidArgumentException("The total price inc VAT must be greater than 0");
+        }
+
+        $this->totalPriceIncVat = $totalPriceIncVat;
+
+        return $this;
     }
 
     public function getTotalWeight(): ?int
@@ -153,22 +224,40 @@ class CustomerOrderItem implements DomainEventProviderInterface
         return $this->totalWeight;
     }
 
+    private function setTotalWeight(int $totalWeight): static
+    {
+        if ($totalWeight < 0) {
+            throw new \InvalidArgumentException("The total weight must be greater than 0");
+        }
+
+        $this->totalWeight = $totalWeight;
+
+        return $this;
+    }
+
     public function getVatRate(): VatRate
     {
         return $this->product->getCategory()->getVatRate();
     }
 
-    public function createFromProduct(Product $product, int $quantity = 1): static
-    {
-        $this->product = $product;
-        $this->quantity = $quantity;
-        $this->weight = $product->getWeight();
-        $this->price = $product->getSellPrice();
-        $this->priceIncVat = $product->getSellPriceIncVat();
-        $this->recalculateTotal();
-        $this->generateStatus();
+    public static function createFromProduct(
+        CustomerOrder $customerOrder,
+        Product $product,
+        int $quantity = 1
+    ): static {
+        $customerOrderItem = (new static())
+            ->setCustomerOrder($customerOrder)
+            ->setProduct($product)
+            ->setQuantity($quantity)
+            ->setWeight($product->getWeight())
+            ->setPrice($product->getSellPrice())
+            ->setPriceIncVat($product->getSellPriceIncVat());
 
-        return $this;
+        $customerOrderItem->getCustomerOrder()->addCustomerOrderItem($customerOrderItem);
+        $customerOrderItem->recalculateTotal();
+        $customerOrderItem->generateStatus();
+
+        return $customerOrderItem;
     }
 
     public function updateItem(int $quantity, string $price, string $priceIncVat): static
@@ -176,12 +265,12 @@ class CustomerOrderItem implements DomainEventProviderInterface
         $qtyAddedToPurchaseOrders = $this->getQtyAddedToPurchaseOrders();
 
         if ($qtyAddedToPurchaseOrders > $quantity) {
-            throw new \LogicException('Cannot edit this allocated qty below %s', $qtyAddedToPurchaseOrders);
+            throw new \LogicException('Cannot edit this allocated qty below '.$qtyAddedToPurchaseOrders);
         }
 
-        $this->quantity = $quantity;
-        $this->price = $price;
-        $this->priceIncVat = $priceIncVat;
+        $this->setQuantity($quantity);
+        $this->setPrice($price);
+        $this->setPriceIncVat($priceIncVat);
         $this->recalculateTotal();
         $this->generateStatus();
 
@@ -241,9 +330,9 @@ class CustomerOrderItem implements DomainEventProviderInterface
 
     public function recalculateTotal(): void
     {
-        $this->totalPrice = bcmul((string) $this->quantity, $this->price, 2);
-        $this->totalPriceIncVat = bcmul((string) $this->quantity, $this->priceIncVat, 2);
-        $this->totalWeight = bcmul((string)$this->quantity, (string) $this->weight, 3);
+        $this->setTotalPrice(bcmul((string) $this->quantity, $this->price, 2));
+        $this->setTotalPriceIncVat(bcmul((string) $this->quantity, $this->priceIncVat, 2));
+        $this->setTotalWeight(bcmul((string)$this->quantity, (string) $this->weight, 3));
     }
 
     public function getOutstandingQty(): int

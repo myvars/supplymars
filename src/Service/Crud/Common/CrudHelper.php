@@ -14,13 +14,13 @@ use Twig\Environment;
 
 class CrudHelper
 {
-    public const CRUD_BASE_TEMPLATE = 'crud/crud.html.twig';
+    public const string CRUD_BASE_TEMPLATE = 'crud/crud.html.twig';
 
-    public const MISSING_ENTITY_TEMPLATE = 'show_empty';
+    public const string MISSING_ENTITY_TEMPLATE = 'show_empty';
 
-    public const TURBO_STREAM_REFRESH_TEMPLATE = 'common/turboStreamRefresh.html.twig';
+    public const string TURBO_STREAM_REFRESH_TEMPLATE = 'common/turboStreamRefresh.html.twig';
 
-    public const REDIRECT_RESPONSE_STATUS = 303;
+    public const int REDIRECT_RESPONSE_STATUS = 303;
 
     public function __construct(
         private readonly RequestStack $requestStack,

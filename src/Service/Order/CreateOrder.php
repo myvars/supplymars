@@ -35,16 +35,14 @@ final readonly class CreateOrder implements CrudActionInterface
     public function fromDto(CreateOrderDto $dto): CustomerOrder
     {
         $customer = $this->getCustomer($dto->getCustomerId());
-        $billingAddress = $this->getBillingAddress($customer);
-        $shippingAddress = $this->getShippingAddress($customer);
         $vatRate = $this->getDefaultVatRate();
 
-        $customerOrder = (new CustomerOrder())
-            ->setCustomer($customer)
-            ->setCustomerOrderRef($dto->getCustomerOrderRef())
-            ->setBillingAddress($billingAddress)
-            ->setShippingAddress($shippingAddress)
-            ->setShippingDetailsFromShippingMethod($dto->getShippingMethod(), $vatRate);
+        $customerOrder = CustomerOrder::createFromCustomer(
+            $customer,
+            $dto->getShippingMethod(),
+            $vatRate,
+            $dto->getCustomerOrderRef()
+        );
 
         $errors = $this->validator->validate($customerOrder);
         if (count($errors) > 0) {
@@ -62,16 +60,6 @@ final readonly class CreateOrder implements CrudActionInterface
     private function getCustomer(int $id): User
     {
         return $this->entityManager->getRepository(User::class)->find($id);
-    }
-
-    private function getBillingAddress(User $customer): Address
-    {
-        return $this->entityManager->getRepository(Address::class)->findDefaultBillingAddress($customer);
-    }
-
-    private function getShippingAddress(User $customer): Address
-    {
-        return $this->entityManager->getRepository(Address::class)->findDefaultShippingAddress($customer);
     }
 
     private function getDefaultVatRate(): VatRate

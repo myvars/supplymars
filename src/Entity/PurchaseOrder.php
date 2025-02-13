@@ -27,46 +27,46 @@ class PurchaseOrder implements DomainEventProviderInterface
 
     #[ORM\ManyToOne(inversedBy: 'purchaseOrders')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?CustomerOrder $customerOrder = null;
+    private CustomerOrder $customerOrder;
 
     #[ORM\ManyToOne(inversedBy: 'purchaseOrders')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Supplier $supplier = null;
+    private Supplier $supplier;
 
     #[ORM\ManyToOne(inversedBy: 'purchaseOrders')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Address $shippingAddress = null;
+    private Address $shippingAddress;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $orderRef = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?ShippingMethod $shippingMethod = null;
+    #[ORM\Column(length: 255)]
+    private ShippingMethod $shippingMethod;
 
-    #[ORM\Column(nullable: true)]
-    private ?\DateTimeImmutable $dueDate = null;
+    #[ORM\Column]
+    private \DateTimeImmutable $dueDate;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    #[Assert\NotBlank(message: 'Please enter a shipping price')]
-    #[Assert\Range(notInRangeMessage: 'Please enter a shipping price (0 to 100000)', min: 0, max: 100000)]
     private string $shippingPrice = '0';
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
-    #[Assert\NotBlank(message: 'Please enter a shipping price inc VAT')]
-    #[Assert\Range(notInRangeMessage: 'Please enter a shipping price inc VAT (0 to 100000)', min: 0, max: 100000)]
     private string $shippingPriceIncVat = '0';
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Please enter a status')]
     private PurchaseOrderStatus $status;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Assert\Range(notInRangeMessage: 'Total price must be between {{ min }} and {{ max }}', min: 0, max: 10000000)]
     private string $totalPrice = '0';
 
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+    #[Assert\Range(
+        notInRangeMessage: 'Total price inc VAT must be between {{ min }} and {{ max }}', min: 0, max: 10000000
+    )]
     private string $totalPriceIncVat = '0';
 
     #[ORM\Column]
+    #[Assert\Range(notInRangeMessage: 'Total weight must be between {{ min }} and {{ max }}', min: 0, max: 100000000)]
     private int $totalWeight = 0;
 
     /**
@@ -76,7 +76,7 @@ class PurchaseOrder implements DomainEventProviderInterface
     #[ORM\OrderBy(['id' => 'ASC'])]
     private Collection $purchaseOrderItems;
 
-    public function __construct()
+    private function __construct()
     {
         $this->status = PurchaseOrderStatus::getDefault();
         $this->purchaseOrderItems = new ArrayCollection();
@@ -90,7 +90,6 @@ class PurchaseOrder implements DomainEventProviderInterface
 
     public function getCustomerOrder(): ?CustomerOrder
     {
-
         return $this->customerOrder;
     }
 
@@ -101,19 +100,19 @@ class PurchaseOrder implements DomainEventProviderInterface
         return $this;
     }
 
-    public function getSupplier(): ?Supplier
+    public function getSupplier(): Supplier
     {
         return $this->supplier;
     }
 
-    public function setSupplier(?Supplier $supplier): static
+    public function setSupplier(Supplier $supplier): static
     {
         $this->supplier = $supplier;
 
         return $this;
     }
 
-    public function getShippingAddress(): ?Address
+    public function getShippingAddress(): Address
     {
         return $this->shippingAddress;
     }
@@ -137,24 +136,24 @@ class PurchaseOrder implements DomainEventProviderInterface
         return $this;
     }
 
-    public function getShippingMethod(): ?ShippingMethod
+    public function getShippingMethod(): ShippingMethod
     {
         return $this->shippingMethod;
     }
 
-    private function setShippingMethod(?ShippingMethod $shippingMethod): static
+    private function setShippingMethod(ShippingMethod $shippingMethod): static
     {
         $this->shippingMethod = $shippingMethod;
 
         return $this;
     }
 
-    public function getDueDate(): ?\DateTimeImmutable
+    public function getDueDate(): \DateTimeImmutable
     {
         return $this->dueDate;
     }
 
-    private function setDueDate(?\DateTimeImmutable $dueDate): static
+    private function setDueDate(\DateTimeImmutable $dueDate): static
     {
         $this->dueDate = $dueDate;
 
@@ -205,14 +204,35 @@ class PurchaseOrder implements DomainEventProviderInterface
         return $this->totalPrice;
     }
 
+    private function setTotalPrice(string $totalPrice): static
+    {
+        $this->totalPrice = $totalPrice;
+
+        return $this;
+    }
+
     public function getTotalPriceIncVat(): string
     {
         return $this->totalPriceIncVat;
     }
 
+    private function setTotalPriceIncVat(string $totalPriceIncVat): static
+    {
+        $this->totalPriceIncVat = $totalPriceIncVat;
+
+        return $this;
+    }
+
     public function getTotalWeight(): int
     {
         return $this->totalWeight;
+    }
+
+    private function setTotalWeight(int $totalWeight): static
+    {
+        $this->totalWeight = $totalWeight;
+
+        return $this;
     }
 
     /**
@@ -242,7 +262,7 @@ class PurchaseOrder implements DomainEventProviderInterface
             $this->purchaseOrderItems->removeElement($purchaseOrderItem)
             && $purchaseOrderItem->getPurchaseOrder() === $this
         ) {
-            $purchaseOrderItem->setPurchaseOrder(null);
+
         }
 
         $this->recalculateTotal();
@@ -250,18 +270,27 @@ class PurchaseOrder implements DomainEventProviderInterface
         return $this;
     }
 
-    public function setShippingDetailsFromShippingMethod(ShippingMethod $shippingMethod, VatRate $vatRate): static
-    {
-        $this->setShippingMethod($shippingMethod);
-        $this->setShippingPrice($shippingMethod->getPrice());
-        $this->setShippingPriceIncVat($shippingMethod->getPriceIncVat($vatRate));
-        $this->setDueDate($shippingMethod->getDueDate());
-        $this->recalculateTotal();
+    public static function createFromOrder(
+        CustomerOrder $customerOrder,
+        Supplier $supplier,
+    ): static {
+        $purchaseOrder =  (new static())
+            ->setCustomerOrder($customerOrder)
+            ->setShippingAddress($customerOrder->getShippingAddress())
+            ->setShippingMethod($customerOrder->getShippingMethod())
+            ->setDueDate($customerOrder->getShippingMethod()->getDueDate())
+            ->setShippingPrice($customerOrder->getShippingMethod()->getPrice())
+            ->setShippingPriceIncVat($customerOrder->getShippingMethod()->getPrice())
+            ->setOrderRef($customerOrder->getCustomerOrderRef())
+            ->setSupplier($supplier);
 
-        return $this;
+        $purchaseOrder->getCustomerOrder()->addPurchaseOrder($purchaseOrder);
+        $purchaseOrder->recalculateTotal();
+
+        return $purchaseOrder;
     }
 
-    public function recalculateTotal(): static
+    public function recalculateTotal(): void
     {
         $totalPrice = 0;
         $totalPriceIncVat = 0;
@@ -276,48 +305,9 @@ class PurchaseOrder implements DomainEventProviderInterface
         $totalPrice += (float) $this->shippingPrice;
         $totalPriceIncVat += (float) $this->shippingPriceIncVat;
 
-        $this->totalPrice = (string) $totalPrice;
-        $this->totalPriceIncVat = (string) $totalPriceIncVat;
-        $this->totalWeight = $totalWeight;
-
-        return $this;
-    }
-
-    public function allowEdit(): bool
-    {
-        return $this->status->allowEdit();
-    }
-
-    public function getLineCount(): int
-    {
-        return $this->purchaseOrderItems->count();
-    }
-
-    public function getItemCount(): int
-    {
-        $count = 0;
-        foreach ($this->purchaseOrderItems as $item) {
-            $count += $item->getQuantity();
-        }
-
-        return $count;
-
-    }
-
-    public static function createFromOrder(
-        CustomerOrder $customerOrder,
-        Supplier $supplier,
-    ): static {
-        return (new static())
-            ->setCustomerOrder($customerOrder)
-            ->setSupplier($supplier)
-            ->setShippingAddress($customerOrder->getShippingAddress())
-            ->setShippingMethod($customerOrder->getShippingMethod())
-            ->setDueDate($customerOrder->getShippingMethod()->getDueDate())
-            ->setShippingPrice($customerOrder->getShippingMethod()->getPrice())
-            ->setShippingPriceIncVat($customerOrder->getShippingMethod()->getPrice())
-            ->setOrderRef($customerOrder->getCustomerOrderRef())
-            ->recalculateTotal();
+        $this->setTotalPrice((string) $totalPrice);
+        $this->setTotalPriceIncVat((string) $totalPriceIncVat);
+        $this->setTotalWeight($totalWeight);
     }
 
     public function generateStatus(): void
@@ -347,5 +337,25 @@ class PurchaseOrder implements DomainEventProviderInterface
         }
 
         $this->setStatus($status);
+    }
+
+    public function allowEdit(): bool
+    {
+        return $this->status->allowEdit();
+    }
+
+    public function getLineCount(): int
+    {
+        return $this->purchaseOrderItems->count();
+    }
+
+    public function getItemCount(): int
+    {
+        $count = 0;
+        foreach ($this->purchaseOrderItems as $item) {
+            $count += $item->getQuantity();
+        }
+
+        return $count;
     }
 }

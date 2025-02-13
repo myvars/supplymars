@@ -6,13 +6,13 @@ use App\Enum\SalesDuration;
 
 final class OverdueOrderSearchDto extends SearchDto
 {
-    public const SORT_DEFAULT = 'dueDate';
+    public const string SORT_DEFAULT = 'dueDate';
 
-    public const SORT_OPTIONS = ['id', 'dueDate', 'customer.fullName', 'totalPrice', 'status'];
+    public const array SORT_OPTIONS = ['id', 'dueDate', 'customer.fullName', 'totalPrice', 'status'];
 
-    public const SORT_DIRECTION_DEFAULT = 'ASC';
+    public const string SORT_DIRECTION_DEFAULT = 'ASC';
 
-    public const LIMIT_DEFAULT = 10;
+    public const int LIMIT_DEFAULT = 10;
 
     private SalesDuration $duration = SalesDuration::LAST_30;
 

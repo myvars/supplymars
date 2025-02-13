@@ -24,6 +24,8 @@ class CrudOptions
 
     private ?string $successLink = null;
 
+    private ?string $safetyLink = null;
+
     private ?string $backLink = null;
 
     private bool $isUrlRefresh = false;
@@ -139,6 +141,18 @@ class CrudOptions
         return $this;
     }
 
+    public function getSafetyLink(): ?string
+    {
+        return $this->safetyLink;
+    }
+
+    public function setSafetyLink(?string $safetyLink): static
+    {
+        $this->safetyLink = $safetyLink;
+
+        return $this;
+    }
+
     public function getBackLink(): ?string
     {
         return $this->backLink;
@@ -173,6 +187,15 @@ class CrudOptions
         $this->allowDelete = $allowDelete;
 
         return $this;
+    }
+
+    public function useSafetyLink(): void
+    {
+        if ($this->safetyLink === null) {
+            return;
+        }
+
+        $this->setSuccessLink($this->safetyLink);
     }
 
     public static function create(): static

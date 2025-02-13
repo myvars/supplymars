@@ -24,7 +24,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 class SubcategoryController extends AbstractController
 {
-    public const SECTION = 'Subcategory';
+    public const string SECTION = 'Subcategory';
 
     #[Route('/', name: 'app_subcategory_index', methods: ['GET'])]
     public function index(

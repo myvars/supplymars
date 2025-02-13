@@ -10,7 +10,7 @@ use Symfony\UX\Chartjs\Model\Chart;
 
 class DoughnutChartBuilder
 {
-    private const CHART_TYPE = Chart::TYPE_DOUGHNUT;
+    private const string CHART_TYPE = Chart::TYPE_DOUGHNUT;
 
     public function __construct(private readonly ChartBuilderInterface $chartBuilder)
     {

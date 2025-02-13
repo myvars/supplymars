@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 final class ProductSalesReportDto
 {
-    public const LIMIT_DEFAULT = 10;
+    public const int LIMIT_DEFAULT = 10;
 
     private string $sortDirection = 'desc';
 

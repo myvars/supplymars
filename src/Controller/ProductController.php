@@ -24,7 +24,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 class ProductController extends AbstractController
 {
-    public const SECTION = 'Product';
+    public const string SECTION = 'Product';
 
     #[Route('/', name: 'app_product_index', methods: ['GET'])]
     public function index(

@@ -20,11 +20,11 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class updateSupplierStockCommand extends Command
 {
-    public const COST_VARIANCE_PERCENT = 10;
+    public const int COST_VARIANCE_PERCENT = 10;
 
-    public const STOCK_VARIANCE_PERCENT = 10;
+    public const int STOCK_VARIANCE_PERCENT = 10;
 
-    public const STOCK_REPLENISH_LEVEL = 20;
+    public const int STOCK_REPLENISH_LEVEL = 20;
 
     public function __construct(
         private readonly SupplierUtility $supplierUtility,

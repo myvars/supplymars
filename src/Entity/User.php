@@ -344,4 +344,24 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
 
         return $this;
     }
+
+    public function getBillingAddress(): ?Address
+    {
+        foreach ($this->addresses as $address) {
+            if ($address->isDefaultBillingAddress()) {
+                return $address;
+            }
+        }
+        return null;
+    }
+
+    public function getShippingAddress(): ?Address
+    {
+        foreach ($this->addresses as $address) {
+            if ($address->isDefaultShippingAddress()) {
+                return $address;
+            }
+        }
+        return null;
+    }
 }
