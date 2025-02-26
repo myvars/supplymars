@@ -35,12 +35,12 @@ class VatRatePriceUpdater
 
     public function postUpdate(VatRate $vatRate): void
     {
-        if ($this->changedProducts === []) {
+        if ([] === $this->changedProducts) {
             return;
         }
 
         $this->productPriceCalculator->recalculatePriceFromArray($this->changedProducts);
-        unset($this->changedProducts);
+        $this->changedProducts = [];
     }
 
     public function setChangedProduct(Product $product): void

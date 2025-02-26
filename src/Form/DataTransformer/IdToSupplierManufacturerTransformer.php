@@ -16,7 +16,6 @@ readonly class IdToSupplierManufacturerTransformer implements DataTransformerInt
     /**
      * Transforms a string (id) to an object (SupplierManufacturer).
      *
-     *
      * @throws TransformationFailedException if object (SupplierManufacturer) is not found
      */
     public function transform(mixed $value): ?SupplierManufacturer
@@ -28,9 +27,7 @@ readonly class IdToSupplierManufacturerTransformer implements DataTransformerInt
         $supplierManufacturer = $this->entityManager->getRepository(SupplierManufacturer::class)->find($value);
 
         if (null === $supplierManufacturer) {
-            throw new TransformationFailedException(
-                sprintf('A supplier manufacturer with Id "%s" does not exist!', $value)
-            );
+            throw new TransformationFailedException(sprintf('A supplier manufacturer with Id "%s" does not exist!', $value));
         }
 
         return $supplierManufacturer;

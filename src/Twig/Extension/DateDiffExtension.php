@@ -8,6 +8,7 @@ use Twig\TwigFilter;
 
 class DateDiffExtension extends AbstractExtension
 {
+    #[\Override]
     public function getFilters(): array
     {
         return [

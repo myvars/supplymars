@@ -27,15 +27,42 @@ class CategoryControllerTest extends WebTestCase
             ->assertSee('3 results');
     }
 
+    public function testCategorySecurity(): void
+    {
+        $this->browser()
+            ->get('/category/')
+            ->assertOn('/login');
+    }
+
+    public function testFilterCategory(): void
+    {
+        CategoryFactory::createMany(3);
+        CategoryFactory::createOne(['priceModel' => PriceModel::PRETTY_99]);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->staff()->create())
+            ->get('/category/')
+            ->assertSuccessful()
+            ->assertSee('Category Search')
+            ->assertSee('4 results')
+            ->get('/category/search/filter')
+            ->assertSuccessful()
+            ->fillField('category_search_filter[priceModel]', PriceModel::PRETTY_99->value)
+            ->click('Update Filter')
+            ->assertOn('/category/?priceModel=pretty_99&filter=on')
+            ->assertSee('Category Search')
+            ->assertSee('1 result');
+    }
+
     public function testShowCategory(): void
     {
-        $category = CategoryFactory::createone(['name' => 'Category to be shown']);
+        $category = CategoryFactory::createone(['name' => 'Test Category']);
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
             ->get("/category/" . $category->getId())
             ->assertSuccessful()
-            ->assertSee('Category to be shown');
+            ->assertSee('Test Category');
     }
 
     public function testNewCategory(): void
@@ -140,6 +167,6 @@ class CategoryControllerTest extends WebTestCase
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
             ->get("/category/999")
-            ->assertStatus(404);
+            ->assertSee("Category not found!");
     }
 }

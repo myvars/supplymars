@@ -10,7 +10,6 @@ use App\Repository\ProductSalesRepository;
 use App\Repository\ProductSalesSummaryRepository;
 use App\Repository\PurchaseOrderRepository;
 use App\ValueObject\ProductSalesType;
-use DateTime;
 
 final readonly class DashboardViewer
 {
@@ -58,7 +57,7 @@ final readonly class DashboardViewer
     private function getOverdueOrderSummary(): ?array
     {
         $summary = $this->orderRepository->findOverdueOrdersSummary(
-            new DateTime(SalesDuration::LAST_30->getStartDate())
+            new \DateTime(SalesDuration::LAST_30->getStartDate())
         );
 
         return $summary ?? [];
@@ -67,7 +66,7 @@ final readonly class DashboardViewer
     private function getRejectedPoSummary(): ?array
     {
         $summary = $this->purchaseOrderRepository->findRejectedPoSummary(
-            new DateTime(SalesDuration::LAST_30->getStartDate())
+            new \DateTime(SalesDuration::LAST_30->getStartDate())
         );
 
         return $summary ?? [];
@@ -84,7 +83,7 @@ final readonly class DashboardViewer
     private function getLatestOrders(): ?array
     {
         return $this->orderRepository->findLatestOrders(
-            new DateTime(SalesDuration::TODAY->getStartDate()),
+            new \DateTime(SalesDuration::TODAY->getStartDate()),
             5
         );
     }

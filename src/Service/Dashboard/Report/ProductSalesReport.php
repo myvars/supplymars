@@ -41,19 +41,19 @@ final readonly class ProductSalesReport implements ReportInterface
 
     private function getSales(): ?array
     {
-        if ($this->dto->getProductId() !== null) {
+        if (null !== $this->dto->getProductId()) {
             return null;
         }
 
         $sales = $this->salesRepository->findProductSalesByDto($this->dto);
 
-        return $sales === [] ? null : $sales;
+        return [] === $sales ? null : $sales;
     }
 
     private function getSummary(): ?array
     {
         $singleSalesType = $this->dto->getSingleSalesType();
-        if ($singleSalesType === null) {
+        if (null === $singleSalesType) {
             return null;
         }
 
@@ -69,12 +69,12 @@ final readonly class ProductSalesReport implements ReportInterface
     private function getProductSalesChart(): ?Chart
     {
         $singleSalesType = $this->dto->getSingleSalesType();
-        if ($singleSalesType === null) {
+        if (null === $singleSalesType) {
             return null;
         }
 
         $salesData = $this->getSalesData($singleSalesType['salesTypeId'], $singleSalesType['salesType']);
-        if ($salesData === []) {
+        if ([] === $salesData) {
             return null;
         }
 
@@ -85,7 +85,7 @@ final readonly class ProductSalesReport implements ReportInterface
     {
         $salesRangeDuration = $this->barChartBuilder::getSalesRangeDuration($this->dto->getDuration());
 
-        if ($salesType === SalesType::PRODUCT && $salesRangeDuration === SalesDuration::DAY) {
+        if (SalesType::PRODUCT === $salesType && SalesDuration::DAY === $salesRangeDuration) {
             return $this->salesRepository->findProductSalesRange(
                 $salesTypeId,
                 $this->dto->getDuration()->getStartDate(),

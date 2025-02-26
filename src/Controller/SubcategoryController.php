@@ -20,28 +20,27 @@ use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/subcategory')]
 #[IsGranted('ROLE_ADMIN')]
 class SubcategoryController extends AbstractController
 {
     public const string SECTION = 'Subcategory';
 
-    #[Route('/', name: 'app_subcategory_index', methods: ['GET'])]
+    #[Route(path: '/subcategory/', name: 'app_subcategory_index', methods: ['GET'])]
     public function index(
         Request $request,
         CrudSearcher $handler,
         SubcategoryRepository $repository,
-        #[MapQueryString] SubcategorySearchDto $dto = new SubcategorySearchDto()
+        #[MapQueryString] SubcategorySearchDto $dto = new SubcategorySearchDto(),
     ): Response {
         return $handler->search(self::SECTION, $dto, $repository, $request->query->all());
     }
 
-    #[Route('/search/filter', name: 'app_subcategory_search_filter', methods: ['GET', 'POST'])]
+    #[Route(path: '/subcategory/search/filter', name: 'app_subcategory_search_filter', methods: ['GET', 'POST'])]
     public function searchFilter(
         Request $request,
         CrudUpdater $handler,
         SearchFilter $action,
-        #[MapQueryString] SubcategorySearchDto $dto = new SubcategorySearchDto()
+        #[MapQueryString] SubcategorySearchDto $dto = new SubcategorySearchDto(),
     ): Response {
         $dto->setQueryString($request->getQueryString());
         $form = $this->createForm(SubcategorySearchFilterType::class, $dto, [
@@ -60,40 +59,40 @@ class SubcategoryController extends AbstractController
         );
     }
 
-    #[Route('/new', name: 'app_subcategory_new', methods: ['GET', 'POST'])]
+    #[Route(path: '/subcategory/new', name: 'app_subcategory_new', methods: ['GET', 'POST'])]
     public function new(CrudCreator $handler): Response
     {
         return $handler->create(self::SECTION, new Subcategory(), SubcategoryType::class);
     }
 
-    #[Route('/{id}', name: 'app_subcategory_show', methods: ['GET'])]
+    #[Route(path: '/subcategory/{id}', name: 'app_subcategory_show', methods: ['GET'])]
     public function show(
         Subcategory $subcategory,
-        CrudReader $handler
+        CrudReader $handler,
     ): Response {
         return $handler->read(self::SECTION, $subcategory);
     }
 
-    #[Route('/{id}/edit', name: 'app_subcategory_edit', methods: ['GET', 'POST'])]
+    #[Route(path: '/subcategory/{id}/edit', name: 'app_subcategory_edit', methods: ['GET', 'POST'])]
     public function edit(
         Subcategory $subcategory,
-        CrudUpdater $handler
-    ): Response{
+        CrudUpdater $handler,
+    ): Response {
         return $handler->update(self::SECTION, $subcategory, SubcategoryType::class);
     }
 
-    #[Route('/{id}/delete/confirm', name: 'app_subcategory_delete_confirm', methods: ['GET'])]
+    #[Route(path: '/subcategory/{id}/delete/confirm', name: 'app_subcategory_delete_confirm', methods: ['GET'])]
     public function deleteConfirm(
-        Subcategory $subcategory,
-        CrudDeleter $handler
+        ?Subcategory $subcategory,
+        CrudDeleter $handler,
     ): Response {
         return $handler->deleteConfirm(self::SECTION, $subcategory);
     }
 
-    #[Route('/{id}/delete', name: 'app_subcategory_delete', methods: ['POST'])]
+    #[Route(path: '/subcategory/{id}/delete', name: 'app_subcategory_delete', methods: ['POST'])]
     public function delete(
         Subcategory $subcategory,
-        CrudDeleter $handler
+        CrudDeleter $handler,
     ): Response {
         return $handler->delete(self::SECTION, $subcategory);
     }

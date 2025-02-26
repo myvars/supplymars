@@ -10,7 +10,7 @@ class ProductSalesType
     private function __construct(
         private readonly SalesType $salesType,
         private readonly SalesDuration $duration,
-        private readonly bool $rebuildRange
+        private readonly bool $rebuildRange,
     ) {
     }
 

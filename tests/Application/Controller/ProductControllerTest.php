@@ -35,8 +35,36 @@ class ProductControllerTest extends WebTestCase
             ->actingAs(UserFactory::new()->staff()->create())
             ->get('/product/?page=2')
             ->assertSuccessful()
+            ->assertOn('/product/?page=1')
             ->assertSee('Product Search')
             ->assertSee('Page 2 not found');
+    }
+
+    public function testProductSecurity(): void
+    {
+        $this->browser()
+            ->get('/product/')
+            ->assertOn('/login');
+    }
+
+    public function testFilterCategory(): void
+    {
+        ProductFactory::createMany(3);
+        ProductFactory::createOne(['mfrPartNumber' => 'TEST-0001']);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->staff()->create())
+            ->get('/product/')
+            ->assertSuccessful()
+            ->assertSee('Product Search')
+            ->assertSee('4 results')
+            ->get('/product/search/filter')
+            ->assertSuccessful()
+            ->fillField('product_search_filter[mfrPartNumber]', 'TEST-0001')
+            ->click('Update Filter')
+            ->assertOn('/product/?mfrPartNumber=TEST-0001&filter=on')
+            ->assertSee('Product Search')
+            ->assertSee('1 result');
     }
 
     public function testShowProduct(): void
@@ -54,20 +82,21 @@ class ProductControllerTest extends WebTestCase
     {
         $subcategory = SubcategoryFactory::createOne(['name' => 'Test Subcategory']);
         $manufacturer = ManufacturerFactory::createOne(['name' => 'Test Manufacturer']);
-$owner = UserFactory::new()->staff()->create();
+        $owner = UserFactory::new()->staff()->create();
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
             ->get('/product/new')
             ->assertSuccessful()
             ->fillField('product[name]','Test Product')
+            ->fillField('product[description]','Test Product Description')
             ->fillField('product[category]', $subcategory->getCategory()->getId())
             ->click('Create Product')
             ->fillField('product[subcategory]', $subcategory->getId())
             ->fillField('product[manufacturer]', $manufacturer->getId())
-            ->fillField('product[owner]', $owner->getId())
-            ->fillField('product[cost]','500')
             ->fillField('product[mfrPartNumber]','12345')
+            ->fillField('product[cost]','500')
+            ->fillField('product[owner]', $owner->getId())
             ->click('Create Product')
             ->assertOn('/product/')
             ->assertSee('Test Product');
@@ -163,6 +192,6 @@ $owner = UserFactory::new()->staff()->create();
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
             ->get("/product/999")
-            ->assertStatus(404);
+            ->assertSee("Product not found!");
     }
 }

@@ -27,6 +27,33 @@ class SubcategoryControllerTest extends WebTestCase
             ->assertSee('3 results');
     }
 
+    public function testSubcategorySecurity(): void
+    {
+        $this->browser()
+            ->get('/subcategory/')
+            ->assertOn('/login');
+    }
+
+    public function testFilterSubcategory(): void
+    {
+        SubcategoryFactory::createMany(3);
+        SubcategoryFactory::createOne(['priceModel' => PriceModel::PRETTY_99]);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->staff()->create())
+            ->get('/subcategory/')
+            ->assertSuccessful()
+            ->assertSee('Subcategory Search')
+            ->assertSee('4 results')
+            ->get('/subcategory/search/filter')
+            ->assertSuccessful()
+            ->fillField('subcategory_search_filter[priceModel]', PriceModel::PRETTY_99->value)
+            ->click('Update Filter')
+            ->assertOn('/subcategory/?priceModel=pretty_99&filter=on')
+            ->assertSee('Subcategory Search')
+            ->assertSee('1 result');
+    }
+
     public function testShowSubcategory(): void
     {
         $subcategory = SubcategoryFactory::createOne(['name' => 'Test Subcategory']);
@@ -41,7 +68,7 @@ class SubcategoryControllerTest extends WebTestCase
     public function testNewSubcategory(): void
     {
         $category = CategoryFactory::createOne(['name' => 'Test Category']);
-$owner = UserFactory::new()->staff()->create();
+        $owner = UserFactory::new()->staff()->create();
         $priceModel = PriceModel::DEFAULT;
 
         $this->browser()

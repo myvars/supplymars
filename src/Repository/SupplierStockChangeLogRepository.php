@@ -2,7 +2,6 @@
 
 namespace App\Repository;
 
-use App\Entity\StatusChangeLog;
 use App\Entity\SupplierStockChangeLog;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -14,7 +13,7 @@ class SupplierStockChangeLogRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, StatusChangeLog::class);
+        parent::__construct($registry, SupplierStockChangeLog::class);
     }
 
     //    /**

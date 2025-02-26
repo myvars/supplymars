@@ -38,7 +38,7 @@ class SupplierProductStockUpdater
 
     public function postUpdate(SupplierProduct $supplierProduct): void
     {
-        if ($this->changedSupplierProducts === []) {
+        if ([] === $this->changedSupplierProducts) {
             unset($this->changedProducts);
 
             return;
@@ -59,10 +59,10 @@ class SupplierProductStockUpdater
 
         if ($this->changedProducts) {
             $this->activeSourceCalculator->recalculateActiveSourceFromArray($this->changedProducts);
-            unset($this->changedProducts);
+            $this->changedProducts = [];
         }
 
-        unset($this->changedSupplierProducts);
+        $this->changedSupplierProducts = [];
     }
 
     public function setChangedSupplierProduct(SupplierProduct $supplierProduct): void

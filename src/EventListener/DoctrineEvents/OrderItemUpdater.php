@@ -30,7 +30,7 @@ class OrderItemUpdater
 
     public function postUpdate(CustomerOrderItem $customerOrderItem): void
     {
-        if ($this->changedCustomerOrders === []) {
+        if ([] === $this->changedCustomerOrders) {
             return;
         }
 
@@ -38,11 +38,16 @@ class OrderItemUpdater
             $customerOrder->recalculateTotal();
         }
 
-        unset($this->changedCustomerOrders);
+        $this->changedCustomerOrders = [];
     }
 
     public function setChangedCustomerOrders(CustomerOrder $customerOrder): void
     {
         $this->changedCustomerOrders[$customerOrder->getId()] = $customerOrder;
+    }
+
+    public function getChangedCustomerOrders(): array
+    {
+        return $this->changedCustomerOrders;
     }
 }

@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: StatusChangeLogRepository::class)]
-#[ORM\Index(columns: ["event_type_id", "event_type", "status"])]
+#[ORM\Index(columns: ['event_type_id', 'event_type', 'status'])]
 class StatusChangeLog
 {
     #[ORM\Id]
@@ -19,18 +19,22 @@ class StatusChangeLog
     public function __construct(
         #[ORM\Column(length: 255)]
         private readonly DomainEventType $eventType,
+
         #[ORM\Column]
         #[Assert\Positive(message: 'Please enter a positive event type Id')]
         private readonly int $eventTypeId,
+
         #[ORM\Column(length: 255)]
         #[Assert\NotBlank(message: 'Please enter a status')]
         #[Assert\Length(max: 255, maxMessage: 'Status must be less than {{ limit }} characters')]
         private readonly string $status,
+
         #[ORM\ManyToOne(inversedBy: 'statusChangeLogs')]
         #[ORM\JoinColumn(nullable: false)]
         private User $user,
+
         #[ORM\Column]
-        private readonly \DateTimeImmutable $eventTimestamp
+        private readonly \DateTimeImmutable $eventTimestamp,
     ) {
     }
 

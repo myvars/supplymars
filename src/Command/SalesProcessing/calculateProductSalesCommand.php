@@ -3,7 +3,6 @@
 namespace App\Command\SalesProcessing;
 
 use App\Service\Sales\ProductSalesCalculator;
-use DateTime;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -35,21 +34,21 @@ class calculateProductSalesCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $dayCount = (int)$input->getArgument('dayCount');
-        $dayOffset = (int)$input->getArgument('dayOffset') ?: 0;
+        $dayCount = (int) $input->getArgument('dayCount');
+        $dayOffset = (int) $input->getArgument('dayOffset') ?: 0;
 
-        $io->info(sprintf("Calculating sales data for %d days, starting %d days ago", $dayCount, $dayOffset));
+        $io->info(sprintf('Calculating sales data for %d days, starting %d days ago', $dayCount, $dayOffset));
 
-        for ($day = 0; $day < $dayCount; $day++) {
-            $startDate = (new DateTime('-' . ($day + $dayOffset) . ' day'))->format(self::DATE_FORMAT);
-            $io->note(sprintf("Processing sales for %s", $startDate));
+        for ($day = 0; $day < $dayCount; ++$day) {
+            $startDate = (new \DateTime('-'.($day + $dayOffset).' day'))->format(self::DATE_FORMAT);
+            $io->note(sprintf('Processing sales for %s', $startDate));
 
             $this->productSalesCalculator->process($startDate);
         }
 
-        $io->success(sprintf("Processed sales data for %d days", $dayCount));
+        $io->success(sprintf('Processed sales data for %d days', $dayCount));
 
-        if ($dayOffset === 0) {
+        if (0 === $dayOffset) {
             $this->runTheProductSalesSummaryCommand($output);
         }
 

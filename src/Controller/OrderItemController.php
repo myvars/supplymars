@@ -21,27 +21,26 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/order')]
 #[IsGranted('ROLE_ADMIN')]
 class OrderItemController extends AbstractController
 {
     public const string SECTION = 'Order Item';
 
-    #[Route('/', name: 'app_order_item_index', methods: ['GET'])]
+    #[Route(path: '/order/', name: 'app_order_item_index', methods: ['GET'])]
     public function index(): Response
     {
         return $this->redirectToRoute('app_order_index');
     }
 
-    #[Route('/item/{id}', name: 'app_order_item_show', methods: ['GET'])]
+    #[Route(path: '/order/item/{id}', name: 'app_order_item_show', methods: ['GET'])]
     public function show(
         CustomerOrderItem $customerOrderItem,
-        CrudReader $handler
+        CrudReader $handler,
     ): Response {
         return $handler->read(self::SECTION, $customerOrderItem);
     }
 
-    #[Route('/{id}/item/new', name: 'app_order_item_new', methods: ['GET', 'POST'])]
+    #[Route(path: '/order/{id}/item/new', name: 'app_order_item_new', methods: ['GET', 'POST'])]
     public function new(
         CustomerOrder $customerOrder,
         CrudCreator $handler,
@@ -64,7 +63,7 @@ class OrderItemController extends AbstractController
         );
     }
 
-    #[Route('/item/{id}/edit', name: 'app_order_item_edit', methods: ['GET', 'POST'])]
+    #[Route(path: '/order/item/{id}/edit', name: 'app_order_item_edit', methods: ['GET', 'POST'])]
     public function edit(
         CustomerOrderItem $orderItem,
         CrudUpdater $handler,
@@ -87,7 +86,8 @@ class OrderItemController extends AbstractController
         );
     }
 
-    #[Route('/item/{id}/supplier/product/{supplierProductId}/po/add',
+    #[Route(
+        path: '/order/item/{id}/supplier/product/{supplierProductId}/po/add',
         name: 'app_purchase_order_item_add',
         methods: ['GET']
     )]
@@ -106,13 +106,13 @@ class OrderItemController extends AbstractController
                 ->setErrorFlash('PO item could not be added')
                 ->setSuccessLink(
                     $this->generateUrl('app_order_show', [
-                        'id' => $customerOrderItem->getCustomerOrder()->getId()
+                        'id' => $customerOrderItem->getCustomerOrder()->getId(),
                     ])
                 )
         );
     }
 
-    #[Route('/item/{id}/cancel', name: 'app_order_item_cancel', methods: ['GET'])]
+    #[Route(path: '/order/item/{id}/cancel', name: 'app_order_item_cancel', methods: ['GET'])]
     public function cancel(
         CustomerOrderItem $customerOrderItem,
         CrudHandler $handler,

@@ -12,7 +12,7 @@ class ManufacturerMapper
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly ValidatorInterface $validator
+        private readonly ValidatorInterface $validator,
     ) {
     }
 
@@ -36,7 +36,7 @@ class ManufacturerMapper
 
         $errors = $this->validator->validate($manufacturer);
         if (count($errors) > 0) {
-            throw new \InvalidArgumentException((string)$errors);
+            throw new \InvalidArgumentException((string) $errors);
         }
 
         $this->entityManager->persist($manufacturer);
@@ -54,13 +54,14 @@ class ManufacturerMapper
 
     private function mapManufacturerToSupplier(
         SupplierManufacturer $supplierManufacturer,
-        Manufacturer $manufacturer
+        Manufacturer $manufacturer,
     ): void {
         if ($supplierManufacturer->getMappedManufacturer() instanceof Manufacturer) {
             return;
         }
 
         $manufacturer->addSupplierManufacturer($supplierManufacturer);
+
         $this->entityManager->persist($supplierManufacturer);
         $this->entityManager->flush();
     }

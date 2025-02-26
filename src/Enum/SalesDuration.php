@@ -2,8 +2,6 @@
 
 namespace App\Enum;
 
-use DateTime;
-
 enum SalesDuration: string
 {
     case TODAY = 'today';
@@ -27,7 +25,7 @@ enum SalesDuration: string
 
     public function getStartDate(bool $rebuildRange = false): string
     {
-        $now = new DateTime();
+        $now = new \DateTime();
 
         return match ($this) {
             self::TODAY => $now->format('Y-m-d'),
@@ -47,8 +45,8 @@ enum SalesDuration: string
     public function getEndDate(): string
     {
         return match ($this) {
-            self::WEEK_AGO => (new DateTime())->modify('-7 days')->format('Y-m-d H:i:s'),
-            default => (new DateTime('+1 day'))->format('Y-m-d'),
+            self::WEEK_AGO => (new \DateTime())->modify('-7 days')->format('Y-m-d H:i:s'),
+            default => (new \DateTime('+1 day'))->format('Y-m-d'),
         };
     }
 

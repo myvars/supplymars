@@ -14,24 +14,22 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/product')]
 #[IsGranted('ROLE_ADMIN')]
 class ProductImageController extends AbstractController
 {
-    #[Route('/{id}/images', name: 'app_product_images', methods: ['GET'])]
+    #[Route(path: '/product/{id}/images', name: 'app_product_images', methods: ['GET'])]
     public function showProductImages(Product $product): Response
     {
         return $this->render('product/images.html.twig', ['result' => $product]);
     }
 
-    #[Route('/{id}/images/create', name: 'app_product_image_create', methods: ['POST'])]
+    #[Route(path: '/product/{id}/images/create', name: 'app_product_image_create', methods: ['POST'])]
     public function create(
         Request $request,
         Product $product,
         CrudHandler $handler,
-        ProductImageCreator $action
-    ): Response
-    {
+        ProductImageCreator $action,
+    ): Response {
         $response = $handler->build(
             $handler->setDefaults()
                 ->setEntity($product)
@@ -51,13 +49,12 @@ class ProductImageController extends AbstractController
         return $response;
     }
 
-    #[Route('/images/{id}/remove', name: 'app_product_image_remove', methods: ['GET'])]
+    #[Route(path: '/product/images/{id}/remove', name: 'app_product_image_remove', methods: ['GET'])]
     public function remove(
         ProductImage $productImage,
         CrudHandler $handler,
         CrudDeleteAction $action,
-    ): Response
-    {
+    ): Response {
         return $handler->build(
             $handler->setDefaults()
                 ->setEntity($productImage)
@@ -70,12 +67,12 @@ class ProductImageController extends AbstractController
         );
     }
 
-    #[Route('/{id}/images/reorder', name: 'app_product_image_reorder', methods: ['POST'])]
+    #[Route(path: '/product/{id}/images/reorder', name: 'app_product_image_reorder', methods: ['POST'])]
     public function reorder(
         Request $request,
         Product $product,
         CrudHandler $handler,
-        ProductImageOrderer $action
+        ProductImageOrderer $action,
     ): Response {
         $orderedIds = json_decode($request->getContent(), true);
         if (null === $orderedIds) {

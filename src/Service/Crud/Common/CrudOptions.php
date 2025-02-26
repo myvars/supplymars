@@ -32,7 +32,6 @@ class CrudOptions
 
     private bool $allowDelete = false;
 
-
     public function getTemplate(): ?string
     {
         return $this->template;
@@ -191,7 +190,7 @@ class CrudOptions
 
     public function useSafetyLink(): void
     {
-        if ($this->safetyLink === null) {
+        if (null === $this->safetyLink) {
             return;
         }
 

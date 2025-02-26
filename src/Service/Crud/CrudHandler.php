@@ -21,7 +21,7 @@ class CrudHandler extends BaseCrudHandler
         return $this->crudOptions::create();
     }
 
-    public function setup(string $section, object $entity, string $formType=''): CrudOptions
+    public function setup(string $section, object $entity, string $formType = ''): CrudOptions
     {
         return $this->setDefaults()
             ->setSection($section)

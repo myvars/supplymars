@@ -25,15 +25,22 @@ class ManufacturerControllerTest extends WebTestCase
             ->assertSee('3 results');
     }
 
+    public function testManufacturerSecurity(): void
+    {
+        $this->browser()
+            ->get('/manufacturer/')
+            ->assertOn('/login');
+    }
+
     public function testShowManufacturer(): void
     {
-        $manufacturer = ManufacturerFactory::createone(['name' => 'Manufacturer to be shown']);
+        $manufacturer = ManufacturerFactory::createone(['name' => 'Test Manufacturer']);
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
             ->get("/manufacturer/" . $manufacturer->getId())
             ->assertSuccessful()
-            ->assertSee('Manufacturer to be shown');
+            ->assertSee('Test Manufacturer');
     }
 
     public function testNewManufacturer(): void
@@ -120,6 +127,6 @@ class ManufacturerControllerTest extends WebTestCase
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
             ->get("/manufacturer/999")
-            ->assertStatus(404);
+            ->assertSee("Manufacturer not found!");
     }
 }

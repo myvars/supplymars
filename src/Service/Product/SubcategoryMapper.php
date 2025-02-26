@@ -13,15 +13,14 @@ class SubcategoryMapper
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly ValidatorInterface $validator
+        private readonly ValidatorInterface $validator,
     ) {
     }
 
     public function createSubcategoryFromSupplierProduct(
         SupplierProduct $supplierProduct,
-        Category $category
-    ): Subcategory
-    {
+        Category $category,
+    ): Subcategory {
         $supplierSubcategory = $supplierProduct->getSupplierSubcategory();
         if (!$supplierSubcategory instanceof SupplierSubcategory) {
             throw new \InvalidArgumentException('Supplier subcategory is missing');
@@ -41,7 +40,7 @@ class SubcategoryMapper
 
         $errors = $this->validator->validate($subcategory);
         if (count($errors) > 0) {
-            throw new \InvalidArgumentException((string)$errors);
+            throw new \InvalidArgumentException((string) $errors);
         }
 
         $this->entityManager->persist($subcategory);
@@ -59,7 +58,7 @@ class SubcategoryMapper
 
     private function mapSubcategoryToSupplier(
         SupplierSubcategory $supplierSubcategory,
-        Subcategory $subcategory
+        Subcategory $subcategory,
     ): void {
         if ($supplierSubcategory->getMappedSubcategory() instanceof Subcategory) {
             return;

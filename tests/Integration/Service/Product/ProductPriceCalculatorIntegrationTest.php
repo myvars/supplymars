@@ -1,0 +1,111 @@
+<?php
+
+namespace App\Tests\Integration\Service\Product;
+
+use App\Enum\PriceModel;
+use App\Factory\CategoryFactory;
+use App\Factory\ProductFactory;
+use App\Factory\SubcategoryFactory;
+use App\Factory\VatRateFactory;
+use App\Service\Product\ProductPriceCalculator;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Zenstruck\Foundry\Test\Factories;
+
+class ProductPriceCalculatorIntegrationTest extends KernelTestCase
+{
+    use Factories;
+
+    private ProductPriceCalculator $productPriceCalculator;
+
+    protected function setUp(): void
+    {
+        self::bootKernel();
+        $this->productPriceCalculator = static::getContainer()->get(ProductPriceCalculator::class);
+    }
+
+    public function testRecalculatePrice(): void
+    {
+        $vatRate = VatRateFactory::createOne(['rate' => '20.00'])->_real();
+        $category = CategoryFactory::createOne(['vatRate' => $vatRate])->_real();
+        $product = ProductFactory::createOne([
+            'category' => $category,
+            'cost' => '100.00',
+            'defaultMarkup' => '15.000',
+            'priceModel' => PriceModel::PRETTY_99
+        ])->_real();
+
+        $this->productPriceCalculator->recalculatePrice($product);
+
+        $this->assertSame('100.00', $product->getCost());
+        $this->assertSame('15.000', $product->getDefaultMarkup());
+        $this->assertSame(PriceModel::PRETTY_99, $product->getPriceModel());
+        $this->assertSame('15.830', $product->getMarkup());
+        $this->assertSame('138.99', $product->getSellPriceIncVat());
+        $this->assertSame('115.83', $product->getSellPrice());
+        $this->assertSame('PRODUCT', $product->getActiveMarkupTarget());
+        $this->assertSame('PRODUCT', $product->getActivePriceModelTarget());
+    }
+
+    public function testRecalculatePriceWithCategoryMarkup(): void
+    {
+        $vatRate = VatRateFactory::createOne(['rate' => '20.00'])->_real();
+        $category = CategoryFactory::createOne([
+            'defaultMarkup' => '10.000',
+            'priceModel' => PriceModel::PRETTY_99,
+            'vatRate' => $vatRate
+        ])->_real();
+        $product = ProductFactory::createOne([
+            'category' => $category,
+            'cost' => '100.00',
+        ])->_real();
+
+        $this->productPriceCalculator->recalculatePrice($product);
+
+        $this->assertSame('100.00', $product->getCost());
+        $this->assertSame('10.000', $category->getDefaultMarkup());
+        $this->assertSame('10.830', $product->getMarkup());
+        $this->assertSame('132.99', $product->getSellPriceIncVat());
+        $this->assertSame('110.83', $product->getSellPrice());
+        $this->assertSame('CATEGORY', $product->getActiveMarkupTarget());
+        $this->assertSame('CATEGORY', $product->getActivePriceModelTarget());
+    }
+
+    public function testRecalculatePriceWithSubcategoryMarkup(): void
+    {
+        $vatRate = VatRateFactory::createOne(['rate' => '20.00'])->_real();
+        $category = CategoryFactory::createOne(['vatRate' => $vatRate])->_real();
+        $subcategory = SubcategoryFactory::createOne([
+            'defaultMarkup' => '20.000',
+            'priceModel' => PriceModel::PRETTY_99,
+            'category' => $category
+        ])->_real();
+        $product = ProductFactory::createOne([
+            'category' => $category,
+            'subcategory' => $subcategory,
+            'cost' => '100.00',
+        ])->_real();
+
+        $this->productPriceCalculator->recalculatePrice($product);
+
+        $this->assertSame('100.00', $product->getCost());
+        $this->assertSame('20.000', $subcategory->getDefaultMarkup());
+        $this->assertSame('20.830', $product->getMarkup());
+        $this->assertSame('144.99', $product->getSellPriceIncVat());
+        $this->assertSame('120.83', $product->getSellPrice());
+        $this->assertSame('SUBCATEGORY', $product->getActiveMarkupTarget());
+        $this->assertSame('SUBCATEGORY', $product->getActivePriceModelTarget());
+    }
+
+    public function testRecalculatePriceFromArray(): void
+    {
+        $products = ProductFactory::createMany(2);
+
+        $this->productPriceCalculator->recalculatePriceFromArray(array_map(fn($product) => $product->_real(), $products));
+
+        foreach ($products as $product) {
+            $this->assertNotNull($product->_real()->getMarkup());
+            $this->assertNotNull($product->_real()->getSellPrice());
+            $this->assertNotNull($product->_real()->getSellPriceIncVat());
+        }
+    }
+}

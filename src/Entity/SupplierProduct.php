@@ -63,7 +63,7 @@ class SupplierProduct implements DomainEventProviderInterface
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
     #[Assert\NotBlank(message: 'Please enter a cost')]
-    #[Assert\PositiveOrZero]
+    #[Assert\PositiveOrZero(message: 'Please enter a positive or zero cost')]
     private ?string $cost = null;
 
     #[ORM\ManyToOne(inversedBy: 'supplierProducts')]

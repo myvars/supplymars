@@ -21,7 +21,7 @@ class createSupplierProductsCommand extends Command
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly ProductGenerator $productGenerator
+        private readonly ProductGenerator $productGenerator,
     ) {
         parent::__construct();
     }
@@ -46,7 +46,7 @@ class createSupplierProductsCommand extends Command
 
         foreach ($supplierProducts as $supplierProduct) {
             $result = $this->processEachSupplierProduct($supplierProduct);
-            $statistics[$result]++;
+            ++$statistics[$result];
         }
 
         return $statistics;
@@ -81,10 +81,10 @@ class createSupplierProductsCommand extends Command
     {
         $io->success(sprintf("Processed supplier products for '%s':", $supplierName));
         $io->listing([
-            'New products created: ' . $statistics['new'],
-            'Products mapped: ' . $statistics['mapped'],
-            'Products skipped (already mapped): ' . $statistics['skipped'],
-            'Inactive products skipped: ' . $statistics['inactive'],
+            'New products created: '.$statistics['new'],
+            'Products mapped: '.$statistics['mapped'],
+            'Products skipped (already mapped): '.$statistics['skipped'],
+            'Inactive products skipped: '.$statistics['inactive'],
         ]);
     }
 

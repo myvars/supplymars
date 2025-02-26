@@ -61,11 +61,11 @@ class SupplierProductRepository extends ServiceEntityRepository implements Searc
                 ->setParameter('supplierManufacturerId', $searchDto->getSupplierManufacturerId());
         }
 
-        if ($searchDto->getInStock() !== null) {
+        if (null !== $searchDto->getInStock()) {
             $qb->andWhere($searchDto->getInStock() > 0 ? 's.stock > 0' : 's.stock = 0');
         }
 
-        if ($searchDto->getIsActive() !== null) {
+        if (null !== $searchDto->getIsActive()) {
             $qb->andWhere($searchDto->getIsActive() > 0 ? 's.isActive = 1' : 's.isActive = 0');
         }
 

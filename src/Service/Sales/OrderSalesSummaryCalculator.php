@@ -7,11 +7,14 @@ use App\Entity\OrderSalesSummary;
 use App\Enum\SalesDuration;
 use App\ValueObject\OrderSalesType;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class OrderSalesSummaryCalculator
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly ValidatorInterface $validator,
+    ) {
     }
 
     public function process(bool $rebuild = false): void
@@ -35,6 +38,12 @@ class OrderSalesSummaryCalculator
                 $sale['orderValue'],
                 $sale['averageOrderValue']
             );
+
+            $errors = $this->validator->validate($orderSalesSummary);
+            if (count($errors) > 0) {
+                throw new \InvalidArgumentException((string) $errors);
+            }
+
             $this->entityManager->persist($orderSalesSummary);
         }
 

@@ -90,7 +90,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
         return $this->email;
     }
 
-    public function setEmail(string $email): static
+    public function setEmail(?string $email): static
     {
         $this->email = $email;
 
@@ -155,7 +155,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
         return $this->fullName;
     }
 
-    public function setFullName(string $fullName): static
+    public function setFullName(?string $fullName): static
     {
         $this->fullName = $fullName;
 
@@ -192,7 +192,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
             $this->roles[] = 'ROLE_ADMIN';
         } else {
             $key = array_search('ROLE_ADMIN', $this->roles, true);
-            if ($key !== false) {
+            if (false !== $key) {
                 unset($this->roles[$key]);
             }
         }
@@ -311,7 +311,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
     {
         // set the owning side to null (unless already changed)
         if ($this->customerOrders->removeElement($customerOrder) && $customerOrder->getCustomer() === $this) {
-
         }
 
         return $this;
@@ -339,7 +338,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
     {
         // set the owning side to null (unless already changed)
         if ($this->statusChangeLogs->removeElement($statusChangeLog) && $statusChangeLog->getUser() === $this) {
-
         }
 
         return $this;
@@ -352,6 +350,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
                 return $address;
             }
         }
+
         return null;
     }
 
@@ -362,6 +361,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
                 return $address;
             }
         }
+
         return null;
     }
 }

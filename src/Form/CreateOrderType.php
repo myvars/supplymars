@@ -16,7 +16,7 @@ class CreateOrderType extends AbstractType
     {
         $builder
             ->add('customerId', TextType::class, [
-                'label' => 'Customer Id'
+                'label' => 'Customer Id',
             ])
             ->add('shippingMethod', EnumType::class, [
                 'class' => ShippingMethod::class,
@@ -24,7 +24,7 @@ class CreateOrderType extends AbstractType
                 'label' => 'Shipping Method',
                 'placeholder' => 'Choose a Shipping Method',
             ])
-            ->add('CustomerOrderRef')
+            ->add('customerOrderRef')
         ;
     }
 

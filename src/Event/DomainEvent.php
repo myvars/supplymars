@@ -13,7 +13,7 @@ abstract class DomainEvent extends Event
 
     public function __construct(
         private readonly DomainEventType $domainEventType,
-        private ?User $user = null
+        private ?User $user = null,
     ) {
         $this->eventTimestamp = new \DateTimeImmutable();
     }
@@ -32,7 +32,7 @@ abstract class DomainEvent extends Event
     {
         $this->user = $user;
     }
-    
+
     public function getUser(): User
     {
         return $this->user;

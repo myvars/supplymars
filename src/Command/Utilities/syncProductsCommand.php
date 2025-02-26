@@ -37,14 +37,12 @@ class syncProductsCommand extends Command
         $minProductId = $input->getArgument('minProductId');
         $maxProductId = $input->getArgument('maxProductId');
 
-
         $this->supplierUtility->setDefaultUser();
 
         $products = $this->getProducts($minProductId, $maxProductId);
 
         $productsCount = 0;
         foreach ($products as $product) {
-
             foreach ($product->getSupplierProducts() as $supplierProduct) {
                 if ($supplierProduct->getName() !== $product->getName()) {
                     $supplierProduct->setName($product->getName());
@@ -59,7 +57,7 @@ class syncProductsCommand extends Command
                 }
             }
 
-            $productsCount++;
+            ++$productsCount;
 
             $io->note(sprintf('Product %05d updated', $product->getId()));
 

@@ -5,12 +5,14 @@ namespace App\Service\Sales;
 use App\Entity\CustomerOrder;
 use App\Entity\OrderSales;
 use Doctrine\ORM\EntityManagerInterface;
-use DateTime;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class OrderSalesCalculator
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly ValidatorInterface $validator,
+    ) {
     }
 
     public function process(string $date): void
@@ -26,6 +28,12 @@ class OrderSalesCalculator
                 $sale['orderValue'],
                 $sale['averageOrderValue']
             );
+
+            $errors = $this->validator->validate($orderSales);
+            if (count($errors) > 0) {
+                throw new \InvalidArgumentException((string) $errors);
+            }
+
             $this->entityManager->persist($orderSales);
         }
 
@@ -35,7 +43,7 @@ class OrderSalesCalculator
     private function getOrderSales(string $date): array
     {
         return $this->entityManager->getRepository(CustomerOrder::class)
-            ->findOrderSalesByDate(new DateTime($date), (new DateTime($date))->modify('+ 1 day'));
+            ->findOrderSalesByDate(new \DateTime($date), (new \DateTime($date))->modify('+ 1 day'));
     }
 
     private function removeExistingOrderSales(string $date): void

@@ -3,7 +3,7 @@
 namespace App\Command\Utilities;
 
 use App\Entity\CustomerOrder;
-use App\Service\Order\RefreshOrderStatus;
+use App\Service\OrderProcessing\RefreshOrderStatus;
 use App\Service\OrderProcessing\SupplierUtility;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -22,7 +22,7 @@ class refreshOrderStatusCommand extends Command
     public function __construct(
         private readonly SupplierUtility $supplierUtility,
         private readonly EntityManagerInterface $entityManager,
-        private readonly RefreshOrderStatus $refreshOrderStatus
+        private readonly RefreshOrderStatus $refreshOrderStatus,
     ) {
         parent::__construct();
     }
@@ -49,15 +49,15 @@ class refreshOrderStatusCommand extends Command
         $refreshedCount = 0;
         foreach ($customerOrders as $customerOrder) {
             $refreshLog = $this->refreshOrderStatus->refresh($customerOrder);
-            if ($refreshLog !== []) {
+            if ([] !== $refreshLog) {
                 foreach ($refreshLog as $log) {
                     $io->note($log);
                 }
 
-                $refreshedCount++;
+                ++$refreshedCount;
             }
 
-            $processedCount++;
+            ++$processedCount;
         }
 
         $io->success(sprintf('Refreshed %d of %d orders', $refreshedCount, $processedCount));

@@ -27,8 +27,7 @@
                                     Qty: {{ orderItem.outstandingQty }} of {{ orderItem.quantity }}
                                 {% endif %}
                             </span>
-                            <span
-                                class="hidden text-sm ms-3 md:inline">Product #{{ '%05d'|format(orderItem.product.id) }}</span>
+                            <span class="hidden text-sm ms-3 md:inline">Product #{{ '%05d'|format(orderItem.product.id) }}</span>
                         </p>
                         <p class="text-gray-600 dark:text-gray-500">
                             <a href="{{ path('app_order_item_status_log', {'id':orderItem.id }) }}"

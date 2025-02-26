@@ -33,7 +33,7 @@ class createCustomerOrdersCommand extends Command
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly CreateOrder $createOrder
+        private readonly CreateOrder $createOrder,
     ) {
         parent::__construct();
     }
@@ -60,11 +60,11 @@ class createCustomerOrdersCommand extends Command
         }
 
         $ordersCreated = 0;
-        for ($i = 0; $i < $orderCount; $i++) {
+        for ($i = 0; $i < $orderCount; ++$i) {
             // sleep to simulate real world
             sleep(random_int(1, intdiv(300, $orderCount)));
             $this->createOrder();
-            $ordersCreated++;
+            ++$ordersCreated;
 
             $this->entityManager->clear();
         }
@@ -83,7 +83,7 @@ class createCustomerOrdersCommand extends Command
 
     private function getUser(): User
     {
-        if (random_int(0, 2) === 0) {
+        if (0 === random_int(0, 2)) {
             $user = $this->entityManager->getRepository(User::class)->getRandomUser();
         } else {
             $user = UserFactory::createOne(['isVerified' => true])->_real();
@@ -111,7 +111,7 @@ class createCustomerOrdersCommand extends Command
     {
         $createOrderDto = new CreateOrderDto();
         $createOrderDto->setCustomerId($user->getId());
-        $createOrderDto->setCustomerOrderRef('TEST-' . sprintf('%04d', $user->getId()));
+        $createOrderDto->setCustomerOrderRef('TEST-'.sprintf('%04d', $user->getId()));
 
         $shippingMethods = ShippingMethod::cases();
         $createOrderDto->setShippingMethod($shippingMethods[array_rand($shippingMethods)]);

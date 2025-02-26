@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Entity\PurchaseOrderItem;
 use App\Entity\Supplier;
 use App\Enum\PurchaseOrderStatus;
-use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -27,7 +26,7 @@ class PurchaseOrderItemRepository extends ServiceEntityRepository
     public function findPurchaseOrderItemsByStatus(
         Supplier $supplier,
         PurchaseOrderStatus $status,
-        int $limit = 10
+        int $limit = 10,
     ): array {
         return $this->createQueryBuilder('poi')
             ->leftjoin('poi.purchaseOrder', 'po')
@@ -43,7 +42,7 @@ class PurchaseOrderItemRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function calculateProductSales(DateTime $startDate, DateTime $endDate): array
+    public function calculateProductSales(\DateTime $startDate, \DateTime $endDate): array
     {
         return $this->createQueryBuilder('poi')
             ->select('p.id AS productId, s.id AS supplierId')
@@ -53,7 +52,7 @@ class PurchaseOrderItemRepository extends ServiceEntityRepository
             ->join('poi.customerOrderItem', 'coi')
             ->join('poi.purchaseOrder', 'po')
             ->join('po.supplier', 's')
-            ->join('coi.product' , 'p')
+            ->join('coi.product', 'p')
             ->andWhere('poi.status = :status')
             ->setParameter('status', PurchaseOrderStatus::DELIVERED)
             ->andWhere('poi.deliveredAt between :startDate and :endDate')

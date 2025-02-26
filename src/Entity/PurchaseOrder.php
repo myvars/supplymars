@@ -262,7 +262,6 @@ class PurchaseOrder implements DomainEventProviderInterface
             $this->purchaseOrderItems->removeElement($purchaseOrderItem)
             && $purchaseOrderItem->getPurchaseOrder() === $this
         ) {
-
         }
 
         $this->recalculateTotal();
@@ -274,7 +273,7 @@ class PurchaseOrder implements DomainEventProviderInterface
         CustomerOrder $customerOrder,
         Supplier $supplier,
     ): static {
-        $purchaseOrder =  (new static())
+        $purchaseOrder = (new static())
             ->setCustomerOrder($customerOrder)
             ->setShippingAddress($customerOrder->getShippingAddress())
             ->setShippingMethod($customerOrder->getShippingMethod())
@@ -320,7 +319,7 @@ class PurchaseOrder implements DomainEventProviderInterface
 
         $status = null;
         foreach ($this->purchaseOrderItems as $item) {
-            if ($status === null || $item->getStatus()->getLevel() < $status->getLevel()) {
+            if (null === $status || $item->getStatus()->getLevel() < $status->getLevel()) {
                 $status = $item->getStatus();
             }
         }
@@ -330,10 +329,7 @@ class PurchaseOrder implements DomainEventProviderInterface
         }
 
         if (!$this->getStatus()->canTransitionTo($status)) {
-            throw new \LogicException(sprintf('Cannot transition from "%s" to "%s"',
-                $this->getStatus()->value,
-                $status->value
-            ));
+            throw new \LogicException(sprintf('Cannot transition from "%s" to "%s"', $this->getStatus()->value, $status->value));
         }
 
         $this->setStatus($status);

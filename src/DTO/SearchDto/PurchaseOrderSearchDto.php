@@ -39,6 +39,7 @@ final class PurchaseOrderSearchDto extends SearchDto implements SearchFilterInte
 
     private ?string $purchaseOrderStatus = null;
 
+    #[\Override]
     public function getSearchParams(): array
     {
         $searchFilterParams = [
@@ -103,6 +104,7 @@ final class PurchaseOrderSearchDto extends SearchDto implements SearchFilterInte
     public function setProductId(?int $productId): PurchaseOrderSearchDto
     {
         $this->productId = $productId;
+
         return $this;
     }
 

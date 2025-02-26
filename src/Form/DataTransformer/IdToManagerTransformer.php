@@ -16,7 +16,6 @@ readonly class IdToManagerTransformer implements DataTransformerInterface
     /**
      * Transforms a string (id) to an object (User).
      *
-     *
      * @throws TransformationFailedException if object (User) is not found
      */
     public function transform(mixed $value): ?User

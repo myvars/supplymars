@@ -23,7 +23,7 @@ class resetSupplierStockCommand extends Command
 
     public function __construct(
         private readonly SupplierUtility $supplierUtility,
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct();
     }
@@ -38,7 +38,7 @@ class resetSupplierStockCommand extends Command
         $io = new SymfonyStyle($input, $output);
         $supplierId = $input->getArgument('supplierId');
 
-        if (self::MAX_STOCK_LEVEL < 0 ) {
+        if (self::MAX_STOCK_LEVEL < 0) {
             $io->error('Max stock level must be greater than 0');
 
             return Command::FAILURE;
@@ -62,12 +62,12 @@ class resetSupplierStockCommand extends Command
         foreach ($supplierProducts as $supplierProduct) {
             $previousStock = $supplierProduct->getStock();
             $supplierProduct->setStock(random_int(0, self::MAX_STOCK_LEVEL));
-            $processedItemCount++;
+            ++$processedItemCount;
 
             $this->entityManager->flush();
 
             $io->note(sprintf('Updating product %s : stock %s (%s)',
-                $supplierProduct->getProductCode() ,
+                $supplierProduct->getProductCode(),
                 $supplierProduct->getStock(),
                 $previousStock)
             );

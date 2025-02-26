@@ -4,8 +4,8 @@ namespace App\Command\InventoryProcessing;
 
 use App\Entity\Supplier;
 use App\Entity\SupplierProduct;
-use App\Service\DomainEventDispatcher;
 use App\Service\OrderProcessing\SupplierUtility;
+use App\Service\Utility\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -29,7 +29,7 @@ class updateSupplierStockCommand extends Command
     public function __construct(
         private readonly SupplierUtility $supplierUtility,
         private readonly EntityManagerInterface $entityManager,
-        private readonly DomainEventDispatcher $domainEventDispatcher
+        private readonly DomainEventDispatcher $domainEventDispatcher,
     ) {
         parent::__construct();
     }
@@ -76,12 +76,12 @@ class updateSupplierStockCommand extends Command
             $previousCost = $supplierProduct->getCost();
 
             $this->realWorldStockLevelSimulator($supplierProduct);
-            $processedItemCount++;
+            ++$processedItemCount;
 
             $this->entityManager->flush();
 
             $io->note(sprintf('Updating product %s : stock %s (%s), cost £%s (£%s)',
-                $supplierProduct->getProductCode() ,
+                $supplierProduct->getProductCode(),
                 $supplierProduct->getStock(),
                 $previousStock,
                 $supplierProduct->getCost(),
@@ -104,7 +104,7 @@ class updateSupplierStockCommand extends Command
     {
         // Simulate real world stock level changes
 
-        //TODO: Add run rate logic to replenish stock
+        // TODO: Add run rate logic to replenish stock
         if ($supplierProduct->getStock() <= self::STOCK_REPLENISH_LEVEL) {
             $this->replenishStock($supplierProduct);
 
@@ -122,7 +122,7 @@ class updateSupplierStockCommand extends Command
 
     private function decreaseStock(SupplierProduct $supplierProduct): void
     {
-        if ($supplierProduct->getStock() === 0) {
+        if (0 === $supplierProduct->getStock()) {
             return;
         }
 
@@ -151,7 +151,7 @@ class updateSupplierStockCommand extends Command
 
         $percentCost = bcdiv((string) $supplierProduct->getCost(), self::COST_VARIANCE_PERCENT, 2);
         $randomCost = bcdiv(random_int(0, bcmul($percentCost, 100, 0)), 100, 2);
-        $randomCost = random_int(0, 1) === 0 ? $randomCost : -$randomCost;
+        $randomCost = 0 === random_int(0, 1) ? $randomCost : -$randomCost;
 
         $supplierProduct->setCost(bcadd((string) $supplierProduct->getCost(), $randomCost, 2));
 

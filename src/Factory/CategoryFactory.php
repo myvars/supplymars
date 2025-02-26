@@ -3,6 +3,7 @@
 namespace App\Factory;
 
 use App\Entity\Category;
+use Zenstruck\Foundry\LazyValue;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -34,16 +35,17 @@ final class CategoryFactory extends PersistentProxyObjectFactory
         return [
             'defaultMarkup' => Category::DEFAULT_MARKUP,
             'name' => ucfirst(implode(' ', self::faker()->words(random_int(1, 3)))),
-            'owner' => UserFactory::new(),
+            'owner' => LazyValue::memoize(fn (): UserFactory => UserFactory::new()->staff()),
             'priceModel' => Category::DEFAULT_PRICE_MODEL,
-            'vatRate' => VatRateFactory::new(),
-            'isActive' => self::faker()->boolean(),
+            'vatRate' => LazyValue::memoize(fn (): VatRateFactory => VatRateFactory::new()->standard()),
+            'isActive' => true,
         ];
     }
 
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
+    #[\Override]
     protected function initialize(): static
     {
         return $this
@@ -51,4 +53,3 @@ final class CategoryFactory extends PersistentProxyObjectFactory
         ;
     }
 }
-

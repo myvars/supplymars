@@ -7,7 +7,6 @@ use App\Repository\CustomerOrderRepository;
 use App\Repository\OrderSalesSummaryRepository;
 use App\Service\Dashboard\BarChartBuilder;
 use App\Service\Dashboard\DoughnutChartBuilder;
-use DateTime;
 use Symfony\Component\DependencyInjection\Attribute\AsTaggedItem;
 use Symfony\UX\Chartjs\Model\Chart;
 
@@ -17,10 +16,10 @@ final readonly class OrderSummaryReport implements ReportInterface
     private OrderSummaryReportDto $dto;
 
     public function __construct(
-        private CustomerOrderRepository     $orderRepository,
+        private CustomerOrderRepository $orderRepository,
         private OrderSalesSummaryRepository $summaryRepository,
-        private BarChartBuilder             $barChartBuilder,
-        private DoughnutChartBuilder        $doughnutChartBuilder
+        private BarChartBuilder $barChartBuilder,
+        private DoughnutChartBuilder $doughnutChartBuilder,
     ) {
     }
 
@@ -52,7 +51,7 @@ final readonly class OrderSummaryReport implements ReportInterface
             $this->barChartBuilder::getSalesRangeDuration($this->dto->getDuration()),
             $this->barChartBuilder::getSalesRangeStartDate($this->dto->getDuration())
         );
-        if ($salesData === []) {
+        if ([] === $salesData) {
             return null;
         }
 
@@ -62,10 +61,10 @@ final readonly class OrderSummaryReport implements ReportInterface
     private function getOrderProgressChart(): ?Chart
     {
         $salesData = $this->orderRepository->findOrderSalesByStatus(
-            new DateTime($this->dto->getDuration()->getStartDate()),
-            new DateTime($this->dto->getDuration()->getEndDate()),
+            new \DateTime($this->dto->getDuration()->getStartDate()),
+            new \DateTime($this->dto->getDuration()->getEndDate()),
         );
-        if ($salesData === []) {
+        if ([] === $salesData) {
             return null;
         }
 

@@ -9,33 +9,37 @@ use PHPUnit\Framework\TestCase;
 
 class ChangePurchaseOrderItemStatusDtoTest extends TestCase
 {
-    public function testFromEntityCreatesDtoWithCorrectValues(): void
+    public function testConstructorAndGetters(): void
+    {
+        $purchaseOrderItemId = 1;
+
+        $dto = new ChangePurchaseOrderItemStatusDto(
+            $purchaseOrderItemId,
+            PurchaseOrderStatus::PROCESSING
+        );
+
+        $this->assertEquals($purchaseOrderItemId, $dto->getId());
+        $this->assertSame(PurchaseOrderStatus::PROCESSING, $dto->getPurchaseOrderItemStatus());
+    }
+
+    public function testSetPurchaseOrderItemStatus(): void
+    {
+        $dto = new ChangePurchaseOrderItemStatusDto(1, null);
+
+        $dto->setPurchaseOrderItemStatus(PurchaseOrderStatus::PROCESSING);
+
+        $this->assertSame(PurchaseOrderStatus::PROCESSING, $dto->getPurchaseOrderItemStatus());
+    }
+
+    public function testFromEntity(): void
     {
         $purchaseOrderItem = $this->createMock(PurchaseOrderItem::class);
         $purchaseOrderItem->method('getId')->willReturn(1);
-        $purchaseOrderItem->method('getStatus')->willReturn(PurchaseOrderStatus::ACCEPTED);
+        $purchaseOrderItem->method('getStatus')->willReturn(PurchaseOrderStatus::PROCESSING);
 
         $dto = ChangePurchaseOrderItemStatusDto::fromEntity($purchaseOrderItem);
 
-        $this->assertSame(1, $dto->getId());
-        $this->assertSame(PurchaseOrderStatus::ACCEPTED, $dto->getPurchaseOrderItemStatus());
-    }
-
-    public function testPurchaseOrderItemIdIsMissing(): void
-    {
-        $this->expectException(\TypeError::class);
-        $dto = new ChangePurchaseOrderItemStatusDto(null, PurchaseOrderStatus::ACCEPTED);
-    }
-
-    public function testGetIdReturnsCorrectId(): void
-    {
-        $dto = new ChangePurchaseOrderItemStatusDto(1, PurchaseOrderStatus::ACCEPTED);
-        $this->assertSame(1, $dto->getId());
-    }
-
-    public function testGetPurchaseOrderItemStatusReturnsCorrectStatus(): void
-    {
-        $dto = new ChangePurchaseOrderItemStatusDto(1, PurchaseOrderStatus::ACCEPTED);
-        $this->assertSame(PurchaseOrderStatus::ACCEPTED, $dto->getPurchaseOrderItemStatus());
+        $this->assertEquals($purchaseOrderItem->getId(), $dto->getId());
+        $this->assertSame($purchaseOrderItem->getStatus(), $dto->getPurchaseOrderItemStatus());
     }
 }

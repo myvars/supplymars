@@ -14,11 +14,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: SubcategoryRepository::class)]
 class Subcategory
 {
+    use TimestampableEntity;
     public const string DEFAULT_MARKUP = '0.000';
 
     public const PriceModel DEFAULT_PRICE_MODEL = PriceModel::NONE;
-
-    use TimestampableEntity;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]

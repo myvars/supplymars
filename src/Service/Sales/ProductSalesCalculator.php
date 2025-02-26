@@ -7,12 +7,14 @@ use App\Entity\ProductSales;
 use App\Entity\PurchaseOrderItem;
 use App\Entity\Supplier;
 use Doctrine\ORM\EntityManagerInterface;
-use DateTime;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ProductSalesCalculator
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly ValidatorInterface $validator,
+    ) {
     }
 
     public function process(string $date): void
@@ -25,7 +27,7 @@ class ProductSalesCalculator
             $product = $this->entityManager->getRepository(Product::class)->find($sale['productId']);
             $supplier = $this->entityManager->getRepository(Supplier::class)->find($sale['supplierId']);
 
-            if ($product !== null) {
+            if (null !== $product) {
                 $productSales = ProductSales::create(
                     $product,
                     $supplier,
@@ -34,6 +36,12 @@ class ProductSalesCalculator
                     $sale['salesCost'],
                     $sale['salesValue']
                 );
+
+                $errors = $this->validator->validate($productSales);
+                if (count($errors) > 0) {
+                    throw new \InvalidArgumentException((string) $errors);
+                }
+
                 $this->entityManager->persist($productSales);
             }
         }
@@ -45,7 +53,7 @@ class ProductSalesCalculator
     {
         return $this->entityManager
             ->getRepository(PurchaseOrderItem::class)
-            ->calculateProductSales(new DateTime($date), (new DateTime($date))->modify('+ 1 day'));
+            ->calculateProductSales(new \DateTime($date), (new \DateTime($date))->modify('+ 1 day'));
     }
 
     private function removeExistingProductSales(string $date): void

@@ -16,7 +16,7 @@ class ValidProductIdValidator extends ConstraintValidator
     {
         /* @var ValidProductId $constraint */
 
-        if (!is_numeric($value) || 0 === (int)$value) {
+        if (!is_numeric($value) || 0 === (int) $value) {
             return;
         }
 

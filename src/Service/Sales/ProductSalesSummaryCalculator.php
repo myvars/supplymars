@@ -8,25 +8,27 @@ use App\Enum\SalesDuration;
 use App\Enum\SalesType;
 use App\ValueObject\ProductSalesType;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ProductSalesSummaryCalculator
 {
-    public function __construct(private readonly EntityManagerInterface $entityManager)
-    {
+    public function __construct(
+        private readonly EntityManagerInterface $entityManager,
+        private readonly ValidatorInterface $validator,
+    ) {
     }
 
     public function process(bool $rebuild = false): void
     {
         foreach (SalesDuration::cases() as $salesDuration) {
-
             foreach (SalesType::cases() as $salesType) {
                 // Skip day duration for product sales since it is already processed
-                if ($salesDuration === SalesDuration::DAY && $salesType === SalesType::PRODUCT) {
+                if (SalesDuration::DAY === $salesDuration && SalesType::PRODUCT === $salesType) {
                     continue;
                 }
 
                 // Skip week ago duration for product sales
-                if ($salesDuration === SalesDuration::WEEK_AGO && $salesType === SalesType::PRODUCT) {
+                if (SalesDuration::WEEK_AGO === $salesDuration && SalesType::PRODUCT === $salesType) {
                     continue;
                 }
 
@@ -50,6 +52,12 @@ class ProductSalesSummaryCalculator
                 $sale['salesCost'],
                 $sale['salesValue'],
             );
+
+            $errors = $this->validator->validate($productSalesSummary);
+            if (count($errors) > 0) {
+                throw new \InvalidArgumentException((string) $errors);
+            }
+
             $this->entityManager->persist($productSalesSummary);
         }
 

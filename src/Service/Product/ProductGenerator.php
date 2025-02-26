@@ -7,14 +7,14 @@ use App\Entity\SupplierProduct;
 use App\Service\Crud\Common\CrudActionInterface;
 use App\Service\Crud\Common\CrudOptions;
 
-final class ProductGenerator implements CrudActionInterface
+final readonly class ProductGenerator implements CrudActionInterface
 {
     public function __construct(
-        private readonly CategoryMapper $categoryMapper,
-        private readonly SubcategoryMapper $subcategoryMapper,
-        private readonly ManufacturerMapper $manufacturerMapper,
-        private readonly ProductMapper $productMapper,
-        private readonly ProductPriceCalculator $productPriceCalculator
+        private CategoryMapper $categoryMapper,
+        private SubcategoryMapper $subcategoryMapper,
+        private ManufacturerMapper $manufacturerMapper,
+        private ProductMapper $productMapper,
+        private ProductPriceCalculator $productPriceCalculator,
     ) {
     }
 
@@ -47,7 +47,7 @@ final class ProductGenerator implements CrudActionInterface
             $subcategory
         );
 
-        $this->productPriceCalculator->recalculatePrice($product,true);
+        $this->productPriceCalculator->recalculatePrice($product, true);
 
         return $product;
     }

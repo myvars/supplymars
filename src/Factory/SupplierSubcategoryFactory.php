@@ -2,6 +2,7 @@
 
 namespace App\Factory;
 
+use App\Entity\Supplier;
 use App\Entity\SupplierSubcategory;
 use Zenstruck\Foundry\LazyValue;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
@@ -32,22 +33,28 @@ final class SupplierSubcategoryFactory extends PersistentProxyObjectFactory
      */
     protected function defaults(): array|callable
     {
-        $supplier = LazyValue::memoize(fn() => SupplierFactory::createOne());
-
         return [
             'name' => ucfirst(implode(' ', self::faker()->words(random_int(1, 3)))),
-            'supplier' => $supplier,
-            'supplierCategory' => SupplierCategoryFactory::new()->with(['supplier' => $supplier]),
+            'supplier' => LazyValue::memoize(fn (): Supplier => SupplierFactory::new()->create()),
+            'supplierCategory' => null,
         ];
     }
 
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
+    #[\Override]
     protected function initialize(): static
     {
         return $this
-            // ->afterInstantiate(function(SupplierSubcategory $supplierSubcategory): void {})
-        ;
+            ->beforeInstantiate(function (array $attributes): array {
+                if (null !== $attributes['supplier']) {
+                    $attributes['supplierCategory'] ??= LazyValue::memoize(
+                        fn (): SupplierCategoryFactory => SupplierCategoryFactory::new()->with(['supplier' => $attributes['supplier']])
+                    );
+                }
+
+                return $attributes;
+            });
     }
 }

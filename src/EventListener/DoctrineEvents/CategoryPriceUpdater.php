@@ -37,7 +37,7 @@ class CategoryPriceUpdater
 
                 if (
                     $eventArgs->hasChangedField('defaultMarkup')
-                    && $product->getActiveMarkupTarget() === 'CATEGORY'
+                    && 'CATEGORY' === $product->getActiveMarkupTarget()
                 ) {
                     $this->setChangedProduct($product);
                     continue;
@@ -45,7 +45,7 @@ class CategoryPriceUpdater
 
                 if (
                     $eventArgs->hasChangedField('priceModel')
-                    && $product->getActivePriceModelTarget() === 'CATEGORY'
+                    && 'CATEGORY' === $product->getActivePriceModelTarget()
                 ) {
                     $this->setChangedProduct($product);
                 }
@@ -55,12 +55,12 @@ class CategoryPriceUpdater
 
     public function postUpdate(Category $category): void
     {
-        if ($this->changedProducts === []) {
+        if ([] === $this->changedProducts) {
             return;
         }
 
         $this->productPriceCalculator->recalculatePriceFromArray($this->changedProducts);
-        unset($this->changedProducts);
+        $this->changedProducts = [];
     }
 
     public function setChangedProduct(Product $product): void

@@ -10,7 +10,7 @@ use App\Entity\Supplier;
 use App\Entity\SupplierProduct;
 use App\Service\Crud\Common\CrudActionInterface;
 use App\Service\Crud\Common\CrudOptions;
-use App\Service\DomainEventDispatcher;
+use App\Service\Utility\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -20,7 +20,7 @@ final readonly class CreatePurchaseOrderItem implements CrudActionInterface
         private EntityManagerInterface $entityManager,
         private ValidatorInterface $validator,
         private CreatePurchaseOrder $purchaseOrderCreator,
-        private DomainEventDispatcher $domainEventDispatcher
+        private DomainEventDispatcher $domainEventDispatcher,
     ) {
     }
 
@@ -37,12 +37,13 @@ final readonly class CreatePurchaseOrderItem implements CrudActionInterface
         }
 
         $matchedSupplierProduct = null;
-        foreach($customerOrderItem->getProduct()->getSupplierProducts() as $supplierProduct) {
+        foreach ($customerOrderItem->getProduct()->getSupplierProducts() as $supplierProduct) {
             if ($supplierProduct->getId() === $supplierProductId) {
                 $matchedSupplierProduct = $supplierProduct;
                 break;
             }
         }
+
         if (!$matchedSupplierProduct instanceof SupplierProduct) {
             throw new \InvalidArgumentException('Supplier product not found');
         }
@@ -52,7 +53,7 @@ final readonly class CreatePurchaseOrderItem implements CrudActionInterface
 
     public function fromOrderItem(
         CustomerOrderItem $customerOrderItem,
-        SupplierProduct $supplierProduct
+        SupplierProduct $supplierProduct,
     ): PurchaseOrderItem {
         if (!$customerOrderItem->allowEdit()) {
             throw new \InvalidArgumentException('Order item cannot be edited');
@@ -69,7 +70,7 @@ final readonly class CreatePurchaseOrderItem implements CrudActionInterface
             $purchaseOrderItem,
             $purchaseOrder,
             $customerOrderItem,
-            $customerOrder
+            $customerOrder,
         ]);
 
         return $purchaseOrderItem;
@@ -82,7 +83,7 @@ final readonly class CreatePurchaseOrderItem implements CrudActionInterface
 
     private function getEditablePurchaseOrder(
         CustomerOrder $customerOrder,
-        Supplier $supplier
+        Supplier $supplier,
     ): PurchaseOrder {
         foreach ($customerOrder->getPurchaseOrders() as $purchaseOrder) {
             if ($purchaseOrder->getSupplier() === $supplier && $purchaseOrder->allowEdit()) {
@@ -96,7 +97,7 @@ final readonly class CreatePurchaseOrderItem implements CrudActionInterface
     private function createPurchaseOrderItem(
         CustomerOrderItem $customerOrderItem,
         PurchaseOrder $purchaseOrder,
-        SupplierProduct $supplierProduct
+        SupplierProduct $supplierProduct,
     ): PurchaseOrderItem {
         $purchaseOrderItem = $this->getEditablePurchaseOrderItem($customerOrderItem, $purchaseOrder);
         if ($purchaseOrderItem instanceof PurchaseOrderItem) {
@@ -132,7 +133,7 @@ final readonly class CreatePurchaseOrderItem implements CrudActionInterface
     private function createNewPurchaseOrderItem(
         CustomerOrderItem $customerOrderItem,
         PurchaseOrder $purchaseOrder,
-        SupplierProduct $supplierProduct
+        SupplierProduct $supplierProduct,
     ): PurchaseOrderItem {
         $purchaseOrderItem = PurchaseOrderItem::createFromCustomerOrderItem(
             $customerOrderItem,
@@ -143,7 +144,7 @@ final readonly class CreatePurchaseOrderItem implements CrudActionInterface
 
         $errors = $this->validator->validate($purchaseOrderItem);
         if (count($errors) > 0) {
-            throw new \InvalidArgumentException((string)$errors);
+            throw new \InvalidArgumentException((string) $errors);
         }
 
         $this->entityManager->persist($purchaseOrderItem);

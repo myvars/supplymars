@@ -25,15 +25,22 @@ class SupplierControllerTest extends WebTestCase
             ->assertSee('3 results');
     }
 
+    public function testSupplierSecurity(): void
+    {
+        $this->browser()
+            ->get('/supplier/')
+            ->assertOn('/login');
+    }
+
     public function testShowSupplier(): void
     {
-        $supplier = SupplierFactory::createone(['name' => 'Supplier to be shown']);
+        $supplier = SupplierFactory::createone(['name' => 'Test Supplier']);
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
             ->get("/supplier/" . $supplier->getId())
             ->assertSuccessful()
-            ->assertSee('Supplier to be shown');
+            ->assertSee('Test Supplier');
     }
 
     public function testNewSupplier(): void
@@ -119,6 +126,6 @@ class SupplierControllerTest extends WebTestCase
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
             ->get("/supplier/999")
-            ->assertStatus(404);
+            ->assertSee("Supplier not found!");
     }
 }

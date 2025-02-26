@@ -3,38 +3,56 @@
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Category;
-use PHPUnit\Framework\TestCase;
 use App\Entity\VatRate;
+use PHPUnit\Framework\TestCase;
 
 class VatRateTest extends TestCase
 {
-
-    public function testGetSetName(): void
+    public function testSettersAndGetters(): void
     {
-        $vatRate = new VatRate();
-        $vatRate->setName('Test VatRate');
+        $vatRate = (new VatRate())
+            ->setName('Standard rate')
+            ->setRate('20.00')
+            ->setIsDefaultVatRate(true);
 
-        $this->assertEquals('Test VatRate', $vatRate->getName());
+        $this->assertEquals('Standard rate', $vatRate->getName());
+        $this->assertEquals('20.00', $vatRate->getRate());
+        $this->assertTrue($vatRate->isDefaultVatRate());
     }
 
-    public function testGetSetRate(): void
+    public function testAddCategory(): void
     {
         $vatRate = new VatRate();
-        $vatRate->setRate(0.21);
-
-        $this->assertEquals(0.21, $vatRate->getRate());
-    }
-
-    public function testAddRemoveCategory(): void
-    {
         $category = $this->createMock(Category::class);
+
+        // Test adding a category
+        $category->expects($this->once())
+            ->method('setVatRate')
+            ->with($vatRate);
+
+        $vatRate->addCategory($category);
+        $this->assertCount(1, $vatRate->getCategories());
+        $this->assertTrue($vatRate->getCategories()->contains($category));
+    }
+
+    public function testRemoveCategory(): void
+    {
         $vatRate = new VatRate();
+        $category = $this->createMock(Category::class);
+
+        // Add the category first to set up the state
         $vatRate->addCategory($category);
 
-        $this->assertEquals($category, $vatRate->getCategories()->first());
+        // Test removing a category
+        $category->expects($this->once())
+            ->method('getVatRate')
+            ->willReturn($vatRate);
+
+        $category->expects($this->once())
+            ->method('setVatRate')
+            ->with(null);
 
         $vatRate->removeCategory($category);
-
-        $this->assertEmpty($vatRate->getCategories());
+        $this->assertCount(0, $vatRate->getCategories());
     }
 }

@@ -61,7 +61,6 @@ class PurchaseOrderItem implements DomainEventProviderInterface
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $deliveredAt = null;
 
-
     private function __construct()
     {
         $this->status = PurchaseOrderStatus::getDefault();
@@ -105,11 +104,11 @@ class PurchaseOrderItem implements DomainEventProviderInterface
     private function setQuantity(int $quantity): static
     {
         if ($quantity < 1) {
-            throw new \InvalidArgumentException("The quantity must be greater than 0");
+            throw new \InvalidArgumentException('The quantity must be greater than 0');
         }
 
         if ($quantity > $this->getMaxQuantity()) {
-            throw new \InvalidArgumentException('Quantity cannot be greater than ' . $this->getMaxQuantity());
+            throw new \InvalidArgumentException('Quantity cannot be greater than '.$this->getMaxQuantity());
         }
 
         $this->quantity = $quantity;
@@ -129,8 +128,8 @@ class PurchaseOrderItem implements DomainEventProviderInterface
 
     private function setPrice(string $price): static
     {
-        if ((float)$price < 0) {
-            throw new \InvalidArgumentException("The price must be greater than 0");
+        if ((float) $price < 0) {
+            throw new \InvalidArgumentException('The price must be greater than 0');
         }
 
         $this->price = $price;
@@ -145,8 +144,8 @@ class PurchaseOrderItem implements DomainEventProviderInterface
 
     private function setPriceIncVat(string $priceIncVat): static
     {
-        if ((float)$priceIncVat < 0) {
-            throw new \InvalidArgumentException("The price inc VAT must be greater than 0");
+        if ((float) $priceIncVat < 0) {
+            throw new \InvalidArgumentException('The price inc VAT must be greater than 0');
         }
 
         $this->priceIncVat = $priceIncVat;
@@ -162,7 +161,7 @@ class PurchaseOrderItem implements DomainEventProviderInterface
     private function setWeight(int $weight): static
     {
         if ($weight < 0) {
-            throw new \InvalidArgumentException("The weight must be greater than 0");
+            throw new \InvalidArgumentException('The weight must be greater than 0');
         }
 
         $this->weight = $weight;
@@ -194,8 +193,8 @@ class PurchaseOrderItem implements DomainEventProviderInterface
 
     private function setTotalPrice(string $totalPrice): static
     {
-        if ((float)$totalPrice < 0) {
-            throw new \InvalidArgumentException("The total price must be greater than 0");
+        if ((float) $totalPrice < 0) {
+            throw new \InvalidArgumentException('The total price must be greater than 0');
         }
 
         $this->totalPrice = $totalPrice;
@@ -210,8 +209,8 @@ class PurchaseOrderItem implements DomainEventProviderInterface
 
     private function setTotalPriceIncVat(string $totalPriceIncVat): static
     {
-        if ((float)$totalPriceIncVat < 0) {
-            throw new \InvalidArgumentException("The total price inc VAT must be greater than 0");
+        if ((float) $totalPriceIncVat < 0) {
+            throw new \InvalidArgumentException('The total price inc VAT must be greater than 0');
         }
 
         $this->totalPriceIncVat = $totalPriceIncVat;
@@ -227,7 +226,7 @@ class PurchaseOrderItem implements DomainEventProviderInterface
     private function setTotalWeight(int $totalWeight): static
     {
         if ($totalWeight < 0) {
-            throw new \InvalidArgumentException("The total weight must be greater than 0");
+            throw new \InvalidArgumentException('The total weight must be greater than 0');
         }
 
         $this->totalWeight = $totalWeight;
@@ -251,7 +250,7 @@ class PurchaseOrderItem implements DomainEventProviderInterface
         CustomerOrderItem $customerOrderItem,
         PurchaseOrder $purchaseOrder,
         SupplierProduct $supplierProduct,
-        int $quantity
+        int $quantity,
     ): static {
         $purchaseOrderItem = (new static())
             ->setCustomerOrderItem($customerOrderItem)
@@ -279,7 +278,7 @@ class PurchaseOrderItem implements DomainEventProviderInterface
     {
         $this->setTotalPrice(bcmul((string) $this->quantity, $this->price, 2));
         $this->setTotalPriceIncVat(bcmul((string) $this->quantity, $this->priceIncVat, 2));
-        $this->setTotalWeight(bcmul((string)$this->quantity, (string) $this->weight, 3));
+        $this->setTotalWeight(bcmul((string) $this->quantity, (string) $this->weight, 3));
     }
 
     public function updateStatus(PurchaseOrderStatus $newStatus): void
@@ -289,14 +288,11 @@ class PurchaseOrderItem implements DomainEventProviderInterface
         }
 
         if (!$this->status->canTransitionTo($newStatus)) {
-            throw new \LogicException(sprintf('Cannot transition from "%s" to "%s"',
-                $this->status->value,
-                $newStatus->value
-            ));
+            throw new \LogicException(sprintf('Cannot transition from "%s" to "%s"', $this->status->value, $newStatus->value));
         }
 
         $this->status = $newStatus;
-        if ($newStatus === PurchaseOrderStatus::DELIVERED) {
+        if (PurchaseOrderStatus::DELIVERED === $newStatus) {
             $this->setDeliveredAt(new \DateTimeImmutable());
         }
 
@@ -312,7 +308,7 @@ class PurchaseOrderItem implements DomainEventProviderInterface
 
     public function allowStatusChange(): bool
     {
-        return $this->status !== PurchaseOrderStatus::DELIVERED && $this->status !== PurchaseOrderStatus::CANCELLED;
+        return PurchaseOrderStatus::DELIVERED !== $this->status && PurchaseOrderStatus::CANCELLED !== $this->status;
     }
 
     public function isRefunded(): bool

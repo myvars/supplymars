@@ -6,14 +6,14 @@ use App\Entity\CustomerOrderItem;
 use App\Enum\OrderStatus;
 use App\Service\Crud\Common\CrudActionInterface;
 use App\Service\Crud\Common\CrudOptions;
-use App\Service\DomainEventDispatcher;
+use App\Service\Utility\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 
 final readonly class CancelOrderItem implements CrudActionInterface
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private DomainEventDispatcher $domainEventDispatcher
+        private DomainEventDispatcher $domainEventDispatcher,
     ) {
     }
 
@@ -29,7 +29,7 @@ final readonly class CancelOrderItem implements CrudActionInterface
 
     public function cancel(CustomerOrderItem $customerOrderItem): void
     {
-        if ($customerOrderItem->getStatus() === OrderStatus::CANCELLED) {
+        if (OrderStatus::CANCELLED === $customerOrderItem->getStatus()) {
             throw new \InvalidArgumentException('Order item is already cancelled');
         }
 
@@ -47,7 +47,7 @@ final readonly class CancelOrderItem implements CrudActionInterface
 
         $this->domainEventDispatcher->dispatchProviderEvents([
             $customerOrderItem,
-            $customerOrderItem->getCustomerOrder()
+            $customerOrderItem->getCustomerOrder(),
         ]);
     }
 }

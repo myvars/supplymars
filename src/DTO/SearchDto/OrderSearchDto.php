@@ -36,6 +36,7 @@ final class OrderSearchDto extends SearchDto implements SearchFilterInterface
 
     private ?string $orderStatus = null;
 
+    #[\Override]
     public function getSearchParams(): array
     {
         $searchFilterParams = [
@@ -99,6 +100,7 @@ final class OrderSearchDto extends SearchDto implements SearchFilterInterface
     public function setProductId(?int $productId): OrderSearchDto
     {
         $this->productId = $productId;
+
         return $this;
     }
 

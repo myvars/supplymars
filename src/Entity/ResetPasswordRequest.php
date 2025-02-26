@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ResetPasswordRequestRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use SymfonyCasts\Bundle\ResetPassword\Model\ResetPasswordRequestInterface;
 use SymfonyCasts\Bundle\ResetPassword\Model\ResetPasswordRequestTrait;
 
@@ -20,10 +21,11 @@ class ResetPasswordRequest implements ResetPasswordRequestInterface
     public function __construct(
         #[ORM\ManyToOne]
         #[ORM\JoinColumn(nullable: false)]
+        #[Assert\NotNull(message: 'User should not be null')]
         private readonly ?User $user,
         \DateTimeInterface $expiresAt,
         string $selector,
-        string $hashedToken
+        string $hashedToken,
     ) {
         $this->initialize($expiresAt, $selector, $hashedToken);
     }

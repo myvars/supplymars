@@ -76,7 +76,7 @@ class Supplier
     public function getColourScheme(): string
     {
         // return a colour scheme based on the supplier ID
-        return 'supplier' . ($this->getId() < 5 ? $this->getId() : 1);
+        return 'supplier'.($this->getId() < 5 ? $this->getId() : 1);
     }
 
     public function isWarehouse(): bool
@@ -243,7 +243,6 @@ class Supplier
     {
         // set the owning side to null (unless already changed)
         if ($this->purchaseOrders->removeElement($purchaseOrder) && $purchaseOrder->getSupplier() === $this) {
-
         }
 
         return $this;

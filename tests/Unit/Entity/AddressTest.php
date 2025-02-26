@@ -3,6 +3,8 @@
 namespace App\Tests\Unit\Entity;
 
 use App\Entity\Address;
+use App\Entity\CustomerOrder;
+use App\Entity\PurchaseOrder;
 use App\Entity\User;
 use PHPUnit\Framework\TestCase;
 
@@ -40,5 +42,69 @@ class AddressTest extends TestCase
         $this->assertSame($user, $address->getCustomer());
         $this->assertTrue($address->isDefaultShippingAddress());
         $this->assertFalse($address->isDefaultBillingAddress());
+    }
+
+    public function testAddCustomerOrder(): void
+    {
+        $address= new Address();
+        $customerOrder = $this->createMock(CustomerOrder::class);
+
+        // Test adding a customer order
+        $customerOrder->expects($this->once())
+            ->method('setShippingAddress')
+            ->with($address);
+
+        $address->addCustomerOrder($customerOrder);
+        $this->assertCount(1, $address->getCustomerOrders());
+        $this->assertTrue($address->getCustomerOrders()->contains($customerOrder));
+    }
+
+    public function testRemoveCustomerOrder(): void
+    {
+        $address= new Address();
+        $customerOrder = $this->createMock(CustomerOrder::class);
+
+        // Add the customer order first to set up the state
+        $address->addCustomerOrder($customerOrder);
+
+        // Test removing a customer order
+        $customerOrder->expects($this->once())
+            ->method('getShippingAddress')
+            ->willReturn($address);
+
+        $address->removeCustomerOrder($customerOrder);
+        $this->assertCount(0, $address->getCustomerOrders());
+    }
+
+    public function testAddPurchaseOrder(): void
+    {
+        $address= new Address();
+        $purchaseOrder = $this->createMock(PurchaseOrder::class);
+
+        // Test adding a customer order
+        $purchaseOrder->expects($this->once())
+            ->method('setShippingAddress')
+            ->with($address);
+
+        $address->addPurchaseOrder($purchaseOrder);
+        $this->assertCount(1, $address->getPurchaseOrders());
+        $this->assertTrue($address->getPurchaseOrders()->contains($purchaseOrder));
+    }
+
+    public function testRemovePurchaseOrder(): void
+    {
+        $address= new Address();
+        $purchaseOrder = $this->createMock(PurchaseOrder::class);
+
+        // Add the purchase order first to set up the state
+        $address->addPurchaseOrder($purchaseOrder);
+
+        // Test removing a purchase order
+        $purchaseOrder->expects($this->once())
+            ->method('getShippingAddress')
+            ->willReturn($address);
+
+        $address->removePurchaseOrder($purchaseOrder);
+        $this->assertCount(0, $address->getPurchaseOrders());
     }
 }

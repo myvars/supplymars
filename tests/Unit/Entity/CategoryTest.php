@@ -12,85 +12,121 @@ use PHPUnit\Framework\TestCase;
 
 class CategoryTest extends TestCase
 {
-    public function testGetSetName(): void
-    {
-        $category = new Category();
-        $category->setName('Test Category');
-
-        $this->assertEquals('Test Category', $category->getName());
-    }
-
-    public function testGetSetDefaultMarkup(): void
-    {
-        $category = new Category();
-        $category->setDefaultMarkup(0.21);
-
-        $this->assertEquals(0.21, $category->getDefaultMarkup());
-    }
-
-    public function testGetSetOwner(): void
+    public function testSettersAndGetters(): void
     {
         $user = $this->createMock(User::class);
-        $user->method('getFullName')->willReturn('Test Owner');
-
-        $category = new Category();
-        $category->setOwner($user);
-
-        $this->assertEquals('Test Owner', $category->getOwner()->getFullName());
-    }
-
-    public function testGetSetVatRate(): void
-    {
         $vatRate = $this->createMock(VatRate::class);
-        $vatRate->method('getName')->willReturn('Test VatRate');
 
-        $category = new Category();
-        $category->setVatRate($vatRate);
+        $category = (new Category())
+            ->setName('Electronics')
+            ->setDefaultMarkup('10.000')
+            ->setOwner($user)
+            ->setVatRate($vatRate)
+            ->setPriceModel(PriceModel::DEFAULT)
+            ->setIsActive(true);
 
-        $this->assertEquals('Test VatRate', $category->getVatRate()->getName());
-    }
-
-    public function testGetSetPriceModel(): void
-    {
-        $priceModel = PriceModel::PRETTY_99;
-
-        $category = new Category();
-        $category->setPriceModel($priceModel);
-
-        $this->assertEquals('Pretty 99', $category->getPriceModel()->getName());
-    }
-
-    public function testGetSetIsActive(): void
-    {
-        $category = new Category();
-        $category->setIsActive(true);
-
+        $this->assertEquals('Electronics', $category->getName());
+        $this->assertEquals('10.000', $category->getDefaultMarkup());
+        $this->assertSame($user, $category->getOwner());
+        $this->assertSame($vatRate, $category->getVatRate());
+        $this->assertEquals(PriceModel::DEFAULT, $category->getPriceModel());
         $this->assertTrue($category->isActive());
     }
 
-    public function testAddRemoveSubcategory(): void
+    public function testAddSubcategory(): void
     {
-        $subcategory = $this->createMock(Subcategory::class);
         $category = new Category();
+        $subcategory = $this->createMock(Subcategory::class);
+
+        // Test adding a subcategory
+        $subcategory->expects($this->once())
+            ->method('setCategory')
+            ->with($category);
+
         $category->addSubcategory($subcategory);
-
-        $this->assertEquals($subcategory, $category->getSubcategories()->first());
-
-        $category->removeSubcategory($subcategory);
-
-        $this->assertEmpty($category->getSubcategories());
+        $this->assertCount(1, $category->getSubcategories());
+        $this->assertTrue($category->getSubcategories()->contains($subcategory));
     }
 
-    public function testAddRemoveProduct(): void
+    public function testRemoveSubcategory(): void
     {
-        $product = $this->createMock(Product::class);
         $category = new Category();
+        $subcategory = $this->createMock(Subcategory::class);
+
+        // Add the subcategory first to set up the state
+        $category->addSubcategory($subcategory);
+
+        // Test removing a subcategory
+        $subcategory->expects($this->once())
+            ->method('getCategory')
+            ->willReturn($category);
+
+        $subcategory->expects($this->once())
+            ->method('setCategory')
+            ->with(null);
+
+        $category->removeSubcategory($subcategory);
+        $this->assertCount(0, $category->getSubcategories());
+    }
+
+    public function testAddProduct(): void
+    {
+        $category = new Category();
+        $product = $this->createMock(Product::class);
+
+        // Test adding a product
+        $product->expects($this->once())
+            ->method('setCategory')
+            ->with($category);
+
+        $category->addProduct($product);
+        $this->assertCount(1, $category->getProducts());
+        $this->assertTrue($category->getProducts()->contains($product));
+    }
+
+    public function testRemoveProduct(): void
+    {
+        $category = new Category();
+        $product = $this->createMock(Product::class);
+
+        // Add the product first to set up the state
         $category->addProduct($product);
 
-        $this->assertEquals($product, $category->getProducts()->first());
+        // Test removing a product
+        $product->expects($this->once())
+            ->method('getCategory')
+            ->willReturn($category);
+
+        $product->expects($this->once())
+            ->method('setCategory')
+            ->with(null);
 
         $category->removeProduct($product);
+        $this->assertCount(0, $category->getProducts());
+    }
 
-        $this->assertEmpty($category->getProducts());
+    public function testGetActiveProducts(): void
+    {
+        $category = new Category();
+
+        $activeProduct1 = $this->createMock(Product::class);
+        $activeProduct1->method('isActive')->willReturn(true);
+
+        $activeProduct2 = $this->createMock(Product::class);
+        $activeProduct2->method('isActive')->willReturn(true);
+
+        $inactiveProduct = $this->createMock(Product::class);
+        $inactiveProduct->method('isActive')->willReturn(false);
+
+        $category->addProduct($activeProduct1);
+        $category->addProduct($activeProduct2);
+        $category->addProduct($inactiveProduct);
+
+        $activeProducts = $category->getActiveProducts();
+
+        $this->assertCount(2, $activeProducts);
+        $this->assertTrue($activeProducts->contains($activeProduct1));
+        $this->assertTrue($activeProducts->contains($activeProduct2));
+        $this->assertFalse($activeProducts->contains($inactiveProduct));
     }
 }

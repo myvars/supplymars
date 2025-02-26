@@ -9,16 +9,16 @@ use Symfony\Component\Validator\Constraints as Assert;
 class EditOrderItemDto
 {
     public function __construct(
-        #[Assert\NotBlank(message: 'Please enter a orderItemId')]
+        #[Assert\Positive(message: 'Please enter a valid orderItemId')]
         private readonly int $orderItemId,
-        #[Assert\NotBlank(message: 'Please enter a product quantity')]
+        #[Assert\NotNull(message: 'Please enter a product quantity')]
         #[Assert\Range(notInRangeMessage: 'Please enter a product quantity (0 to 100000)', min: 0, max: 100000)]
         #[MinOrderItemQty]
         private ?int $quantity,
-        #[Assert\NotBlank(message: 'Please enter a product price including VAT')]
+        #[Assert\NotNull(message: 'Please enter a product price inc VAT')]
         #[Assert\Range(notInRangeMessage: 'Please enter a product price inc VAT (0 to 100000)', min: 0, max: 100000)]
         private ?string $priceIncVat,
-        private readonly ?bool $allowCancel = false
+        private readonly ?bool $allowCancel = false,
     ) {
     }
 

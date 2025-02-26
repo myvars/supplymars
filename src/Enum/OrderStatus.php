@@ -53,17 +53,17 @@ enum OrderStatus: string
 
     public function allowEdit(): bool
     {
-        return $this === self::PENDING || $this === self::PROCESSING;
+        return self::PENDING === $this || self::PROCESSING === $this;
     }
 
     public function allowCancel(): bool
     {
-        return $this === self::PENDING;
+        return self::PENDING === $this;
     }
 
     public function isCancelled(): bool
     {
-        return $this === self::CANCELLED;
+        return self::CANCELLED === $this;
     }
 
     public function canTransitionTo(OrderStatus $to): bool

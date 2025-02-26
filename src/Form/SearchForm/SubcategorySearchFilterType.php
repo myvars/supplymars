@@ -23,7 +23,7 @@ class SubcategorySearchFilterType extends AbstractType
         private readonly EntityManagerInterface $entityManager,
         private readonly IdToCategoryTransformer $idToCategoryTransformer,
         private readonly IdToManagerTransformer $idToManagerTransformer,
-        private readonly stringToPriceModelTransformer $stringToPriceModelTransformer
+        private readonly stringToPriceModelTransformer $stringToPriceModelTransformer,
     ) {
     }
 

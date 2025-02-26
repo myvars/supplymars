@@ -13,9 +13,18 @@ class ProductImageControllerTest extends WebTestCase
     use HasBrowser;
     use Factories;
 
+    private readonly string $dummyImagePath;
+    private readonly string $invalidImagePath;
+
+    protected function setUp(): void
+    {
+        $this->dummyImagePath =  __DIR__ . '/../../Resources/dummy-image.jpg';
+        $this->invalidImagePath = __DIR__ . '/../../Resources/invalid-image.txt';
+    }
+
     public function testShowProductImages(): void
     {
-        $product = ProductFactory::createOne(['name' => 'Test Product'])->_real();
+        $product = ProductFactory::createOne(['name' => 'Test Product']);
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
@@ -28,16 +37,15 @@ class ProductImageControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
-            ->get('/product/999999/images')
+            ->get('/product/999/images')
             ->assertStatus(404);
     }
 
     public function testCreateRemoveImage(): void
     {
+        $product = ProductFactory::createOne(['name' => 'Test Product'])->_real();
         $uploadDir = static::getContainer()->getParameter('kernel.project_dir') . '/public/'
             . static::getContainer()->getParameter('app.product_uploads');
-        $product = ProductFactory::createOne(['name' => 'Test Product'])->_real();
-        $dummyImagePath = __DIR__ . '/../../Resources/dummy-image.jpg';
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
@@ -45,7 +53,7 @@ class ProductImageControllerTest extends WebTestCase
             ->assertSuccessful()
             ->assertSee('Product Images')
             ->assertSee('0 Product Images')
-            ->attachFile('imageFile[]', [$dummyImagePath, $dummyImagePath])
+            ->attachFile('imageFile[]', [$this->dummyImagePath, $this->dummyImagePath])
             ->click('Upload')
             ->assertSuccessful()
             ->assertSee('Product Image(s) added!')
@@ -77,7 +85,6 @@ class ProductImageControllerTest extends WebTestCase
     public function testCreateImageWithInvalidType(): void
     {
         $product = ProductFactory::createOne(['name' => 'Test Product'])->_real();
-        $invalidImagePath = __DIR__ . '/../../Resources/invalid-image.txt';
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
@@ -85,17 +92,14 @@ class ProductImageControllerTest extends WebTestCase
             ->assertSuccessful()
             ->assertSee('Product Images')
             ->assertSee('0 Product Images')
-            ->attachFile('imageFile[]', [$invalidImagePath])
+            ->attachFile('imageFile[]', [$this->invalidImagePath])
             ->click('Upload')
             ->assertSuccessful()
             ->assertSee('0 Product Images');
     }
 
-    // test for the case when the product does not exist
     public function testCreateImageWithNonExistentProduct(): void
     {
-        $dummyImagePath = __DIR__ . '/../../Resources/dummy-image.jpg';
-
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
             ->request('POST', '/product/999999/images/create', [
@@ -103,25 +107,23 @@ class ProductImageControllerTest extends WebTestCase
                     'Content-Type' => 'multipart/form-data',
                 ],
                 'body' => [
-                    'imageFile' => $dummyImagePath,
+                    'imageFile' => $this->dummyImagePath,
                 ],
             ])
             ->assertStatus(404);
     }
 
-    // test for the case when the product image does not exist
     public function testRemoveNonExistentImage(): void
     {
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
-            ->request('GET', '/product/images/999999/remove')
+            ->request('GET', '/product/images/999/remove')
             ->assertStatus(404);
     }
 
     public function testReorderImages(): void
     {
         $product = ProductFactory::createOne(['name' => 'Test Product'])->_real();
-        $dummyImagePath = __DIR__ . '/../../Resources/dummy-image.jpg';
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
@@ -129,7 +131,7 @@ class ProductImageControllerTest extends WebTestCase
             ->assertSuccessful()
             ->assertSee('Product Images')
             ->assertSee('0 Product Images')
-            ->attachFile('imageFile[]', [$dummyImagePath, $dummyImagePath])
+            ->attachFile('imageFile[]', [$this->dummyImagePath, $this->dummyImagePath])
             ->click('Upload')
             ->assertSuccessful()
             ->assertSee('Product Image(s) added!')
@@ -169,7 +171,6 @@ class ProductImageControllerTest extends WebTestCase
         }
     }
 
-    // test for the case when the request body is not a valid JSON
     public function testReorderImagesWithInvalidBody(): void
     {
         $product = ProductFactory::createOne(['name' => 'Test Product'])->_real();

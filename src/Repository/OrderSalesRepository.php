@@ -21,12 +21,11 @@ class OrderSalesRepository extends ServiceEntityRepository
     public function findOrderSalesSummary(OrderSalesType $orderSalesType): array
     {
         return $this->getOrderSalesQuery($orderSalesType->getStartDate(), $orderSalesType->getEndDate())
-            ->addSelect("DATE_FORMAT(os.salesDate, :dateString) AS dateString")
+            ->addSelect('DATE_FORMAT(os.salesDate, :dateString) AS dateString')
             ->setParameter('dateString', $orderSalesType->getDateString())
             ->groupBy('dateString')
             ->getQuery()->getResult();
     }
-
 
     private function getOrderSalesQuery(string $startDate, string $endDate): QueryBuilder
     {

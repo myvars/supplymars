@@ -33,7 +33,7 @@ final class VatRateFactory extends PersistentProxyObjectFactory
     {
         return [
             'name' => self::faker()->text(255),
-            'rate' => self::faker()->randomNumber(5) / 100,
+            'rate' => self::faker()->numberBetween(1, 100000) / 100,
             'isDefaultVatRate' => false,
         ];
     }
@@ -41,6 +41,7 @@ final class VatRateFactory extends PersistentProxyObjectFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
+    #[\Override]
     protected function initialize(): static
     {
         return $this
@@ -50,6 +51,6 @@ final class VatRateFactory extends PersistentProxyObjectFactory
 
     public function standard(): self
     {
-        return $this->with(['name' => 'Standard Vat Rate', 'rate' => '20.00', 'isDefaultVatRate' => true]);
+        return $this->with(['name' => 'Standard rate', 'rate' => '20.00', 'isDefaultVatRate' => true]);
     }
 }

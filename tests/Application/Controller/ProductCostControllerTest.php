@@ -3,11 +3,9 @@
 namespace App\Tests\Application\Controller;
 
 use App\Factory\ProductFactory;
+use App\Factory\SupplierProductFactory;
 use App\Factory\UserFactory;
-use App\Service\Product\ActiveSourceCalculator;
 use App\Service\Product\ProductPriceCalculator;
-use App\Tests\Utilities\TestProduct;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
@@ -19,16 +17,9 @@ class ProductCostControllerTest extends WebTestCase
 
     private ProductPriceCalculator $productPriceCalculator;
 
-    private TestProduct $testProduct;
-
     protected function setUp(): void
     {
         $this->productPriceCalculator = self::getContainer()->get(ProductPriceCalculator::class);
-        $this->testProduct = new TestProduct(
-            self::getContainer()->get(EntityManagerInterface::class),
-            self::getContainer()->get(ActiveSourceCalculator::class),
-            $this->productPriceCalculator
-        );
     }
 
     public function testShowProductCost(): void
@@ -42,9 +33,19 @@ class ProductCostControllerTest extends WebTestCase
             ->assertSee('Product Cost');
     }
 
+    public function testProductCostSecurity(): void
+    {
+        $product = ProductFactory::createOne(['name' => 'Product to be shown']);
+
+        $this->browser()
+            ->get("/product/" . $product->getId() . "/cost")
+            ->assertOn('/login');
+    }
+
     public function testShowProductCostWithActiveProductCategorySubcategoryAndSource(): void
     {
-        $product = $this->testProduct->create();
+        $supplierProduct = SupplierProductFactory::createOne();
+        $product = $supplierProduct->getProduct();
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
@@ -56,7 +57,8 @@ class ProductCostControllerTest extends WebTestCase
 
     public function testShowProductCostWithInactiveProduct(): void
     {
-        $product = $this->testProduct->create();
+        $supplierProduct = SupplierProductFactory::createOne();
+        $product = $supplierProduct->getProduct();
 
         $product->setIsActive(false);
 
@@ -72,7 +74,8 @@ class ProductCostControllerTest extends WebTestCase
 
     public function testShowProductCostWithInactiveCategory(): void
     {
-        $product = $this->testProduct->create();
+        $supplierProduct = SupplierProductFactory::createOne();
+        $product = $supplierProduct->getProduct();
 
         $product->getCategory()->setIsActive(false);
         $this->productPriceCalculator->recalculatePrice($product);
@@ -87,7 +90,8 @@ class ProductCostControllerTest extends WebTestCase
 
     public function testShowProductCostWithInactiveSubcategory(): void
     {
-        $product = $this->testProduct->create();
+        $supplierProduct = SupplierProductFactory::createOne();
+        $product = $supplierProduct->getProduct();
 
         $product->getSubcategory()->setIsActive(false);
         $this->productPriceCalculator->recalculatePrice($product);
@@ -100,7 +104,7 @@ class ProductCostControllerTest extends WebTestCase
             ->assertSee('Incomplete Product');
     }
 
-    public function testShowProductCostWithInvalidProduct(): void
+    public function testShowProductCostNotFound(): void
     {
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
@@ -110,10 +114,7 @@ class ProductCostControllerTest extends WebTestCase
 
     public function testEditProductCost(): void
     {
-        $product = ProductFactory::createOne([
-            'name' => 'Test Product',
-            'defaultMarkup' => '0.000',
-        ]);
+        $product = ProductFactory::createOne(['name' => 'Test Product']);
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
@@ -141,7 +142,7 @@ class ProductCostControllerTest extends WebTestCase
             ->assertSee('Please enter a price model');
     }
 
-    public function testEditProductCostWithInvalidProduct(): void
+    public function testEditProductCostNotFound(): void
     {
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
@@ -151,10 +152,7 @@ class ProductCostControllerTest extends WebTestCase
 
     public function testEditCategoryCost(): void
     {
-        $product = ProductFactory::createOne([
-            'name' => 'Test Product',
-            'defaultMarkup' => '0.000',
-        ]);
+        $product = ProductFactory::createOne(['name' => 'Test Product']);
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
@@ -182,7 +180,7 @@ class ProductCostControllerTest extends WebTestCase
             ->assertSee('Please enter a price model');
     }
 
-    public function testEditCategoryCostWithInvalidProduct(): void
+    public function testEditCategoryCostNotFound(): void
     {
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
@@ -192,10 +190,7 @@ class ProductCostControllerTest extends WebTestCase
 
     public function testEditSubcategoryCost(): void
     {
-        $product = ProductFactory::createOne([
-            'name' => 'Test Product',
-            'defaultMarkup' => '0.000',
-        ]);
+        $product = ProductFactory::createOne(['name' => 'Test Product']);
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
@@ -223,7 +218,7 @@ class ProductCostControllerTest extends WebTestCase
             ->assertSee('Please enter a price model');
     }
 
-    public function testEditSubcategoryCostWithInvalidProduct(): void
+    public function testEditSubcategoryCostNotFound(): void
     {
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())

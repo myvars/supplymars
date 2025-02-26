@@ -17,7 +17,7 @@ class CrudSearcher extends AbstractController
 
     public function __construct(
         public readonly CrudHelper $crudHelper,
-        private readonly Paginator $paginator
+        private readonly Paginator $paginator,
     ) {
     }
 
@@ -30,7 +30,7 @@ class CrudSearcher extends AbstractController
         try {
             $searchResults = $this->getSearchResults($searchDto, $searchQuery);
         } catch (OutOfRangeCurrentPageException) {
-            $this->addFlash('warning', 'Page '. $searchDto->getPage() .' not found!');
+            $this->addFlash('warning', 'Page '.$searchDto->getPage().' not found!');
 
             return $this->crudHelper->redirectToLink(
                 $this->generateUrl(
@@ -49,7 +49,7 @@ class CrudSearcher extends AbstractController
 
     private function getSearchResults(
         SearchInterface $searchDto,
-        SearchQueryInterface $searchQuery
+        SearchQueryInterface $searchQuery,
     ): Pagerfanta {
         return $this->paginator->createPagination(
             $searchQuery->findBySearchDto($searchDto),

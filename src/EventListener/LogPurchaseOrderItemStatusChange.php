@@ -3,7 +3,7 @@
 namespace App\EventListener;
 
 use App\Event\PurchaseOrderItemStatusChangedEvent;
-use App\Service\StatusChangeLogger;
+use App\Service\OrderProcessing\StatusChangeLogger;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 final readonly class LogPurchaseOrderItemStatusChange

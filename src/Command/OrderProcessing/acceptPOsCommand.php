@@ -22,7 +22,7 @@ class acceptPOsCommand extends Command
 {
     public function __construct(
         private readonly SupplierUtility $supplierUtility,
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct();
     }
@@ -63,7 +63,7 @@ class acceptPOsCommand extends Command
                 );
             }
 
-            $processedPoCount++;
+            ++$processedPoCount;
 
             $io->note(sprintf('Purchase order %05d : %s', $purchaseOrder->getId(), $newStatus->value));
         }
@@ -82,6 +82,6 @@ class acceptPOsCommand extends Command
     private function realWorldPoStatusSimulator(): PurchaseOrderStatus
     {
         // Simulate real world scenario by rejecting some POs
-        return random_int(1,50) === 1 ? PurchaseOrderStatus::REJECTED : PurchaseOrderStatus::ACCEPTED;
+        return 1 === random_int(1, 50) ? PurchaseOrderStatus::REJECTED : PurchaseOrderStatus::ACCEPTED;
     }
 }

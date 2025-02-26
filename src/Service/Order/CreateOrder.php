@@ -3,13 +3,12 @@
 namespace App\Service\Order;
 
 use App\DTO\CreateOrderDto;
-use App\Entity\Address;
 use App\Entity\CustomerOrder;
 use App\Entity\User;
 use App\Entity\VatRate;
 use App\Service\Crud\Common\CrudActionInterface;
 use App\Service\Crud\Common\CrudOptions;
-use App\Service\DomainEventDispatcher;
+use App\Service\Utility\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -18,7 +17,7 @@ final readonly class CreateOrder implements CrudActionInterface
     public function __construct(
         private EntityManagerInterface $entityManager,
         private ValidatorInterface $validator,
-        private DomainEventDispatcher $domainEventDispatcher
+        private DomainEventDispatcher $domainEventDispatcher,
     ) {
     }
 
@@ -46,7 +45,7 @@ final readonly class CreateOrder implements CrudActionInterface
 
         $errors = $this->validator->validate($customerOrder);
         if (count($errors) > 0) {
-            throw new \InvalidArgumentException((string)$errors);
+            throw new \InvalidArgumentException((string) $errors);
         }
 
         $this->entityManager->persist($customerOrder);

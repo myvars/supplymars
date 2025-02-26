@@ -18,99 +18,121 @@ class ProductImage
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'productImages')]
-    #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotNull(message: 'Please enter a product')]
-    private ?Product $product = null;
-
-    #[ORM\Column]
-    private ?int $position = null;
-
     #[ORM\Column(length: 255)]
-    private ?string $imageName = null;
+    #[Assert\NotBlank(message: 'Please enter an image name')]
+    private string $imageName = 'image';
 
-    #[ORM\Column]
-    private ?int $imageSize = null;
+    private function __construct(
+        #[ORM\ManyToOne(inversedBy: 'productImages')]
+        #[ORM\JoinColumn(nullable: false)]
+        private Product $product,
 
-    #[ORM\Column(length: 255)]
-    private ?string $imageMimeType = null;
+        #[ORM\Column]
+        #[Assert\Positive(message: 'Position must be greater than 0')]
+        private int $position,
 
-    #[ORM\Column(length: 255)]
-    private ?string $imageOriginalName = null;
+        #[ORM\Column]
+        #[Assert\Positive(message: 'Image size must be greater than 0')]
+        private readonly int $imageSize,
 
-    #[Assert\NotNull(message: 'Please upload an image')]
-    #[Assert\Image(maxSize: '2M', maxSizeMessage: 'The image is too large. Allowed maximum size is 2MB')]
-    #[Assert\File(mimeTypes: ['image/*'], mimeTypesMessage: 'Please upload a valid file type')]
-    private ?UploadedFile $imageFile = null;
+        #[ORM\Column(length: 255)]
+        #[Assert\NotBlank(message: 'Please enter an image mime type')]
+        private readonly string $imageMimeType,
+
+        #[ORM\Column(length: 255)]
+        #[Assert\NotBlank(message: 'Please enter an image original name')]
+        private readonly string $imageOriginalName,
+
+        #[Assert\NotNull(message: 'Please upload an image')]
+        #[Assert\Image(maxSize: '2M', maxSizeMessage: 'The image is too large. Allowed maximum size is 2MB')]
+        #[Assert\File(mimeTypes: ['image/*'], mimeTypesMessage: 'Please upload a valid file type')]
+        private readonly UploadedFile $imageFile,
+    ) {
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    public function getProduct(): ?Product
+    public function getProduct(): Product
     {
         return $this->product;
     }
 
-    public function setProduct(?Product $product): static
+    public function setProduct(Product $product): static
     {
         $this->product = $product;
 
         return $this;
     }
 
-    public function getPosition(): ?int
+    public function getPosition(): int
     {
         return $this->position;
     }
 
-    public function setPosition(int $position): static
+    private function setPosition(int $position): static
     {
         $this->position = $position;
 
         return $this;
     }
 
-    public function setImageName(?string $imageName): static
+    private function setImageName(string $imageName): static
     {
         $this->imageName = $imageName;
 
         return $this;
     }
 
-    public function getImageName(): ?string
+    public function getImageName(): string
     {
         return $this->imageName;
     }
 
-    public function getImageSize(): ?int
+    public function getImageSize(): int
     {
         return $this->imageSize;
     }
 
-    public function getImageMimeType(): ?string
+    public function getImageMimeType(): string
     {
         return $this->imageMimeType;
     }
 
-    public function getImageOriginalName(): ?string
+    public function getImageOriginalName(): string
     {
         return $this->imageOriginalName;
     }
 
-    public function setImageFile(UploadedFile $imageFile): static
-    {
-        $this->imageFile = $imageFile;
-        $this->imageSize = $imageFile->getSize();
-        $this->imageMimeType = $imageFile->getMimeType();
-        $this->imageOriginalName = $imageFile->getClientOriginalName();
-
-        return $this;
-    }
-
-    public function getImageFile(): ?UploadedFile
+    public function getImageFile(): UploadedFile
     {
         return $this->imageFile;
+    }
+
+    public static function createFromUploadedFile(
+        Product $product,
+        UploadedFile $uploadedFile,
+        int $position,
+    ): self {
+        return new self(
+            $product,
+            $position,
+            $uploadedFile->getSize(),
+            $uploadedFile->getMimeType(),
+            $uploadedFile->getClientOriginalName(),
+            $uploadedFile
+        );
+    }
+
+    public function updateImageName(string $imageName): void
+    {
+        $this->setImageName($imageName);
+    }
+
+    public function updatePosition(int $position): void
+    {
+        $this->setPosition($position);
     }
 }

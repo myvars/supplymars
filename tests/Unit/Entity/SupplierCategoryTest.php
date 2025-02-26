@@ -10,46 +10,87 @@ use PHPUnit\Framework\TestCase;
 
 class SupplierCategoryTest extends TestCase
 {
-    public function testGetSetName(): void
-    {
-        $supplierCategory = new SupplierCategory();
-        $supplierCategory->setName('Test Supplier Category');
-
-        $this->assertEquals('Test Supplier Category', $supplierCategory->getName());
-    }
-
-    public function testGetSetSupplier(): void
+    public function testSettersAndGetters(): void
     {
         $supplier = $this->createMock(Supplier::class);
-        $supplierCategory = new SupplierCategory();
-        $supplierCategory->setSupplier($supplier);
 
-        $this->assertEquals($supplier, $supplierCategory->getSupplier());
+        $supplierCategory = (new SupplierCategory())
+            ->setName('Test Supplier Category')
+            ->setSupplier($supplier);
+
+        $this->assertEquals('Test Supplier Category', $supplierCategory->getName());
+        $this->assertSame($supplier, $supplierCategory->getSupplier());
     }
 
-    public function testAddRemoveSupplierProduct(): void
+    public function testAddSupplierProduct(): void
     {
-        $supplierProduct = $this->createMock(SupplierProduct::class);
         $supplierCategory = new SupplierCategory();
+        $supplierProduct = $this->createMock(SupplierProduct::class);
+
+        // Test adding a supplier product
+        $supplierProduct->expects($this->once())
+            ->method('setSupplierCategory')
+            ->with($supplierCategory);
+
+        $supplierCategory->addSupplierProduct($supplierProduct);
+        $this->assertCount(1, $supplierCategory->getSupplierProducts());
+        $this->assertTrue($supplierCategory->getSupplierProducts()->contains($supplierProduct));
+    }
+
+    public function testRemoveSupplierProduct(): void
+    {
+        $supplierCategory = new SupplierCategory();
+        $supplierProduct = $this->createMock(SupplierProduct::class);
+
+        // Add the supplier product first to set up the state
         $supplierCategory->addSupplierProduct($supplierProduct);
 
-        $this->assertEquals($supplierProduct, $supplierCategory->getSupplierProducts()->first());
+        // Test removing a supplier product
+        $supplierProduct->expects($this->once())
+            ->method('getSupplierCategory')
+            ->willReturn($supplierCategory);
+
+        $supplierProduct->expects($this->once())
+            ->method('setSupplierCategory')
+            ->with(null);
 
         $supplierCategory->removeSupplierProduct($supplierProduct);
-
-        $this->assertEmpty($supplierCategory->getSupplierProducts());
+        $this->assertCount(0, $supplierCategory->getSupplierProducts());
     }
 
-    public function testAddRemoveSupplierSubcategory(): void
+    public function testAddSupplierSubcategory(): void
     {
-        $supplierSubcategory = $this->createMock(SupplierSubcategory::class);
         $supplierCategory = new SupplierCategory();
+        $supplierSubcategory = $this->createMock(SupplierSubcategory::class);
+
+        // Test adding a supplier subcategory
+        $supplierSubcategory->expects($this->once())
+            ->method('setSupplierCategory')
+            ->with($supplierCategory);
+
+        $supplierCategory->addSupplierSubcategory($supplierSubcategory);
+        $this->assertCount(1, $supplierCategory->getSupplierSubcategories());
+        $this->assertTrue($supplierCategory->getSupplierSubcategories()->contains($supplierSubcategory));
+    }
+
+    public function testRemoveSupplierSubcategory(): void
+    {
+        $supplierCategory = new SupplierCategory();
+        $supplierSubcategory = $this->createMock(SupplierSubcategory::class);
+
+        // Add the supplier subcategory first to set up the state
         $supplierCategory->addSupplierSubcategory($supplierSubcategory);
 
-        $this->assertEquals($supplierSubcategory, $supplierCategory->getSupplierSubcategories()->first());
+        // Test removing a supplier subcategory
+        $supplierSubcategory->expects($this->once())
+            ->method('getSupplierCategory')
+            ->willReturn($supplierCategory);
+
+        $supplierSubcategory->expects($this->once())
+            ->method('setSupplierCategory')
+            ->with(null);
 
         $supplierCategory->removeSupplierSubcategory($supplierSubcategory);
-
-        $this->assertEmpty($supplierCategory->getSupplierSubcategories());
+        $this->assertCount(0, $supplierCategory->getSupplierSubcategories());
     }
 }

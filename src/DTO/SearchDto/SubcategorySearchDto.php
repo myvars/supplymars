@@ -22,6 +22,7 @@ final class SubcategorySearchDto extends SearchDto implements SearchFilterInterf
     #[Assert\Range(notInRangeMessage: 'Please enter a valid Manager Id', min: 1, max: 1000000)]
     private ?int $managerId = null;
 
+    #[\Override]
     public function getSearchParams(): array
     {
         $searchFilterParams = [
@@ -57,6 +58,7 @@ final class SubcategorySearchDto extends SearchDto implements SearchFilterInterf
     public function setPriceModel(?string $priceModel): SubcategorySearchDto
     {
         $this->priceModel = $priceModel;
+
         return $this;
     }
 

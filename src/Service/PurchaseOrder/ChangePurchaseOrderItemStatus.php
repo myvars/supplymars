@@ -6,14 +6,14 @@ use App\DTO\ChangePurchaseOrderItemStatusDto;
 use App\Entity\PurchaseOrderItem;
 use App\Service\Crud\Common\CrudActionInterface;
 use App\Service\Crud\Common\CrudOptions;
-use App\Service\DomainEventDispatcher;
+use App\Service\Utility\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 
 final readonly class ChangePurchaseOrderItemStatus implements CrudActionInterface
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private DomainEventDispatcher $domainEventDispatcher
+        private DomainEventDispatcher $domainEventDispatcher,
     ) {
     }
 
@@ -48,7 +48,7 @@ final readonly class ChangePurchaseOrderItemStatus implements CrudActionInterfac
             $purchaseOrderItem,
             $purchaseOrderItem->getPurchaseOrder(),
             $purchaseOrderItem->getCustomerOrderItem(),
-            $purchaseOrderItem->getCustomerOrderItem()->getCustomerOrder()
+            $purchaseOrderItem->getCustomerOrderItem()->getCustomerOrder(),
         ]);
     }
 

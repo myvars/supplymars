@@ -34,7 +34,7 @@ class DoughnutChartBuilder
                         'label' => ucfirst($salesMetric->getDataLabel()),
                         'data' => array_values($data),
                         'backgroundColor' => array_map(
-                            fn($status): string => OrderStatus::from($status)->getChartColor(),
+                            fn ($status): string => OrderStatus::from($status)->getChartColor(),
                             array_keys($data)
                         ),
                         'borderWidth' => 1,
@@ -47,7 +47,6 @@ class DoughnutChartBuilder
                 'layout' => [
                     'padding' => 20,
                     'borderWidth' => 1,
-
                 ],
                 'plugins' => [
                     'tooltip' => [
@@ -80,7 +79,7 @@ class DoughnutChartBuilder
             $order[strtolower($status->value)] = $status->getLevel();
         }
 
-        uksort($chartData, fn($a, $b): int => $order[strtolower((string) $a)] <=> $order[strtolower((string) $b)]);
+        uksort($chartData, fn ($a, $b): int => $order[strtolower((string) $a)] <=> $order[strtolower((string) $b)]);
 
         return $chartData;
     }

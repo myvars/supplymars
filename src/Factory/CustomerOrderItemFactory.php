@@ -4,6 +4,7 @@ namespace App\Factory;
 
 use App\Entity\CustomerOrderItem;
 use Zenstruck\Foundry\LazyValue;
+use Zenstruck\Foundry\Object\Instantiator;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -32,12 +33,9 @@ final class CustomerOrderItemFactory extends PersistentProxyObjectFactory
      */
     protected function defaults(): array|callable
     {
-        $customerOrder = LazyValue::memoize(fn() => CustomerOrderFactory::new()->create());
-        $product = LazyValue::memoize(fn() => ProductFactory::new()->create());
-
         return [
-            'customerOrder' => $customerOrder,
-            'product' => $product,
+            'customerOrder' => LazyValue::memoize(fn (): CustomerOrderFactory => CustomerOrderFactory::new()),
+            'product' => LazyValue::memoize(fn (): ProductFactory => ProductFactory::new()),
             'quantity' => 1,
         ];
     }
@@ -45,14 +43,11 @@ final class CustomerOrderItemFactory extends PersistentProxyObjectFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
+    #[\Override]
     protected function initialize(): static
     {
-        return $this->instantiateWith(function (array $attributes) {
-            return CustomerOrderItem::createFromProduct(
-                $attributes['customerOrder'],
-                $attributes['product'],
-                $attributes['quantity']
-            );
-        });
+        return $this->instantiateWith(
+            Instantiator::namedConstructor('createFromProduct')
+        );
     }
 }

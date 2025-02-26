@@ -20,28 +20,27 @@ use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/category')]
 #[IsGranted('ROLE_ADMIN')]
 class CategoryController extends AbstractController
 {
     public const string SECTION = 'Category';
 
-    #[Route('/', name: 'app_category_index', methods: ['GET'])]
+    #[Route(path: '/category/', name: 'app_category_index', methods: ['GET'])]
     public function index(
         Request $request,
         CrudSearcher $handler,
         CategoryRepository $repository,
-        #[MapQueryString] CategorySearchDto $dto = new CategorySearchDto()
+        #[MapQueryString] CategorySearchDto $dto = new CategorySearchDto(),
     ): Response {
         return $handler->search(self::SECTION, $dto, $repository, $request->query->all());
     }
 
-    #[Route('/search/filter', name: 'app_category_search_filter', methods: ['GET', 'POST'])]
+    #[Route(path: '/category/search/filter', name: 'app_category_search_filter', methods: ['GET', 'POST'])]
     public function searchFilter(
         Request $request,
         CrudUpdater $handler,
         SearchFilter $action,
-        #[MapQueryString] CategorySearchDto $dto = new CategorySearchDto()
+        #[MapQueryString] CategorySearchDto $dto = new CategorySearchDto(),
     ): Response {
         $dto->setQueryString($request->getQueryString());
         $form = $this->createForm(CategorySearchFilterType::class, $dto, [
@@ -60,40 +59,40 @@ class CategoryController extends AbstractController
         );
     }
 
-    #[Route('/new', name: 'app_category_new', methods: ['GET', 'POST'])]
+    #[Route(path: '/category/new', name: 'app_category_new', methods: ['GET', 'POST'])]
     public function new(CrudCreator $handler): Response
     {
         return $handler->create(self::SECTION, new Category(), CategoryType::class);
     }
 
-    #[Route('/{id}', name: 'app_category_show', methods: ['GET'])]
+    #[Route(path: '/category/{id}', name: 'app_category_show', methods: ['GET'])]
     public function show(
-        Category $category,
-        CrudReader $handler
+        ?Category $category,
+        CrudReader $handler,
     ): Response {
         return $handler->read(self::SECTION, $category);
     }
 
-    #[Route('/{id}/edit', name: 'app_category_edit', methods: ['GET', 'POST'])]
+    #[Route(path: '/category/{id}/edit', name: 'app_category_edit', methods: ['GET', 'POST'])]
     public function edit(
         Category $category,
-        CrudUpdater $handler
+        CrudUpdater $handler,
     ): Response {
         return $handler->update(self::SECTION, $category, CategoryType::class);
     }
 
-    #[Route('/{id}/delete/confirm', name: 'app_category_delete_confirm', methods: ['GET'])]
+    #[Route(path: '/category/{id}/delete/confirm', name: 'app_category_delete_confirm', methods: ['GET'])]
     public function deleteConfirm(
-        Category $category,
-        CrudDeleter $handler
+        ?Category $category,
+        CrudDeleter $handler,
     ): Response {
         return $handler->deleteConfirm(self::SECTION, $category);
     }
 
-    #[Route('/{id}/delete', name: 'app_category_delete', methods: ['POST'])]
+    #[Route(path: '/category/{id}/delete', name: 'app_category_delete', methods: ['POST'])]
     public function delete(
         Category $category,
-        CrudDeleter $handler
+        CrudDeleter $handler,
     ): Response {
         return $handler->delete(self::SECTION, $category);
     }

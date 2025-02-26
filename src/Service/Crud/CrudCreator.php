@@ -18,7 +18,7 @@ class CrudCreator extends BaseCrudHandler
         public readonly CrudHelper $crudHelper,
         private readonly CrudOptions $crudOptions,
         #[Autowire(service: CrudCreateAction::class)]
-        private readonly CrudActionInterface $defaultCrudAction
+        private readonly CrudActionInterface $defaultCrudAction,
     ) {
         parent::__construct($crudHelper);
     }
@@ -37,10 +37,10 @@ class CrudCreator extends BaseCrudHandler
             ->setCrudActionContext(null);
     }
 
-    public function setup(string $section, object $entity, string $formType=''): CrudOptions
+    public function setup(string $section, object $entity, string $formType = ''): CrudOptions
     {
         $form = $this->createForm($formType, $entity, [
-            'action' => $this->generateUrl('app_'.$this->crudHelper->snakeCase($section).'_new')
+            'action' => $this->generateUrl('app_'.$this->crudHelper->snakeCase($section).'_new'),
         ]);
 
         return $this->setDefaults()

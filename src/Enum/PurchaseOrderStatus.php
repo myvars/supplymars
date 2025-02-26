@@ -34,17 +34,17 @@ enum PurchaseOrderStatus: string
 
     public function allowEdit(): bool
     {
-        return $this === self::PENDING;
+        return self::PENDING === $this;
     }
 
     public function isRefunded(): bool
     {
-        return $this === self::REFUNDED;
+        return self::REFUNDED === $this;
     }
 
     public function isCancelled(): bool
     {
-        return $this === self::CANCELLED;
+        return self::CANCELLED === $this;
     }
 
     public function canTransitionTo(PurchaseOrderStatus $to): bool

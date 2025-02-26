@@ -32,7 +32,7 @@ class ProductSalesSummaryRepository extends ServiceEntityRepository
         string $salesTypeId,
         SalesType $salesType,
         SalesDuration $duration,
-        string $startDate
+        string $startDate,
     ): array {
         return $this->getProductSalesSummaryQuery($salesTypeId, $salesType)
             ->setParameter('duration', $duration->value)
@@ -57,7 +57,6 @@ class ProductSalesSummaryRepository extends ServiceEntityRepository
             ->andWhere('ps.duration = :duration')
             ->setParameter('salesId', $salesTypeId)
             ->setParameter('salesType', $salesType->value);
-
     }
 
     public function deleteByProductSalesType(ProductSalesType $productSalesType): void
@@ -69,9 +68,9 @@ class ProductSalesSummaryRepository extends ServiceEntityRepository
             ->setParameter('salesType', $productSalesType->getSalesType()->value)
             ->setParameter('duration', $productSalesType->getDuration()->value);
 
-        if ($productSalesType->getRangeStartDate() !== null) {
+        if (null !== $productSalesType->getRangeStartDate()) {
             $qb->andWhere('p.dateString = :dateString')
-                ->setParameter('dateString', $productSalesType->getRangeStartDate() );
+                ->setParameter('dateString', $productSalesType->getRangeStartDate());
         }
 
         $qb->getQuery()->execute();

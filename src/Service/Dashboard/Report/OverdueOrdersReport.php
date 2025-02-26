@@ -5,7 +5,6 @@ namespace App\Service\Dashboard\Report;
 use App\DTO\SearchDto\OverdueOrderSearchDto;
 use App\Repository\CustomerOrderRepository;
 use App\Service\Search\Paginator;
-use DateTime;
 use Pagerfanta\Exception\OutOfRangeCurrentPageException;
 use Pagerfanta\Pagerfanta;
 use Symfony\Component\DependencyInjection\Attribute\AsTaggedItem;
@@ -17,7 +16,7 @@ class OverdueOrdersReport implements ReportInterface
 
     public function __construct(
         private readonly CustomerOrderRepository $orderRepository,
-        private readonly Paginator $paginator
+        private readonly Paginator $paginator,
     ) {
     }
 
@@ -45,7 +44,7 @@ class OverdueOrdersReport implements ReportInterface
     private function getSummary(): ?array
     {
         $summary = $this->orderRepository->findOverdueOrdersSummary(
-            new DateTime($this->dto->getDuration()->getStartDate())
+            new \DateTime($this->dto->getDuration()->getStartDate())
         );
 
         return $summary ?? [];

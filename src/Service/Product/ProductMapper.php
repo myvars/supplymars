@@ -13,14 +13,14 @@ class ProductMapper
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly ValidatorInterface $validator
+        private readonly ValidatorInterface $validator,
     ) {
     }
 
     public function createProductFromSupplierProduct(
         SupplierProduct $supplierProduct,
         Manufacturer $manufacturer,
-        Subcategory $subcategory
+        Subcategory $subcategory,
     ): Product {
         $product = $this->productAlreadyExists($supplierProduct->getName());
         if ($product instanceof Product) {
@@ -42,7 +42,7 @@ class ProductMapper
 
         $errors = $this->validator->validate($product);
         if (count($errors) > 0) {
-            throw new \InvalidArgumentException((string)$errors);
+            throw new \InvalidArgumentException((string) $errors);
         }
 
         $this->entityManager->persist($product);
@@ -60,7 +60,7 @@ class ProductMapper
 
     private function mapProductToSupplier(
         SupplierProduct $supplierProduct,
-        Product $product
+        Product $product,
     ): void {
         if ($supplierProduct->getProduct() instanceof Product) {
             return;

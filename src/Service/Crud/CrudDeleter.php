@@ -18,14 +18,14 @@ class CrudDeleter extends BaseCrudHandler
         public readonly CrudHelper $crudHelper,
         private readonly CrudOptions $crudOptions,
         #[Autowire(service: CrudDeleteAction::class)]
-        private readonly CrudActionInterface $defaultCrudAction
+        private readonly CrudActionInterface $defaultCrudAction,
     ) {
         parent::__construct($crudHelper);
     }
 
     public function deleteConfirm(string $section, ?object $entity): Response
     {
-        if ($entity === null) {
+        if (null === $entity) {
             return $this->crudHelper->crudError($section);
         }
 
@@ -49,7 +49,7 @@ class CrudDeleter extends BaseCrudHandler
             ->setCrudActionContext(null);
     }
 
-    public function setup(string $section, object $entity, string $formType=''): CrudOptions
+    public function setup(string $section, object $entity, string $formType = ''): CrudOptions
     {
         return $this->setDefaults()
             ->setSection($section)

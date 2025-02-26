@@ -29,7 +29,7 @@ class CrudReader extends BaseCrudHandler
             ->setTemplate(self::TEMPLATE);
     }
 
-    public function setup(string $section, object $entity, string $formType=''): CrudOptions
+    public function setup(string $section, object $entity, string $formType = ''): CrudOptions
     {
         return $this->setDefaults()
             ->setSection($section)

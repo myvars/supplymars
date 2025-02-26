@@ -16,7 +16,6 @@ readonly class IdToSupplierTransformer implements DataTransformerInterface
     /**
      * Transforms a string (id) to an object (Supplier).
      *
-     *
      * @throws TransformationFailedException if object (Supplier) is not found
      */
     public function transform(mixed $value): ?Supplier

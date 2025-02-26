@@ -86,10 +86,10 @@ class ProductType extends AbstractType
         ;
 
         $builder->add('auto-update', SubmitType::class, [
-            'attr' => ['class' => 'hidden-submit-button', 'data-submit-form-target' => 'submit']
+            'attr' => ['class' => 'hidden-submit-button', 'data-submit-form-target' => 'submit'],
         ]);
 
-        $builder->addDependent('subcategory', 'category', function(DependentField $field, ?Category $category): void {
+        $builder->addDependent('subcategory', 'category', function (DependentField $field, ?Category $category): void {
             $field
                 ->add(EntityType::class, [
                     'class' => Subcategory::class,

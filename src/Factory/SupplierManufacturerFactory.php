@@ -3,6 +3,7 @@
 namespace App\Factory;
 
 use App\Entity\SupplierManufacturer;
+use Zenstruck\Foundry\LazyValue;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -33,13 +34,14 @@ final class SupplierManufacturerFactory extends PersistentProxyObjectFactory
     {
         return [
             'name' => self::faker()->company(),
-            'supplier' => SupplierFactory::new(),
+            'supplier' => LazyValue::memoize(fn (): SupplierFactory => SupplierFactory::new()),
         ];
     }
 
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
+    #[\Override]
     protected function initialize(): static
     {
         return $this

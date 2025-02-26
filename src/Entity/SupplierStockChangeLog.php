@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: SupplierStockChangeLogRepository::class)]
+#[ORM\Index(columns: ['supplier_product_id', 'event_type'])]
 class SupplierStockChangeLog
 {
     #[ORM\Id]
@@ -15,35 +16,43 @@ class SupplierStockChangeLog
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    #[Assert\NotBlank(message: 'Please enter a supplier product Id')]
-    #[Assert\Positive(message: 'Please enter a positive supplier product Id')]
-    private readonly int $supplierProductId;
-
-    #[ORM\Column]
-    #[Assert\NotBlank(message: 'Please enter a stock level')]
-    #[Assert\Range(notInRangeMessage: 'Please enter a stock level', min: 0, max: 10000)]
-    private readonly int $stock;
-
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
-    #[Assert\NotBlank(message: 'Please enter a cost')]
-    #[Assert\PositiveOrZero]
-    private readonly string $cost;
-
-    public function __construct(
+    private function __construct(
         #[ORM\Column(length: 255)]
-        #[Assert\NotBlank(message: 'Please enter an event type')]
+        #[Assert\Choice(choices: [
+            DomainEventType::SUPPLIER_PRODUCT_STOCK_CHANGED,
+            DomainEventType::SUPPLIER_PRODUCT_COST_CHANGED,
+        ], message: 'Invalid event type')]
         private readonly DomainEventType $eventType,
 
-        SupplierProduct $supplierProduct,
+        #[ORM\Column]
+        private readonly int $supplierProductId,
 
         #[ORM\Column]
-        #[Assert\NotBlank(message: 'Please enter an event timestamp')]
-        private readonly \DateTimeImmutable $eventTimestamp
+        #[Assert\Range(notInRangeMessage: 'Please enter a stock level', min: 0, max: 10000)]
+        private readonly int $stock,
+
+        #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+        #[Assert\PositiveOrZero(message: 'Please enter a positive or zero cost')]
+        private readonly string $cost,
+
+        #[ORM\Column]
+        #[Assert\NotNull(message: 'Event timestamp must not be null')]
+        private readonly \DateTimeImmutable $eventTimestamp,
     ) {
-        $this->supplierProductId = $supplierProduct->getId();
-        $this->stock = $supplierProduct->getStock();
-        $this->cost = $supplierProduct->getCost();
+    }
+
+    public static function create(
+        DomainEventType $eventType,
+        SupplierProduct $supplierProduct,
+        \DateTimeImmutable $eventTimestamp,
+    ): self {
+        return new self(
+            $eventType,
+            $supplierProduct->getId(),
+            $supplierProduct->getStock(),
+            $supplierProduct->getCost(),
+            $eventTimestamp
+        );
     }
 
     public function getId(): ?int

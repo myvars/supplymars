@@ -19,7 +19,7 @@ class PurchaseOrderSearchFilterType extends AbstractType
 {
     public function __construct(
         private readonly IdToSupplierTransformer $idToSupplierTransformer,
-        private readonly stringToPurchaseOrderStatusTransformer $stringToPurchaseOrderStatusTransformer
+        private readonly stringToPurchaseOrderStatusTransformer $stringToPurchaseOrderStatusTransformer,
     ) {
     }
 
@@ -33,17 +33,17 @@ class PurchaseOrderSearchFilterType extends AbstractType
                 'placeholder' => 'Any Supplier',
             ])
             ->add('purchaseOrderId', null, [
-                'label' => 'Purchase Order Id'
+                'label' => 'Purchase Order Id',
             ])
             ->add('customerOrderId', null, [
                 'required' => false,
-                'label' => 'Customer Order Id'
+                'label' => 'Customer Order Id',
             ])
             ->add('customerId', null, [
-                'label' => 'Customer Id'
+                'label' => 'Customer Id',
             ])
             ->add('productId', null, [
-                'label' => 'with Product Id'
+                'label' => 'with Product Id',
             ])
             ->add('purchaseOrderStatus', EnumType::class, [
                 'class' => PurchaseOrderStatus::class,
@@ -57,7 +57,7 @@ class PurchaseOrderSearchFilterType extends AbstractType
                 'attr' => [
                     'data-controller' => 'datepicker',
                     'placeholder' => 'yyyy-mm-dd',
-                ]
+                ],
             ])
             ->add('endDate', TextType::class, [
                 'label' => 'End Date',
@@ -65,7 +65,7 @@ class PurchaseOrderSearchFilterType extends AbstractType
                 'attr' => [
                     'data-controller' => 'datepicker',
                     'placeholder' => 'yyyy-mm-dd',
-                ]
+                ],
             ])
             ->add('query', HiddenType::class)
             ->add('sort', HiddenType::class)

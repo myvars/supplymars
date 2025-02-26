@@ -25,6 +25,13 @@ class VatRateControllerTest extends WebTestCase
             ->assertSee('3 results');
     }
 
+    public function testCustomerSecurity(): void
+    {
+        $this->browser()
+            ->get('/vat-rate/')
+            ->assertOn('/login');
+    }
+
     public function testShowVatRate(): void
     {
         $vatRate = VatRateFactory::createone(['name' => 'VAT rate to be shown']);
@@ -124,6 +131,6 @@ class VatRateControllerTest extends WebTestCase
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
             ->get("/vat-rate/999")
-            ->assertStatus(404);
+            ->assertSee("Vat rate not found!");
     }
 }

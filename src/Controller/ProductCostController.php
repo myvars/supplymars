@@ -12,22 +12,21 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/product')]
 #[IsGranted('ROLE_ADMIN')]
 class ProductCostController extends AbstractController
 {
     public const string SECTION = 'Product';
 
-    #[Route('/{id}/cost', name: 'app_product_cost', methods: ['GET'])]
+    #[Route(path: '/product/{id}/cost', name: 'app_product_cost', methods: ['GET'])]
     public function cost(Product $product): Response
     {
         return $this->render('product/cost.html.twig', ['result' => $product]);
     }
 
-    #[Route('/{id}/cost/edit', name: 'app_product_cost_edit', methods: ['GET', 'POST'])]
+    #[Route(path: '/product/{id}/cost/edit', name: 'app_product_cost_edit', methods: ['GET', 'POST'])]
     public function costEdit(
         Product $product,
-        CrudUpdater $handler
+        CrudUpdater $handler,
     ): Response {
         $form = $this->createForm(ProductCostType::class, $product, [
             'action' => $this->generateUrl('app_product_cost_edit', ['id' => $product->getId()]),
@@ -46,10 +45,14 @@ class ProductCostController extends AbstractController
         );
     }
 
-    #[Route('/{id}/cost/category/edit', name: 'app_product_cost_category_edit', methods: ['GET', 'POST'])]
+    #[Route(
+        path: '/product/{id}/cost/category/edit',
+        name: 'app_product_cost_category_edit',
+        methods: ['GET', 'POST']
+    )]
     public function costCategoryEdit(
         Product $product,
-        CrudUpdater $handler
+        CrudUpdater $handler,
     ): Response {
         $category = $product->getCategory();
         $form = $this->createForm(CategoryCostType::class, $category, [
@@ -69,10 +72,14 @@ class ProductCostController extends AbstractController
         );
     }
 
-    #[Route('/{id}/cost/subcategory/edit', name: 'app_product_cost_subcategory_edit', methods: ['GET', 'POST'])]
+    #[Route(
+        path: '/product/{id}/cost/subcategory/edit',
+        name: 'app_product_cost_subcategory_edit',
+        methods: ['GET', 'POST']
+    )]
     public function costSubcategoryEdit(
         Product $product,
-        CrudUpdater $handler
+        CrudUpdater $handler,
     ): Response {
         $subcategory = $product->getSubcategory();
         $form = $this->createForm(SubcategoryCostType::class, $subcategory, [

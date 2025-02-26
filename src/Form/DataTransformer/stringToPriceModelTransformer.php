@@ -18,7 +18,7 @@ readonly class stringToPriceModelTransformer implements DataTransformerInterface
         try {
             return PriceModel::from(strtoupper((string) $value));
         } catch (\InvalidArgumentException) {
-            throw new TransformationFailedException('Invalid price model value: ' . $value);
+            throw new TransformationFailedException('Invalid price model value: '.$value);
         }
     }
 

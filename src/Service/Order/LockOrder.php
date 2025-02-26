@@ -13,7 +13,7 @@ final readonly class LockOrder implements CrudActionInterface
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private Security $security
+        private Security $security,
     ) {
     }
 

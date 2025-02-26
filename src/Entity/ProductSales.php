@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ProductSalesRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProductSalesRepository::class)]
 class ProductSales
@@ -14,21 +15,35 @@ class ProductSales
         #[ORM\ManyToOne]
         #[ORM\JoinColumn(nullable: false)]
         private readonly Product $product,
+
         #[ORM\Id]
         #[ORM\ManyToOne]
         #[ORM\JoinColumn(nullable: false)]
         private readonly Supplier $supplier,
+
         #[ORM\Id]
         #[ORM\Column(length: 10)]
+        #[Assert\NotBlank(message: 'Date string must not be blank')]
+        #[Assert\Length(max: 10)]
         private readonly string $dateString,
+
         #[ORM\Column]
+        #[Assert\PositiveOrZero(message: 'Sales quantity must be zero or positive')]
         private readonly int $salesQty,
+
         #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+        #[Assert\NotBlank(message: 'Sales cost must not be blank')]
+        #[Assert\PositiveOrZero(message: 'Sales cost must be zero or positive')]
         private readonly string $salesCost,
+
         #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+        #[Assert\NotBlank(message: 'Sales value must not be blank')]
+        #[Assert\PositiveOrZero(message: 'Sales value must be zero or positive')]
         private readonly string $salesValue,
+
         #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-        private readonly \DateTimeImmutable $salesDate
+        #[Assert\NotNull(message: 'Sales date must not be null')]
+        private readonly \DateTimeImmutable $salesDate,
     ) {
     }
 
@@ -39,7 +54,7 @@ class ProductSales
         int $salesQty,
         string $salesCost,
         string $salesValue,
-    ): self{
+    ): self {
         return new self(
             $product,
             $supplier,

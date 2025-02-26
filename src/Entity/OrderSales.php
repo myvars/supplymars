@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\OrderSalesRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: OrderSalesRepository::class)]
 class OrderSales
@@ -12,15 +13,27 @@ class OrderSales
     private function __construct(
         #[ORM\Id]
         #[ORM\Column(length: 10)]
+        #[Assert\NotBlank(message: 'Date string must not be blank')]
+        #[Assert\Length(max: 10)]
         private readonly string $dateString,
+
         #[ORM\Column]
+        #[Assert\PositiveOrZero(message: 'Order count must be zero or positive')]
         private readonly int $orderCount,
+
         #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+        #[Assert\NotBlank(message: 'Order value must not be blank')]
+        #[Assert\PositiveOrZero(message: 'Order value must be zero or positive')]
         private readonly string $orderValue,
+
         #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
+        #[Assert\NotBlank(message: 'Average order value must not be blank')]
+        #[Assert\PositiveOrZero(message: 'Average order value must be zero or positive')]
         private readonly string $averageOrderValue,
+
         #[ORM\Column(type: Types::DATE_IMMUTABLE)]
-        private readonly \DateTimeImmutable $salesDate
+        #[Assert\NotNull(message: 'Sales date must not be null')]
+        private readonly \DateTimeImmutable $salesDate,
     ) {
     }
 
@@ -28,8 +41,8 @@ class OrderSales
         string $dateString,
         int $orderCount,
         string $orderValue,
-        string $averageOrderValue
-    ): self{
+        string $averageOrderValue,
+    ): self {
         return new self(
             $dateString,
             $orderCount,

@@ -49,6 +49,7 @@ abstract class SearchDto implements SearchInterface
     public function setQuery(?string $query): static
     {
         $this->query = $query;
+
         return $this;
     }
 

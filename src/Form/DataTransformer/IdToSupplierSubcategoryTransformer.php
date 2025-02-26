@@ -16,7 +16,6 @@ readonly class IdToSupplierSubcategoryTransformer implements DataTransformerInte
     /**
      * Transforms a string (id) to an object (SupplierSubcategory).
      *
-     *
      * @throws TransformationFailedException if object (SupplierSubcategory) is not found
      */
     public function transform(mixed $value): ?SupplierSubcategory
@@ -28,9 +27,7 @@ readonly class IdToSupplierSubcategoryTransformer implements DataTransformerInte
         $supplierSubcategory = $this->entityManager->getRepository(SupplierSubcategory::class)->find($value);
 
         if (null === $supplierSubcategory) {
-            throw new TransformationFailedException(
-                sprintf('A supplier subcategory with Id "%s" does not exist!', $value)
-            );
+            throw new TransformationFailedException(sprintf('A supplier subcategory with Id "%s" does not exist!', $value));
         }
 
         return $supplierSubcategory;

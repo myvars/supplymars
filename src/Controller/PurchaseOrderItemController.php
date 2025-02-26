@@ -16,33 +16,31 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/purchase/order/item')]
 #[IsGranted('ROLE_ADMIN')]
 class PurchaseOrderItemController extends AbstractController
 {
     public const string SECTION = 'Purchase Order Item';
 
-    #[Route('/', name: 'app_purchase_order_item_index', methods: ['GET'])]
+    #[Route(path: '/purchase/order/item/', name: 'app_purchase_order_item_index', methods: ['GET'])]
     public function index(): Response
     {
         return $this->redirectToRoute('app_purchase_order_index');
     }
 
-    #[Route('/{id}', name: 'app_purchase_order_item_show', methods: ['GET'])]
+    #[Route(path: '/purchase/order/item/{id}', name: 'app_purchase_order_item_show', methods: ['GET'])]
     public function show(
-        PurchaseOrderItem $purchaseOrderItem,
-        CrudReader $handler
+        ?PurchaseOrderItem $purchaseOrderItem,
+        CrudReader $handler,
     ): Response {
         return $handler->read(self::SECTION, $purchaseOrderItem);
     }
 
-    #[Route('/{id}/edit', name: 'app_purchase_order_item_edit', methods: ['GET', 'POST'])]
+    #[Route(path: '/purchase/order/item/{id}/edit', name: 'app_purchase_order_item_edit', methods: ['GET', 'POST'])]
     public function edit(
         PurchaseOrderItem $purchaseOrderItem,
         CrudUpdater $handler,
         EditPurchaseOrderItem $action,
-    ): Response
-    {
+    ): Response {
         $editPOItemDto = EditPurchaseOrderItemDto::fromEntity($purchaseOrderItem);
 
         return $handler->build(
@@ -51,22 +49,26 @@ class PurchaseOrderItemController extends AbstractController
                 ->setAllowDelete(false)
                 ->setSuccessLink(
                     $this->generateUrl('app_purchase_order_show', [
-                        'id' => $purchaseOrderItem->getPurchaseOrder()->getId()
+                        'id' => $purchaseOrderItem->getPurchaseOrder()->getId(),
                     ])
                 )
                 ->setSafetyLink(
                     $this->generateUrl('app_order_show', [
-                        'id' => $purchaseOrderItem->getPurchaseOrder()->getCustomerOrder()->getId()
+                        'id' => $purchaseOrderItem->getPurchaseOrder()->getCustomerOrder()->getId(),
                     ])
                 )
         );
     }
 
-    #[Route('/{id}/edit/status', name: 'app_purchase_order_item_status_edit', methods: ['GET', 'POST'])]
+    #[Route(
+        path: '/purchase/order/item/{id}/edit/status',
+        name: 'app_purchase_order_item_status_edit',
+        methods: ['GET', 'POST']
+    )]
     public function editStatus(
         PurchaseOrderItem $purchaseOrderItem,
         CrudUpdater $handler,
-        ChangePurchaseOrderItemStatus $action
+        ChangePurchaseOrderItemStatus $action,
     ): Response {
         $changePurchaseOrderItemStatusDto = ChangePurchaseOrderItemStatusDto::fromEntity($purchaseOrderItem);
         $form = $this->createForm(ChangePurchaseOrderItemStatusType::class, $changePurchaseOrderItemStatusDto, [
@@ -85,7 +87,7 @@ class PurchaseOrderItemController extends AbstractController
                 ->setErrorFlash('Can not update PO Item status!')
                 ->setSuccessLink(
                     $this->generateUrl('app_purchase_order_show', [
-                        'id' => $purchaseOrderItem->getPurchaseOrder()->getId()
+                        'id' => $purchaseOrderItem->getPurchaseOrder()->getId(),
                     ])
                 )
         );

@@ -16,7 +16,6 @@ readonly class IdToCategoryTransformer implements DataTransformerInterface
     /**
      * Transforms a string (id) to an object (Category).
      *
-     *
      * @throws TransformationFailedException if object (Category) is not found
      */
     public function transform(mixed $value): ?Category

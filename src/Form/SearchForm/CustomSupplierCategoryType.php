@@ -10,7 +10,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 class CustomSupplierCategoryType extends AbstractType
 {
     public function __construct(
-        private readonly IdToSupplierCategoryTransformer $idToSupplierCategoryTransformer
+        private readonly IdToSupplierCategoryTransformer $idToSupplierCategoryTransformer,
     ) {
     }
 
@@ -19,7 +19,8 @@ class CustomSupplierCategoryType extends AbstractType
         $builder->addModelTransformer($this->idToSupplierCategoryTransformer);
     }
 
-    public function getParent()
+    #[\Override]
+    public function getParent(): string
     {
         return EntityType::class;
     }

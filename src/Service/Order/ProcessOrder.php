@@ -16,7 +16,7 @@ final readonly class ProcessOrder implements CrudActionInterface
 {
     public function __construct(
         private CreatePurchaseOrderItem $createPurchaseOrderItem,
-        private ChangePurchaseOrderItemStatus $changePurchaseOrderItemStatus
+        private ChangePurchaseOrderItemStatus $changePurchaseOrderItemStatus,
     ) {
     }
 
@@ -82,7 +82,7 @@ final readonly class ProcessOrder implements CrudActionInterface
     {
         foreach ($customerOrder->getPurchaseOrders() as $purchaseOrder) {
             foreach ($purchaseOrder->getPurchaseOrderItems() as $purchaseOrderItem) {
-                if ($purchaseOrderItem->getStatus() !== PurchaseOrderStatus::PENDING) {
+                if (PurchaseOrderStatus::PENDING !== $purchaseOrderItem->getStatus()) {
                     continue;
                 }
 

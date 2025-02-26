@@ -16,7 +16,6 @@ readonly class IdToSupplierCategoryTransformer implements DataTransformerInterfa
     /**
      * Transforms a string (id) to an object (SupplierCategory).
      *
-     *
      * @throws TransformationFailedException if object (SupplierCategory) is not found
      */
     public function transform(mixed $value): ?SupplierCategory
@@ -28,9 +27,7 @@ readonly class IdToSupplierCategoryTransformer implements DataTransformerInterfa
         $supplierCategory = $this->entityManager->getRepository(SupplierCategory::class)->find($value);
 
         if (null === $supplierCategory) {
-            throw new TransformationFailedException(
-                sprintf('A supplier category with Id "%s" does not exist!', $value)
-            );
+            throw new TransformationFailedException(sprintf('A supplier category with Id "%s" does not exist!', $value));
         }
 
         return $supplierCategory;

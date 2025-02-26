@@ -6,128 +6,115 @@ use App\Entity\Product;
 use App\Entity\Supplier;
 use App\Entity\SupplierCategory;
 use App\Entity\SupplierManufacturer;
-use App\Entity\SupplierSubcategory;
-use PHPUnit\Framework\TestCase;
 use App\Entity\SupplierProduct;
+use App\Entity\SupplierSubcategory;
+use App\Event\SupplierProductCostChangedEvent;
+use App\Event\SupplierProductStockChangedEvent;
+use PHPUnit\Framework\TestCase;
 
 class SupplierProductTest extends TestCase
 {
-    public function testGetSetName(): void
-    {
-        $supplierProduct = new SupplierProduct();
-        $supplierProduct->setName('Test SupplierProduct');
-
-        $this->assertEquals('Test SupplierProduct', $supplierProduct->getName());
-    }
-
-    public function testGetSetProductCode(): void
-    {
-        $supplierProduct = new SupplierProduct();
-        $supplierProduct->setProductCode('Test ProductCode');
-
-        $this->assertEquals('Test ProductCode', $supplierProduct->getProductCode());
-    }
-
-    public function testGetSetSupplierCategory(): void
-    {
-        $supplierCategory = $this->createMock(SupplierCategory::class);
-        $supplierCategory->method('getName')->willReturn('Test SupplierCategory');
-
-        $supplierProduct = new SupplierProduct();
-        $supplierProduct->setSupplierCategory($supplierCategory);
-
-        $this->assertEquals('Test SupplierCategory', $supplierProduct->getSupplierCategory()->getName());
-    }
-
-    public function testGetSetSupplierSubcategory(): void
-    {
-        $supplierSubcategory = $this->createMock(SupplierSubcategory::class);
-        $supplierSubcategory->method('getName')->willReturn('Test SupplierSubcategory');
-
-        $supplierProduct = new SupplierProduct();
-        $supplierProduct->setSupplierSubcategory($supplierSubcategory);
-
-        $this->assertEquals('Test SupplierSubcategory', $supplierProduct->getSupplierSubcategory()->getName());
-    }
-
-    public function testGetSetSupplierManufacturer(): void
-    {
-        $supplierManufacturer = $this->createMock(SupplierManufacturer::class);
-        $supplierManufacturer->method('getName')->willReturn('Test SupplierManufacturer');
-
-        $supplierProduct = new SupplierProduct();
-        $supplierProduct->setSupplierManufacturer($supplierManufacturer);
-
-        $this->assertEquals('Test SupplierManufacturer', $supplierProduct->getSupplierManufacturer()->getName());
-    }
-
-    public function testGetSetMfrPartNumber(): void
-    {
-        $supplierProduct = new SupplierProduct();
-        $supplierProduct->setMfrPartNumber('Test MfrPartNumber');
-
-        $this->assertEquals('Test MfrPartNumber', $supplierProduct->getMfrPartNumber());
-    }
-
-    public function testGetSetWeight(): void
-    {
-        $supplierProduct = new SupplierProduct();
-        $supplierProduct->setWeight(500);
-
-        $this->assertEquals(500, $supplierProduct->getWeight());
-    }
-
-    public function testGetSetStock(): void
-    {
-        $supplierProduct = new SupplierProduct();
-        $supplierProduct->setStock(10);
-
-        $this->assertEquals(10, $supplierProduct->getStock());
-    }
-
-    public function testGetSetLeadTimeDays(): void
-    {
-        $supplierProduct = new SupplierProduct();
-        $supplierProduct->setLeadTimeDays(10);
-
-        $this->assertEquals(10, $supplierProduct->getLeadTimeDays());
-    }
-
-    public function testGetSetCost(): void
-    {
-        $supplierProduct = new SupplierProduct();
-        $supplierProduct->setCost(10.5);
-
-        $this->assertEquals(10.5, $supplierProduct->getCost());
-    }
-
-    public function testGetSetSupplier(): void
+    public function testSettersAndGetters(): void
     {
         $supplier = $this->createMock(Supplier::class);
-        $supplier->method('getName')->willReturn('Test Supplier');
+        $supplierCategory = $this->createMock(SupplierCategory::class);
+        $supplierSubcategory = $this->createMock(SupplierSubcategory::class);
+        $supplierManufacturer = $this->createMock(SupplierManufacturer::class);
+        $product = $this->createMock(Product::class);
+
+        $supplierProduct = (new SupplierProduct())
+            ->setName('Test Supplier Product')
+            ->setProductCode('TP12345')
+            ->setSupplier($supplier)
+            ->setSupplierCategory($supplierCategory)
+            ->setSupplierSubcategory($supplierSubcategory)
+            ->setSupplierManufacturer($supplierManufacturer)
+            ->setMfrPartNumber('PART-1234')
+            ->setWeight(5000)
+            ->setStock(100)
+            ->setLeadTimeDays(10)
+            ->setCost('150.00')
+            ->setProduct($product)
+            ->setIsActive(true);
+
+        $this->assertEquals('Test Supplier Product', $supplierProduct->getName());
+        $this->assertEquals('TP12345', $supplierProduct->getProductCode());
+        $this->assertSame($supplier, $supplierProduct->getSupplier());
+        $this->assertSame($supplierCategory, $supplierProduct->getSupplierCategory());
+        $this->assertSame($supplierSubcategory, $supplierProduct->getSupplierSubcategory());
+        $this->assertSame($supplierManufacturer, $supplierProduct->getSupplierManufacturer());
+        $this->assertEquals('PART-1234', $supplierProduct->getMfrPartNumber());
+        $this->assertEquals(5000, $supplierProduct->getWeight());
+        $this->assertEquals(100, $supplierProduct->getStock());
+        $this->assertEquals(10, $supplierProduct->getLeadTimeDays());
+        $this->assertEquals('150.00', $supplierProduct->getCost());
+        $this->assertSame($product, $supplierProduct->getProduct());
+        $this->assertTrue($supplierProduct->isActive());
+    }
+
+    public function testIsMapped(): void
+    {
+        $supplierProduct = new SupplierProduct();
+        $this->assertFalse($supplierProduct->isMapped());
+
+        $product = $this->createMock(Product::class);
+        $supplierProduct->setProduct($product);
+        $this->assertTrue($supplierProduct->isMapped());
+    }
+
+    public function testHasActiveSupplier(): void
+    {
+        $supplier = $this->createMock(Supplier::class);
+        $supplier->method('isActive')->willReturn(true);
 
         $supplierProduct = new SupplierProduct();
         $supplierProduct->setSupplier($supplier);
 
-        $this->assertEquals('Test Supplier', $supplierProduct->getSupplier()->getName());
+        $this->assertTrue($supplierProduct->hasActiveSupplier());
     }
 
-    public function testGetSetProduct(): void
+    public function testHasStock(): void
     {
-        $product = $this->createMock(Product::class);
-        $product->method('getName')->willReturn('Test Product');
-
         $supplierProduct = new SupplierProduct();
-        $supplierProduct->setProduct($product);
+        $supplierProduct->setStock(0);
+        $this->assertFalse($supplierProduct->hasStock());
 
-        $this->assertEquals('Test Product', $supplierProduct->getProduct()->getName());
+        $supplierProduct->setStock(10);
+        $this->assertTrue($supplierProduct->hasStock());
     }
 
-    public function testGetSetIsActive(): void
+    public function testSetStockRaisesEvent(): void
     {
         $supplierProduct = new SupplierProduct();
-        $supplierProduct->setIsActive(true);
+        $supplierProduct->setStock(10);
 
-        $this->assertTrue($supplierProduct->isActive());
+        $events = $supplierProduct->releaseDomainEvents();
+        $this->assertCount(1, $events);
+        $this->assertInstanceOf(SupplierProductStockChangedEvent::class, $events[0]);
+        $this->assertSame($supplierProduct, $events[0]->getSupplierProduct());
+    }
+
+    public function testSetCostRaisesEvent(): void
+    {
+        $supplierProduct = new SupplierProduct();
+        $supplierProduct->setCost('100.00');
+
+        $events = $supplierProduct->releaseDomainEvents();
+        $this->assertCount(1, $events);
+        $this->assertInstanceOf(SupplierProductCostChangedEvent::class, $events[0]);
+        $this->assertSame($supplierProduct, $events[0]->getSupplierProduct());
+    }
+
+    public function testSetCostDoesNotRaiseEventWhenCostIsSame(): void
+    {
+        $supplierProduct = new SupplierProduct();
+        $supplierProduct->setCost('100.00');
+        $supplierProduct->releaseDomainEvents();
+
+        // Set the same cost again
+        $supplierProduct->setCost('100.00');
+
+        $events = $supplierProduct->releaseDomainEvents();
+        $this->assertCount(0, $events);
     }
 }

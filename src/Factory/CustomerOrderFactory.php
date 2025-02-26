@@ -3,8 +3,10 @@
 namespace App\Factory;
 
 use App\Entity\CustomerOrder;
+use App\Entity\User;
 use App\Enum\ShippingMethod;
 use Zenstruck\Foundry\LazyValue;
+use Zenstruck\Foundry\Object\Instantiator;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
@@ -33,20 +35,11 @@ final class CustomerOrderFactory extends PersistentProxyObjectFactory
      */
     protected function defaults(): array|callable
     {
-        $customer = LazyValue::memoize(fn() => UserFactory::new()->create());
-        $billingAddress = LazyValue::memoize(fn() => AddressFactory::new([
-            'customer' => $customer,
-            'isDefaultBillingAddress' => true,
-            'isDefaultShippingAddress' => true
-        ])->create()->_real());
-        $shippingMethod = LazyValue::memoize(fn() => self::faker()->randomElement(ShippingMethod::cases()));
-        $vatRate = LazyValue::memoize(fn() => VatRateFactory::new()->standard());
-
         return [
-            'customer' => $customer,
-            'billingAddress' => $billingAddress,
-            'shippingMethod' => $shippingMethod,
-            'vatRate' => $vatRate,
+            'customer' => LazyValue::memoize(fn (): User => UserFactory::new()->create()),
+            'billingAddress' => null,
+            'shippingMethod' => LazyValue::memoize(fn () => self::faker()->randomElement(ShippingMethod::cases())),
+            'vatRate' => LazyValue::memoize(fn (): VatRateFactory => VatRateFactory::new()->standard()),
             'customerOrderRef' => self::faker()->word(),
         ];
     }
@@ -54,16 +47,26 @@ final class CustomerOrderFactory extends PersistentProxyObjectFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
+    #[\Override]
     protected function initialize(): static
     {
-        return $this->instantiateWith(function (array $attributes) {
-            return CustomerOrder::createFromCustomer(
-                $attributes['customer'],
-                $attributes['shippingMethod'],
-                $attributes['vatRate'],
-                $attributes['customerOrderRef']
+        return $this
+            ->beforeInstantiate(function (array $attributes): array {
+                if (null !== $attributes['customer']) {
+                    $attributes['billingAddress'] ??= LazyValue::memoize(
+                        fn (): AddressFactory => AddressFactory::new()->with([
+                            'customer' => $attributes['customer'],
+                            'isDefaultBillingAddress' => true,
+                            'isDefaultShippingAddress' => true,
+                        ])
+                    );
+                }
+
+                return $attributes;
+            })
+            ->instantiateWith(
+                Instantiator::namedConstructor('createFromCustomer')
+                    ->allowExtra('billingAddress')
             );
-        });
     }
 }
-

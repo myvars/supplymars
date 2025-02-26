@@ -6,7 +6,6 @@ use App\DTO\SearchDto\OverdueOrderSearchDto;
 use App\DTO\SearchDto\SearchInterface;
 use App\Entity\CustomerOrder;
 use App\Enum\OrderStatus;
-use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -104,7 +103,7 @@ class CustomerOrderRepository extends ServiceEntityRepository implements SearchQ
             ->getResult();
     }
 
-    public function findOrderSalesByDate(DateTime $startDate, DateTime $endDate): array
+    public function findOrderSalesByDate(\DateTime $startDate, \DateTime $endDate): array
     {
         return $this->getOrderSales($startDate, $endDate)
             ->addSelect('DATE_FORMAT(co.createdAt, :dateString) AS dateString')
@@ -114,7 +113,7 @@ class CustomerOrderRepository extends ServiceEntityRepository implements SearchQ
             ->getResult();
     }
 
-    public function findOrderSalesByStatus(DateTime $startDate, DateTime $endDate): array
+    public function findOrderSalesByStatus(\DateTime $startDate, \DateTime $endDate): array
     {
         return $this->getOrderSales($startDate, $endDate)
             ->addSelect('co.status')
@@ -123,7 +122,7 @@ class CustomerOrderRepository extends ServiceEntityRepository implements SearchQ
             ->getResult();
     }
 
-    public function getOrderSales(DateTime $startDate, DateTime $endDate): QueryBuilder
+    public function getOrderSales(\DateTime $startDate, \DateTime $endDate): QueryBuilder
     {
         return $this->createQueryBuilder('co')
             ->select('count(co.id) as orderCount')
@@ -140,7 +139,7 @@ class CustomerOrderRepository extends ServiceEntityRepository implements SearchQ
     {
         $sort = $dto->getSort() ?: $dto::SORT_DEFAULT;
         $sortDirection = $dto->getSortDirection() ?: $dto::SORT_DIRECTION_DEFAULT;
-        $startDate = new DateTime($dto->getDuration()->getStartDate());
+        $startDate = new \DateTime($dto->getDuration()->getStartDate());
 
         $qb = $this->getOverdueOrders($startDate)
             ->select('co, DATE_DIFF(CURRENT_DATE(), co.dueDate) AS HIDDEN overdueDays');
@@ -154,7 +153,7 @@ class CustomerOrderRepository extends ServiceEntityRepository implements SearchQ
         return $qb;
     }
 
-    public function findOverdueOrdersSummary(DateTime $startDate): ?array
+    public function findOverdueOrdersSummary(\DateTime $startDate): ?array
     {
         return $this->getOverdueOrders($startDate)
             ->select('COUNT(co.id) AS orderCount, SUM(co.totalPrice) AS orderValue')
@@ -162,7 +161,7 @@ class CustomerOrderRepository extends ServiceEntityRepository implements SearchQ
             ->getOneOrNullResult();
     }
 
-    public function getOverdueOrders(DateTime $startDate): QueryBuilder
+    public function getOverdueOrders(\DateTime $startDate): QueryBuilder
     {
         return $this->createQueryBuilder('co')
             ->andWhere('co.createdAt >= :startDate')
@@ -172,7 +171,7 @@ class CustomerOrderRepository extends ServiceEntityRepository implements SearchQ
             ->andWhere('co.dueDate < CURRENT_DATE()');
     }
 
-    public function findLatestOrders(DateTime $startDate, int $limit = 10): array
+    public function findLatestOrders(\DateTime $startDate, int $limit = 10): array
     {
         return $this->createQueryBuilder('co')
             ->andWhere('co.createdAt >= :startDate')

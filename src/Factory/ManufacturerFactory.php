@@ -33,13 +33,14 @@ final class ManufacturerFactory extends PersistentProxyObjectFactory
     {
         return [
             'name' => self::faker()->company(),
-            'isActive' => self::faker()->boolean(),
+            'isActive' => true,
         ];
     }
 
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
+    #[\Override]
     protected function initialize(): static
     {
         return $this

@@ -9,6 +9,7 @@
         >
             {% if result.orderLock is not null %}
                 <twig:ux:icon name="flowbite:lock-solid" class="w-4 me-1"/>
+                <span class="hidden text-sm me-1 md:inline">Locked by </span>
                 <span class="text-sm">{{ result.orderLock.fullName }}</span>
             {% else %}
                 <twig:ux:icon name="flowbite:lock-open-solid" class="w-4 me-1.5"/>

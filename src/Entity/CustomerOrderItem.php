@@ -116,7 +116,7 @@ class CustomerOrderItem implements DomainEventProviderInterface
     private function setQuantity(int $quantity): static
     {
         if ($quantity < 1) {
-            throw new \InvalidArgumentException("The quantity must be positive");
+            throw new \InvalidArgumentException('The quantity must be positive');
         }
 
         $this->quantity = $quantity;
@@ -131,8 +131,8 @@ class CustomerOrderItem implements DomainEventProviderInterface
 
     private function setPrice(string $price): static
     {
-        if ((float)$price < 0) {
-            throw new \InvalidArgumentException("The price must greater than 0");
+        if ((float) $price < 0) {
+            throw new \InvalidArgumentException('The price must greater than 0');
         }
 
         $this->price = $price;
@@ -147,8 +147,8 @@ class CustomerOrderItem implements DomainEventProviderInterface
 
     private function setPriceIncVat(string $priceIncVat): static
     {
-        if ((float)$priceIncVat < 0) {
-            throw new \InvalidArgumentException("The price inc VAT must greater than 0");
+        if ((float) $priceIncVat < 0) {
+            throw new \InvalidArgumentException('The price inc VAT must greater than 0');
         }
 
         $this->priceIncVat = $priceIncVat;
@@ -164,7 +164,7 @@ class CustomerOrderItem implements DomainEventProviderInterface
     private function setWeight(int $weight): static
     {
         if ($weight < 0) {
-            throw new \InvalidArgumentException("The weight must be greater than 0");
+            throw new \InvalidArgumentException('The weight must be greater than 0');
         }
 
         $this->weight = $weight;
@@ -194,8 +194,8 @@ class CustomerOrderItem implements DomainEventProviderInterface
 
     private function setTotalPrice(string $totalPrice): static
     {
-        if ((float)$totalPrice < 0) {
-            throw new \InvalidArgumentException("The total price must be greater than 0");
+        if ((float) $totalPrice < 0) {
+            throw new \InvalidArgumentException('The total price must be greater than 0');
         }
 
         $this->totalPrice = $totalPrice;
@@ -210,8 +210,8 @@ class CustomerOrderItem implements DomainEventProviderInterface
 
     private function setTotalPriceIncVat(string $totalPriceIncVat): static
     {
-        if ((float)$totalPriceIncVat < 0) {
-            throw new \InvalidArgumentException("The total price inc VAT must be greater than 0");
+        if ((float) $totalPriceIncVat < 0) {
+            throw new \InvalidArgumentException('The total price inc VAT must be greater than 0');
         }
 
         $this->totalPriceIncVat = $totalPriceIncVat;
@@ -227,7 +227,7 @@ class CustomerOrderItem implements DomainEventProviderInterface
     private function setTotalWeight(int $totalWeight): static
     {
         if ($totalWeight < 0) {
-            throw new \InvalidArgumentException("The total weight must be greater than 0");
+            throw new \InvalidArgumentException('The total weight must be greater than 0');
         }
 
         $this->totalWeight = $totalWeight;
@@ -243,7 +243,7 @@ class CustomerOrderItem implements DomainEventProviderInterface
     public static function createFromProduct(
         CustomerOrder $customerOrder,
         Product $product,
-        int $quantity = 1
+        int $quantity = 1,
     ): static {
         $customerOrderItem = (new static())
             ->setCustomerOrder($customerOrder)
@@ -280,7 +280,7 @@ class CustomerOrderItem implements DomainEventProviderInterface
     public function generateStatus(): void
     {
         // If the item is already cancelled, do nothing
-        if ($this->getStatus() === OrderStatus::CANCELLED) {
+        if (OrderStatus::CANCELLED === $this->getStatus()) {
             return;
         }
 
@@ -293,7 +293,7 @@ class CustomerOrderItem implements DomainEventProviderInterface
         }
 
         // If there are still outstanding qty, set the item status to PROCESSING
-        if ($this->getOutstandingQty() !== 0 && $this->getQtyAddedToPurchaseOrders() !== 0) {
+        if (0 !== $this->getOutstandingQty() && 0 !== $this->getQtyAddedToPurchaseOrders()) {
             $this->setStatus(OrderStatus::PROCESSING);
             $this->customerOrder->generateStatus();
 
@@ -308,17 +308,17 @@ class CustomerOrderItem implements DomainEventProviderInterface
         $purchaseOrderItemStatus = null;
         foreach ($this->purchaseOrderItems as $item) {
             // Skip refunded items
-            if ($item->getStatus() === PurchaseOrderStatus::REFUNDED) {
+            if (PurchaseOrderStatus::REFUNDED === $item->getStatus()) {
                 continue;
             }
 
-            if ($purchaseOrderItemStatus === null || $item->getStatus()->getLevel() < $purchaseOrderItemStatus->getLevel()) {
+            if (null === $purchaseOrderItemStatus || $item->getStatus()->getLevel() < $purchaseOrderItemStatus->getLevel()) {
                 $purchaseOrderItemStatus = $item->getStatus();
             }
         }
 
         // If all items are refunded, set the purchase order item status to default
-        if ($purchaseOrderItemStatus === null) {
+        if (null === $purchaseOrderItemStatus) {
             $purchaseOrderItemStatus = PurchaseOrderStatus::getDefault();
         }
 
@@ -327,17 +327,16 @@ class CustomerOrderItem implements DomainEventProviderInterface
         $this->customerOrder->generateStatus();
     }
 
-
     public function recalculateTotal(): void
     {
         $this->setTotalPrice(bcmul((string) $this->quantity, $this->price, 2));
         $this->setTotalPriceIncVat(bcmul((string) $this->quantity, $this->priceIncVat, 2));
-        $this->setTotalWeight(bcmul((string)$this->quantity, (string) $this->weight, 3));
+        $this->setTotalWeight(bcmul((string) $this->quantity, (string) $this->weight, 3));
     }
 
     public function getOutstandingQty(): int
     {
-        return max(($this->getQuantity() - $this->getQtyAddedToPurchaseOrders()), 0);
+        return max($this->getQuantity() - $this->getQtyAddedToPurchaseOrders(), 0);
     }
 
     public function getQtyAddedToPurchaseOrders(): int
@@ -359,22 +358,19 @@ class CustomerOrderItem implements DomainEventProviderInterface
 
     public function allowCancel(): bool
     {
-        return $this->getQtyAddedToPurchaseOrders() === 0
-            && ($this->getStatus() === OrderStatus::PENDING || $this->getStatus() === OrderStatus::PROCESSING);
+        return 0 === $this->getQtyAddedToPurchaseOrders()
+            && (OrderStatus::PENDING === $this->getStatus() || OrderStatus::PROCESSING === $this->getStatus());
     }
 
     public function cancelItem(): void
     {
-        if ($this->getQtyAddedToPurchaseOrders() !== 0) {
+        if (0 !== $this->getQtyAddedToPurchaseOrders()) {
             throw new \LogicException('Cannot cancel this order item');
         }
 
         $status = OrderStatus::CANCELLED;
         if (!$this->status->canTransitionTo($status)) {
-            throw new \LogicException(sprintf('Cannot transition from "%s" to "%s"',
-                $this->status->value,
-                $status->value
-            ));
+            throw new \LogicException(sprintf('Cannot transition from "%s" to "%s"', $this->status->value, $status->value));
         }
 
         $this->setStatus($status);

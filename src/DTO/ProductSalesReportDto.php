@@ -2,8 +2,8 @@
 
 namespace App\DTO;
 
-use App\Enum\SalesDuration;
 use App\Enum\ProductSalesMetric;
+use App\Enum\SalesDuration;
 use App\Enum\SalesType;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -151,17 +151,18 @@ final class ProductSalesReportDto
         ];
 
         // Filter to get only non-null values
-        $nonEmptyIdentifiers = array_filter($identifiers, fn($value): bool => !is_null($value));
+        $nonEmptyIdentifiers = array_filter($identifiers, fn ($value): bool => !is_null($value));
 
-        if ($nonEmptyIdentifiers === []) {
+        if ([] === $nonEmptyIdentifiers) {
             return [
                 'salesType' => SalesType::ALL,
                 'salesTypeId' => 1,
             ];
         }
 
-        if (count($nonEmptyIdentifiers) === 1) {
+        if (1 === count($nonEmptyIdentifiers)) {
             $salesType = array_key_first($nonEmptyIdentifiers);
+
             return [
                 'salesType' => SalesType::from($salesType),
                 'salesTypeId' => $nonEmptyIdentifiers[$salesType],

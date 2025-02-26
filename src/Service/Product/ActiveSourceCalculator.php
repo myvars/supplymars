@@ -11,16 +11,15 @@ class ActiveSourceCalculator
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly ProductRepository $productRepository
+        private readonly ProductRepository $productRepository,
     ) {
     }
 
     public function recalculateActiveSource(
         Product $product,
-        bool $flush = true
+        bool $flush = true,
     ): void {
         $supplierProducts = $product->getSupplierProducts();
-
         foreach ($supplierProducts as $supplierProduct) {
             if (
                 $supplierProduct->hasActiveSupplier()
@@ -35,9 +34,9 @@ class ActiveSourceCalculator
                 }
 
                 if ($supplierProduct->getCost() === $activeSource->getCost()
-                    && $supplierProduct->getStock() <= $activeSource->getStock()
+                    && $supplierProduct->getStock() > $activeSource->getStock()
                 ) {
-                    continue;
+                    $activeSource = $supplierProduct;
                 }
 
                 if ($supplierProduct->getCost() < $activeSource->getCost()) {
@@ -60,7 +59,8 @@ class ActiveSourceCalculator
     /**
      * @param Product[] $products
      */
-    public function recalculateActiveSourceFromArray(array $products): void {
+    public function recalculateActiveSourceFromArray(array $products): void
+    {
         foreach ($products as $product) {
             $this->recalculateActiveSource($product, false);
         }
@@ -94,7 +94,7 @@ class ActiveSourceCalculator
 
     public function removeMappedProduct(SupplierProduct $supplierProduct): void
     {
-        $supplierProduct->setProduct(null);
+        $supplierProduct->getProduct()->removeSupplierProduct($supplierProduct);
 
         $this->entityManager->persist($supplierProduct);
         $this->flush();

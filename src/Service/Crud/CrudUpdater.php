@@ -35,11 +35,11 @@ class CrudUpdater extends BaseCrudHandler
             ->setCrudAction($this->defaultCrudAction);
     }
 
-    public function setup(string $section, object $entity, string $formType=''): CrudOptions
+    public function setup(string $section, object $entity, string $formType = ''): CrudOptions
     {
         $form = $this->createForm($formType, $entity, [
             'action' => $this->generateUrl(
-                'app_'.$this->crudHelper->snakeCase($section) . '_edit',
+                'app_'.$this->crudHelper->snakeCase($section).'_edit',
                 ['id' => $entity->getId()]
             )]
         );
@@ -77,7 +77,7 @@ class CrudUpdater extends BaseCrudHandler
                 'result' => $crudOptions->getEntity(),
                 'backLink' => $crudOptions->getBackLink(),
                 'form' => $form,
-                'allowDelete' => $crudOptions->isAllowDelete()
+                'allowDelete' => $crudOptions->isAllowDelete(),
             ]
         );
     }

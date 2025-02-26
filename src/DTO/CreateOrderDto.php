@@ -16,7 +16,7 @@ class CreateOrderDto
     #[Assert\NotBlank(message: 'Please enter a shipping method')]
     private ?ShippingMethod $shippingMethod = null;
 
-    private ?string $CustomerOrderRef = null;
+    private ?string $customerOrderRef = null;
 
     public function getCustomerId(): ?int
     {
@@ -32,12 +32,12 @@ class CreateOrderDto
 
     public function getCustomerOrderRef(): ?string
     {
-        return $this->CustomerOrderRef;
+        return $this->customerOrderRef;
     }
 
-    public function setCustomerOrderRef(?string $CustomerOrderRef): static
+    public function setCustomerOrderRef(?string $customerOrderRef): static
     {
-        $this->CustomerOrderRef = $CustomerOrderRef;
+        $this->customerOrderRef = $customerOrderRef;
 
         return $this;
     }
@@ -47,7 +47,7 @@ class CreateOrderDto
         return $this->shippingMethod;
     }
 
-    public function setShippingMethod(ShippingMethod $shippingMethod): static
+    public function setShippingMethod(?ShippingMethod $shippingMethod): static
     {
         $this->shippingMethod = $shippingMethod;
 

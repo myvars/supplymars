@@ -46,7 +46,7 @@ class CrudHelper
 
     public function isAutoUpdate(FormInterface $form): bool
     {
-        if ($form->has('auto-update') === false) {
+        if (false === $form->has('auto-update')) {
             return false;
         }
 
@@ -60,12 +60,12 @@ class CrudHelper
         }
     }
 
-    public function showEmpty(string $section) : Response
+    public function showEmpty(string $section): Response
     {
         try {
             $content = $this->twig->render(self::CRUD_BASE_TEMPLATE, [
                 'section' => $section,
-                'template' => self::MISSING_ENTITY_TEMPLATE
+                'template' => self::MISSING_ENTITY_TEMPLATE,
             ]);
         } catch (\Exception) {
             $content = '';
@@ -89,7 +89,7 @@ class CrudHelper
     public function redirectToLink(
         string $link,
         bool $isUrlRefresh = false,
-        int $status = self::REDIRECT_RESPONSE_STATUS
+        int $status = self::REDIRECT_RESPONSE_STATUS,
     ): RedirectResponse|Response {
         if ($this->requestStack
             ->getCurrentRequest()
@@ -109,7 +109,7 @@ class CrudHelper
             ->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
         try {
-            $content = $this->twig->render(self::TURBO_STREAM_REFRESH_TEMPLATE, ["newUrl" => $newUrl]);
+            $content = $this->twig->render(self::TURBO_STREAM_REFRESH_TEMPLATE, ['newUrl' => $newUrl]);
         } catch (\Exception) {
             $content = '';
         }

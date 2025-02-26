@@ -9,46 +9,50 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 class ProductImageTest extends TestCase
 {
-    public function testGetSetProduct(): void
+    public function testCreateFromUploadedFile(): void
     {
         $product = $this->createMock(Product::class);
+        $uploadedFile = $this->createMock(UploadedFile::class);
 
-        $productImage = new ProductImage();
-        $productImage->setProduct($product);
+        $uploadedFile->method('getSize')->willReturn(1024);
+        $uploadedFile->method('getMimeType')->willReturn('image/jpeg');
+        $uploadedFile->method('getClientOriginalName')->willReturn('test.jpg');
 
-        $this->assertEquals($product, $productImage->getProduct());
-    }
+        $productImage = ProductImage::createFromUploadedFile($product, $uploadedFile, 1);
 
-    public function testGetSetPosition(): void
-    {
-        $position = 1;
-        $productImage = new ProductImage();
-        $productImage->setPosition($position);
-
+        $this->assertSame($product, $productImage->getProduct());
         $this->assertEquals(1, $productImage->getPosition());
-    }
-
-    public function testGetSetImageName(): void
-    {
-        $imageName = 'test-image.jpg';
-        $productImage = new ProductImage();
-        $productImage->setImageName($imageName);
-
-        $this->assertEquals('test-image.jpg', $productImage->getImageName());
-    }
-
-    public function testGetSetImageFile(): void
-    {
-        $imageFile = $this->createMock(UploadedFile::class);
-        $imageFile->method('getSize')->willReturn(1024);
-        $imageFile->method('getMimeType')->willReturn('image/jpeg');
-        $imageFile->method('getClientOriginalName')->willReturn('test-image.jpg');
-
-        $productImage = new ProductImage();
-        $productImage->setImageFile($imageFile);
-
         $this->assertEquals(1024, $productImage->getImageSize());
         $this->assertEquals('image/jpeg', $productImage->getImageMimeType());
-        $this->assertEquals('test-image.jpg', $productImage->getImageOriginalName());
+        $this->assertEquals('test.jpg', $productImage->getImageOriginalName());
+        $this->assertSame($uploadedFile, $productImage->getImageFile());
+    }
+
+    public function testUpdateImageName(): void
+    {
+        $product = $this->createMock(Product::class);
+        $uploadedFile = $this->createMock(UploadedFile::class);
+        $uploadedFile->method('getSize')->willReturn(1024);
+        $uploadedFile->method('getMimeType')->willReturn('image/jpeg');
+        $uploadedFile->method('getClientOriginalName')->willReturn('test.jpg');
+
+        $productImage = ProductImage::createFromUploadedFile($product, $uploadedFile, 1);
+        $productImage->updateImageName('new_image_name');
+
+        $this->assertEquals('new_image_name', $productImage->getImageName());
+    }
+
+    public function testUpdatePosition(): void
+    {
+        $product = $this->createMock(Product::class);
+        $uploadedFile = $this->createMock(UploadedFile::class);
+        $uploadedFile->method('getSize')->willReturn(1024);
+        $uploadedFile->method('getMimeType')->willReturn('image/jpeg');
+        $uploadedFile->method('getClientOriginalName')->willReturn('test.jpg');
+
+        $productImage = ProductImage::createFromUploadedFile($product, $uploadedFile, 1);
+        $productImage->updatePosition(2);
+
+        $this->assertEquals(2, $productImage->getPosition());
     }
 }

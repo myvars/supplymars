@@ -6,7 +6,6 @@ use App\DTO\SearchDto\SearchInterface;
 use App\Entity\PurchaseOrder;
 use App\Entity\Supplier;
 use App\Enum\PurchaseOrderStatus;
-use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -35,7 +34,7 @@ class PurchaseOrderRepository extends ServiceEntityRepository implements SearchQ
 
         if ($searchDto->getQuery()) {
             $qb->andWhere('p.id LIKE :query')
-                ->setParameter('query', '%' . $searchDto->getQuery() . '%');
+                ->setParameter('query', '%'.$searchDto->getQuery().'%');
         }
 
         if ($searchDto->getPurchaseOrderId()) {
@@ -107,7 +106,7 @@ class PurchaseOrderRepository extends ServiceEntityRepository implements SearchQ
             ->getResult();
     }
 
-    public function findRejectedPoSummary(DateTime $startDate): array
+    public function findRejectedPoSummary(\DateTime $startDate): array
     {
         return $this->createQueryBuilder('po')
             ->select('COUNT(po.id) as poCount')

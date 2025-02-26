@@ -23,16 +23,16 @@ class OrderSearchFilterType extends AbstractType
         $builder
             ->add('customerOrderId', null, [
                 'required' => false,
-                'label' => 'Customer Order Id'
+                'label' => 'Customer Order Id',
             ])
             ->add('purchaseOrderId', null, [
-                'label' => 'Purchase Order Id'
+                'label' => 'Purchase Order Id',
             ])
             ->add('customerId', null, [
-                'label' => 'Customer Id'
+                'label' => 'Customer Id',
             ])
             ->add('productId', null, [
-                'label' => 'with Product Id'
+                'label' => 'with Product Id',
             ])
             ->add('orderStatus', EnumType::class, [
                 'class' => OrderStatus::class,
@@ -46,7 +46,7 @@ class OrderSearchFilterType extends AbstractType
                 'attr' => [
                     'data-controller' => 'datepicker',
                     'placeholder' => 'yyyy-mm-dd',
-                ]
+                ],
             ])
             ->add('endDate', TextType::class, [
                 'label' => 'End Date',
@@ -54,7 +54,7 @@ class OrderSearchFilterType extends AbstractType
                 'attr' => [
                     'data-controller' => 'datepicker',
                     'placeholder' => 'yyyy-mm-dd',
-                ]
+                ],
             ])
             ->add('query', HiddenType::class)
             ->add('sort', HiddenType::class)

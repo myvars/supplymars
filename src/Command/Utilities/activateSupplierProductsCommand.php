@@ -22,7 +22,7 @@ class activateSupplierProductsCommand extends Command
     public function __construct(
         private readonly SupplierUtility $supplierUtility,
         private readonly EntityManagerInterface $entityManager,
-        private readonly ChangeMappedProductStatus $changeMappedProductStatus
+        private readonly ChangeMappedProductStatus $changeMappedProductStatus,
     ) {
         parent::__construct();
     }
@@ -45,9 +45,8 @@ class activateSupplierProductsCommand extends Command
 
         $processedItemCount = 0;
         foreach ($supplierProducts as $supplierProduct) {
-
             $this->changeMappedProductStatus->toggleMappedProductStatus($supplierProduct);
-            $processedItemCount++;
+            ++$processedItemCount;
 
             $io->note(sprintf('Activating Supplier: %s, Supplier Product ID: %d, Mapped Product ID: %d',
                 $supplierProduct->getSupplier()->getName(),

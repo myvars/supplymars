@@ -12,27 +12,29 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
-class SupplierUtility {
-
+class SupplierUtility
+{
     public const string DEFAULT_USER_EMAIL = 'adam@admin.com';
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly TokenStorageInterface  $tokenStorage,
-        private readonly UserProviderInterface  $userProvider,
-        private readonly ChangePurchaseOrderItemStatus $changeStatusService
+        private readonly TokenStorageInterface $tokenStorage,
+        private readonly UserProviderInterface $userProvider,
+        private readonly ChangePurchaseOrderItemStatus $changeStatusService,
     ) {
     }
 
-    public function getRandomSupplier(): ?Supplier {
+    public function getRandomSupplier(): ?Supplier
+    {
         $suppliers = $this->entityManager->getRepository(Supplier::class)->findAll();
+
         return $suppliers[array_rand($suppliers)] ?? null;
     }
 
     public function changePurchaseOrderItemStatus(
         PurchaseOrderItem $purchaseOrderItem,
         PurchaseOrderStatus $currentStatus,
-        PurchaseOrderStatus $newStatus
+        PurchaseOrderStatus $newStatus,
     ): void {
         if ($purchaseOrderItem->getStatus() !== $currentStatus) {
             return;

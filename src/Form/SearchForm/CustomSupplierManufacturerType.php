@@ -10,7 +10,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 class CustomSupplierManufacturerType extends AbstractType
 {
     public function __construct(
-        private readonly IdToSupplierManufacturerTransformer $idToSupplierManufacturerTransformer
+        private readonly IdToSupplierManufacturerTransformer $idToSupplierManufacturerTransformer,
     ) {
     }
 
@@ -19,7 +19,8 @@ class CustomSupplierManufacturerType extends AbstractType
         $builder->addModelTransformer($this->idToSupplierManufacturerTransformer);
     }
 
-    public function getParent()
+    #[\Override]
+    public function getParent(): string
     {
         return EntityType::class;
     }

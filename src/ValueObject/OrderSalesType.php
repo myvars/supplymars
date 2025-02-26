@@ -8,7 +8,7 @@ class OrderSalesType
 {
     private function __construct(
         private readonly SalesDuration $duration,
-        private readonly bool $rebuildRange
+        private readonly bool $rebuildRange,
     ) {
     }
 

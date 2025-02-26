@@ -2,7 +2,6 @@
 
 namespace App\Service\Dashboard;
 
-
 use App\Service\Dashboard\Report\ReportInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 use Symfony\Contracts\Service\ServiceCollectionInterface;
@@ -27,6 +26,6 @@ final readonly class ReportHandler
 
     public function hasReport(?string $report): bool
     {
-        return $report !== null && $this->reports->has($report);
+        return null !== $report && $this->reports->has($report);
     }
 }

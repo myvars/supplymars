@@ -13,14 +13,14 @@ final readonly class LogSupplierProductStockChange
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private ValidatorInterface $validator
+        private ValidatorInterface $validator,
     ) {
     }
 
     #[AsEventListener]
     public function onSupplierProductStockChange(SupplierProductStockChangedEvent $event): void
     {
-        $supplierStockChangeLog = new SupplierStockChangeLog(
+        $supplierStockChangeLog = SupplierStockChangeLog::create(
             $event->getDomainEventType(),
             $event->getSupplierProduct(),
             $event->getEventTimestamp()
@@ -32,7 +32,7 @@ final readonly class LogSupplierProductStockChange
     #[AsEventListener]
     public function onSupplierProductCostChange(SupplierProductCostChangedEvent $event): void
     {
-        $supplierStockChangeLog = new SupplierStockChangeLog(
+        $supplierStockChangeLog = SupplierStockChangeLog::create(
             $event->getDomainEventType(),
             $event->getSupplierProduct(),
             $event->getEventTimestamp()
@@ -41,7 +41,7 @@ final readonly class LogSupplierProductStockChange
         $this->save($supplierStockChangeLog);
     }
 
-        private function save(SupplierStockChangeLog $supplierStockChangeLog): void
+    private function save(SupplierStockChangeLog $supplierStockChangeLog): void
     {
         $errors = $this->validator->validate($supplierStockChangeLog);
         if (count($errors) > 0) {

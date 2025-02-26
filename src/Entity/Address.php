@@ -263,7 +263,6 @@ class Address
     {
         // set the owning side to null (unless already changed)
         if ($this->customerOrders->removeElement($customerOrder) && $customerOrder->getShippingAddress() === $this) {
-
         }
 
         return $this;
@@ -291,7 +290,6 @@ class Address
     {
         // set the owning side to null (unless already changed)
         if ($this->purchaseOrders->removeElement($purchaseOrder) && $purchaseOrder->getShippingAddress() === $this) {
-
         }
 
         return $this;

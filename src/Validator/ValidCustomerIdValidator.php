@@ -16,11 +16,11 @@ class ValidCustomerIdValidator extends ConstraintValidator
     {
         /* @var ValidCustomerId $constraint */
 
-        if (!is_numeric($value) || 0 === (int)$value) {
+        if (!is_numeric($value) || 0 === (int) $value) {
             return;
         }
 
-        if ($user = $this->userRepository->find($value)) {
+        if ($this->userRepository->find($value)) {
             return;
         }
 

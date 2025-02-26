@@ -2,8 +2,8 @@
 
 namespace App\Service\Product;
 
-use App\Entity\SupplierCategory;
 use App\Entity\Category;
+use App\Entity\SupplierCategory;
 use App\Entity\SupplierProduct;
 use App\Entity\User;
 use App\Entity\VatRate;
@@ -20,7 +20,7 @@ class CategoryMapper
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly ValidatorInterface $validator,
-        private readonly Security $security
+        private readonly Security $security,
     ) {
     }
 
@@ -44,7 +44,7 @@ class CategoryMapper
 
         $errors = $this->validator->validate($category);
         if (count($errors) > 0) {
-            throw new \InvalidArgumentException((string)$errors);
+            throw new \InvalidArgumentException((string) $errors);
         }
 
         $this->entityManager->persist($category);

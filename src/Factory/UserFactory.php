@@ -36,7 +36,7 @@ final class UserFactory extends PersistentProxyObjectFactory
             'email' => self::faker()->email(),
             'roles' => [],
             'password' => self::faker()->password(),
-            'fullName' => self::faker()->firstName() . ' ' . self::faker()->lastName(),
+            'fullName' => self::faker()->firstName().' '.self::faker()->lastName(),
             'isVerified' => true,
             'isStaff' => false,
         ];
@@ -45,11 +45,12 @@ final class UserFactory extends PersistentProxyObjectFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
+    #[\Override]
     protected function initialize(): static
     {
         return $this
             ->afterInstantiate(function (User $user): void {
-                if ($user->getPassword() !== '' && $user->getPassword() !== '0') {
+                if ('' !== $user->getPassword() && '0' !== $user->getPassword()) {
                     $user->setPassword($this->passwordEncoder->hashPassword($user, $user->getPassword()));
                 }
             });
@@ -60,4 +61,3 @@ final class UserFactory extends PersistentProxyObjectFactory
         return $this->with(['fullName' => 'Staff Member', 'isStaff' => true]);
     }
 }
-

@@ -18,7 +18,8 @@ class CustomSubcategoryType extends AbstractType
         $builder->addModelTransformer($this->idToSubcategoryTransformer);
     }
 
-    public function getParent()
+    #[\Override]
+    public function getParent(): string
     {
         return EntityType::class;
     }

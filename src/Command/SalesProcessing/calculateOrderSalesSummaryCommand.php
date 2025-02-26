@@ -29,13 +29,13 @@ class calculateOrderSalesSummaryCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $rebuild = (int)$input->getArgument('rebuild');
+        $rebuild = (int) $input->getArgument('rebuild');
 
-        $io->info("Calculating order sales summary");
+        $io->info('Calculating order sales summary');
 
         $this->orderSalesSummaryCalculator->process($rebuild);
 
-        $io->success("Sales summary calculation completed");
+        $io->success('Sales summary calculation completed');
 
         return Command::SUCCESS;
     }

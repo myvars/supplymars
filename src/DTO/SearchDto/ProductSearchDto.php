@@ -27,6 +27,7 @@ final class ProductSearchDto extends SearchDto implements SearchFilterInterface
 
     private ?bool $inStock = null;
 
+    #[\Override]
     public function getSearchParams(): array
     {
         $searchFilterParams = [

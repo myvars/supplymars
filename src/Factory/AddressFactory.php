@@ -33,20 +33,19 @@ final class AddressFactory extends PersistentProxyObjectFactory
     protected function defaults(): array|callable
     {
         $cityData = $this->marsCity();
-        $customer = LazyValue::memoize(fn() => UserFactory::new()->create());
 
         return [
             'city' => $cityData['name'],
             'country' => 'Mars Colony',
             'county' => 'Red Zone',
-            'customer' => $customer,
-            'postCode' => $cityData['sectorCode'] . '-' . random_int(10, 50),
+            'customer' => LazyValue::memoize(fn (): UserFactory => UserFactory::new()),
+            'postCode' => $cityData['sectorCode'].'-'.random_int(10, 50),
             'street' => self::faker()->streetAddress(),
             'phoneNumber' => self::faker()->phoneNumber(),
             'email' => self::faker()->email(),
             'fullName' => self::faker()->name(),
-            'companyName' => random_int(1,5) === 1 ? self::faker()->company() : null,
-            'street2' => random_int(1,5) === 1 ? self::faker()->streetName() : null,
+            'companyName' => 1 === random_int(1, 5) ? self::faker()->company() : null,
+            'street2' => 1 === random_int(1, 5) ? self::faker()->streetName() : null,
             'isDefaultShippingAddress' => false,
             'isDefaultBillingAddress' => false,
         ];
@@ -79,6 +78,7 @@ final class AddressFactory extends PersistentProxyObjectFactory
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
      */
+    #[\Override]
     protected function initialize(): static
     {
         return $this

@@ -8,7 +8,7 @@ use Symfony\Component\Form\Exception\TransformationFailedException;
 
 readonly class stringToPurchaseOrderStatusTransformer implements DataTransformerInterface
 {
-    //Transforms a string (status) to an enum (PurchaseOrderStatus)
+    // Transforms a string (status) to an enum (PurchaseOrderStatus)
     public function transform(mixed $value): ?PurchaseOrderStatus
     {
         if (null === $value) {
@@ -18,11 +18,11 @@ readonly class stringToPurchaseOrderStatusTransformer implements DataTransformer
         try {
             return PurchaseOrderStatus::from(strtoupper((string) $value));
         } catch (\InvalidArgumentException) {
-            throw new TransformationFailedException('Invalid status value: ' . $value);
+            throw new TransformationFailedException('Invalid status value: '.$value);
         }
     }
 
-    //Transforms an enum (PurchaseOrderStatus) to a string (status)
+    // Transforms an enum (PurchaseOrderStatus) to a string (status)
     public function reverseTransform(mixed $value): ?string
     {
         if (!$value) {

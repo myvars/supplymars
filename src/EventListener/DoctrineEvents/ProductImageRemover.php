@@ -4,7 +4,7 @@ namespace App\EventListener\DoctrineEvents;
 
 use App\Entity\Product;
 use App\Entity\ProductImage;
-use App\Service\UploadHelper;
+use App\Service\Utility\UploadHelper;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PreRemoveEventArgs;
@@ -24,7 +24,7 @@ class ProductImageRemover
         private readonly UploadHelper $uploadHelper,
         private readonly CacheManager $cacheManager,
         #[Autowire('%app.product_uploads%')]
-        private readonly string $appProductUploads
+        private readonly string $appProductUploads,
     ) {
     }
 
@@ -45,7 +45,7 @@ class ProductImageRemover
 
     public function postRemove(): void
     {
-        if ($this->changedProducts === []) {
+        if ([] === $this->changedProducts) {
             return;
         }
 
@@ -55,7 +55,7 @@ class ProductImageRemover
 
         $this->entityManager->flush();
 
-        unset($this->changedProducts);
+        $this->changedProducts = [];
     }
 
     public function setChangedProduct(Product $product): void
@@ -66,7 +66,7 @@ class ProductImageRemover
     public function reorderProductImages(Product $product): void
     {
         foreach ($product->getProductImages() as $index => $productImage) {
-            $productImage->setPosition($index + 1);
+            $productImage->updatePosition($index + 1);
         }
     }
 }

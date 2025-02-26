@@ -22,7 +22,7 @@ use Symfonycasts\DynamicForms\DynamicFormBuilder;
 class SupplierProductSearchFilterType extends AbstractType
 {
     public function __construct(
-        private readonly EntityManagerInterface  $entityManager,
+        private readonly EntityManagerInterface $entityManager,
         private readonly IdToSupplierTransformer $idToSupplierTransformer,
     ) {
     }
@@ -67,47 +67,47 @@ class SupplierProductSearchFilterType extends AbstractType
         ;
 
         $builder->add('auto-update', SubmitType::class, [
-            'attr' => ['class' => 'hidden-submit-button', 'data-submit-form-target' => 'submit']
+            'attr' => ['class' => 'hidden-submit-button', 'data-submit-form-target' => 'submit'],
         ]);
 
         $builder->addDependent(
-            'supplierCategoryId', 'supplierId', function(DependentField $field, ?int $supplierId): void {
-            $field
-                ->add(CustomSupplierCategoryType::class, [
-                    'label' => 'Supplier Category',
-                    'class' => SupplierCategory::class,
-                    'choices' => $this->entityManager->getRepository(SupplierCategory::class)
-                        ->findBy(['supplier' => $supplierId]),
-                    'choice_label' => 'name',
-                    'placeholder' => 'Any Category',
-                    'attr' => ['data-action' => 'change->submit-form#submitForm'],
-                    'priority' => 4,
-                ]);
-        });
+            'supplierCategoryId', 'supplierId', function (DependentField $field, ?int $supplierId): void {
+                $field
+                    ->add(CustomSupplierCategoryType::class, [
+                        'label' => 'Supplier Category',
+                        'class' => SupplierCategory::class,
+                        'choices' => $this->entityManager->getRepository(SupplierCategory::class)
+                            ->findBy(['supplier' => $supplierId]),
+                        'choice_label' => 'name',
+                        'placeholder' => 'Any Category',
+                        'attr' => ['data-action' => 'change->submit-form#submitForm'],
+                        'priority' => 4,
+                    ]);
+            });
 
         $builder->addDependent(
-            'supplierSubcategoryId', 'supplierCategoryId', function(DependentField $field, ?int $supplierCategoryId): void {
-            $field
-                ->add(CustomSupplierSubcategoryType::class, [
-                    'label' => 'Supplier Subcategory',
-                    'class' => SupplierSubcategory::class,
-                    'choices' => $this->entityManager->getRepository(SupplierSubcategory::class)
-                        ->findBy(['supplierCategory' => $supplierCategoryId]),
-                    'choice_label' => 'name',
-                    'placeholder' => 'Any Subcategory',
-                    'attr' => ['data-action' => 'change->submit-form#submitForm'],
-                    'priority' => 3,
-                ]);
-        });
+            'supplierSubcategoryId', 'supplierCategoryId', function (DependentField $field, ?int $supplierCategoryId): void {
+                $field
+                    ->add(CustomSupplierSubcategoryType::class, [
+                        'label' => 'Supplier Subcategory',
+                        'class' => SupplierSubcategory::class,
+                        'choices' => $this->entityManager->getRepository(SupplierSubcategory::class)
+                            ->findBy(['supplierCategory' => $supplierCategoryId]),
+                        'choice_label' => 'name',
+                        'placeholder' => 'Any Subcategory',
+                        'attr' => ['data-action' => 'change->submit-form#submitForm'],
+                        'priority' => 3,
+                    ]);
+            });
 
         $builder->addDependent(
             'supplierManufacturerId',
             ['supplierId', 'supplierCategoryId', 'supplierSubcategoryId'],
-            function(
+            function (
                 DependentField $field,
                 ?int $supplierId,
                 ?int $supplierCategoryId,
-                ?int $supplierSubcategoryId
+                ?int $supplierSubcategoryId,
             ): void {
                 $field
                 ->add(CustomSupplierManufacturerType::class, [
@@ -119,8 +119,8 @@ class SupplierProductSearchFilterType extends AbstractType
                     'placeholder' => 'Any Manufacturer',
                     'priority' => 2,
                 ]
-            );
-        });
+                );
+            });
 
         $builder->get('supplierId')
             ->addModelTransformer($this->idToSupplierTransformer);

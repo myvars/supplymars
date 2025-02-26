@@ -6,14 +6,14 @@ use App\Entity\Product;
 use App\Entity\SupplierProduct;
 use App\Service\Crud\Common\CrudActionInterface;
 use App\Service\Crud\Common\CrudOptions;
-use App\Service\DomainEventDispatcher;
 use App\Service\Product\ActiveSourceCalculator;
+use App\Service\Utility\DomainEventDispatcher;
 
 final readonly class RemoveMappedProduct implements CrudActionInterface
 {
     public function __construct(
         private ActiveSourceCalculator $activeSourceCalculator,
-        private DomainEventDispatcher $domainEventDispatcher
+        private DomainEventDispatcher $domainEventDispatcher,
     ) {
     }
 

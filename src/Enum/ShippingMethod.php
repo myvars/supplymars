@@ -3,7 +3,6 @@
 namespace App\Enum;
 
 use App\Entity\VatRate;
-use Exception;
 
 enum ShippingMethod: string
 {
@@ -53,7 +52,7 @@ enum ShippingMethod: string
 
         try {
             $date = new \DateTimeImmutable(sprintf('+%d days', $days));
-        } catch (Exception) {
+        } catch (\Exception) {
             throw new \InvalidArgumentException('Invalid date');
         }
 

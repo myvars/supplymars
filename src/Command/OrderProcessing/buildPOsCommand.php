@@ -50,7 +50,7 @@ class buildPOsCommand extends Command
         $processedOrders = 0;
         foreach ($customerOrders as $customerOrder) {
             $this->orderProcessor->processOrder($customerOrder);
-            $processedOrders++;
+            ++$processedOrders;
 
             $io->note(sprintf('Customer order %05d processed', $customerOrder->getId()));
         }

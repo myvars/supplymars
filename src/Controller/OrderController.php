@@ -26,28 +26,27 @@ use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/order')]
 #[IsGranted('ROLE_ADMIN')]
 class OrderController extends AbstractController
 {
     public const string SECTION = 'Order';
 
-    #[Route('/', name: 'app_order_index', methods: ['GET'])]
+    #[Route(path: '/order/', name: 'app_order_index', methods: ['GET'])]
     public function index(
         Request $request,
         CrudSearcher $handler,
         CustomerOrderRepository $repository,
-        #[MapQueryString] OrderSearchDto $dto = new OrderSearchDto()
+        #[MapQueryString] OrderSearchDto $dto = new OrderSearchDto(),
     ): Response {
         return $handler->search(self::SECTION, $dto, $repository, $request->query->all());
     }
 
-    #[Route('/search/filter', name: 'app_order_search_filter', methods: ['GET', 'POST'])]
+    #[Route(path: '/order/search/filter', name: 'app_order_search_filter', methods: ['GET', 'POST'])]
     public function searchFilter(
         Request $request,
         CrudUpdater $handler,
         SearchFilter $action,
-        #[MapQueryString] OrderSearchDto $dto = new OrderSearchDto()
+        #[MapQueryString] OrderSearchDto $dto = new OrderSearchDto(),
     ): Response {
         $dto->setQueryString($request->getQueryString());
         $form = $this->createForm(OrderSearchFilterType::class, $dto, [
@@ -66,11 +65,11 @@ class OrderController extends AbstractController
         );
     }
 
-    #[Route('/new', name: 'app_order_new', methods: ['GET', 'POST'])]
+    #[Route(path: '/order/new', name: 'app_order_new', methods: ['GET', 'POST'])]
     public function new(
         CrudCreator $handler,
         CreateOrder $action,
-        CreateOrderDto $createOrderDto
+        CreateOrderDto $createOrderDto,
     ): Response {
         return $handler->build(
             $handler->setup(self::SECTION, $createOrderDto, CreateOrderType::class)
@@ -78,31 +77,30 @@ class OrderController extends AbstractController
         );
     }
 
-    #[Route('/{id}', name: 'app_order_show', methods: ['GET'])]
+    #[Route(path: '/order/{id}', name: 'app_order_show', methods: ['GET'])]
     public function show(
-        CustomerOrder $customerOrder,
-        CrudReader $handler
+        ?CustomerOrder $customerOrder,
+        CrudReader $handler,
     ): Response {
         return $handler->read(self::SECTION, $customerOrder);
     }
 
-    #[Route('/{id}/cancel/confirm', name: 'app_order_cancel_confirm', methods: ['GET'])]
+    #[Route(path: '/order/{id}/cancel/confirm', name: 'app_order_cancel_confirm', methods: ['GET'])]
     public function cancelConfirm(
         CustomerOrder $customerOrder,
-        CrudReader $handler
+        CrudReader $handler,
     ): Response {
         return $handler->build(
-            $handler->setDefaults()
-                ->setEntity($customerOrder)
-                ->setTemplate('order/cancel.html.twig')
+            $handler->setup(self::SECTION, $customerOrder)
+                ->setTemplate('cancel')
         );
     }
 
-    #[Route('/{id}/cancel', name: 'app_order_cancel', methods: ['POST'])]
+    #[Route(path: '/order/{id}/cancel', name: 'app_order_cancel', methods: ['POST'])]
     public function cancel(
         CustomerOrder $customerOrder,
         CrudDeleter $handler,
-        CancelOrder $action
+        CancelOrder $action,
     ): Response {
         return $handler->build(
             $handler->setup(self::SECTION, $customerOrder)
@@ -115,11 +113,11 @@ class OrderController extends AbstractController
         );
     }
 
-    #[Route('/{id}/process', name: 'app_order_process', methods: ['GET'])]
+    #[Route(path: '/order/{id}/process', name: 'app_order_process', methods: ['GET'])]
     public function process(
         CustomerOrder $customerOrder,
         CrudHandler $handler,
-        ProcessOrder $action
+        ProcessOrder $action,
     ): Response {
         return $handler->build(
             $handler->setDefaults()
@@ -133,12 +131,12 @@ class OrderController extends AbstractController
         );
     }
 
-    #[Route('/{id}/lock/toggle', name: 'app_order_lock_toggle_status', methods: ['GET'])]
+    #[Route(path: '/order/{id}/lock/toggle', name: 'app_order_lock_toggle_status', methods: ['GET'])]
     public function toggleStatus(
         CustomerOrder $customerOrder,
         CrudHandler $handler,
-        LockOrder $action
-    ): Response{
+        LockOrder $action,
+    ): Response {
         return $handler->build(
             $handler->setDefaults()
                 ->setEntity($customerOrder)

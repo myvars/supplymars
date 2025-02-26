@@ -12,7 +12,7 @@ class EmailVerifier
 {
     public function __construct(
         private readonly VerifyEmailHelperInterface $verifyEmailHelper,
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
     ) {
     }
 

@@ -16,7 +16,6 @@ readonly class IdToSubcategoryTransformer implements DataTransformerInterface
     /**
      * Transforms a string (id) to an object (Subcategory).
      *
-     *
      * @throws TransformationFailedException if object (Subcategory) is not found
      */
     public function transform(mixed $value): ?Subcategory

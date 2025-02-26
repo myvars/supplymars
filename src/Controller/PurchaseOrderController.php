@@ -17,28 +17,27 @@ use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[Route('/purchase/order')]
 #[IsGranted('ROLE_ADMIN')]
 class PurchaseOrderController extends AbstractController
 {
     public const string SECTION = 'Purchase Order';
 
-    #[Route('/', name: 'app_purchase_order_index', methods: ['GET'])]
+    #[Route(path: '/purchase/order/', name: 'app_purchase_order_index', methods: ['GET'])]
     public function index(
         Request $request,
         CrudSearcher $handler,
         PurchaseOrderRepository $repository,
-        #[MapQueryString] PurchaseOrderSearchDto $dto = new PurchaseOrderSearchDto()
+        #[MapQueryString] PurchaseOrderSearchDto $dto = new PurchaseOrderSearchDto(),
     ): Response {
         return $handler->search(self::SECTION, $dto, $repository, $request->query->all());
     }
 
-    #[Route('/search/filter', name: 'app_purchase_order_search_filter', methods: ['GET', 'POST'])]
+    #[Route(path: '/purchase/order/search/filter', name: 'app_purchase_order_search_filter', methods: ['GET', 'POST'])]
     public function searchFilter(
         Request $request,
         CrudUpdater $handler,
         SearchFilter $action,
-        #[MapQueryString] PurchaseOrderSearchDto $dto = new PurchaseOrderSearchDto()
+        #[MapQueryString] PurchaseOrderSearchDto $dto = new PurchaseOrderSearchDto(),
     ): Response {
         $dto->setQueryString($request->getQueryString());
         $form = $this->createForm(PurchaseOrderSearchFilterType::class, $dto, [
@@ -57,10 +56,10 @@ class PurchaseOrderController extends AbstractController
         );
     }
 
-    #[Route('/{id}', name: 'app_purchase_order_show', methods: ['GET'])]
+    #[Route(path: '/purchase/order/{id}', name: 'app_purchase_order_show', methods: ['GET'])]
     public function show(
-        PurchaseOrder $purchaseOrder,
-        CrudReader $handler
+        ?PurchaseOrder $purchaseOrder,
+        CrudReader $handler,
     ): Response {
         return $handler->read(self::SECTION, $purchaseOrder);
     }

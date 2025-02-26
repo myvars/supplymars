@@ -6,19 +6,19 @@ use App\Entity\Product;
 use App\Entity\ProductImage;
 use App\Service\Crud\Common\CrudActionInterface;
 use App\Service\Crud\Common\CrudOptions;
-use App\Service\UploadHelper;
+use App\Service\Utility\UploadHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
-final class ProductImageCreator implements CrudActionInterface
+final readonly class ProductImageCreator implements CrudActionInterface
 {
     public function __construct(
-        private readonly EntityManagerInterface $entityManager,
-        private readonly ValidatorInterface $validator,
-        private readonly UploadHelper $uploadHelper,
+        private EntityManagerInterface $entityManager,
+        private ValidatorInterface $validator,
+        private UploadHelper $uploadHelper,
         #[Autowire('%app.product_uploads%')]
-        private readonly string $appProductUploads,
+        private string $appProductUploads,
     ) {
     }
 
@@ -33,41 +33,38 @@ final class ProductImageCreator implements CrudActionInterface
         $this->createProductImagesFromArray($product, $imageFiles);
     }
 
-    public function createProductImagesFromArray(Product $product, array $imageFiles=[]): void
+    public function createProductImagesFromArray(Product $product, array $imageFiles = []): void
     {
-        if (count($imageFiles) === 0) {
+        if ([] === $imageFiles) {
             return;
         }
 
         $nextPosition = $this->getNextPosition($product);
         foreach ($imageFiles as $imageFile) {
-            $productImage = (new ProductImage())
-                ->setProduct($product)
-                ->setImageFile($imageFile)
-                ->setPosition($nextPosition);
+            $productImage = ProductImage::createFromUploadedFile($product, $imageFile, $nextPosition);
 
             $errors = $this->validator->validate($productImage);
             if (count($errors) > 0) {
                 continue;
             }
 
-            $this->createProductImage($productImage);
+            $this->completeProductImage($productImage);
             ++$nextPosition;
         }
-    }
-
-    private function createProductImage(ProductImage $productImage): void
-    {
-        $productImage->setImageName(
-            $this->uploadHelper->uploadFile($productImage->getImageFile(), $this->appProductUploads)
-        );
-
-        $this->entityManager->persist($productImage);
-        $this->entityManager->flush();
     }
 
     private function getNextPosition(Product $product): int
     {
         return $this->entityManager->getRepository(ProductImage::class)->getNextPositionForProduct($product);
+    }
+
+    private function completeProductImage(ProductImage $productImage): void
+    {
+        $productImage->updateImageName(
+            $this->uploadHelper->uploadFile($productImage->getImageFile(), $this->appProductUploads)
+        );
+
+        $this->entityManager->persist($productImage);
+        $this->entityManager->flush();
     }
 }

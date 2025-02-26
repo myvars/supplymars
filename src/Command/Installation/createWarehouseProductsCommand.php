@@ -22,7 +22,7 @@ class createWarehouseProductsCommand extends Command
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly ProductGenerator $productGenerator
+        private readonly ProductGenerator $productGenerator,
     ) {
         parent::__construct();
     }
@@ -51,7 +51,7 @@ class createWarehouseProductsCommand extends Command
 
         foreach ($supplierProducts as $supplierProduct) {
             $this->productGenerator->createFromSupplierProduct($supplierProduct);
-            $productCount++;
+            ++$productCount;
         }
 
         return $productCount;

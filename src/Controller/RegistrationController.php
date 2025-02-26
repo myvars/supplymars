@@ -6,7 +6,7 @@ use App\Entity\User;
 use App\Form\RegistrationFormType;
 use App\Repository\UserRepository;
 use App\Security\EmailVerifier;
-use App\Service\MailerHelper;
+use App\Service\Email\MailerHelper;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,7 +28,7 @@ class RegistrationController extends AbstractController
     ) {
     }
 
-    #[Route('/register', name: 'app_register')]
+    #[Route(path: '/register', name: 'app_register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, UserAuthenticatorInterface $userAuthenticator, EntityManagerInterface $entityManager): Response
     {
         $user = new User();
@@ -67,7 +67,7 @@ class RegistrationController extends AbstractController
         ]);
     }
 
-    #[Route('/verify/email', name: 'app_verify_email')]
+    #[Route(path: '/verify/email', name: 'app_verify_email')]
     public function verifyUserEmail(Request $request, TranslatorInterface $translator, UserRepository $userRepository, UserAuthenticatorInterface $userAuthenticator): Response
     {
         $id = $request->query->get('id');
@@ -98,7 +98,7 @@ class RegistrationController extends AbstractController
         );
     }
 
-    #[Route('verify/resend', name: 'app_verify_resend_email')]
+    #[Route(path: 'verify/resend', name: 'app_verify_resend_email')]
     public function resendVerifyUserEmail(AuthenticationUtils $authenticationUtils): Response
     {
         // remove the login error if there is one
@@ -112,7 +112,7 @@ class RegistrationController extends AbstractController
         ]);
     }
 
-    #[Route('verify/send', name: 'app_verify_send_email')]
+    #[Route(path: 'verify/send', name: 'app_verify_send_email')]
     public function sendVerifyUserEmail(Request $request, UserRepository $repository): Response
     {
         $user = $repository->findOneBy(['email' => $request->get('email')]);

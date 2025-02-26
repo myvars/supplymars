@@ -17,6 +17,7 @@ class DateRange extends Constraint
      */
     public string $message = 'The start date must be earlier than the end date';
 
+    #[\Override]
     public function getTargets(): array|string
     {
         return self::CLASS_CONSTRAINT;  // Ensure the constraint targets the class

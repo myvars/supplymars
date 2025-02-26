@@ -22,6 +22,7 @@ final class CategorySearchDto extends SearchDto implements SearchFilterInterface
     #[Assert\Range(notInRangeMessage: 'Please enter a valid Vat Rate Id', min: 1, max: 1000000)]
     private ?int $vatRateId = null;
 
+    #[\Override]
     public function getSearchParams(): array
     {
         $searchFilterParams = [
@@ -45,6 +46,7 @@ final class CategorySearchDto extends SearchDto implements SearchFilterInterface
     public function setPriceModel(?string $priceModel): CategorySearchDto
     {
         $this->priceModel = $priceModel;
+
         return $this;
     }
 
@@ -68,6 +70,7 @@ final class CategorySearchDto extends SearchDto implements SearchFilterInterface
     public function setVatRateId(?int $vatRateId): CategorySearchDto
     {
         $this->vatRateId = $vatRateId;
+
         return $this;
     }
 }

@@ -23,7 +23,7 @@ class refundPOsCommand extends Command
     public function __construct(
         private readonly SupplierUtility $supplierUtility,
         private readonly EntityManagerInterface $entityManager,
-        private readonly ProcessOrder $action
+        private readonly ProcessOrder $action,
     ) {
         parent::__construct();
     }
@@ -56,7 +56,7 @@ class refundPOsCommand extends Command
 
             $this->action->processOrder($purchaseOrder->getCustomerOrder());
 
-            $processedPoCount++;
+            ++$processedPoCount;
 
             $io->note(sprintf('Purchase order %05d : %s', $purchaseOrder->getId(), $newStatus->value));
         }
@@ -69,7 +69,7 @@ class refundPOsCommand extends Command
     private function getRejectedPurchaseOrders(int $poCount): ?array
     {
         return $this->entityManager->getRepository(PurchaseOrder::class)->findBy([
-            'status' => PurchaseOrderStatus::REJECTED
+            'status' => PurchaseOrderStatus::REJECTED,
         ], null, $poCount);
     }
 }

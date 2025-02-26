@@ -24,7 +24,7 @@ class SupplierManufacturerRepository extends ServiceEntityRepository
     public function findSupplierManufacturers(
         ?int $supplierId,
         ?int $supplierCategoryId,
-        ?int $supplierSubcategoryId
+        ?int $supplierSubcategoryId,
     ): ?array {
         $qb = $this->createQueryBuilder('sm')
             ->leftJoin('sm.supplierProducts', 'sp');

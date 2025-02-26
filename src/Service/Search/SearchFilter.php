@@ -28,7 +28,7 @@ final readonly class SearchFilter implements CrudActionInterface
         ));
 
         $newSuccessLink = $parsedSuccessLink['path']
-            .($mergedQueryString !== '' && $mergedQueryString !== '0' ? '?'.$mergedQueryString : '');
+            .('' !== $mergedQueryString && '0' !== $mergedQueryString ? '?'.$mergedQueryString : '');
 
         $crudOptions
             ->setIsUrlRefresh(true)

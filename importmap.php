@@ -67,17 +67,17 @@ return [
         'version' => '1.15.6',
     ],
     'flowbite/dist/flowbite.min.css' => [
-        'version' => '3.1.1',
+        'version' => '3.1.2',
         'type' => 'css',
     ],
     'flowbite' => [
-        'version' => '3.1.1',
+        'version' => '3.1.2',
     ],
     'flowbite-datepicker' => [
         'version' => '1.3.2',
     ],
     'chart.js' => [
-        'version' => '4.4.7',
+        'version' => '4.4.8',
     ],
     '@kurkle/color' => [
         'version' => '0.3.4',

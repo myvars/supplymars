@@ -14,7 +14,7 @@ class ChangePurchaseOrderItemStatusDto
         private readonly int $purchaseOrderItemId,
         #[Assert\NotBlank(message: 'Please enter a PO Item status')]
         #[ValidPOItemStatusChange]
-        private ?PurchaseOrderStatus $purchaseOrderItemStatus
+        private ?PurchaseOrderStatus $purchaseOrderItemStatus,
     ) {
     }
 

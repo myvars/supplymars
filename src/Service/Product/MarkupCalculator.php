@@ -8,7 +8,7 @@ class MarkupCalculator
 {
     public function calculateMarkupFromSellPrice(
         string $cost,
-        string $sellPrice
+        string $sellPrice,
     ): string {
         if (1 !== bccomp($cost, '0', 2)) {
             throw new \InvalidArgumentException('Cost must be greater than 0.');
@@ -25,7 +25,7 @@ class MarkupCalculator
 
     public function calculateSellPrice(
         string $cost,
-        string $markup
+        string $markup,
     ): string {
         if (1 !== bccomp($cost, '0', 2)) {
             throw new \InvalidArgumentException('Cost must be greater than 0.');
@@ -43,7 +43,7 @@ class MarkupCalculator
     public function calculateSellPriceIncVat(
         string $cost,
         string $markup,
-        string $vatRate
+        string $vatRate,
     ): string {
         if (-1 === bccomp($vatRate, '0', 2)) {
             throw new \InvalidArgumentException('VAT rate must not be negative.');
@@ -57,7 +57,7 @@ class MarkupCalculator
 
     public function calculateSellPriceBeforeVat(
         string $sellPriceIncVat,
-        string $vatRate
+        string $vatRate,
     ): string {
         if (1 !== bccomp($sellPriceIncVat, '0', 2)) {
             throw new \InvalidArgumentException('Sell price (inc VAT) must be greater than 0.');
@@ -76,7 +76,7 @@ class MarkupCalculator
         string $cost,
         string $markup,
         string $vatRate,
-        PriceModel $priceModel
+        PriceModel $priceModel,
     ): string {
         $sellPriceIncVat = $this->calculateSellPriceIncVat($cost, $markup, $vatRate);
 
@@ -86,7 +86,7 @@ class MarkupCalculator
     public function calculateCustomMarkup(
         string $cost,
         string $sellPriceIncVat,
-        string $vatRate
+        string $vatRate,
     ): string {
         $sellPriceBeforeVat = $this->calculateSellPriceBeforeVat($sellPriceIncVat, $vatRate);
 

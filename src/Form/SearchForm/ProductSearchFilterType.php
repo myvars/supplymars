@@ -66,22 +66,22 @@ class ProductSearchFilterType extends AbstractType
         ;
 
         $builder->add('auto-update', SubmitType::class, [
-            'attr' => ['class' => 'hidden-submit-button', 'data-submit-form-target' => 'submit']
+            'attr' => ['class' => 'hidden-submit-button', 'data-submit-form-target' => 'submit'],
         ]);
 
         $builder->addDependent(
-            'subcategoryId', 'categoryId', function(DependentField $field, ?int $categoryId): void {
-            $field
-                ->add(CustomSubcategoryType::class, [
-                    'label' => 'Subcategory',
-                    'class' => Subcategory::class,
-                    'choices' => $this->entityManager->getRepository(Subcategory::class)
-                        ->findBy(['category' => $categoryId]),
-                    'choice_label' => 'name',
-                    'placeholder' => 'Any Subcategory',
-                    'priority' => 1,
-                ]);
-        });
+            'subcategoryId', 'categoryId', function (DependentField $field, ?int $categoryId): void {
+                $field
+                    ->add(CustomSubcategoryType::class, [
+                        'label' => 'Subcategory',
+                        'class' => Subcategory::class,
+                        'choices' => $this->entityManager->getRepository(Subcategory::class)
+                            ->findBy(['category' => $categoryId]),
+                        'choice_label' => 'name',
+                        'placeholder' => 'Any Subcategory',
+                        'priority' => 1,
+                    ]);
+            });
 
         $builder->get('categoryId')
             ->addModelTransformer($this->idToCategoryTransformer);

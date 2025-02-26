@@ -23,7 +23,7 @@ class deliverPOItemsCommand extends Command
 {
     public function __construct(
         private readonly SupplierUtility $supplierUtility,
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
     ) {
         parent::__construct();
     }
@@ -63,7 +63,7 @@ class deliverPOItemsCommand extends Command
                 PurchaseOrderStatus::SHIPPED,
                 PurchaseOrderStatus::DELIVERED
             );
-            $processedPOItemCount++;
+            ++$processedPOItemCount;
 
             $io->note(sprintf('PO Item %05d delivered', $purchaseOrderItem->getId()));
         }
@@ -73,7 +73,8 @@ class deliverPOItemsCommand extends Command
         return Command::SUCCESS;
     }
 
-    public function getPurchaseOrderItems(Supplier $supplier, int $count): array {
+    public function getPurchaseOrderItems(Supplier $supplier, int $count): array
+    {
         return $this->entityManager->getRepository(PurchaseOrderItem::class)
             ->findPurchaseOrderItemsByStatus($supplier, PurchaseOrderStatus::SHIPPED, $count);
     }
@@ -98,6 +99,6 @@ class deliverPOItemsCommand extends Command
         }
 
         // Simulate real world scenario delivering only some PO items
-        return random_int(0, 20) !== 0;
+        return 0 !== random_int(0, 20);
     }
 }

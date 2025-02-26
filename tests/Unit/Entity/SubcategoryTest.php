@@ -12,85 +12,151 @@ use PHPUnit\Framework\TestCase;
 
 class SubcategoryTest extends TestCase
 {
-    public function testGetSetName(): void
-    {
-        $subcategory = new Subcategory();
-        $subcategory->setName('Test Subcategory');
-
-        $this->assertEquals('Test Subcategory', $subcategory->getName());
-    }
-
-    public function testGetSetCategory(): void
-    {
-        $category = $this->createMock(Category::class);
-        $category->method('getName')->willReturn('Test Category');
-
-        $subcategory = new Subcategory();
-        $subcategory->setCategory($category);
-
-        $this->assertEquals('Test Category', $subcategory->getCategory()->getName());
-    }
-
-    public function testGetSetDefaultMarkup(): void
-    {
-        $subcategory = new Subcategory();
-        $subcategory->setDefaultMarkup(0.21);
-
-        $this->assertEquals(0.21, $subcategory->getDefaultMarkup());
-    }
-
-    public function testGetSetOwner(): void
+    public function testSettersAndGetters(): void
     {
         $user = $this->createMock(User::class);
-        $user->method('getFullName')->willReturn('Test Owner');
+        $category = $this->createMock(Category::class);
 
-        $subcategory = new Subcategory();
-        $subcategory->setOwner($user);
+        $subcategory = (new SubCategory())
+            ->setName('Electronics')
+            ->setDefaultMarkup('10.000')
+            ->setOwner($user)
+            ->setCategory($category)
+            ->setPriceModel(PriceModel::DEFAULT)
+            ->setIsActive(true);
 
-        $this->assertEquals('Test Owner', $subcategory->getOwner()->getFullName());
-    }
-
-    public function testGetSetPriceModel(): void
-    {
-        $priceModel = PriceModel::PRETTY_99;
-
-        $subcategory = new Subcategory();
-        $subcategory->setPriceModel($priceModel);
-
-        $this->assertEquals('Pretty 99', $subcategory->getPriceModel()->getName());
-    }
-
-    public function testGetSetIsActive(): void
-    {
-        $subcategory = new Subcategory();
-        $subcategory->setIsActive(true);
-
+        $this->assertEquals('Electronics', $subcategory->getName());
+        $this->assertEquals('10.000', $subcategory->getDefaultMarkup());
+        $this->assertSame($user, $subcategory->getOwner());
+        $this->assertSame($category, $subcategory->getCategory());
+        $this->assertEquals(PriceModel::DEFAULT, $subcategory->getPriceModel());
         $this->assertTrue($subcategory->isActive());
     }
 
-    public function testAddRemoveProduct(): void
+    public function testAddProduct(): void
     {
-        $product = $this->createMock(Product::class);
         $subcategory = new Subcategory();
+        $product = $this->createMock(Product::class);
+
+        // Test adding a product
+        $product->expects($this->once())
+            ->method('setSubcategory')
+            ->with($subcategory);
+
         $subcategory->addProduct($product);
-
-        $this->assertEquals($product, $subcategory->getProducts()->first());
-
-        $subcategory->removeProduct($product);
-
-        $this->assertEmpty($subcategory->getProducts());
+        $this->assertCount(1, $subcategory->getProducts());
+        $this->assertTrue($subcategory->getProducts()->contains($product));
     }
 
-    public function testAddRemoveSupplierSubcategory(): void
+    public function testRemoveProduct(): void
     {
-        $supplierSubcategory = $this->createMock(SupplierSubcategory::class);
         $subcategory = new Subcategory();
+        $product = $this->createMock(Product::class);
+
+        // Add the product first to set up the state
+        $subcategory->addProduct($product);
+
+        // Test removing a product
+        $product->expects($this->once())
+            ->method('getSubcategory')
+            ->willReturn($subcategory);
+
+        $product->expects($this->once())
+            ->method('setSubcategory')
+            ->with(null);
+
+        $subcategory->removeProduct($product);
+        $this->assertCount(0, $subcategory->getProducts());
+    }
+
+    public function testGetActiveProducts(): void
+    {
+        $subcategory = new Subcategory();
+
+        $activeProduct1 = $this->createMock(Product::class);
+        $activeProduct1->method('isActive')->willReturn(true);
+
+        $activeProduct2 = $this->createMock(Product::class);
+        $activeProduct2->method('isActive')->willReturn(true);
+
+        $inactiveProduct = $this->createMock(Product::class);
+        $inactiveProduct->method('isActive')->willReturn(false);
+
+        $subcategory->addProduct($activeProduct1);
+        $subcategory->addProduct($activeProduct2);
+        $subcategory->addProduct($inactiveProduct);
+
+        $activeProducts = $subcategory->getActiveProducts();
+
+        $this->assertCount(2, $activeProducts);
+        $this->assertTrue($activeProducts->contains($activeProduct1));
+        $this->assertTrue($activeProducts->contains($activeProduct2));
+        $this->assertFalse($activeProducts->contains($inactiveProduct));
+    }
+
+    public function testAddSupplierSubcategory(): void
+    {
+        $subcategory = new Subcategory();
+        $supplierSubcategory = $this->createMock(SupplierSubcategory::class);
+
+        // Test adding a supplier subcategory
+        $supplierSubcategory->expects($this->once())
+            ->method('setMappedSubcategory')
+            ->with($subcategory);
+
+        $subcategory->addSupplierSubcategory($supplierSubcategory);
+        $this->assertCount(1, $subcategory->getSupplierSubcategories());
+        $this->assertTrue($subcategory->getSupplierSubcategories()->contains($supplierSubcategory));
+    }
+
+    public function testRemoveSupplierSubcategory(): void
+    {
+        $subcategory = new Subcategory();
+        $supplierSubcategory = $this->createMock(SupplierSubcategory::class);
+
+        // Add the supplier subcategory first to set up the state
         $subcategory->addSupplierSubcategory($supplierSubcategory);
 
-        $this->assertEquals($supplierSubcategory, $subcategory->getSupplierSubcategories()->first());
+        // Test removing a supplier subcategory
+        $supplierSubcategory->expects($this->once())
+            ->method('getMappedSubcategory')
+            ->willReturn($subcategory);
+
+        $supplierSubcategory->expects($this->once())
+            ->method('setMappedSubcategory')
+            ->with(null);
 
         $subcategory->removeSupplierSubcategory($supplierSubcategory);
+        $this->assertCount(0, $subcategory->getSupplierSubcategories());
+    }
 
-        $this->assertEmpty($subcategory->getSupplierSubcategories());
+    public function testHasDefaultMarkup(): void
+    {
+        $subcategory = new Subcategory();
+        $subcategory->setDefaultMarkup('0.000');
+        $this->assertFalse($subcategory->hasDefaultMarkup());
+
+        $subcategory->setDefaultMarkup('1.000');
+        $this->assertTrue($subcategory->hasDefaultMarkup());
+    }
+
+    public function testHasOwner(): void
+    {
+        $subcategory = new Subcategory();
+        $this->assertFalse($subcategory->hasOwner());
+
+        $owner = $this->createMock(User::class);
+        $subcategory->setOwner($owner);
+        $this->assertTrue($subcategory->hasOwner());
+    }
+
+    public function testHasPriceModel(): void
+    {
+        $subcategory = new Subcategory();
+        $subcategory->setPriceModel(PriceModel::NONE);
+        $this->assertFalse($subcategory->hasPriceModel());
+
+        $subcategory->setPriceModel(PriceModel::DEFAULT);
+        $this->assertTrue($subcategory->hasPriceModel());
     }
 }

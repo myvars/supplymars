@@ -32,6 +32,7 @@ final class SupplierProductSearchDto extends SearchDto implements SearchFilterIn
 
     private ?bool $isActive = null;
 
+    #[\Override]
     public function getSearchParams(): array
     {
         $searchFilterParams = [

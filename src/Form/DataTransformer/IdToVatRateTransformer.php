@@ -16,7 +16,6 @@ readonly class IdToVatRateTransformer implements DataTransformerInterface
     /**
      * Transforms a string (id) to an object (VatRate).
      *
-     *
      * @throws TransformationFailedException if object (VatRate) is not found
      */
     public function transform(mixed $value): ?VatRate

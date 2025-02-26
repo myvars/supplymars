@@ -86,7 +86,7 @@ class AppFixtures extends Fixture
 
         $newProductCount = self::EDI_SUPPLIER_PRODUCT_COUNT - $mappedProductCount;
 
-        for ($i = 0; $i < self::EDI_SUPPLIER_COUNT; $i++) {
+        for ($i = 0; $i < self::EDI_SUPPLIER_COUNT; ++$i) {
             $supplier = SupplierFactory::createOne(['isActive' => true]);
             $this->createSupplierProducts($supplier, $newProductCount);
             $this->createCommonProducts($warehouse, $supplier, $mappedProductCount);
@@ -110,10 +110,10 @@ class AppFixtures extends Fixture
             SupplierSubcategoryFactory::new([
                 'supplier' => $supplier,
                 'supplierCategory' => $category,
-            ])->range(1,5)->create();
+            ])->range(1, 5)->create();
         }
 
-        SupplierProductFactory::createMany($productCount, function() use ($supplier): array {
+        SupplierProductFactory::createMany($productCount, function () use ($supplier): array {
             $randomSubcategory = SupplierSubcategoryFactory::random([
                 'supplier' => $supplier,
             ]);

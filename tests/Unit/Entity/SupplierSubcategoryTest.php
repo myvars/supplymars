@@ -11,51 +11,76 @@ use PHPUnit\Framework\TestCase;
 
 class SupplierSubcategoryTest extends TestCase
 {
-    public function testGetSetName(): void
-    {
-        $supplierSubcategory = new SupplierSubcategory();
-        $supplierSubcategory->setName('Test Supplier Subcategory');
-
-        $this->assertEquals('Test Supplier Subcategory', $supplierSubcategory->getName());
-    }
-
-    public function testGetSetSupplier(): void
+    public function testSettersAndGetters(): void
     {
         $supplier = $this->createMock(Supplier::class);
-        $supplierSubcategory = new SupplierSubcategory();
-        $supplierSubcategory->setSupplier($supplier);
-
-        $this->assertEquals($supplier, $supplierSubcategory->getSupplier());
-    }
-
-    public function testGetSetSupplierCategory(): void
-    {
         $supplierCategory = $this->createMock(SupplierCategory::class);
-        $supplierSubcategory = new SupplierSubcategory();
-        $supplierSubcategory->setSupplierCategory($supplierCategory);
 
-        $this->assertEquals($supplierCategory, $supplierSubcategory->getSupplierCategory());
+        $supplierSubcategory = (new SupplierSubcategory())
+            ->setName('Test Supplier Subcategory')
+            ->setSupplier($supplier)
+            ->setSupplierCategory($supplierCategory);
+
+        $this->assertEquals('Test Supplier Subcategory', $supplierSubcategory->getName());
+        $this->assertSame($supplier, $supplierSubcategory->getSupplier());
+        $this->assertSame($supplierCategory, $supplierSubcategory->getSupplierCategory());
     }
 
-    public function testGetSetMappedSubcategory(): void
+    public function testAddSupplierProduct(): void
     {
-        $subcategory = $this->createMock(Subcategory::class);
         $supplierSubcategory = new SupplierSubcategory();
-        $supplierSubcategory->setMappedSubcategory($subcategory);
-
-        $this->assertEquals($subcategory, $supplierSubcategory->getMappedSubcategory());
-    }
-
-    public function testAddRemoveSupplierProduct(): void
-    {
         $supplierProduct = $this->createMock(SupplierProduct::class);
+
+        // Test adding a supplier product
+        $supplierProduct->expects($this->once())
+            ->method('setSupplierSubcategory')
+            ->with($supplierSubcategory);
+
+        $supplierSubcategory->addSupplierProduct($supplierProduct);
+        $this->assertCount(1, $supplierSubcategory->getSupplierProducts());
+        $this->assertTrue($supplierSubcategory->getSupplierProducts()->contains($supplierProduct));
+    }
+
+    public function testRemoveSupplierProduct(): void
+    {
         $supplierSubcategory = new SupplierSubcategory();
+        $supplierProduct = $this->createMock(SupplierProduct::class);
+
+        // Add the supplier product first to set up the state
         $supplierSubcategory->addSupplierProduct($supplierProduct);
 
-        $this->assertEquals($supplierProduct, $supplierSubcategory->getSupplierProducts()->first());
+        // Test removing a supplier product
+        $supplierProduct->expects($this->once())
+            ->method('getSupplierSubcategory')
+            ->willReturn($supplierSubcategory);
+
+        $supplierProduct->expects($this->once())
+            ->method('setSupplierSubcategory')
+            ->with(null);
 
         $supplierSubcategory->removeSupplierProduct($supplierProduct);
-
-        $this->assertEmpty($supplierSubcategory->getSupplierProducts());
+        $this->assertCount(0, $supplierSubcategory->getSupplierProducts());
     }
+
+    public function testGetMappedSubcategory(): void
+    {
+        $supplierSubcategory = new SupplierSubcategory();
+        $subcategory = $this->createMock(Subcategory::class);
+
+        $supplierSubcategory->setMappedSubcategory($subcategory);
+
+        $this->assertSame($subcategory, $supplierSubcategory->getMappedSubcategory());
+    }
+
+    public function testSetMappedSubcategory(): void
+    {
+        $supplierSubcategory = new SupplierSubcategory();
+        $subcategory = $this->createMock(Subcategory::class);
+
+        $supplierSubcategory->setMappedSubcategory($subcategory);
+
+        $this->assertSame($subcategory, $supplierSubcategory->getMappedSubcategory());
+    }
+
+
 }

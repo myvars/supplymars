@@ -4,7 +4,6 @@ namespace App\Service\Dashboard;
 
 use App\Enum\SalesDuration;
 use App\Enum\SalesMetricInterface;
-use DateInterval;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
 
@@ -25,7 +24,7 @@ class BarChartBuilder
             $salesDuration->getChartGranularity()
         );
 
-        $chartData =  $this->mergeSalesData(
+        $chartData = $this->mergeSalesData(
             $dateRange,
             $salesData,
             $salesDuration->getChartLabelFormat(),
@@ -72,7 +71,7 @@ class BarChartBuilder
                     ],
                 ],
                 'layout' => [
-                    'padding' => 20
+                    'padding' => 20,
                 ],
             ]);
     }
@@ -81,14 +80,14 @@ class BarChartBuilder
         \DateTimeImmutable $startDate,
         \DateTimeImmutable $endDate,
         string $labelFormat,
-        string $granularity
+        string $granularity,
     ): array {
         if ($startDate > $endDate) {
             throw new \InvalidArgumentException('Start date must be less than or equal to end date.');
         }
 
         $dateRange = [];
-        $period = new \DatePeriod($startDate, DateInterval::createFromDateString($granularity), $endDate);
+        $period = new \DatePeriod($startDate, \DateInterval::createFromDateString($granularity), $endDate);
         foreach ($period as $date) {
             $dateRange[$date->format($labelFormat)] = 0;
         }
@@ -100,7 +99,7 @@ class BarChartBuilder
         array $dateRange,
         array $salesData,
         string $labelFormat,
-        string $salesMetric
+        string $salesMetric,
     ): array {
         foreach ($salesData as $entry) {
             $salesDataByDate[$entry['salesDate']->format($labelFormat)] = $entry[$salesMetric];
@@ -115,7 +114,7 @@ class BarChartBuilder
 
     public static function getSalesRangeDuration(SalesDuration $salesDuration): SalesDuration
     {
-        if ($salesDuration === SalesDuration::MTD) {
+        if (SalesDuration::MTD === $salesDuration) {
             return SalesDuration::MONTH;
         }
 
@@ -124,7 +123,7 @@ class BarChartBuilder
 
     public static function getSalesRangeStartDate(SalesDuration $salesDuration): string
     {
-        if ($salesDuration === SalesDuration::MTD) {
+        if (SalesDuration::MTD === $salesDuration) {
             return SalesDuration::MONTH->getStartDate(true);
         }
 

@@ -55,7 +55,7 @@ class ProductRepository extends ServiceEntityRepository implements SearchQueryIn
                 ->setParameter('manufacturerId', $searchDto->getManufacturerId());
         }
 
-        if ($searchDto->getInStock() !== null) {
+        if (null !== $searchDto->getInStock()) {
             $qb->andWhere($searchDto->getInStock() > 0 ? 'p.stock > 0' : 'p.stock = 0');
         }
 
@@ -66,7 +66,7 @@ class ProductRepository extends ServiceEntityRepository implements SearchQueryIn
 
     public function findRandomProducts(int $limit = 10): array
     {
-        //change the query to join on active product source
+        // change the query to join on active product source
         return $this->getEntityManager()->createQuery('
             SELECT p FROM App\Entity\Product p
             JOIN p.supplierProducts sp
@@ -75,6 +75,5 @@ class ProductRepository extends ServiceEntityRepository implements SearchQueryIn
             ')
             ->setMaxResults($limit)
             ->getResult();
-
     }
 }

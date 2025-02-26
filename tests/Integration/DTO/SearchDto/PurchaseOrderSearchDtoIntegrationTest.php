@@ -1,0 +1,99 @@
+<?php
+
+namespace App\Tests\Integration\DTO\SearchDto;
+
+use App\DTO\SearchDto\PurchaseOrderSearchDto;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+
+class PurchaseOrderSearchDtoIntegrationTest extends KernelTestCase
+{
+    private ValidatorInterface $validator;
+
+    protected function setUp(): void
+    {
+        self::bootKernel();
+        $this->validator = static::getContainer()->get(ValidatorInterface::class);
+    }
+
+    public function testValidPurchaseOrderSearchDto(): void
+    {
+        $dto = new PurchaseOrderSearchDto();
+        $dto->setSort('createdAt');
+        $dto->setSortDirection('ASC');
+        $dto->setPurchaseOrderId(123);
+        $dto->setCustomerOrderId(456);
+        $dto->setCustomerId(789);
+        $dto->setProductId(101);
+        $dto->setSupplierId(202);
+        $dto->setStartDate('2023-01-01');
+        $dto->setEndDate('2023-12-31');
+        $dto->setPurchaseOrderStatus('completed');
+
+        $errors = $this->validator->validate($dto);
+        $this->assertCount(0, $errors);
+    }
+
+    public function testInvalidPurchaseOrderId(): void
+    {
+        $dto = new PurchaseOrderSearchDto();
+        $dto->setPurchaseOrderId(0);
+
+        $errors = $this->validator->validate($dto);
+        $this->assertSame('Please enter a valid Purchase Order Id', $errors[0]->getMessage());
+    }
+
+    public function testInvalidCustomerOrderId(): void
+    {
+        $dto = new PurchaseOrderSearchDto();
+        $dto->setCustomerOrderId(0);
+
+        $errors = $this->validator->validate($dto);
+        $this->assertSame('Please enter a valid Customer Order Id', $errors[0]->getMessage());
+    }
+
+    public function testInvalidCustomerId(): void
+    {
+        $dto = new PurchaseOrderSearchDto();
+        $dto->setCustomerId(0);
+
+        $errors = $this->validator->validate($dto);
+        $this->assertSame('Please enter a valid Customer Id', $errors[0]->getMessage());
+    }
+
+    public function testInvalidProductId(): void
+    {
+        $dto = new PurchaseOrderSearchDto();
+        $dto->setProductId(0);
+
+        $errors = $this->validator->validate($dto);
+        $this->assertSame('Please enter a valid Product Id', $errors[0]->getMessage());
+    }
+
+    public function testInvalidSupplierId(): void
+    {
+        $dto = new PurchaseOrderSearchDto();
+        $dto->setSupplierId(0);
+
+        $errors = $this->validator->validate($dto);
+        $this->assertSame('Please enter a valid Supplier Id', $errors[0]->getMessage());
+    }
+
+    public function testInvalidStartDate(): void
+    {
+        $dto = new PurchaseOrderSearchDto();
+        $dto->setStartDate('invalid-date');
+
+        $errors = $this->validator->validate($dto);
+        $this->assertSame('This value is not a valid date.', $errors[0]->getMessage());
+    }
+
+    public function testInvalidEndDate(): void
+    {
+        $dto = new PurchaseOrderSearchDto();
+        $dto->setEndDate('invalid-date');
+
+        $errors = $this->validator->validate($dto);
+        $this->assertSame('This value is not a valid date.', $errors[0]->getMessage());
+    }
+}

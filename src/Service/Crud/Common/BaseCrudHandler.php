@@ -11,15 +11,15 @@ abstract class BaseCrudHandler extends AbstractController
     {
     }
 
-    abstract protected function setDefaults(): CrudOptions;
+    abstract public function setDefaults(): CrudOptions;
 
-    abstract protected function setup(string $section, object $entity, string $formType = ''): CrudOptions;
+    abstract public function setup(string $section, object $entity, string $formType = ''): CrudOptions;
 
-    abstract protected function build(CrudOptions $crudOptions): Response;
+    abstract public function build(CrudOptions $crudOptions): Response;
 
     protected function process(string $section, ?object $entity, string $formType = ''): Response
     {
-        if ($entity === null) {
+        if (null === $entity) {
             return $this->getError($section);
         }
 
@@ -28,7 +28,7 @@ abstract class BaseCrudHandler extends AbstractController
         );
     }
 
-    protected function handle(CrudOptions $crudOptions): Response
+    public function handle(CrudOptions $crudOptions): Response
     {
         try {
             $crudOptions->getCrudAction()->handle($crudOptions);
@@ -43,9 +43,9 @@ abstract class BaseCrudHandler extends AbstractController
         }
 
         return $this->crudHelper->redirectToLink(
-                $crudOptions->getSuccessLink(),
-                $crudOptions->isUrlRefresh()
-            );
+            $crudOptions->getSuccessLink(),
+            $crudOptions->isUrlRefresh()
+        );
     }
 
     public function getError(string $section): Response

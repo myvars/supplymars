@@ -38,7 +38,7 @@ class CustomerOrder implements DomainEventProviderInterface
     private Address $billingAddress;
 
     #[ORM\Column(length: 255, nullable: true)]
-    private ?string $CustomerOrderRef = null;
+    private ?string $customerOrderRef = null;
 
     #[ORM\Column(length: 255)]
     #[ORM\JoinColumn(nullable: false)]
@@ -141,12 +141,12 @@ class CustomerOrder implements DomainEventProviderInterface
 
     public function getCustomerOrderRef(): ?string
     {
-        return $this->CustomerOrderRef;
+        return $this->customerOrderRef;
     }
 
-    private function setCustomerOrderRef(?string $CustomerOrderRef): static
+    private function setCustomerOrderRef(?string $customerOrderRef): static
     {
-        $this->CustomerOrderRef = $CustomerOrderRef;
+        $this->customerOrderRef = $customerOrderRef;
 
         return $this;
     }
@@ -182,8 +182,8 @@ class CustomerOrder implements DomainEventProviderInterface
 
     private function setShippingPrice(string $shippingPrice): static
     {
-        if ((float)$shippingPrice < 0) {
-            throw new \InvalidArgumentException("The shipping price must be greater than 0");
+        if ((float) $shippingPrice < 0) {
+            throw new \InvalidArgumentException('The shipping price must be greater than 0');
         }
 
         $this->shippingPrice = $shippingPrice;
@@ -198,8 +198,8 @@ class CustomerOrder implements DomainEventProviderInterface
 
     private function setShippingPriceIncVat(string $shippingPriceIncVat): static
     {
-        if ((float)$shippingPriceIncVat < 0) {
-            throw new \InvalidArgumentException("The shipping price inc VAT must be greater than 0");
+        if ((float) $shippingPriceIncVat < 0) {
+            throw new \InvalidArgumentException('The shipping price inc VAT must be greater than 0');
         }
 
         $this->shippingPriceIncVat = $shippingPriceIncVat;
@@ -229,8 +229,8 @@ class CustomerOrder implements DomainEventProviderInterface
 
     private function setTotalPrice(string $totalPrice): static
     {
-        if ((float)$totalPrice < 0) {
-            throw new \InvalidArgumentException("The total price must be greater than 0");
+        if ((float) $totalPrice < 0) {
+            throw new \InvalidArgumentException('The total price must be greater than 0');
         }
 
         $this->totalPrice = $totalPrice;
@@ -245,8 +245,8 @@ class CustomerOrder implements DomainEventProviderInterface
 
     private function setTotalPriceIncVat(string $totalPriceIncVat): static
     {
-        if ((float)$totalPriceIncVat < 0) {
-            throw new \InvalidArgumentException("The total price inc VAT must be greater than 0");
+        if ((float) $totalPriceIncVat < 0) {
+            throw new \InvalidArgumentException('The total price inc VAT must be greater than 0');
         }
 
         $this->totalPriceIncVat = $totalPriceIncVat;
@@ -262,7 +262,7 @@ class CustomerOrder implements DomainEventProviderInterface
     private function setTotalWeight(int $totalWeight): static
     {
         if ($totalWeight < 0) {
-            throw new \InvalidArgumentException("The total weight must be greater than 0");
+            throw new \InvalidArgumentException('The total weight must be greater than 0');
         }
 
         $this->totalWeight = $totalWeight;
@@ -317,7 +317,6 @@ class CustomerOrder implements DomainEventProviderInterface
             $this->customerOrderItems->removeElement($customerOrderItem)
             && $customerOrderItem->getCustomerOrder() === $this
         ) {
-
         }
 
         $this->recalculateTotal();
@@ -357,13 +356,13 @@ class CustomerOrder implements DomainEventProviderInterface
         User $customer,
         ShippingMethod $shippingMethod,
         VatRate $vatRate,
-        ?string $orderRef
+        ?string $customerOrderRef,
     ): static {
-        $customerOrder =  (new static())
+        $customerOrder = (new static())
             ->setCustomer($customer)
             ->setShippingAddress($customer->getShippingAddress())
             ->setBillingAddress($customer->getBillingAddress())
-            ->setCustomerOrderRef($orderRef)
+            ->setCustomerOrderRef($customerOrderRef)
             ->setShippingMethod($shippingMethod)
             ->setShippingPrice($shippingMethod->getPrice())
             ->setShippingPriceIncVat($shippingMethod->getPriceIncVat($vatRate))
@@ -381,7 +380,7 @@ class CustomerOrder implements DomainEventProviderInterface
         $totalWeight = 0;
 
         foreach ($this->customerOrderItems as $customerOrderItem) {
-            if ($customerOrderItem->getStatus() === OrderStatus::CANCELLED) {
+            if (OrderStatus::CANCELLED === $customerOrderItem->getStatus()) {
                 continue;
             }
 
@@ -390,9 +389,9 @@ class CustomerOrder implements DomainEventProviderInterface
             $totalWeight += $customerOrderItem->getTotalWeight();
         }
 
-        if ($this->getStatus() !== OrderStatus::CANCELLED) {
-            $totalPrice += (float)$this->getShippingPrice();
-            $totalPriceIncVat += (float)$this->getShippingPriceIncVat();
+        if (OrderStatus::CANCELLED !== $this->getStatus()) {
+            $totalPrice += (float) $this->getShippingPrice();
+            $totalPriceIncVat += (float) $this->getShippingPriceIncVat();
         }
 
         $this->setTotalPrice((string) $totalPrice);
@@ -404,12 +403,12 @@ class CustomerOrder implements DomainEventProviderInterface
     {
         $orderStatus = null;
         foreach ($this->customerOrderItems as $item) {
-            if ($orderStatus === null || $item->getStatus()->getLevel() < $orderStatus->getLevel()) {
+            if (null === $orderStatus || $item->getStatus()->getLevel() < $orderStatus->getLevel()) {
                 $orderStatus = $item->getStatus();
             }
         }
 
-        if ($orderStatus === null) {
+        if (null === $orderStatus) {
             $orderStatus = OrderStatus::getDefault();
         }
 
@@ -429,7 +428,7 @@ class CustomerOrder implements DomainEventProviderInterface
 
     public function isCancelled(): bool
     {
-        return $this->status === OrderStatus::CANCELLED;
+        return OrderStatus::CANCELLED === $this->status;
     }
 
     public function cancelOrder(): void

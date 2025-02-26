@@ -43,7 +43,8 @@ class ProductPriceCalculator
     /**
      * @param Product[] $products
      */
-    public function recalculatePriceFromArray(array $products): void {
+    public function recalculatePriceFromArray(array $products): void
+    {
         foreach ($products as $product) {
             $this->recalculatePrice($product, false);
         }

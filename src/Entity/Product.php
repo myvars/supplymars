@@ -13,11 +13,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product
 {
+    use TimestampableEntity;
     public const string DEFAULT_MARKUP = '0.000';
 
     public const PriceModel DEFAULT_PRICE_MODEL = PriceModel::NONE;
-
-    use TimestampableEntity;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -60,7 +59,7 @@ class Product
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
     #[Assert\NotBlank(message: 'Please enter a cost')]
-    #[Assert\PositiveOrZero]
+    #[Assert\PositiveOrZero(message: 'Please enter a positive or zero cost')]
     private ?string $cost = null;
 
     #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
@@ -414,7 +413,6 @@ class Product
     {
         // set the owning side to null (unless already changed)
         if ($this->productImages->removeElement($productImage) && $productImage->getProduct() === $this) {
-            $productImage->setProduct(null);
         }
 
         return $this;
