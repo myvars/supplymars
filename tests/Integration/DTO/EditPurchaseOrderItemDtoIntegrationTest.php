@@ -32,8 +32,10 @@ class EditPurchaseOrderItemDtoIntegrationTest extends KernelTestCase
 
     public function testInvalidPurchaseOrderItemId(): void
     {
-        $this->expectException(\AssertionError::class);
-        $this->expectExceptionMessage('assert($purchaseOrderItem instanceof PurchaseOrderItem)');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage(
+            'The MaxPurchaseOrderItemQty constraint can only be used with a valid purchaseOrderItemId'
+        );
 
         $dto = new EditPurchaseOrderItemDto(
             0,

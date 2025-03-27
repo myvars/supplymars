@@ -47,8 +47,8 @@ class ChangePurchaseOrderItemStatusDtoIntegrationTest extends KernelTestCase
     public function testInvalidPurchaseOrderItemId(): void
     {
 
-        $this->expectException(\AssertionError::class);
-        $this->expectExceptionMessage('assert($purchaseOrderItem instanceof PurchaseOrderItem)');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('PurchaseOrderItem not found');
 
         $dto = new ChangePurchaseOrderItemStatusDto(
             -1,

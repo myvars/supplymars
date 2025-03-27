@@ -16,17 +16,23 @@ class MinOrderItemQtyValidator extends ConstraintValidator
 
     public function validate($value, Constraint $constraint): void
     {
-        assert($constraint instanceof MinOrderItemQty);
+        if (!$constraint instanceof MinOrderItemQty) {
+            throw new \InvalidArgumentException('Constraint must be instance of ' . MinOrderItemQty::class);
+        }
 
         if (null === $value || '' === $value) {
             return;
         }
 
         $editOrderItemDto = $this->context->getObject();
-        assert($editOrderItemDto instanceof EditOrderItemDto);
+        if (!$editOrderItemDto instanceof EditOrderItemDto) {
+            throw new \InvalidArgumentException('Object must be instance of ' . EditOrderItemDto::class);
+        }
 
         $customerOrderItem = $this->customerOrderItemRepository->find($editOrderItemDto->getId());
-        assert($customerOrderItem instanceof CustomerOrderItem);
+        if (!$customerOrderItem instanceof CustomerOrderItem) {
+            throw new \InvalidArgumentException('CustomerOrderItem not found');
+        }
 
         $minQuantity = $customerOrderItem->getQtyAddedToPurchaseOrders();
 

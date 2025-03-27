@@ -16,17 +16,29 @@ class MaxPurchaseOrderItemQtyValidator extends ConstraintValidator
 
     public function validate($value, Constraint $constraint): void
     {
-        assert($constraint instanceof MaxPurchaseOrderItemQty);
+        if (!$constraint instanceof MaxPurchaseOrderItemQty) {
+            throw new \InvalidArgumentException(
+                'Constraint must be an instance of ' . MaxPurchaseOrderItemQty::class
+            );
+        }
 
         if (null === $value || '' === $value) {
             return;
         }
 
         $purchaseOrderItemDto = $this->context->getObject();
-        assert($purchaseOrderItemDto instanceof EditPurchaseOrderItemDto);
+        if (!$purchaseOrderItemDto instanceof EditPurchaseOrderItemDto) {
+            throw new \InvalidArgumentException(
+                'The MaxPurchaseOrderItemQty constraint can only be used on EditPurchaseOrderItemDto'
+            );
+        }
 
         $purchaseOrderItem = $this->purchaseOrderItemRepository->find($purchaseOrderItemDto->getId());
-        assert($purchaseOrderItem instanceof PurchaseOrderItem);
+        if (!$purchaseOrderItem instanceof PurchaseOrderItem) {
+            throw new \InvalidArgumentException(
+                'The MaxPurchaseOrderItemQty constraint can only be used with a valid purchaseOrderItemId'
+            );
+        }
 
         $maxQuantity = $purchaseOrderItem->getMaxQuantity();
 

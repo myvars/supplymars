@@ -35,8 +35,8 @@ class EditOrderItemDtoIntegrationTest extends KernelTestCase
 
     public function testInvalidOrderItemId(): void
     {
-        $this->expectException(\AssertionError::class);
-        $this->expectExceptionMessage('assert($customerOrderItem instanceof CustomerOrderItem)');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('CustomerOrderItem not found');
 
         $dto = new EditOrderItemDto(
             0,

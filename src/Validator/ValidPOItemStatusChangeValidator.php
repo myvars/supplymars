@@ -16,13 +16,23 @@ class ValidPOItemStatusChangeValidator extends ConstraintValidator
 
     public function validate($value, Constraint $constraint): void
     {
-        assert($constraint instanceof ValidPOItemStatusChange);
+        if (!$constraint instanceof ValidPOItemStatusChange) {
+            throw new \InvalidArgumentException(
+                'Constraint must be instance of ' . ValidPOItemStatusChange::class
+            );
+        }
 
         $purchaseOrderItemStatusChangeDto = $this->context->getObject();
-        assert($purchaseOrderItemStatusChangeDto instanceof ChangePurchaseOrderItemStatusDto);
+        if (!$purchaseOrderItemStatusChangeDto instanceof ChangePurchaseOrderItemStatusDto) {
+            throw new \InvalidArgumentException(
+                'Object must be instance of ' . ChangePurchaseOrderItemStatusDto::class
+            );
+        }
 
         $purchaseOrderItem = $this->purchaseOrderItemRepository->find($purchaseOrderItemStatusChangeDto->getId());
-        assert($purchaseOrderItem instanceof PurchaseOrderItem);
+        if (!$purchaseOrderItem instanceof PurchaseOrderItem) {
+            throw new \InvalidArgumentException('PurchaseOrderItem not found');
+        }
 
         if ($purchaseOrderItem->getStatus() === $value) {
             return;
