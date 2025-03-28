@@ -3,17 +3,17 @@
 {% block title %}Login{% endblock %}
 
 {% block body %}
-    <section class="rounded bg-gray-50 dark:bg-gray-900 md:h-screen" style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
+    <section class="rounded-sm bg-gray-50 dark:bg-gray-900 md:h-screen" style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
         <div class="mx-auto flex flex-col items-center px-6 py-8 lg:py-0">
-            <div class="w-full rounded bg-white shadow dark:border dark:border-gray-700 dark:bg-gray-800 sm:max-w-md md:m-10 xl:p-0">
+            <div class="w-full rounded-sm bg-white shadow-sm dark:border dark:border-gray-700 dark:bg-gray-800 sm:max-w-md md:m-10 xl:p-0">
                 <div class="p-6 space-y-4 sm:p-8 md:space-y-6">
                     <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white md:text-2xl">
                         Sign in to your account
                     </h1>
                     <form method="post" class="space-y-4 md:space-y-6" action="{{ path('app_login') }}" novalidate="novalidate">
                         {% if app.user %}
-                            <div class="mb-4 flex items-center rounded border border-blue-300 bg-blue-50 p-4 text-sm text-blue-800 dark:border-blue-800 dark:bg-gray-800 dark:text-blue-400" role="alert">
-                                <svg class="inline h-4 w-4 flex-shrink-0 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                            <div class="mb-4 flex items-center rounded-sm border border-blue-300 bg-blue-50 p-4 text-sm text-blue-800 dark:border-blue-800 dark:bg-gray-800 dark:text-blue-400" role="alert">
+                                <svg class="inline h-4 w-4 shrink-0 me-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
                                 </svg>
                                 <span class="sr-only">Info</span>
@@ -26,9 +26,9 @@
                         {% endif %}
                         {% if error %}
                             <div
-                                class="mb-4 flex items-center rounded border border-red-300 bg-red-50 p-4 text-sm text-red-800 dark:border-red-800 dark:bg-gray-800 dark:text-red-400"
+                                class="mb-4 flex items-center rounded-sm border border-red-300 bg-red-50 p-4 text-sm text-red-800 dark:border-red-800 dark:bg-gray-800 dark:text-red-400"
                                 role="alert">
-                                <svg class="inline h-4 w-4 flex-shrink-0 me-3" aria-hidden="true"
+                                <svg class="inline h-4 w-4 shrink-0 me-3" aria-hidden="true"
                                      xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
                                     <path
                                         d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
@@ -41,16 +41,16 @@
                         {% endif %}
                         <div>
                             <label for="email" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Your email</label>
-                            <input type="email" name="email" id="email" value="{{ last_username }}" autocomplete="email" class="block w-full rounded border border-gray-300 bg-gray-50 text-gray-900 p-2.5 focus:ring-primary-600 focus:border-primary-600 dark:placeholder-gray-400 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm dark:focus:border-blue-500 dark:focus:ring-blue-500" placeholder="name@company.com" required="">
+                            <input type="email" name="email" id="email" value="{{ last_username }}" autocomplete="email" class="block w-full rounded-sm border border-gray-300 bg-gray-50 text-gray-900 p-2.5 focus:ring-primary-600 focus:border-primary-600 dark:placeholder-gray-400 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm dark:focus:border-blue-500 dark:focus:ring-blue-500" placeholder="name@company.com" required="">
                         </div>
                         <div>
                             <label for="password" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Password</label>
-                            <input type="password" name="password" id="password" autocomplete="current-password" class="block w-full rounded border border-gray-300 bg-gray-50 text-gray-900 p-2.5 focus:ring-primary-600 focus:border-primary-600 dark:placeholder-gray-400 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm dark:focus:border-blue-500 dark:focus:ring-blue-500" required="">
+                            <input type="password" name="password" id="password" autocomplete="current-password" class="block w-full rounded-sm border border-gray-300 bg-gray-50 text-gray-900 p-2.5 focus:ring-primary-600 focus:border-primary-600 dark:placeholder-gray-400 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:text-sm dark:focus:border-blue-500 dark:focus:ring-blue-500" required="">
                         </div>
                         <div class="flex items-center justify-between">
                             <div class="flex items-start">
                                 <div class="flex h-5 items-center">
-                                    <input id="remember" aria-describedby="remember" type="checkbox" class="h-4 w-4 rounded border border-gray-300 bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" checked required="">
+                                    <input id="remember" aria-describedby="remember" type="checkbox" class="h-4 w-4 rounded-sm border border-gray-300 bg-gray-50 focus:ring-3 focus:ring-primary-300 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600" checked required="">
                                 </div>
                                 <div class="ml-3 text-sm">
                                     <label for="remember" class="text-gray-500 dark:text-gray-300">Remember me</label>

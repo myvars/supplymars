@@ -1,5 +1,5 @@
 <div {{ attributes.defaults({
-    'class': width~' relative h-full rounded '~this.getBackgroundClasses~' '~this.getBorderClasses,
+    'class': width~' relative h-full rounded-sm '~this.getBackgroundClasses~' '~this.getBorderClasses,
 }) }}
 >
     {% if editLink %}
@@ -14,7 +14,7 @@
 
     {% if showLink %}
     <a href="{{ showLink }}" data-turbo-frame="body" >
-        <div class="relative rounded transition-colors {{ this.getBackgroundClasses }} dark:hover:bg-gray-600">
+        <div class="relative rounded-sm transition-colors {{ this.getBackgroundClasses }} dark:hover:bg-gray-600">
     {% endif %}
             <div class="{{ padding }} text-sm text-gray-500 dark:text-gray-400">
                 {% if title %}

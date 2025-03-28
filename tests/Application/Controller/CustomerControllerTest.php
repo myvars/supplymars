@@ -15,9 +15,10 @@ class CustomerControllerTest extends WebTestCase
     public function testIndexCustomer(): void
     {
         UserFactory::createMany(3);
+        $user = UserFactory::new()->staff()->create();
 
         $this->browser()
-            ->actingAs(UserFactory::new()->staff()->create())
+            ->actingAs($user)
             ->get('/customer/')
             ->assertSuccessful()
             ->assertSee('Customer Search')
@@ -34,9 +35,10 @@ class CustomerControllerTest extends WebTestCase
     public function testShowCustomer(): void
     {
         $customer = UserFactory::createOne(['fullName' => 'Test Customer']);
+        $user = UserFactory::new()->staff()->create();
 
         $this->browser()
-            ->actingAs(UserFactory::new()->staff()->create())
+            ->actingAs($user)
             ->get("/customer/" . $customer->getId())
             ->assertSuccessful()
             ->assertSee('Test Customer');
@@ -45,9 +47,10 @@ class CustomerControllerTest extends WebTestCase
     public function testEditCustomer(): void
     {
         $customer = UserFactory::createOne(['fullName' => 'Customer to be edited']);
+        $user = UserFactory::new()->staff()->create();
 
         $this->browser()
-            ->actingAs(UserFactory::new()->staff()->create())
+            ->actingAs($user)
             ->get("/customer/" . $customer->getId() . "/edit")
             ->assertSuccessful()
             ->fillField('customer[fullName]', 'Edited Customer')
@@ -59,9 +62,10 @@ class CustomerControllerTest extends WebTestCase
     public function testEditCustomerValidation(): void
     {
         $customer = UserFactory::createOne(['fullName' => 'Customer to be edited']);
+        $user = UserFactory::new()->staff()->create();
 
         $this->browser()
-            ->actingAs(UserFactory::new()->staff()->create())
+            ->actingAs($user)
             ->get("/customer/" . $customer->getId() . "/edit")
             ->assertSuccessful()
             // Intentionally filling form with invalid data
@@ -91,9 +95,10 @@ class CustomerControllerTest extends WebTestCase
     public function testDeleteCustomerConfirmation(): void
     {
         $customer = UserFactory::createOne(['fullName' => 'Customer to be deleted']);
+        $user = UserFactory::new()->staff()->create();
 
         $this->browser()
-            ->actingAs(UserFactory::new()->staff()->create())
+            ->actingAs($user)
             ->get("/customer/" . $customer->getId() . "/delete/confirm")
             ->assertSuccessful()
             ->assertSee('Are you sure you want to delete this Customer');
@@ -102,9 +107,10 @@ class CustomerControllerTest extends WebTestCase
     public function testDeleteCustomer(): void
     {
         $customer = UserFactory::createOne(['fullName' => 'Customer to be deleted']);
+        $user = UserFactory::new()->staff()->create();
 
         $this->browser()
-            ->actingAs(UserFactory::new()->staff()->create())
+            ->actingAs($user)
             ->get("/customer/" . $customer->getId() . "/delete/confirm")
             ->assertSuccessful()
             ->click('Delete')

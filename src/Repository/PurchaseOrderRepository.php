@@ -86,7 +86,11 @@ class PurchaseOrderRepository extends ServiceEntityRepository implements SearchQ
             }
         }
 
-        $qb->orderBy('p.'.$sort, $sortDirection);
+        if (str_starts_with($sort, 'customerOrder.')) {
+            $qb->leftJoin('p.customerOrder', 'customerOrder')->orderBy($sort, $sortDirection);
+        } else {
+            $qb->orderBy('p.'.$sort, $sortDirection);
+        }
 
         return $qb;
     }

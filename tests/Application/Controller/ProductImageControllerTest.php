@@ -46,9 +46,10 @@ class ProductImageControllerTest extends WebTestCase
         $product = ProductFactory::createOne(['name' => 'Test Product'])->_real();
         $uploadDir = static::getContainer()->getParameter('kernel.project_dir') . '/public/'
             . static::getContainer()->getParameter('app.product_uploads');
+        $user = UserFactory::new()->staff()->create();
 
         $this->browser()
-            ->actingAs(UserFactory::new()->staff()->create())
+            ->actingAs($user)
             ->visit('/product/' . $product->getId() . '/images')
             ->assertSuccessful()
             ->assertSee('Product Images')
@@ -67,7 +68,7 @@ class ProductImageControllerTest extends WebTestCase
             $this->assertFileExists($uploadDir . $productImage->getImageName());
 
             $this->browser()
-                ->actingAs(UserFactory::new()->staff()->create())
+                ->actingAs($user)
                 ->visit('/product/images/' . $productImage->getId() . '/remove')
                 ->followRedirect()
                 ->assertSuccessful()
@@ -75,7 +76,7 @@ class ProductImageControllerTest extends WebTestCase
         }
 
         $this->browser()
-            ->actingAs(UserFactory::new()->staff()->create())
+            ->actingAs($user)
             ->visit('/product/' . $product->getId() . '/images')
             ->assertSuccessful()
             ->assertSee('0 Product Images');
@@ -124,9 +125,10 @@ class ProductImageControllerTest extends WebTestCase
     public function testReorderImages(): void
     {
         $product = ProductFactory::createOne(['name' => 'Test Product'])->_real();
+        $user = UserFactory::new()->staff()->create();
 
         $this->browser()
-            ->actingAs(UserFactory::new()->staff()->create())
+            ->actingAs($user)
             ->visit('/product/' . $product->getId() . '/images')
             ->assertSuccessful()
             ->assertSee('Product Images')
@@ -146,7 +148,7 @@ class ProductImageControllerTest extends WebTestCase
         ];
 
         $this->browser()
-            ->actingAs(UserFactory::new()->staff()->create())
+            ->actingAs($user)
             ->request('POST', '/product/' . $product->getId() . '/images/reorder', [
                 'headers' => [
                     'Content-Type' => 'application/json',
@@ -163,7 +165,7 @@ class ProductImageControllerTest extends WebTestCase
 
         foreach ($productImages as $productImage) {
             $this->browser()
-                ->actingAs(UserFactory::new()->staff()->create())
+                ->actingAs($user)
                 ->visit('/product/images/' . $productImage->getId() . '/remove')
                 ->followRedirect()
                 ->assertSuccessful()

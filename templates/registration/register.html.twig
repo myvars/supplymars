@@ -3,10 +3,10 @@
 {% block title %}Sign Up{% endblock %}
 
 {% block body %}
-    <section class="rounded bg-gray-50 dark:bg-gray-900 md:h-screen" style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
+    <section class="rounded-sm bg-gray-50 dark:bg-gray-900 md:h-screen" style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
         <div class="mx-auto flex flex-col items-center px-6 py-8 lg:py-0">
             <div
-                class="w-full rounded bg-white shadow dark:border dark:border-gray-700 dark:bg-gray-800 sm:max-w-md md:m-10 xl:p-0">
+                class="w-full rounded-sm bg-white shadow-sm dark:border dark:border-gray-700 dark:bg-gray-800 sm:max-w-md md:m-10 xl:p-0">
                 <div class="p-6 space-y-4 sm:p-8 md:space-y-6">
                     <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white md:text-2xl">
                         Create an account
@@ -28,7 +28,7 @@
                             <input type="checkbox" id="registration_form_agreeTerms"
                                    name="{{ field_name(registrationForm.agreeTerms) }}"
                                    required="required"
-                                   class="h-4 w-4 rounded border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
+                                   class="h-4 w-4 rounded-sm border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600"
                                    value="{{ field_value(registrationForm.agreeTerms) }}">
                             <label class="ml-2 text-sm font-light text-gray-500 dark:text-gray-400"
                                    for="registration_form_agreeTerms">

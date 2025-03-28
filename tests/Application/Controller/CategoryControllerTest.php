@@ -104,9 +104,10 @@ class CategoryControllerTest extends WebTestCase
     {
         $owner = UserFactory::new()->staff()->create();
         $category = CategoryFactory::createone(['name' => 'Category to be edited', 'owner' => $owner]);
+        $user = UserFactory::new()->staff()->create();
 
         $this->browser()
-            ->actingAs(UserFactory::new()->staff()->create())
+            ->actingAs($user)
             ->get("/category/" . $category->getId() . "/edit")
             ->assertSuccessful()
             ->fillField('category[name]','Edited Category')

@@ -23,7 +23,7 @@ return [
         'version' => '3.2.2',
     ],
     '@hotwired/turbo' => [
-        'version' => '8.0.12',
+        'version' => '8.0.13',
     ],
     'stimulus-use' => [
         'version' => '0.52.3',
@@ -43,9 +43,6 @@ return [
     'aos/dist/aos.css' => [
         'version' => '2.3.4',
         'type' => 'css',
-    ],
-    'turbo-view-transitions' => [
-        'version' => '0.3.0',
     ],
     'stimulus-popover' => [
         'version' => '6.2.0',
@@ -77,9 +74,12 @@ return [
         'version' => '1.3.2',
     ],
     'chart.js' => [
-        'version' => '4.4.8',
+        'version' => '4.4.9',
     ],
     '@kurkle/color' => [
         'version' => '0.3.4',
+    ],
+    'turbo-view-transitions' => [
+        'version' => '0.3.0',
     ],
 ];

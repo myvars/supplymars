@@ -7,7 +7,7 @@
         padding="p-0"
         colour="{{ colourScheme }}"
     >
-        <div class="flex items-center justify-between rounded dark:bg-gray-800 hover:dark:bg-gray-700">
+        <div class="flex items-center justify-between rounded-sm dark:bg-gray-800 dark:hover:bg-gray-700">
             <twig:ProductImage
                 imageName="{{ purchaseOrderItem.customerOrderItem.product.hasProductImage ? purchaseOrderItem.customerOrderItem.product.getFirstImage.imageName : null }}"
                 filter="small_thumbnail"

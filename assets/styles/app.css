@@ -1,11 +1,110 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import 'tailwindcss';
 
-body {
-    min-height: 75rem;
-    padding-top: 4px;
-    background-color: lightgray;
+@source '../../vendor/tales-from-a-dev/flowbite-bundle/templates!**!*.html.twig';
+
+@custom-variant dark (&:is(.dark *));
+@custom-variant turbo-frame (turbo-frame[src] &);
+@custom-variant modal (dialog &);
+
+@theme {
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
+  --color-primary-950: #172554;
+
+  --color-supplier1-50: #ecfeff;
+  --color-supplier1-100: #cffafe;
+  --color-supplier1-200: #a5f3fc;
+  --color-supplier1-300: #67e8f9;
+  --color-supplier1-400: #22d3ee;
+  --color-supplier1-500: #06b6d4;
+  --color-supplier1-600: #0891b2;
+  --color-supplier1-700: #0e7490;
+  --color-supplier1-800: #155e75;
+  --color-supplier1-900: #164e63;
+  --color-supplier1-950: #083344;
+
+  --color-supplier2-50: #fdf2f8;
+  --color-supplier2-100: #fce7f3;
+  --color-supplier2-200: #fbcfe8;
+  --color-supplier2-300: #f9a8d4;
+  --color-supplier2-400: #f472b6;
+  --color-supplier2-500: #ec4899;
+  --color-supplier2-600: #db2777;
+  --color-supplier2-700: #be185d;
+  --color-supplier2-800: #9d174d;
+  --color-supplier2-900: #831843;
+  --color-supplier2-950: #70173a;
+
+  --color-supplier3-50: #f3faf7;
+  --color-supplier3-100: #def7ec;
+  --color-supplier3-200: #bcf0da;
+  --color-supplier3-300: #84e1bc;
+  --color-supplier3-400: #31c48d;
+  --color-supplier3-500: #0e9f6e;
+  --color-supplier3-600: #057a55;
+  --color-supplier3-700: #046c4e;
+  --color-supplier3-800: #03543f;
+  --color-supplier3-900: #014737;
+  --color-supplier3-950: #013428;
+
+  --color-supplier4-50: #fafaf4;
+  --color-supplier4-100: #f1e6dc;
+  --color-supplier4-200: #e3d1c1;
+  --color-supplier4-300: #d1bba6;
+  --color-supplier4-400: #bfa691;
+  --color-supplier4-500: #ae927d;
+  --color-supplier4-600: #8f7362;
+  --color-supplier4-700: #715947;
+  --color-supplier4-800: #544033;
+  --color-supplier4-900: #382a22;
+  --color-supplier4-950: #1d1511;
+
+  --animate-fade-in: fadeIn 0.5s ease-out;
+  --animate-wiggle: wiggle 0.5s ease-in-out infinite;
+
+  @keyframes slide-to-right {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(100%);
+    }
+  }
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+}
+
+/*
+  The default border color has changed to `currentColor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
 }
 
 .gradient-text {

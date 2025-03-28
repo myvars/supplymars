@@ -1,6 +1,6 @@
 {% props section, results %}
 
-<div class="mx-auto max-w-screen-xl p-3">
+<div class="mx-auto max-w-(--breakpoint-xl) p-3">
     {% block result_count %}
         <div id="{{ section|slug }}-result-count">
             <h1 class="text-xl text-gray-900 dark:text-white">
@@ -41,14 +41,14 @@
                         data-searchbox-target="queryInput"
                         data-action="input->searchbox#debouncedQueryInputChanged"
                         aria-label="Search"
-                        class="block w-full rounded border border-gray-300 bg-gray-50 p-2 pl-10 text-sm text-gray-900 focus:ring-primary-500 focus:border-primary-500 dark:placeholder-gray-400 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
+                        class="block w-full rounded-sm border border-gray-300 bg-gray-50 p-2 pl-10 text-sm text-gray-900 focus:ring-primary-500 focus:border-primary-500 dark:placeholder-gray-400 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
                         placeholder="Search"
                     >
                 </div>
             </form>
         </div>
         <div
-            class="flex w-full flex-shrink-0 flex-col items-stretch justify-end space-y-2 md:space-y-0 md:space-x-3 md:w-auto md:flex-row md:items-center">
+            class="flex w-full shrink-0 flex-col items-stretch justify-end space-y-2 md:space-y-0 md:space-x-3 md:w-auto md:flex-row md:items-center">
             {% block add %}{% endblock %}
         </div>
     </div>

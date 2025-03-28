@@ -72,9 +72,10 @@ class OrderControllerTest extends WebTestCase
     {
         $customer = UserFactory::createOne();
         CustomerOrderFactory::createOne(['customer' => $customer]);
+        $user = UserFactory::new()->staff()->create();
 
         $this->browser()
-            ->actingAs(UserFactory::new()->staff()->create())
+            ->actingAs($user)
             ->get('/order/new')
             ->assertSuccessful()
             ->fillField('create_order[customerId]', $customer->getId())
