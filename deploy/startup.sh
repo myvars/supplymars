@@ -1,39 +1,91 @@
 #!/bin/bash
+
+set -e  # Exit immediately if a command exits with a non-zero status
+set -u  # Treat unset variables as an error
+
+PROJECT_DIR="/opt/bitnami/projects/app"
+
+read -p $'Domain Name:\n' domainvar
+if [[ -z "$domainvar" ]]; then
+  echo "Error: Domain Name is required."
+  exit 1
+fi
+
+# Prompt user for database reset
 read -p $'Drop existing database? [n]:\n' input
 choice=${input:-n}
 
-# Composer install
-composer update --working-dir /opt/bitnami/projects/app/
-
-# Compile asset mapper
-cd /opt/bitnami/projects/app
-/opt/bitnami/projects/app/bin/console tailwind:build --minify
-/opt/bitnami/projects/app/bin/console asset-map:compile
-
-
-if  [ "$choice" = "y" -o "$choice" = "Y" ] ;then
-echo "Dropping database..."
-# Create database migrations
-/opt/bitnami/projects/app/bin/console doctrine:database:drop --force || true
-/opt/bitnami/projects/app/bin/console doctrine:database:create
-/opt/bitnami/projects/app/bin/console doctrine:schema:create
-# App specific startup options ##########################################
-# Load fixtures
-/opt/bitnami/projects/app/bin/console doctrine:fixtures:load -n --env=dev --no-debug
-/opt/bitnami/projects/app/bin/console app:create-warehouse-products --env=dev --no-debug
-/opt/bitnami/projects/app/bin/console app:create-supplier-products --env=dev --no-debug
-else
-echo "Using existing data"
-/opt/bitnami/projects/app/bin/console doctrine:migrations:migrate -n
+# Run Composer update
+if ! composer update --working-dir "${PROJECT_DIR}"; then
+  echo "Error: Composer update failed."
+  exit 1
 fi
 
-# Install supervisor scripts
-sudo supervisorctl stop messenger-consume:*
-sudo cp /opt/bitnami/projects/app/deploy/messenger-worker.conf /etc/supervisor/conf.d/
+# Handle database reset or migration
+if [[ "$choice" =~ ^[yY]$ ]]; then
+  echo "Dropping and recreating the database...(skip in production)"
+#  "${PROJECT_DIR}/bin/console" doctrine:database:drop --force || true
+#  "${PROJECT_DIR}/bin/console" doctrine:database:create
+#  "${PROJECT_DIR}/bin/console" doctrine:schema:create
+#  "${PROJECT_DIR}/bin/console" doctrine:fixtures:load -n --env=dev --no-debug
+#  "${PROJECT_DIR}/bin/console" app:create-warehouse-products --env=dev --no-debug
+#  "${PROJECT_DIR}/bin/console" app:create-supplier-products --env=dev --no-debug
+else
+  echo "Using existing database..."
+  "${PROJECT_DIR}/bin/console" doctrine:migrations:migrate -n
+fi
+
+# Copy logos and icons
+mkdir -p "${PROJECT_DIR}/public/images/icons"
+if ! cp "${PROJECT_DIR}/assets/images/icons/${domainvar}"/* "${PROJECT_DIR}/public/images/icons"; then
+  echo "Error: Failed to copy icons."
+  exit 1
+fi
+
+if ! cp "${PROJECT_DIR}/templates/logo/${domainvar}"/* "${PROJECT_DIR}/templates/logo"; then
+  echo "Error: Failed to copy logos."
+  exit 1
+fi
+
+# Compile assets
+cd "${PROJECT_DIR}"
+if ! "${PROJECT_DIR}/bin/console" tailwind:build --minify; then
+  echo "Error: Tailwind build failed."
+  exit 1
+fi
+
+if ! "${PROJECT_DIR}/bin/console" asset-map:compile; then
+  echo "Error: Asset map compilation failed."
+  exit 1
+fi
+
+if ! "${PROJECT_DIR}/bin/console" cache:clear; then
+  echo "Error: Cache clear failed."
+  exit 1
+fi
+
+# Install and restart supervisor scripts
+sudo supervisorctl stop messenger-consume:* || true
+sudo cp "${PROJECT_DIR}/deploy/messenger-worker.conf" /etc/supervisor/conf.d/
 sudo supervisorctl reread
 sudo supervisorctl update
 sudo supervisorctl start messenger-consume:*
-# End App specific startup options ######################################
 
-# Restart apache
-sudo /opt/bitnami/ctlscript.sh restart apache
+# Copy Apache vhost configurations
+if ! sudo cp "${PROJECT_DIR}/deploy/app-vhost.conf" /opt/bitnami/apache2/conf/vhosts/app-vhost.conf; then
+  echo "Error: Failed to copy app-vhost.conf."
+  exit 1
+fi
+
+if ! sudo cp "${PROJECT_DIR}/deploy/app-https-vhost.conf" /opt/bitnami/apache2/conf/vhosts/app-https-vhost.conf; then
+  echo "Error: Failed to copy app-https-vhost.conf."
+  exit 1
+fi
+
+# Restart Apache
+if ! sudo /opt/bitnami/ctlscript.sh restart apache; then
+  echo "Error: Failed to restart Apache."
+  exit 1
+fi
+
+echo "Startup script completed successfully."
