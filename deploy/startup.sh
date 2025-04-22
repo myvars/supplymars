@@ -3,21 +3,25 @@
 set -e  # Exit immediately if a command exits with a non-zero status
 set -u  # Treat unset variables as an error
 
+SITE_DOMAIN="duckbongo.com"
 PROJECT_DIR="/opt/bitnami/projects/app"
 
-read -p $'Domain Name:\n' domainvar
-if [[ -z "$domainvar" ]]; then
-  echo "Error: Domain Name is required."
-  exit 1
-fi
-
 # Prompt user for database reset
-read -p $'Drop existing database? [n]:\n' input
+read -t 5 -p $'Drop existing database? [n]:\n' input || true
 choice=${input:-n}
 
 # Run Composer update
 if ! composer update --working-dir "${PROJECT_DIR}"; then
   echo "Error: Composer update failed."
+  exit 1
+fi
+
+# Copy the cryptographic key
+if cp /home/bitnami/turtle.php "${PROJECT_DIR}/config/secrets/prod/prod.decrypt.private.php"; then
+    "${PROJECT_DIR}/bin/console" secrets:decrypt-to-local --force --env=prod
+    rm "${PROJECT_DIR}/config/secrets/prod/prod.decrypt.private.php"
+else
+  echo "Error: Failed to copy cryptographic key."
   exit 1
 fi
 
@@ -37,12 +41,12 @@ fi
 
 # Copy logos and icons
 mkdir -p "${PROJECT_DIR}/public/images/icons"
-if ! cp "${PROJECT_DIR}/assets/images/icons/${domainvar}"/* "${PROJECT_DIR}/public/images/icons"; then
+if ! cp "${PROJECT_DIR}/assets/images/icons/${SITE_DOMAIN}"/* "${PROJECT_DIR}/public/images/icons"; then
   echo "Error: Failed to copy icons."
   exit 1
 fi
 
-if ! cp "${PROJECT_DIR}/templates/logo/${domainvar}"/* "${PROJECT_DIR}/templates/logo"; then
+if ! cp "${PROJECT_DIR}/templates/logo/${SITE_DOMAIN}"/* "${PROJECT_DIR}/templates/logo"; then
   echo "Error: Failed to copy logos."
   exit 1
 fi

@@ -39,6 +39,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Please enter a full name')]
+    #[Assert\Length(max: 50, maxMessage: 'Max 50 characters')]
     private ?string $fullName = null;
 
     #[ORM\Column(type: 'boolean')]
