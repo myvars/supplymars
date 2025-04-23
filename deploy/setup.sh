@@ -8,6 +8,8 @@ SITE_DOMAIN="duckbongo.com"
 CERTS_DIR="/opt/bitnami/apache/conf"
 PROJECT_DIR="/opt/bitnami/projects/app"
 
+echo "Setup script running..."
+
 # Check for required commands
 for cmd in sudo git wget; do
   if ! command -v $cmd &>/dev/null; then
@@ -58,6 +60,8 @@ if ! git clone -b main "https://myvars:${gitpassvar}@github.com/myvars/turtle" "
   echo "Error: Failed to clone repository."
   exit 1
 fi
+
+echo "Setup script completed successfully."
 
 # Run the startup script
 if [[ -f "${PROJECT_DIR}/deploy/startup.sh" ]]; then

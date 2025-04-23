@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#cccccc">
+    <link rel="icon" type="image/png" href="{{ asset('images/icons/favicon-96x96.png') }}" sizes="96x96" />
+    <link rel="icon" type="image/svg+xml" href="{{ asset('images/icons/favicon.svg') }}" />
+    <link rel="shortcut icon" href="{{ asset('images/icons/favicon.ico') }}" />
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('images/icons/apple-touch-icon.png') }}" />
+    <meta name="apple-mobile-web-app-title" content="{{ domain|split('.')|first }}" />
+    <link rel="manifest" href="{{ asset('images/icons/site.webmanifest') }}" />
     {% if app.environment != 'test' %}
         <meta name="view-transition">
         <meta name="turbo-refresh-method" content="replace">
@@ -38,7 +44,7 @@
                     </button>
                     <a href="{{ path('app_homepage') }}" class="mx-4 flex space-x-3 rtl:space-x-reverse"
                        data-turbo-frame="body">
-                        {{ include('logo/_logo.html.twig', { 'logoHeight': 40 }) }}
+                        {{ include('logo/_logo.html.twig', { 'logoHeight': 35 }) }}
                     </a>
                 </div>
                 <div class="flex items-center space-x-3 rtl:space-x-reverse md:space-x-0 md:order-2">

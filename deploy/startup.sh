@@ -6,6 +6,8 @@ set -u  # Treat unset variables as an error
 SITE_DOMAIN="duckbongo.com"
 PROJECT_DIR="/opt/bitnami/projects/app"
 
+echo "Startup script running..."
+
 # Prompt user for database reset
 read -t 5 -p $'Drop existing database? [n]:\n' input || true
 choice=${input:-n}
@@ -41,12 +43,12 @@ fi
 
 # Copy logos and icons
 mkdir -p "${PROJECT_DIR}/public/images/icons"
-if ! cp "${PROJECT_DIR}/assets/images/icons/${SITE_DOMAIN}"/* "${PROJECT_DIR}/public/images/icons"; then
+if ! cp -f "${PROJECT_DIR}/assets/images/icons/${SITE_DOMAIN}"/* "${PROJECT_DIR}/assets/images/icons"; then
   echo "Error: Failed to copy icons."
   exit 1
 fi
 
-if ! cp "${PROJECT_DIR}/templates/logo/${SITE_DOMAIN}"/* "${PROJECT_DIR}/templates/logo"; then
+if ! cp -f "${PROJECT_DIR}/templates/logo/${SITE_DOMAIN}"/* "${PROJECT_DIR}/templates/logo"; then
   echo "Error: Failed to copy logos."
   exit 1
 fi
