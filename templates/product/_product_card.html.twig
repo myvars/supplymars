@@ -5,7 +5,7 @@
             filter="medium_image"
             alt="{{ product.name }}"
             style="rounded-t-lg"
-            showLink="{{ path('app_product_images', {id: product.category.id}) }}"
+            showLink="{{ path('app_product_images', {id: product.id}) }}"
         ></twig:ProductImage>
     </twig:block>
     <p class="text-xl text-gray-900 line-clamp-1 dark:text-white">{{ product.name }}</p>
