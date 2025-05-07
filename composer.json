@@ -66,8 +66,7 @@
         "twig/inky-extra": "^3.21",
         "twig/intl-extra": "^3.21",
         "twig/string-extra": "^3.21",
-        "twig/twig": "^2.12|^3.21.1",
-        "zenstruck/foundry": "^2.4"
+        "twig/twig": "^2.12|^3.21.1"
     },
     "config": {
         "allow-plugins": {
@@ -133,6 +132,7 @@
         "symfony/phpunit-bridge": "^7.2.6",
         "symfony/stopwatch": "7.2.*",
         "symfony/web-profiler-bundle": "7.2.*",
-        "zenstruck/browser": "^1.9.1"
+        "zenstruck/browser": "^1.9.1",
+        "zenstruck/foundry": "^2.4"
     }
 }
