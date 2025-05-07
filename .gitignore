@@ -23,11 +23,6 @@
 /public/build/
 yarn-error.log
 ###< yarn ###
-
-###> liip/imagine-bundle ###
-/public/media/cache/
-###< liip/imagine-bundle ###
-
 /public/uploads/
 ###> phpstan/phpstan ###
 phpstan.neon
@@ -35,3 +30,7 @@ phpstan.neon
 
 .idea/
 ###> phpspec/ ###
+
+###> liip/imagine-bundle ###
+/public/media/cache/
+###< liip/imagine-bundle ###
