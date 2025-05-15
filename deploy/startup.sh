@@ -18,9 +18,22 @@ if ! composer update --working-dir "${PROJECT_DIR}"; then
   exit 1
 fi
 
-# Copy the cryptographic key
+# Copy the cryptographic key for secrets decryption
 if cp /home/bitnami/turtle.php "${PROJECT_DIR}/config/secrets/prod/prod.decrypt.private.php"; then
     "${PROJECT_DIR}/bin/console" secrets:decrypt-to-local --force --env=prod
+
+    # Extract from .env.prod.local
+    db_url=$(grep '^DATABASE_URL=' "${PROJECT_DIR}/.env.prod.local" | cut -d '=' -f2-)
+
+    # Safety check
+    if [ -z "$db_url" ]; then
+      echo "Error: Could not extract DATABASE_URL from secrets."
+      exit 1
+    fi
+
+    # Append to .env
+    printf "\nDATABASE_URL=%s\n" "$db_url" >> "${PROJECT_DIR}/.env"
+
     rm "${PROJECT_DIR}/config/secrets/prod/prod.decrypt.private.php"
 else
   echo "Error: Failed to copy cryptographic key."
