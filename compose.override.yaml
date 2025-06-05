@@ -1,19 +1,53 @@
-version: '3'
-
 services:
-  ###> doctrine/doctrine-bundle ###
-  database:
-    ports:
-      - '3306:3306'
-  ###< doctrine/doctrine-bundle ###
+  php:
+    environment:
+      APP_ENV: ${APP_ENV:-dev}
+      APP_DEBUG: 1
+      XDEBUG_MODE: ${XDEBUG_MODE:-off}
+    volumes:
+      - ./docker/php/conf.d/20-app.dev.ini:/usr/local/etc/php/app.conf.d/20-app.dev.ini:ro
+      - .:/app
+    extra_hosts:
+      - host.docker.internal:host-gateway
 
-###> symfony/mailer ###
+  nginx:
+    volumes:
+      - ./docker/nginx/conf.d/dev.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./docker/nginx/certs/dev-fullchain.pem:/etc/ssl/certs/fullchain.pem:ro
+      - ./docker/nginx/certs/dev-privkey.pem:/etc/ssl/private/privkey.pem:ro
+      - ./public:/app/public
+
+  database:
+    environment:
+      MYSQL_USER: devapp
+      MYSQL_PASSWORD: devpassword
+      MYSQL_ROOT_PASSWORD: rootpassword
+
+  messenger:
+    environment:
+      APP_ENV: ${APP_ENV:-dev}
+      APP_DEBUG: 1
+    volumes:
+      - .:/app
+
+  phpmyadmin:
+    image: phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: database
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - "8080:80"
+    depends_on:
+      - database
+
+  ###> symfony/mailer ###
   mailer:
     image: axllent/mailpit
     ports:
-      - "1025"
-      - "8025"
+      - "1025:1025"
+      - "8025:8025"
     environment:
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
-###< symfony/mailer ###
+  ###< symfony/mailer ###

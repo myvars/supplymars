@@ -1,0 +1,55 @@
+# Symfony runtime and temp data
+/var/
+/vendor/
+/public/bundles/
+/public/uploads/
+/config/secrets/prod/prod.decrypt.private.php
+
+# Tailwind + front-end build artifacts
+/node_modules/
+/public/assets/
+/public/build/
+
+# If you use asset mapper or encore
+/assets/vendor/
+/assets/generated/
+
+# Compiled Tailwind output (if any custom output path)
+/tailwind.config.js
+/postcss.config.js
+/purgecss.config.js
+/vite.config.js
+
+# Environment config files — copy explicitly in Dockerfile
+.env.local
+.env.*.local
+.env.test
+.env.dev
+.env.test.local
+
+# Git-related
+.git
+.gitignore
+.gitattributes
+
+# Editor and OS files
+.DS_Store
+Thumbs.db
+*.log
+*.swp
+*.swo
+*.bak
+*.tmp
+*.orig
+
+# Composer, PHPUnit, PHP caches
+/.phpunit.result.cache
+/.composer
+composer.lock
+
+# Docker & tooling
+docker-compose.override.yaml
+.dockerignore
+Dockerfile
+entry-*.sh
+docker-entrypoint.sh

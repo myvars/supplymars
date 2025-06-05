@@ -1,0 +1,5 @@
+services:
+  nginx:
+    volumes:
+      - ./docker/nginx/certs/dev-fullchain.pem:/etc/ssl/certs/fullchain.pem:ro
+      - ./docker/nginx/certs/dev-privkey.pem:/etc/ssl/private/privkey.pem:ro
