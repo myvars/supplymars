@@ -19,9 +19,7 @@ services:
 
   database:
     environment:
-      MYSQL_USER: devapp
-      MYSQL_PASSWORD: devpassword
-      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_ROOT_PASSWORD: password
 
   messenger:
     environment:

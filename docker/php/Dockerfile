@@ -96,9 +96,9 @@ USER www-data
 
 # Build assets and compile cache (using fake Database URL)
 RUN set -eux; \
-    DATABASE_URL="sqlite:///:memory:" php bin/console tailwind:build --minify; \
-    DATABASE_URL="sqlite:///:memory:" php bin/console importmap:install; \
-    DATABASE_URL="sqlite:///:memory:" php bin/console asset-map:compile --env=prod --no-debug;
+    php bin/console tailwind:build --minify; \
+    php bin/console importmap:install; \
+    php bin/console asset-map:compile --env=prod --no-debug;
 
 
 # ---- NGINX dev stage ----
