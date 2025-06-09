@@ -7,9 +7,12 @@ use App\Factory\CustomerOrderFactory;
 use App\Factory\ProductFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Zenstruck\Foundry\Test\Factories;
 
 class CreateOrderItemDtoIntegrationTest extends KernelTestCase
 {
+    use Factories;
+
     private ValidatorInterface $validator;
 
     protected function setUp(): void

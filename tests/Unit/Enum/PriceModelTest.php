@@ -3,19 +3,18 @@
 namespace App\Tests\Unit\Enum;
 
 use App\Enum\PriceModel;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class PriceModelTest extends TestCase
 {
-    /**
-     * @dataProvider nameProvider
-     */
+    #[DataProvider('nameProvider')]
     public function testName(PriceModel $model, string $expectedName): void
     {
         $this->assertEquals($expectedName, $model->getName());
     }
 
-    public function nameProvider(): array
+    public static function nameProvider(): array
     {
         return [
             [PriceModel::NONE, 'None'],
@@ -28,15 +27,13 @@ class PriceModelTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider descriptionProvider
-     */
+    #[DataProvider('descriptionProvider')]
     public function testDescription(PriceModel $model, string $expectedDescription): void
     {
         $this->assertEquals($expectedDescription, $model->getDescription());
     }
 
-    public function descriptionProvider(): array
+    public static function descriptionProvider(): array
     {
         return [
             [PriceModel::NONE, 'No Price Model'],
@@ -49,15 +46,13 @@ class PriceModelTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider prettyPriceProvider
-     */
+    #[DataProvider('prettyPriceProvider')]
     public function testGetPrettyPrice(PriceModel $model, string $price, string $expected): void
     {
         $this->assertEquals($expected, $model->getPrettyPrice($price));
     }
 
-    public function prettyPriceProvider(): array
+    public static function prettyPriceProvider(): array
     {
         return [
             [PriceModel::NONE, '10.50', '10.50'],

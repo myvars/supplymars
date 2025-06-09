@@ -22,7 +22,7 @@ jobs:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: |
-            ${{ runner.os }}-buildx-        
+            ${{ runner.os }}-buildx-
 
       - name: Build containers to check build succeeds
         run: |
@@ -56,7 +56,8 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /home/ubuntu/supplymars
-            git pull origin main
+            git fetch origin
+            git reset --hard origin/main
             export SYMFONY_DECRYPTION_SECRET="${{ secrets.SYMFONY_DECRYPTION_SECRET }}"
             export MYSQL_PASSWORD="${{ secrets.MYSQL_PASSWORD }}"
             export MYSQL_ROOT_PASSWORD="${{ secrets.MYSQL_ROOT_PASSWORD }}"

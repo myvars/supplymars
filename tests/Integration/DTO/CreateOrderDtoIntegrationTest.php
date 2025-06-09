@@ -7,9 +7,12 @@ use App\Enum\ShippingMethod;
 use App\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Zenstruck\Foundry\Test\Factories;
 
 class CreateOrderDtoIntegrationTest extends KernelTestCase
 {
+    use Factories;
+
     private ValidatorInterface $validator;
 
     protected function setUp(): void
