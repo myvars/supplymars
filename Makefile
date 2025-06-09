@@ -10,7 +10,7 @@ up-prod:
 	APP_ENV=prod docker compose -f compose.yaml -f compose.prod.yaml up -d --build --remove-orphans --wait
 
 up-prod-local:
-	APP_ENV=prod docker compose -f compose.yaml -f compose.prod.yaml -f compose.prod.local.yaml up -d --build --remove-orphans --wait
+	docker compose --env-file .env.prod.local -f compose.yaml -f compose.prod.yaml -f compose.prod.local.yaml up -d --build --remove-orphans --wait
 
 down:
 	$(COMPOSE) down

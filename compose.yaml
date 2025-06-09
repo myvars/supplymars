@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
-      target: php-${DOCKER_BUILD_TARGET:-dev}
+      target: php-dev
     command: sh -c "wait-for-it database:3306 --timeout=60 --strict -- php-fpm"
     restart: unless-stopped
     depends_on:
@@ -20,7 +20,7 @@ services:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
-      target: nginx-${DOCKER_BUILD_TARGET:-dev}
+      target: nginx-dev
     environment:
       SERVER_NAME: ${SERVER_NAME:-localhost}
     restart: unless-stopped
@@ -59,7 +59,7 @@ services:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
-      target: php-${DOCKER_BUILD_TARGET:-dev}
+      target: php-dev
     command: sh -c "wait-for-it database:3306 --timeout=60 --strict -- php bin/console messenger:consume async --time-limit=3600"
     restart: unless-stopped
     depends_on:

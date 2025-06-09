@@ -1,7 +1,7 @@
 services:
   php:
     environment:
-      APP_ENV: ${APP_ENV:-dev}
+      APP_ENV: dev
       APP_DEBUG: 1
       XDEBUG_MODE: ${XDEBUG_MODE:-off}
     volumes:
@@ -23,7 +23,7 @@ services:
 
   messenger:
     environment:
-      APP_ENV: ${APP_ENV:-dev}
+      APP_ENV: dev
       APP_DEBUG: 1
     volumes:
       - .:/app
