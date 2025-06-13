@@ -25,10 +25,10 @@ messenger:
 	$(COMPOSE) run --rm messenger
 
 test:
-	APP_ENV=test $(COMPOSE) run --rm php ./run-tests.sh
+	$(COMPOSE) run --rm -e APP_ENV=test php ./run-tests.sh
 
 test-%:
-	APP_ENV=test $(COMPOSE) run --rm php ./run-tests.sh --filter $*
+	$(COMPOSE) run --rm -e APP_ENV=test php ./run-tests.sh --filter $*
 
 bash:
 	$(COMPOSE) exec php bash
@@ -52,4 +52,7 @@ up-nocache:
 prune:
 	docker system prune -af
 
-.PHONY: up up-prod up-prod-local down restart init migrate messenger test test-% bash logs logs-% stop clean-build up-nocache prune
+cache-clear:
+	$(COMPOSE) exec php php bin/console cache:clear
+
+.PHONY: up up-prod up-prod-local down restart init migrate messenger test test-% bash logs logs-% stop clean-build up-nocache prune cahe-clear

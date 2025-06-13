@@ -8,7 +8,10 @@ services:
       APP_ENV: prod
       APP_DEBUG: 0
       APP_SECRET: ${APP_SECRET}
+      SITE_DOMAIN: ${SITE_DOMAIN}
       DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
+      REDIS_SESSION_DSN: ${REDIS_SESSION_DSN}
       MAILER_DSN: ${MAILER_DSN}
       AWS_S3_REGION: ${AWS_S3_REGION}
       AWS_S3_BUCKET: ${AWS_S3_BUCKET}
@@ -30,6 +33,10 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
 
+  redis:
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+
   messenger:
     build:
       context: .
@@ -39,5 +46,8 @@ services:
       APP_ENV: prod
       APP_DEBUG: 0
       APP_SECRET: ${APP_SECRET}
+      SITE_DOMAIN: ${SITE_DOMAIN}
       DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
+      REDIS_SESSION_DSN: ${REDIS_SESSION_DSN}
       MAILER_DSN: ${MAILER_DSN}

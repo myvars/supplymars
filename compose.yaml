@@ -9,6 +9,8 @@ services:
     depends_on:
       database:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     healthcheck:
       test: [ "CMD", "php", "bin/console", "about" ]
       interval: 60s
@@ -55,12 +57,24 @@ services:
       start_period: 60s
   ###< doctrine/doctrine-bundle ###
 
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
   messenger:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
       target: php-dev
-    command: sh -c "wait-for-it database:3306 --timeout=60 --strict -- php bin/console messenger:consume async --time-limit=3600"
+    command: sh -c "wait-for-it database:3306 --timeout=60 --strict -- php bin/console messenger:consume async --time-limit=3600 --sleep=5"
     restart: unless-stopped
     depends_on:
       database:
@@ -73,6 +87,7 @@ services:
       start_period: 30s
 
 volumes:
+  redis_data:
   ###> doctrine/doctrine-bundle ###
   db-data:
 ###< doctrine/doctrine-bundle ###

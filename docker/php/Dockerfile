@@ -14,6 +14,8 @@ RUN apt-get update && apt-get install -y \
         bcmath \
         gd \
         xsl \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
@@ -86,7 +88,7 @@ RUN rm -Rf docker/ tests/
 # Prepare directories for cache and logs
 RUN set -eux; \
     mkdir -p var/cache/prod var/log public/assets assets/vendor; \
-    chown -R www-data:www-data var public/assets assets; \
+    chown -R www-data:www-data var public/assets assets /usr/local/etc/php/conf.d; \
     chmod -R 775 var public/assets assets; \
     composer dump-autoload --classmap-authoritative --no-dev; \
     composer dump-env prod;

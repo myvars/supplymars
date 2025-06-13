@@ -50,7 +50,11 @@ jobs:
             git reset --hard origin/main
             export APP_ENV=prod
             export APP_SECRET="${{ secrets.APP_SECRET }}"
+            export SITE_DOMAIN="${{ secrets.SITE_DOMAIN }}"
             export DATABASE_URL="${{ secrets.DATABASE_URL }}"
+            export REDIS_PASSWORD="${{ secrets.REDIS_PASSWORD }}"
+            export REDIS_URL="${{ secrets.REDIS_URL }}"
+            export REDIS_SESSION_DSN="${{ secrets.REDIS_SESSION_DSN }}"
             export MAILER_DSN="${{ secrets.MAILER_DSN }}"
             export AWS_S3_REGION="${{ secrets.AWS_S3_REGION }}"
             export AWS_S3_BUCKET="${{ secrets.AWS_S3_BUCKET }}"
