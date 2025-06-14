@@ -72,7 +72,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     {
         // Execute a raw SQL query to fetch a single random user ID
         $conn = $this->getEntityManager()->getConnection();
-        $sql = 'SELECT id FROM user ORDER BY RAND() LIMIT 1';
+        $sql = 'SELECT id FROM user WHERE is_verified=1 ORDER BY RAND() LIMIT 1';
         $userId = $conn->fetchOne($sql);
 
         // Fetch the user entity by its ID

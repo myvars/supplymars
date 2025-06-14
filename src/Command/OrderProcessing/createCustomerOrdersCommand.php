@@ -9,9 +9,9 @@ use App\Entity\CustomerOrderItem;
 use App\Entity\Product;
 use App\Entity\User;
 use App\Enum\ShippingMethod;
-use App\Factory\AddressFactory;
-use App\Factory\UserFactory;
 use App\Service\Order\CreateOrder;
+use App\Service\OrderProcessing\RandomAddressFactory;
+use App\Service\OrderProcessing\RandomUserFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -34,6 +34,8 @@ class createCustomerOrdersCommand extends Command
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
         private readonly CreateOrder $createOrder,
+        private readonly RandomUserFactory $randomUserFactory,
+        private readonly RandomAddressFactory $randomAddressFactory,
     ) {
         parent::__construct();
     }
@@ -86,7 +88,7 @@ class createCustomerOrdersCommand extends Command
         if (0 === random_int(0, 2)) {
             $user = $this->entityManager->getRepository(User::class)->getRandomUser();
         } else {
-            $user = UserFactory::createOne(['isVerified' => true])->_real();
+            $user = $this->createUser();
         }
 
         if (!$user->getBillingAddress() instanceof Address) {
@@ -96,15 +98,23 @@ class createCustomerOrdersCommand extends Command
         return $user;
     }
 
+    private function createUser(): User
+    {
+        $user = $this->randomUserFactory->create();
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        return $user;
+    }
+
     private function createBillingAddress(User $user): void
     {
-        AddressFactory::createOne([
-            'customer' => $user,
-            'email' => $user->getEmail(),
-            'fullName' => $user->getFullName(),
-            'isDefaultBillingAddress' => true,
-            'isDefaultShippingAddress' => true,
-        ])->_real();
+        $address = $this->randomAddressFactory->create($user);
+        $address->setIsDefaultShippingAddress(true);
+        $address->setIsDefaultBillingAddress(true);
+        $user->addAddress($address);
+        $this->entityManager->persist($address);
+        $this->entityManager->flush();
     }
 
     private function placeCustomerOrder(User $user): CustomerOrder

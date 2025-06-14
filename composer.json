@@ -13,6 +13,7 @@
         "doctrine/doctrine-bundle": "^2.14",
         "doctrine/doctrine-migrations-bundle": "^3.4.2",
         "doctrine/orm": "^3.3.3",
+        "fakerphp/faker": "^1.24",
         "friendsofphp/proxy-manager-lts": "^1.0.18",
         "knplabs/knp-time-bundle": "^2.4",
         "league/flysystem-aws-s3-v3": "^3.29",

@@ -3,6 +3,7 @@
 namespace App\Factory;
 
 use App\Entity\Address;
+use App\Enum\MarsCity;
 use Zenstruck\Foundry\LazyValue;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
@@ -32,14 +33,14 @@ final class AddressFactory extends PersistentProxyObjectFactory
      */
     protected function defaults(): array|callable
     {
-        $cityData = $this->marsCity();
+        $cityData = MarsCity::random();
 
         return [
-            'city' => $cityData['name'],
+            'city' => $cityData->value,
             'country' => 'Mars Colony',
             'county' => 'Red Zone',
             'customer' => LazyValue::memoize(fn (): UserFactory => UserFactory::new()),
-            'postCode' => $cityData['sectorCode'].'-'.random_int(10, 50),
+            'postCode' => $cityData->sectorCode().'-'.random_int(10, 50),
             'street' => self::faker()->streetAddress(),
             'phoneNumber' => self::faker()->phoneNumber(),
             'email' => self::faker()->email(),
@@ -49,30 +50,6 @@ final class AddressFactory extends PersistentProxyObjectFactory
             'isDefaultShippingAddress' => false,
             'isDefaultBillingAddress' => false,
         ];
-    }
-
-    // Helper function to randomly select a Mars city and its sector code
-    private function marsCity(): array
-    {
-        $marsCities = [
-            ['name' => 'Olympia', 'sectorCode' => 'OM'],
-            ['name' => 'Vallis', 'sectorCode' => 'VM'],
-            ['name' => 'Gale', 'sectorCode' => 'GC'],
-            ['name' => 'Elysium', 'sectorCode' => 'EP'],
-            ['name' => 'Red Dune', 'sectorCode' => 'RD'],
-            ['name' => 'Crimson', 'sectorCode' => 'CP'],
-            ['name' => 'Ironhold', 'sectorCode' => 'ID'],
-            ['name' => 'Arcadia', 'sectorCode' => 'AP'],
-            ['name' => 'Amazonis', 'sectorCode' => 'AS'],
-            ['name' => 'Hellas', 'sectorCode' => 'HB'],
-            ['name' => 'Isidis', 'sectorCode' => 'IP'],
-            ['name' => 'Noctis', 'sectorCode' => 'NL'],
-            ['name' => 'Cydonia', 'sectorCode' => 'CY'],
-            ['name' => 'Tharsis', 'sectorCode' => 'TH'],
-            ['name' => 'Utopia', 'sectorCode' => 'UP'],
-        ];
-
-        return $marsCities[array_rand($marsCities)];
     }
 
     /**
