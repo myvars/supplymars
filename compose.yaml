@@ -73,7 +73,7 @@ services:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
-      target: php-dev
+      target: messenger-dev
     command: sh -c "wait-for-it database:3306 --timeout=60 --strict -- php bin/console messenger:consume async --time-limit=3600 --sleep=5"
     restart: unless-stopped
     depends_on:
@@ -81,6 +81,22 @@ services:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "php", "bin/console", "about"]
+      interval: 60s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  cron:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      target: cron-dev
+    restart: unless-stopped
+    depends_on:
+      database:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "php", "bin/console", "about" ]
       interval: 60s
       timeout: 10s
       retries: 5

@@ -22,11 +22,8 @@ else
     echo "[docker-entrypoint] Skipping asset builds in production."
 fi
 
-# Clear cache
-php bin/console cache:clear --env="${APP_ENV:-dev}" || echo "Cache clear failed"
-
 # Early exit for test env
-if [[ "$APP_ENV" = "test" ]]; then
+if [ "$APP_ENV" = "test" ]; then
   echo "[docker-entrypoint] Test environment detected — skipping runtime setup"
   exec "$@"
 fi
@@ -44,6 +41,9 @@ fi
 # Setup Messenger transport
 echo "[docker-entrypoint] Setting up Messenger transport..."
 php bin/console messenger:setup-transports --no-interaction || true
+
+# Clear cache
+php bin/console cache:clear --env="${APP_ENV:-dev}" || echo "Cache clear failed"
 
 echo "[docker-entrypoint] Entrypoint complete"
 exec docker-php-entrypoint "$@"

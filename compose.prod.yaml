@@ -5,8 +5,6 @@ services:
       dockerfile: docker/php/Dockerfile
       target: php-prod
     environment:
-      APP_ENV: prod
-      APP_DEBUG: 0
       APP_SECRET: ${APP_SECRET}
       SITE_DOMAIN: ${SITE_DOMAIN}
       DATABASE_URL: ${DATABASE_URL}
@@ -41,10 +39,21 @@ services:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
-      target: php-prod
+      target: messenger-prod
     environment:
-      APP_ENV: prod
-      APP_DEBUG: 0
+      APP_SECRET: ${APP_SECRET}
+      SITE_DOMAIN: ${SITE_DOMAIN}
+      DATABASE_URL: ${DATABASE_URL}
+      REDIS_URL: ${REDIS_URL}
+      REDIS_SESSION_DSN: ${REDIS_SESSION_DSN}
+      MAILER_DSN: ${MAILER_DSN}
+
+  cron:
+    build:
+      context: .
+      dockerfile: docker/php/Dockerfile
+      target: cron-prod
+    environment:
       APP_SECRET: ${APP_SECRET}
       SITE_DOMAIN: ${SITE_DOMAIN}
       DATABASE_URL: ${DATABASE_URL}

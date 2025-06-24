@@ -15,9 +15,6 @@ up-prod-local:
 down:
 	$(COMPOSE) down
 
-restart:
-	$(COMPOSE) down && $(COMPOSE) up --wait --build
-
 migrate:
 	$(COMPOSE) exec php php bin/console doctrine:migrations:migrate --no-interaction
 
@@ -45,14 +42,10 @@ stop:
 clean-build:
 	$(COMPOSE) build --no-cache
 
-up-nocache:
-	$(COMPOSE) build --no-cache
-	$(COMPOSE) up --wait
-
 prune:
 	docker system prune -af
 
 cache-clear:
 	$(COMPOSE) exec php php bin/console cache:clear
 
-.PHONY: up up-prod up-prod-local down restart init migrate messenger test test-% bash logs logs-% stop clean-build up-nocache prune cahe-clear
+.PHONY: up up-prod up-prod-local down migrate messenger test test-% bash logs logs-% stop clean-build prune cache-clear
