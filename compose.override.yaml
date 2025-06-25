@@ -1,71 +1,84 @@
+# ===============================
+# Docker Compose Override (Dev)
+# ===============================
+# Overrides for local development: mounts, Xdebug, Mailer, PHPMyAdmin, etc.
+
 services:
   php:
     environment:
-      XDEBUG_MODE: ${XDEBUG_MODE:-off}
-      REDIS_URL: redis://redis:6379
-      REDIS_SESSION_DSN: tcp://redis:6379
+      XDEBUG_MODE: ${XDEBUG_MODE:-off}      # Enable Xdebug if desired (export XDEBUG_MODE=debug)
+      REDIS_URL: redis://redis:6379         # Use local Redis for cache
+      REDIS_SESSION_DSN: tcp://redis:6379   # Use Redis for PHP session storage
     volumes:
-      - ./docker/php/conf.d/20-app.dev.ini:/usr/local/etc/php/app.conf.d/20-app.dev.ini:ro
-      - .:/app
-      - app-var:/app/var
+      - ./docker/php/conf.d/20-app.dev.ini:/usr/local/etc/php/app.conf.d/20-app.dev.ini:ro  # Dev PHP config
+      - .:/app              # Mount project source (for instant code reload)
+      - app-var:/app/var    # Dedicated volume for var/ (cache/logs)
     extra_hosts:
-      - host.docker.internal:host-gateway
+      - host.docker.internal:host-gateway   # For talking to host from container
 
+  # --- Nginx Webserver (Dev) ---
   nginx:
     volumes:
-      - ./docker/nginx/conf.d/dev.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./docker/nginx/conf.d/dev.conf:/etc/nginx/conf.d/default.conf:ro    # Dev Nginx config
       - ./docker/nginx/certs/dev-fullchain.pem:/etc/ssl/certs/fullchain.pem:ro
       - ./docker/nginx/certs/dev-privkey.pem:/etc/ssl/private/privkey.pem:ro
-      - ./public:/app/public
+      - ./public:/app/public    # Mount public dir for instant asset reload
 
+  # --- MySQL Database (Dev) ---
   database:
     environment:
-      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password   # Dev root pw (never use in prod!)
 
+  # --- Redis (Dev) ---
   redis:
     environment:
-      REDIS_PASSWORD: password
+      REDIS_PASSWORD: password    # Dev pw (never use in prod!)
 
+  # --- Messenger Worker (Dev) ---
   messenger:
     environment:
       REDIS_URL: redis://redis:6379
       REDIS_SESSION_DSN: tcp://redis:6379
     volumes:
-      - .:/app
-      - messenger-var:/app/var
+      - .:/app                    # Mount source for code reload
+      - messenger-var:/app/var    # Dedicated volume for var/ (cache/logs)
 
+  # --- Cron Jobs (Dev) ---
   cron:
     environment:
       REDIS_URL: redis://redis:6379
       REDIS_SESSION_DSN: tcp://redis:6379
     volumes:
-      - ./docker/php/cron/crontab:/etc/cron.d/app-cron:ro
-      - .:/app
-      - cron-var:/app/var
+      - ./docker/php/cron/dev-crontab:/etc/cron.d/app-cron:ro   # Mount dev crontab
+      - .:/app                    # Mount source for code reload
+      - cron-var:/app/var         # Dedicated volume for var/ (cache/logs)
 
+  # --- PhpMyAdmin (Dev Tool) ---
   phpmyadmin:
     image: phpmyadmin
     restart: unless-stopped
     environment:
       PMA_HOST: database
-      MYSQL_ROOT_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password   # Must match database container
     ports:
-      - "8080:80"
+      - "8080:80"   # Access at http://localhost:8080
     depends_on:
       - database
 
+  # --- Mailpit (Dev SMTP capture) ---
   ###> symfony/mailer ###
   mailer:
     image: axllent/mailpit
     ports:
-      - "1025:1025"
-      - "8025:8025"
+      - "1025:1025"   # SMTP for app to deliver to Mailpit
+      - "8025:8025"   # Web UI for inspecting mails (http://localhost:8025)
     environment:
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
   ###< symfony/mailer ###
 
+# --- Dev Cache/Log Volumes for each container ---
 volumes:
-  app-var:
-  messenger-var:
-  cron-var:
+  app-var:          # Dedicated to main php container
+  messenger-var:    # Messenger service isolation
+  cron-var:         # Cron service isolation

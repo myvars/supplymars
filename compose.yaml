@@ -1,23 +1,33 @@
+# ===============================
+# Docker Compose (Development)
+# ===============================
+# Defines core services for Symfony dev stack.
+# See compose.prod.yaml & .prod.local.yaml for production overrides.
+
 services:
+  # --- PHP Application (FPM) ---
   php:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
       target: php-dev
+    # Waits for database before starting PHP-FPM
     command: sh -c "wait-for-it database:3306 --timeout=60 --strict -- php-fpm"
     restart: unless-stopped
     depends_on:
       database:
-        condition: service_healthy
+        condition: service_healthy  # Only start when DB is healthy
       redis:
         condition: service_healthy
     healthcheck:
+      # Checks the app is responding by running a Symfony command
       test: [ "CMD", "php", "bin/console", "about" ]
       interval: 60s
       timeout: 10s
       retries: 5
       start_period: 30s
 
+  # --- Nginx Webserver ---
   nginx:
     build:
       context: .
@@ -27,28 +37,31 @@ services:
       SERVER_NAME: ${SERVER_NAME:-localhost}
     restart: unless-stopped
     ports:
-      - "80:80"
-      - "443:443"
+      - "80:80"     # HTTP
+      - "443:443"   # HTTPS (dev SSL cert)
     depends_on:
       php:
         condition: service_healthy
     healthcheck:
+      # Use curl to verify HTTPS server responds
       test: [ "CMD", "curl", "-kf", "https://localhost" ]
       interval: 60s
       timeout: 5s
       retries: 5
       start_period: 30s
 
+  # --- MySQL Database (Dev) ---
   ###> doctrine/doctrine-bundle ###
   database:
     image: mysql:8.0
     restart: unless-stopped
     ports:
-      - "3306:3306"
+      - "3306:3306"   # Expose for dev tools.
     environment:
       MYSQL_DATABASE: app
+      # Default username/pw set in .env
     volumes:
-      - db-data:/var/lib/mysql
+      - db-data:/var/lib/mysql  # Persist DB data between restarts
     healthcheck:
       test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
       interval: 60s
@@ -57,11 +70,12 @@ services:
       start_period: 60s
   ###< doctrine/doctrine-bundle ###
 
+  # --- Redis Cache (Dev) ---
   redis:
     image: redis:7-alpine
     restart: unless-stopped
     volumes:
-      - redis_data:/data
+      - redis_data:/data  # Persist redis data between restarts
     healthcheck:
       test: [ "CMD", "redis-cli", "ping" ]
       interval: 30s
@@ -69,33 +83,40 @@ services:
       retries: 5
       start_period: 10s
 
+  # --- Symfony Messenger/Worker (Dev) ---
   messenger:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
       target: messenger-dev
+    # Wait for database, then run messenger consumer
     command: sh -c "wait-for-it database:3306 --timeout=60 --strict -- php bin/console messenger:consume async --time-limit=3600 --sleep=5"
     restart: unless-stopped
     depends_on:
       database:
         condition: service_healthy
     healthcheck:
+      # Checks the app is responding by running a Symfony command
       test: ["CMD", "php", "bin/console", "about"]
       interval: 60s
       timeout: 10s
       retries: 5
       start_period: 30s
 
+  # --- Cron Jobs (Dev) ---
   cron:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
       target: cron-dev
+    # Export all env vars for cron, then start cron in foreground
+    command: /bin/sh -c 'printenv | grep -v "no_proxy" > /etc/environment && cron -f'
     restart: unless-stopped
     depends_on:
       database:
         condition: service_healthy
     healthcheck:
+      # Checks the app is responding by running a Symfony command
       test: [ "CMD", "php", "bin/console", "about" ]
       interval: 60s
       timeout: 10s
@@ -103,7 +124,7 @@ services:
       start_period: 30s
 
 volumes:
-  redis_data:
-  ###> doctrine/doctrine-bundle ###
-  db-data:
+  redis_data: # Redis data
+###> doctrine/doctrine-bundle ###
+  db-data:  # MySQL data
 ###< doctrine/doctrine-bundle ###

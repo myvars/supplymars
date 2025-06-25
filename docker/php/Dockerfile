@@ -105,6 +105,7 @@ COPY --from=php-prod-builder /app /app
 # Ensure entrypoint script is used
 ENTRYPOINT ["docker-entrypoint.sh"]
 
+
 # ---- Messenger Dev Stage ----
 FROM php-dev AS messenger-dev
 
@@ -116,23 +117,15 @@ FROM php-prod AS messenger-prod
 # ---- Cron Dev Stage ----
 FROM php-dev AS cron-dev
 
-# Keep the container running for development purposes
-CMD ["tail", "-f", "/dev/null"]
-
 
 # ---- Cron Production Stage ----
 FROM php-prod AS cron-prod
 
 # Copy crontab file for the cron service
-COPY --link docker/php/cron/crontab /etc/cron.d/app-cron
+COPY --link docker/php/cron/prod-crontab /etc/cron.d/app-cron
 
-# Ensure the crontab file has the correct permissions and load it
-RUN RUN set -eux; \
-    chmod 0644 /etc/cron.d/app-cron && \
-    touch /var/log/cron.log;
-
-# Start the cron service in the foreground
-CMD ["cron", "-f"]
+# Ensure the crontab file has the correct permissions
+RUN chmod 0644 /etc/cron.d/app-cron;
 
 
 # ---- NGINX Dev Stage ----

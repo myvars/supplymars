@@ -1,5 +1,16 @@
+# ========================================
+# Docker Compose: Production (local overrides)
+# ========================================
+# This file is used for overrides during local production builds/testing
+# It is NOT used in "real" production (e.g. on the actual production server)
+
 services:
   nginx:
     volumes:
+      # Use fake SSL certs for local testing
       - ./docker/nginx/certs/dev-fullchain.pem:/etc/ssl/certs/fullchain.pem:ro
       - ./docker/nginx/certs/dev-privkey.pem:/etc/ssl/private/privkey.pem:ro
+
+  cron:
+    # Prevent cron from running real jobs on local machine
+    command: /bin/sh -c 'printenv | grep -v "no_proxy" > /etc/environment && tail -f /dev/null'

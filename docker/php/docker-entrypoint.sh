@@ -31,7 +31,7 @@ fi
 echo "[docker-entrypoint] Database is ready."
 
 # Run migrations if any exist
-if [ "$( find ./migrations -iname '*.php' -print -quit )" ]; then
+if [ -d ./migrations ] && [ "$( find ./migrations -iname '*.php' -print -quit )" ]; then
   echo "[docker-entrypoint] Running database migrations..."
   php bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing
 else
@@ -40,10 +40,11 @@ fi
 
 # Setup Messenger transport
 echo "[docker-entrypoint] Setting up Messenger transport..."
-php bin/console messenger:setup-transports --no-interaction || true
+php bin/console messenger:setup-transports --no-interaction || echo "Messenger setup failed (non-fatal)"
 
 # Clear cache
 php bin/console cache:clear --env="${APP_ENV:-dev}" || echo "Cache clear failed"
 
 echo "[docker-entrypoint] Entrypoint complete"
+echo "[docker-entrypoint] Command to exec: $@"
 exec docker-php-entrypoint "$@"

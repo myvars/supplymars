@@ -1,1 +1,0 @@
-* * * * * root echo "cron works" >> /var/log/cron-test.log

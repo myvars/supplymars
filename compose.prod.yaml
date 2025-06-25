@@ -1,40 +1,52 @@
+# ========================================
+# Docker Compose: Production Configuration
+# ========================================
+# Secure, production-ready settings: real secrets, no dev mounts, real SSL, isolated service configs.
+
 services:
+  # --- PHP Application (Prod) ---
   php:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
       target: php-prod
     environment:
-      APP_SECRET: ${APP_SECRET}
-      SITE_DOMAIN: ${SITE_DOMAIN}
-      DATABASE_URL: ${DATABASE_URL}
-      REDIS_URL: ${REDIS_URL}
-      REDIS_SESSION_DSN: ${REDIS_SESSION_DSN}
-      MAILER_DSN: ${MAILER_DSN}
-      AWS_S3_REGION: ${AWS_S3_REGION}
-      AWS_S3_BUCKET: ${AWS_S3_BUCKET}
-      AWS_S3_ACCESS_ID: ${AWS_S3_ACCESS_ID}
-      AWS_S3_SECRET_ACCESS_KEY: ${AWS_S3_SECRET_ACCESS_KEY}
+      APP_SECRET: ${APP_SECRET}                               # Production app secret
+      SITE_DOMAIN: ${SITE_DOMAIN}                             # Production domain
+      DATABASE_URL: ${DATABASE_URL}                           # Full DB connection string (use app user)
+      REDIS_URL: ${REDIS_URL}                                 # Redis connection for cache
+      REDIS_SESSION_DSN: ${REDIS_SESSION_DSN}                 # Redis for PHP sessions
+      MAILER_DSN: ${MAILER_DSN}                               # Mailer DSN (e.g., SMTP for real mail delivery)
+      AWS_S3_REGION: ${AWS_S3_REGION}                         # AWS S3 region for uploads
+      AWS_S3_BUCKET: ${AWS_S3_BUCKET}                         # S3 bucket name
+      AWS_S3_ACCESS_ID: ${AWS_S3_ACCESS_ID}                   # AWS S3 access key ID
+      AWS_S3_SECRET_ACCESS_KEY: ${AWS_S3_SECRET_ACCESS_KEY}   # AWS S3 secret access key
+    # No code mounts—built artifacts only; code changes require a new build.
 
+  # --- Nginx Webserver (Prod) ---
   nginx:
     build:
       context: .
       dockerfile: docker/php/Dockerfile
       target: nginx-prod
     volumes:
+      # Use real, trusted SSL certificates from Let's Encrypt (must be present on host)
       - /etc/letsencrypt/live/supplymars.com/fullchain.pem:/etc/ssl/certs/fullchain.pem:ro
       - /etc/letsencrypt/live/supplymars.com/privkey.pem:/etc/ssl/private/privkey.pem:ro
 
+  # --- MySQL Database (Prod) ---
   database:
     environment:
-      MYSQL_USER: app
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: app                               # App-specific DB user (never root in prod)
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}             # Secure, unique app password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}   # Used for root access only (never in app)
 
+  # --- Redis (Prod) ---
   redis:
     environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}             # Protect Redis in prod (set strong pw)
 
+  # --- Messenger Worker (Prod) ---
   messenger:
     build:
       context: .
@@ -47,7 +59,9 @@ services:
       REDIS_URL: ${REDIS_URL}
       REDIS_SESSION_DSN: ${REDIS_SESSION_DSN}
       MAILER_DSN: ${MAILER_DSN}
+    # No volume mounts—worker runs using baked production code and environment
 
+  # --- Cron Jobs (Prod) ---
   cron:
     build:
       context: .
@@ -60,3 +74,4 @@ services:
       REDIS_URL: ${REDIS_URL}
       REDIS_SESSION_DSN: ${REDIS_SESSION_DSN}
       MAILER_DSN: ${MAILER_DSN}
+    # No volume mounts—cron runs using baked production code and environment
