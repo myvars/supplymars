@@ -2,14 +2,13 @@
 
 namespace App\Command\Utilities;
 
+use Symfony\Component\Console\Attribute\Argument;
 use App\Entity\SupplierProduct;
 use App\Service\OrderProcessing\SupplierUtility;
 use App\Service\SupplierProduct\ChangeMappedProductStatus;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -17,25 +16,16 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:activate-supplier-products',
     description: 'Activate supplier products',
 )]
-class activateSupplierProductsCommand extends Command
+class activateSupplierProductsCommand
 {
-    public function __construct(
-        private readonly SupplierUtility $supplierUtility,
-        private readonly EntityManagerInterface $entityManager,
-        private readonly ChangeMappedProductStatus $changeMappedProductStatus,
-    ) {
-        parent::__construct();
-    }
-
-    protected function configure(): void
+    public function __construct(private readonly SupplierUtility $supplierUtility, private readonly EntityManagerInterface $entityManager, private readonly ChangeMappedProductStatus $changeMappedProductStatus)
     {
-        $this->addArgument('itemCount', InputArgument::REQUIRED, 'Item count to process');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    public function __invoke(#[Argument(name: 'itemCount', description: 'Item count to process')]
+    string $itemCount, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $itemCount = $input->getArgument('itemCount');
 
         $this->supplierUtility->setDefaultUser();
 

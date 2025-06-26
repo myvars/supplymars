@@ -74,10 +74,10 @@ return [
         'version' => '1.3.2',
     ],
     'chart.js' => [
-        'version' => '4.4.9',
+        'version' => '4.5.0',
     ],
     '@kurkle/color' => [
-        'version' => '0.3.4',
+        'version' => '0.4.0',
     ],
     'turbo-view-transitions' => [
         'version' => '0.3.0',

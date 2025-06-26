@@ -2,11 +2,11 @@
 
 namespace App\Command\SalesProcessing;
 
+use Symfony\Component\Console\Attribute\Argument;
 use App\Service\Sales\ProductSalesCalculator;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -15,27 +15,25 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:calculate-product-sales',
     description: 'Calculate product sales',
 )]
-class calculateProductSalesCommand extends Command
+class calculateProductSalesCommand
 {
     private const string DATE_FORMAT = 'Y-m-d';
 
-    public function __construct(private readonly ProductSalesCalculator $productSalesCalculator)
-    {
-        parent::__construct();
+    public function __construct(
+        private readonly ProductSalesCalculator $productSalesCalculator,
+        private readonly calculateProductSalesSummaryCommand $productSalesSummaryCommand
+    ) {
     }
 
-    protected function configure(): void
-    {
-        $this
-            ->addArgument('dayCount', InputArgument::REQUIRED, 'Days to process')
-            ->addArgument('dayOffset', InputArgument::OPTIONAL, 'Day offset to start processing');
-    }
-
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
+    public function __invoke(
+        InputInterface $input,
+        OutputInterface $output,
+        #[Argument(description: 'Days to process')] string $dayCount,
+        #[Argument(description: 'Day offset to start processing')] ?string $dayOffset
+    ): int {
         $io = new SymfonyStyle($input, $output);
-        $dayCount = (int) $input->getArgument('dayCount');
-        $dayOffset = (int) $input->getArgument('dayOffset') ?: 0;
+        $dayCount = (int) $dayCount;
+        $dayOffset = (int) $dayOffset ?: 0;
 
         $io->info(sprintf('Calculating sales data for %d days, starting %d days ago', $dayCount, $dayOffset));
 
@@ -57,7 +55,7 @@ class calculateProductSalesCommand extends Command
 
     public function runTheProductSalesSummaryCommand(OutputInterface $output): void
     {
-        $productSalesSummaryInput = new ArrayInput(['command' => 'app:calculate-product-sales-summary']);
-        $this->getApplication()->doRun($productSalesSummaryInput, $output);
+        $input = new ArrayInput([]);
+        $this->productSalesSummaryCommand->__invoke($input, $output, null);
     }
 }

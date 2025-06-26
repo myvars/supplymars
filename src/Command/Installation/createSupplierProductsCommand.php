@@ -17,16 +17,15 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:create-supplier-products',
     description: 'Create new products and product maps from a supplier',
 )]
-class createSupplierProductsCommand extends Command
+class createSupplierProductsCommand
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly ProductGenerator $productGenerator,
+        private readonly ProductGenerator $productGenerator
     ) {
-        parent::__construct();
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    public function __invoke(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $io->note('Starting to process supplier products...');

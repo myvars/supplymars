@@ -10,8 +10,13 @@
 
 ###> phpunit/phpunit ###
 /phpunit.xml
+phpunit.cache/
+.phpunit.cache/
 .phpunit.result.cache
 ###< phpunit/phpunit ###
+
+# Symfony local config
+.symfony.local.yaml
 
 ###> symfony/asset-mapper ###
 /public/assets/

@@ -2,6 +2,7 @@
 
 namespace App\Command\InventoryProcessing;
 
+use Symfony\Component\Console\Attribute\Argument;
 use App\Entity\Supplier;
 use App\Entity\SupplierProduct;
 use App\Service\OrderProcessing\SupplierUtility;
@@ -9,7 +10,6 @@ use App\Service\Utility\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -18,7 +18,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:update-supplier-stock',
     description: 'Update supplier stock levels',
 )]
-class updateSupplierStockCommand extends Command
+class updateSupplierStockCommand
 {
     public const int COST_VARIANCE_PERCENT = 10;
 
@@ -29,20 +29,16 @@ class updateSupplierStockCommand extends Command
     public function __construct(
         private readonly SupplierUtility $supplierUtility,
         private readonly EntityManagerInterface $entityManager,
-        private readonly DomainEventDispatcher $domainEventDispatcher,
+        private readonly DomainEventDispatcher $domainEventDispatcher
     ) {
-        parent::__construct();
     }
 
-    protected function configure(): void
-    {
-        $this->addArgument('itemCount', InputArgument::REQUIRED, 'Item count to process');
-    }
-
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
+    public function __invoke(
+        InputInterface $input,
+        OutputInterface $output,
+        #[Argument(description: 'Item count to process')] string $itemCount
+    ): int {
         $io = new SymfonyStyle($input, $output);
-        $itemCount = $input->getArgument('itemCount');
 
         if (self::COST_VARIANCE_PERCENT <= 0) {
             $io->error('Cost variance percent must be greater than 0');

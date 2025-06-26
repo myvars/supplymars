@@ -2,10 +2,10 @@
 
 namespace App\Command\SalesProcessing;
 
+use Symfony\Component\Console\Attribute\Argument;
 use App\Service\Sales\ProductSalesSummaryCalculator;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -14,22 +14,19 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:calculate-product-sales-summary',
     description: 'Calculate product sales summary',
 )]
-class calculateProductSalesSummaryCommand extends Command
+class calculateProductSalesSummaryCommand
 {
     public function __construct(private readonly ProductSalesSummaryCalculator $productSalesSummaryCalculator)
     {
-        parent::__construct();
     }
 
-    protected function configure(): void
-    {
-        $this->addArgument('rebuild', InputArgument::OPTIONAL, 'Rebuild full sales summary');
-    }
-
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
+    public function __invoke(
+        InputInterface $input,
+        OutputInterface $output,
+        #[Argument(description: 'Rebuild full sales summary')] ?string $rebuild
+    ): int {
         $io = new SymfonyStyle($input, $output);
-        $rebuild = (int) $input->getArgument('rebuild');
+        $rebuild = (int) $rebuild;
 
         $io->info('Calculating product sales summary');
 

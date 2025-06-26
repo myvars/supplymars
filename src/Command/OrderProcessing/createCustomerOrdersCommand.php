@@ -2,6 +2,8 @@
 
 namespace App\Command\OrderProcessing;
 
+use Symfony\Component\Console\Attribute\Argument;
+use Symfony\Component\Console\Attribute\Option;
 use App\DTO\CreateOrderDto;
 use App\Entity\Address;
 use App\Entity\CustomerOrder;
@@ -15,9 +17,7 @@ use App\Service\OrderProcessing\RandomUserFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -25,7 +25,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:create-customer-orders',
     description: 'Create new customer orders',
 )]
-class createCustomerOrdersCommand extends Command
+class createCustomerOrdersCommand
 {
     public const int MAX_ORDER_LINES = 5;
 
@@ -35,29 +35,24 @@ class createCustomerOrdersCommand extends Command
         private readonly EntityManagerInterface $entityManager,
         private readonly CreateOrder $createOrder,
         private readonly RandomUserFactory $randomUserFactory,
-        private readonly RandomAddressFactory $randomAddressFactory,
+        private readonly RandomAddressFactory $randomAddressFactory
     ) {
-        parent::__construct();
     }
 
-    protected function configure(): void
-    {
-        $this->addArgument('orderCount', InputArgument::REQUIRED, 'Order count');
-        $this->addOption('random', null, InputOption::VALUE_NONE, 'Random order count');
-    }
-
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
+    public function __invoke(
+        InputInterface $input,
+        OutputInterface $output,
+        #[Argument(description: 'Order count')] string $orderCount,
+        #[Option(description: 'Randomise')] bool $random = false
+    ): int {
         $io = new SymfonyStyle($input, $output);
-
-        $orderCount = $input->getArgument('orderCount');
         if ($orderCount < 1) {
             $io->error('Order count must be greater than 0');
 
             return Command::FAILURE;
         }
 
-        if ($input->getOption('random')) {
+        if ($random) {
             $orderCount = random_int(0, $orderCount);
         }
 
@@ -112,6 +107,7 @@ class createCustomerOrdersCommand extends Command
         $address = $this->randomAddressFactory->create($user);
         $address->setIsDefaultShippingAddress(true);
         $address->setIsDefaultBillingAddress(true);
+
         $user->addAddress($address);
         $this->entityManager->persist($address);
         $this->entityManager->flush();

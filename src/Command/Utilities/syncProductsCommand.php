@@ -2,13 +2,12 @@
 
 namespace App\Command\Utilities;
 
+use Symfony\Component\Console\Attribute\Argument;
 use App\Entity\Product;
 use App\Service\OrderProcessing\SupplierUtility;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -16,26 +15,17 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:sync-products',
     description: 'Resync product name, description, categories, subcategories, with suppliers',
 )]
-class syncProductsCommand extends Command
+class syncProductsCommand
 {
-    public function __construct(
-        private readonly SupplierUtility $supplierUtility,
-        private readonly EntityManagerInterface $entityManager,
-    ) {
-        parent::__construct();
-    }
-
-    protected function configure(): void
+    public function __construct(private readonly SupplierUtility $supplierUtility, private readonly EntityManagerInterface $entityManager)
     {
-        $this->addArgument('minProductId', InputArgument::REQUIRED, 'min product id');
-        $this->addArgument('maxProductId', InputArgument::REQUIRED, 'max product id');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    public function __invoke(#[Argument(name: 'minProductId', description: 'min product id')]
+    string $minProductId, #[Argument(name: 'maxProductId', description: 'max product id')]
+    string $maxProductId, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $minProductId = $input->getArgument('minProductId');
-        $maxProductId = $input->getArgument('maxProductId');
 
         $this->supplierUtility->setDefaultUser();
 

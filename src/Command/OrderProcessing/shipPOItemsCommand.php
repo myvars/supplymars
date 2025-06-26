@@ -2,6 +2,7 @@
 
 namespace App\Command\OrderProcessing;
 
+use Symfony\Component\Console\Attribute\Argument;
 use App\Entity\PurchaseOrderItem;
 use App\Entity\StatusChangeLog;
 use App\Entity\Supplier;
@@ -10,7 +11,6 @@ use App\Service\OrderProcessing\SupplierUtility;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -19,24 +19,20 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:ship-purchase-order-items',
     description: 'Ship PO items',
 )]
-class shipPOItemsCommand extends Command
+class shipPOItemsCommand
 {
     public function __construct(
         private readonly SupplierUtility $supplierUtility,
-        private readonly EntityManagerInterface $entityManager,
+        private readonly EntityManagerInterface $entityManager
     ) {
-        parent::__construct();
     }
 
-    protected function configure(): void
-    {
-        $this->addArgument('poItemCount', InputArgument::REQUIRED, 'PO item count to process');
-    }
-
-    protected function execute(InputInterface $input, OutputInterface $output): int
-    {
+    public function __invoke(
+        InputInterface $input,
+        OutputInterface $output,
+        #[Argument(description: 'PO item count to process')] string $poItemCount
+    ): int {
         $io = new SymfonyStyle($input, $output);
-        $poItemCount = $input->getArgument('poItemCount');
 
         $supplier = $this->supplierUtility->getRandomSupplier();
 

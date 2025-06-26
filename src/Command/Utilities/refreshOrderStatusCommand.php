@@ -2,14 +2,13 @@
 
 namespace App\Command\Utilities;
 
+use Symfony\Component\Console\Attribute\Argument;
 use App\Entity\CustomerOrder;
 use App\Service\OrderProcessing\RefreshOrderStatus;
 use App\Service\OrderProcessing\SupplierUtility;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
@@ -17,27 +16,17 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:refresh-order-status',
     description: 'Refresh order, item, PO status',
 )]
-class refreshOrderStatusCommand extends Command
+class refreshOrderStatusCommand
 {
-    public function __construct(
-        private readonly SupplierUtility $supplierUtility,
-        private readonly EntityManagerInterface $entityManager,
-        private readonly RefreshOrderStatus $refreshOrderStatus,
-    ) {
-        parent::__construct();
-    }
-
-    protected function configure(): void
+    public function __construct(private readonly SupplierUtility $supplierUtility, private readonly EntityManagerInterface $entityManager, private readonly RefreshOrderStatus $refreshOrderStatus)
     {
-        $this->addArgument('orderCount', InputArgument::REQUIRED, 'Number of orders to process');
-        $this->addArgument('offset', InputArgument::OPTIONAL, 'Offset to start from', 0);
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    public function __invoke(#[Argument(name: 'orderCount', description: 'Number of orders to process')]
+    string $orderCount, #[Argument(name: 'offset', description: 'Offset to start from')]
+    ?string $offset, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $orderCount = $input->getArgument('orderCount');
-        $offset = $input->getArgument('offset');
 
         $this->supplierUtility->setDefaultUser();
 

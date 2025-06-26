@@ -16,22 +16,17 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:create-warehouse-products',
     description: 'Create new products from the default supplier products table',
 )]
-class createWarehouseProductsCommand extends Command
+class createWarehouseProductsCommand
 {
     public const string DEFAULT_SUPPLIER_NAME = 'Turtle Inc';
 
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly ProductGenerator $productGenerator,
+        private readonly ProductGenerator $productGenerator
     ) {
-        parent::__construct();
     }
 
-    protected function configure(): void
-    {
-    }
-
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    public function __invoke(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
         $supplier = $this->getSupplier();
