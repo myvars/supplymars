@@ -12,6 +12,9 @@ up-prod:
 up-prod-local:
 	docker compose --env-file .env.prod.local -f compose.yaml -f compose.prod.yaml -f compose.prod.local.yaml up -d --build --remove-orphans --wait
 
+up-dev-tools:
+	$(COMPOSE) -f compose.dev-tools.yaml up -d --wait --build
+
 down:
 	$(COMPOSE) down
 
@@ -48,4 +51,4 @@ prune:
 cache-clear:
 	$(COMPOSE) exec php php bin/console cache:clear
 
-.PHONY: up up-prod up-prod-local down migrate messenger test test-% bash logs logs-% stop clean-build prune cache-clear
+.PHONY: up up-prod up-prod-local up-dev-tools down migrate messenger test test-% bash logs logs-% stop clean-build prune cache-clear

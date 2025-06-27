@@ -1,0 +1,76 @@
+# ===============================
+# Docker Compose (Development Tools Only)
+# ===============================
+# Defines basic services for local development tools.
+# Use with local symfony server or other dev setups.
+
+services:
+  # --- MySQL Database (Dev) ---
+###> doctrine/doctrine-bundle ###
+  database:
+    image: mysql:8.0
+    restart: unless-stopped
+    ports:
+      - "3306:3306"   # Expose for dev tools.
+    environment:
+      MYSQL_DATABASE: app
+      MYSQL_ROOT_PASSWORD: password
+      # Default username/pw set in .env
+    volumes:
+      - db-data:/var/lib/mysql    # Persist DB data between restarts
+    healthcheck:
+      # Wait for MySQL to be ready
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      interval: 60s
+      timeout: 10s
+      retries: 5
+      start_period: 60s
+  ###< doctrine/doctrine-bundle ###
+
+  # --- Redis Cache (Dev) ---
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    environment:
+      REDIS_PASSWORD: password    # Dev pw (never use in prod!)
+    volumes:
+      - redis_data:/data    # Persist redis data between restarts
+    healthcheck:
+      # Wait for Redis to be ready
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # --- PhpMyAdmin (Dev Tool) ---
+  phpmyadmin:
+    image: phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: database
+      MYSQL_ROOT_PASSWORD: password   # Must match database container
+    ports:
+      - "8080:80"   # Access at http://localhost:8080
+    depends_on:
+      - database
+
+  # --- Mailpit (Dev SMTP capture) ---
+  ###> symfony/mailer ###
+  mailer:
+    image: axllent/mailpit
+    ports:
+      - "1025:1025"   # SMTP for app to deliver to Mailpit
+      - "8025:8025"   # Web UI for inspecting mails (http://localhost:8025)
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+  ###< symfony/mailer ###
+
+volumes:
+###> doctrine/doctrine-bundle ###
+  db-data:      # MySQL data
+###< doctrine/doctrine-bundle ###
+  redis_data:   # Redis data

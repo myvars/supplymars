@@ -9,6 +9,7 @@ services:
       XDEBUG_MODE: ${XDEBUG_MODE:-off}      # Enable Xdebug if desired (export XDEBUG_MODE=debug)
       REDIS_URL: redis://redis:6379         # Use local Redis for cache
       REDIS_SESSION_DSN: tcp://redis:6379   # Use Redis for PHP session storage
+      SITE_URL: https://localhost         # Local dev URL
     volumes:
       - ./docker/php/conf.d/20-app.dev.ini:/usr/local/etc/php/app.conf.d/20-app.dev.ini:ro  # Dev PHP config
       - .:/app              # Mount project source (for instant code reload)
@@ -39,6 +40,7 @@ services:
     environment:
       REDIS_URL: redis://redis:6379
       REDIS_SESSION_DSN: tcp://redis:6379
+      SITE_URL: https://localhost
     volumes:
       - .:/app                    # Mount source for code reload
       - messenger-var:/app/var    # Dedicated volume for var/ (cache/logs)
@@ -48,6 +50,7 @@ services:
     environment:
       REDIS_URL: redis://redis:6379
       REDIS_SESSION_DSN: tcp://redis:6379
+      SITE_URL: https://localhost
     volumes:
       - ./docker/php/cron/dev-crontab:/etc/cron.d/app-cron:ro   # Mount dev crontab
       - .:/app                    # Mount source for code reload
