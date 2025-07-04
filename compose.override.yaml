@@ -1,21 +1,71 @@
 # ===============================
-# Docker Compose Override (Dev)
+# Docker Compose: Development configuration
 # ===============================
 # Overrides for local development: mounts, Xdebug, Mailer, PHPMyAdmin, etc.
 
+x-common-php-env: &common-php-env
+  SITE_URL: "https://localhost"
+  DATABASE_URL: "mysql://root:password@database:3306/app?serverVersion=8.0&charset=utf8mb4"
+  REDIS_URL: "redis://default:password@redis:6379"
+  REDIS_SESSION_DSN: "tcp://redis:6379"
+  MAILER_DSN: "smtp://mailer:1025"
+  MESSENGER_TRANSPORT_DSN: "phpamqplib://guest:guest@rabbitmq:5672/%2f/messages"
+
 services:
+  # --- MySQL Database (Dev) ---
+  database:
+    ports:
+      - "3306:3306"   # Expose for dev tools.
+    environment:
+      MYSQL_ROOT_PASSWORD: password   # Dev root pw (never use in prod!)
+
+
+  # --- Redis (Dev) ---
+  redis:
+    environment:
+      REDIS_PASSWORD: password    # Dev pw (never use in prod!)
+
+
+  # --- RabbitMQ (Dev) ---
+  rabbitmq:
+    ports:
+      - "5672:5672"      # AMQP protocol (internal use)
+      - "15672:15672"    # RabbitMQ Management UI (dev only; see below)
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+
+
+# --- PHP Application (Dev) ---
   php:
     environment:
-      XDEBUG_MODE: ${XDEBUG_MODE:-off}      # Enable Xdebug if desired (export XDEBUG_MODE=debug)
-      REDIS_URL: redis://redis:6379         # Use local Redis for cache
-      REDIS_SESSION_DSN: tcp://redis:6379   # Use Redis for PHP session storage
-      SITE_URL: https://localhost         # Local dev URL
+      <<: *common-php-env
+      XDEBUG_MODE: ${XDEBUG_MODE:-off}    # Enable Xdebug if desired (export XDEBUG_MODE=debug)
     volumes:
       - ./docker/php/conf.d/20-app.dev.ini:/usr/local/etc/php/app.conf.d/20-app.dev.ini:ro  # Dev PHP config
       - .:/app              # Mount project source (for instant code reload)
       - app-var:/app/var    # Dedicated volume for var/ (cache/logs)
     extra_hosts:
       - host.docker.internal:host-gateway   # For talking to host from container
+
+
+  # --- Messenger Worker (Dev) ---
+  messenger:
+    environment:
+      <<: *common-php-env
+    volumes:
+      - .:/app                    # Mount source for code reload
+      - messenger-var:/app/var    # Dedicated volume for var/ (cache/logs)
+
+
+  # --- Cron Jobs (Dev) ---
+  cron:
+    environment:
+      <<: *common-php-env
+    volumes:
+      - ./docker/php/cron/dev-crontab:/etc/cron.d/app-cron:ro   # Mount dev crontab
+      - .:/app                    # Mount source for code reload
+      - cron-var:/app/var         # Dedicated volume for var/ (cache/logs)
 
   # --- Nginx Webserver (Dev) ---
   nginx:
@@ -25,36 +75,6 @@ services:
       - ./docker/nginx/certs/dev-privkey.pem:/etc/ssl/private/privkey.pem:ro
       - ./public:/app/public    # Mount public dir for instant asset reload
 
-  # --- MySQL Database (Dev) ---
-  database:
-    environment:
-      MYSQL_ROOT_PASSWORD: password   # Dev root pw (never use in prod!)
-
-  # --- Redis (Dev) ---
-  redis:
-    environment:
-      REDIS_PASSWORD: password    # Dev pw (never use in prod!)
-
-  # --- Messenger Worker (Dev) ---
-  messenger:
-    environment:
-      REDIS_URL: redis://redis:6379
-      REDIS_SESSION_DSN: tcp://redis:6379
-      SITE_URL: https://localhost
-    volumes:
-      - .:/app                    # Mount source for code reload
-      - messenger-var:/app/var    # Dedicated volume for var/ (cache/logs)
-
-  # --- Cron Jobs (Dev) ---
-  cron:
-    environment:
-      REDIS_URL: redis://redis:6379
-      REDIS_SESSION_DSN: tcp://redis:6379
-      SITE_URL: https://localhost
-    volumes:
-      - ./docker/php/cron/dev-crontab:/etc/cron.d/app-cron:ro   # Mount dev crontab
-      - .:/app                    # Mount source for code reload
-      - cron-var:/app/var         # Dedicated volume for var/ (cache/logs)
 
   # --- PhpMyAdmin (Dev Tool) ---
   phpmyadmin:
@@ -68,6 +88,7 @@ services:
     depends_on:
       - database
 
+
   # --- Mailpit (Dev SMTP capture) ---
   ###> symfony/mailer ###
   mailer:
@@ -79,6 +100,7 @@ services:
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
   ###< symfony/mailer ###
+
 
 # --- Dev Cache/Log Volumes for each container ---
 volumes:

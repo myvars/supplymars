@@ -1,12 +1,11 @@
 # ===============================
-# Docker Compose (Development Tools Only)
+# Docker Compose: Local development configuration (symfony server)
 # ===============================
 # Defines basic services for local development tools.
 # Use with local symfony server or other dev setups.
 
 services:
-  # --- MySQL Database (Dev) ---
-###> doctrine/doctrine-bundle ###
+  # --- MySQL Database (Dev local) ---
   database:
     image: mysql:8.0
     restart: unless-stopped
@@ -25,9 +24,9 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
-  ###< doctrine/doctrine-bundle ###
 
-  # --- Redis Cache (Dev) ---
+
+  # --- Redis Cache (Dev local) ---
   redis:
     image: redis:7-alpine
     restart: unless-stopped
@@ -45,7 +44,26 @@ services:
       retries: 5
       start_period: 10s
 
-  # --- PhpMyAdmin (Dev Tool) ---
+
+  # --- RabbitMQ Message Broker (Dev local) ---
+  rabbitmq:
+    image: rabbitmq:4.1.1-management
+    restart: unless-stopped
+    ports:
+      - "5672:5672"      # AMQP protocol (internal use)
+      - "15672:15672"    # RabbitMQ Management UI (dev only; see below)
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+
+  # --- PhpMyAdmin (Dev local Tool) ---
   phpmyadmin:
     image: phpmyadmin
     restart: unless-stopped
@@ -57,8 +75,8 @@ services:
     depends_on:
       - database
 
-  # --- Mailpit (Dev SMTP capture) ---
-  ###> symfony/mailer ###
+
+  # --- Mailpit (Dev local SMTP capture) ---
   mailer:
     image: axllent/mailpit
     ports:
@@ -67,10 +85,9 @@ services:
     environment:
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
-  ###< symfony/mailer ###
 
+
+# --- Volumes (Dev local)  ---
 volumes:
-###> doctrine/doctrine-bundle ###
   db-data:      # MySQL data
-###< doctrine/doctrine-bundle ###
   redis_data:   # Redis data

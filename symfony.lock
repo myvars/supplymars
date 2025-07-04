@@ -62,6 +62,9 @@
             "migrations/.gitignore"
         ]
     },
+    "jwage/phpamqplib-messenger": {
+        "version": "0.8.4"
+    },
     "knplabs/knp-time-bundle": {
         "version": "v2.2.0"
     },

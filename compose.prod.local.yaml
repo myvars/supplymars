@@ -1,16 +1,66 @@
 # ========================================
-# Docker Compose: Production (local overrides)
+# Docker Compose: Local production configuration
 # ========================================
 # This file is used for overrides during local production builds/testing
 # It is NOT used in "real" production (e.g. on the actual production server)
 
+x-mailer-env: &mailer-env
+  MAILER_DSN: smtp://mailer:1025
+
 services:
+  # --- RabbitMQ Message Broker (Prod local) ---
+  rabbitmq:
+    ports:
+      - "15672:15672"    # RabbitMQ Management UI (dev)
+
+
+  # --- PHP Application (Prod local) ---
+  php:
+    environment:
+      <<: *mailer-env
+
+
+    # --- Messenger Worker (Prod local) ---
+  messenger:
+    environment:
+      <<: *mailer-env
+
+
+  # --- Cron Jobs (Prod) ---
+  cron:
+    environment:
+      <<: *mailer-env
+    # Prevent cron from running real jobs on local machine
+    command: /bin/sh -c 'printenv | grep -v "no_proxy" > /etc/environment && tail -f /dev/null'
+
+
+  # --- Nginx Webserver (Prod local) ---
   nginx:
     volumes:
       # Use fake SSL certs for local testing
       - ./docker/nginx/certs/dev-fullchain.pem:/etc/ssl/certs/fullchain.pem:ro
       - ./docker/nginx/certs/dev-privkey.pem:/etc/ssl/private/privkey.pem:ro
 
-  cron:
-    # Prevent cron from running real jobs on local machine
-    command: /bin/sh -c 'printenv | grep -v "no_proxy" > /etc/environment && tail -f /dev/null'
+
+  # --- PhpMyAdmin (Prod local Tool) ---
+  phpmyadmin:
+    image: phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: database
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}   # Must match database container
+    ports:
+      - "8080:80"   # Access at http://localhost:8080
+    depends_on:
+      - database
+
+
+  # --- Mailpit (Prod local SMTP capture) ---
+  mailer:
+    image: axllent/mailpit
+    ports:
+      - "1025:1025"   # SMTP for app to deliver to Mailpit
+      - "8025:8025"   # Web UI for inspecting mails (http://localhost:8025)
+    environment:
+      MP_SMTP_AUTH_ACCEPT_ANY: 1
+      MP_SMTP_AUTH_ALLOW_INSECURE: 1
