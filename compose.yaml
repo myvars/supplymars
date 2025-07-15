@@ -8,7 +8,6 @@ services:
   # --- MySQL Database ---
   database:
     image: mysql:8.0
-    restart: unless-stopped
     environment:
       MYSQL_DATABASE: app
       # Default username/pw set in .env
@@ -21,12 +20,12 @@ services:
       timeout: 10s
       retries: 5
       start_period: 60s
+    restart: unless-stopped
 
 
   # --- Redis Cache ---
   redis:
     image: redis:7-alpine
-    restart: unless-stopped
     volumes:
       - redis_data:/data  # Persist redis data between restarts
     healthcheck:
@@ -36,18 +35,19 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+    restart: unless-stopped
 
 
   # --- RabbitMQ Message Broker ---
   rabbitmq:
     image: rabbitmq:4.1.1-management
-    restart: unless-stopped
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 30s
+    restart: unless-stopped
 
 
   # --- PHP Application (FPM) ---
@@ -56,9 +56,6 @@ services:
       context: .
       dockerfile: docker/php/Dockerfile
       target: php-dev
-    # Waits for database before starting PHP-FPM
-    command: sh -c "wait-for-it database:3306 --timeout=60 --strict -- php-fpm"
-    restart: unless-stopped
     depends_on:
       database:
         condition: service_healthy  # Only start when DB is healthy
@@ -66,6 +63,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+    # Waits for database before starting PHP-FPM
+    command: sh -c "wait-for-it database:3306 --timeout=60 --strict -- php-fpm"
     healthcheck:
       # Checks the app is responding by running a Symfony command
       test: [ "CMD", "php", "bin/console", "about" ]
@@ -73,6 +72,7 @@ services:
       timeout: 10s
       retries: 5
       start_period: 30s
+    restart: unless-stopped
 
 
   # --- Symfony Messenger/Worker ---
@@ -81,14 +81,13 @@ services:
       context: .
       dockerfile: docker/php/Dockerfile
       target: messenger-dev
-    # Wait for database, then run messenger consumer
-    command: sh -c "wait-for-it database:3306 --timeout=60 --strict -- php bin/console messenger:consume async --time-limit=3600 --sleep=5"
-    restart: unless-stopped
     depends_on:
       database:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+    # Wait for database, then run messenger consumer
+    command: sh -c "wait-for-it database:3306 --timeout=60 --strict -- php bin/console messenger:consume async --time-limit=3600 --sleep=5"
     healthcheck:
       # Checks the app is responding by running a Symfony command
       test: ["CMD", "php", "bin/console", "about"]
@@ -96,6 +95,7 @@ services:
       timeout: 10s
       retries: 5
       start_period: 30s
+    restart: unless-stopped
 
 
   # --- Cron Jobs ---
@@ -104,14 +104,13 @@ services:
       context: .
       dockerfile: docker/php/Dockerfile
       target: cron-dev
-    # Export all env vars for cron, then start cron in foreground
-    command: /bin/sh -c 'printenv | grep -v "no_proxy" > /etc/environment && cron -f'
-    restart: unless-stopped
     depends_on:
       database:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+    # Export all env vars for cron, then start cron in foreground
+    command: /bin/sh -c 'printenv | grep -v "no_proxy" > /etc/environment && cron -f'
     healthcheck:
       # Checks the app is responding by running a Symfony command
       test: [ "CMD", "php", "bin/console", "about" ]
@@ -119,6 +118,7 @@ services:
       timeout: 10s
       retries: 5
       start_period: 30s
+    restart: unless-stopped
 
 
   # --- Nginx Webserver ---
@@ -127,22 +127,22 @@ services:
       context: .
       dockerfile: docker/php/Dockerfile
       target: nginx-dev
-    environment:
-      SERVER_NAME: ${SERVER_NAME:-localhost}
-    restart: unless-stopped
-    ports:
-      - "80:80"     # HTTP
-      - "443:443"   # HTTPS (dev SSL cert)
     depends_on:
       php:
         condition: service_healthy
+    ports:
+      - "80:80"     # HTTP
+      - "443:443"   # HTTPS (dev SSL cert)
+    environment:
+      SERVER_NAME: ${SERVER_NAME:-localhost}
     healthcheck:
       # Use curl to verify HTTPS server responds
       test: [ "CMD", "curl", "-kf", "https://localhost" ]
-      interval: 60s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
+      interval: 30s
+      timeout: 10s
+      retries: 6
+      start_period: 60s
+    restart: unless-stopped
 
 
 # --- Volumes ---

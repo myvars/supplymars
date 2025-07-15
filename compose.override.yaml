@@ -79,14 +79,14 @@ services:
   # --- PhpMyAdmin (Dev Tool) ---
   phpmyadmin:
     image: phpmyadmin
-    restart: unless-stopped
-    environment:
-      PMA_HOST: database
-      MYSQL_ROOT_PASSWORD: password   # Must match database container
+    depends_on:
+      database:
+        condition: service_healthy
     ports:
       - "8080:80"   # Access at http://localhost:8080
-    depends_on:
-      - database
+    environment:
+      PMA_HOST: database
+    restart: unless-stopped
 
 
   # --- Mailpit (Dev SMTP capture) ---

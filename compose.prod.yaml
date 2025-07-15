@@ -20,8 +20,8 @@ x-common-php-env: &common-php-env
 services:
   # --- MySQL Database (Prod) ---
   database:
-    expose:
-      - "3306"  # Expose MySQL port internally (not to host)
+    ports:
+      - "127.0.0.1:3306:3306"   # Bind MySQL to localhost only (not exposed to public)
     environment:
       MYSQL_USER: app                               # App-specific DB user (never root in prod)
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}             # Secure, unique app password

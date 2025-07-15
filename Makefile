@@ -16,7 +16,7 @@ up-dev-tools:
 	$(COMPOSE) -f compose.dev-tools.yaml up -d --wait --build
 
 down:
-	$(COMPOSE) down
+	$(COMPOSE) -f compose.yaml -f compose.dev-tools.yaml down --remove-orphans
 
 migrate:
 	$(COMPOSE) exec php php bin/console doctrine:migrations:migrate --no-interaction
