@@ -1,10 +1,9 @@
 # Makefile
 
 PROJECT_NAME = symfony-app
-COMPOSE = docker compose
 
 up:
-	$(COMPOSE) up --wait --build
+	docker compose up --wait --build
 
 up-prod:
 	APP_ENV=prod docker compose -f compose.yaml -f compose.prod.yaml up -d --build --remove-orphans --wait
@@ -13,42 +12,45 @@ up-prod-local:
 	docker compose --env-file .env.prod.local -f compose.yaml -f compose.prod.yaml -f compose.prod.local.yaml up -d --build --remove-orphans --wait
 
 up-dev-tools:
-	$(COMPOSE) -f compose.dev-tools.yaml up -d --wait --build
+	docker compose -f compose.dev-tools.yaml up -d --wait --build
 
 down:
-	$(COMPOSE) -f compose.yaml -f compose.dev-tools.yaml down --remove-orphans
+	docker compose -f compose.yaml -f compose.dev-tools.yaml down --remove-orphans
 
 migrate:
-	$(COMPOSE) exec php php bin/console doctrine:migrations:migrate --no-interaction
+	docker compose exec php php bin/console doctrine:migrations:migrate --no-interaction
 
 messenger:
-	$(COMPOSE) run --rm messenger
+	docker compose run --rm messenger
 
 test:
-	$(COMPOSE) run --rm -e APP_ENV=test php ./run-tests.sh
+	docker compose run --rm -e APP_ENV=test php ./scripts/run-tests.sh
 
 test-%:
-	$(COMPOSE) run --rm -e APP_ENV=test php ./run-tests.sh --filter $*
+	docker compose run --rm -e APP_ENV=test php ./scripts/run-tests.sh --filter $*
 
 bash:
-	$(COMPOSE) exec php bash
+	docker compose exec php bash
 
 logs:
-	$(COMPOSE) logs -f
+	docker compose logs -f
 
 logs-%:
-	$(COMPOSE) logs -f $*
-
-stop:
-	$(COMPOSE) stop
+	docker compose logs -f $*
 
 clean-build:
-	$(COMPOSE) build --no-cache
+	docker compose build --no-cache
 
 prune:
 	docker system prune -af
 
 cache-clear:
-	$(COMPOSE) exec php php bin/console cache:clear
+	docker compose exec php php bin/console cache:clear
 
-.PHONY: up up-prod up-prod-local up-dev-tools down migrate messenger test test-% bash logs logs-% stop clean-build prune cache-clear
+k6:
+	./scripts/run-k6-script.sh $(SCRIPT) $(ENV) false
+
+k6-dash:
+	./scripts/run-k6-script.sh $(SCRIPT) $(ENV) true
+
+.PHONY: up up-prod up-prod-local up-dev-tools down migrate messenger test test-% bash logs logs-% clean-build prune cache-clear k6 k6-dash

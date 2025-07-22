@@ -33,7 +33,7 @@ jobs:
       # Run tests
       - name: Run tests
         run: |
-          docker compose -f compose.yaml -f compose.override.yaml run --rm -e APP_ENV=test php ./run-tests.sh
+          docker compose -f compose.yaml -f compose.override.yaml run --rm -e APP_ENV=test php ./scripts/run-tests.sh
         env:
           APP_ENV: test
 

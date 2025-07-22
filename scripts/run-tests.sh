@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+cd "$(dirname "$0")/.."
 
 if [ "$APP_ENV" != "test" ]; then
   echo "[run-tests] Refusing to run: APP_ENV is not 'test' (got '$APP_ENV')"
