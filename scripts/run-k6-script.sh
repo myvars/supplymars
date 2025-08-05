@@ -16,6 +16,17 @@ fi
 
 case "$ENV" in
   symfony)
+    if [ "$DASHBOARD" = "true" ]; then
+      echo ""
+      echo "============================"
+      echo "REMINDER: To view the K6 dashboard remotely, set up an SSH tunnel:"
+      echo ""
+      echo "e.g.) ssh -N -L 5665:localhost:5665 ubuntu@supplymars.com"
+      echo ""
+      echo "Then visit: http://localhost:5665"
+      echo "============================"
+      echo ""
+    fi
     cp "$(pwd)/public/assets/manifest.json" "$MANIFEST_PATH"
     docker run --rm \
       -v "$(pwd)/tests/Performance/k6":/scripts \
