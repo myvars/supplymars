@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\AddressRepository;
+use App\ValueObject\AddressPublicId;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -11,6 +12,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: AddressRepository::class)]
 class Address
 {
+    use HasPublicUlid;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -76,6 +79,7 @@ class Address
 
     public function __construct()
     {
+        $this->initializePublicId();
         $this->customerOrders = new ArrayCollection();
         $this->purchaseOrders = new ArrayCollection();
     }
@@ -83,6 +87,11 @@ class Address
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getPublicId(): AddressPublicId
+    {
+        return AddressPublicId::fromString($this->publicIdString());
     }
 
     public function getFullName(): ?string

@@ -4,9 +4,10 @@ namespace App\Entity;
 
 use App\Enum\PurchaseOrderStatus;
 use App\Enum\ShippingMethod;
-use App\Event\PurchaseOrderCreatedEvent;
-use App\Event\PurchaseOrderStatusChangedEvent;
+use App\Event\PurchaseOrderStatusWasChangedEvent;
 use App\Repository\PurchaseOrderRepository;
+use App\ValueObject\PurchaseOrderPublicId;
+use App\ValueObject\StatusChange;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -19,6 +20,7 @@ class PurchaseOrder implements DomainEventProviderInterface
 {
     use TimestampableEntity;
     use DomainEventTrait;
+    use HasPublicUlid;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -78,14 +80,19 @@ class PurchaseOrder implements DomainEventProviderInterface
 
     private function __construct()
     {
+        $this->initializePublicId();
         $this->status = PurchaseOrderStatus::getDefault();
         $this->purchaseOrderItems = new ArrayCollection();
-        $this->raiseDomainEvent(new PurchaseOrderCreatedEvent($this));
     }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getPublicId(): PurchaseOrderPublicId
+    {
+        return PurchaseOrderPublicId::fromString($this->publicIdString());
     }
 
     public function getCustomerOrder(): ?CustomerOrder
@@ -189,14 +196,15 @@ class PurchaseOrder implements DomainEventProviderInterface
         return $this->status;
     }
 
-    private function setStatus(PurchaseOrderStatus $status): void
+    private function setStatus(PurchaseOrderStatus $newStatus): void
     {
-        if ($this->status === $status) {
-            return;
-        }
+        $statusChange = StatusChange::from($this->getStatus(), $newStatus);
 
-        $this->status = $status;
-        $this->raiseDomainEvent(new PurchaseOrderStatusChangedEvent($this));
+        if ($statusChange->hasChanged()) {
+            $this->status = $newStatus;
+
+            $this->raiseDomainEvent(new PurchaseOrderStatusWasChangedEvent($this->getPublicId(), $statusChange));
+        }
     }
 
     public function getTotalPrice(): string

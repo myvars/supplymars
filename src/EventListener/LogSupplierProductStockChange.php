@@ -3,39 +3,45 @@
 namespace App\EventListener;
 
 use App\Entity\SupplierStockChangeLog;
-use App\Event\SupplierProductCostChangedEvent;
-use App\Event\SupplierProductStockChangedEvent;
+use App\Event\SupplierProductStockWasChangedEvent;
+use App\EventListener\DoctrineEvents\SupplierProductPublicIdResolver;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
+/**
+ * Listens for supplier stock change events and logs them.
+ */
+#[AsEventListener(event: SupplierProductStockWasChangedEvent::class)]
 final readonly class LogSupplierProductStockChange
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
         private ValidatorInterface $validator,
+        private SupplierProductPublicIdResolver $publicIdResolver,
+        private LoggerInterface $logger
     ) {
     }
 
-    #[AsEventListener]
-    public function onSupplierProductStockChange(SupplierProductStockChangedEvent $event): void
+    public function __invoke(SupplierProductStockWasChangedEvent $event): void
     {
-        $supplierStockChangeLog = SupplierStockChangeLog::create(
-            $event->getDomainEventType(),
-            $event->getSupplierProduct(),
-            $event->getEventTimestamp()
-        );
+        $legacyId = $this->publicIdResolver->resolve($event->publicId()); // VO in, ?int out
+        if ($legacyId === null) {
+            $this->logger->warning('Could not resolve legacy ID for public ID', [
+                'publicId' => (string) $event->publicId(),
+                'eventClass' => get_class($event),
+            ]);
 
-        $this->save($supplierStockChangeLog);
-    }
+            return;
+        }
 
-    #[AsEventListener]
-    public function onSupplierProductCostChange(SupplierProductCostChangedEvent $event): void
-    {
         $supplierStockChangeLog = SupplierStockChangeLog::create(
-            $event->getDomainEventType(),
-            $event->getSupplierProduct(),
-            $event->getEventTimestamp()
+            $event->type(),
+            $legacyId,
+            $event->stockChange(),
+            $event->costChange(),
+            $event->occurredAt()
         );
 
         $this->save($supplierStockChangeLog);
@@ -45,8 +51,7 @@ final readonly class LogSupplierProductStockChange
     {
         $errors = $this->validator->validate($supplierStockChangeLog);
         if (count($errors) > 0) {
-            $errorsString = (string) $errors;
-            throw new \InvalidArgumentException($errorsString);
+            throw new \InvalidArgumentException((string) $errors);
         }
 
         $this->entityManager->persist($supplierStockChangeLog);

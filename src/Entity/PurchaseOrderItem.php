@@ -3,9 +3,10 @@
 namespace App\Entity;
 
 use App\Enum\PurchaseOrderStatus;
-use App\Event\PurchaseOrderItemCreatedEvent;
-use App\Event\PurchaseOrderItemStatusChangedEvent;
+use App\Event\PurchaseOrderItemStatusWasChangedEvent;
 use App\Repository\PurchaseOrderItemRepository;
+use App\ValueObject\PurchaseOrderItemPublicId;
+use App\ValueObject\StatusChange;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
@@ -16,6 +17,7 @@ class PurchaseOrderItem implements DomainEventProviderInterface
 {
     use TimestampableEntity;
     use DomainEventTrait;
+    use HasPublicUlid;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -63,13 +65,18 @@ class PurchaseOrderItem implements DomainEventProviderInterface
 
     private function __construct()
     {
+        $this->initializePublicId();
         $this->status = PurchaseOrderStatus::getDefault();
-        $this->raiseDomainEvent(new PurchaseOrderItemCreatedEvent($this));
     }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getPublicId(): PurchaseOrderItemPublicId
+    {
+        return PurchaseOrderItemPublicId::fromString($this->publicIdString());
     }
 
     public function getPurchaseOrder(): PurchaseOrder
@@ -283,7 +290,8 @@ class PurchaseOrderItem implements DomainEventProviderInterface
 
     public function updateStatus(PurchaseOrderStatus $newStatus): void
     {
-        if ($newStatus === $this->status) {
+        $statusChange = StatusChange::from($this->getStatus(), $newStatus);
+        if (!$statusChange->hasChanged()) {
             return;
         }
 
@@ -296,7 +304,8 @@ class PurchaseOrderItem implements DomainEventProviderInterface
             $this->setDeliveredAt(new \DateTimeImmutable());
         }
 
-        $this->raiseDomainEvent(new PurchaseOrderItemStatusChangedEvent($this));
+        $this->raiseDomainEvent(new PurchaseOrderItemStatusWasChangedEvent($this->getPublicId(), $statusChange));
+
         $this->getPurchaseOrder()->generateStatus();
         $this->getCustomerOrderItem()->generateStatus();
     }

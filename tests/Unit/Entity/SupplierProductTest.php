@@ -8,8 +8,8 @@ use App\Entity\SupplierCategory;
 use App\Entity\SupplierManufacturer;
 use App\Entity\SupplierProduct;
 use App\Entity\SupplierSubcategory;
-use App\Event\SupplierProductCostChangedEvent;
-use App\Event\SupplierProductStockChangedEvent;
+use App\Event\SupplierProductCostWasChangedEvent;
+use App\Event\SupplierProductStockWasChangedEvent;
 use PHPUnit\Framework\TestCase;
 
 class SupplierProductTest extends TestCase
@@ -90,7 +90,7 @@ class SupplierProductTest extends TestCase
 
         $events = $supplierProduct->releaseDomainEvents();
         $this->assertCount(1, $events);
-        $this->assertInstanceOf(SupplierProductStockChangedEvent::class, $events[0]);
+        $this->assertInstanceOf(SupplierProductStockWasChangedEvent::class, $events[0]);
         $this->assertSame($supplierProduct, $events[0]->getSupplierProduct());
     }
 
@@ -101,7 +101,7 @@ class SupplierProductTest extends TestCase
 
         $events = $supplierProduct->releaseDomainEvents();
         $this->assertCount(1, $events);
-        $this->assertInstanceOf(SupplierProductCostChangedEvent::class, $events[0]);
+        $this->assertInstanceOf(SupplierProductStockWasChangedEvent::class, $events[0]);
         $this->assertSame($supplierProduct, $events[0]->getSupplierProduct());
     }
 

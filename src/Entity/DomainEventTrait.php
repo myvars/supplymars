@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Event\DomainEvent;
+use App\Event\AbstractDomainEvent;
 
 trait DomainEventTrait
 {
     private array $domainEvents = [];
 
-    public function raiseDomainEvent(DomainEvent $event): void
+    public function raiseDomainEvent(AbstractDomainEvent $event): void
     {
         $this->domainEvents[] = $event;
     }

@@ -4,6 +4,8 @@ namespace App\Factory;
 
 use App\Entity\SupplierStockChangeLog;
 use App\Enum\DomainEventType;
+use App\ValueObject\CostChange;
+use App\ValueObject\StockChange;
 use Zenstruck\Foundry\LazyValue;
 use Zenstruck\Foundry\Object\Instantiator;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
@@ -35,9 +37,12 @@ final class SupplierStockChangeLogFactory extends PersistentProxyObjectFactory
     protected function defaults(): array|callable
     {
         return [
-            'eventType' => DomainEventType::SUPPLIER_PRODUCT_STOCK_CHANGED,
+            'type' => DomainEventType::SUPPLIER_PRODUCT_STOCK_CHANGED,
             'supplierProduct' => LazyValue::memoize(fn (): SupplierProductFactory => SupplierProductFactory::new()),
-            'eventTimestamp' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
+            'supplierProductId' => null,
+            'stockChange' => null,
+            'costChange' => null,
+            'occurredAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
         ];
     }
 
@@ -47,8 +52,23 @@ final class SupplierStockChangeLogFactory extends PersistentProxyObjectFactory
     #[\Override]
     protected function initialize(): static
     {
-        return $this->instantiateWith(
-            Instantiator::namedConstructor('create')
-        );
+        return $this
+            ->beforeInstantiate(function (array $attributes): array {
+                $attributes['supplierProductId'] ??= $attributes['supplierProduct']->getId();
+                $attributes['stockChange'] ??= StockChange::from(
+                    $attributes['supplierProduct']->getStock(),
+                    $attributes['supplierProduct']->getStock() + 1
+                );
+                $attributes['costChange'] ??= CostChange::from(
+                    $attributes['supplierProduct']->getCost(),
+                    bcadd($attributes['supplierProduct']->getCost(), '1.00', 2)
+                );
+
+                return $attributes;
+            })
+            ->instantiateWith(
+                Instantiator::namedConstructor('create')
+                    ->allowExtra('supplierProduct')
+            );
     }
 }

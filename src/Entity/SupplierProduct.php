@@ -2,9 +2,11 @@
 
 namespace App\Entity;
 
-use App\Event\SupplierProductCostChangedEvent;
-use App\Event\SupplierProductStockChangedEvent;
+use App\Event\SupplierProductStockWasChangedEvent;
 use App\Repository\SupplierProductRepository;
+use App\ValueObject\CostChange;
+use App\ValueObject\StockChange;
+use App\ValueObject\SupplierProductPublicId;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -14,6 +16,7 @@ class SupplierProduct implements DomainEventProviderInterface
 {
     use TimestampableEntity;
     use DomainEventTrait;
+    use HasPublicUlid;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -49,12 +52,12 @@ class SupplierProduct implements DomainEventProviderInterface
     #[ORM\Column]
     #[Assert\NotNull(message: 'Please enter a weight')]
     #[Assert\Range(notInRangeMessage: 'Please enter a product weight(grams)', min: 0, max: 100000)]
-    private ?int $weight = null;
+    private ?int $weight = 0;
 
     #[ORM\Column]
     #[Assert\NotNull(message: 'Please enter a stock level')]
     #[Assert\Range(notInRangeMessage: 'Please enter a stock level', min: 0, max: 10000)]
-    private ?int $stock = null;
+    private ?int $stock = 0;
 
     #[ORM\Column]
     #[Assert\NotNull(message: 'Please enter a lead time')]
@@ -72,9 +75,19 @@ class SupplierProduct implements DomainEventProviderInterface
     #[ORM\Column]
     private ?bool $isActive = null;
 
+    public function __construct()
+    {
+        $this->initializePublicId();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getPublicId(): SupplierProductPublicId
+    {
+        return SupplierProductPublicId::fromString($this->publicIdString());
     }
 
     public function getName(): ?string
@@ -178,14 +191,21 @@ class SupplierProduct implements DomainEventProviderInterface
         return $this->stock;
     }
 
-    public function setStock(?int $stock): static
+    public function setStock(?int $newStock): static
     {
-        if ($stock === $this->getStock()) {
+        $stockChange = StockChange::from($this->getStock()  ?? '0.00', $newStock  ?? '0.00');
+        if (!$stockChange->hasChanged()) {
             return $this;
         }
 
-        $this->stock = $stock;
-        $this->raiseDomainEvent(new SupplierProductStockChangedEvent($this));
+        $this->stock = $newStock;
+        $this->raiseDomainEvent(
+            new SupplierProductStockWasChangedEvent(
+                $this->getPublicId(),
+                $stockChange,
+                CostChange::from($this->getCost() ?? '0.00', $this->getCost() ?? '0.00')
+            )
+        );
 
         return $this;
     }
@@ -207,14 +227,21 @@ class SupplierProduct implements DomainEventProviderInterface
         return $this->cost;
     }
 
-    public function setCost(?string $cost): static
+    public function setCost(?string $newCost): static
     {
-        if ($cost === $this->getCost()) {
+        $costChange = CostChange::from($this->getCost() ?? 0, $newCost ?? 0);
+        if (!$costChange->hasChanged()) {
             return $this;
         }
 
-        $this->cost = $cost;
-        $this->raiseDomainEvent(new SupplierProductCostChangedEvent($this));
+        $this->cost = $newCost;
+        $this->raiseDomainEvent(
+            new SupplierProductStockWasChangedEvent(
+                $this->getPublicId(),
+                Stockchange::from($this->getStock() ?? 0, $this->getStock() ?? 0),
+                $costChange
+            )
+        );
 
         return $this;
     }

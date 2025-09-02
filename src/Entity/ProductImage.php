@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ProductImageRepository;
+use App\ValueObject\ProductImagePublicId;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -12,6 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class ProductImage
 {
     use TimestampableEntity;
+    use HasPublicUlid;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -48,11 +50,17 @@ class ProductImage
         #[Assert\File(mimeTypes: ['image/*'], mimeTypesMessage: 'Please upload a valid file type')]
         private readonly UploadedFile $imageFile,
     ) {
+        $this->initializePublicId();
     }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getPublicId(): ProductImagePublicId
+    {
+        return ProductImagePublicId::fromString($this->publicIdString());
     }
 
     public function getProduct(): Product

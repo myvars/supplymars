@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\SupplierSubcategoryRepository;
+use App\ValueObject\SupplierSubcategoryPublicId;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -13,6 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class SupplierSubcategory
 {
     use TimestampableEntity;
+    use HasPublicUlid;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -41,12 +43,18 @@ class SupplierSubcategory
 
     public function __construct()
     {
+        $this->initializePublicId();
         $this->supplierProducts = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getPublicId(): SupplierSubcategoryPublicId
+    {
+        return SupplierSubcategoryPublicId::fromString($this->publicIdString());
     }
 
     public function getName(): ?string

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Enum\PriceModel;
 use App\Repository\SubcategoryRepository;
+use App\ValueObject\SubcategoryPublicId;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
@@ -15,6 +16,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Subcategory
 {
     use TimestampableEntity;
+    use HasPublicUlid;
+
     public const string DEFAULT_MARKUP = '0.000';
 
     public const PriceModel DEFAULT_PRICE_MODEL = PriceModel::NONE;
@@ -56,6 +59,7 @@ class Subcategory
 
     public function __construct()
     {
+        $this->initializePublicId();
         $this->products = new ArrayCollection();
         $this->supplierSubcategories = new ArrayCollection();
     }
@@ -63,6 +67,11 @@ class Subcategory
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getPublicId(): SubcategoryPublicId
+    {
+        return SubcategoryPublicId::fromString($this->publicIdString());
     }
 
     public function getName(): ?string

@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\SupplierRepository;
+use App\ValueObject\SupplierPublicId;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -13,6 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Supplier
 {
     use TimestampableEntity;
+    use HasPublicUlid;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -49,6 +51,7 @@ class Supplier
 
     public function __construct()
     {
+        $this->initializePublicId();
         $this->supplierCategories = new ArrayCollection();
         $this->supplierSubcategories = new ArrayCollection();
         $this->supplierManufacturers = new ArrayCollection();
@@ -59,6 +62,11 @@ class Supplier
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getPublicId(): SupplierPublicId
+    {
+        return SupplierPublicId::fromString($this->publicIdString());
     }
 
     public function getName(): ?string

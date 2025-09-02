@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Enum\PriceModel;
 use App\Repository\ProductRepository;
+use App\ValueObject\ProductPublicId;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -14,6 +15,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Product
 {
     use TimestampableEntity;
+    use HasPublicUlid;
+
     public const string DEFAULT_MARKUP = '0.000';
 
     public const PriceModel DEFAULT_PRICE_MODEL = PriceModel::NONE;
@@ -108,6 +111,7 @@ class Product
 
     public function __construct()
     {
+        $this->initializePublicId();
         $this->supplierProducts = new ArrayCollection();
         $this->productImages = new ArrayCollection();
     }
@@ -115,6 +119,11 @@ class Product
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getPublicId(): ProductPublicId
+    {
+        return ProductPublicId::fromString($this->publicIdString());
     }
 
     public function getName(): ?string

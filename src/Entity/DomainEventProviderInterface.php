@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
-use App\Event\DomainEvent;
+use App\Event\AbstractDomainEvent;
 
 interface DomainEventProviderInterface
 {
-    public function raiseDomainEvent(DomainEvent $event): void;
+    public function raiseDomainEvent(AbstractDomainEvent $event): void;
 
     public function releaseDomainEvents(): array;
 }

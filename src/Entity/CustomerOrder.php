@@ -4,9 +4,10 @@ namespace App\Entity;
 
 use App\Enum\OrderStatus;
 use App\Enum\ShippingMethod;
-use App\Event\OrderCreatedEvent;
-use App\Event\OrderStatusChangedEvent;
+use App\Event\OrderStatusWasChangedEvent;
 use App\Repository\CustomerOrderRepository;
+use App\ValueObject\CustomerOrderPublicId;
+use App\ValueObject\StatusChange;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -19,6 +20,7 @@ class CustomerOrder implements DomainEventProviderInterface
 {
     use TimestampableEntity;
     use DomainEventTrait;
+    use HasPublicUlid;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -92,15 +94,20 @@ class CustomerOrder implements DomainEventProviderInterface
 
     private function __construct()
     {
+        $this->initializePublicId();
         $this->status = OrderStatus::getDefault();
         $this->customerOrderItems = new ArrayCollection();
         $this->purchaseOrders = new ArrayCollection();
-        $this->raiseDomainEvent(new OrderCreatedEvent($this));
     }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getPublicId(): CustomerOrderPublicId
+    {
+        return CustomerOrderPublicId::fromString($this->publicIdString());
     }
 
     public function getCustomer(): User
@@ -212,11 +219,14 @@ class CustomerOrder implements DomainEventProviderInterface
         return $this->status;
     }
 
-    private function setStatus(OrderStatus $status): static
+    private function setStatus(OrderStatus $newStatus): static
     {
-        if ($this->getStatus() !== $status) {
-            $this->status = $status;
-            $this->raiseDomainEvent(new OrderStatusChangedEvent($this));
+        $statusChange = StatusChange::from($this->getStatus(), $newStatus);
+
+        if ($statusChange->hasChanged()) {
+            $this->status = $newStatus;
+
+            $this->raiseDomainEvent(new OrderStatusWasChangedEvent($this->getPublicId(), $statusChange));
         }
 
         return $this;

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Enum\PriceModel;
 use App\Repository\CategoryRepository;
+use App\ValueObject\CategoryPublicId;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
@@ -15,6 +16,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Category
 {
     use TimestampableEntity;
+    use HasPublicUlid;
+
     public const string DEFAULT_MARKUP = '5.000';
 
     public const PriceModel DEFAULT_PRICE_MODEL = PriceModel::DEFAULT;
@@ -60,6 +63,7 @@ class Category
 
     public function __construct()
     {
+        $this->initializePublicId();
         $this->subcategories = new ArrayCollection();
         $this->products = new ArrayCollection();
     }
@@ -67,6 +71,11 @@ class Category
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getPublicId(): CategoryPublicId
+    {
+        return CategoryPublicId::fromString($this->publicIdString());
     }
 
     public function getName(): ?string

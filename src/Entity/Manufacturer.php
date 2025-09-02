@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ManufacturerRepository;
+use App\ValueObject\ManufacturerPublicId;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -13,6 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Manufacturer
 {
     use TimestampableEntity;
+    use HasPublicUlid;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -34,6 +36,7 @@ class Manufacturer
 
     public function __construct()
     {
+        $this->initializePublicId();
         $this->products = new ArrayCollection();
         $this->supplierManufacturers = new ArrayCollection();
     }
@@ -41,6 +44,11 @@ class Manufacturer
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getPublicId(): ManufacturerPublicId
+    {
+        return ManufacturerPublicId::fromString($this->publicIdString());
     }
 
     public function getName(): ?string

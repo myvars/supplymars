@@ -31,7 +31,6 @@ class DomainEventDispatcher
             }
 
             foreach ($eventProvider->releaseDomainEvents() as $event) {
-                $event->setUser($this->security->getUser());
                 $this->dispatchEvent($event);
             }
         }

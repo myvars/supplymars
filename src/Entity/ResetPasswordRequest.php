@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ResetPasswordRequestRepository;
+use App\ValueObject\ResetPasswordRequestPublicId;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use SymfonyCasts\Bundle\ResetPassword\Model\ResetPasswordRequestInterface;
@@ -12,6 +13,7 @@ use SymfonyCasts\Bundle\ResetPassword\Model\ResetPasswordRequestTrait;
 class ResetPasswordRequest implements ResetPasswordRequestInterface
 {
     use ResetPasswordRequestTrait;
+    use HasPublicUlid;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -27,12 +29,18 @@ class ResetPasswordRequest implements ResetPasswordRequestInterface
         string $selector,
         string $hashedToken,
     ) {
+        $this->initializePublicId();
         $this->initialize($expiresAt, $selector, $hashedToken);
     }
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getPublicId(): ResetPasswordRequestPublicId
+    {
+        return ResetPasswordRequestPublicId::fromString($this->publicIdString());
     }
 
     public function getUser(): object

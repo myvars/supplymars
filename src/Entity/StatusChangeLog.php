@@ -29,12 +29,12 @@ class StatusChangeLog
         #[Assert\Length(max: 255, maxMessage: 'Status must be less than {{ limit }} characters')]
         private readonly string $status,
 
+        #[ORM\Column]
+        private readonly \DateTimeImmutable $eventTimestamp,
+
         #[ORM\ManyToOne(inversedBy: 'statusChangeLogs')]
         #[ORM\JoinColumn(nullable: false)]
         private User $user,
-
-        #[ORM\Column]
-        private readonly \DateTimeImmutable $eventTimestamp,
     ) {
     }
 

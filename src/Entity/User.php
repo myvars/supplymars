@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use App\ValueObject\UserPublicId;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -17,6 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class User implements UserInterface, PasswordAuthenticatedUserInterface, \Stringable
 {
     use TimestampableEntity;
+    use HasPublicUlid;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -74,6 +76,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
 
     public function __construct()
     {
+        $this->initializePublicId();
         $this->categories = new ArrayCollection();
         $this->subcategories = new ArrayCollection();
         $this->addresses = new ArrayCollection();
@@ -84,6 +87,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getPublicId(): UserPublicId
+    {
+        return UserPublicId::fromString($this->publicIdString());
     }
 
     public function getEmail(): ?string

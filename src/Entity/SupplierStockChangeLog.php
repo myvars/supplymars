@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Enum\DomainEventType;
 use App\Repository\SupplierStockChangeLogRepository;
+use App\ValueObject\CostChange;
+use App\ValueObject\StockChange;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -42,16 +44,18 @@ class SupplierStockChangeLog
     }
 
     public static function create(
-        DomainEventType $eventType,
-        SupplierProduct $supplierProduct,
-        \DateTimeImmutable $eventTimestamp,
+        DomainEventType $type,
+        int $supplierProductId,
+        StockChange $stockChange,
+        CostChange $costChange,
+        \DateTimeImmutable $occurredAt,
     ): self {
         return new self(
-            $eventType,
-            $supplierProduct->getId(),
-            $supplierProduct->getStock(),
-            $supplierProduct->getCost(),
-            $eventTimestamp
+            $type,
+            $supplierProductId,
+            $stockChange->after(),
+            $costChange->after(),
+            $occurredAt
         );
     }
 

@@ -3,7 +3,7 @@
 namespace App\Tests\Unit\Service\Utility;
 
 use App\Entity\DomainEventProviderInterface;
-use App\Event\DomainEvent;
+use App\Event\AbstractDomainEvent;
 use App\Service\Utility\DomainEventDispatcher;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -33,7 +33,7 @@ class DomainEventDispatcherTest extends TestCase
 
     public function testDispatchProviderEventsWithDomainEventProvider(): void
     {
-        $event = $this->createMock(DomainEvent::class);
+        $event = $this->createMock(AbstractDomainEvent::class);
         $eventProvider = $this->createMock(DomainEventProviderInterface::class);
         $eventProvider->method('releaseDomainEvents')->willReturn([$event]);
 

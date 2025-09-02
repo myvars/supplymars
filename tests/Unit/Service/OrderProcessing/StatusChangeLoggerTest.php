@@ -5,8 +5,8 @@ namespace App\Tests\Unit\Service\OrderProcessing;
 use App\Entity\User;
 use App\Enum\DomainEventType;
 use App\Enum\OrderStatus;
-use App\Event\DomainEvent;
-use App\Service\OrderProcessing\StatusChangeLogger;
+use App\Event\AbstractDomainEvent;
+use App\Service\OrderProcessing\StatusChangedLogger;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
@@ -16,19 +16,19 @@ class StatusChangeLoggerTest extends TestCase
 {
     private EntityManagerInterface $entityManager;
     private ValidatorInterface $validator;
-    private StatusChangeLogger $statusChangeLogger;
+    private StatusChangedLogger $statusChangeLogger;
 
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->validator = $this->createMock(ValidatorInterface::class);
-        $this->statusChangeLogger = new StatusChangeLogger($this->entityManager, $this->validator);
+        $this->statusChangeLogger = new StatusChangedLogger($this->entityManager, $this->validator);
     }
 
     public function testFromStatusChangeEventSuccessfully(): void
     {
         $user = $this->createMock(User::class);
-        $event = $this->createMock(DomainEvent::class);
+        $event = $this->createMock(AbstractDomainEvent::class);
         $event->method('getDomainEventType')->willReturn(DomainEventType::ORDER_STATUS_CHANGED);
         $event->method('getUser')->willReturn($user);
         $event->method('getEventTimestamp')->willReturn(new \DateTimeImmutable());
@@ -38,13 +38,13 @@ class StatusChangeLoggerTest extends TestCase
         $this->entityManager->expects($this->once())->method('persist');
         $this->entityManager->expects($this->once())->method('flush');
 
-        $this->statusChangeLogger->fromStatusChangeEvent($event, 1, OrderStatus::PROCESSING->value);
+        $this->statusChangeLogger->fromStatusWasChangedEvent($event, 1, OrderStatus::PROCESSING->value);
     }
 
     public function testFromStatusChangeEventThrowsExceptionOnValidationFailure(): void
     {
         $user = $this->createMock(User::class);
-        $event = $this->createMock(DomainEvent::class);
+        $event = $this->createMock(AbstractDomainEvent::class);
         $event->method('getDomainEventType')->willReturn(DomainEventType::ORDER_STATUS_CHANGED);
         $event->method('getUser')->willReturn($user);
         $event->method('getEventTimestamp')->willReturn(new \DateTimeImmutable());
@@ -58,6 +58,6 @@ class StatusChangeLoggerTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Validation error');
 
-        $this->statusChangeLogger->fromStatusChangeEvent($event, 1, OrderStatus::PROCESSING->value);
+        $this->statusChangeLogger->fromStatusWasChangedEvent($event, 1, OrderStatus::PROCESSING->value);
     }
 }
