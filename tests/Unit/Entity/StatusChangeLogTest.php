@@ -18,8 +18,8 @@ class StatusChangeLogTest extends TestCase
             DomainEventType::ORDER_STATUS_CHANGED,
             1,
             'SHIPPED',
-            $user,
-            $eventTimestamp
+            $eventTimestamp,
+            $user
         );
 
         $this->assertSame(DomainEventType::ORDER_STATUS_CHANGED, $statusChangeLog->getEventType());
@@ -38,8 +38,8 @@ class StatusChangeLogTest extends TestCase
             DomainEventType::ORDER_STATUS_CHANGED,
             1,
             'SHIPPED',
-            $user,
-            $eventTimestamp
+            $eventTimestamp,
+            $user
         );
 
         $newUser = $this->createMock(User::class);

@@ -43,7 +43,7 @@ class ChangePurchaseOrderItemStatusIntegrationTest extends KernelTestCase
 
         $this->changePurchaseOrderItemStatus->handle($crudOptions);
 
-        $updatedPurchaseOrderItem = PurchaseOrderItemFactory::repository()->find($purchaseOrderItem->getId());
+        $updatedPurchaseOrderItem = PurchaseOrderItemFactory::repository()->find($purchaseOrderItem->getId())->_real();
 
         $this->assertInstanceOf(PurchaseOrderItem::class, $updatedPurchaseOrderItem);
         $this->assertSame(PurchaseOrderStatus::PROCESSING, $updatedPurchaseOrderItem->getStatus());
@@ -51,7 +51,7 @@ class ChangePurchaseOrderItemStatusIntegrationTest extends KernelTestCase
 
     public function testHandleWithSameStatusChange(): void
     {
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne();
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne()->_real();
 
         $dto = new ChangePurchaseOrderItemStatusDto(
             $purchaseOrderItem->getId(),
@@ -63,7 +63,7 @@ class ChangePurchaseOrderItemStatusIntegrationTest extends KernelTestCase
 
         $this->changePurchaseOrderItemStatus->handle($crudOptions);
 
-        $updatedPurchaseOrderItem = PurchaseOrderItemFactory::repository()->find($purchaseOrderItem->getId());
+        $updatedPurchaseOrderItem = PurchaseOrderItemFactory::repository()->find($purchaseOrderItem->getId())->_real();
 
         $this->assertInstanceOf(PurchaseOrderItem::class, $updatedPurchaseOrderItem);
         $this->assertSame(PurchaseOrderStatus::PENDING, $updatedPurchaseOrderItem->getStatus());

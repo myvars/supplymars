@@ -64,6 +64,7 @@ class ProductSalesCalculatorIntegrationTest extends KernelTestCase
     {
         $purchaseOrderItems = PurchaseOrderItemFactory::repository()->findAll();
         foreach ($purchaseOrderItems as $purchaseOrderItem) {
+            $purchaseOrderItem->_save();
             $this->changePurchaseOrderItemStatus($purchaseOrderItem, PurchaseOrderStatus::PROCESSING);
             $this->changePurchaseOrderItemStatus($purchaseOrderItem, PurchaseOrderStatus::ACCEPTED);
             $this->changePurchaseOrderItemStatus($purchaseOrderItem, PurchaseOrderStatus::SHIPPED);

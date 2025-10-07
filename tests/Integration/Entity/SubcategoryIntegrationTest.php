@@ -95,7 +95,7 @@ class SubcategoryIntegrationTest extends KernelTestCase
             'isActive' => true,
         ]);
 
-        $persistedSubcategory = SubcategoryFactory::repository()->find($subcategory->getId());
+        $persistedSubcategory = SubcategoryFactory::repository()->find($subcategory->getId())->_real();
         $this->assertEquals('Smartphones', $persistedSubcategory->getName());
     }
 

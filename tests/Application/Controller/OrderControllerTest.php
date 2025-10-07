@@ -170,7 +170,7 @@ class OrderControllerTest extends WebTestCase
     public function testProcessOrder(): void
     {
         $supplierProduct = SupplierProductFactory::new()->recalculatePrice()->create();
-        $order = CustomerOrderFactory::createOne(['customerOrderRef' => 'TEST12345']);
+        $order = CustomerOrderFactory::createOne(['customerOrderRef' => 'TEST12345'])->_real();
         $orderItem = CustomerOrderItemFactory::createOne([
             'customerOrder' => $order,
             'product' => $supplierProduct->getProduct()
@@ -197,7 +197,7 @@ class OrderControllerTest extends WebTestCase
 
     public function testLockOrder(): void
     {
-        $order = CustomerOrderFactory::createOne(['customerOrderRef' => 'TEST12345']);
+        $order = CustomerOrderFactory::createOne(['customerOrderRef' => 'TEST12345'])->_real();
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())

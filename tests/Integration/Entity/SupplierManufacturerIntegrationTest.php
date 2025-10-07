@@ -59,7 +59,7 @@ class SupplierManufacturerIntegrationTest extends KernelTestCase
             'supplier' => $supplier,
         ]);
 
-        $persistedSupplierManufacturer = SupplierManufacturerFactory::repository()->find($supplierManufacturer->getId());
+        $persistedSupplierManufacturer = SupplierManufacturerFactory::repository()->find($supplierManufacturer->getId())->_real();
         $this->assertEquals('Tech Supplies', $persistedSupplierManufacturer->getName());
         $this->assertSame($supplier, $persistedSupplierManufacturer->getSupplier());
     }

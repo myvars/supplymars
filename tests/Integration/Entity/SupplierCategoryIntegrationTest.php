@@ -60,7 +60,7 @@ class SupplierCategoryIntegrationTest extends KernelTestCase
             'supplier' => $supplier,
         ]);
 
-        $persistedSupplierCategory = SupplierCategoryFactory::repository()->find($supplierCategory->getId());
+        $persistedSupplierCategory = SupplierCategoryFactory::repository()->find($supplierCategory->getId())->_real();
         $this->assertEquals('Office Supplies', $persistedSupplierCategory->getName());
         $this->assertSame($supplier, $persistedSupplierCategory->getSupplier());
     }

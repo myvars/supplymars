@@ -2,7 +2,6 @@
 
 namespace App\Service\Utility;
 
-use Gedmo\Sluggable\Util\Urlizer;
 use League\Flysystem\Filesystem;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\Visibility;
@@ -10,12 +9,14 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\File\Exception\CannotWriteFileException;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class UploadHelper
 {
     public function __construct(
         #[Autowire(service: 'oneup_flysystem.products_fs_filesystem')]
         private readonly Filesystem $uploadFilesystem,
+        private readonly SluggerInterface $slugger,
     ) {
     }
 
@@ -80,8 +81,8 @@ class UploadHelper
 
     private function getNewFilename(File $file, string $fileName): string
     {
-        return Urlizer::urlize(pathinfo($fileName, PATHINFO_FILENAME))
-            .'-'.uniqid().'.'.$file->guessExtension();
+        $slug = $this->slugger->slug(pathinfo($fileName, PATHINFO_FILENAME))->lower();
+        return $slug.'-'.uniqid().'.'.$file->guessExtension();
     }
 
     private function createFilePath(?string $directory, string $fileName): string

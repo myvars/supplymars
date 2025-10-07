@@ -64,7 +64,7 @@ class VatRateIntegrationTest  extends KernelTestCase
             'isDefaultVatRate' => true
         ]);
 
-        $persistedVatRate = VatRateFactory::repository()->find($vatRate->getId());
+        $persistedVatRate = VatRateFactory::repository()->find($vatRate->getId())->_real();
         $this->assertEquals('Standard rate', $persistedVatRate->getName());
     }
 

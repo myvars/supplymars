@@ -13,7 +13,7 @@ final readonly class CostChange
     ) {
     }
 
-    public static function from(int $before, int $after): self
+    public static function from(string $before, string $after): self
     {
         return new self($before, $after);
     }

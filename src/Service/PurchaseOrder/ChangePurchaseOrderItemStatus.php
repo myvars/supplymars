@@ -11,7 +11,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 final readonly class ChangePurchaseOrderItemStatus implements CrudActionInterface
 {
-    public function __construct(
+    public function  __construct(
         private EntityManagerInterface $entityManager,
         private DomainEventDispatcher $domainEventDispatcher,
     ) {

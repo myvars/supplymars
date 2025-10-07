@@ -8,7 +8,6 @@ use App\Entity\SupplierCategory;
 use App\Entity\SupplierManufacturer;
 use App\Entity\SupplierProduct;
 use App\Entity\SupplierSubcategory;
-use App\Event\SupplierProductCostWasChangedEvent;
 use App\Event\SupplierProductStockWasChangedEvent;
 use PHPUnit\Framework\TestCase;
 
@@ -91,7 +90,7 @@ class SupplierProductTest extends TestCase
         $events = $supplierProduct->releaseDomainEvents();
         $this->assertCount(1, $events);
         $this->assertInstanceOf(SupplierProductStockWasChangedEvent::class, $events[0]);
-        $this->assertSame($supplierProduct, $events[0]->getSupplierProduct());
+        $this->assertEquals($supplierProduct->getpublicId(), $events[0]->publicId());
     }
 
     public function testSetCostRaisesEvent(): void
@@ -102,7 +101,7 @@ class SupplierProductTest extends TestCase
         $events = $supplierProduct->releaseDomainEvents();
         $this->assertCount(1, $events);
         $this->assertInstanceOf(SupplierProductStockWasChangedEvent::class, $events[0]);
-        $this->assertSame($supplierProduct, $events[0]->getSupplierProduct());
+        $this->assertEquals($supplierProduct->getPublicId(), $events[0]->publicId());
     }
 
     public function testSetCostDoesNotRaiseEventWhenCostIsSame(): void

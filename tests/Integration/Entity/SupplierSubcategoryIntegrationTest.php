@@ -67,7 +67,7 @@ class SupplierSubcategoryIntegrationTest extends KernelTestCase
             'mappedSubcategory' => $mappedSubcategory,
         ]);
 
-        $persistedSupplierSubcategory = SupplierSubcategoryFactory::repository()->find($supplierSubcategory->getId());
+        $persistedSupplierSubcategory = SupplierSubcategoryFactory::repository()->find($supplierSubcategory->getId())->_real();
         $this->assertEquals('Office Furniture', $persistedSupplierSubcategory->getName());
         $this->assertSame($supplier, $persistedSupplierSubcategory->getSupplier());
         $this->assertSame($supplierCategory, $persistedSupplierSubcategory->getSupplierCategory());

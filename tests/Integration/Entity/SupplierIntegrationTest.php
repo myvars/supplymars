@@ -47,7 +47,7 @@ class SupplierIntegrationTest extends KernelTestCase
             'isActive' => true,
         ]);
 
-        $persistedSupplier = SupplierFactory::repository()->find($supplier->getId());
+        $persistedSupplier = SupplierFactory::repository()->find($supplier->getId())->_real();
         $this->assertEquals('Global Supplies', $persistedSupplier->getName());
         $this->assertTrue($persistedSupplier->isActive());
         $this->assertFalse($persistedSupplier->isWarehouse());

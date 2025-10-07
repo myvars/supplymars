@@ -36,7 +36,7 @@ class ChangePurchaseOrderItemStatusDtoIntegrationTest extends KernelTestCase
 
     public function testChangePurchaseOrderItemStatusDtoWithSameStatus(): void
     {
-        $item = PurchaseOrderItemFactory::createOne();
+        $item = PurchaseOrderItemFactory::createOne()->_real();
 
         $dto = new ChangePurchaseOrderItemStatusDto(
             $item->getId(),

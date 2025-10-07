@@ -77,6 +77,7 @@ final readonly class backfillUlidsCommand
 
         $io->section("Backfilling {$entityClass}");
         $io->writeln("  Missing: <comment>{$total}</comment>  |  Processing: <comment>{$target}</comment>  |  Batch: <comment>{$batchSize}</comment>");
+        $io->writeln(""); // blank line
 
         // Streaming query for rows to process
         $qb = $repo->createQueryBuilder('e')

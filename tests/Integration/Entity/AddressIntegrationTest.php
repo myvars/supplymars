@@ -105,7 +105,7 @@ class AddressIntegrationTest extends KernelTestCase
             'isDefaultBillingAddress' => false,
         ]);
 
-        $persistedAddress = AddressFactory::repository()->find($address->getId());
+        $persistedAddress = AddressFactory::repository()->find($address->getId())->_real();
         $this->assertEquals('123 Main St', $persistedAddress->getStreet());
     }
 

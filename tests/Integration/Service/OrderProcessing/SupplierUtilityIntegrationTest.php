@@ -47,7 +47,7 @@ class SupplierUtilityIntegrationTest extends KernelTestCase
 
     public function testChangePurchaseOrderItemStatus(): void
     {
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne();
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne()->_real();
         $this->supplierUtility->changePurchaseOrderItemStatus(
             $purchaseOrderItem,
             PurchaseOrderStatus::PENDING,

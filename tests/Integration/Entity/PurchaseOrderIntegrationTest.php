@@ -46,9 +46,9 @@ class PurchaseOrderIntegrationTest extends KernelTestCase
         $purchaseOrder = PurchaseOrderFactory::createOne([
             'customerOrder' => $customerOrder,
             'supplier' => $supplier,
-        ]);
+        ])->_real();
 
-        $persistedPurchaseOrder = PurchaseOrderFactory::repository()->find($purchaseOrder->getId());
+        $persistedPurchaseOrder = PurchaseOrderFactory::repository()->find($purchaseOrder->getId())->_real();
         $this->assertEquals($purchaseOrder->getId(), $persistedPurchaseOrder->getId());
     }
 

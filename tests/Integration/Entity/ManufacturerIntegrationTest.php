@@ -42,9 +42,9 @@ class ManufacturerIntegrationTest extends KernelTestCase
         $manufacturer = ManufacturerFactory::createOne([
             'name' => 'Test Manufacturer',
             'isActive' => true,
-        ]);
+        ])->_real();
 
-        $persistedManufacturer = ManufacturerFactory::repository()->find($manufacturer->getId());
+        $persistedManufacturer = ManufacturerFactory::repository()->find($manufacturer->getId())->_real();
         $this->assertEquals('Test Manufacturer', $persistedManufacturer->getName());
         $this->assertTrue($persistedManufacturer->isActive());
     }

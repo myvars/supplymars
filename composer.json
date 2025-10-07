@@ -128,16 +128,16 @@
         "dama/doctrine-test-bundle": "^8.3.1",
         "dg/bypass-finals": "^1.9",
         "doctrine/doctrine-fixtures-bundle": "^4.1",
-        "phpunit/phpunit": "^12.3.7",
-        "rector/rector": "^2.1.4",
+        "phpunit/phpunit": "^12.4.0",
+        "rector/rector": "^2.1.7",
         "symfony/browser-kit": "7.3.*",
         "symfony/css-selector": "7.3.*",
         "symfony/debug-bundle": "7.3.*",
         "symfony/maker-bundle": "^1.64.0",
-        "symfony/phpunit-bridge": "^7.3.3",
+        "symfony/phpunit-bridge": "^7.3.4",
         "symfony/stopwatch": "7.3.*",
         "symfony/web-profiler-bundle": "7.3.*",
         "zenstruck/browser": "^1.9.1",
-        "zenstruck/foundry": "^2.6.3"
+        "zenstruck/foundry": "^2.7.2"
     }
 }

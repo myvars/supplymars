@@ -57,9 +57,9 @@ class PurchaseOrderItemIntegrationTest extends KernelTestCase
 
     public function testPurchaseOrderItemPersistence(): void
     {
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne();
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne()->_real();
 
-        $persistedPurchaseOrderItem = PurchaseOrderItemFactory::repository()->find($purchaseOrderItem->getId());
+        $persistedPurchaseOrderItem = PurchaseOrderItemFactory::repository()->find($purchaseOrderItem->getId())->_real();
         $this->assertEquals($purchaseOrderItem->getId(), $persistedPurchaseOrderItem->getId());
     }
 

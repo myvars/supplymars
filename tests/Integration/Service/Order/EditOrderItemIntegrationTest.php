@@ -48,7 +48,7 @@ class EditOrderItemIntegrationTest extends KernelTestCase
 
         $this->editOrderItem->handle($crudOptions);
 
-        $updatedCustomerOrderItem = CustomerOrderItemFactory::repository()->find($customerOrderItem->getId());
+        $updatedCustomerOrderItem = CustomerOrderItemFactory::repository()->find($customerOrderItem->getId())->_real();
 
         $this->assertInstanceOf(CustomerOrderItem::class, $updatedCustomerOrderItem);
         $this->assertSame(2, $updatedCustomerOrderItem->getQuantity());

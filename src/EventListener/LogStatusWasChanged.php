@@ -25,7 +25,7 @@ final readonly class LogStatusWasChanged
         private StatusChangedLogger $statusChangedLogger,
         private CurrentUserProvider $currentUserProvider,
         private PublicIdResolverRegistry $publicIdResolverRegistry,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
     ) {
     }
 

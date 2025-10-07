@@ -2,12 +2,13 @@
 
 namespace App\Tests\Unit\Service\Utility;
 
-
 use App\Service\Utility\UploadHelper;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Visibility;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\String\UnicodeString;
 
 class UploadHelperTest extends TestCase
 {
@@ -18,7 +19,11 @@ class UploadHelperTest extends TestCase
     protected function setUp(): void
     {
         $this->filesystemMock = $this->createMock(Filesystem::class);
-        $this->uploadHelper = new UploadHelper($this->filesystemMock);
+        $this->sluggerMock = $this->createMock(SluggerInterface::class);
+        $this->sluggerMock
+            ->method('slug')
+            ->willReturn(new UnicodeString('dummy-image'));
+        $this->uploadHelper = new UploadHelper($this->filesystemMock, $this->sluggerMock);
     }
 
     public function testUploadFile(): void

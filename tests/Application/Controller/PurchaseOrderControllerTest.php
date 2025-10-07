@@ -35,7 +35,7 @@ class PurchaseOrderControllerTest extends WebTestCase
 
     public function testShowPurchaseOrder(): void
     {
-        $purchaseOrder = PurchaseOrderFactory::createOne();
+        $purchaseOrder = PurchaseOrderFactory::createOne()->_real();
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())

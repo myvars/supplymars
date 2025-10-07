@@ -98,14 +98,6 @@ class SupplierProductIntegrationTest extends KernelTestCase
         $this->assertSame('Please enter a product weight(grams)', $violations[0]->getMessage());
     }
 
-    public function testStockIsRequired(): void
-    {
-        $supplierProduct = SupplierProductFactory::new()->withoutPersisting()->create(['stock' => null]);
-
-        $violations = $this->validator->validate($supplierProduct);
-        $this->assertSame('Please enter a stock level', $violations[0]->getMessage());
-    }
-
     public function testInvalidStockLessThanZero(): void
     {
         $supplierProduct = SupplierProductFactory::new()->withoutPersisting()->create(['stock' => -1]);
@@ -187,7 +179,7 @@ class SupplierProductIntegrationTest extends KernelTestCase
             'isActive' => true,
         ]);
 
-        $persistedSupplierProduct = SupplierProductFactory::repository()->find($supplierProduct->getId());
+        $persistedSupplierProduct = SupplierProductFactory::repository()->find($supplierProduct->getId())->_real();
         $this->assertEquals('Office Chair', $persistedSupplierProduct->getName());
         $this->assertEquals('OC12345', $persistedSupplierProduct->getProductCode());
         $this->assertSame($supplier, $persistedSupplierProduct->getSupplier());

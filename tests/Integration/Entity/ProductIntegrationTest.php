@@ -206,15 +206,15 @@ class ProductIntegrationTest extends KernelTestCase
             'owner' => UserFactory::createOne(),
             'priceModel' => PriceModel::PRETTY_99,
             'isActive' => true,
-        ]);
+        ])->_real();
 
-        $persistedProduct = ProductFactory::repository()->find($product->getId());
+        $persistedProduct = ProductFactory::repository()->find($product->getId())->_real();
         $this->assertEquals('Test Product', $persistedProduct->getName());
     }
 
     public function testAddSupplierProduct(): void
     {
-        $product = ProductFactory::createOne();
+        $product = ProductFactory::createOne()->_real();
         $supplierProduct = SupplierProductFactory::createOne(['product' => $product])->_real();
 
         $this->assertCount(1, $product->getSupplierProducts());
@@ -223,7 +223,7 @@ class ProductIntegrationTest extends KernelTestCase
 
     public function testAddProductImage(): void
     {
-        $product = ProductFactory::createOne();
+        $product = ProductFactory::createOne()->_real();
         $productImage = ProductImageFactory::createOne(['product' => $product])->_real();
 
         $this->assertCount(1, $product->getProductImages());

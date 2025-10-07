@@ -5,27 +5,45 @@ namespace App\Tests\Unit\EventListener;
 use App\Entity\User;
 use App\Event\StatusWasChangedEventInterface;
 use App\EventListener\LogStatusWasChanged;
+use App\EventListener\PublicIdResolverRegistry;
 use App\Service\OrderProcessing\StatusChangedLogger;
 use App\Service\Utility\CurrentUserProvider;
+use App\ValueObject\CustomerOrderPublicId;
 use PHPUnit\Framework\TestCase;
-use Symfony\Bundle\SecurityBundle\Security;
+use Psr\Log\LoggerInterface;
 
 class LogStatusWasChangedTest extends TestCase
 {
     public function testInvokeCallsLoggerWithEventAndCurrentUser(): void
     {
+        $legacyId = 123;
+        $publicId = CustomerOrderPublicId::new();
+
         $event = $this->createMock(StatusWasChangedEventInterface::class);
-        $logger = $this->createMock(StatusChangedLogger::class);
+        $event->method('publicId')->willReturn($publicId);
+
         $user = $this->createMock(User::class);
-        $security = $this->createMock(Security::class);
-        $security->method('getUser')->willReturn($user);
-        $currentUserProvider = new CurrentUserProvider($security);
+        $currentUserProvider = $this->createStub(CurrentUserProvider::class);
+        $currentUserProvider->method('get')->willReturn($user);
 
-        $logger->expects($this->once())
+        $publicIdResolverRegistry = $this->createMock(PublicIdResolverRegistry::class);
+        $publicIdResolverRegistry->method('resolve')->with($publicId)->willReturn($legacyId);
+
+        $statusChangedLogger = $this->createMock(StatusChangedLogger::class);
+        $statusChangedLogger->expects($this->once())
             ->method('fromStatusWasChangedEvent')
-            ->with($event, $user);
+            ->with($event, $user, $legacyId);
 
-        $listener = new LogStatusWasChanged($logger, $currentUserProvider);
+        $logger = $this->createMock(LoggerInterface::class);
+
+        $listener = new LogStatusWasChanged(
+            $statusChangedLogger,
+            $currentUserProvider,
+            $publicIdResolverRegistry,
+            $logger
+
+        );
+
         $listener->__invoke($event);
     }
 }

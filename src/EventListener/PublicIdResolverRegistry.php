@@ -3,8 +3,8 @@
 namespace App\EventListener;
 
 use App\ValueObject\AbstractUlidId;
+use Psr\Container\ContainerInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 final class PublicIdResolverRegistry
 {
@@ -28,7 +28,7 @@ final class PublicIdResolverRegistry
         }
 
         /** @var PublicIdResolver|null $resolver */
-        $resolver = $this->resolvers[$publicId::class] ?? null;
+        $resolver = $this->resolvers->get($publicId::class) ?? null;
 
         return $this->cache[$key] = $resolver?->resolve($publicId);
     }

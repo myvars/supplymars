@@ -49,7 +49,7 @@ final class SupplierProductFactory extends PersistentProxyObjectFactory
             'weight' => self::faker()->numberBetween(1, 10000),
             'stock' => self::faker()->numberBetween(1, 1000),
             'leadTimeDays' => self::faker()->numberBetween(1, 99),
-            'cost' => self::faker()->numberBetween(1, 100000) / 100,
+            'cost' => (string) self::faker()->numberBetween(1, 100000) / 100,
             'product' => LazyValue::memoize(fn (): ProductFactory => ProductFactory::new()),
             'isActive' => true,
         ];

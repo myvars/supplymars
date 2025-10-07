@@ -1,5 +1,5 @@
 # ------------ Php Base Stage ------------
-FROM php:8.3-fpm AS php-base
+FROM php:8.4.13-fpm AS php-base
 
 # Install system dependencies for extensions
 RUN apt-get update && apt-get install -y \

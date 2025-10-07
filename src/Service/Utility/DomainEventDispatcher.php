@@ -3,15 +3,12 @@
 namespace App\Service\Utility;
 
 use App\Entity\DomainEventProviderInterface;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class DomainEventDispatcher
 {
-    public function __construct(
-        private readonly EventDispatcherInterface $eventDispatcher,
-        private readonly Security $security,
-    ) {
+    public function __construct(private readonly EventDispatcherInterface $eventDispatcher)
+    {
     }
 
     /**

@@ -25,15 +25,15 @@ class LogStatusChangeIntegrationTest extends KernelTestCase
     protected function setUp(): void
     {
         self::bootKernel();
-        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
+        $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
         $domainEventDispatcher = static::getContainer()->get(DomainEventDispatcher::class);
-        $this->changePurchaseOrderItemStatus = new ChangePurchaseOrderItemStatus($entityManager, $domainEventDispatcher);
+        $this->changePurchaseOrderItemStatus = new ChangePurchaseOrderItemStatus($this->entityManager, $domainEventDispatcher);
         StaffUserStory::load();
     }
 
     public function testOnOrderItemStatusChangeLogsStatusChange(): void
     {
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne();
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne()->_real();
 
         $dto = new ChangePurchaseOrderItemStatusDto(
             $purchaseOrderItem->getId(),
@@ -48,7 +48,7 @@ class LogStatusChangeIntegrationTest extends KernelTestCase
         $orderStatusChangeLog = StatusChangeLogFactory::repository()->findOneBy([
             'eventTypeId' => $purchaseOrderItem->getCustomerOrderItem()->getCustomerOrder()->getId(),
             'eventType' => DomainEventType::ORDER_STATUS_CHANGED,
-            'status' => OrderStatus::PROCESSING
+            'status' => OrderStatus::PROCESSING,
         ]);
 
         $this->assertNotNull($orderStatusChangeLog);

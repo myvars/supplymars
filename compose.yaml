@@ -7,7 +7,7 @@
 services:
   # --- MySQL Database ---
   database:
-    image: mysql:8.0
+    image: mysql:8.4
     environment:
       MYSQL_DATABASE: app
       # Default username/pw set in .env
@@ -25,7 +25,7 @@ services:
 
   # --- Redis Cache ---
   redis:
-    image: redis:7-alpine
+    image: redis:8.2-alpine
     volumes:
       - redis_data:/data  # Persist redis data between restarts
     healthcheck:
@@ -40,7 +40,7 @@ services:
 
   # --- RabbitMQ Message Broker ---
   rabbitmq:
-    image: rabbitmq:4.1.1-management
+    image: rabbitmq:4.1.4-management
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
       interval: 30s

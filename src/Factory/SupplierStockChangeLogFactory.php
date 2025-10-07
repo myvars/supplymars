@@ -6,7 +6,6 @@ use App\Entity\SupplierStockChangeLog;
 use App\Enum\DomainEventType;
 use App\ValueObject\CostChange;
 use App\ValueObject\StockChange;
-use Zenstruck\Foundry\LazyValue;
 use Zenstruck\Foundry\Object\Instantiator;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
@@ -38,10 +37,9 @@ final class SupplierStockChangeLogFactory extends PersistentProxyObjectFactory
     {
         return [
             'type' => DomainEventType::SUPPLIER_PRODUCT_STOCK_CHANGED,
-            'supplierProduct' => LazyValue::memoize(fn (): SupplierProductFactory => SupplierProductFactory::new()),
-            'supplierProductId' => null,
-            'stockChange' => null,
-            'costChange' => null,
+            'supplierProductId' => 1,
+            'stockChange' => StockChange::from(0, 0),
+            'costChange' => CostChange::from('0.00', '0.00'),
             'occurredAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
         ];
     }
@@ -53,8 +51,7 @@ final class SupplierStockChangeLogFactory extends PersistentProxyObjectFactory
     protected function initialize(): static
     {
         return $this
-            ->beforeInstantiate(function (array $attributes): array {
-                $attributes['supplierProductId'] ??= $attributes['supplierProduct']->getId();
+            ->beforeInstantiate(function (array $attributes): array {;
                 $attributes['stockChange'] ??= StockChange::from(
                     $attributes['supplierProduct']->getStock(),
                     $attributes['supplierProduct']->getStock() + 1

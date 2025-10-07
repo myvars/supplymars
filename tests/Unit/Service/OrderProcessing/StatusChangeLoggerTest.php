@@ -5,8 +5,9 @@ namespace App\Tests\Unit\Service\OrderProcessing;
 use App\Entity\User;
 use App\Enum\DomainEventType;
 use App\Enum\OrderStatus;
-use App\Event\AbstractDomainEvent;
+use App\Event\StatusWasChangedEventInterface;
 use App\Service\OrderProcessing\StatusChangedLogger;
+use App\ValueObject\StatusChange;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
@@ -27,27 +28,31 @@ class StatusChangeLoggerTest extends TestCase
 
     public function testFromStatusChangeEventSuccessfully(): void
     {
+        $legacyId = 123;
+        $statusChange = StatusChange::from(OrderStatus::PENDING, OrderStatus::PROCESSING);
         $user = $this->createMock(User::class);
-        $event = $this->createMock(AbstractDomainEvent::class);
-        $event->method('getDomainEventType')->willReturn(DomainEventType::ORDER_STATUS_CHANGED);
-        $event->method('getUser')->willReturn($user);
-        $event->method('getEventTimestamp')->willReturn(new \DateTimeImmutable());
+        $event = $this->createMock(StatusWasChangedEventInterface::class);
+        $event->method('type')->willReturn(DomainEventType::ORDER_STATUS_CHANGED);
+        $event->method('statusChange')->willReturn($statusChange);
+        $event->method('occurredAt')->willReturn(new \DateTimeImmutable());
 
         $this->validator->method('validate')->willReturn($this->createMock(ConstraintViolationListInterface::class));
 
         $this->entityManager->expects($this->once())->method('persist');
         $this->entityManager->expects($this->once())->method('flush');
 
-        $this->statusChangeLogger->fromStatusWasChangedEvent($event, 1, OrderStatus::PROCESSING->value);
+        $this->statusChangeLogger->fromStatusWasChangedEvent($event, $user, $legacyId);
     }
 
     public function testFromStatusChangeEventThrowsExceptionOnValidationFailure(): void
     {
+        $legacyId = 123;
+        $statusChange = StatusChange::from(OrderStatus::PENDING, OrderStatus::PROCESSING);
         $user = $this->createMock(User::class);
-        $event = $this->createMock(AbstractDomainEvent::class);
-        $event->method('getDomainEventType')->willReturn(DomainEventType::ORDER_STATUS_CHANGED);
-        $event->method('getUser')->willReturn($user);
-        $event->method('getEventTimestamp')->willReturn(new \DateTimeImmutable());
+        $event = $this->createMock(StatusWasChangedEventInterface::class);
+        $event->method('type')->willReturn(DomainEventType::ORDER_STATUS_CHANGED);
+        $event->method('statusChange')->willReturn($statusChange);
+        $event->method('occurredAt')->willReturn(new \DateTimeImmutable());
 
         $violationList = $this->createMock(ConstraintViolationListInterface::class);
         $violationList->method('count')->willReturn(1);
@@ -58,6 +63,6 @@ class StatusChangeLoggerTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Validation error');
 
-        $this->statusChangeLogger->fromStatusWasChangedEvent($event, 1, OrderStatus::PROCESSING->value);
+        $this->statusChangeLogger->fromStatusWasChangedEvent($event, $user, $legacyId);
     }
 }

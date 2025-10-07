@@ -193,7 +193,7 @@ class SupplierProduct implements DomainEventProviderInterface
 
     public function setStock(?int $newStock): static
     {
-        $stockChange = StockChange::from($this->getStock()  ?? '0.00', $newStock  ?? '0.00');
+        $stockChange = StockChange::from($this->getStock() ?? 0, $newStock ?? 0);
         if (!$stockChange->hasChanged()) {
             return $this;
         }
@@ -229,7 +229,7 @@ class SupplierProduct implements DomainEventProviderInterface
 
     public function setCost(?string $newCost): static
     {
-        $costChange = CostChange::from($this->getCost() ?? 0, $newCost ?? 0);
+        $costChange = CostChange::from($this->getCost() ?? '0.00', $newCost ?? '0.00');
         if (!$costChange->hasChanged()) {
             return $this;
         }

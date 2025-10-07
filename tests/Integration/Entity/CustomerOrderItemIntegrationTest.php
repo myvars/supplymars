@@ -86,16 +86,16 @@ class CustomerOrderItemIntegrationTest extends KernelTestCase
 
     public function testCustomerOrderItemPersistence(): void
     {
-        $customerOrder = CustomerOrderFactory::createOne();
+        $customerOrder = CustomerOrderFactory::createOne()->_real();
         $product = ProductFactory::createOne();
 
         $customerOrderItem = CustomerOrderItemFactory::createOne([
             'customerOrder' => $customerOrder,
             'product' => $product,
             'quantity' => 5,
-        ]);
+        ])->_real();
 
-        $persistedCustomerOrderItem = CustomerOrderItemFactory::repository()->find($customerOrderItem->getId());
+        $persistedCustomerOrderItem = CustomerOrderItemFactory::repository()->find($customerOrderItem->getId())->_real();
         $this->assertEquals($customerOrderItem->getId(), $persistedCustomerOrderItem->getId());
     }
 

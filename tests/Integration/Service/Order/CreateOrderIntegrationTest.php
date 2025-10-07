@@ -59,7 +59,7 @@ class CreateOrderIntegrationTest extends KernelTestCase
         $customerOrder = CustomerOrderFactory::repository()->findOneBy([
             'customer' => $customer,
             'customerOrderRef' => 'order_ref'
-        ]);
+        ])->_real();
 
         $this->assertInstanceOf(CustomerOrder::class, $customerOrder);
         $this->assertSame('order_ref', $customerOrder->getCustomerOrderRef());

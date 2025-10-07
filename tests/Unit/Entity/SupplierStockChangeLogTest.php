@@ -2,9 +2,10 @@
 
 namespace App\Tests\Unit\Entity;
 
-use App\Entity\SupplierProduct;
 use App\Entity\SupplierStockChangeLog;
 use App\Enum\DomainEventType;
+use App\ValueObject\CostChange;
+use App\ValueObject\StockChange;
 use PHPUnit\Framework\TestCase;
 
 class SupplierStockChangeLogTest extends TestCase
@@ -12,15 +13,13 @@ class SupplierStockChangeLogTest extends TestCase
     public function testCreate(): void
     {
         $eventType = DomainEventType::SUPPLIER_PRODUCT_STOCK_CHANGED;
-        $supplierProduct = $this->createMock(SupplierProduct::class);
-        $supplierProduct->method('getId')->willReturn(1);
-        $supplierProduct->method('getStock')->willReturn(100);
-        $supplierProduct->method('getCost')->willReturn('50.00');
         $eventTimestamp = new \DateTimeImmutable();
 
         $supplierStockChangeLog = SupplierStockChangeLog::create(
             $eventType,
-            $supplierProduct,
+            1,
+            StockChange::from(0, 100),
+            CostChange::from('0.00', '50.00'),
             $eventTimestamp
         );
 

@@ -34,7 +34,7 @@ class PurchaseOrderItemControllerTest extends WebTestCase
 
     public function testShowPurchaseOrderItem(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['name' => 'Test Product']);
+        $supplierProduct = SupplierProductFactory::createOne(['name' => 'Test Product'])->_real();
         $purchaseOrderItem = PurchaseOrderItemFactory::createOne([
             'supplier' => $supplierProduct->getSupplier(),
             'product' => $supplierProduct->getProduct(),
@@ -58,7 +58,7 @@ class PurchaseOrderItemControllerTest extends WebTestCase
 
     public function testEditPurchaseOrderItem(): void
     {
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne(['quantity' => 2]);
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne(['quantity' => 2])->_real();
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
@@ -90,7 +90,7 @@ class PurchaseOrderItemControllerTest extends WebTestCase
 
     public function testEditPurchaseOrderItemWithZeroQty(): void
     {
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne(['quantity' => 2]);
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne(['quantity' => 2])->_real();
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())

@@ -82,7 +82,7 @@ class ProductImageIntegrationTest extends KernelTestCase
         $product = ProductFactory::createOne()->_real();
         $productImage = ProductImageFactory::createOne(['product' => $product]);
 
-        $persistedProductImage = ProductImageFactory::repository()->find($productImage->getId());
+        $persistedProductImage = ProductImageFactory::repository()->find($productImage->getId())->_real();
         $this->assertSame($product, $persistedProductImage->getProduct());
     }
 }

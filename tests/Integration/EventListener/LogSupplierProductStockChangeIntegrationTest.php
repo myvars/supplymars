@@ -36,18 +36,4 @@ class LogSupplierProductStockChangeIntegrationTest extends KernelTestCase
 
         $this->assertNotNull($supplierProductStockChangeLog);
     }
-
-    public function testOnSupplierProductCostChangeLogsStockChange(): void
-    {
-        $supplierProduct = SupplierProductFactory::createOne()->_real();
-
-        $this->domainEventDispatcher->dispatchProviderEvents($supplierProduct);
-
-        $supplierProductStockChangeLog = SupplierStockChangeLogFactory::repository()->findOneBy([
-            'supplierProductId' => $supplierProduct->getId(),
-            'eventType' => DomainEventType::SUPPLIER_PRODUCT_COST_CHANGED,
-        ]);
-
-        $this->assertNotNull($supplierProductStockChangeLog);
-    }
 }

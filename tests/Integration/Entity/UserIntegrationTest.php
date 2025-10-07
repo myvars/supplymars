@@ -63,7 +63,7 @@ class UserIntegrationTest extends KernelTestCase
             'isStaff' => false,
         ]);
 
-        $persistedUser = UserFactory::repository()->find($user->getId());
+        $persistedUser = UserFactory::repository()->find($user->getId())->_real();
         $this->assertEquals('test@example.com', $persistedUser->getEmail());
     }
 

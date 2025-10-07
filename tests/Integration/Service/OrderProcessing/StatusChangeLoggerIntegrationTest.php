@@ -8,6 +8,7 @@ use App\Event\OrderStatusWasChangedEvent;
 use App\Factory\CustomerOrderFactory;
 use App\Factory\UserFactory;
 use App\Service\OrderProcessing\StatusChangedLogger;
+use App\ValueObject\StatusChange;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -31,26 +32,29 @@ class StatusChangeLoggerIntegrationTest extends KernelTestCase
     {
         $user = UserFactory::new()->staff()->create()->_real();
         $customerOrder = CustomerOrderFactory::new()->create()->_real();
-        $event = new OrderStatusWasChangedEvent($customerOrder);
-        $event->setUser($user);
+
+        $event = new OrderStatusWasChangedEvent(
+            $customerOrder->getPublicId(),
+            StatusChange::from(OrderStatus::PENDING, OrderStatus::PROCESSING)
+        );
 
         $this->statusChangeLogger->fromStatusWasChangedEvent(
             $event,
-            $customerOrder->getId(),
-            OrderStatus::PROCESSING->value
+            $user,
+            $customerOrder->getId()
         );
 
         $statusChangeLog = static::getContainer()->get(EntityManagerInterface::class)
             ->getRepository(StatusChangeLog::class)
             ->findOneBy([
                 'eventTypeId' => $customerOrder->getId(),
-                'eventType' => $event->getDomainEventType(),
+                'eventType' => $event->type(),
                 'status' => OrderStatus::PROCESSING->value
             ]);
 
         $this->assertInstanceOf(StatusChangeLog::class, $statusChangeLog);
         $this->assertSame($user, $statusChangeLog->getUser());
-        $this->assertSame($event->getDomainEventType(), $statusChangeLog->getEventType());
+        $this->assertSame($event->type(), $statusChangeLog->getEventType());
         $this->assertSame(OrderStatus::PROCESSING->value, $statusChangeLog->getStatus());
     }
 }

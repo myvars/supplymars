@@ -111,7 +111,7 @@ class CategoryIntegrationTest extends KernelTestCase
             'isActive' => true,
         ]);
 
-        $persistedCategory = CategoryFactory::repository()->find($category->getId());
+        $persistedCategory = CategoryFactory::repository()->find($category->getId())->_real();
         $this->assertEquals('Electronics', $persistedCategory->getName());
     }
 
