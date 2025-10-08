@@ -35,7 +35,7 @@ echo "[docker-entrypoint] Database is ready"
 # Run migrations if any exist
 if [ -d ./migrations ] && [ "$( find ./migrations -iname '*.php' -print -quit )" ]; then
   echo "[docker-entrypoint] Running database migrations..."
-  php bin/console doctrine:migrations:migrate --no-interaction --all-or-nothing
+  php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
 else
   echo "[docker-entrypoint] No migration files found — skipping migrations"
 fi

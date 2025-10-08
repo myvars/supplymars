@@ -48,6 +48,7 @@ jobs:
             cd /home/ubuntu/supplymars
             git fetch origin
             git reset --hard origin/main
+            git clean -fdx
             export APP_ENV="prod"
             export APP_SECRET="${{ secrets.APP_SECRET }}"
             export DATABASE_URL="${{ secrets.DATABASE_URL }}"
