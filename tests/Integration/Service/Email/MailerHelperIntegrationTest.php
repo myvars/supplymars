@@ -15,6 +15,7 @@ class MailerHelperIntegrationTest extends KernelTestCase
     use Factories;
 
     private MailerHelper $mailerHelper;
+
     private EmailVerifier $emailVerifier;
 
     protected function setUp(): void

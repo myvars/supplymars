@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\OrderProcessing;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\Entity\CustomerOrder;
 use App\Entity\CustomerOrderItem;
 use App\Entity\PurchaseOrder;
@@ -14,7 +15,8 @@ use PHPUnit\Framework\TestCase;
 
 class StatusLogUtilityTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
+    private MockObject $entityManager;
+
     private StatusLogUtility $statusLogUtility;
 
     protected function setUp(): void

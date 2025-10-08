@@ -13,8 +13,7 @@ class SupplierProductStockWasChangedEvent extends AbstractDomainEvent
         private readonly SupplierProductPublicId $publicId,
         private readonly StockChange $stockChange,
         private readonly CostChange $costChange,
-    )
-    {
+    ) {
         parent::__construct(DomainEventType::SUPPLIER_PRODUCT_STOCK_CHANGED);
     }
 

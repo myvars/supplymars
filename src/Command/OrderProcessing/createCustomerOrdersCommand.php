@@ -2,8 +2,6 @@
 
 namespace App\Command\OrderProcessing;
 
-use Symfony\Component\Console\Attribute\Argument;
-use Symfony\Component\Console\Attribute\Option;
 use App\DTO\CreateOrderDto;
 use App\Entity\Address;
 use App\Entity\CustomerOrder;
@@ -15,7 +13,9 @@ use App\Service\Order\CreateOrder;
 use App\Service\OrderProcessing\RandomAddressFactory;
 use App\Service\OrderProcessing\RandomUserFactory;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Attribute\Option;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -35,7 +35,7 @@ class createCustomerOrdersCommand
         private readonly EntityManagerInterface $entityManager,
         private readonly CreateOrder $createOrder,
         private readonly RandomUserFactory $randomUserFactory,
-        private readonly RandomAddressFactory $randomAddressFactory
+        private readonly RandomAddressFactory $randomAddressFactory,
     ) {
     }
 
@@ -43,7 +43,7 @@ class createCustomerOrdersCommand
         InputInterface $input,
         OutputInterface $output,
         #[Argument(description: 'Order count')] string $orderCount,
-        #[Option(description: 'Randomise')] bool $random = false
+        #[Option(description: 'Randomise')] bool $random = false,
     ): int {
         $io = new SymfonyStyle($input, $output);
         if ($orderCount < 1) {

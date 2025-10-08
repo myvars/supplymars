@@ -28,7 +28,7 @@ class OrderSalesSummaryCalculatorIntegrationTest extends KernelTestCase
 
     public function testProcessedSuccessfully(): void
     {
-        $date = (new \DateTime())->format('Y-m-d');
+        $date = new \DateTime()->format('Y-m-d');
         OrderSalesFactory::createOne([
             'dateString' => $date,
             'orderCount' => 10,

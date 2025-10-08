@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\Product;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\Entity\Product;
 use App\Entity\ProductImage;
 use App\Service\Crud\Common\CrudOptions;
@@ -12,7 +13,8 @@ use PHPUnit\Framework\TestCase;
 
 class ProductImageOrdererTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
+    private MockObject $entityManager;
+
     private ProductImageOrderer $productImageOrderer;
 
     protected function setUp(): void

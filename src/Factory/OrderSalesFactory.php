@@ -30,7 +30,7 @@ final class OrderSalesFactory extends PersistentProxyObjectFactory
      *
      * @todo add your default values here
      */
-    protected function defaults(): array|callable
+    protected function defaults(): array
     {
         return [
             'dateString' => self::faker()->date(),

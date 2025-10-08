@@ -10,7 +10,7 @@ class OrderItemStatusWasChangedEvent extends AbstractDomainEvent implements Stat
 {
     public function __construct(
         private readonly CustomerOrderItemPublicId $publicId,
-        private readonly StatusChange $statusChange
+        private readonly StatusChange $statusChange,
     ) {
         parent::__construct(DomainEventType::ORDER_ITEM_STATUS_CHANGED);
     }

@@ -2,11 +2,9 @@
 
 namespace App\Tests\Integration\Service\PurchaseOrder;
 
-use App\Entity\PurchaseOrder;
 use App\Factory\CustomerOrderFactory;
 use App\Factory\SupplierFactory;
 use App\Service\PurchaseOrder\CreatePurchaseOrder;
-use App\Service\Utility\DomainEventDispatcher;
 use App\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -24,8 +22,7 @@ class CreatePurchaseOrderIntegrationTest extends KernelTestCase
         self::bootKernel();
         $entityManager = static::getContainer()->get(EntityManagerInterface::class);
         $validator = static::getContainer()->get(ValidatorInterface::class);
-        $domainEventDispatcher = static::getContainer()->get(DomainEventDispatcher::class);
-        $this->createPurchaseOrder = new CreatePurchaseOrder($entityManager, $validator, $domainEventDispatcher);
+        $this->createPurchaseOrder = new CreatePurchaseOrder($entityManager, $validator);
         StaffUserStory::load();
     }
 
@@ -36,7 +33,6 @@ class CreatePurchaseOrderIntegrationTest extends KernelTestCase
 
         $purchaseOrder = $this->createPurchaseOrder->fromOrder($customerOrder, $supplier);
 
-        $this->assertInstanceOf(PurchaseOrder::class, $purchaseOrder);
         $this->assertSame($customerOrder, $purchaseOrder->getCustomerOrder());
         $this->assertSame($supplier, $purchaseOrder->getSupplier());
     }

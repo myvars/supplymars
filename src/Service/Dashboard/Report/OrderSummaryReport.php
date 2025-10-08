@@ -23,7 +23,7 @@ final readonly class OrderSummaryReport implements ReportInterface
     ) {
     }
 
-    public function build(object $dto): ?array
+    public function build(object $dto): array
     {
         if (!$dto instanceof OrderSummaryReportDto) {
             throw new \InvalidArgumentException('Invalid DTO');
@@ -38,7 +38,7 @@ final readonly class OrderSummaryReport implements ReportInterface
         ];
     }
 
-    private function getSummary(): ?array
+    private function getSummary(): array
     {
         $summary = $this->summaryRepository->findOrderSalesSummary($this->dto->getDuration());
 

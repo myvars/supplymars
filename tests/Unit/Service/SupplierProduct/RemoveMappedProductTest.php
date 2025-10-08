@@ -2,25 +2,24 @@
 
 namespace App\Tests\Unit\Service\SupplierProduct;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\Entity\Product;
 use App\Entity\SupplierProduct;
 use App\Service\Crud\Common\CrudOptions;
 use App\Service\Product\ActiveSourceCalculator;
 use App\Service\SupplierProduct\RemoveMappedProduct;
-use App\Service\Utility\DomainEventDispatcher;
 use PHPUnit\Framework\TestCase;
 
 class RemoveMappedProductTest extends TestCase
 {
-    private ActiveSourceCalculator $activeSourceCalculator;
-    private DomainEventDispatcher $domainEventDispatcher;
+    private MockObject $activeSourceCalculator;
+
     private RemoveMappedProduct $removeMappedProduct;
 
     protected function setUp(): void
     {
         $this->activeSourceCalculator = $this->createMock(ActiveSourceCalculator::class);
-        $this->domainEventDispatcher = $this->createMock(DomainEventDispatcher::class);
-        $this->removeMappedProduct = new RemoveMappedProduct($this->activeSourceCalculator, $this->domainEventDispatcher);
+        $this->removeMappedProduct = new RemoveMappedProduct($this->activeSourceCalculator);
     }
 
     public function testHandleWithNonSupplierProductEntity(): void
@@ -59,7 +58,6 @@ class RemoveMappedProductTest extends TestCase
 
         $this->activeSourceCalculator->expects($this->once())->method('removeMappedProduct')->with($supplierProduct);
         $this->activeSourceCalculator->expects($this->once())->method('recalculateActiveSource')->with($product);
-        $this->domainEventDispatcher->expects($this->once())->method('dispatchProviderEvents')->with($supplierProduct);
 
         $this->removeMappedProduct->handle($crudOptions);
     }

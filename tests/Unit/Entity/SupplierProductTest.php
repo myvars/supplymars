@@ -21,7 +21,7 @@ class SupplierProductTest extends TestCase
         $supplierManufacturer = $this->createMock(SupplierManufacturer::class);
         $product = $this->createMock(Product::class);
 
-        $supplierProduct = (new SupplierProduct())
+        $supplierProduct = new SupplierProduct()
             ->setName('Test Supplier Product')
             ->setProductCode('TP12345')
             ->setSupplier($supplier)

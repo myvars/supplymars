@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class PurchaseOrderItem implements DomainEventProviderInterface
 {
     use TimestampableEntity;
-    use DomainEventTrait;
+    use DomainEventProviderTrait;
     use HasPublicUlid;
 
     #[ORM\Id]
@@ -259,7 +259,7 @@ class PurchaseOrderItem implements DomainEventProviderInterface
         SupplierProduct $supplierProduct,
         int $quantity,
     ): static {
-        $purchaseOrderItem = (new static())
+        $purchaseOrderItem = new static()
             ->setCustomerOrderItem($customerOrderItem)
             ->setPurchaseOrder($purchaseOrder)
             ->setSupplierProduct($supplierProduct)

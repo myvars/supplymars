@@ -10,7 +10,7 @@ class OrderStatusWasChangedEvent extends AbstractDomainEvent implements StatusWa
 {
     public function __construct(
         private readonly CustomerOrderPublicId $publicId,
-        private readonly StatusChange $statusChange
+        private readonly StatusChange $statusChange,
     ) {
         parent::__construct(DomainEventType::ORDER_STATUS_CHANGED);
     }

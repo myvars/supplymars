@@ -63,7 +63,7 @@
                                         </a>
                                     </th>
                                     <td class="px-6 py-3 text-right">
-                                        {{ order.totalPrice|format_currency('GBP', { max_fraction_digit:0 }) }}
+                                        {{ '£' ~ order.totalPrice|default(0)|round(0, 'floor')|number_format(0, '.', ',') }}
                                     </td>
                                 </tr>
                             {% endfor %}

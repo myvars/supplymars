@@ -8,7 +8,6 @@ use App\Entity\CustomerOrderItem;
 use App\Service\Crud\Common\CrudActionInterface;
 use App\Service\Crud\Common\CrudOptions;
 use App\Service\Product\MarkupCalculator;
-use App\Service\Utility\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 
 final readonly class EditOrderItem implements CrudActionInterface
@@ -16,7 +15,6 @@ final readonly class EditOrderItem implements CrudActionInterface
     public function __construct(
         private EntityManagerInterface $entityManager,
         private MarkupCalculator $markupCalculator,
-        private DomainEventDispatcher $domainEventDispatcher,
     ) {
     }
 
@@ -43,11 +41,6 @@ final readonly class EditOrderItem implements CrudActionInterface
         $customerOrder->recalculateTotal();
 
         $this->entityManager->flush();
-
-        $this->domainEventDispatcher->dispatchProviderEvents([
-            $customerOrderItem,
-            $customerOrder,
-        ]);
     }
 
     private function getCustomerOrderItem(int $id): CustomerOrderItem

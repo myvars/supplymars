@@ -16,7 +16,7 @@ class SupplierSubcategoryTest extends TestCase
         $supplier = $this->createMock(Supplier::class);
         $supplierCategory = $this->createMock(SupplierCategory::class);
 
-        $supplierSubcategory = (new SupplierSubcategory())
+        $supplierSubcategory = new SupplierSubcategory()
             ->setName('Test Supplier Subcategory')
             ->setSupplier($supplier)
             ->setSupplierCategory($supplierCategory);

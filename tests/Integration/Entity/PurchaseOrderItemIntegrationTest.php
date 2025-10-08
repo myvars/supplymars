@@ -9,6 +9,7 @@ use App\Factory\PurchaseOrderFactory;
 use App\Factory\PurchaseOrderItemFactory;
 use App\Factory\SupplierFactory;
 use App\Factory\SupplierProductFactory;
+use App\Story\StaffUserStory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Zenstruck\Foundry\Test\Factories;
@@ -23,6 +24,7 @@ class PurchaseOrderItemIntegrationTest extends KernelTestCase
     {
         self::bootKernel();
         $this->validator = static::getContainer()->get(ValidatorInterface::class);
+        StaffUserStory::load();
     }
 
     public function testValidPurchaseOrderItem(): void
@@ -67,16 +69,13 @@ class PurchaseOrderItemIntegrationTest extends KernelTestCase
     {
         $customerOrderItem = CustomerOrderItemFactory::createOne(['quantity' => 10]);
         $purchaseOrderItem = PurchaseOrderItemFactory::createOne([
-            'quantity' => 1,
-            'customerOrderItem' => $customerOrderItem]
-        )->_real();
+            'customerOrderItem' => $customerOrderItem
+        ])->_real();
         $lineTotal = $purchaseOrderItem->getTotalPrice();
 
         $purchaseOrderItem->updateItem(10);
 
-        $this->assertEquals(10, $purchaseOrderItem->getQuantity());
-        $this->assertEquals(bcmul($lineTotal, 10, 2), $purchaseOrderItem->getTotalPrice());
-
+        $this->assertEquals(10, $purchaseOrderItem->getQuantity());$this->assertEquals(bcmul($lineTotal, 10, 2), $purchaseOrderItem->getTotalPrice());
     }
 
     public function testInvalidUpdatePurchaseOrderItemWithHighQty(): void

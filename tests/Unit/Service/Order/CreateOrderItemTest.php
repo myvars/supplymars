@@ -2,15 +2,14 @@
 
 namespace App\Tests\Unit\Service\Order;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\DTO\CreateOrderItemDto;
 use App\Entity\CustomerOrder;
-use App\Entity\CustomerOrderItem;
 use App\Entity\Product;
 use App\Repository\CustomerOrderRepository;
 use App\Repository\ProductRepository;
 use App\Service\Crud\Common\CrudOptions;
 use App\Service\Order\CreateOrderItem;
-use App\Service\Utility\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
@@ -18,17 +17,17 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class CreateOrderItemTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
-    private ValidatorInterface $validator;
-    private DomainEventDispatcher $domainEventDispatcher;
+    private MockObject $entityManager;
+
+    private MockObject $validator;
+
     private CreateOrderItem $createOrderItem;
 
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->validator = $this->createMock(ValidatorInterface::class);
-        $this->domainEventDispatcher = $this->createMock(DomainEventDispatcher::class);
-        $this->createOrderItem = new CreateOrderItem($this->entityManager, $this->validator, $this->domainEventDispatcher);
+        $this->createOrderItem = new CreateOrderItem($this->entityManager, $this->validator);
     }
 
     public function testHandleWithNonCreateOrderItemDtoEntity(): void
@@ -70,9 +69,7 @@ class CreateOrderItemTest extends TestCase
 
         $this->entityManager->expects($this->once())->method('persist');
         $this->entityManager->expects($this->once())->method('flush');
-        $this->domainEventDispatcher->expects($this->once())->method('dispatchProviderEvents');
 
-        $customerOrderItem = $this->createOrderItem->fromDto($dto);
-        $this->assertInstanceOf(CustomerOrderItem::class, $customerOrderItem);
+        $this->createOrderItem->fromDto($dto);
     }
 }

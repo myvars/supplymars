@@ -6,7 +6,7 @@ use App\ValueObject\AbstractUlidId;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;
 
 #[AutoconfigureTag('app.public_id_resolver')]
-interface PublicIdResolver
+interface PublicIdResolverInterface
 {
     /** Return the VO class this resolver supports, e.g. CustomerOrderPublicId::class */
     public static function supports(): string;

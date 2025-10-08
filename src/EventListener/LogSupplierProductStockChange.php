@@ -20,17 +20,17 @@ final readonly class LogSupplierProductStockChange
         private EntityManagerInterface $entityManager,
         private ValidatorInterface $validator,
         private SupplierProductPublicIdResolver $publicIdResolver,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
     ) {
     }
 
     public function __invoke(SupplierProductStockWasChangedEvent $event): void
     {
         $legacyId = $this->publicIdResolver->resolve($event->publicId()); // VO in, ?int out
-        if ($legacyId === null) {
+        if (null === $legacyId) {
             $this->logger->warning('Could not resolve legacy ID for public ID', [
                 'publicId' => (string) $event->publicId(),
-                'eventClass' => get_class($event),
+                'eventClass' => $event::class,
             ]);
 
             return;

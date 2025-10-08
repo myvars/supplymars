@@ -9,7 +9,6 @@ use App\Factory\PurchaseOrderItemFactory;
 use App\Factory\SupplierProductFactory;
 use App\Service\Crud\Common\CrudOptions;
 use App\Service\PurchaseOrder\EditPurchaseOrderItem;
-use App\Service\Utility\DomainEventDispatcher;
 use App\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -25,8 +24,7 @@ class EditPurchaseOrderItemIntegrationTest extends KernelTestCase
     {
         self::bootKernel();
         $entityManager = static::getContainer()->get(EntityManagerInterface::class);
-        $domainEventDispatcher = static::getContainer()->get(DomainEventDispatcher::class);
-        $this->editPurchaseOrderItem = new EditPurchaseOrderItem($entityManager, $domainEventDispatcher);
+        $this->editPurchaseOrderItem = new EditPurchaseOrderItem($entityManager);
         StaffUserStory::load();
     }
 

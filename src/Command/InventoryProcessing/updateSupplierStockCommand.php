@@ -2,12 +2,11 @@
 
 namespace App\Command\InventoryProcessing;
 
-use Symfony\Component\Console\Attribute\Argument;
 use App\Entity\Supplier;
 use App\Entity\SupplierProduct;
 use App\Service\OrderProcessing\SupplierUtility;
-use App\Service\Utility\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -29,14 +28,13 @@ class updateSupplierStockCommand
     public function __construct(
         private readonly SupplierUtility $supplierUtility,
         private readonly EntityManagerInterface $entityManager,
-        private readonly DomainEventDispatcher $domainEventDispatcher
     ) {
     }
 
     public function __invoke(
         InputInterface $input,
         OutputInterface $output,
-        #[Argument(description: 'Item count to process')] string $itemCount
+        #[Argument(description: 'Item count to process')] string $itemCount,
     ): int {
         $io = new SymfonyStyle($input, $output);
 
@@ -123,19 +121,15 @@ class updateSupplierStockCommand
         }
 
         // allow stock level to decrease by up to 10% of current stock level
-        $stockPercent = bcdiv($supplierProduct->getStock(), self::STOCK_VARIANCE_PERCENT, 2);
+        $stockPercent = bcdiv((string) $supplierProduct->getStock(), self::STOCK_VARIANCE_PERCENT, 2);
         $stockChange = random_int(0, ceil($stockPercent));
         $supplierProduct->setStock($supplierProduct->getStock() - $stockChange);
-
-        $this->domainEventDispatcher->dispatchProviderEvents($supplierProduct);
     }
 
     public function increaseStock(SupplierProduct $supplierProduct): void
     {
         // allow stock level to increase by random amount up to 100
         $supplierProduct->setStock($supplierProduct->getStock() + random_int(0, 100));
-
-        $this->domainEventDispatcher->dispatchProviderEvents($supplierProduct);
     }
 
     public function changeCost(SupplierProduct $supplierProduct): void
@@ -150,7 +144,5 @@ class updateSupplierStockCommand
         $randomCost = 0 === random_int(0, 1) ? $randomCost : -$randomCost;
 
         $supplierProduct->setCost(bcadd((string) $supplierProduct->getCost(), $randomCost, 2));
-
-        $this->domainEventDispatcher->dispatchProviderEvents($supplierProduct);
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Command\SalesProcessing;
 
-use Symfony\Component\Console\Attribute\Argument;
 use App\Service\Sales\OrderSalesCalculator;
+use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -21,7 +21,7 @@ class calculateOrderSalesCommand
 
     public function __construct(
         private readonly OrderSalesCalculator $orderSalesCalculator,
-        private readonly calculateOrderSalesSummaryCommand $orderSalesSummaryCommand
+        private readonly calculateOrderSalesSummaryCommand $orderSalesSummaryCommand,
     ) {
     }
 
@@ -29,7 +29,7 @@ class calculateOrderSalesCommand
         InputInterface $input,
         OutputInterface $output,
         #[Argument(description: 'Days to process')] string $dayCount,
-        #[Argument(description: 'Day offset to start processing')] ?string $dayOffset
+        #[Argument(description: 'Day offset to start processing')] ?string $dayOffset,
     ): int {
         $io = new SymfonyStyle($input, $output);
         $dayCount = (int) $dayCount;
@@ -38,7 +38,7 @@ class calculateOrderSalesCommand
         $io->info(sprintf('Calculating sales data for %d days, starting %d days ago', $dayCount, $dayOffset));
 
         for ($day = 0; $day < $dayCount; ++$day) {
-            $startDate = (new \DateTime('-'.($day + $dayOffset).' day'))->format(self::DATE_FORMAT);
+            $startDate = new \DateTime('-'.($day + $dayOffset).' day')->format(self::DATE_FORMAT);
             $io->note(sprintf('Processing sales for %s', $startDate));
 
             $this->orderSalesCalculator->process($startDate);

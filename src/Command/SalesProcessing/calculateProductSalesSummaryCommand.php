@@ -2,8 +2,8 @@
 
 namespace App\Command\SalesProcessing;
 
-use Symfony\Component\Console\Attribute\Argument;
 use App\Service\Sales\ProductSalesSummaryCalculator;
+use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,7 +23,7 @@ class calculateProductSalesSummaryCommand
     public function __invoke(
         InputInterface $input,
         OutputInterface $output,
-        #[Argument(description: 'Rebuild full sales summary')] ?string $rebuild
+        #[Argument(description: 'Rebuild full sales summary')] ?string $rebuild,
     ): int {
         $io = new SymfonyStyle($input, $output);
         $rebuild = (int) $rebuild;

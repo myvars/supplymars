@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\Dashboard;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\Repository\CustomerOrderRepository;
 use App\Repository\OrderSalesSummaryRepository;
 use App\Repository\ProductSalesRepository;
@@ -12,11 +13,16 @@ use PHPUnit\Framework\TestCase;
 
 class DashboardViewerTest extends TestCase
 {
-    private OrderSalesSummaryRepository $orderSummaryRepositoryMock;
-    private ProductSalesSummaryRepository $productSummaryRepositoryMock;
-    private CustomerOrderRepository $orderRepositoryMock;
-    private PurchaseOrderRepository $purchaseOrderRepositoryMock;
-    private ProductSalesRepository $productSalesRepositoryMock;
+    private MockObject $orderSummaryRepositoryMock;
+
+    private MockObject $productSummaryRepositoryMock;
+
+    private MockObject $orderRepositoryMock;
+
+    private MockObject $purchaseOrderRepositoryMock;
+
+    private MockObject $productSalesRepositoryMock;
+
     private DashboardViewer $dashboardViewer;
 
     protected function setUp(): void

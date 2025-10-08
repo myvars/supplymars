@@ -2,7 +2,6 @@
 
 namespace App\Service\Crud\Common;
 
-use App\Service\Utility\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -11,7 +10,6 @@ final readonly class CrudUpdateAction implements CrudActionInterface
     public function __construct(
         private EntityManagerInterface $entityManager,
         private ValidatorInterface $validator,
-        private DomainEventDispatcher $domainEventDispatcher,
     ) {
     }
 
@@ -29,7 +27,5 @@ final readonly class CrudUpdateAction implements CrudActionInterface
 
         $this->entityManager->persist($entity);
         $this->entityManager->flush();
-
-        $this->domainEventDispatcher->dispatchProviderEvents($entity);
     }
 }

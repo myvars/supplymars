@@ -2,12 +2,12 @@
 
 namespace App\Command\OrderProcessing;
 
-use Symfony\Component\Console\Attribute\Argument;
 use App\Entity\PurchaseOrder;
 use App\Entity\Supplier;
 use App\Enum\PurchaseOrderStatus;
 use App\Service\OrderProcessing\SupplierUtility;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,14 +22,14 @@ class acceptPOsCommand
 {
     public function __construct(
         private readonly SupplierUtility $supplierUtility,
-        private readonly EntityManagerInterface $entityManager
+        private readonly EntityManagerInterface $entityManager,
     ) {
     }
 
     public function __invoke(
         InputInterface $input,
         OutputInterface $output,
-        #[Argument(description: 'PO count to process')] string $poCount
+        #[Argument(description: 'PO count to process')] string $poCount,
     ): int {
         $io = new SymfonyStyle($input, $output);
 

@@ -141,7 +141,7 @@ class OrderControllerTest extends WebTestCase
     public function testCancelOrder(): void
     {
         $order = CustomerOrderFactory::createOne(['customerOrderRef' => 'TEST12345']);
-        $orderItem = CustomerOrderItemFactory::createOne(['customerOrder' => $order]);
+        CustomerOrderItemFactory::createOne(['customerOrder' => $order]);
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
@@ -171,7 +171,7 @@ class OrderControllerTest extends WebTestCase
     {
         $supplierProduct = SupplierProductFactory::new()->recalculatePrice()->create();
         $order = CustomerOrderFactory::createOne(['customerOrderRef' => 'TEST12345'])->_real();
-        $orderItem = CustomerOrderItemFactory::createOne([
+        CustomerOrderItemFactory::createOne([
             'customerOrder' => $order,
             'product' => $supplierProduct->getProduct()
         ]);

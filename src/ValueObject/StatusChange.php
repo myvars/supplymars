@@ -35,6 +35,6 @@ final readonly class StatusChange
 
     public function describe(): string
     {
-        return $this->before->value . ' → ' . $this->after->value;
+        return $this->before->value.' → '.$this->after->value;
     }
 }

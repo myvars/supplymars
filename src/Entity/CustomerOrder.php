@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class CustomerOrder implements DomainEventProviderInterface
 {
     use TimestampableEntity;
-    use DomainEventTrait;
+    use DomainEventProviderTrait;
     use HasPublicUlid;
 
     #[ORM\Id]
@@ -368,7 +368,7 @@ class CustomerOrder implements DomainEventProviderInterface
         VatRate $vatRate,
         ?string $customerOrderRef,
     ): static {
-        $customerOrder = (new static())
+        $customerOrder = new static()
             ->setCustomer($customer)
             ->setShippingAddress($customer->getShippingAddress())
             ->setBillingAddress($customer->getBillingAddress())

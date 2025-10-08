@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\PurchaseOrder;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\DTO\EditPurchaseOrderItemDto;
 use App\Entity\CustomerOrderItem;
 use App\Entity\PurchaseOrder;
@@ -9,22 +10,20 @@ use App\Entity\PurchaseOrderItem;
 use App\Repository\PurchaseOrderItemRepository;
 use App\Service\Crud\Common\CrudOptions;
 use App\Service\PurchaseOrder\EditPurchaseOrderItem;
-use App\Service\Utility\DomainEventDispatcher;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 
 class EditPurchaseOrderItemTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
-    private DomainEventDispatcher $domainEventDispatcher;
+    private MockObject $entityManager;
+
     private EditPurchaseOrderItem $editPurchaseOrderItem;
 
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
-        $this->domainEventDispatcher = $this->createMock(DomainEventDispatcher::class);
-        $this->editPurchaseOrderItem = new EditPurchaseOrderItem($this->entityManager, $this->domainEventDispatcher);
+        $this->editPurchaseOrderItem = new EditPurchaseOrderItem($this->entityManager);
     }
 
     public function testHandleWithNonEditPurchaseOrderItemDtoEntity(): void
@@ -133,7 +132,6 @@ class EditPurchaseOrderItemTest extends TestCase
         $this->entityManager->expects($this->once())->method('persist');
         $this->entityManager->expects($this->exactly(2))->method('remove');
         $this->entityManager->expects($this->once())->method('flush');
-        $this->domainEventDispatcher->expects($this->exactly(2))->method('dispatchProviderEvents');
 
         $this->editPurchaseOrderItem->handle($crudOptions);
     }
@@ -164,7 +162,6 @@ class EditPurchaseOrderItemTest extends TestCase
 
         $this->entityManager->expects($this->once())->method('persist');
         $this->entityManager->expects($this->once())->method('flush');
-        $this->domainEventDispatcher->expects($this->exactly(2))->method('dispatchProviderEvents');
 
         $this->editPurchaseOrderItem->handle($crudOptions);
     }

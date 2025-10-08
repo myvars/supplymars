@@ -7,7 +7,6 @@ use App\Factory\SupplierProductFactory;
 use App\Service\Crud\Common\CrudOptions;
 use App\Service\Product\ActiveSourceCalculator;
 use App\Service\SupplierProduct\ChangeMappedProductStatus;
-use App\Service\Utility\DomainEventDispatcher;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 
@@ -21,11 +20,7 @@ class ChangeMappedProductStatusIntegrationTest extends KernelTestCase
     {
         self::bootKernel();
         $activeSourceCalculator = static::getContainer()->get(ActiveSourceCalculator::class);
-        $domainEventDispatcher = static::getContainer()->get(DomainEventDispatcher::class);
-        $this->changeMappedProductStatus = new ChangeMappedProductStatus(
-            $activeSourceCalculator,
-            $domainEventDispatcher
-        );
+        $this->changeMappedProductStatus = new ChangeMappedProductStatus($activeSourceCalculator);
     }
 
     public function testHandleWithValidSupplierProduct(): void

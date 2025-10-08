@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\Product;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\Entity\Product;
 use App\Entity\SupplierProduct;
 use App\Repository\ProductRepository;
@@ -12,7 +13,8 @@ use PHPUnit\Framework\TestCase;
 
 class ActiveSourceCalculatorTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
+    private MockObject $entityManager;
+
     private ActiveSourceCalculator $activeSourceCalculator;
 
     protected function setUp(): void

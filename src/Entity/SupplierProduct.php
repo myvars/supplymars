@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class SupplierProduct implements DomainEventProviderInterface
 {
     use TimestampableEntity;
-    use DomainEventTrait;
+    use DomainEventProviderTrait;
     use HasPublicUlid;
 
     #[ORM\Id]
@@ -238,7 +238,7 @@ class SupplierProduct implements DomainEventProviderInterface
         $this->raiseDomainEvent(
             new SupplierProductStockWasChangedEvent(
                 $this->getPublicId(),
-                Stockchange::from($this->getStock() ?? 0, $this->getStock() ?? 0),
+                StockChange::from($this->getStock() ?? 0, $this->getStock() ?? 0),
                 $costChange
             )
         );

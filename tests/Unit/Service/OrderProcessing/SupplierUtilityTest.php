@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\OrderProcessing;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\Entity\PurchaseOrderItem;
 use App\Entity\Supplier;
 use App\Entity\User;
@@ -17,10 +18,14 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class SupplierUtilityTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
-    private TokenStorageInterface $tokenStorage;
-    private UserProviderInterface $userProvider;
-    private ChangePurchaseOrderItemStatus $changeStatusService;
+    private MockObject $entityManager;
+
+    private MockObject $tokenStorage;
+
+    private MockObject $userProvider;
+
+    private MockObject $changeStatusService;
+
     private SupplierUtility $supplierUtility;
 
     protected function setUp(): void

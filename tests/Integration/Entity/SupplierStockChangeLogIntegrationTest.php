@@ -3,7 +3,6 @@
 namespace App\Tests\Integration\Entity;
 
 use App\Enum\DomainEventType;
-use App\Factory\SupplierProductFactory;
 use App\Factory\SupplierStockChangeLogFactory;
 use App\ValueObject\CostChange;
 use App\ValueObject\StockChange;

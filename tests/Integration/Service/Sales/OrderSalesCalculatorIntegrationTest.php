@@ -28,7 +28,7 @@ class OrderSalesCalculatorIntegrationTest extends KernelTestCase
 
     public function testProcessedSuccessfully(): void
     {
-        $date = (new \DateTime())->format('Y-m-d');
+        $date = new \DateTime()->format('Y-m-d');
         $product = ProductFactory::createOne([
             'stock' => 100,
             'sellPrice' => 100.00

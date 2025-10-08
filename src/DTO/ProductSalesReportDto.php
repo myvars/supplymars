@@ -32,7 +32,7 @@ final class ProductSalesReportDto
     #[Assert\Range(notInRangeMessage: 'Please enter a valid Supplier Id', min: 1, max: 1000000)]
     private ?int $supplierId = null;
 
-    public function getSort(): ?ProductSalesMetric
+    public function getSort(): ProductSalesMetric
     {
         return $this->sort;
     }
@@ -48,7 +48,7 @@ final class ProductSalesReportDto
         return $this;
     }
 
-    public function getSortDirection(): ?string
+    public function getSortDirection(): string
     {
         return $this->sortDirection;
     }
@@ -64,7 +64,7 @@ final class ProductSalesReportDto
         return $this;
     }
 
-    public function getDuration(): ?SalesDuration
+    public function getDuration(): SalesDuration
     {
         return $this->duration;
     }
@@ -151,7 +151,7 @@ final class ProductSalesReportDto
         ];
 
         // Filter to get only non-null values
-        $nonEmptyIdentifiers = array_filter($identifiers, fn ($value): bool => !is_null($value));
+        $nonEmptyIdentifiers = array_filter($identifiers, fn (?int $value): bool => !is_null($value));
 
         if ([] === $nonEmptyIdentifiers) {
             return [

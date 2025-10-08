@@ -14,7 +14,7 @@ class SupplierTest extends TestCase
 {
     public function testSettersAndGetters(): void
     {
-        $supplier = (new Supplier())
+        $supplier = new Supplier()
             ->setName('Test Supplier')
             ->setIsActive(true)
             ->setIsWarehouse(false);

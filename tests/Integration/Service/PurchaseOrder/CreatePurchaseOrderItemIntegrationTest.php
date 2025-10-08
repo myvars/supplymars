@@ -14,7 +14,6 @@ use App\Service\Order\EditOrderItem;
 use App\Service\Product\MarkupCalculator;
 use App\Service\PurchaseOrder\CreatePurchaseOrder;
 use App\Service\PurchaseOrder\CreatePurchaseOrderItem;
-use App\Service\Utility\DomainEventDispatcher;
 use App\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -26,7 +25,9 @@ class CreatePurchaseOrderItemIntegrationTest extends KernelTestCase
     use Factories;
 
     private CreatePurchaseOrderItem $createPurchaseOrderItem;
+
     private EntityManagerInterface $entityManager;
+
     private EditOrderItem $editOrderItem;
 
 
@@ -36,12 +37,10 @@ class CreatePurchaseOrderItemIntegrationTest extends KernelTestCase
         $entityManager = static::getContainer()->get(EntityManagerInterface::class);
         $validator = static::getContainer()->get(ValidatorInterface::class);
         $createPurchaseOrder = static::getContainer()->get(CreatePurchaseOrder::class);
-        $domainEventDispatcher = static::getContainer()->get(DomainEventDispatcher::class);
         $this->createPurchaseOrderItem = new CreatePurchaseOrderItem(
             $entityManager,
             $validator,
-            $createPurchaseOrder,
-            $domainEventDispatcher
+            $createPurchaseOrder
         );
 
         $markupCalculator = static::getContainer()->get(MarkupCalculator::class);
@@ -86,6 +85,7 @@ class CreatePurchaseOrderItemIntegrationTest extends KernelTestCase
         );
         $crudOptions = new CrudOptions();
         $crudOptions->setEntity($dto);
+
         $this->editOrderItem->handle($crudOptions);
 
         $crudOptions->setEntity($customerOrderItem);

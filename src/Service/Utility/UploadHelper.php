@@ -82,6 +82,7 @@ class UploadHelper
     private function getNewFilename(File $file, string $fileName): string
     {
         $slug = $this->slugger->slug(pathinfo($fileName, PATHINFO_FILENAME))->lower();
+
         return $slug.'-'.uniqid().'.'.$file->guessExtension();
     }
 

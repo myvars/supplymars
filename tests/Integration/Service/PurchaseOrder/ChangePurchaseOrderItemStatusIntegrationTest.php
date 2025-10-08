@@ -8,7 +8,6 @@ use App\Enum\PurchaseOrderStatus;
 use App\Factory\PurchaseOrderItemFactory;
 use App\Service\Crud\Common\CrudOptions;
 use App\Service\PurchaseOrder\ChangePurchaseOrderItemStatus;
-use App\Service\Utility\DomainEventDispatcher;
 use App\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -24,8 +23,7 @@ class ChangePurchaseOrderItemStatusIntegrationTest extends KernelTestCase
     {
         self::bootKernel();
         $entityManager = static::getContainer()->get(EntityManagerInterface::class);
-        $domainEventDispatcher = static::getContainer()->get(DomainEventDispatcher::class);
-        $this->changePurchaseOrderItemStatus = new ChangePurchaseOrderItemStatus($entityManager, $domainEventDispatcher);
+        $this->changePurchaseOrderItemStatus = new ChangePurchaseOrderItemStatus($entityManager);
         StaffUserStory::load();
     }
 

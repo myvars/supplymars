@@ -2,11 +2,11 @@
 
 namespace App\Command\Utilities;
 
-use Symfony\Component\Console\Attribute\Argument;
 use App\Entity\SupplierProduct;
 use App\Service\OrderProcessing\SupplierUtility;
 use App\Service\SupplierProduct\ChangeMappedProductStatus;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -23,7 +23,7 @@ class activateSupplierProductsCommand
     }
 
     public function __invoke(#[Argument(name: 'itemCount', description: 'Item count to process')]
-    string $itemCount, OutputInterface $output): int
+        string $itemCount, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 

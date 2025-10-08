@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\Dashboard;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\Service\Dashboard\ReportHandler;
 use App\Service\Dashboard\Report\ReportInterface;
 use PHPUnit\Framework\TestCase;
@@ -9,7 +10,8 @@ use Symfony\Contracts\Service\ServiceCollectionInterface;
 
 class ReportHandlerTest extends TestCase
 {
-    private ServiceCollectionInterface $serviceCollectionMock;
+    private MockObject $serviceCollectionMock;
+
     private ReportHandler $reportHandler;
 
     protected function setUp(): void

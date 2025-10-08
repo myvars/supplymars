@@ -23,7 +23,7 @@ class ProductTest extends TestCase
         $owner = $this->createMock(User::class);
         $priceModel = PriceModel::PRETTY_99;
 
-        $product = (new Product())
+        $product = new Product()
             ->setName('Test Product')
             ->setMfrPartNumber('Test MfrPartNumber')
             ->setStock(100)

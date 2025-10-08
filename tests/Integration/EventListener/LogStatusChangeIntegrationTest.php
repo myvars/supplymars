@@ -10,7 +10,6 @@ use App\Factory\PurchaseOrderItemFactory;
 use App\Factory\StatusChangeLogFactory;
 use App\Service\Crud\Common\CrudOptions;
 use App\Service\PurchaseOrder\ChangePurchaseOrderItemStatus;
-use App\Service\Utility\DomainEventDispatcher;
 use App\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -25,9 +24,8 @@ class LogStatusChangeIntegrationTest extends KernelTestCase
     protected function setUp(): void
     {
         self::bootKernel();
-        $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
-        $domainEventDispatcher = static::getContainer()->get(DomainEventDispatcher::class);
-        $this->changePurchaseOrderItemStatus = new ChangePurchaseOrderItemStatus($this->entityManager, $domainEventDispatcher);
+        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
+        $this->changePurchaseOrderItemStatus = new ChangePurchaseOrderItemStatus($entityManager);
         StaffUserStory::load();
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\Dashboard;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\Enum\OrderStatus;
 use App\Enum\SalesDuration;
 use App\Enum\SalesMetricInterface;
@@ -12,7 +13,8 @@ use Symfony\UX\Chartjs\Model\Chart;
 
 class DoughnutChartBuilderTest extends TestCase
 {
-    private ChartBuilderInterface $chartBuilderMock;
+    private MockObject $chartBuilderMock;
+
     private DoughnutChartBuilder $doughnutChartBuilder;
 
     protected function setUp(): void

@@ -33,7 +33,7 @@ class SubcategoryMapper
             return $subcategory;
         }
 
-        $subcategory = (new Subcategory())
+        $subcategory = new Subcategory()
             ->setName($supplierSubcategory->getName())
             ->setCategory($category)
             ->setIsActive(true);

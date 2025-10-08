@@ -1,11 +1,14 @@
 <?php
 
 namespace App\ValueObject;
+
 use Symfony\Component\Uid\Ulid;
 
 abstract readonly class AbstractUlidId implements \Stringable, \JsonSerializable
 {
-    final private function __construct(private string $value) {}
+    final private function __construct(private string $value)
+    {
+    }
 
     public static function new(): static
     {
@@ -17,6 +20,7 @@ abstract readonly class AbstractUlidId implements \Stringable, \JsonSerializable
         if (!Ulid::isValid($value)) {
             throw new \InvalidArgumentException(static::class.' must be a valid ULID string');
         }
+
         return new static($value);
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\Sales;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\Entity\Product;
 use App\Entity\ProductSales;
 use App\Entity\PurchaseOrderItem;
@@ -18,8 +19,10 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ProductSalesCalculatorTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
-    private ValidatorInterface $validator;
+    private MockObject $entityManager;
+
+    private MockObject $validator;
+
     private ProductSalesCalculator $productSalesCalculator;
 
     protected function setUp(): void

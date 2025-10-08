@@ -8,7 +8,6 @@ use App\Entity\CustomerOrderItem;
 use App\Entity\Product;
 use App\Service\Crud\Common\CrudActionInterface;
 use App\Service\Crud\Common\CrudOptions;
-use App\Service\Utility\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -17,7 +16,6 @@ final readonly class CreateOrderItem implements CrudActionInterface
     public function __construct(
         private EntityManagerInterface $entityManager,
         private ValidatorInterface $validator,
-        private DomainEventDispatcher $domainEventDispatcher,
     ) {
     }
 
@@ -49,8 +47,6 @@ final readonly class CreateOrderItem implements CrudActionInterface
 
         $this->entityManager->persist($customerOrderItem);
         $this->entityManager->flush();
-
-        $this->domainEventDispatcher->dispatchProviderEvents([$customerOrderItem, $customerOrder]);
 
         return $customerOrderItem;
     }

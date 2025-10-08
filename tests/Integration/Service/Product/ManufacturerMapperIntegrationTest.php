@@ -20,7 +20,9 @@ class ManufacturerMapperIntegrationTest extends KernelTestCase
     use Factories;
 
     private CategoryMapper $categoryMapper;
+
     private EntityManagerInterface $entityManager;
+
     private Security $security;
 
     protected function setUp(): void

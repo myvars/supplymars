@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\Product;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\Entity\Category;
 use App\Entity\Manufacturer;
 use App\Entity\Product;
@@ -16,8 +17,10 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ProductMapperTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
-    private ValidatorInterface $validator;
+    private MockObject $entityManager;
+
+    private MockObject $validator;
+
     private ProductMapper $productMapper;
 
     protected function setUp(): void

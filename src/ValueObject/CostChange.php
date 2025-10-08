@@ -3,7 +3,7 @@
 namespace App\ValueObject;
 
 /**
- * Represents a cost change
+ * Represents a cost change.
  */
 final readonly class CostChange
 {
@@ -35,6 +35,6 @@ final readonly class CostChange
 
     public function describe(): string
     {
-        return $this->before . ' → ' . $this->after;
+        return $this->before.' → '.$this->after;
     }
 }

@@ -27,7 +27,7 @@ final class PublicIdResolverRegistry
             return $this->cache[$key];
         }
 
-        /** @var PublicIdResolver|null $resolver */
+        /** @var PublicIdResolverInterface|null $resolver */
         $resolver = $this->resolvers->get($publicId::class) ?? null;
 
         return $this->cache[$key] = $resolver?->resolve($publicId);

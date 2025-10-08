@@ -3,7 +3,6 @@
 namespace App\Tests\Integration\Service\Order;
 
 use App\Entity\CustomerOrder;
-use App\Entity\User;
 use App\Factory\CustomerOrderFactory;
 use App\Service\Crud\Common\CrudOptions;
 use App\Service\Order\LockOrder;
@@ -18,6 +17,7 @@ class LockOrderIntegrationTest extends KernelTestCase
     use Factories;
 
     private LockOrder $lockOrder;
+
     private Security $security;
 
     protected function setUp(): void

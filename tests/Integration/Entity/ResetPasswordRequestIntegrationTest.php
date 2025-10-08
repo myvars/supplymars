@@ -47,7 +47,7 @@ class ResetPasswordRequestIntegrationTest extends KernelTestCase
     {
         $user = UserFactory::createOne();
 
-        $resetPasswordRequest = ResetPasswordRequestFactory::createOne([
+        ResetPasswordRequestFactory::createOne([
             'user' => $user,
             'expiresAt' => new \DateTimeImmutable('2023-01-01'),
             'selector' => 'selector',

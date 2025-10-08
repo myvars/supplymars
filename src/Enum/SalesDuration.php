@@ -45,8 +45,8 @@ enum SalesDuration: string
     public function getEndDate(): string
     {
         return match ($this) {
-            self::WEEK_AGO => (new \DateTime())->modify('-7 days')->format('Y-m-d H:i:s'),
-            default => (new \DateTime('+1 day'))->format('Y-m-d'),
+            self::WEEK_AGO => new \DateTime()->modify('-7 days')->format('Y-m-d H:i:s'),
+            default => new \DateTime('+1 day')->format('Y-m-d'),
         };
     }
 

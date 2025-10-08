@@ -10,7 +10,6 @@ use App\Factory\ProductImageFactory;
 use App\Factory\SubcategoryFactory;
 use App\Factory\SupplierProductFactory;
 use App\Factory\UserFactory;
-use App\Service\Product\ActiveSourceCalculator;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Zenstruck\Foundry\Test\Factories;
@@ -242,7 +241,7 @@ class ProductIntegrationTest extends KernelTestCase
     public function testHasActiveProductSource(): void
     {
         $product = ProductFactory::createOne();
-        $supplierProduct = SupplierProductFactory::createOne(['product' => $product])->_real();
+        SupplierProductFactory::createOne(['product' => $product])->_real();
 
         $this->assertTrue($product->hasActiveProductSource());
     }
@@ -300,7 +299,7 @@ class ProductIntegrationTest extends KernelTestCase
             'category' => $category,
             'subcategory' => $subcategory,
         ]);
-        $supplierProduct = SupplierProductFactory::new()->recalculatePrice()->create([
+        SupplierProductFactory::new()->recalculatePrice()->create([
             'product' => $product,
             'isActive' => true,
             'stock' => 100,

@@ -30,7 +30,7 @@ final class ResetPasswordRequestFactory extends PersistentProxyObjectFactory
      *
      * @todo add your default values here
      */
-    protected function defaults(): array|callable
+    protected function defaults(): array
     {
         return [
             'expiresAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),

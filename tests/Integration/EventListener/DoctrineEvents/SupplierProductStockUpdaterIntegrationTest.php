@@ -44,6 +44,7 @@ class SupplierProductStockUpdaterIntegrationTest extends KernelTestCase
         // Change different supplier status
         $supplierProduct2 = SupplierProductFactory::createOne(['isActive' => true])->_real();
         $supplierProduct2->setIsActive(false);
+
         $this->entityManager->flush();
 
         $this->entityManager->getRepository(Product::class)->find($product->getId());

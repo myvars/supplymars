@@ -14,7 +14,7 @@ class AddressTest extends TestCase
     {
         $user = $this->createMock(User::class);
 
-        $address = (new Address())
+        $address = new Address()
             ->setFullName('John Doe')
             ->setCompanyName('Acme Corp')
             ->setStreet('123 Main St')

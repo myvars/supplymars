@@ -8,7 +8,7 @@ use App\ValueObject\SupplierProductPublicId;
 
 final readonly class SupplierProductPublicIdResolver extends AbstractPublicIdResolver
 {
-    public function __construct(private SupplierProductRepository $repository)
+    public function __construct(SupplierProductRepository $repository)
     {
         parent::__construct($repository);
     }

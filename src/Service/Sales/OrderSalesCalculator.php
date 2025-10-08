@@ -43,7 +43,7 @@ class OrderSalesCalculator
     private function getOrderSales(string $date): array
     {
         return $this->entityManager->getRepository(CustomerOrder::class)
-            ->findOrderSalesByDate(new \DateTime($date), (new \DateTime($date))->modify('+ 1 day'));
+            ->findOrderSalesByDate(new \DateTime($date), new \DateTime($date)->modify('+ 1 day'));
     }
 
     private function removeExistingOrderSales(string $date): void

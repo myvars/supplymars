@@ -2,7 +2,6 @@
 
 namespace App\Service\OrderProcessing;
 
-
 use App\Entity\Address;
 use App\Entity\User;
 use App\Enum\MarsCity;
@@ -11,7 +10,7 @@ use Faker\Generator;
 final readonly class RandomAddressFactory
 {
     public function __construct(
-        private Generator $faker
+        private Generator $faker,
     ) {
     }
 

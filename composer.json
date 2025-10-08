@@ -4,7 +4,7 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "require": {
-        "php": ">=8.3",
+        "php": ">=8.4",
         "ext-bcmath": "*",
         "ext-ctype": "*",
         "ext-iconv": "*",
@@ -129,7 +129,7 @@
         "dg/bypass-finals": "^1.9",
         "doctrine/doctrine-fixtures-bundle": "^4.1",
         "phpunit/phpunit": "^12.4.0",
-        "rector/rector": "^2.1.7",
+        "rector/rector": "^2.2.1",
         "symfony/browser-kit": "7.3.*",
         "symfony/css-selector": "7.3.*",
         "symfony/debug-bundle": "7.3.*",
@@ -138,6 +138,6 @@
         "symfony/stopwatch": "7.3.*",
         "symfony/web-profiler-bundle": "7.3.*",
         "zenstruck/browser": "^1.9.1",
-        "zenstruck/foundry": "^2.7.2"
+        "zenstruck/foundry": "^2.7.3"
     }
 }

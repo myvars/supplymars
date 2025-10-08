@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\Sales;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\Entity\OrderSales;
 use App\Entity\OrderSalesSummary;
 use App\Enum\SalesDuration;
@@ -15,8 +16,10 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class OrderSalesSummaryCalculatorTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
-    private ValidatorInterface $validator;
+    private MockObject $entityManager;
+
+    private MockObject $validator;
+
     private OrderSalesSummaryCalculator $orderSalesSummaryCalculator;
 
     protected function setUp(): void

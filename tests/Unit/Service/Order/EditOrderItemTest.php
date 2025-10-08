@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\Order;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\DTO\EditOrderItemDto;
 use App\Entity\CustomerOrder;
 use App\Entity\CustomerOrderItem;
@@ -10,23 +11,22 @@ use App\Repository\CustomerOrderItemRepository;
 use App\Service\Crud\Common\CrudOptions;
 use App\Service\Order\EditOrderItem;
 use App\Service\Product\MarkupCalculator;
-use App\Service\Utility\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 
 class EditOrderItemTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
-    private MarkupCalculator $markupCalculator;
-    private DomainEventDispatcher $domainEventDispatcher;
+    private MockObject $entityManager;
+
+    private MockObject $markupCalculator;
+
     private EditOrderItem $editOrderItem;
 
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->markupCalculator = $this->createMock(MarkupCalculator::class);
-        $this->domainEventDispatcher = $this->createMock(DomainEventDispatcher::class);
-        $this->editOrderItem = new EditOrderItem($this->entityManager, $this->markupCalculator, $this->domainEventDispatcher);
+        $this->editOrderItem = new EditOrderItem($this->entityManager, $this->markupCalculator);
     }
 
     public function testHandleWithNonEditOrderItemDtoEntity(): void
@@ -68,7 +68,6 @@ class EditOrderItemTest extends TestCase
 
         $this->entityManager->expects($this->once())->method('persist');
         $this->entityManager->expects($this->once())->method('flush');
-        $this->domainEventDispatcher->expects($this->once())->method('dispatchProviderEvents');
 
         $this->editOrderItem->handle($crudOptions);
     }
@@ -96,7 +95,6 @@ class EditOrderItemTest extends TestCase
         $this->entityManager->expects($this->once())->method('remove');
         $this->entityManager->expects($this->once())->method('persist');
         $this->entityManager->expects($this->once())->method('flush');
-        $this->domainEventDispatcher->expects($this->once())->method('dispatchProviderEvents');
 
         $this->editOrderItem->handle($crudOptions);
     }
@@ -123,7 +121,6 @@ class EditOrderItemTest extends TestCase
         $customerOrderItem->method('getQtyAddedToPurchaseOrders')->willReturn(2);
 
         $this->entityManager->expects($this->never())->method('flush');
-        $this->domainEventDispatcher->expects($this->never())->method('dispatchProviderEvents');
 
         $this->editOrderItem->handle($crudOptions);
     }

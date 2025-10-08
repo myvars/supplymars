@@ -13,7 +13,7 @@ final class OrderSummaryReportDto
 
     private SalesDuration $duration = SalesDuration::LAST_30;
 
-    public function getSort(): ?OrderSalesMetric
+    public function getSort(): OrderSalesMetric
     {
         return $this->sort;
     }
@@ -29,7 +29,7 @@ final class OrderSummaryReportDto
         return $this;
     }
 
-    public function getSortDirection(): ?string
+    public function getSortDirection(): string
     {
         return $this->sortDirection;
     }
@@ -45,7 +45,7 @@ final class OrderSummaryReportDto
         return $this;
     }
 
-    public function getDuration(): ?SalesDuration
+    public function getDuration(): SalesDuration
     {
         return $this->duration;
     }

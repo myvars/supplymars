@@ -4,7 +4,6 @@ namespace App\Tests\Unit\Service\OrderProcessing;
 
 use App\Entity\Address;
 use App\Entity\User;
-use App\Enum\MarsCity;
 use App\Service\OrderProcessing\RandomAddressFactory;
 use Faker\Generator;
 use PHPUnit\Framework\TestCase;
@@ -18,10 +17,13 @@ class RandomAddressFactoryTest extends TestCase
         $user->method('getFullName')->willReturn('John Doe');
 
         $faker = new class extends Generator {
-            public function streetAddress() { return '123 Mars St'; }
-            public function phoneNumber() { return '555-1234'; }
-            public function company() { return 'Mars Corp'; }
-            public function streetName() { return 'Red Dune Ave'; }
+            public function streetAddress(): string { return '123 Mars St'; }
+
+            public function phoneNumber(): string { return '555-1234'; }
+
+            public function company(): string { return 'Mars Corp'; }
+
+            public function streetName(): string { return 'Red Dune Ave'; }
         };
 
         $factory = new RandomAddressFactory($faker);

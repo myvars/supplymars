@@ -17,7 +17,7 @@ readonly class MailerHelper
 
     public function sendEmailVerificationMessage(User $user, array $emailSignatureContext): TemplatedEmail
     {
-        $email = (new TemplatedEmail())
+        $email = new TemplatedEmail()
             ->to(new Address($user->getEmail(), $user->getFullName()))
             ->subject('Please Confirm your Email')
             ->htmlTemplate('email/verify-email.html.twig')
@@ -30,7 +30,7 @@ readonly class MailerHelper
 
     public function sendEmailResetPasswordMessage(User $user, ResetPasswordToken $resetToken): TemplatedEmail
     {
-        $email = (new TemplatedEmail())
+        $email = new TemplatedEmail()
             ->to(new Address($user->getEmail(), $user->getFullName()))
             ->subject('Your password reset request')
             ->htmlTemplate('email/reset-password.html.twig')

@@ -79,7 +79,7 @@ class ProductSalesSummaryIntegrationTest extends KernelTestCase
             SalesType::PRODUCT,
             SalesDuration::LAST_7
         );
-        $productSalesSummary = ProductSalesSummaryFactory::createOne([
+        ProductSalesSummaryFactory::createOne([
             'productSalesType' => $productSalesType,
             'salesId' => 1,
             'dateString' => '2023-01-01',

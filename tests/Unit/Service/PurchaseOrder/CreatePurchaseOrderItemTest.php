@@ -2,11 +2,11 @@
 
 namespace App\Tests\Unit\Service\PurchaseOrder;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\Entity\CustomerOrder;
 use App\Entity\CustomerOrderItem;
 use App\Entity\Product;
 use App\Entity\PurchaseOrder;
-use App\Entity\PurchaseOrderItem;
 use App\Entity\Supplier;
 use App\Entity\SupplierProduct;
 use App\Repository\CustomerOrderRepository;
@@ -14,7 +14,6 @@ use App\Repository\SupplierProductRepository;
 use App\Service\Crud\Common\CrudOptions;
 use App\Service\PurchaseOrder\CreatePurchaseOrder;
 use App\Service\PurchaseOrder\CreatePurchaseOrderItem;
-use App\Service\Utility\DomainEventDispatcher;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
@@ -23,10 +22,12 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class CreatePurchaseOrderItemTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
-    private ValidatorInterface $validator;
-    private CreatePurchaseOrder $createPurchaseOrder;
-    private DomainEventDispatcher $domainEventDispatcher;
+    private MockObject $entityManager;
+
+    private MockObject $validator;
+
+    private MockObject $createPurchaseOrder;
+
     private CreatePurchaseOrderItem $createPurchaseOrderItem;
 
     protected function setUp(): void
@@ -34,12 +35,10 @@ class CreatePurchaseOrderItemTest extends TestCase
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->validator = $this->createMock(ValidatorInterface::class);
         $this->createPurchaseOrder = $this->createMock(CreatePurchaseOrder::class);
-        $this->domainEventDispatcher = $this->createMock(DomainEventDispatcher::class);
         $this->createPurchaseOrderItem = new CreatePurchaseOrderItem(
             $this->entityManager,
             $this->validator,
-            $this->createPurchaseOrder,
-            $this->domainEventDispatcher
+            $this->createPurchaseOrder
         );
     }
 
@@ -108,7 +107,6 @@ class CreatePurchaseOrderItemTest extends TestCase
         $supplierProduct = $this->createMock(SupplierProduct::class);
         $customerOrder = $this->createMock(CustomerOrder::class);
         $purchaseOrder = $this->createMock(PurchaseOrder::class);
-        $purchaseOrderItem = $this->createMock(PurchaseOrderItem::class);
 
         $customerOrderItem->method('allowEdit')->willReturn(true);
         $customerOrderItem->method('getCustomerOrder')->willReturn($customerOrder);
@@ -128,9 +126,7 @@ class CreatePurchaseOrderItemTest extends TestCase
 
         $this->entityManager->expects($this->once())->method('persist');
         $this->entityManager->expects($this->once())->method('flush');
-        $this->domainEventDispatcher->expects($this->once())->method('dispatchProviderEvents');
 
-        $purchaseOrderItem = $this->createPurchaseOrderItem->fromOrderItem($customerOrderItem, $supplierProduct);
-        $this->assertInstanceOf(PurchaseOrderItem::class, $purchaseOrderItem);
+        $this->createPurchaseOrderItem->fromOrderItem($customerOrderItem, $supplierProduct);
     }
 }

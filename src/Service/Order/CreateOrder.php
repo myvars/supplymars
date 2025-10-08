@@ -8,7 +8,6 @@ use App\Entity\User;
 use App\Entity\VatRate;
 use App\Service\Crud\Common\CrudActionInterface;
 use App\Service\Crud\Common\CrudOptions;
-use App\Service\Utility\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -17,7 +16,6 @@ final readonly class CreateOrder implements CrudActionInterface
     public function __construct(
         private EntityManagerInterface $entityManager,
         private ValidatorInterface $validator,
-        private DomainEventDispatcher $domainEventDispatcher,
     ) {
     }
 
@@ -50,8 +48,6 @@ final readonly class CreateOrder implements CrudActionInterface
 
         $this->entityManager->persist($customerOrder);
         $this->entityManager->flush();
-
-        $this->domainEventDispatcher->dispatchProviderEvents($customerOrder);
 
         return $customerOrder;
     }

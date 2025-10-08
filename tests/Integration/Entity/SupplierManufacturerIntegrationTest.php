@@ -64,7 +64,7 @@ class SupplierManufacturerIntegrationTest extends KernelTestCase
         $this->assertSame($supplier, $persistedSupplierManufacturer->getSupplier());
     }
 
-    public function testAddSupplierProductToSupplierManufacturer()
+    public function testAddSupplierProductToSupplierManufacturer(): void
     {
         $supplierManufacturer = SupplierManufacturerFactory::createOne()->_real();
         $supplierProduct = SupplierProductFactory::createOne(['supplierManufacturer' => $supplierManufacturer])->_real();
@@ -73,7 +73,7 @@ class SupplierManufacturerIntegrationTest extends KernelTestCase
         $this->assertSame($supplierManufacturer, $supplierProduct->getSupplierManufacturer());
     }
 
-    public function testRemoveSupplierProductFromSupplierManufacturer()
+    public function testRemoveSupplierProductFromSupplierManufacturer(): void
     {
         $supplierManufacturer = SupplierManufacturerFactory::createOne()->_real();
         $supplierProduct = SupplierProductFactory::createOne(['supplierManufacturer' => $supplierManufacturer])->_real();
@@ -84,7 +84,7 @@ class SupplierManufacturerIntegrationTest extends KernelTestCase
         $this->assertNull($supplierProduct->getSupplierManufacturer());
     }
 
-    public function testReAddSupplierProductToSupplierManufacturer()
+    public function testReAddSupplierProductToSupplierManufacturer(): void
     {
         $supplierManufacturer = SupplierManufacturerFactory::createOne()->_real();
         $supplierProduct = SupplierProductFactory::createOne(['supplierManufacturer' => $supplierManufacturer])->_real();

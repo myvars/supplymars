@@ -17,19 +17,22 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 final readonly class backfillUlidsCommand
 {
-    public function __construct(private EntityManagerInterface $em) {}
+    public function __construct(private EntityManagerInterface $em)
+    {
+    }
 
     public function __invoke(
         SymfonyStyle $io,
         #[Argument(
             description: 'Batch size (defaults to 200).'
         )] int $batchSize = 200,
-        #[Option(description: 'Maximum number of rows to process per entity')] ?int $limit = null
+        #[Option(description: 'Maximum number of rows to process per entity')] ?int $limit = null,
     ): int {
         $entities = $this->entitiesUsingHasPublicUlid();
 
-        if ($entities === []) {
+        if ([] === $entities) {
             $io->success('No entities found using HasPublicUlid.');
+
             return 0;
         }
 
@@ -38,6 +41,7 @@ final readonly class backfillUlidsCommand
         }
 
         $io->success('Backfill complete for all entities with HasPublicUlid.');
+
         return 0;
     }
 
@@ -51,8 +55,7 @@ final readonly class backfillUlidsCommand
 
         return array_values(array_filter(
             $all,
-            static fn (ClassMetadata $meta) =>
-            in_array(HasPublicUlid::class, class_uses($meta->getName()), true)
+            static fn (ClassMetadata $meta): bool => in_array(HasPublicUlid::class, class_uses($meta->getName()), true)
         ));
     }
 
@@ -68,23 +71,24 @@ final readonly class backfillUlidsCommand
             ->getQuery()
             ->getSingleScalarResult();
 
-        if ($total === 0) {
-            $io->section("{$entityClass}: nothing to backfill.");
+        if (0 === $total) {
+            $io->section($entityClass.': nothing to backfill.');
+
             return;
         }
 
-        $target = $limit !== null ? min($total, $limit) : $total;
+        $target = null !== $limit ? min($total, $limit) : $total;
 
-        $io->section("Backfilling {$entityClass}");
-        $io->writeln("  Missing: <comment>{$total}</comment>  |  Processing: <comment>{$target}</comment>  |  Batch: <comment>{$batchSize}</comment>");
-        $io->writeln(""); // blank line
+        $io->section('Backfilling '.$entityClass);
+        $io->writeln(sprintf('  Missing: <comment>%s</comment>  |  Processing: <comment>%d</comment>  |  Batch: <comment>%d</comment>', $total, $target, $batchSize));
+        $io->writeln(''); // blank line
 
         // Streaming query for rows to process
         $qb = $repo->createQueryBuilder('e')
             ->where('e.publicId IS NULL')
             ->orderBy('e.id', 'ASC');
 
-        if ($limit !== null) {
+        if (null !== $limit) {
             $qb->setMaxResults($limit);
         }
 
@@ -103,7 +107,7 @@ final readonly class backfillUlidsCommand
             $entity->initializePublicId();
             ++$processed;
 
-            if ($processed % $batchSize === 0) {
+            if (0 === $processed % $batchSize) {
                 $this->em->flush();
                 $this->em->clear();
             }
@@ -115,6 +119,6 @@ final readonly class backfillUlidsCommand
 
         $progress->finish();
         $io->newLine(2);
-        $io->writeln("  Done. Backfilled <info>{$processed}</info> rows.");
+        $io->writeln(sprintf('  Done. Backfilled <info>%d</info> rows.', $processed));
     }
 }

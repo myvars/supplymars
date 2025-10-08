@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\Product;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\Entity\Category;
 use App\Entity\Manufacturer;
 use App\Entity\Product;
@@ -18,11 +19,16 @@ use PHPUnit\Framework\TestCase;
 
 class ProductGeneratorTest extends TestCase
 {
-    private CategoryMapper $categoryMapper;
-    private SubcategoryMapper $subcategoryMapper;
-    private ManufacturerMapper $manufacturerMapper;
-    private ProductMapper $productMapper;
-    private ProductPriceCalculator $productPriceCalculator;
+    private MockObject $categoryMapper;
+
+    private MockObject $subcategoryMapper;
+
+    private MockObject $manufacturerMapper;
+
+    private MockObject $productMapper;
+
+    private MockObject $productPriceCalculator;
+
     private ProductGenerator $productGenerator;
 
     protected function setUp(): void

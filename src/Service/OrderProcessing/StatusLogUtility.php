@@ -16,7 +16,7 @@ final readonly class StatusLogUtility
     {
     }
 
-    public function forCustomerOrder(CustomerOrder $customerOrder): ?array
+    public function forCustomerOrder(CustomerOrder $customerOrder): array
     {
         return $this->getStatusLogs(
             DomainEventType::ORDER_STATUS_CHANGED,
@@ -24,7 +24,7 @@ final readonly class StatusLogUtility
         );
     }
 
-    public function forCustomerOrderItem(CustomerOrderItem $customerOrderItem): ?array
+    public function forCustomerOrderItem(CustomerOrderItem $customerOrderItem): array
     {
         return $this->getStatusLogs(
             DomainEventType::ORDER_ITEM_STATUS_CHANGED,
@@ -32,7 +32,7 @@ final readonly class StatusLogUtility
         );
     }
 
-    public function forPurchaseOrder(PurchaseOrder $purchaseOrder): ?array
+    public function forPurchaseOrder(PurchaseOrder $purchaseOrder): array
     {
         return $this->getStatusLogs(
             DomainEventType::PURCHASE_ORDER_STATUS_CHANGED,
@@ -40,7 +40,7 @@ final readonly class StatusLogUtility
         );
     }
 
-    public function forPurchaseOrderItem(PurchaseOrderItem $purchaseOrderItem): ?array
+    public function forPurchaseOrderItem(PurchaseOrderItem $purchaseOrderItem): array
     {
         return $this->getStatusLogs(
             DomainEventType::PURCHASE_ORDER_ITEM_STATUS_CHANGED,

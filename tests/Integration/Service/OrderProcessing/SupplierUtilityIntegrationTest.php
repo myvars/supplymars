@@ -59,7 +59,7 @@ class SupplierUtilityIntegrationTest extends KernelTestCase
 
     public function testSetDefaultUser(): void
     {
-        $user = UserFactory::new()->staff()->create(['email' => 'adam@admin.com']);
+        UserFactory::new()->staff()->create(['email' => 'adam@admin.com']);
 
         $this->supplierUtility->setDefaultUser();
 

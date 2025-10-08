@@ -33,7 +33,7 @@ final class SupplierStockChangeLogFactory extends PersistentProxyObjectFactory
      *
      * @todo add your default values here
      */
-    protected function defaults(): array|callable
+    protected function defaults(): array
     {
         return [
             'type' => DomainEventType::SUPPLIER_PRODUCT_STOCK_CHANGED,
@@ -51,14 +51,14 @@ final class SupplierStockChangeLogFactory extends PersistentProxyObjectFactory
     protected function initialize(): static
     {
         return $this
-            ->beforeInstantiate(function (array $attributes): array {;
+            ->beforeInstantiate(function (array $attributes): array {
                 $attributes['stockChange'] ??= StockChange::from(
                     $attributes['supplierProduct']->getStock(),
                     $attributes['supplierProduct']->getStock() + 1
                 );
                 $attributes['costChange'] ??= CostChange::from(
                     $attributes['supplierProduct']->getCost(),
-                    bcadd($attributes['supplierProduct']->getCost(), '1.00', 2)
+                    bcadd((string) $attributes['supplierProduct']->getCost(), '1.00', 2)
                 );
 
                 return $attributes;

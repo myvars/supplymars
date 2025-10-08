@@ -25,6 +25,7 @@ class ProductPriceUpdaterIntegrationTest extends KernelTestCase
         $product = ProductFactory::createOne(['cost' => 100, 'defaultMarkup' => '20.000'])->_real();
 
         $product->setCost(120);
+
         $this->entityManager->flush();
 
         $updatedProduct = $this->entityManager->getRepository(Product::class)->find($product->getId());
@@ -36,6 +37,7 @@ class ProductPriceUpdaterIntegrationTest extends KernelTestCase
         $product = ProductFactory::createOne(['cost' => 100, 'defaultMarkup' => '20.000'])->_real();
 
         $product->setName('New Product Name');
+
         $this->entityManager->flush();
 
         $updatedProduct = $this->entityManager->getRepository(Product::class)->find($product->getId());

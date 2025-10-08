@@ -31,7 +31,7 @@ class CrudHelper
 
     public function snakeCase(string $string): string
     {
-        return (new UnicodeString($string))->lower()->snake();
+        return new UnicodeString($string)->lower()->snake();
     }
 
     public function getRequest(): ?Request

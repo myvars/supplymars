@@ -219,7 +219,7 @@ class OrderItemControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
-            ->get("/order/item/999" . "/supplier/product/" . $supplierProduct->getId() . "/po/add")
+            ->get('/order/item/999/supplier/product/' . $supplierProduct->getId() . "/po/add")
             ->assertStatus(404);
     }
 

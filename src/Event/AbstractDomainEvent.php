@@ -9,7 +9,7 @@ abstract class AbstractDomainEvent extends Event implements DomainEventInterface
 {
     public function __construct(
         private readonly DomainEventType $type,
-        private ?\DateTimeImmutable $occurredAt = null
+        private ?\DateTimeImmutable $occurredAt = null,
     ) {
         $this->occurredAt = $occurredAt ?? new \DateTimeImmutable();
     }

@@ -17,16 +17,12 @@ class ValidPOItemStatusChangeValidator extends ConstraintValidator
     public function validate($value, Constraint $constraint): void
     {
         if (!$constraint instanceof ValidPOItemStatusChange) {
-            throw new \InvalidArgumentException(
-                'Constraint must be instance of ' . ValidPOItemStatusChange::class
-            );
+            throw new \InvalidArgumentException('Constraint must be instance of '.ValidPOItemStatusChange::class);
         }
 
         $purchaseOrderItemStatusChangeDto = $this->context->getObject();
         if (!$purchaseOrderItemStatusChangeDto instanceof ChangePurchaseOrderItemStatusDto) {
-            throw new \InvalidArgumentException(
-                'Object must be instance of ' . ChangePurchaseOrderItemStatusDto::class
-            );
+            throw new \InvalidArgumentException('Object must be instance of '.ChangePurchaseOrderItemStatusDto::class);
         }
 
         $purchaseOrderItem = $this->purchaseOrderItemRepository->find($purchaseOrderItemStatusChangeDto->getId());

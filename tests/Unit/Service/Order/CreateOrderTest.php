@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\Order;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\DTO\CreateOrderDto;
 use App\Entity\Address;
 use App\Entity\CustomerOrder;
@@ -12,7 +13,6 @@ use App\Repository\UserRepository;
 use App\Repository\VatRateRepository;
 use App\Service\Crud\Common\CrudOptions;
 use App\Service\Order\CreateOrder;
-use App\Service\Utility\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
@@ -20,17 +20,17 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class CreateOrderTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
-    private ValidatorInterface $validator;
-    private DomainEventDispatcher $domainEventDispatcher;
+    private MockObject $entityManager;
+
+    private MockObject $validator;
+
     private CreateOrder $createOrder;
 
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->validator = $this->createMock(ValidatorInterface::class);
-        $this->domainEventDispatcher = $this->createMock(DomainEventDispatcher::class);
-        $this->createOrder = new CreateOrder($this->entityManager, $this->validator, $this->domainEventDispatcher);
+        $this->createOrder = new CreateOrder($this->entityManager, $this->validator);
     }
 
     public function testHandleWithNonCreateOrderDtoEntity(): void
@@ -73,7 +73,6 @@ class CreateOrderTest extends TestCase
 
         $this->entityManager->expects($this->once())->method('persist');
         $this->entityManager->expects($this->once())->method('flush');
-        $this->domainEventDispatcher->expects($this->once())->method('dispatchProviderEvents');
 
         $customerOrder = $this->createOrder->fromDto($dto);
         $this->assertInstanceOf(CustomerOrder::class, $customerOrder);

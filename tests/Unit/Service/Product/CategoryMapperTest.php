@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\Product;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\Entity\Category;
 use App\Entity\SupplierCategory;
 use App\Entity\SupplierProduct;
@@ -19,9 +20,12 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class CategoryMapperTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
-    private ValidatorInterface $validator;
-    private Security $security;
+    private MockObject $entityManager;
+
+    private MockObject $validator;
+
+    private MockObject $security;
+
     private CategoryMapper $categoryMapper;
 
     protected function setUp(): void

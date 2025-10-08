@@ -3,7 +3,6 @@
 namespace App\Tests\Application\Controller;
 
 use App\Enum\PurchaseOrderStatus;
-use App\Factory\PurchaseOrderFactory;
 use App\Factory\PurchaseOrderItemFactory;
 use App\Factory\SupplierProductFactory;
 use App\Factory\UserFactory;

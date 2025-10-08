@@ -17,7 +17,7 @@ class CategoryTest extends TestCase
         $user = $this->createMock(User::class);
         $vatRate = $this->createMock(VatRate::class);
 
-        $category = (new Category())
+        $category = new Category()
             ->setName('Electronics')
             ->setDefaultMarkup('10.000')
             ->setOwner($user)

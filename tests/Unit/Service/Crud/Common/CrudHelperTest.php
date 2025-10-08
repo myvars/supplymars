@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\Crud\Common;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\Service\Crud\Common\CrudHelper;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,9 +12,12 @@ use Twig\Environment;
 
 class CrudHelperTest extends TestCase
 {
-    private RequestStack $requestStack;
-    private Environment $twig;
-    private UrlGeneratorInterface $router;
+    private MockObject $requestStack;
+
+    private MockObject $twig;
+
+    private MockObject $router;
+
     private CrudHelper $crudHelper;
 
     protected function setUp(): void

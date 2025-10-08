@@ -2,10 +2,8 @@
 
 namespace App\Tests\Integration\Service\Sales;
 
-use App\Entity\ProductSales;
 use App\Entity\ProductSalesSummary;
 use App\Enum\SalesDuration;
-use App\Enum\SalesType;
 use App\Factory\ProductSalesFactory;
 use App\Factory\ProductSalesSummaryFactory;
 use App\Service\Sales\ProductSalesSummaryCalculator;
@@ -30,7 +28,7 @@ class ProductSalesSummaryCalculatorIntegrationTest extends KernelTestCase
 
     public function testProcessedSuccessfully(): void
     {
-        $date = (new \DateTime())->format('Y-m-d');
+        $date = new \DateTime()->format('Y-m-d');
         ProductSalesFactory::createOne([
             'dateString' => $date,
             'salesQty' => 10,

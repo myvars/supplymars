@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\Dashboard;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\Enum\SalesDuration;
 use App\Enum\SalesMetricInterface;
 use App\Service\Dashboard\BarChartBuilder;
@@ -12,7 +13,8 @@ use Symfony\UX\Chartjs\Model\Chart;
 
 class BarChartBuilderTest extends TestCase
 {
-    private ChartBuilderInterface $chartBuilder;
+    private MockObject $chartBuilder;
+
     private BarChartBuilder $barChartBuilder;
 
     protected function setUp(): void

@@ -22,6 +22,7 @@ class ProductSalesCalculatorIntegrationTest extends KernelTestCase
     use Factories;
 
     private ProductSalesCalculator $productSalesCalculator;
+
     private ChangePurchaseOrderItemStatus $changePurchaseOrderItemStatus;
 
     protected function setUp(): void
@@ -36,7 +37,7 @@ class ProductSalesCalculatorIntegrationTest extends KernelTestCase
 
     public function testProcessSuccessfully(): void
     {
-        $date = (new \DateTime())->format('Y-m-d');
+        $date = new \DateTime()->format('Y-m-d');
 
         $supplierProduct = SupplierProductFactory::createOne([
             'cost' => '10.00',

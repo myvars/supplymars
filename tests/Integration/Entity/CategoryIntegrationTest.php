@@ -115,7 +115,7 @@ class CategoryIntegrationTest extends KernelTestCase
         $this->assertEquals('Electronics', $persistedCategory->getName());
     }
 
-    public function testAddSubcategoryToCategory()
+    public function testAddSubcategoryToCategory(): void
     {
         $category = CategoryFactory::createOne()->_real();
         $subcategory = SubcategoryFactory::createOne(['category' => $category])->_real();
@@ -124,7 +124,7 @@ class CategoryIntegrationTest extends KernelTestCase
         $this->assertSame($category, $subcategory->getCategory());
     }
 
-    public function testRemoveSubcategoryFromCategory()
+    public function testRemoveSubcategoryFromCategory(): void
     {
         $category = CategoryFactory::createOne()->_real();
         $subcategory = SubcategoryFactory::createOne(['category' => $category])->_real();
@@ -135,7 +135,7 @@ class CategoryIntegrationTest extends KernelTestCase
         $this->assertNull($subcategory->getCategory());
     }
 
-    public function testReAddSubcategoryToCategory()
+    public function testReAddSubcategoryToCategory(): void
     {
         $category = CategoryFactory::createOne()->_real();
         $subcategory = SubcategoryFactory::createOne(['category' => $category])->_real();
@@ -147,7 +147,7 @@ class CategoryIntegrationTest extends KernelTestCase
         $this->assertSame($category, $subcategory->getCategory());
     }
 
-    public function testAddProductToCategory()
+    public function testAddProductToCategory(): void
     {
         $category = CategoryFactory::createOne()->_real();
         $product = ProductFactory::createOne(['category' => $category])->_real();
@@ -156,7 +156,7 @@ class CategoryIntegrationTest extends KernelTestCase
         $this->assertSame($category, $product->getCategory());
     }
 
-    public function testRemoveProductFromCategory()
+    public function testRemoveProductFromCategory(): void
     {
         $category = CategoryFactory::createOne()->_real();
         $product = ProductFactory::createOne(['category' => $category])->_real();
@@ -167,7 +167,7 @@ class CategoryIntegrationTest extends KernelTestCase
         $this->assertNull($product->getCategory());
     }
 
-    public function testReAddProductToCategory()
+    public function testReAddProductToCategory(): void
     {
         $category = CategoryFactory::createOne()->_real();
         $product = ProductFactory::createOne(['category' => $category])->_real();

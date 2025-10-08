@@ -19,7 +19,7 @@ readonly class StatusChangedLogger
     public function fromStatusWasChangedEvent(
         StatusWasChangedEventInterface $event,
         User $currentUser,
-        int $legacyId
+        int $legacyId,
     ): void {
         $statusChangeLog = new StatusChangeLog(
             $event->type(),

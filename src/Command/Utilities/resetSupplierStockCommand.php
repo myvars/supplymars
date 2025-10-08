@@ -2,11 +2,11 @@
 
 namespace App\Command\Utilities;
 
-use Symfony\Component\Console\Attribute\Argument;
 use App\Entity\Supplier;
 use App\Entity\SupplierProduct;
 use App\Service\OrderProcessing\SupplierUtility;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -25,7 +25,7 @@ class resetSupplierStockCommand
     }
 
     public function __invoke(#[Argument(name: 'supplierId', description: 'Supplier to process')]
-    string $supplierId, OutputInterface $output): int
+        string $supplierId, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
@@ -74,7 +74,7 @@ class resetSupplierStockCommand
         return $this->entityManager->getRepository(Supplier::class)->find($supplierId);
     }
 
-    private function getSupplierProducts(Supplier $supplier): ?array
+    private function getSupplierProducts(Supplier $supplier): array
     {
         return $this->entityManager->getRepository(SupplierProduct::class)->findBy(['supplier' => $supplier]);
     }

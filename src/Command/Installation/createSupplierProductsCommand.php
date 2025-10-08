@@ -21,7 +21,7 @@ class createSupplierProductsCommand
 {
     public function __construct(
         private readonly EntityManagerInterface $entityManager,
-        private readonly ProductGenerator $productGenerator
+        private readonly ProductGenerator $productGenerator,
     ) {
     }
 

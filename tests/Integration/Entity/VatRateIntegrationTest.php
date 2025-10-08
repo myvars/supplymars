@@ -68,7 +68,7 @@ class VatRateIntegrationTest  extends KernelTestCase
         $this->assertEquals('Standard rate', $persistedVatRate->getName());
     }
 
-    public function testAddCategoryToVatRate()
+    public function testAddCategoryToVatRate(): void
     {
         $vatRate = VatRateFactory::createOne()->_real();
         $category = CategoryFactory::createOne(['vatRate' => $vatRate])->_real();
@@ -77,7 +77,7 @@ class VatRateIntegrationTest  extends KernelTestCase
         $this->assertSame($vatRate, $category->getVatRate());
     }
 
-    public function testRemoveCategoryFromVatRate()
+    public function testRemoveCategoryFromVatRate(): void
     {
         $vatRate = VatRateFactory::createOne()->_real();
         $category = CategoryFactory::createOne(['vatRate' => $vatRate])->_real();
@@ -88,7 +88,7 @@ class VatRateIntegrationTest  extends KernelTestCase
         $this->assertNull($category->getVatRate());
     }
 
-    public function testReAddCategoryToVatRate()
+    public function testReAddCategoryToVatRate(): void
     {
         $vatRate = VatRateFactory::createOne()->_real();
         $category = CategoryFactory::createOne(['vatRate' => $vatRate])->_real();

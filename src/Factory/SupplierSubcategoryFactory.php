@@ -31,7 +31,7 @@ final class SupplierSubcategoryFactory extends PersistentProxyObjectFactory
      *
      * @todo add your default values here
      */
-    protected function defaults(): array|callable
+    protected function defaults(): array
     {
         return [
             'name' => ucfirst(implode(' ', self::faker()->words(random_int(1, 3)))),

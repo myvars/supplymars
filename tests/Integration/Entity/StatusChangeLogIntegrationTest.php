@@ -23,7 +23,7 @@ class StatusChangeLogIntegrationTest extends KernelTestCase
 
     public function testValidStatusChangeLog(): void
     {
-        $user = UserFactory::createOne();
+        UserFactory::createOne();
 
         $statusChangeLog = StatusChangeLogFactory::createOne([
             'eventTypeId' => 1,

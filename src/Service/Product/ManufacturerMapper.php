@@ -30,7 +30,7 @@ class ManufacturerMapper
             return $manufacturer;
         }
 
-        $manufacturer = (new Manufacturer())
+        $manufacturer = new Manufacturer()
             ->setName($supplierManufacturer->getName())
             ->setIsActive(true);
 

@@ -49,7 +49,7 @@ class ManufacturerIntegrationTest extends KernelTestCase
         $this->assertTrue($persistedManufacturer->isActive());
     }
 
-    public function testAddProductToManufacturer()
+    public function testAddProductToManufacturer(): void
     {
         $manufacturer = ManufacturerFactory::createOne()->_real();
         $product = ProductFactory::createOne(['manufacturer' => $manufacturer])->_real();
@@ -58,7 +58,7 @@ class ManufacturerIntegrationTest extends KernelTestCase
         $this->assertSame($manufacturer, $product->getManufacturer());
     }
 
-    public function testRemoveProductFromManufacturer()
+    public function testRemoveProductFromManufacturer(): void
     {
         $manufacturer = ManufacturerFactory::createOne()->_real();
         $product = ProductFactory::createOne(['manufacturer' => $manufacturer])->_real();
@@ -69,7 +69,7 @@ class ManufacturerIntegrationTest extends KernelTestCase
         $this->assertNull($product->getManufacturer());
     }
 
-    public function testReAddProductToManufacturer()
+    public function testReAddProductToManufacturer(): void
     {
         $manufacturer = ManufacturerFactory::createOne()->_real();
         $product = ProductFactory::createOne(['manufacturer' => $manufacturer])->_real();
@@ -81,7 +81,7 @@ class ManufacturerIntegrationTest extends KernelTestCase
         $this->assertSame($manufacturer, $product->getManufacturer());
     }
 
-    public function testAddSupplierManufacturerToManufacturer()
+    public function testAddSupplierManufacturerToManufacturer(): void
     {
         $manufacturer = ManufacturerFactory::createOne()->_real();
         $supplierManufacturer = SupplierManufacturerFactory::createOne(['mappedManufacturer' => $manufacturer])->_real();
@@ -90,7 +90,7 @@ class ManufacturerIntegrationTest extends KernelTestCase
         $this->assertSame($manufacturer, $supplierManufacturer->getMappedManufacturer());
     }
 
-    public function testRemoveSupplierManufacturerFromManufacturer()
+    public function testRemoveSupplierManufacturerFromManufacturer(): void
     {
         $manufacturer = ManufacturerFactory::createOne()->_real();
         $supplierManufacturer = SupplierManufacturerFactory::createOne(['mappedManufacturer' => $manufacturer])->_real();
@@ -101,7 +101,7 @@ class ManufacturerIntegrationTest extends KernelTestCase
         $this->assertNull($supplierManufacturer->getMappedManufacturer());
     }
 
-    public function testReAddSupplierManufacturerToManufacturer()
+    public function testReAddSupplierManufacturerToManufacturer(): void
     {
         $manufacturer = ManufacturerFactory::createOne()->_real();
         $supplierManufacturer = SupplierManufacturerFactory::createOne(['mappedManufacturer' => $manufacturer])->_real();

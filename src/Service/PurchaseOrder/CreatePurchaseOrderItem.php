@@ -10,7 +10,6 @@ use App\Entity\Supplier;
 use App\Entity\SupplierProduct;
 use App\Service\Crud\Common\CrudActionInterface;
 use App\Service\Crud\Common\CrudOptions;
-use App\Service\Utility\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -20,7 +19,6 @@ final readonly class CreatePurchaseOrderItem implements CrudActionInterface
         private EntityManagerInterface $entityManager,
         private ValidatorInterface $validator,
         private CreatePurchaseOrder $purchaseOrderCreator,
-        private DomainEventDispatcher $domainEventDispatcher,
     ) {
     }
 
@@ -65,13 +63,6 @@ final readonly class CreatePurchaseOrderItem implements CrudActionInterface
         $purchaseOrderItem = $this->createPurchaseOrderItem($customerOrderItem, $purchaseOrder, $supplierProduct);
 
         $this->entityManager->flush();
-
-        $this->domainEventDispatcher->dispatchProviderEvents([
-            $purchaseOrderItem,
-            $purchaseOrder,
-            $customerOrderItem,
-            $customerOrder,
-        ]);
 
         return $purchaseOrderItem;
     }

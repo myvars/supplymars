@@ -29,7 +29,7 @@ class ProductMapper
             return $product;
         }
 
-        $product = (new Product())
+        $product = new Product()
             ->setName($supplierProduct->getName())
             ->setCost($supplierProduct->getCost())
             ->setLeadTimeDays($supplierProduct->getLeadTimeDays())

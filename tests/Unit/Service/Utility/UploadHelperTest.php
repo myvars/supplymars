@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\Utility;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\Service\Utility\UploadHelper;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Visibility;
@@ -12,7 +13,9 @@ use Symfony\Component\String\UnicodeString;
 
 class UploadHelperTest extends TestCase
 {
-    private Filesystem $filesystemMock;
+    public MockObject $sluggerMock;
+
+    private MockObject $filesystemMock;
 
     private UploadHelper $uploadHelper;
 

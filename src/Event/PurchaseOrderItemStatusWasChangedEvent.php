@@ -10,7 +10,7 @@ class PurchaseOrderItemStatusWasChangedEvent extends AbstractDomainEvent impleme
 {
     public function __construct(
         private readonly PurchaseOrderItemPublicId $publicId,
-        private readonly StatusChange $statusChange
+        private readonly StatusChange $statusChange,
     ) {
         parent::__construct(DomainEventType::PURCHASE_ORDER_ITEM_STATUS_CHANGED);
     }

@@ -11,7 +11,6 @@ use App\Factory\UserFactory;
 use App\Factory\VatRateFactory;
 use App\Service\Crud\Common\CrudOptions;
 use App\Service\Order\CreateOrder;
-use App\Service\Utility\DomainEventDispatcher;
 use App\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -29,8 +28,7 @@ class CreateOrderIntegrationTest extends KernelTestCase
         self::bootKernel();
         $entityManager = static::getContainer()->get(EntityManagerInterface::class);
         $validator = static::getContainer()->get(ValidatorInterface::class);
-        $domainEventDispatcher = static::getContainer()->get(DomainEventDispatcher::class);
-        $this->createOrder = new CreateOrder($entityManager, $validator, $domainEventDispatcher);
+        $this->createOrder = new CreateOrder($entityManager, $validator);
         StaffUserStory::load();
     }
 
@@ -44,7 +42,7 @@ class CreateOrderIntegrationTest extends KernelTestCase
         ])->_real();
         $customer->addAddress($address);
 
-        $vatRate = VatRateFactory::new()->standard()->create();
+        VatRateFactory::new()->standard()->create();
 
         $dto = new CreateOrderDto();
         $dto->setCustomerId($customer->getId());

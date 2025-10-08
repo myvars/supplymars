@@ -14,6 +14,7 @@ class ProductImageControllerTest extends WebTestCase
     use Factories;
 
     private readonly string $dummyImagePath;
+
     private readonly string $invalidImagePath;
 
     protected function setUp(): void

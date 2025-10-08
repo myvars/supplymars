@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\OrderProcessing;
 
+use Faker\Generator;
 use App\Entity\User;
 use App\Service\OrderProcessing\RandomUserFactory;
 use PHPUnit\Framework\TestCase;
@@ -12,12 +13,16 @@ class RandomUserFactoryTest extends TestCase
     public function testCreateReturnsUserWithExpectedProperties(): void
     {
         // Stub Faker\Generator with required methods and correct method signature
-        $faker = new class extends \Faker\Generator {
+        $faker = new class extends Generator {
             public function unique($reset = false, $maxRetries = 10000) { return $this; }
-            public function safeEmail() { return 'test@example.com'; }
-            public function firstName() { return 'John'; }
-            public function lastName() { return 'Doe'; }
-            public function password() { return 'plainPassword'; }
+
+            public function safeEmail(): string { return 'test@example.com'; }
+
+            public function firstName(): string { return 'John'; }
+
+            public function lastName(): string { return 'Doe'; }
+
+            public function password(): string { return 'plainPassword'; }
         };
 
         $passwordEncoder = $this->createMock(UserPasswordHasherInterface::class);

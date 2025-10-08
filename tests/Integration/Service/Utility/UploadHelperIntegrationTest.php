@@ -12,6 +12,7 @@ class UploadHelperIntegrationTest extends KernelTestCase
     use Factories;
 
     private UploadHelper $uploadHelper;
+
     private string $appProductUploads;
 
     protected function setUp(): void

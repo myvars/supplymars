@@ -8,7 +8,6 @@ use App\Factory\CustomerOrderItemFactory;
 use App\Service\Crud\Common\CrudOptions;
 use App\Service\Order\EditOrderItem;
 use App\Service\Product\MarkupCalculator;
-use App\Service\Utility\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
@@ -18,6 +17,7 @@ class OrderItemUpdaterIntegrationTest extends KernelTestCase
     use Factories;
 
     private EntityManagerInterface $entityManager;
+
     private EditOrderItem $editOrderItem;
 
     protected function setUp(): void
@@ -25,8 +25,7 @@ class OrderItemUpdaterIntegrationTest extends KernelTestCase
         self::bootKernel();
         $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
         $markupCalculator = static::getContainer()->get(MarkupCalculator::class);
-        $domainEventDispatcher = static::getContainer()->get(DomainEventDispatcher::class);
-        $this->editOrderItem = new EditOrderItem($this->entityManager, $markupCalculator, $domainEventDispatcher);
+        $this->editOrderItem = new EditOrderItem($this->entityManager, $markupCalculator);
     }
 
     public function testPreAndPostUpdateRecalculatesTotalWhenFieldsChange(): void

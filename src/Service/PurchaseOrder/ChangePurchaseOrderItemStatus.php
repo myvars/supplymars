@@ -6,15 +6,12 @@ use App\DTO\ChangePurchaseOrderItemStatusDto;
 use App\Entity\PurchaseOrderItem;
 use App\Service\Crud\Common\CrudActionInterface;
 use App\Service\Crud\Common\CrudOptions;
-use App\Service\Utility\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 
 final readonly class ChangePurchaseOrderItemStatus implements CrudActionInterface
 {
-    public function  __construct(
-        private EntityManagerInterface $entityManager,
-        private DomainEventDispatcher $domainEventDispatcher,
-    ) {
+    public function __construct(private EntityManagerInterface $entityManager)
+    {
     }
 
     public function handle(CrudOptions $crudOptions): void
@@ -43,13 +40,6 @@ final readonly class ChangePurchaseOrderItemStatus implements CrudActionInterfac
 
         $this->entityManager->persist($purchaseOrderItem);
         $this->entityManager->flush();
-
-        $this->domainEventDispatcher->dispatchProviderEvents([
-            $purchaseOrderItem,
-            $purchaseOrderItem->getPurchaseOrder(),
-            $purchaseOrderItem->getCustomerOrderItem(),
-            $purchaseOrderItem->getCustomerOrderItem()->getCustomerOrder(),
-        ]);
     }
 
     private function getPurchaseOrderItem(int $id): PurchaseOrderItem

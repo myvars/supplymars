@@ -2,13 +2,13 @@
 
 namespace App\Command\OrderProcessing;
 
-use Symfony\Component\Console\Attribute\Argument;
 use App\Entity\PurchaseOrderItem;
 use App\Entity\StatusChangeLog;
 use App\Entity\Supplier;
 use App\Enum\PurchaseOrderStatus;
 use App\Service\OrderProcessing\SupplierUtility;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -28,7 +28,7 @@ class deliverPOItemsCommand
     public function __invoke(
         InputInterface $input,
         OutputInterface $output,
-        #[Argument(description: 'PO item count to process')] string $poItemCount
+        #[Argument(description: 'PO item count to process')] string $poItemCount,
     ): int {
         $io = new SymfonyStyle($input, $output);
 
@@ -85,8 +85,8 @@ class deliverPOItemsCommand
         // Check it's between 7 AM and 10 PM, and the PO item was accepted more than 2 hours ago
         $now = new \DateTimeImmutable();
         $intervalTime = $now->sub(\DateInterval::createFromDateString('12 hours')); // 12 hours ago
-        $startTime = (new \DateTimeImmutable())->setTime(7, 0);  // 7 AM today
-        $endTime = (new \DateTimeImmutable())->setTime(21, 0);   // 9 PM today
+        $startTime = new \DateTimeImmutable()->setTime(7, 0);  // 7 AM today
+        $endTime = new \DateTimeImmutable()->setTime(21, 0);   // 9 PM today
 
         if ($now < $startTime || $now > $endTime || $statusChangeLog->getEventTimestamp() > $intervalTime) {
             return false;

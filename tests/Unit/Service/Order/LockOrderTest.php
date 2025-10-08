@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\Order;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\Entity\CustomerOrder;
 use App\Entity\User;
 use App\Service\Crud\Common\CrudOptions;
@@ -12,8 +13,10 @@ use Symfony\Bundle\SecurityBundle\Security;
 
 class LockOrderTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
-    private Security $security;
+    private MockObject $entityManager;
+
+    private MockObject $security;
+
     private LockOrder $lockOrder;
 
     protected function setUp(): void

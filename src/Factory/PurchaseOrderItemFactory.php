@@ -34,7 +34,7 @@ final class PurchaseOrderItemFactory extends PersistentProxyObjectFactory
      *
      * @todo add your default values here
      */
-    protected function defaults(): array|callable
+    protected function defaults(): array
     {
         return [
             'product' => LazyValue::memoize(fn (): Product => ProductFactory::new()->create()),

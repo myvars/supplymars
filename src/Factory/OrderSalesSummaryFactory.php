@@ -32,7 +32,7 @@ final class OrderSalesSummaryFactory extends PersistentProxyObjectFactory
      *
      * @todo add your default values here
      */
-    protected function defaults(): array|callable
+    protected function defaults(): array
     {
         return [
             'orderSalesType' => OrderSalesType::create(

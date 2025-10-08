@@ -71,7 +71,7 @@ class OrderSalesSummaryIntegrationTest extends KernelTestCase
     public function testOrderSalesSummaryPersistence(): void
     {
         $orderSalesType = OrderSalesType::create(SalesDuration::LAST_7);
-        $orderSalesSummary = OrderSalesSummaryFactory::createOne([
+        OrderSalesSummaryFactory::createOne([
             'orderSalesType' => $orderSalesType,
             'dateString' => '2023-01-01',
             'orderCount' => 10,

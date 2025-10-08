@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\Customer;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\Entity\CustomerOrder;
 use App\Entity\User;
 use App\Service\Crud\Common\CrudOptions;
@@ -12,7 +13,8 @@ use PHPUnit\Framework\TestCase;
 
 class DeleteCustomerTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
+    private MockObject $entityManager;
+
     private DeleteCustomer $deleteCustomer;
 
     protected function setUp(): void

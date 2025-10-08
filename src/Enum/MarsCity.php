@@ -22,7 +22,7 @@ enum MarsCity: string
 
     public function sectorCode(): string
     {
-        return match($this) {
+        return match ($this) {
             self::OLYMPIA => 'OM',
             self::VALLIS => 'VM',
             self::GALE => 'GC',
@@ -44,6 +44,7 @@ enum MarsCity: string
     public static function random(): self
     {
         $cases = self::cases();
+
         return $cases[array_rand($cases)];
     }
 }

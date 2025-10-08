@@ -3,7 +3,7 @@
 namespace App\ValueObject;
 
 /**
- * Represents a stock level change
+ * Represents a stock level change.
  */
 final readonly class StockChange
 {
@@ -26,7 +26,6 @@ final readonly class StockChange
     public function after(): int
     {
         return $this->after;
-
     }
 
     public function hasChanged(): bool
@@ -36,6 +35,6 @@ final readonly class StockChange
 
     public function describe(): string
     {
-        return $this->before . ' → ' . $this->after;
+        return $this->before.' → '.$this->after;
     }
 }

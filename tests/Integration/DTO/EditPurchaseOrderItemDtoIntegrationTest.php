@@ -44,7 +44,7 @@ class EditPurchaseOrderItemDtoIntegrationTest extends KernelTestCase
             0,
             1
         );
-        $violations = $this->validator->validate($dto);
+        $this->validator->validate($dto);
     }
 
     public function testQuantityIsRequired(): void

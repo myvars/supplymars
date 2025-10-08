@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\PurchaseOrder;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\DTO\ChangePurchaseOrderItemStatusDto;
 use App\Entity\CustomerOrder;
 use App\Entity\CustomerOrderItem;
@@ -11,21 +12,19 @@ use App\Enum\PurchaseOrderStatus;
 use App\Repository\PurchaseOrderItemRepository;
 use App\Service\Crud\Common\CrudOptions;
 use App\Service\PurchaseOrder\ChangePurchaseOrderItemStatus;
-use App\Service\Utility\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 
 class ChangePurchaseOrderItemStatusTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
-    private DomainEventDispatcher $domainEventDispatcher;
+    private MockObject $entityManager;
+
     private ChangePurchaseOrderItemStatus $changePurchaseOrderItemStatus;
 
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
-        $this->domainEventDispatcher = $this->createMock(DomainEventDispatcher::class);
-        $this->changePurchaseOrderItemStatus = new ChangePurchaseOrderItemStatus($this->entityManager, $this->domainEventDispatcher);
+        $this->changePurchaseOrderItemStatus = new ChangePurchaseOrderItemStatus($this->entityManager);
     }
 
     public function testHandleWithInvalidEntity(): void
@@ -85,7 +84,6 @@ class ChangePurchaseOrderItemStatusTest extends TestCase
         $purchaseOrderItem->expects($this->once())->method('updateStatus')->with(PurchaseOrderStatus::PROCESSING);
         $this->entityManager->expects($this->once())->method('persist')->with($purchaseOrderItem);
         $this->entityManager->expects($this->once())->method('flush');
-        $this->domainEventDispatcher->expects($this->once())->method('dispatchProviderEvents');
 
         $this->changePurchaseOrderItemStatus->handle($crudOptions);
     }

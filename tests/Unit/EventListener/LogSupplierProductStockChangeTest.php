@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\EventListener;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\Entity\SupplierStockChangeLog;
 use App\Enum\DomainEventType;
 use App\Event\SupplierProductStockWasChangedEvent;
@@ -18,8 +19,9 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class LogSupplierProductStockChangeTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
-    private ValidatorInterface $validator;
+    private MockObject $entityManager;
+
+    private MockObject $validator;
 
     protected function setUp(): void
     {

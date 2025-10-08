@@ -16,7 +16,7 @@ final class OverdueOrderSearchDto extends SearchDto
 
     private SalesDuration $duration = SalesDuration::LAST_30;
 
-    public function getDuration(): ?SalesDuration
+    public function getDuration(): SalesDuration
     {
         return $this->duration;
     }

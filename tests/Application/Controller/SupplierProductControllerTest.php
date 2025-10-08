@@ -253,7 +253,7 @@ class SupplierProductControllerTest extends WebTestCase
 
     public function testMapSupplierProduct(): void
     {
-        $vatRate = VatRateFactory::new()->standard()->create();
+        VatRateFactory::new()->standard()->create();
         $supplierProduct = SupplierProductFactory::createOne([
             'name' => 'Supplier Product to be mapped',
             'product' => null

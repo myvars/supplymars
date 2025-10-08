@@ -2,6 +2,7 @@
 
 namespace App\Tests\Integration\Service\Search;
 
+use App\Entity\User;
 use App\Factory\UserFactory;
 use App\Service\Search\Paginator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,6 +14,7 @@ class PaginatorIntegrationTest extends KernelTestCase
     use Factories;
 
     private Paginator $paginator;
+
     private EntityManagerInterface $entityManager;
 
     protected function setUp(): void
@@ -28,7 +30,7 @@ class PaginatorIntegrationTest extends KernelTestCase
 
         $queryBuilder = $this->entityManager->createQueryBuilder()
             ->select('u')
-            ->from('App\Entity\User', 'u');
+            ->from(User::class, 'u');
 
         $page = 1;
         $limit = 10;

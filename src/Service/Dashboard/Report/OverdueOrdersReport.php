@@ -41,7 +41,7 @@ class OverdueOrdersReport implements ReportInterface
         ];
     }
 
-    private function getSummary(): ?array
+    private function getSummary(): array
     {
         $summary = $this->orderRepository->findOverdueOrdersSummary(
             new \DateTime($this->dto->getDuration()->getStartDate())

@@ -53,7 +53,7 @@ class ProductSalesCalculator
     {
         return $this->entityManager
             ->getRepository(PurchaseOrderItem::class)
-            ->calculateProductSales(new \DateTime($date), (new \DateTime($date))->modify('+ 1 day'));
+            ->calculateProductSales(new \DateTime($date), new \DateTime($date)->modify('+ 1 day'));
     }
 
     private function removeExistingProductSales(string $date): void

@@ -22,7 +22,7 @@ final readonly class DashboardViewer
     ) {
     }
 
-    public function build(): ?array
+    public function build(): array
     {
         return [
             'orderSalesSummary' => $this->getOrderSalesSummary(SalesDuration::TODAY),
@@ -36,14 +36,14 @@ final readonly class DashboardViewer
         ];
     }
 
-    private function getOrderSalesSummary(SalesDuration $duration): ?array
+    private function getOrderSalesSummary(SalesDuration $duration): array
     {
         $summary = $this->orderSummaryRepository->findOrderSalesSummary($duration);
 
         return $summary ?? [];
     }
 
-    private function getProductSalesSummary(SalesDuration $duration): ?array
+    private function getProductSalesSummary(SalesDuration $duration): array
     {
         $summary = $this->productSummaryRepository->findProductSalesSummary(
             1,
@@ -54,7 +54,7 @@ final readonly class DashboardViewer
         return $summary ?? [];
     }
 
-    private function getOverdueOrderSummary(): ?array
+    private function getOverdueOrderSummary(): array
     {
         $summary = $this->orderRepository->findOverdueOrdersSummary(
             new \DateTime(SalesDuration::LAST_30->getStartDate())
@@ -63,7 +63,7 @@ final readonly class DashboardViewer
         return $summary ?? [];
     }
 
-    private function getRejectedPoSummary(): ?array
+    private function getRejectedPoSummary(): array
     {
         $summary = $this->purchaseOrderRepository->findRejectedPoSummary(
             new \DateTime(SalesDuration::LAST_30->getStartDate())
@@ -72,7 +72,7 @@ final readonly class DashboardViewer
         return $summary ?? [];
     }
 
-    private function getLatestProductSales(): ?array
+    private function getLatestProductSales(): array
     {
         return $this->productSalesRepository->findLatestProductSales(
             ProductSalesType::create(SalesType::ALL, SalesDuration::TODAY),
@@ -80,7 +80,7 @@ final readonly class DashboardViewer
         );
     }
 
-    private function getLatestOrders(): ?array
+    private function getLatestOrders(): array
     {
         return $this->orderRepository->findLatestOrders(
             new \DateTime(SalesDuration::TODAY->getStartDate()),

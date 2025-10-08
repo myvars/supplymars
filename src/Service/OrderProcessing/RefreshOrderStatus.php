@@ -3,15 +3,12 @@
 namespace App\Service\OrderProcessing;
 
 use App\Entity\CustomerOrder;
-use App\Service\Utility\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 
 final readonly class RefreshOrderStatus
 {
-    public function __construct(
-        private EntityManagerInterface $entityManager,
-        private DomainEventDispatcher $domainEventDispatcher,
-    ) {
+    public function __construct(private EntityManagerInterface $entityManager)
+    {
     }
 
     public function refresh(CustomerOrder $customerOrder): array
@@ -50,8 +47,6 @@ final readonly class RefreshOrderStatus
                     $purchaseOrder->getStatus()->value
                 );
             }
-
-            $this->domainEventDispatcher->dispatchProviderEvents([$purchaseOrder]);
         }
     }
 
@@ -69,11 +64,6 @@ final readonly class RefreshOrderStatus
                     $customerOrderItem->getStatus()->value
                 );
             }
-
-            $this->domainEventDispatcher->dispatchProviderEvents([
-                $customerOrderItem,
-                $customerOrderItem->getCustomerOrder()]
-            );
         }
     }
 

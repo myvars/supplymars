@@ -5,7 +5,7 @@ namespace App\EventListener;
 use App\ValueObject\AbstractUlidId;
 use Doctrine\Persistence\ObjectRepository;
 
-abstract readonly class AbstractPublicIdResolver implements PublicIdResolver
+abstract readonly class AbstractPublicIdResolver implements PublicIdResolverInterface
 {
     public function __construct(private ObjectRepository $repository)
     {

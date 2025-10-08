@@ -2,12 +2,11 @@
 
 namespace App\Tests\Unit\Service\PurchaseOrder;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\Entity\CustomerOrder;
-use App\Entity\PurchaseOrder;
 use App\Entity\Supplier;
 use App\Enum\ShippingMethod;
 use App\Service\PurchaseOrder\CreatePurchaseOrder;
-use App\Service\Utility\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
@@ -15,17 +14,17 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class CreatePurchaseOrderTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
-    private ValidatorInterface $validator;
-    private DomainEventDispatcher $domainEventDispatcher;
+    private MockObject $entityManager;
+
+    private MockObject $validator;
+
     private CreatePurchaseOrder $createPurchaseOrder;
 
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
         $this->validator = $this->createMock(ValidatorInterface::class);
-        $this->domainEventDispatcher = $this->createMock(DomainEventDispatcher::class);
-        $this->createPurchaseOrder = new CreatePurchaseOrder($this->entityManager, $this->validator, $this->domainEventDispatcher);
+        $this->createPurchaseOrder = new CreatePurchaseOrder($this->entityManager, $this->validator);
     }
 
     public function testCreatePurchaseOrderSuccessfully(): void
@@ -38,9 +37,7 @@ class CreatePurchaseOrderTest extends TestCase
 
         $this->entityManager->expects($this->once())->method('persist');
         $this->entityManager->expects($this->once())->method('flush');
-        $this->domainEventDispatcher->expects($this->once())->method('dispatchProviderEvents');
 
-        $purchaseOrder = $this->createPurchaseOrder->fromOrder($customerOrder, $supplier);
-        $this->assertInstanceOf(PurchaseOrder::class, $purchaseOrder);
+        $this->createPurchaseOrder->fromOrder($customerOrder, $supplier);
     }
 }

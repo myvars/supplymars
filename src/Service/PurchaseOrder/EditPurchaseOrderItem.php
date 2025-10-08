@@ -8,15 +8,12 @@ use App\Entity\PurchaseOrder;
 use App\Entity\PurchaseOrderItem;
 use App\Service\Crud\Common\CrudActionInterface;
 use App\Service\Crud\Common\CrudOptions;
-use App\Service\Utility\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 
 final readonly class EditPurchaseOrderItem implements CrudActionInterface
 {
-    public function __construct(
-        private EntityManagerInterface $entityManager,
-        private DomainEventDispatcher $domainEventDispatcher,
-    ) {
+    public function __construct(private EntityManagerInterface $entityManager)
+    {
     }
 
     public function handle(CrudOptions $crudOptions): void
@@ -50,37 +47,10 @@ final readonly class EditPurchaseOrderItem implements CrudActionInterface
             return;
         }
 
-        $customerOrderItem = $purchaseOrderItem->getCustomerOrderItem();
+        $purchaseOrderItem->getCustomerOrderItem();
         $this->editPurchaseOrderItem($purchaseOrderItem, $dto->getQuantity());
 
         $this->entityManager->flush();
-
-        $this->dispatchEvents($customerOrderItem, $purchaseOrderItem);
-    }
-
-    private function dispatchEvents(
-        CustomerOrderItem $customerOrderItem,
-        PurchaseOrderItem $purchaseOrderItem,
-    ): void {
-        $this->domainEventDispatcher->dispatchProviderEvents([
-            $customerOrderItem,
-            $customerOrderItem->getCustomerOrder(),
-        ]);
-
-        // check if the purchase order had been removed
-        $purchaseOrder = $purchaseOrderItem->getPurchaseOrder();
-        if (!$purchaseOrderItem->getPurchaseOrder() instanceof PurchaseOrder) {
-            return;
-        }
-
-        $this->domainEventDispatcher->dispatchProviderEvents($purchaseOrder);
-
-        // check if the purchase order item had been removed
-        if (!$purchaseOrder->getPurchaseOrderItems()->contains($purchaseOrderItem)) {
-            return;
-        }
-
-        $this->domainEventDispatcher->dispatchProviderEvents($purchaseOrderItem);
     }
 
     private function getPurchaseOrderItem(int $id): ?PurchaseOrderItem

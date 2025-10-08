@@ -6,7 +6,6 @@ use App\Enum\OrderStatus;
 use App\Factory\CustomerOrderItemFactory;
 use App\Service\Crud\Common\CrudOptions;
 use App\Service\Order\CancelOrder;
-use App\Service\Utility\DomainEventDispatcher;
 use App\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -22,8 +21,7 @@ class CancelOrderIntegrationTest extends KernelTestCase
     {
         self::bootKernel();
         $entityManager = static::getContainer()->get(EntityManagerInterface::class);
-        $domainEventDispatcher = static::getContainer()->get(DomainEventDispatcher::class);
-        $this->cancelOrder = new CancelOrder($entityManager, $domainEventDispatcher);
+        $this->cancelOrder = new CancelOrder($entityManager);
         StaffUserStory::load();
     }
 

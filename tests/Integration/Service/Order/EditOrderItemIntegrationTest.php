@@ -10,7 +10,6 @@ use App\Factory\PurchaseOrderItemFactory;
 use App\Service\Crud\Common\CrudOptions;
 use App\Service\Order\EditOrderItem;
 use App\Service\Product\MarkupCalculator;
-use App\Service\Utility\DomainEventDispatcher;
 use App\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -27,8 +26,7 @@ class EditOrderItemIntegrationTest extends KernelTestCase
         self::bootKernel();
         $entityManager = static::getContainer()->get(EntityManagerInterface::class);
         $markupCalculator = static::getContainer()->get(MarkupCalculator::class);
-        $domainEventDispatcher = static::getContainer()->get(DomainEventDispatcher::class);
-        $this->editOrderItem = new EditOrderItem($entityManager, $markupCalculator, $domainEventDispatcher);
+        $this->editOrderItem = new EditOrderItem($entityManager, $markupCalculator);
         StaffUserStory::load();
     }
 

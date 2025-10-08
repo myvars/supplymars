@@ -2,15 +2,12 @@
 
 namespace App\Service\Crud\Common;
 
-use App\Service\Utility\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 
 final readonly class CrudDeleteAction implements CrudActionInterface
 {
-    public function __construct(
-        private EntityManagerInterface $entityManager,
-        private DomainEventDispatcher $domainEventDispatcher,
-    ) {
+    public function __construct(private EntityManagerInterface $entityManager)
+    {
     }
 
     public function handle(CrudOptions $crudOptions): void
@@ -22,7 +19,5 @@ final readonly class CrudDeleteAction implements CrudActionInterface
     {
         $this->entityManager->remove($entity);
         $this->entityManager->flush();
-
-        $this->domainEventDispatcher->dispatchProviderEvents($entity);
     }
 }

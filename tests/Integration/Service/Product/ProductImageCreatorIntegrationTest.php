@@ -17,7 +17,9 @@ class ProductImageCreatorIntegrationTest extends KernelTestCase
     use Factories;
 
     private ProductImageCreator $productImageCreator;
+
     private string $appProductUploads;
+
     private UploadHelper $uploadHelper;
 
     protected function setUp(): void

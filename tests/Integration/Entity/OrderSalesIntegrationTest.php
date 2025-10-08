@@ -66,7 +66,7 @@ class OrderSalesIntegrationTest extends KernelTestCase
 
     public function testOrderSalesPersistence(): void
     {
-        $orderSales = OrderSalesFactory::createOne([
+        OrderSalesFactory::createOne([
             'dateString' => '2023-01-01',
             'orderCount' => 10,
             'orderValue' => '100.00',

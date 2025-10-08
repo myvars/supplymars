@@ -9,7 +9,6 @@ use App\Factory\CustomerOrderItemFactory;
 use App\Factory\ProductFactory;
 use App\Service\Crud\Common\CrudOptions;
 use App\Service\Order\CreateOrderItem;
-use App\Service\Utility\DomainEventDispatcher;
 use App\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -27,8 +26,7 @@ class CreateOrderItemIntegrationTest extends KernelTestCase
         self::bootKernel();
         $entityManager = static::getContainer()->get(EntityManagerInterface::class);
         $validator = static::getContainer()->get(ValidatorInterface::class);
-        $domainEventDispatcher = static::getContainer()->get(DomainEventDispatcher::class);
-        $this->createOrderItem = new CreateOrderItem($entityManager, $validator, $domainEventDispatcher);
+        $this->createOrderItem = new CreateOrderItem($entityManager, $validator);
         StaffUserStory::load();
     }
 

@@ -2,6 +2,8 @@
 
 namespace App\Tests\Integration\Service\Product;
 
+use App\Entity\Product;
+use Zenstruck\Foundry\Persistence\Proxy;
 use App\Enum\PriceModel;
 use App\Factory\CategoryFactory;
 use App\Factory\ProductFactory;
@@ -100,7 +102,7 @@ class ProductPriceCalculatorIntegrationTest extends KernelTestCase
     {
         $products = ProductFactory::createMany(2);
 
-        $this->productPriceCalculator->recalculatePriceFromArray(array_map(fn($product) => $product->_real(), $products));
+        $this->productPriceCalculator->recalculatePriceFromArray(array_map(fn(Product&Proxy $product): object => $product->_real(), $products));
 
         foreach ($products as $product) {
             $this->assertNotNull($product->_real()->getMarkup());

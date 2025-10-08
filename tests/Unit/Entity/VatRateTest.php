@@ -10,7 +10,7 @@ class VatRateTest extends TestCase
 {
     public function testSettersAndGetters(): void
     {
-        $vatRate = (new VatRate())
+        $vatRate = new VatRate()
             ->setName('Standard rate')
             ->setRate('20.00')
             ->setIsDefaultVatRate(true);

@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\Email;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\Entity\User;
 use App\Service\Email\MailerHelper;
 use PHPUnit\Framework\TestCase;
@@ -11,7 +12,8 @@ use SymfonyCasts\Bundle\ResetPassword\Model\ResetPasswordToken;
 
 class MailerHelperTest extends TestCase
 {
-    private MailerInterface $mailer;
+    private MockObject $mailer;
+
     private MailerHelper $mailerHelper;
 
     protected function setUp(): void

@@ -7,7 +7,7 @@ use App\ValueObject\PurchaseOrderItemPublicId;
 
 final readonly class PurchaseOrderItemPublicIdResolver extends AbstractPublicIdResolver
 {
-    public function __construct(private PurchaseOrderItemRepository $repository)
+    public function __construct(PurchaseOrderItemRepository $repository)
     {
         parent::__construct($repository);
     }

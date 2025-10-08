@@ -2,7 +2,6 @@
 
 namespace App\Service\OrderProcessing;
 
-
 use App\Entity\User;
 use Faker\Generator;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -11,7 +10,7 @@ final readonly class RandomUserFactory
 {
     public function __construct(
         private Generator $faker,
-        private UserPasswordHasherInterface $passwordEncoder
+        private UserPasswordHasherInterface $passwordEncoder,
     ) {
     }
 

@@ -6,15 +6,12 @@ use App\Entity\CustomerOrderItem;
 use App\Enum\OrderStatus;
 use App\Service\Crud\Common\CrudActionInterface;
 use App\Service\Crud\Common\CrudOptions;
-use App\Service\Utility\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
 
 final readonly class CancelOrderItem implements CrudActionInterface
 {
-    public function __construct(
-        private EntityManagerInterface $entityManager,
-        private DomainEventDispatcher $domainEventDispatcher,
-    ) {
+    public function __construct(private EntityManagerInterface $entityManager)
+    {
     }
 
     public function handle(CrudOptions $crudOptions): void
@@ -44,10 +41,5 @@ final readonly class CancelOrderItem implements CrudActionInterface
 
         $this->entityManager->persist($customerOrder);
         $this->entityManager->flush();
-
-        $this->domainEventDispatcher->dispatchProviderEvents([
-            $customerOrderItem,
-            $customerOrderItem->getCustomerOrder(),
-        ]);
     }
 }

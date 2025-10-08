@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use App\Event\AbstractDomainEvent;
 
-trait DomainEventTrait
+trait DomainEventProviderTrait
 {
     private array $domainEvents = [];
 

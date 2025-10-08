@@ -109,7 +109,7 @@ class AddressIntegrationTest extends KernelTestCase
         $this->assertEquals('123 Main St', $persistedAddress->getStreet());
     }
 
-    public function testAddCustomerOrderToAddress()
+    public function testAddCustomerOrderToAddress(): void
     {
         $user = UserFactory::createOne();
         $address = AddressFactory::createOne([
@@ -123,7 +123,7 @@ class AddressIntegrationTest extends KernelTestCase
         $this->assertSame($address, $customerOrder->getBillingAddress());
     }
 
-    public function testRemoveCustomerOrderFromAddress()
+    public function testRemoveCustomerOrderFromAddress(): void
     {
         $user = UserFactory::createOne();
         $address = AddressFactory::createOne([
@@ -138,7 +138,7 @@ class AddressIntegrationTest extends KernelTestCase
         $this->assertFalse($address->getCustomerOrders()->contains($customerOrder));
     }
 
-    public function testReAddAddressToUser()
+    public function testReAddAddressToUser(): void
     {
         $user = UserFactory::createOne()->_real();
         $address = AddressFactory::createOne(['customer' => $user])->_real();
@@ -150,7 +150,7 @@ class AddressIntegrationTest extends KernelTestCase
         $this->assertSame($user, $address->getCustomer());
     }
 
-    public function testAddCategoryToUser()
+    public function testAddCategoryToUser(): void
     {
         $user = UserFactory::createOne()->_real();
         $category = CategoryFactory::createOne(['owner' => $user])->_real();
@@ -159,7 +159,7 @@ class AddressIntegrationTest extends KernelTestCase
         $this->assertSame($user, $category->getOwner());
     }
 
-    public function testRemoveCategoryFromUser()
+    public function testRemoveCategoryFromUser(): void
     {
         $user = UserFactory::createOne()->_real();
         $category = CategoryFactory::createOne(['owner' => $user])->_real();
@@ -170,7 +170,7 @@ class AddressIntegrationTest extends KernelTestCase
         $this->assertNull($category->getOwner());
     }
 
-    public function testReAddCategoryToUser()
+    public function testReAddCategoryToUser(): void
     {
         $user = UserFactory::createOne()->_real();
         $category = CategoryFactory::createOne(['owner' => $user])->_real();

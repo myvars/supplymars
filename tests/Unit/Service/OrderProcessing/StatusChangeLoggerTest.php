@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\OrderProcessing;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\Entity\User;
 use App\Enum\DomainEventType;
 use App\Enum\OrderStatus;
@@ -15,8 +16,10 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class StatusChangeLoggerTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
-    private ValidatorInterface $validator;
+    private MockObject $entityManager;
+
+    private MockObject $validator;
+
     private StatusChangedLogger $statusChangeLogger;
 
     protected function setUp(): void

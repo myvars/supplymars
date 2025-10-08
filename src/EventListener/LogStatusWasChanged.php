@@ -32,10 +32,10 @@ final readonly class LogStatusWasChanged
     public function __invoke(StatusWasChangedEventInterface $event): void
     {
         $legacyId = $this->publicIdResolverRegistry->resolve($event->publicId()); // VO in, ?int out
-        if ($legacyId === null) {
+        if (null === $legacyId) {
             $this->logger->warning('Could not resolve legacy ID for public ID', [
                 'publicId' => (string) $event->publicId(),
-                'eventClass' => get_class($event),
+                'eventClass' => $event::class,
             ]);
 
             return;

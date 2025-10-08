@@ -79,7 +79,7 @@ class CustomerControllerTest extends WebTestCase
 
     public function testEditCustomerWithExistingEmail(): void
     {
-        $existingCustomer = UserFactory::createOne(['email' => 'customer@exists.com']);
+        UserFactory::createOne(['email' => 'customer@exists.com']);
         $customer = UserFactory::createOne(['fullName' => 'Customer to be edited']);
 
         $this->browser()

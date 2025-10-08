@@ -23,7 +23,7 @@ final readonly class ProductSalesReport implements ReportInterface
     ) {
     }
 
-    public function build(object $dto): ?array
+    public function build(object $dto): array
     {
         if (!$dto instanceof ProductSalesReportDto) {
             throw new \InvalidArgumentException('Invalid DTO');

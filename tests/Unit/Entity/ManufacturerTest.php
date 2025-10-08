@@ -11,7 +11,7 @@ class ManufacturerTest extends TestCase
 {
     public function testSettersAndGetters(): void
     {
-        $manufacturer = (new Manufacturer())
+        $manufacturer = new Manufacturer()
             ->setName('Test Manufacturer')
             ->setIsActive(true);
 

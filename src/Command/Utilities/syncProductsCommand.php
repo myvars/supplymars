@@ -2,10 +2,10 @@
 
 namespace App\Command\Utilities;
 
-use Symfony\Component\Console\Attribute\Argument;
 use App\Entity\Product;
 use App\Service\OrderProcessing\SupplierUtility;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -22,8 +22,8 @@ class syncProductsCommand
     }
 
     public function __invoke(#[Argument(name: 'minProductId', description: 'min product id')]
-    string $minProductId, #[Argument(name: 'maxProductId', description: 'max product id')]
-    string $maxProductId, OutputInterface $output): int
+        string $minProductId, #[Argument(name: 'maxProductId', description: 'max product id')]
+        string $maxProductId, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
 
@@ -59,7 +59,7 @@ class syncProductsCommand
         return Command::SUCCESS;
     }
 
-    private function getProducts(int $minProductId, int $maxProductId): ?array
+    private function getProducts(int $minProductId, int $maxProductId): array
     {
         return $this->entityManager->getRepository(Product::class)->findBy(['id' => range($minProductId, $maxProductId)]);
     }

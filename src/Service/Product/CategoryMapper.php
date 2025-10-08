@@ -36,7 +36,7 @@ class CategoryMapper
             return $category;
         }
 
-        $category = (new Category())
+        $category = new Category()
             ->setName($supplierCategory->getName())
             ->setOwner($this->security->getUser() ?? $this->getOwner())
             ->setVatRate($this->getDefaultVatRate())

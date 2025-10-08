@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\Order;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\Entity\CustomerOrder;
 use App\Entity\CustomerOrderItem;
 use App\Entity\Product;
@@ -18,8 +19,10 @@ use PHPUnit\Framework\TestCase;
 
 class ProcessOrderTest extends TestCase
 {
-    private CreatePurchaseOrderItem $createPurchaseOrderItem;
-    private ChangePurchaseOrderItemStatus $changePurchaseOrderItemStatus;
+    private MockObject $createPurchaseOrderItem;
+
+    private MockObject $changePurchaseOrderItemStatus;
+
     private ProcessOrder $processOrder;
 
     protected function setUp(): void

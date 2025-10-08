@@ -9,7 +9,7 @@
 
 {% macro formatValue(value, valueType, format, maxFractionDigits) %}
     {% if valueType == 'currency' %}
-        {{ value|format_currency(format, { max_fraction_digit:maxFractionDigits }) }}
+        {{ '£' ~ value|default(0)|round(0, 'floor')|number_format(maxFractionDigits, '.', ',') }}
     {% elseif valueType == 'percentage' %}
         {{ value|number_format(2) ~ '%' }}
     {% else %}

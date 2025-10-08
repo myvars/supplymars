@@ -2,11 +2,11 @@
 
 namespace App\Command\OrderProcessing;
 
-use Symfony\Component\Console\Attribute\Argument;
 use App\Entity\CustomerOrder;
 use App\Service\Order\ProcessOrder;
 use App\Service\OrderProcessing\SupplierUtility;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -22,14 +22,14 @@ class buildPOsCommand
     public function __construct(
         private readonly SupplierUtility $supplierUtility,
         private readonly EntityManagerInterface $entityManager,
-        private readonly ProcessOrder $orderProcessor
+        private readonly ProcessOrder $orderProcessor,
     ) {
     }
 
     public function __invoke(
         InputInterface $input,
         OutputInterface $output,
-        #[Argument(description: 'Order count to process')] string $orderCount
+        #[Argument(description: 'Order count to process')] string $orderCount,
     ): int {
         $io = new SymfonyStyle($input, $output);
 

@@ -17,7 +17,7 @@
         >
             <p class="mb-1">Sales Cost</p>
             <p class="text-xl font-bold text-gray-900 dark:text-gray-300">
-                {{ summary.salesCost|default(0)|format_currency('GBP', { max_fraction_digit:0 }) }}
+                {{ '£' ~ summary.salesCost|default(0)|round(0, 'floor')|number_format(0, '.', ',') }}
             </p>
         </a>
     </div>
@@ -27,7 +27,7 @@
         >
             <p class="mb-1">Sales profit</p>
             <p class="text-xl font-bold text-gray-900 dark:text-gray-300">
-                {{ summary.salesProfit|default(0)|format_currency('GBP', { max_fraction_digit:0 }) }}
+                {{ '£' ~ summary.salesProfit|default(0)|round(0, 'floor')|number_format(0, '.', ',') }}
             </p>
         </a>
     </div>

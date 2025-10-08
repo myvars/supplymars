@@ -34,7 +34,7 @@ class DoughnutChartBuilder
                         'label' => ucfirst($salesMetric->getDataLabel()),
                         'data' => array_values($data),
                         'backgroundColor' => array_map(
-                            fn ($status): string => OrderStatus::from($status)->getChartColor(),
+                            fn (int|string $status): string => OrderStatus::from($status)->getChartColor(),
                             array_keys($data)
                         ),
                         'borderWidth' => 1,

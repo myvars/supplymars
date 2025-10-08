@@ -13,7 +13,7 @@ class SupplierManufacturerTest extends TestCase
     {
         $supplier = $this->createMock(Supplier::class);
 
-        $supplierManufacturer = (new SupplierManufacturer())
+        $supplierManufacturer = new SupplierManufacturer()
             ->setName('Test Supplier Manufacturer')
             ->setSupplier($supplier);
 

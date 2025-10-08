@@ -2,27 +2,26 @@
 
 namespace App\Tests\Unit\Service\Order;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\Entity\CustomerOrder;
 use App\Entity\CustomerOrderItem;
 use App\Enum\OrderStatus;
 use App\Service\Crud\Common\CrudOptions;
 use App\Service\Order\CancelOrder;
-use App\Service\Utility\DomainEventDispatcher;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 
 class CancelOrderTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
-    private DomainEventDispatcher $domainEventDispatcher;
+    private MockObject $entityManager;
+
     private CancelOrder $cancelOrder;
 
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
-        $this->domainEventDispatcher = $this->createMock(DomainEventDispatcher::class);
-        $this->cancelOrder = new CancelOrder($this->entityManager, $this->domainEventDispatcher);
+        $this->cancelOrder = new CancelOrder($this->entityManager);
     }
 
     public function testHandleWithNonCustomerOrderEntity(): void
@@ -65,7 +64,7 @@ class CancelOrderTest extends TestCase
         $this->cancelOrder->handle($crudOptions);
     }
 
-    public function testCancelOrderWhenAllowed()
+    public function testCancelOrderWhenAllowed(): void
     {
         $customerOrderItem = $this->createMock(CustomerOrderItem::class);
         $customerOrderItem->expects($this->once())->method('cancelItem');
@@ -84,7 +83,6 @@ class CancelOrderTest extends TestCase
 
         $this->entityManager->expects($this->exactly(2))->method('persist');
         $this->entityManager->expects($this->once())->method('flush');
-        $this->domainEventDispatcher->expects($this->exactly(2))->method('dispatchProviderEvents');
 
         $this->cancelOrder->handle($crudOptions);
 

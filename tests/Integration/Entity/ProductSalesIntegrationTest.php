@@ -74,7 +74,7 @@ class ProductSalesIntegrationTest extends KernelTestCase
     {
         $product = ProductFactory::createOne();
         $supplier = SupplierFactory::createOne();
-        $productSales = ProductSalesFactory::createOne([
+        ProductSalesFactory::createOne([
             'product' => $product,
             'supplier' => $supplier,
             'dateString' => '2023-01-01',

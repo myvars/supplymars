@@ -2,6 +2,7 @@
 
 namespace App\Tests\Unit\Service\Product;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use App\Entity\Product;
 use App\Entity\ProductImage;
 use App\Repository\ProductImageRepository;
@@ -16,9 +17,12 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 class ProductImageCreatorTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
-    private ValidatorInterface $validator;
-    private UploadHelper $uploadHelper;
+    private MockObject $entityManager;
+
+    private MockObject $validator;
+
+    private MockObject $uploadHelper;
+
     private ProductImageCreator $productImageCreator;
 
     protected function setUp(): void

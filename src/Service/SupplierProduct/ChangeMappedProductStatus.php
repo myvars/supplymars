@@ -7,14 +7,11 @@ use App\Entity\SupplierProduct;
 use App\Service\Crud\Common\CrudActionInterface;
 use App\Service\Crud\Common\CrudOptions;
 use App\Service\Product\ActiveSourceCalculator;
-use App\Service\Utility\DomainEventDispatcher;
 
 final readonly class ChangeMappedProductStatus implements CrudActionInterface
 {
-    public function __construct(
-        private ActiveSourceCalculator $activeSourceCalculator,
-        private DomainEventDispatcher $domainEventDispatcher,
-    ) {
+    public function __construct(private ActiveSourceCalculator $activeSourceCalculator)
+    {
     }
 
     public function handle(CrudOptions $crudOptions): void
@@ -35,7 +32,5 @@ final readonly class ChangeMappedProductStatus implements CrudActionInterface
 
         $this->activeSourceCalculator->toggleStatus($supplierProduct);
         $this->activeSourceCalculator->recalculateActiveSource($supplierProduct->getProduct());
-
-        $this->domainEventDispatcher->dispatchProviderEvents($supplierProduct);
     }
 }

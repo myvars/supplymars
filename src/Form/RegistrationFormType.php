@@ -28,9 +28,7 @@ class RegistrationFormType extends AbstractType
             ->add('agreeTerms', CheckboxType::class, [
                 'mapped' => false,
                 'constraints' => [
-                    new IsTrue([
-                        'message' => 'Please agree to our terms.',
-                    ]),
+                    new IsTrue(message: 'Please agree to our terms.'),
                 ],
             ])
             ->add('plainPassword', RepeatedType::class, [
@@ -43,15 +41,8 @@ class RegistrationFormType extends AbstractType
                 'second_options' => ['label' => 'Confirm password'],
                 'attr' => ['autocomplete' => 'new-password'],
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please confirm password',
-                    ]),
-                    new Length([
-                        'min' => 6,
-                        'minMessage' => 'Your password should be at least {{ limit }} characters',
-                        // max length allowed by Symfony for security reasons
-                        'max' => 4096,
-                    ]),
+                    new NotBlank(message: 'Please confirm password'),
+                    new Length(min: 6, max: 4096, minMessage: 'Your password should be at least {{ limit }} characters'),
                 ],
             ])
         ;

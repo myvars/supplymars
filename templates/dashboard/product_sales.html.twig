@@ -94,10 +94,10 @@
                                     {{ sale.salesQty }}
                                 </td>
                                 <td class="px-6 py-4 text-right">
-                                    {{ sale.salesValue|format_currency('GBP', { max_fraction_digit:0 }) }}
+                                    {{ '£' ~ sale.salesValue|default(0)|round(0, 'floor')|number_format(0, '.', ',') }}
                                 </td>
                                 <td class="px-6 py-4 text-right">
-                                    {{ sale.salesProfit|format_currency('GBP', { max_fraction_digit:0 }) }}
+                                    {{ '£' ~ sale.alesProfit|default(0)|round(0, 'floor')|number_format(0, '.', ',') }}
                                 </td>
                                 <td class="px-6 py-4 text-center">
                                     {{ '%0.2f%%'|format(sale.salesMargin) }}
