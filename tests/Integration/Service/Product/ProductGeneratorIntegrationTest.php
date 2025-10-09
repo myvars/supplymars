@@ -27,7 +27,7 @@ class ProductGeneratorIntegrationTest extends KernelTestCase
 
     public function testHandleWithValidSupplierProduct(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['product' => null])->_real();
+        $supplierProduct = SupplierProductFactory::createOne(['product' => null]);
 
         $crudOptions = new CrudOptions();
         $crudOptions->setEntity($supplierProduct);
@@ -43,7 +43,7 @@ class ProductGeneratorIntegrationTest extends KernelTestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Product already exists');
 
-        $supplierProduct = SupplierProductFactory::createOne()->_real();
+        $supplierProduct = SupplierProductFactory::createOne();
 
         $crudOptions = new CrudOptions();
         $crudOptions->setEntity($supplierProduct);

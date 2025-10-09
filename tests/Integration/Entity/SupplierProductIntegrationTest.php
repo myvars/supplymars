@@ -156,13 +156,13 @@ class SupplierProductIntegrationTest extends KernelTestCase
 
     public function testSupplierProductPersistence(): void
     {
-        $supplier = SupplierFactory::createOne()->_real();
-        $supplierCategory = SupplierCategoryFactory::createOne(['supplier' => $supplier])->_real();
+        $supplier = SupplierFactory::createOne();
+        $supplierCategory = SupplierCategoryFactory::createOne(['supplier' => $supplier]);
         $supplierSubcategory = SupplierSubcategoryFactory::createOne([
             'supplier' => $supplier,
             'supplierCategory' => $supplierCategory
-        ])->_real();
-        $supplerManufacturer = SupplierManufacturerFactory::createOne(['supplier' => $supplier])->_real();
+        ]);
+        $supplerManufacturer = SupplierManufacturerFactory::createOne(['supplier' => $supplier]);
 
         $supplierProduct = SupplierProductFactory::createOne([
             'name' => 'Office Chair',
@@ -179,7 +179,7 @@ class SupplierProductIntegrationTest extends KernelTestCase
             'isActive' => true,
         ]);
 
-        $persistedSupplierProduct = SupplierProductFactory::repository()->find($supplierProduct->getId())->_real();
+        $persistedSupplierProduct = SupplierProductFactory::repository()->find($supplierProduct->getId());
         $this->assertEquals('Office Chair', $persistedSupplierProduct->getName());
         $this->assertEquals('OC12345', $persistedSupplierProduct->getProductCode());
         $this->assertSame($supplier, $persistedSupplierProduct->getSupplier());
@@ -196,8 +196,8 @@ class SupplierProductIntegrationTest extends KernelTestCase
 
     public function testAddSupplierCategoryToSupplierProduct(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne()->_real();
-        $supplierCategory = SupplierCategoryFactory::createOne(['supplierProducts' => [$supplierProduct]])->_real();
+        $supplierProduct = SupplierProductFactory::createOne();
+        $supplierCategory = SupplierCategoryFactory::createOne(['supplierProducts' => [$supplierProduct]]);
 
         $this->assertTrue($supplierCategory->getSupplierProducts()->contains($supplierProduct));
         $this->assertSame($supplierCategory, $supplierProduct->getSupplierCategory());
@@ -205,8 +205,8 @@ class SupplierProductIntegrationTest extends KernelTestCase
 
     public function testRemoveSupplierCategoryFromSupplierProduct(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne()->_real();
-        $supplierCategory = SupplierCategoryFactory::createOne(['supplierProducts' => [$supplierProduct]])->_real();
+        $supplierProduct = SupplierProductFactory::createOne();
+        $supplierCategory = SupplierCategoryFactory::createOne(['supplierProducts' => [$supplierProduct]]);
 
         $supplierCategory->removeSupplierProduct($supplierProduct);
 
@@ -216,8 +216,8 @@ class SupplierProductIntegrationTest extends KernelTestCase
 
     public function testReAddSupplierCategoryToSupplierProduct(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne()->_real();
-        $supplierCategory = SupplierCategoryFactory::createOne(['supplierProducts' => [$supplierProduct]])->_real();
+        $supplierProduct = SupplierProductFactory::createOne();
+        $supplierCategory = SupplierCategoryFactory::createOne(['supplierProducts' => [$supplierProduct]]);
 
         $supplierCategory->removeSupplierProduct($supplierProduct);
         $supplierCategory->addSupplierProduct($supplierProduct);
@@ -228,8 +228,8 @@ class SupplierProductIntegrationTest extends KernelTestCase
 
     public function testAddSupplierSubcategoryToSupplierProduct(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne()->_real();
-        $supplierSubcategory = SupplierSubcategoryFactory::createOne(['supplierProducts' => [$supplierProduct]])->_real();
+        $supplierProduct = SupplierProductFactory::createOne();
+        $supplierSubcategory = SupplierSubcategoryFactory::createOne(['supplierProducts' => [$supplierProduct]]);
 
         $this->assertTrue($supplierSubcategory->getSupplierProducts()->contains($supplierProduct));
         $this->assertSame($supplierSubcategory, $supplierProduct->getSupplierSubcategory());
@@ -237,8 +237,8 @@ class SupplierProductIntegrationTest extends KernelTestCase
 
     public function testRemoveSupplierSubcategoryFromSupplierProduct(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne()->_real();
-        $supplierSubcategory = SupplierSubcategoryFactory::createOne(['supplierProducts' => [$supplierProduct]])->_real();
+        $supplierProduct = SupplierProductFactory::createOne();
+        $supplierSubcategory = SupplierSubcategoryFactory::createOne(['supplierProducts' => [$supplierProduct]]);
 
         $supplierSubcategory->removeSupplierProduct($supplierProduct);
 
@@ -248,8 +248,8 @@ class SupplierProductIntegrationTest extends KernelTestCase
 
     public function testReAddSupplierSubcategoryToSupplierProduct(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne()->_real();
-        $supplierSubcategory = SupplierSubcategoryFactory::createOne(['supplierProducts' => [$supplierProduct]])->_real();
+        $supplierProduct = SupplierProductFactory::createOne();
+        $supplierSubcategory = SupplierSubcategoryFactory::createOne(['supplierProducts' => [$supplierProduct]]);
 
         $supplierSubcategory->removeSupplierProduct($supplierProduct);
         $supplierSubcategory->addSupplierProduct($supplierProduct);
@@ -260,8 +260,8 @@ class SupplierProductIntegrationTest extends KernelTestCase
 
     public function testAddSupplierManufacturerToSupplierProduct(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne()->_real();
-        $supplierManufacturer = SupplierManufacturerFactory::createOne(['supplierProducts' => [$supplierProduct]])->_real();
+        $supplierProduct = SupplierProductFactory::createOne();
+        $supplierManufacturer = SupplierManufacturerFactory::createOne(['supplierProducts' => [$supplierProduct]]);
 
         $this->assertTrue($supplierManufacturer->getSupplierProducts()->contains($supplierProduct));
         $this->assertSame($supplierManufacturer, $supplierProduct->getSupplierManufacturer());
@@ -269,8 +269,8 @@ class SupplierProductIntegrationTest extends KernelTestCase
 
     public function testRemoveSupplierManufacturerFromSupplierProduct(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne()->_real();
-        $supplierManufacturer = SupplierManufacturerFactory::createOne(['supplierProducts' => [$supplierProduct]])->_real();
+        $supplierProduct = SupplierProductFactory::createOne();
+        $supplierManufacturer = SupplierManufacturerFactory::createOne(['supplierProducts' => [$supplierProduct]]);
 
         $supplierManufacturer->removeSupplierProduct($supplierProduct);
 
@@ -280,8 +280,8 @@ class SupplierProductIntegrationTest extends KernelTestCase
 
     public function testReAddSupplierManufacturerToSupplierProduct(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne()->_real();
-        $supplierManufacturer = SupplierManufacturerFactory::createOne(['supplierProducts' => [$supplierProduct]])->_real();
+        $supplierProduct = SupplierProductFactory::createOne();
+        $supplierManufacturer = SupplierManufacturerFactory::createOne(['supplierProducts' => [$supplierProduct]]);
 
         $supplierManufacturer->removeSupplierProduct($supplierProduct);
         $supplierManufacturer->addSupplierProduct($supplierProduct);

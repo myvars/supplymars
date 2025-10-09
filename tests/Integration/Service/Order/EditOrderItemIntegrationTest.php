@@ -32,8 +32,8 @@ class EditOrderItemIntegrationTest extends KernelTestCase
 
     public function testHandleWithValidEditOrderItemDto(): void
     {
-        $product = ProductFactory::createOne(['sellPriceIncVat' => '50.00'])->_real();
-        $customerOrderItem = CustomerOrderItemFactory::createOne(['product' => $product])->_real();
+        $product = ProductFactory::createOne(['sellPriceIncVat' => '50.00']);
+        $customerOrderItem = CustomerOrderItemFactory::createOne(['product' => $product]);
 
         $dto = new EditOrderItemDto(
             $customerOrderItem->getId(),
@@ -46,7 +46,7 @@ class EditOrderItemIntegrationTest extends KernelTestCase
 
         $this->editOrderItem->handle($crudOptions);
 
-        $updatedCustomerOrderItem = CustomerOrderItemFactory::repository()->find($customerOrderItem->getId())->_real();
+        $updatedCustomerOrderItem = CustomerOrderItemFactory::repository()->find($customerOrderItem->getId());
 
         $this->assertInstanceOf(CustomerOrderItem::class, $updatedCustomerOrderItem);
         $this->assertSame(2, $updatedCustomerOrderItem->getQuantity());
@@ -55,8 +55,8 @@ class EditOrderItemIntegrationTest extends KernelTestCase
 
     public function testHandleWithNewZeroQuantity(): void
     {
-        $product = ProductFactory::createOne(['sellPriceIncVat' => '50.00'])->_real();
-        $customerOrderItem = CustomerOrderItemFactory::createOne(['product' => $product])->_real();
+        $product = ProductFactory::createOne(['sellPriceIncVat' => '50.00']);
+        $customerOrderItem = CustomerOrderItemFactory::createOne(['product' => $product]);
         $customerOrderItemId = $customerOrderItem->getId();
 
         $dto = new EditOrderItemDto(
@@ -75,7 +75,7 @@ class EditOrderItemIntegrationTest extends KernelTestCase
 
     public function testHandleWithNewQuantityLessThanPoQuantity(): void
     {
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne()->_real();
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne();
         $customerOrderItemId = $purchaseOrderItem->getCustomerOrderItem()->getId();
         $customerOrderItemQty = $purchaseOrderItem->getCustomerOrderItem()->getQuantity();
 

@@ -22,7 +22,7 @@ class VatRatePriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testVatRateProductsRecalculateWhenVatRateChanges(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"])->_real();
+        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"]);
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals('126.00', $product->getSellPriceIncVat());
@@ -37,13 +37,13 @@ class VatRatePriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testNoUpdateWhenDifferentVatRateChanges(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"])->_real();
+        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"]);
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals('126.00', $product->getSellPriceIncVat());
 
         // Change different vat rate
-        $vatRate = VatRateFactory::createOne(['rate' => '5.000'])->_real();
+        $vatRate = VatRateFactory::createOne(['rate' => '5.000']);
         $vatRate->setRate('10.000');
 
         $this->entityManager->flush();

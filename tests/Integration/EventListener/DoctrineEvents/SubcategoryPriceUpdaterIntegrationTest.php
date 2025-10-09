@@ -23,7 +23,7 @@ class SubcategoryPriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testSubcategoryProductsRecalculateWhenDefaultMarkupChanges(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"])->_real();
+        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"]);
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals('126.00', $product->getSellPriceIncVat());
@@ -38,7 +38,7 @@ class SubcategoryPriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testNoUpdateWhenDefaultMarkupChangesOnDifferentSubcategory(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"])->_real();
+        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"]);
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals('126.00', $product->getSellPriceIncVat());
@@ -46,7 +46,7 @@ class SubcategoryPriceUpdaterIntegrationTest extends KernelTestCase
         $subcategory = SubcategoryFactory::createOne([
             'category' => $product->getCategory(),
             'defaultMarkup' => '0.000',
-        ])->_real();
+        ]);
 
         // Change default markup on different subcategory
         $subcategory->setDefaultMarkup('10.000');
@@ -59,7 +59,7 @@ class SubcategoryPriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testSubcategoryProductsSkipWhenDefaultMarkupChangesAndProductMarkupSet(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"])->_real();
+        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"]);
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals('126.00', $product->getSellPriceIncVat());
@@ -76,7 +76,7 @@ class SubcategoryPriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testSubcategoryProductsRecalculateWhenPriceModelChanges(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"])->_real();
+        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"]);
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals('126.00', $product->getSellPriceIncVat());
@@ -91,7 +91,7 @@ class SubcategoryPriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testSubcategoryProductsSkipWhenPriceModelChangesAndProductPriceModelSet(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"])->_real();
+        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"]);
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals('126.00', $product->getSellPriceIncVat());

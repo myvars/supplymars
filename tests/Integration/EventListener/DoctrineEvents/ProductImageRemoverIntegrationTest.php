@@ -23,7 +23,7 @@ class ProductImageRemoverIntegrationTest extends KernelTestCase
 
     public function testRemoveImage(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne()->_real();
+        $supplierProduct = SupplierProductFactory::createOne();
         $product = $supplierProduct->getProduct();
 
         $uploadHelper = self::getContainer()->get(UploadHelper::class);

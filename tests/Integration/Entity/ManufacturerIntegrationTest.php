@@ -42,17 +42,17 @@ class ManufacturerIntegrationTest extends KernelTestCase
         $manufacturer = ManufacturerFactory::createOne([
             'name' => 'Test Manufacturer',
             'isActive' => true,
-        ])->_real();
+        ]);
 
-        $persistedManufacturer = ManufacturerFactory::repository()->find($manufacturer->getId())->_real();
+        $persistedManufacturer = ManufacturerFactory::repository()->find($manufacturer->getId());
         $this->assertEquals('Test Manufacturer', $persistedManufacturer->getName());
         $this->assertTrue($persistedManufacturer->isActive());
     }
 
     public function testAddProductToManufacturer(): void
     {
-        $manufacturer = ManufacturerFactory::createOne()->_real();
-        $product = ProductFactory::createOne(['manufacturer' => $manufacturer])->_real();
+        $manufacturer = ManufacturerFactory::createOne();
+        $product = ProductFactory::createOne(['manufacturer' => $manufacturer]);
 
         $this->assertTrue($manufacturer->getProducts()->contains($product));
         $this->assertSame($manufacturer, $product->getManufacturer());
@@ -60,8 +60,8 @@ class ManufacturerIntegrationTest extends KernelTestCase
 
     public function testRemoveProductFromManufacturer(): void
     {
-        $manufacturer = ManufacturerFactory::createOne()->_real();
-        $product = ProductFactory::createOne(['manufacturer' => $manufacturer])->_real();
+        $manufacturer = ManufacturerFactory::createOne();
+        $product = ProductFactory::createOne(['manufacturer' => $manufacturer]);
 
         $manufacturer->removeProduct($product);
 
@@ -71,8 +71,8 @@ class ManufacturerIntegrationTest extends KernelTestCase
 
     public function testReAddProductToManufacturer(): void
     {
-        $manufacturer = ManufacturerFactory::createOne()->_real();
-        $product = ProductFactory::createOne(['manufacturer' => $manufacturer])->_real();
+        $manufacturer = ManufacturerFactory::createOne();
+        $product = ProductFactory::createOne(['manufacturer' => $manufacturer]);
 
         $manufacturer->removeProduct($product);
         $manufacturer->addProduct($product);
@@ -83,8 +83,8 @@ class ManufacturerIntegrationTest extends KernelTestCase
 
     public function testAddSupplierManufacturerToManufacturer(): void
     {
-        $manufacturer = ManufacturerFactory::createOne()->_real();
-        $supplierManufacturer = SupplierManufacturerFactory::createOne(['mappedManufacturer' => $manufacturer])->_real();
+        $manufacturer = ManufacturerFactory::createOne();
+        $supplierManufacturer = SupplierManufacturerFactory::createOne(['mappedManufacturer' => $manufacturer]);
 
         $this->assertTrue($manufacturer->getSupplierManufacturers()->contains($supplierManufacturer));
         $this->assertSame($manufacturer, $supplierManufacturer->getMappedManufacturer());
@@ -92,8 +92,8 @@ class ManufacturerIntegrationTest extends KernelTestCase
 
     public function testRemoveSupplierManufacturerFromManufacturer(): void
     {
-        $manufacturer = ManufacturerFactory::createOne()->_real();
-        $supplierManufacturer = SupplierManufacturerFactory::createOne(['mappedManufacturer' => $manufacturer])->_real();
+        $manufacturer = ManufacturerFactory::createOne();
+        $supplierManufacturer = SupplierManufacturerFactory::createOne(['mappedManufacturer' => $manufacturer]);
 
         $manufacturer->removeSupplierManufacturer($supplierManufacturer);
 
@@ -103,8 +103,8 @@ class ManufacturerIntegrationTest extends KernelTestCase
 
     public function testReAddSupplierManufacturerToManufacturer(): void
     {
-        $manufacturer = ManufacturerFactory::createOne()->_real();
-        $supplierManufacturer = SupplierManufacturerFactory::createOne(['mappedManufacturer' => $manufacturer])->_real();
+        $manufacturer = ManufacturerFactory::createOne();
+        $supplierManufacturer = SupplierManufacturerFactory::createOne(['mappedManufacturer' => $manufacturer]);
 
         $manufacturer->removeSupplierManufacturer($supplierManufacturer);
         $manufacturer->addSupplierManufacturer($supplierManufacturer);

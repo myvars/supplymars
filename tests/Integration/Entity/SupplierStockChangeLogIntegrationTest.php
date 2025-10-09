@@ -52,10 +52,10 @@ class SupplierStockChangeLogIntegrationTest extends KernelTestCase
             'stockChange' => StockChange::from(0, 100),
             'costChange' => CostChange::from('0.00', '50.00'),
             'occurredAt' => new \DateTimeImmutable(),
-        ])->_real();
+        ]);
 
         $persistedSupplierStockChangeLog = SupplierStockChangeLogFactory::repository()
-            ->find($supplierStockChangeLog->getId())->_real();
+            ->find($supplierStockChangeLog->getId());
 
         $this->assertEquals(100, $persistedSupplierStockChangeLog->getStock());
     }

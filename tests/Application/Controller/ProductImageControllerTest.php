@@ -2,8 +2,10 @@
 
 namespace App\Tests\Application\Controller;
 
+use App\Entity\Product;
 use App\Factory\ProductFactory;
 use App\Factory\UserFactory;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
@@ -17,10 +19,13 @@ class ProductImageControllerTest extends WebTestCase
 
     private readonly string $invalidImagePath;
 
+    private EntityManagerInterface $entityManager;
+
     protected function setUp(): void
     {
         $this->dummyImagePath =  __DIR__ . '/../../Resources/dummy-image.jpg';
         $this->invalidImagePath = __DIR__ . '/../../Resources/invalid-image.txt';
+        $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
     }
 
     public function testShowProductImages(): void
@@ -44,7 +49,8 @@ class ProductImageControllerTest extends WebTestCase
 
     public function testCreateRemoveImage(): void
     {
-        $product = ProductFactory::createOne(['name' => 'Test Product'])->_real();
+        $product = ProductFactory::createOne(['name' => 'Test Product']);
+        $this->entityManager->refresh($product);
         $uploadDir = static::getContainer()->getParameter('kernel.project_dir') . '/public/'
             . static::getContainer()->getParameter('app.product_uploads');
         $user = UserFactory::new()->staff()->create();
@@ -86,7 +92,7 @@ class ProductImageControllerTest extends WebTestCase
 
     public function testCreateImageWithInvalidType(): void
     {
-        $product = ProductFactory::createOne(['name' => 'Test Product'])->_real();
+        $product = ProductFactory::createOne(['name' => 'Test Product']);
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
@@ -125,7 +131,8 @@ class ProductImageControllerTest extends WebTestCase
 
     public function testReorderImages(): void
     {
-        $product = ProductFactory::createOne(['name' => 'Test Product'])->_real();
+        $product = ProductFactory::createOne(['name' => 'Test Product']);
+        $this->entityManager->refresh($product);
         $user = UserFactory::new()->staff()->create();
 
         $this->browser()
@@ -159,7 +166,7 @@ class ProductImageControllerTest extends WebTestCase
             ->assertSuccessful();
 
         // check the new position order is correct
-        $product = ProductFactory::repository()->find($product->getId());
+        $product = $this->entityManager->getRepository(Product::class)->find($product->getId());
         $reorderedProductImages = $product->getProductImages();
         $this->assertEquals($reorderedProductImages[0]->getId(), $productImages[1]->getId());
         $this->assertEquals($reorderedProductImages[1]->getId(), $productImages[0]->getId());
@@ -176,7 +183,7 @@ class ProductImageControllerTest extends WebTestCase
 
     public function testReorderImagesWithInvalidBody(): void
     {
-        $product = ProductFactory::createOne(['name' => 'Test Product'])->_real();
+        $product = ProductFactory::createOne(['name' => 'Test Product']);
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())

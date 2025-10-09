@@ -113,7 +113,7 @@ class OrderItemControllerTest extends WebTestCase
     public function testEditOrderItem(): void
     {
         $supplierProduct = SupplierProductFactory::new()->recalculatePrice()->create(['stock' => 10]);
-        $orderItem = CustomerOrderItemFactory::createOne(['product' => $supplierProduct->getProduct()])->_real();
+        $orderItem = CustomerOrderItemFactory::createOne(['product' => $supplierProduct->getProduct()]);
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
@@ -134,7 +134,7 @@ class OrderItemControllerTest extends WebTestCase
     public function testEditOrderItemValidation(): void
     {
         $supplierProduct = SupplierProductFactory::new()->recalculatePrice()->create(['stock' => 10]);
-        $orderItem = CustomerOrderItemFactory::createOne(['product' => $supplierProduct->getProduct()])->_real();
+        $orderItem = CustomerOrderItemFactory::createOne(['product' => $supplierProduct->getProduct()]);
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
@@ -154,7 +154,7 @@ class OrderItemControllerTest extends WebTestCase
     public function testEditOrderWithZeroQuantity(): void
     {
         $supplierProduct = SupplierProductFactory::new()->recalculatePrice()->create(['stock' => 10]);
-        $orderItem = CustomerOrderItemFactory::createOne(['product' => $supplierProduct->getProduct()])->_real();
+        $orderItem = CustomerOrderItemFactory::createOne(['product' => $supplierProduct->getProduct()]);
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
@@ -172,7 +172,7 @@ class OrderItemControllerTest extends WebTestCase
 
     public function testEditOrderItemWithMinOrderQuantity(): void
     {
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne()->_real();
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne();
         $orderItem = $purchaseOrderItem->getCustomerOrderItem();
 
         $this->browser()
@@ -200,7 +200,7 @@ class OrderItemControllerTest extends WebTestCase
 
     public function testAddToPurchaseOrder(): void
     {
-        $supplierProduct = SupplierProductFactory::new()->recalculatePrice()->create(['stock' => 10])->_real();
+        $supplierProduct = SupplierProductFactory::new()->recalculatePrice()->create(['stock' => 10]);
         $orderItem = CustomerOrderItemFactory::createOne(['product' => $supplierProduct->getProduct()]);
 
         $this->browser()
@@ -280,7 +280,7 @@ class OrderItemControllerTest extends WebTestCase
 
     public function testReAddToNewPurchaseOrder(): void
     {
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne(['quantity' => 2])->_real();
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne(['quantity' => 2]);
         $orderItem = $purchaseOrderItem->getCustomerOrderItem();
         $newSupplierProduct = SupplierProductFactory::new()->recalculatePrice()->create([
             'product' => $orderItem->getProduct()
@@ -301,13 +301,13 @@ class OrderItemControllerTest extends WebTestCase
             ->assertOn('/order/' . $orderItem->getCustomerOrder()->getId())
             ->assertSee('PO #' . sprintf('%06d', $purchaseOrderItem->getPurchaseOrder()->getId()));
 
-        $customerOrder = CustomerOrderFactory::repository()->find($orderItem->getCustomerOrder())->_real();
+        $customerOrder = CustomerOrderFactory::repository()->find($orderItem->getCustomerOrder());
         $this->assertCount(2, $customerOrder->getPurchaseOrders());
     }
 
     public function testReAddToSamePurchaseOrder(): void
     {
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne(['quantity' => 2])->_real();
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne(['quantity' => 2]);
         $orderItem = $purchaseOrderItem->getCustomerOrderItem();
 
         $this->browser()
@@ -330,7 +330,7 @@ class OrderItemControllerTest extends WebTestCase
     public function testCancelOrderItem(): void
     {
         $supplierProduct = SupplierProductFactory::new()->recalculatePrice()->create(['stock' => 10]);
-        $orderItem = CustomerOrderItemFactory::createOne(['product' => $supplierProduct->getProduct()])->_real();
+        $orderItem = CustomerOrderItemFactory::createOne(['product' => $supplierProduct->getProduct()]);
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
@@ -345,7 +345,7 @@ class OrderItemControllerTest extends WebTestCase
     public function testCancelOrderItemWhenAlreadyCancelled(): void
     {
         $supplierProduct = SupplierProductFactory::new()->recalculatePrice()->create(['stock' => 10]);
-        $orderItem = CustomerOrderItemFactory::createOne(['product' => $supplierProduct->getProduct()])->_real();
+        $orderItem = CustomerOrderItemFactory::createOne(['product' => $supplierProduct->getProduct()]);
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())

@@ -47,6 +47,6 @@ class OrderSalesSummaryCalculatorIntegrationTest extends KernelTestCase
 
         $this->assertSame(10, $orderSalesSummary->getOrderCount());
         $this->assertSame('1000.00', $orderSalesSummary->getOrderValue());
-        $this->assertSame('100.00', $orderSalesSummary->getAverageOrderValue());
+        $this->assertSame(100, (int) $orderSalesSummary->getAverageOrderValue());
     }
 }

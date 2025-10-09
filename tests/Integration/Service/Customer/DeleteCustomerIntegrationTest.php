@@ -26,8 +26,8 @@ class DeleteCustomerIntegrationTest extends KernelTestCase
 
     public function testHandleWithValidCustomer(): void
     {
-        $customer = UserFactory::createOne()->_real();
-        $address = AddressFactory::createOne(['customer' => $customer])->_real();
+        $customer = UserFactory::createOne();
+        $address = AddressFactory::createOne(['customer' => $customer]);
         $customer->addAddress($address);
         $customerId = $customer->getId();
         $addressId = $address->getId();
@@ -46,7 +46,7 @@ class DeleteCustomerIntegrationTest extends KernelTestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Customer has order history and cannot be deleted');
 
-        $customer = UserFactory::createOne()->_real();
+        $customer = UserFactory::createOne();
         CustomerOrderFactory::createOne(['customer' => $customer]);
 
         $crudOptions = new CrudOptions();

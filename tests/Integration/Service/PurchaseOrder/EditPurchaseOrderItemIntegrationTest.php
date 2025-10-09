@@ -30,7 +30,7 @@ class EditPurchaseOrderItemIntegrationTest extends KernelTestCase
 
     public function testHandleWithValidEditPurchaseOrderItemDto(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['stock' => 100])->_real();
+        $supplierProduct = SupplierProductFactory::createOne(['stock' => 100]);
         $customerOrderItem = CustomerOrderItemFactory::createOne([
             'quantity' => 10,
             'product' => $supplierProduct->getProduct()
@@ -52,24 +52,24 @@ class EditPurchaseOrderItemIntegrationTest extends KernelTestCase
 
         $this->editPurchaseOrderItem->handle($crudOptions);
 
-        $updatedPurchaseOrderItem = PurchaseOrderItemFactory::repository()->find($purchaseOrderItem->getId())->_real();
+        $updatedPurchaseOrderItem = PurchaseOrderItemFactory::repository()->find($purchaseOrderItem->getId());
         $this->assertSame(5, $updatedPurchaseOrderItem->getQuantity());
     }
 
     public function testHandleWithZeroUpdateQuantity(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['stock' => 100])->_real();
+        $supplierProduct = SupplierProductFactory::createOne(['stock' => 100]);
         $customerOrderItem = CustomerOrderItemFactory::createOne([
             'quantity' => 10,
             'product' => $supplierProduct->getProduct()
-        ])->_real();
+        ]);
         $purchaseOrderItem = PurchaseOrderItemFactory::createOne([
             'product' => $supplierProduct->getProduct(),
             'supplier' => $supplierProduct->getSupplier(),
             'customerOrderItem' => $customerOrderItem,
             'supplierProduct' => $supplierProduct,
             'quantity' => 3
-        ])->_real();
+        ]);
         $purchaseOrderItemId = $purchaseOrderItem->getId();
         $purchaseOrderId = $purchaseOrderItem->getPurchaseOrder()->getId();
 

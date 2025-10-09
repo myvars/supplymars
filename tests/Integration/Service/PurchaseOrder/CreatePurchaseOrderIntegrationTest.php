@@ -28,8 +28,8 @@ class CreatePurchaseOrderIntegrationTest extends KernelTestCase
 
     public function testCreatePurchaseOrderSuccessfully(): void
     {
-        $supplier = SupplierFactory::createOne()->_real();
-        $customerOrder = CustomerOrderFactory::createOne()->_real();
+        $supplier = SupplierFactory::createOne();
+        $customerOrder = CustomerOrderFactory::createOne();
 
         $purchaseOrder = $this->createPurchaseOrder->fromOrder($customerOrder, $supplier);
 

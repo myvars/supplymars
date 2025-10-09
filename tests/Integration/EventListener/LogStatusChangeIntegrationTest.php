@@ -31,7 +31,7 @@ class LogStatusChangeIntegrationTest extends KernelTestCase
 
     public function testOnOrderItemStatusChangeLogsStatusChange(): void
     {
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne()->_real();
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne();
 
         $dto = new ChangePurchaseOrderItemStatusDto(
             $purchaseOrderItem->getId(),

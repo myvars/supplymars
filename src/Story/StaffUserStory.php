@@ -15,7 +15,7 @@ final class StaffUserStory extends Story
 
     public function build(): void
     {
-        $user = UserFactory::new()->staff()->create()->_real();
+        $user = UserFactory::new()->staff()->create();
         $token = new UsernamePasswordToken($user, 'main', $user->getRoles());
         $this->tokenStorage->setToken($token);
     }

@@ -27,14 +27,14 @@ class ProductPriceCalculatorIntegrationTest extends KernelTestCase
 
     public function testRecalculatePrice(): void
     {
-        $vatRate = VatRateFactory::createOne(['rate' => '20.00'])->_real();
-        $category = CategoryFactory::createOne(['vatRate' => $vatRate])->_real();
+        $vatRate = VatRateFactory::createOne(['rate' => '20.00']);
+        $category = CategoryFactory::createOne(['vatRate' => $vatRate]);
         $product = ProductFactory::createOne([
             'category' => $category,
             'cost' => '100.00',
             'defaultMarkup' => '15.000',
             'priceModel' => PriceModel::PRETTY_99
-        ])->_real();
+        ]);
 
         $this->productPriceCalculator->recalculatePrice($product);
 
@@ -50,16 +50,16 @@ class ProductPriceCalculatorIntegrationTest extends KernelTestCase
 
     public function testRecalculatePriceWithCategoryMarkup(): void
     {
-        $vatRate = VatRateFactory::createOne(['rate' => '20.00'])->_real();
+        $vatRate = VatRateFactory::createOne(['rate' => '20.00']);
         $category = CategoryFactory::createOne([
             'defaultMarkup' => '10.000',
             'priceModel' => PriceModel::PRETTY_99,
             'vatRate' => $vatRate
-        ])->_real();
+        ]);
         $product = ProductFactory::createOne([
             'category' => $category,
             'cost' => '100.00',
-        ])->_real();
+        ]);
 
         $this->productPriceCalculator->recalculatePrice($product);
 
@@ -74,18 +74,18 @@ class ProductPriceCalculatorIntegrationTest extends KernelTestCase
 
     public function testRecalculatePriceWithSubcategoryMarkup(): void
     {
-        $vatRate = VatRateFactory::createOne(['rate' => '20.00'])->_real();
-        $category = CategoryFactory::createOne(['vatRate' => $vatRate])->_real();
+        $vatRate = VatRateFactory::createOne(['rate' => '20.00']);
+        $category = CategoryFactory::createOne(['vatRate' => $vatRate]);
         $subcategory = SubcategoryFactory::createOne([
             'defaultMarkup' => '20.000',
             'priceModel' => PriceModel::PRETTY_99,
             'category' => $category
-        ])->_real();
+        ]);
         $product = ProductFactory::createOne([
             'category' => $category,
             'subcategory' => $subcategory,
             'cost' => '100.00',
-        ])->_real();
+        ]);
 
         $this->productPriceCalculator->recalculatePrice($product);
 
@@ -102,12 +102,12 @@ class ProductPriceCalculatorIntegrationTest extends KernelTestCase
     {
         $products = ProductFactory::createMany(2);
 
-        $this->productPriceCalculator->recalculatePriceFromArray(array_map(fn(Product&Proxy $product): object => $product->_real(), $products));
+        $this->productPriceCalculator->recalculatePriceFromArray($products);
 
         foreach ($products as $product) {
-            $this->assertNotNull($product->_real()->getMarkup());
-            $this->assertNotNull($product->_real()->getSellPrice());
-            $this->assertNotNull($product->_real()->getSellPriceIncVat());
+            $this->assertNotNull($product->getMarkup());
+            $this->assertNotNull($product->getSellPrice());
+            $this->assertNotNull($product->getSellPriceIncVat());
         }
     }
 }

@@ -15,7 +15,7 @@ class StatusLogControllerTest extends WebTestCase
 
     public function testShowOrderStatusLog(): void
     {
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne()->_real();
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne();
         $order = $purchaseOrderItem->getPurchaseOrder()->getCustomerOrder();
 
         $this->browser()
@@ -28,7 +28,7 @@ class StatusLogControllerTest extends WebTestCase
 
     public function testShowOrderStatusLogSecurity(): void
     {
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne()->_real();
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne();
         $order = $purchaseOrderItem->getPurchaseOrder()->getCustomerOrder();
 
         $this->browser()
@@ -46,7 +46,7 @@ class StatusLogControllerTest extends WebTestCase
 
     public function testShowOrderItemStatusLog(): void
     {
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne()->_real();
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne();
         $orderItem = $purchaseOrderItem->getCustomerOrderItem();
 
         $this->browser()
@@ -59,7 +59,7 @@ class StatusLogControllerTest extends WebTestCase
 
     public function testShowOrderItemStatusLogSecurity(): void
     {
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne()->_real();
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne();
         $orderItem = $purchaseOrderItem->getCustomerOrderItem();
 
         $this->browser()
@@ -77,7 +77,7 @@ class StatusLogControllerTest extends WebTestCase
 
     public function testShowPurchaseOrderStatusLog(): void
     {
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne()->_real();
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne();
         $purchaseOrder = $purchaseOrderItem->getPurchaseOrder();
 
         $this->browser()
@@ -90,7 +90,7 @@ class StatusLogControllerTest extends WebTestCase
 
     public function testShowPurchaseOrderStatusLogSecurity(): void
     {
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne()->_real();
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne();
         $purchaseOrder = $purchaseOrderItem->getPurchaseOrder();
 
         $this->browser()
@@ -108,7 +108,7 @@ class StatusLogControllerTest extends WebTestCase
 
     public function testShowPurchaseOrderItemStatusLog(): void
     {
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne()->_real();
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne();
 
         $this->browser()
             ->actingAs(UserFactory::new()->staff()->create())
@@ -120,7 +120,7 @@ class StatusLogControllerTest extends WebTestCase
 
     public function testShowPurchaseOrderItemStatusLogSecurity(): void
     {
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne()->_real();
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne();
 
         $this->browser()
             ->get("/status/log/purchase/order/item/" . $purchaseOrderItem->getId())

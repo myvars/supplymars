@@ -7,6 +7,7 @@ use App\Service\Crud\Common\CrudOptions;
 use App\Service\Product\ProductImageCreator;
 use App\Service\Utility\UploadHelper;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Exception\ORMException;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -22,19 +23,21 @@ class ProductImageCreatorIntegrationTest extends KernelTestCase
 
     private UploadHelper $uploadHelper;
 
+    private EntityManagerInterface $entityManager;
+
     protected function setUp(): void
     {
         self::bootKernel();
-        $entityManager = static::getContainer()->get(EntityManagerInterface::class);
+        $this->entityManager = static::getContainer()->get(EntityManagerInterface::class);
         $validator = static::getContainer()->get(ValidatorInterface::class);
         $this->uploadHelper = static::getContainer()->get(UploadHelper::class);
         $this->appProductUploads = static::getContainer()->getParameter('app.product_uploads');
-        $this->productImageCreator = new ProductImageCreator($entityManager, $validator, $this->uploadHelper, $this->appProductUploads);
+        $this->productImageCreator = new ProductImageCreator($this->entityManager, $validator, $this->uploadHelper, $this->appProductUploads);
     }
 
     public function testHandleWithValidProduct(): void
     {
-        $product = ProductFactory::createOne()->_real();
+        $product = ProductFactory::createOne();
         $imageFile = new UploadedFile(
             __DIR__ . '/../../../../tests/Resources/dummy-image.jpg',
             'dummy-image.jpg',
@@ -48,6 +51,7 @@ class ProductImageCreatorIntegrationTest extends KernelTestCase
         $crudOptions->setCrudActionContext(['imageFiles' => [$imageFile]]);
 
         $this->productImageCreator->handle($crudOptions);
+        $this->entityManager->refresh($product);
 
         $productImages = $product->getProductImages();
         $this->assertCount(1, $productImages);

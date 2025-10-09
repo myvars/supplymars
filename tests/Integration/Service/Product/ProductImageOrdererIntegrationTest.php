@@ -25,9 +25,9 @@ class ProductImageOrdererIntegrationTest extends KernelTestCase
 
     public function testHandleWithValidProduct(): void
     {
-        $product = ProductFactory::createOne()->_real();
-        $productImage1 = ProductImageFactory::createOne(['product' => $product, 'position' => 1])->_real();
-        $productImage2 = ProductImageFactory::createOne(['product' => $product, 'position' => 2])->_real();
+        $product = ProductFactory::createOne();
+        $productImage1 = ProductImageFactory::createOne(['product' => $product, 'position' => 1]);
+        $productImage2 = ProductImageFactory::createOne(['product' => $product, 'position' => 2]);
 
         $crudOptions = new CrudOptions();
         $crudOptions->setEntity($product);

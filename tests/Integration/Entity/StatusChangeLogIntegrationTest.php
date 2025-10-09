@@ -60,7 +60,7 @@ class StatusChangeLogIntegrationTest extends KernelTestCase
             'status' => 'SHIPPED',
             'user' => $user,
             'eventTimestamp' => new \DateTimeImmutable()
-        ])->_disableAutoRefresh();
+        ]);
 
         $persistedStatusChangeLog = StatusChangeLogFactory::repository()->find($statusChangeLog->getId());
         $this->assertEquals('SHIPPED', $persistedStatusChangeLog->getStatus());

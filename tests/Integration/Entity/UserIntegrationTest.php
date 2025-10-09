@@ -30,7 +30,7 @@ class UserIntegrationTest extends KernelTestCase
             'email' => 'valid@example.com',
             'fullName' => 'Valid User',
             'password' => 'validpassword',
-        ])->_real();
+        ]);
 
         $errors = $this->validator->validate($user);
         $this->assertCount(0, $errors);
@@ -38,7 +38,7 @@ class UserIntegrationTest extends KernelTestCase
 
     public function testInvalidEmail(): void
     {
-        $user = UserFactory::createOne(['email' => 'invalid-email'])->_real();
+        $user = UserFactory::createOne(['email' => 'invalid-email']);
 
         $errors = $this->validator->validate($user);
         $this->assertSame('This value is not a valid email address.', $errors[0]->getMessage());
@@ -46,7 +46,7 @@ class UserIntegrationTest extends KernelTestCase
 
     public function testBlankFullName(): void
     {
-        $user = UserFactory::createOne(['fullName' => ''])->_real();
+        $user = UserFactory::createOne(['fullName' => '']);
 
         $errors = $this->validator->validate($user);
         $this->assertSame('Please enter a full name', $errors[0]->getMessage());
@@ -63,14 +63,14 @@ class UserIntegrationTest extends KernelTestCase
             'isStaff' => false,
         ]);
 
-        $persistedUser = UserFactory::repository()->find($user->getId())->_real();
+        $persistedUser = UserFactory::repository()->find($user->getId());
         $this->assertEquals('test@example.com', $persistedUser->getEmail());
     }
 
     public function testAddCategoryToUser(): void
     {
-        $user = UserFactory::createOne()->_real();
-        $category = CategoryFactory::createOne(['owner' => $user])->_real();
+        $user = UserFactory::createOne();
+        $category = CategoryFactory::createOne(['owner' => $user]);
 
         $this->assertTrue($user->getCategories()->contains($category));
         $this->assertSame($user, $category->getOwner());
@@ -78,8 +78,8 @@ class UserIntegrationTest extends KernelTestCase
 
     public function testRemoveCategoryFromUser(): void
     {
-        $user = UserFactory::createOne()->_real();
-        $category = CategoryFactory::createOne(['owner' => $user])->_real();
+        $user = UserFactory::createOne();
+        $category = CategoryFactory::createOne(['owner' => $user]);
 
         $user->removeCategory($category);
 
@@ -89,8 +89,8 @@ class UserIntegrationTest extends KernelTestCase
 
     public function testReAddCategoryToUser(): void
     {
-        $user = UserFactory::createOne()->_real();
-        $category = CategoryFactory::createOne(['owner' => $user])->_real();
+        $user = UserFactory::createOne();
+        $category = CategoryFactory::createOne(['owner' => $user]);
 
         $user->removeCategory($category);
         $user->addCategory($category);
@@ -101,8 +101,8 @@ class UserIntegrationTest extends KernelTestCase
 
     public function testAddSubCategoryToUser(): void
     {
-        $user = UserFactory::createOne()->_real();
-        $subcategory = SubcategoryFactory::createOne(['owner' => $user])->_real();
+        $user = UserFactory::createOne();
+        $subcategory = SubcategoryFactory::createOne(['owner' => $user]);
 
         $this->assertTrue($user->getSubcategories()->contains($subcategory));
         $this->assertSame($user, $subcategory->getOwner());
@@ -110,8 +110,8 @@ class UserIntegrationTest extends KernelTestCase
 
     public function testRemoveSubcategoryFromUser(): void
     {
-        $user = UserFactory::createOne()->_real();
-        $subcategory = SubcategoryFactory::createOne(['owner' => $user])->_real();
+        $user = UserFactory::createOne();
+        $subcategory = SubcategoryFactory::createOne(['owner' => $user]);
 
         $user->removeSubcategory($subcategory);
 
@@ -121,8 +121,8 @@ class UserIntegrationTest extends KernelTestCase
 
     public function testReAddSubcategoryToUser(): void
     {
-        $user = UserFactory::createOne()->_real();
-        $subcategory = SubcategoryFactory::createOne(['owner' => $user])->_real();
+        $user = UserFactory::createOne();
+        $subcategory = SubcategoryFactory::createOne(['owner' => $user]);
 
         $user->removeSubcategory($subcategory);
         $user->addSubcategory($subcategory);
@@ -133,8 +133,8 @@ class UserIntegrationTest extends KernelTestCase
 
     public function testAddAddressToUser(): void
     {
-        $user = UserFactory::createOne()->_real();
-        $address = AddressFactory::createOne(['customer' => $user])->_real();
+        $user = UserFactory::createOne();
+        $address = AddressFactory::createOne(['customer' => $user]);
 
         $this->assertTrue($user->getAddresses()->contains($address));
         $this->assertSame($user, $address->getCustomer());
@@ -142,8 +142,8 @@ class UserIntegrationTest extends KernelTestCase
 
     public function testRemoveAddressFromUser(): void
     {
-        $user = UserFactory::createOne()->_real();
-        $address = AddressFactory::createOne(['customer' => $user])->_real();
+        $user = UserFactory::createOne();
+        $address = AddressFactory::createOne(['customer' => $user]);
 
         $user->removeAddress($address);
 
@@ -153,8 +153,8 @@ class UserIntegrationTest extends KernelTestCase
 
     public function testReAddAddressToUser(): void
     {
-        $user = UserFactory::createOne()->_real();
-        $address = AddressFactory::createOne(['customer' => $user])->_real();
+        $user = UserFactory::createOne();
+        $address = AddressFactory::createOne(['customer' => $user]);
 
         $user->removeAddress($address);
         $user->addAddress($address);
@@ -165,13 +165,13 @@ class UserIntegrationTest extends KernelTestCase
 
     public function testAddCustomerOrderToUser(): void
     {
-        $user = UserFactory::createOne()->_real();
+        $user = UserFactory::createOne();
         $address = AddressFactory::createOne([
             'customer' => $user,
             'isDefaultBillingAddress' => true,
             'isDefaultShippingAddress' => true
         ]);
-        $customerOrder = CustomerOrderFactory::createOne(['customer' => $user, 'billingAddress' => $address])->_real();
+        $customerOrder = CustomerOrderFactory::createOne(['customer' => $user, 'billingAddress' => $address]);
 
         $this->assertTrue($user->getCustomerOrders()->contains($customerOrder));
         $this->assertSame($user, $customerOrder->getCustomer());
@@ -179,13 +179,13 @@ class UserIntegrationTest extends KernelTestCase
 
     public function testRemoveCustomerOrderFromUser(): void
     {
-        $user = UserFactory::createOne()->_real();
+        $user = UserFactory::createOne();
         $address = AddressFactory::createOne([
             'customer' => $user,
             'isDefaultBillingAddress' => true,
             'isDefaultShippingAddress' => true
         ]);
-        $customerOrder = CustomerOrderFactory::createOne(['customer' => $user, 'billingAddress' => $address])->_real();
+        $customerOrder = CustomerOrderFactory::createOne(['customer' => $user, 'billingAddress' => $address]);
 
         $user->removeCustomerOrder($customerOrder);
 
@@ -194,13 +194,13 @@ class UserIntegrationTest extends KernelTestCase
 
     public function testReAddCustomerOrderToUser(): void
     {
-        $user = UserFactory::createOne()->_real();
+        $user = UserFactory::createOne();
         $address = AddressFactory::createOne([
             'customer' => $user,
             'isDefaultBillingAddress' => true,
             'isDefaultShippingAddress' => true
         ]);
-        $customerOrder = CustomerOrderFactory::createOne(['customer' => $user, 'billingAddress' => $address])->_real();
+        $customerOrder = CustomerOrderFactory::createOne(['customer' => $user, 'billingAddress' => $address]);
 
         $user->removeCustomerOrder($customerOrder);
         $user->addCustomerOrder($customerOrder);
@@ -211,8 +211,8 @@ class UserIntegrationTest extends KernelTestCase
 
     public function testAddStatusChangeLogToUser(): void
     {
-        $user = UserFactory::createOne()->_real();
-        $statusChangeLog = StatusChangeLogFactory::createOne(['user' => $user])->_real();
+        $user = UserFactory::createOne();
+        $statusChangeLog = StatusChangeLogFactory::createOne(['user' => $user]);
 
         $this->assertTrue($user->getStatusChangeLogs()->contains($statusChangeLog));
         $this->assertSame($user, $statusChangeLog->getUser());
@@ -220,8 +220,8 @@ class UserIntegrationTest extends KernelTestCase
 
     public function testRemoveStatusChangeLogFromUser(): void
     {
-        $user = UserFactory::createOne()->_real();
-        $statusChangeLog = StatusChangeLogFactory::createOne(['user' => $user])->_real();
+        $user = UserFactory::createOne();
+        $statusChangeLog = StatusChangeLogFactory::createOne(['user' => $user]);
 
         $user->removeStatusChangeLog($statusChangeLog);
 
@@ -230,8 +230,8 @@ class UserIntegrationTest extends KernelTestCase
 
     public function testReAddStatusChangeLogToUser(): void
     {
-        $user = UserFactory::createOne()->_real();
-        $statusChangeLog = StatusChangeLogFactory::createOne(['user' => $user])->_real();
+        $user = UserFactory::createOne();
+        $statusChangeLog = StatusChangeLogFactory::createOne(['user' => $user]);
 
         $user->removeStatusChangeLog($statusChangeLog);
         $user->addStatusChangeLog($statusChangeLog);

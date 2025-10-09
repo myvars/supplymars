@@ -30,7 +30,7 @@ class SubcategoryMapperIntegrationTest extends KernelTestCase
 
     public function testCreateSubcategoryFromSupplierProductSuccessfully(): void
     {
-        $supplier = SupplierFactory::createOne()->_real();
+        $supplier = SupplierFactory::createOne();
         $supplierCategory = SupplierCategoryFactory::createOne([
             'name' => 'Electronics',
             'supplier' => $supplier
@@ -39,14 +39,14 @@ class SubcategoryMapperIntegrationTest extends KernelTestCase
             'name' => 'Laptops',
             'supplier' => $supplier,
             'supplierCategory' => $supplierCategory
-        ])->_real();
+        ]);
         $supplierProduct = SupplierProductFactory::createOne([
             'supplier' => $supplier,
             'supplierCategory' => $supplierCategory,
             'supplierSubcategory' => $supplierSubcategory
-        ])->_real();
+        ]);
 
-        $category = CategoryFactory::createOne(['name' => 'Electronics'])->_real();
+        $category = CategoryFactory::createOne(['name' => 'Electronics']);
 
         $createdSubcategory = $this->subcategoryMapper->createSubcategoryFromSupplierProduct($supplierProduct, $category);
 

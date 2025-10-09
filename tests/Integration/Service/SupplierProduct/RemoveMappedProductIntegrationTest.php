@@ -25,11 +25,11 @@ class RemoveMappedProductIntegrationTest extends KernelTestCase
 
     public function testHandleWithValidSupplierProduct(): void
     {
-        $product = ProductFactory::createOne()->_real();
+        $product = ProductFactory::createOne();
         $supplierProduct = SupplierProductFactory::createOne([
             'stock' => 100,
             'product' => $product
-        ])->_real();
+        ]);
 
         $this->assertSame($supplierProduct, $product->getActiveProductSource());
 
@@ -44,17 +44,17 @@ class RemoveMappedProductIntegrationTest extends KernelTestCase
 
     public function testHandleWhenActiveSourceRemoved(): void
     {
-        $product = ProductFactory::createOne()->_real();
+        $product = ProductFactory::createOne();
         $supplierProduct1 = SupplierProductFactory::createOne([
             'stock' => 100,
             'cost' => '5.00',
             'product' => $product
-        ])->_real();
+        ]);
         $supplierProduct2 = SupplierProductFactory::createOne([
             'stock' => 100,
             'cost' => '10.00',
             'product' => $product
-        ])->_real();
+        ]);
 
         $this->assertSame($supplierProduct1, $product->getActiveProductSource());
 

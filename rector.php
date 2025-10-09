@@ -1,6 +1,7 @@
 <?php
 
 use Rector\Config\RectorConfig;
+use Zenstruck\Foundry\Utils\Rector\FoundrySetList;
 
 return RectorConfig::configure()
     ->withPaths([

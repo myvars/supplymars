@@ -25,11 +25,11 @@ class ChangeMappedProductStatusIntegrationTest extends KernelTestCase
 
     public function testHandleWithValidSupplierProduct(): void
     {
-        $product = ProductFactory::createOne()->_real();
+        $product = ProductFactory::createOne();
         $supplierProduct = SupplierProductFactory::createOne([
             'stock' => 100,
             'product' => $product
-        ])->_real();
+        ]);
 
         $this->assertSame($supplierProduct, $product->getActiveProductSource());
 
@@ -44,17 +44,17 @@ class ChangeMappedProductStatusIntegrationTest extends KernelTestCase
 
     public function testHandleWithActiveSourceStatusChange(): void
     {
-        $product = ProductFactory::createOne(['isActive' => true])->_real();
+        $product = ProductFactory::createOne(['isActive' => true]);
         $supplierProduct1 = SupplierProductFactory::createOne([
             'stock' => 100,
             'cost' => '5.00',
             'product' => $product
-        ])->_real();
+        ]);
         $supplierProduct2 = SupplierProductFactory::createOne([
             'stock' => 100,
             'cost' => '10.00',
             'product' => $product
-        ])->_real();
+        ]);
 
         $this->assertSame($supplierProduct1, $product->getActiveProductSource());
 

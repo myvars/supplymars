@@ -30,8 +30,8 @@ class StatusChangeLoggerIntegrationTest extends KernelTestCase
 
     public function testFromStatusChangeEventSuccessfully(): void
     {
-        $user = UserFactory::new()->staff()->create()->_real();
-        $customerOrder = CustomerOrderFactory::new()->create()->_real();
+        $user = UserFactory::new()->staff()->create();
+        $customerOrder = CustomerOrderFactory::new()->create();
 
         $event = new OrderStatusWasChangedEvent(
             $customerOrder->getPublicId(),

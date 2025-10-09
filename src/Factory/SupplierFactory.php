@@ -2,13 +2,13 @@
 
 namespace App\Factory;
 
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 use App\Entity\Supplier;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<Supplier>
+ * @extends PersistentObjectFactory<Supplier>
  */
-final class SupplierFactory extends PersistentProxyObjectFactory
+final class SupplierFactory extends PersistentObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services

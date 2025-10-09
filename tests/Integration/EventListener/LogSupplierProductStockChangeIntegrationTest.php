@@ -21,7 +21,7 @@ class LogSupplierProductStockChangeIntegrationTest extends KernelTestCase
 
     public function testOnSupplierProductStockChangeLogsStockChange(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne()->_real();
+        $supplierProduct = SupplierProductFactory::createOne();
 
         $supplierProductStockChangeLog = SupplierStockChangeLogFactory::repository()->findOneBy([
             'supplierProductId' => $supplierProduct->getId(),

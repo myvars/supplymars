@@ -32,8 +32,8 @@ class ProcessOrderIntegrationTest extends KernelTestCase
 
     public function testHandleWithValidCustomerOrder(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne()->_real();
-        $customerOrderItem = CustomerOrderItemFactory::createOne(['product' => $supplierProduct->getProduct()])->_real();
+        $supplierProduct = SupplierProductFactory::createOne();
+        $customerOrderItem = CustomerOrderItemFactory::createOne(['product' => $supplierProduct->getProduct()]);
 
         $crudOptions = new CrudOptions();
         $crudOptions->setEntity($customerOrderItem->getCustomerOrder());
@@ -46,14 +46,14 @@ class ProcessOrderIntegrationTest extends KernelTestCase
 
     public function testHandleWithHalfProcessedCustomerOrder(): void
     {
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne()->_real();
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne();
         $customerOrder = $purchaseOrderItem->getPurchaseOrder()->getCustomerOrder();
 
-        $supplierProduct = SupplierProductFactory::createOne()->_real();
+        $supplierProduct = SupplierProductFactory::createOne();
         $customerOrderItem = CustomerOrderItemFactory::createOne([
             'customerOrder' => $customerOrder,
             'product' => $supplierProduct->getProduct()
-        ])->_real();
+        ]);
 
         $crudOptions = new CrudOptions();
         $crudOptions->setEntity($customerOrderItem->getCustomerOrder());
@@ -68,7 +68,7 @@ class ProcessOrderIntegrationTest extends KernelTestCase
 
     public function testHandleWithMissingSupplierProduct(): void
     {
-        $customerOrderItem = CustomerOrderItemFactory::createOne()->_real();
+        $customerOrderItem = CustomerOrderItemFactory::createOne();
 
         $crudOptions = new CrudOptions();
         $crudOptions->setEntity($customerOrderItem->getCustomerOrder());
@@ -81,15 +81,15 @@ class ProcessOrderIntegrationTest extends KernelTestCase
 
     public function testHandleWithInsufficientSupplierStock(): void
     {
-        $product = ProductFactory::createOne(['stock' => 1])->_real();
+        $product = ProductFactory::createOne(['stock' => 1]);
         $supplierProduct = SupplierProductFactory::createOne([
             'product' => $product,
             'stock' => 1
-        ])->_real();
+        ]);
         $customerOrderItem = CustomerOrderItemFactory::createOne([
             'product' => $supplierProduct->getProduct(),
             'quantity' => 2
-        ])->_real();
+        ]);
 
         $crudOptions = new CrudOptions();
         $crudOptions->setEntity($customerOrderItem->getCustomerOrder());
@@ -102,8 +102,8 @@ class ProcessOrderIntegrationTest extends KernelTestCase
 
     public function testHandleWithInactiveSupplierProduct(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['isActive' => false])->_real();
-        $customerOrderItem = CustomerOrderItemFactory::createOne(['product' => $supplierProduct->getProduct()])->_real();
+        $supplierProduct = SupplierProductFactory::createOne(['isActive' => false]);
+        $customerOrderItem = CustomerOrderItemFactory::createOne(['product' => $supplierProduct->getProduct()]);
 
         $crudOptions = new CrudOptions();
         $crudOptions->setEntity($customerOrderItem->getCustomerOrder());

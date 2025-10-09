@@ -22,7 +22,7 @@ class ProductPriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testPreUpdateRecalculatesPriceWhenFieldsChange(): void
     {
-        $product = ProductFactory::createOne(['cost' => 100, 'defaultMarkup' => '20.000'])->_real();
+        $product = ProductFactory::createOne(['cost' => 100, 'defaultMarkup' => '20.000']);
 
         $product->setCost(120);
 
@@ -34,7 +34,7 @@ class ProductPriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testPreUpdateSkipsRecalculationWhenNoRelevantFieldsChange(): void
     {
-        $product = ProductFactory::createOne(['cost' => 100, 'defaultMarkup' => '20.000'])->_real();
+        $product = ProductFactory::createOne(['cost' => 100, 'defaultMarkup' => '20.000']);
 
         $product->setName('New Product Name');
 

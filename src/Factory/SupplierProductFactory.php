@@ -2,18 +2,18 @@
 
 namespace App\Factory;
 
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 use App\Entity\Product;
 use App\Entity\Supplier;
 use App\Entity\SupplierProduct;
 use App\Service\Product\ActiveSourceCalculator;
 use App\Service\Product\ProductPriceCalculator;
 use Zenstruck\Foundry\LazyValue;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<SupplierProduct>
+ * @extends PersistentObjectFactory<SupplierProduct>
  */
-final class SupplierProductFactory extends PersistentProxyObjectFactory
+final class SupplierProductFactory extends PersistentObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services

@@ -24,7 +24,7 @@ class DeleteCustomerIntegrationTest extends KernelTestCase
 
     public function testHandleWithValidCustomer(): void
     {
-        $customer = UserFactory::createOne()->_real();
+        $customer = UserFactory::createOne();
         $customerId = $customer->getId();
 
         $crudOptions = new CrudOptions();

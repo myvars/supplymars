@@ -28,11 +28,11 @@ class StatusLogUtilityIntegrationTest extends KernelTestCase
 
     public function testForCustomerOrder(): void
     {
-        $customerOrder = CustomerOrderFactory::createOne()->_real();
+        $customerOrder = CustomerOrderFactory::createOne();
         $statusChangeLog = StatusChangeLogFactory::createOne([
             'eventType' => DomainEventType::ORDER_STATUS_CHANGED,
             'eventTypeId' => $customerOrder->getId()
-        ])->_real();
+        ]);
 
         $logs = $this->statusLogUtility->forCustomerOrder($customerOrder);
         $this->assertCount(1, $logs);
@@ -41,11 +41,11 @@ class StatusLogUtilityIntegrationTest extends KernelTestCase
 
     public function testForCustomerOrderItem(): void
     {
-        $customerOrderItem = CustomerOrderItemFactory::createOne()->_real();
+        $customerOrderItem = CustomerOrderItemFactory::createOne();
         $statusChangeLog = StatusChangeLogFactory::createOne([
             'eventType' => DomainEventType::ORDER_ITEM_STATUS_CHANGED,
             'eventTypeId' => $customerOrderItem->getId()
-        ])->_real();
+        ]);
 
         $logs = $this->statusLogUtility->forCustomerOrderItem($customerOrderItem);
         $this->assertCount(1, $logs);
@@ -54,11 +54,11 @@ class StatusLogUtilityIntegrationTest extends KernelTestCase
 
     public function testForPurchaseOrder(): void
     {
-        $purchaseOrder = PurchaseOrderFactory::createOne()->_real();
+        $purchaseOrder = PurchaseOrderFactory::createOne();
         $statusChangeLog = StatusChangeLogFactory::createOne([
             'eventType' => DomainEventType::PURCHASE_ORDER_STATUS_CHANGED,
             'eventTypeId' => $purchaseOrder->getId()
-        ])->_real();
+        ]);
 
         $logs = $this->statusLogUtility->forPurchaseOrder($purchaseOrder);
         $this->assertCount(1, $logs);
@@ -67,11 +67,11 @@ class StatusLogUtilityIntegrationTest extends KernelTestCase
 
     public function testForPurchaseOrderItem(): void
     {
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne()->_real();
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne();
         $statusChangeLog = StatusChangeLogFactory::createOne([
             'eventType' => DomainEventType::PURCHASE_ORDER_ITEM_STATUS_CHANGED,
             'eventTypeId' => $purchaseOrderItem->getId()
-        ])->_real();
+        ]);
 
         $logs = $this->statusLogUtility->forPurchaseOrderItem($purchaseOrderItem);
         $this->assertCount(1, $logs);

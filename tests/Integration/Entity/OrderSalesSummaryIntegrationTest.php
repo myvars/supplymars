@@ -81,10 +81,10 @@ class OrderSalesSummaryIntegrationTest extends KernelTestCase
         $persistedOrderSalesSummary = OrderSalesSummaryFactory::repository()->findOneBy([
             'dateString' => '2023-01-01',
             'duration' => SalesDuration::LAST_7->value,
-        ])->_real();
+        ]);
 
         $this->assertEquals(10, $persistedOrderSalesSummary->getOrderCount());
         $this->assertEquals('100.00', $persistedOrderSalesSummary->getOrderValue());
-        $this->assertEquals('10.00', $persistedOrderSalesSummary->getAverageOrderValue());
+        $this->assertEquals('10', $persistedOrderSalesSummary->getAverageOrderValue());
     }
 }

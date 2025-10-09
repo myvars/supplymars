@@ -2,15 +2,15 @@
 
 namespace App\Factory;
 
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 use App\Entity\ProductImage;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Zenstruck\Foundry\LazyValue;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<ProductImage>
+ * @extends PersistentObjectFactory<ProductImage>
  */
-final class ProductImageFactory extends PersistentProxyObjectFactory
+final class ProductImageFactory extends PersistentObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services

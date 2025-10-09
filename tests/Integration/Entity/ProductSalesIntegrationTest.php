@@ -87,7 +87,7 @@ class ProductSalesIntegrationTest extends KernelTestCase
             'product' => $product,
             'supplier' => $supplier,
             'dateString' => '2023-01-01',
-        ])->_real();
+        ]);
 
         $this->assertEquals(100, $persistedProductSales->getSalesQty());
     }

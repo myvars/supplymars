@@ -31,7 +31,7 @@ class LockOrderIntegrationTest extends KernelTestCase
 
     public function testHandleWithValidCustomerOrder(): void
     {
-        $customerOrder = CustomerOrderFactory::createOne()->_real();
+        $customerOrder = CustomerOrderFactory::createOne();
 
         $crudOptions = new CrudOptions();
         $crudOptions->setEntity($customerOrder);

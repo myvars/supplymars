@@ -74,10 +74,10 @@ class OrderSalesIntegrationTest extends KernelTestCase
 
         $persistedOrderSales = OrderSalesFactory::repository()->findOneBy([
             'dateString' => '2023-01-01'
-        ])->_real();
+        ]);
 
         $this->assertEquals(10, $persistedOrderSales->getOrderCount());
         $this->assertEquals('100.00', $persistedOrderSales->getOrderValue());
-        $this->assertEquals('10.00', $persistedOrderSales->getAverageOrderValue());
+        $this->assertEquals('10', $persistedOrderSales->getAverageOrderValue());
     }
 }

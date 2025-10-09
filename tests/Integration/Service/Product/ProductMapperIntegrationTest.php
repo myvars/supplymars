@@ -29,8 +29,8 @@ class ProductMapperIntegrationTest extends KernelTestCase
 
     public function testCreateProductFromSupplierProductSuccessfully(): void
     {
-        $manufacturer = ManufacturerFactory::createOne(['name' => 'Sony'])->_real();
-        $subcategory = SubcategoryFactory::createOne(['name' => 'Laptops'])->_real();
+        $manufacturer = ManufacturerFactory::createOne(['name' => 'Sony']);
+        $subcategory = SubcategoryFactory::createOne(['name' => 'Laptops']);
 
         $supplierProduct = SupplierProductFactory::createOne([
             'name' => 'Test Product',
@@ -38,7 +38,7 @@ class ProductMapperIntegrationTest extends KernelTestCase
             'leadTimeDays' => 5,
             'mfrPartNumber' => 'MPN123',
             'weight' => 150,
-        ])->_real();
+        ]);
 
         $product = $this->productMapper->createProductFromSupplierProduct($supplierProduct, $manufacturer, $subcategory);
 
@@ -55,11 +55,11 @@ class ProductMapperIntegrationTest extends KernelTestCase
 
     public function testCreateProductFromSupplierWithExistingProduct(): void
     {
-        $existingProduct = ProductFactory::createOne(['name' => 'Test Product'])->_real();
+        $existingProduct = ProductFactory::createOne(['name' => 'Test Product']);
         $supplierProduct = SupplierProductFactory::createOne([
             'name' => 'Test Product',
             'product' => null
-        ])->_real();
+        ]);
 
         $product = $this->productMapper->createProductFromSupplierProduct(
             $supplierProduct,

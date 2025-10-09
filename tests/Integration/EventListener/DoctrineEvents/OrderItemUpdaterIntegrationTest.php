@@ -30,7 +30,7 @@ class OrderItemUpdaterIntegrationTest extends KernelTestCase
 
     public function testPreAndPostUpdateRecalculatesTotalWhenFieldsChange(): void
     {
-        $customerOrderItem = CustomerOrderItemFactory::createOne()->_real();
+        $customerOrderItem = CustomerOrderItemFactory::createOne();
         $customerOrder = $customerOrderItem->getCustomerOrder();
         $customerOrderTotalPrice = $customerOrder->getTotalPrice();
 

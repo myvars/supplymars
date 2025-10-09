@@ -32,8 +32,8 @@ class CreateOrderItemIntegrationTest extends KernelTestCase
 
     public function testHandleWithValidCreateOrderItemDto(): void
     {
-        $customerOrder = CustomerOrderFactory::createOne()->_real();
-        $product = ProductFactory::createOne()->_real();
+        $customerOrder = CustomerOrderFactory::createOne();
+        $product = ProductFactory::createOne();
 
         $dto = new CreateOrderItemDto(
             $customerOrder->getId(),
@@ -49,7 +49,7 @@ class CreateOrderItemIntegrationTest extends KernelTestCase
         $customerOrderItem = CustomerOrderItemFactory::repository()->findOneBy([
             'customerOrder' => $customerOrder,
             'product' => $product
-        ])->_real();
+        ]);
 
         $this->assertInstanceOf(CustomerOrderItem::class, $customerOrderItem);
         $this->assertSame($customerOrder, $customerOrderItem->getCustomerOrder());

@@ -27,7 +27,7 @@ class MailerHelperIntegrationTest extends KernelTestCase
 
     public function testSendEmailVerificationMessage(): void
     {
-        $user = UserFactory::createOne()->_real();
+        $user = UserFactory::createOne();
         $emailSignatureContext = $this->emailVerifier->createEmailSignatureContext('app_verify_email', $user);
 
         $email = $this->mailerHelper->sendEmailVerificationMessage($user, $emailSignatureContext);
@@ -40,7 +40,7 @@ class MailerHelperIntegrationTest extends KernelTestCase
 
     public function testSendEmailResetPasswordMessage(): void
     {
-        $user = UserFactory::createOne()->_real();
+        $user = UserFactory::createOne();
         $resetToken = new ResetPasswordToken('token', new \DateTimeImmutable(), time());
 
         $email = $this->mailerHelper->sendEmailResetPasswordMessage($user, $resetToken);

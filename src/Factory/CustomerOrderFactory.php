@@ -2,17 +2,17 @@
 
 namespace App\Factory;
 
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 use App\Entity\CustomerOrder;
 use App\Entity\User;
 use App\Enum\ShippingMethod;
 use Zenstruck\Foundry\LazyValue;
 use Zenstruck\Foundry\Object\Instantiator;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<CustomerOrder>
+ * @extends PersistentObjectFactory<CustomerOrder>
  */
-final class CustomerOrderFactory extends PersistentProxyObjectFactory
+final class CustomerOrderFactory extends PersistentObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services

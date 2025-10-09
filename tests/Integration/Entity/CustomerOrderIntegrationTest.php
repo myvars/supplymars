@@ -45,16 +45,16 @@ class CustomerOrderIntegrationTest extends KernelTestCase
 
     public function testCustomerOrderPersistence(): void
     {
-        $order = CustomerOrderFactory::createOne()->_real();
+        $order = CustomerOrderFactory::createOne();
 
-        $persistedOrder = CustomerOrderFactory::repository()->find($order->getId())->_real();
+        $persistedOrder = CustomerOrderFactory::repository()->find($order->getId());
         $this->assertEquals($order->getId(), $persistedOrder->getId());
     }
 
     public function testAddCustomerOrderItemToOrder(): void
     {
-        $order = CustomerOrderFactory::createOne()->_real();
-        $item = CustomerOrderItemFactory::createOne(['customerOrder' => $order])->_real();
+        $order = CustomerOrderFactory::createOne();
+        $item = CustomerOrderItemFactory::createOne(['customerOrder' => $order]);
 
         $order->addCustomerOrderItem($item);
 
@@ -64,8 +64,8 @@ class CustomerOrderIntegrationTest extends KernelTestCase
 
     public function testRemoveCustomerOrderItemFromOrder(): void
     {
-        $order = CustomerOrderFactory::createOne()->_real();
-        $item = CustomerOrderItemFactory::createOne(['customerOrder' => $order])->_real();
+        $order = CustomerOrderFactory::createOne();
+        $item = CustomerOrderItemFactory::createOne(['customerOrder' => $order]);
 
         $order->addCustomerOrderItem($item);
         $order->removeCustomerOrderItem($item);
@@ -75,8 +75,8 @@ class CustomerOrderIntegrationTest extends KernelTestCase
 
     public function testReAddCustomerOrderItemToOrder(): void
     {
-        $order = CustomerOrderFactory::createOne()->_real();
-        $item = CustomerOrderItemFactory::createOne(['customerOrder' => $order])->_real();
+        $order = CustomerOrderFactory::createOne();
+        $item = CustomerOrderItemFactory::createOne(['customerOrder' => $order]);
 
         $order->removeCustomerOrderItem($item);
         $order->addCustomerOrderItem($item);
@@ -87,7 +87,7 @@ class CustomerOrderIntegrationTest extends KernelTestCase
 
     public function testSetOrderLock(): void
     {
-        $order = CustomerOrderFactory::createOne()->_real();
+        $order = CustomerOrderFactory::createOne();
         $order->lockOrder(UserFactory::createOne());
 
         $this->assertInstanceOf(User::class, $order->getOrderLock());
@@ -95,7 +95,7 @@ class CustomerOrderIntegrationTest extends KernelTestCase
 
     public function testCancelOrder(): void
     {
-        $order = CustomerOrderFactory::createOne()->_real();
+        $order = CustomerOrderFactory::createOne();
         $order->cancelOrder();
 
         $this->assertSame(OrderStatus::CANCELLED, $order->getStatus());
@@ -103,7 +103,7 @@ class CustomerOrderIntegrationTest extends KernelTestCase
 
     public function testGenerateStatus(): void
     {
-        $order = CustomerOrderFactory::createOne()->_real();
+        $order = CustomerOrderFactory::createOne();
         $order->generateStatus();
 
         $this->assertSame(OrderStatus::getDefault(), $order->getStatus());
@@ -111,7 +111,7 @@ class CustomerOrderIntegrationTest extends KernelTestCase
 
     public function testGetLineCount(): void
     {
-        $order = CustomerOrderFactory::createOne()->_real();
+        $order = CustomerOrderFactory::createOne();
         CustomerOrderItemFactory::createMany(2, ['customerOrder' => $order]);
 
         $this->assertSame(2, $order->getLineCount());
@@ -119,7 +119,7 @@ class CustomerOrderIntegrationTest extends KernelTestCase
 
     public function testGetItemCount(): void
     {
-        $order = CustomerOrderFactory::createOne()->_real();
+        $order = CustomerOrderFactory::createOne();
         CustomerOrderItemFactory::createMany(2, ['customerOrder' => $order, 'quantity' => 2]);
 
         $this->assertSame(4, $order->getItemCount());

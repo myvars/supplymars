@@ -205,16 +205,16 @@ class ProductIntegrationTest extends KernelTestCase
             'owner' => UserFactory::createOne(),
             'priceModel' => PriceModel::PRETTY_99,
             'isActive' => true,
-        ])->_real();
+        ]);
 
-        $persistedProduct = ProductFactory::repository()->find($product->getId())->_real();
+        $persistedProduct = ProductFactory::repository()->find($product->getId());
         $this->assertEquals('Test Product', $persistedProduct->getName());
     }
 
     public function testAddSupplierProduct(): void
     {
-        $product = ProductFactory::createOne()->_real();
-        $supplierProduct = SupplierProductFactory::createOne(['product' => $product])->_real();
+        $product = ProductFactory::createOne();
+        $supplierProduct = SupplierProductFactory::createOne(['product' => $product]);
 
         $this->assertCount(1, $product->getSupplierProducts());
         $this->assertTrue($product->getSupplierProducts()->contains($supplierProduct));
@@ -222,8 +222,8 @@ class ProductIntegrationTest extends KernelTestCase
 
     public function testAddProductImage(): void
     {
-        $product = ProductFactory::createOne()->_real();
-        $productImage = ProductImageFactory::createOne(['product' => $product])->_real();
+        $product = ProductFactory::createOne();
+        $productImage = ProductImageFactory::createOne(['product' => $product]);
 
         $this->assertCount(1, $product->getProductImages());
         $this->assertTrue($product->getProductImages()->contains($productImage));
@@ -231,8 +231,8 @@ class ProductIntegrationTest extends KernelTestCase
 
     public function testRemoveProductImage(): void
     {
-        $product = ProductFactory::createOne()->_real();
-        $productImage = ProductImageFactory::createOne(['product' => $product])->_real();
+        $product = ProductFactory::createOne();
+        $productImage = ProductImageFactory::createOne(['product' => $product]);
 
         $product->removeProductImage($productImage);
         $this->assertCount(0, $product->getProductImages());
@@ -241,7 +241,7 @@ class ProductIntegrationTest extends KernelTestCase
     public function testHasActiveProductSource(): void
     {
         $product = ProductFactory::createOne();
-        SupplierProductFactory::createOne(['product' => $product])->_real();
+        SupplierProductFactory::createOne(['product' => $product]);
 
         $this->assertTrue($product->hasActiveProductSource());
     }
@@ -249,7 +249,7 @@ class ProductIntegrationTest extends KernelTestCase
     public function testHasProductImage(): void
     {
         $productImage = ProductImageFactory::createOne();
-        $product = ProductFactory::createOne()->_real();
+        $product = ProductFactory::createOne();
 
         $product->addProductImage($productImage);
 
@@ -259,7 +259,7 @@ class ProductIntegrationTest extends KernelTestCase
     public function testGetFirstImage(): void
     {
         $productImage = ProductImageFactory::createOne();
-        $product = ProductFactory::createOne()->_real();
+        $product = ProductFactory::createOne();
 
         $product->addProductImage($productImage);
 
@@ -311,8 +311,8 @@ class ProductIntegrationTest extends KernelTestCase
     public function testGetActiveSupplierProducts(): void
     {
         $product = ProductFactory::createOne();
-        $activeSupplierProduct = SupplierProductFactory::createOne(['product' => $product])->_real();
-        $inactiveSupplierProduct = SupplierProductFactory::createOne(['product' => $product, 'isActive' => false])->_real();
+        $activeSupplierProduct = SupplierProductFactory::createOne(['product' => $product]);
+        $inactiveSupplierProduct = SupplierProductFactory::createOne(['product' => $product, 'isActive' => false]);
 
         $activeSupplierProducts = $product->getActiveSupplierProducts();
 
@@ -323,13 +323,13 @@ class ProductIntegrationTest extends KernelTestCase
 
     public function testGetDefaultOwner(): void
     {
-        $categoryOwner = UserFactory::createOne()->_real();
-        $subcategoryOwner = UserFactory::createOne()->_real();
-        $productOwner = UserFactory::createOne()->_real();
+        $categoryOwner = UserFactory::createOne();
+        $subcategoryOwner = UserFactory::createOne();
+        $productOwner = UserFactory::createOne();
 
         $category = CategoryFactory::createOne(['owner' => $categoryOwner]);
         $subcategory = SubcategoryFactory::createOne(['category' => $category, 'owner' => $subcategoryOwner]);
-        $product = ProductFactory::createOne(['category' => $category, 'subcategory' => $subcategory, 'owner' => $productOwner])->_real();
+        $product = ProductFactory::createOne(['category' => $category, 'subcategory' => $subcategory, 'owner' => $productOwner]);
 
         $this->assertSame($productOwner, $product->getDefaultOwner());
 

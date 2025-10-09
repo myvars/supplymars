@@ -37,7 +37,7 @@ class ManufacturerMapperIntegrationTest extends KernelTestCase
 
     public function testCreateCategoryFromSupplierProductSuccessfully(): void
     {
-        $supplier = SupplierFactory::createOne()->_real();
+        $supplier = SupplierFactory::createOne();
         $supplierCategory = SupplierCategoryFactory::createOne([
             'name' => 'Electronics',
             'supplier' => $supplier
@@ -47,7 +47,7 @@ class ManufacturerMapperIntegrationTest extends KernelTestCase
             'supplierCategory' => $supplierCategory
         ]);
 
-        $createdCategory = $this->categoryMapper->createCategoryFromSupplierProduct($supplierProduct->_real());
+        $createdCategory = $this->categoryMapper->createCategoryFromSupplierProduct($supplierProduct);
 
         $this->assertInstanceOf(Category::class, $createdCategory);
         $this->assertSame('Electronics', $createdCategory->getName());

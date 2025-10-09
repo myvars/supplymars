@@ -59,9 +59,9 @@ class PurchaseOrderItemIntegrationTest extends KernelTestCase
 
     public function testPurchaseOrderItemPersistence(): void
     {
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne()->_real();
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne();
 
-        $persistedPurchaseOrderItem = PurchaseOrderItemFactory::repository()->find($purchaseOrderItem->getId())->_real();
+        $persistedPurchaseOrderItem = PurchaseOrderItemFactory::repository()->find($purchaseOrderItem->getId());
         $this->assertEquals($purchaseOrderItem->getId(), $persistedPurchaseOrderItem->getId());
     }
 
@@ -70,7 +70,7 @@ class PurchaseOrderItemIntegrationTest extends KernelTestCase
         $customerOrderItem = CustomerOrderItemFactory::createOne(['quantity' => 10]);
         $purchaseOrderItem = PurchaseOrderItemFactory::createOne([
             'customerOrderItem' => $customerOrderItem
-        ])->_real();
+        ]);
         $lineTotal = $purchaseOrderItem->getTotalPrice();
 
         $purchaseOrderItem->updateItem(10);
@@ -80,7 +80,7 @@ class PurchaseOrderItemIntegrationTest extends KernelTestCase
 
     public function testInvalidUpdatePurchaseOrderItemWithHighQty(): void
     {
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne()->_real();
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne();
         $maxQuantity = $purchaseOrderItem->getMaxQuantity();
 
         $this->expectException(\LogicException::class);

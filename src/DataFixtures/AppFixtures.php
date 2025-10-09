@@ -12,7 +12,6 @@ use App\Factory\UserFactory;
 use App\Factory\VatRateFactory;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
-use Zenstruck\Foundry\Persistence\Proxy;
 
 class AppFixtures extends Fixture
 {
@@ -65,7 +64,7 @@ class AppFixtures extends Fixture
         VatRateFactory::createOne(['name' => 'Zero rate', 'rate' => 0]);
     }
 
-    public function createWarehouse(): Proxy
+    public function createWarehouse(): object
     {
         return SupplierFactory::createOne([
             'name' => self::DEFAULT_SUPPLIER_NAME,
@@ -74,7 +73,7 @@ class AppFixtures extends Fixture
         ]);
     }
 
-    public function createAdditionalSuppliers(Proxy $warehouse): void
+    public function createAdditionalSuppliers(object $warehouse): void
     {
         if (self::EDI_SUPPLIER_PRODUCT_COUNT < 1) {
             return;
@@ -93,7 +92,7 @@ class AppFixtures extends Fixture
         }
     }
 
-    public function createSupplierProducts(Proxy $supplier, int $productCount): void
+    public function createSupplierProducts(object $supplier, int $productCount): void
     {
         if ($productCount < 1) {
             return;
@@ -128,7 +127,7 @@ class AppFixtures extends Fixture
         });
     }
 
-    private function createCommonProducts(Proxy $warehouse, Proxy $supplier, int $productMapCount): void
+    private function createCommonProducts(object $warehouse, object $supplier, int $productMapCount): void
     {
         $commonProducts = SupplierProductFactory::randomSet($productMapCount, [
             'supplier' => $warehouse,

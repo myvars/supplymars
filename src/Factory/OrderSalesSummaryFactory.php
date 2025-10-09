@@ -2,16 +2,16 @@
 
 namespace App\Factory;
 
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 use App\Entity\OrderSalesSummary;
 use App\Enum\SalesDuration;
 use App\ValueObject\OrderSalesType;
 use Zenstruck\Foundry\Object\Instantiator;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<OrderSalesSummary>
+ * @extends PersistentObjectFactory<OrderSalesSummary>
  */
-final class OrderSalesSummaryFactory extends PersistentProxyObjectFactory
+final class OrderSalesSummaryFactory extends PersistentObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services

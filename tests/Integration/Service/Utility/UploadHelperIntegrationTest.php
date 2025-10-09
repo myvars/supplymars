@@ -24,7 +24,7 @@ class UploadHelperIntegrationTest extends KernelTestCase
 
     public function testUploadFileSuccessfully(): void
     {
-        $productImage = ProductImageFactory::createOne()->_real();
+        $productImage = ProductImageFactory::createOne();
 
         $newFileName = $this->uploadHelper->uploadFile($productImage->getImageFile(), $this->appProductUploads);
         $this->assertStringContainsString('dummy-image-', $newFileName);

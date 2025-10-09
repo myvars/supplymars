@@ -56,7 +56,7 @@ class ResetPasswordRequestIntegrationTest extends KernelTestCase
 
         $persistedResetPasswordRequest = ResetPasswordRequestFactory::repository()->findOneBy([
             'selector' => 'selector'
-        ])->_real();
+        ]);
 
         $this->assertEquals('hashedToken', $persistedResetPasswordRequest->getHashedToken());
     }

@@ -39,7 +39,7 @@ class CreateOrderIntegrationTest extends KernelTestCase
             'customer' => $customer,
             'isDefaultBillingAddress' => true,
             'isDefaultShippingAddress' => true
-        ])->_real();
+        ]);
         $customer->addAddress($address);
 
         VatRateFactory::new()->standard()->create();
@@ -57,7 +57,7 @@ class CreateOrderIntegrationTest extends KernelTestCase
         $customerOrder = CustomerOrderFactory::repository()->findOneBy([
             'customer' => $customer,
             'customerOrderRef' => 'order_ref'
-        ])->_real();
+        ]);
 
         $this->assertInstanceOf(CustomerOrder::class, $customerOrder);
         $this->assertSame('order_ref', $customerOrder->getCustomerOrderRef());

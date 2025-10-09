@@ -111,14 +111,14 @@ class CategoryIntegrationTest extends KernelTestCase
             'isActive' => true,
         ]);
 
-        $persistedCategory = CategoryFactory::repository()->find($category->getId())->_real();
+        $persistedCategory = CategoryFactory::repository()->find($category->getId());
         $this->assertEquals('Electronics', $persistedCategory->getName());
     }
 
     public function testAddSubcategoryToCategory(): void
     {
-        $category = CategoryFactory::createOne()->_real();
-        $subcategory = SubcategoryFactory::createOne(['category' => $category])->_real();
+        $category = CategoryFactory::createOne();
+        $subcategory = SubcategoryFactory::createOne(['category' => $category]);
 
         $this->assertTrue($category->getSubcategories()->contains($subcategory));
         $this->assertSame($category, $subcategory->getCategory());
@@ -126,8 +126,8 @@ class CategoryIntegrationTest extends KernelTestCase
 
     public function testRemoveSubcategoryFromCategory(): void
     {
-        $category = CategoryFactory::createOne()->_real();
-        $subcategory = SubcategoryFactory::createOne(['category' => $category])->_real();
+        $category = CategoryFactory::createOne();
+        $subcategory = SubcategoryFactory::createOne(['category' => $category]);
 
         $category->removeSubcategory($subcategory);
 
@@ -137,8 +137,8 @@ class CategoryIntegrationTest extends KernelTestCase
 
     public function testReAddSubcategoryToCategory(): void
     {
-        $category = CategoryFactory::createOne()->_real();
-        $subcategory = SubcategoryFactory::createOne(['category' => $category])->_real();
+        $category = CategoryFactory::createOne();
+        $subcategory = SubcategoryFactory::createOne(['category' => $category]);
 
         $category->removeSubcategory($subcategory);
         $category->addSubcategory($subcategory);
@@ -149,8 +149,8 @@ class CategoryIntegrationTest extends KernelTestCase
 
     public function testAddProductToCategory(): void
     {
-        $category = CategoryFactory::createOne()->_real();
-        $product = ProductFactory::createOne(['category' => $category])->_real();
+        $category = CategoryFactory::createOne();
+        $product = ProductFactory::createOne(['category' => $category]);
 
         $this->assertTrue($category->getProducts()->contains($product));
         $this->assertSame($category, $product->getCategory());
@@ -158,8 +158,8 @@ class CategoryIntegrationTest extends KernelTestCase
 
     public function testRemoveProductFromCategory(): void
     {
-        $category = CategoryFactory::createOne()->_real();
-        $product = ProductFactory::createOne(['category' => $category])->_real();
+        $category = CategoryFactory::createOne();
+        $product = ProductFactory::createOne(['category' => $category]);
 
         $category->removeProduct($product);
 
@@ -169,8 +169,8 @@ class CategoryIntegrationTest extends KernelTestCase
 
     public function testReAddProductToCategory(): void
     {
-        $category = CategoryFactory::createOne()->_real();
-        $product = ProductFactory::createOne(['category' => $category])->_real();
+        $category = CategoryFactory::createOne();
+        $product = ProductFactory::createOne(['category' => $category]);
 
         $category->removeProduct($product);
         $category->addProduct($product);

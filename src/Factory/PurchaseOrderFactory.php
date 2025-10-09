@@ -2,15 +2,15 @@
 
 namespace App\Factory;
 
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 use App\Entity\PurchaseOrder;
 use Zenstruck\Foundry\LazyValue;
 use Zenstruck\Foundry\Object\Instantiator;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<PurchaseOrder>
+ * @extends PersistentObjectFactory<PurchaseOrder>
  */
-final class PurchaseOrderFactory extends PersistentProxyObjectFactory
+final class PurchaseOrderFactory extends PersistentObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services

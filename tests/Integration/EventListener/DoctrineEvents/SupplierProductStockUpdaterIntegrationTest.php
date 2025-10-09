@@ -21,7 +21,7 @@ class SupplierProductStockUpdaterIntegrationTest extends KernelTestCase
 
     public function testProductsRecalculateWhenSupplierProductChanges(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne()->_real();
+        $supplierProduct = SupplierProductFactory::createOne();
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals($supplierProduct, $product->getActiveProductSource());
@@ -36,13 +36,13 @@ class SupplierProductStockUpdaterIntegrationTest extends KernelTestCase
 
     public function testNoUpdateWhenDifferentSupplierChanges(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne()->_real();
+        $supplierProduct = SupplierProductFactory::createOne();
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals($supplierProduct, $product->getActiveProductSource());
 
         // Change different supplier status
-        $supplierProduct2 = SupplierProductFactory::createOne(['isActive' => true])->_real();
+        $supplierProduct2 = SupplierProductFactory::createOne(['isActive' => true]);
         $supplierProduct2->setIsActive(false);
 
         $this->entityManager->flush();

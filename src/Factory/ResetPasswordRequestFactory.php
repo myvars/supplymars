@@ -2,14 +2,14 @@
 
 namespace App\Factory;
 
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 use App\Entity\ResetPasswordRequest;
 use Zenstruck\Foundry\LazyValue;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<ResetPasswordRequest>
+ * @extends PersistentObjectFactory<ResetPasswordRequest>
  */
-final class ResetPasswordRequestFactory extends PersistentProxyObjectFactory
+final class ResetPasswordRequestFactory extends PersistentObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services

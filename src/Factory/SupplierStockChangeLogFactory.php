@@ -2,17 +2,17 @@
 
 namespace App\Factory;
 
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 use App\Entity\SupplierStockChangeLog;
 use App\Enum\DomainEventType;
 use App\ValueObject\CostChange;
 use App\ValueObject\StockChange;
 use Zenstruck\Foundry\Object\Instantiator;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<SupplierStockChangeLog>
+ * @extends PersistentObjectFactory<SupplierStockChangeLog>
  */
-final class SupplierStockChangeLogFactory extends PersistentProxyObjectFactory
+final class SupplierStockChangeLogFactory extends PersistentObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services

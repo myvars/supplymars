@@ -2,6 +2,7 @@
 
 namespace App\Tests\Integration\Service\Sales;
 
+use function Zenstruck\Foundry\Persistence\save;
 use App\DTO\ChangePurchaseOrderItemStatusDto;
 use App\Entity\ProductSales;
 use App\Entity\PurchaseOrderItem;
@@ -42,7 +43,7 @@ class ProductSalesCalculatorIntegrationTest extends KernelTestCase
         $supplierProduct = SupplierProductFactory::createOne([
             'cost' => '10.00',
             'stock' => 100,
-        ])->_real();
+        ]);
 
         PurchaseOrderItemFactory::createMany(10, [
             'product' => $supplierProduct->getProduct(),
@@ -54,7 +55,7 @@ class ProductSalesCalculatorIntegrationTest extends KernelTestCase
 
         $this->productSalesCalculator->process($date);
 
-        $productSales = ProductSalesFactory::repository()->findOneBy(['dateString' => $date])->_real();
+        $productSales = ProductSalesFactory::repository()->findOneBy(['dateString' => $date]);
         $this->assertInstanceOf(ProductSales::class, $productSales);
         $this->assertSame(10, $productSales->getSalesQty());
         $this->assertSame('105.00', $productSales->getSalesValue());
@@ -65,7 +66,7 @@ class ProductSalesCalculatorIntegrationTest extends KernelTestCase
     {
         $purchaseOrderItems = PurchaseOrderItemFactory::repository()->findAll();
         foreach ($purchaseOrderItems as $purchaseOrderItem) {
-            $purchaseOrderItem->_save();
+            save($purchaseOrderItem);
             $this->changePurchaseOrderItemStatus($purchaseOrderItem, PurchaseOrderStatus::PROCESSING);
             $this->changePurchaseOrderItemStatus($purchaseOrderItem, PurchaseOrderStatus::ACCEPTED);
             $this->changePurchaseOrderItemStatus($purchaseOrderItem, PurchaseOrderStatus::SHIPPED);

@@ -27,7 +27,7 @@ class CancelOrderItemIntegrationTest extends KernelTestCase
 
     public function testHandleWithValidOrderItem(): void
     {
-        $customerOrderItem = CustomerOrderItemFactory::createOne()->_real();
+        $customerOrderItem = CustomerOrderItemFactory::createOne();
 
         $crudOptions = new CrudOptions();
         $crudOptions->setEntity($customerOrderItem);

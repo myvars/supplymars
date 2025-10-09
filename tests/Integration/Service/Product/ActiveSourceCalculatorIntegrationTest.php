@@ -22,12 +22,12 @@ class ActiveSourceCalculatorIntegrationTest extends KernelTestCase
 
     public function testRecalculateActiveSource(): void
     {
-        $product = ProductFactory::createOne()->_real();
+        $product = ProductFactory::createOne();
         $supplierProduct = SupplierProductFactory::createOne([
             'product' => null,
             'cost' => '100.00',
             'stock' => 10
-        ])->_real();
+        ]);
         $product->addSupplierProduct($supplierProduct);
 
         $this->activeSourceCalculator->recalculateActiveSource($product);
@@ -37,7 +37,7 @@ class ActiveSourceCalculatorIntegrationTest extends KernelTestCase
 
     public function testRecalculateActiveSourceWithNoSupplierProducts(): void
     {
-        $product = ProductFactory::createOne()->_real();
+        $product = ProductFactory::createOne();
 
         $this->activeSourceCalculator->recalculateActiveSource($product);
 
@@ -49,7 +49,7 @@ class ActiveSourceCalculatorIntegrationTest extends KernelTestCase
         $supplierProduct = SupplierProductFactory::createOne([
             'cost' => '100.00',
             'stock' => 10
-        ])->_real();
+        ]);
         $supplierProduct->getSupplier()->setIsActive(false);
 
         $this->assertNotNull($supplierProduct->getProduct()->getActiveProductSource());
@@ -64,7 +64,7 @@ class ActiveSourceCalculatorIntegrationTest extends KernelTestCase
         $supplierProduct = SupplierProductFactory::createOne([
             'cost' => '100.00',
             'stock' => 10
-        ])->_real();
+        ]);
         $supplierProduct->setIsActive(false);
 
         $this->assertNotNull($supplierProduct->getProduct()->getActiveProductSource());
@@ -79,7 +79,7 @@ class ActiveSourceCalculatorIntegrationTest extends KernelTestCase
         $supplierProduct = SupplierProductFactory::createOne([
             'cost' => '100.00',
             'stock' => 10
-        ])->_real();
+        ]);
         $supplierProduct->setStock(0);
 
         $this->assertNotNull($supplierProduct->getProduct()->getActiveProductSource());
@@ -94,7 +94,7 @@ class ActiveSourceCalculatorIntegrationTest extends KernelTestCase
         $supplierProduct = SupplierProductFactory::createOne([
             'cost' => '100.00',
             'stock' => 10
-        ])->_real();
+        ]);
         $supplierProduct->setCost(0);
 
         $this->assertNotNull($supplierProduct->getProduct()->getActiveProductSource());
@@ -109,12 +109,12 @@ class ActiveSourceCalculatorIntegrationTest extends KernelTestCase
         $supplierProduct = SupplierProductFactory::createOne([
             'cost' => '100.00',
             'stock' => 10
-        ])->_real();
+        ]);
         $supplierProduct2 = SupplierProductFactory::createOne([
             'product' => null,
             'cost' => '50.00',
             'stock' => 10
-        ])->_real();
+        ]);
         $supplierProduct->getProduct()->addSupplierProduct($supplierProduct2);
 
         $this->assertSame($supplierProduct, $supplierProduct->getProduct()->getActiveProductSource());
@@ -129,12 +129,12 @@ class ActiveSourceCalculatorIntegrationTest extends KernelTestCase
         $supplierProduct = SupplierProductFactory::createOne([
             'cost' => '100.00',
             'stock' => 5
-        ])->_real();
+        ]);
         $supplierProduct2 = SupplierProductFactory::createOne([
             'product' => null,
             'cost' => '100.00',
             'stock' => 10
-        ])->_real();
+        ]);
         $supplierProduct->getProduct()->addSupplierProduct($supplierProduct2);
 
         $this->assertSame($supplierProduct, $supplierProduct->getProduct()->getActiveProductSource());
@@ -149,12 +149,12 @@ class ActiveSourceCalculatorIntegrationTest extends KernelTestCase
         $supplierProduct = SupplierProductFactory::createOne([
             'cost' => '100.00',
             'stock' => 10
-        ])->_real();
+        ]);
         $supplierProduct2 = SupplierProductFactory::createOne([
             'product' => null,
             'cost' => '100.00',
             'stock' => 5
-        ])->_real();
+        ]);
         $supplierProduct->getProduct()->addSupplierProduct($supplierProduct2);
 
         $this->assertSame($supplierProduct, $supplierProduct->getProduct()->getActiveProductSource());
@@ -169,11 +169,11 @@ class ActiveSourceCalculatorIntegrationTest extends KernelTestCase
         $supplierProduct1 = SupplierProductFactory::createOne([
             'cost' => '100.00',
             'stock' => 10
-        ])->_real();
+        ]);
         $supplierProduct2 = SupplierProductFactory::createOne([
             'cost' => '200.00',
             'stock' => 20
-        ])->_real();
+        ]);
 
         $this->activeSourceCalculator->recalculateActiveSourceFromArray([
             $supplierProduct1->getProduct(),
@@ -186,7 +186,7 @@ class ActiveSourceCalculatorIntegrationTest extends KernelTestCase
 
     public function testToggleStatus(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne()->_real();
+        $supplierProduct = SupplierProductFactory::createOne();
 
         $this->activeSourceCalculator->toggleStatus($supplierProduct);
 

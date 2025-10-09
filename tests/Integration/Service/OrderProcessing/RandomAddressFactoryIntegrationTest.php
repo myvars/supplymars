@@ -24,7 +24,7 @@ class RandomAddressFactoryIntegrationTest extends KernelTestCase
 
     public function testCreateReturnsValidAddress(): void
     {
-        $user = UserFactory::createOne()->_real();
+        $user = UserFactory::createOne();
 
         $address = $this->factory->create($user);
 

@@ -69,8 +69,8 @@ class SupplierProductControllerTest extends WebTestCase
 
     public function testNewSupplierProduct(): void
     {
-        $supplier = SupplierFactory::createOne(['name' => 'Test Supplier'])->_real();
-        $supplierSubcategory = SupplierSubcategoryFactory::createOne(['supplier' => $supplier])->_real();
+        $supplier = SupplierFactory::createOne(['name' => 'Test Supplier']);
+        $supplierSubcategory = SupplierSubcategoryFactory::createOne(['supplier' => $supplier]);
         $supplierManufacturer = SupplierManufacturerFactory::createOne(['supplier' => $supplier]);
 
         $this->browser()

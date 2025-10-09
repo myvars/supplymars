@@ -50,12 +50,12 @@ class CreatePurchaseOrderItemIntegrationTest extends KernelTestCase
 
     public function testHandleWithValidCustomerOrderItem(): void
     {
-        $customerOrder = CustomerOrderFactory::createOne()->_real();
-        $supplierProduct = SupplierProductFactory::createOne()->_real();
+        $customerOrder = CustomerOrderFactory::createOne();
+        $supplierProduct = SupplierProductFactory::createOne();
         $customerOrderItem = CustomerOrderItemFactory::new()->with([
             'customerOrder' => $customerOrder,
             'product' => $supplierProduct->getProduct()
-        ])->create()->_real();
+        ])->create();
 
         $crudOptions = new CrudOptions();
         $crudOptions->setEntity($customerOrderItem);
@@ -73,8 +73,8 @@ class CreatePurchaseOrderItemIntegrationTest extends KernelTestCase
 
     public function testHandleWithEditablePurchaseOrderItem(): void
     {
-        $product = ProductFactory::createOne(['sellPriceIncVat' => '50.00'])->_real();
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne(['product' => $product])->_real();
+        $product = ProductFactory::createOne(['sellPriceIncVat' => '50.00']);
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne(['product' => $product]);
         $customerOrderItem = $purchaseOrderItem->getCustomerOrderItem();
         $supplierProduct = $purchaseOrderItem->getSupplierProduct();
 

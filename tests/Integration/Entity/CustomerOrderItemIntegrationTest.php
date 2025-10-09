@@ -56,7 +56,7 @@ class CustomerOrderItemIntegrationTest extends KernelTestCase
 
     public function testUpdateWithInvalidMaxQty(): void
     {
-        $customerOrderItem = CustomerOrderItemFactory::createOne()->_real();
+        $customerOrderItem = CustomerOrderItemFactory::createOne();
 
         $customerOrderItem->updateItem(10001, '100', '120');
 
@@ -66,7 +66,7 @@ class CustomerOrderItemIntegrationTest extends KernelTestCase
 
     public function testUpdateWithInvalidMaxPrice(): void
     {
-        $customerOrderItem = CustomerOrderItemFactory::createOne()->_real();
+        $customerOrderItem = CustomerOrderItemFactory::createOne();
 
         $customerOrderItem->updateItem(10, '10000001', '120');
 
@@ -76,7 +76,7 @@ class CustomerOrderItemIntegrationTest extends KernelTestCase
 
     public function testUpdateWithInvalidMaxPriceIncVat(): void
     {
-        $customerOrderItem = CustomerOrderItemFactory::createOne()->_real();
+        $customerOrderItem = CustomerOrderItemFactory::createOne();
 
         $customerOrderItem->updateItem(10, '100', '10000001');
 
@@ -86,22 +86,22 @@ class CustomerOrderItemIntegrationTest extends KernelTestCase
 
     public function testCustomerOrderItemPersistence(): void
     {
-        $customerOrder = CustomerOrderFactory::createOne()->_real();
+        $customerOrder = CustomerOrderFactory::createOne();
         $product = ProductFactory::createOne();
 
         $customerOrderItem = CustomerOrderItemFactory::createOne([
             'customerOrder' => $customerOrder,
             'product' => $product,
             'quantity' => 5,
-        ])->_real();
+        ]);
 
-        $persistedCustomerOrderItem = CustomerOrderItemFactory::repository()->find($customerOrderItem->getId())->_real();
+        $persistedCustomerOrderItem = CustomerOrderItemFactory::repository()->find($customerOrderItem->getId());
         $this->assertEquals($customerOrderItem->getId(), $persistedCustomerOrderItem->getId());
     }
 
     public function testUpdateCustomerOrderItem(): void
     {
-        $customerOrderItem = CustomerOrderItemFactory::createOne()->_real();
+        $customerOrderItem = CustomerOrderItemFactory::createOne();
         $customerOrderItem->updateItem(10, '10.00', '12.00');
 
         $this->assertEquals(10, $customerOrderItem->getQuantity());
@@ -109,7 +109,7 @@ class CustomerOrderItemIntegrationTest extends KernelTestCase
 
     public function testUpdateQtyGreaterThanQtyAllocatedToPo(): void
     {
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne()->_real();
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne();
         $customerOrderItem = $purchaseOrderItem->getCustomerOrderItem();
         $customerOrderItem->addPurchaseOrderItem($purchaseOrderItem);
 

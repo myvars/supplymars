@@ -105,7 +105,7 @@ class AddressIntegrationTest extends KernelTestCase
             'isDefaultBillingAddress' => false,
         ]);
 
-        $persistedAddress = AddressFactory::repository()->find($address->getId())->_real();
+        $persistedAddress = AddressFactory::repository()->find($address->getId());
         $this->assertEquals('123 Main St', $persistedAddress->getStreet());
     }
 
@@ -116,8 +116,8 @@ class AddressIntegrationTest extends KernelTestCase
             'customer' => $user,
             'isDefaultBillingAddress' => true,
             'isDefaultShippingAddress' => true
-        ])->_real();
-        $customerOrder = CustomerOrderFactory::createOne(['customer' => $user, 'billingAddress' => $address])->_real();
+        ]);
+        $customerOrder = CustomerOrderFactory::createOne(['customer' => $user, 'billingAddress' => $address]);
 
         $this->assertTrue($address->getCustomerOrders()->contains($customerOrder));
         $this->assertSame($address, $customerOrder->getBillingAddress());
@@ -130,8 +130,8 @@ class AddressIntegrationTest extends KernelTestCase
             'customer' => $user,
             'isDefaultBillingAddress' => true,
             'isDefaultShippingAddress' => true
-        ])->_real();
-        $customerOrder = CustomerOrderFactory::createOne(['customer' => $user, 'billingAddress' => $address])->_real();
+        ]);
+        $customerOrder = CustomerOrderFactory::createOne(['customer' => $user, 'billingAddress' => $address]);
 
         $address->removeCustomerOrder($customerOrder);
 
@@ -140,8 +140,8 @@ class AddressIntegrationTest extends KernelTestCase
 
     public function testReAddAddressToUser(): void
     {
-        $user = UserFactory::createOne()->_real();
-        $address = AddressFactory::createOne(['customer' => $user])->_real();
+        $user = UserFactory::createOne();
+        $address = AddressFactory::createOne(['customer' => $user]);
 
         $user->removeAddress($address);
         $user->addAddress($address);
@@ -152,8 +152,8 @@ class AddressIntegrationTest extends KernelTestCase
 
     public function testAddCategoryToUser(): void
     {
-        $user = UserFactory::createOne()->_real();
-        $category = CategoryFactory::createOne(['owner' => $user])->_real();
+        $user = UserFactory::createOne();
+        $category = CategoryFactory::createOne(['owner' => $user]);
 
         $this->assertTrue($user->getCategories()->contains($category));
         $this->assertSame($user, $category->getOwner());
@@ -161,8 +161,8 @@ class AddressIntegrationTest extends KernelTestCase
 
     public function testRemoveCategoryFromUser(): void
     {
-        $user = UserFactory::createOne()->_real();
-        $category = CategoryFactory::createOne(['owner' => $user])->_real();
+        $user = UserFactory::createOne();
+        $category = CategoryFactory::createOne(['owner' => $user]);
 
         $user->removeCategory($category);
 
@@ -172,8 +172,8 @@ class AddressIntegrationTest extends KernelTestCase
 
     public function testReAddCategoryToUser(): void
     {
-        $user = UserFactory::createOne()->_real();
-        $category = CategoryFactory::createOne(['owner' => $user])->_real();
+        $user = UserFactory::createOne();
+        $category = CategoryFactory::createOne(['owner' => $user]);
 
         $user->removeCategory($category);
         $user->addCategory($category);

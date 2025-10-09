@@ -2,15 +2,15 @@
 
 namespace App\Factory;
 
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 use App\Entity\StatusChangeLog;
 use App\Enum\DomainEventType;
 use Zenstruck\Foundry\LazyValue;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<StatusChangeLog>
+ * @extends PersistentObjectFactory<StatusChangeLog>
  */
-final class StatusChangeLogFactory extends PersistentProxyObjectFactory
+final class StatusChangeLogFactory extends PersistentObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services

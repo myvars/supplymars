@@ -25,13 +25,13 @@ class CategoryPriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testCategoryProductsRecalculateWhenVatRateChanges(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"])->_real();
+        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"]);
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals('126.00', $product->getSellPriceIncVat());
 
         // Change vat rate on category
-        $vatRate = VatRateFactory::createOne(['rate' => '10.000'])->_real();
+        $vatRate = VatRateFactory::createOne(['rate' => '10.000']);
         $product->getCategory()->setVatRate($vatRate);
         $this->entityManager->flush();
 
@@ -41,7 +41,7 @@ class CategoryPriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testCategoryProductsRecalculateWhenDefaultMarkupChanges(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"])->_real();
+        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"]);
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals('126.00', $product->getSellPriceIncVat());
@@ -56,13 +56,13 @@ class CategoryPriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testNoUpdateWhenDefaultMarkupChangesOnDifferentCategory(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"])->_real();
+        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"]);
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals('126.00', $product->getSellPriceIncVat());
 
         // Change default markup on different category
-        $category = CategoryFactory::createOne(['defaultMarkup' => '5.000'])->_real();
+        $category = CategoryFactory::createOne(['defaultMarkup' => '5.000']);
         $category->setDefaultMarkup('10.000');
 
         $this->entityManager->flush();
@@ -73,7 +73,7 @@ class CategoryPriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testCategoryProductsSkipWhenDefaultMarkupChangesAndProductMarkupSet(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"])->_real();
+        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"]);
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals('126.00', $product->getSellPriceIncVat());
@@ -90,7 +90,7 @@ class CategoryPriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testCategoryProductsSkipWhenDefaultMarkupChangesAndSubcategoryMarkupSet(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"])->_real();
+        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"]);
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals('126.00', $product->getSellPriceIncVat());
@@ -107,7 +107,7 @@ class CategoryPriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testCategoryProductsRecalculateWhenPriceModelChanges(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"])->_real();
+        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"]);
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals('126.00', $product->getSellPriceIncVat());
@@ -122,7 +122,7 @@ class CategoryPriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testCategoryProductsSkipWhenPriceModelChangesAndProductPriceModelSet(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"])->_real();
+        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"]);
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals('126.00', $product->getSellPriceIncVat());
@@ -139,7 +139,7 @@ class CategoryPriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testCategoryProductsSkipWhenPriceModelChangesAndSubcategoryPriceModelSet(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"])->_real();
+        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"]);
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals('126.00', $product->getSellPriceIncVat());

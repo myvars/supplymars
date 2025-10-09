@@ -92,7 +92,7 @@ class ProductSalesSummaryIntegrationTest extends KernelTestCase
             'salesId' => 1,
             'salesType' => SalesType::PRODUCT->value,
             'duration' => SalesDuration::LAST_7->value,
-        ])->_real();
+        ]);
 
         $this->assertEquals(100, $persistedProductSalesSummary->getSalesQty());
     }

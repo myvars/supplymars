@@ -2,13 +2,13 @@
 
 namespace App\Factory;
 
+use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
 use App\Entity\VatRate;
-use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<VatRate>
+ * @extends PersistentObjectFactory<VatRate>
  */
-final class VatRateFactory extends PersistentProxyObjectFactory
+final class VatRateFactory extends PersistentObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
