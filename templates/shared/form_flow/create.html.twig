@@ -1,0 +1,16 @@
+{% extends 'shared/turbo/modal_base.html.twig' %}
+
+{% block title %}New {{ flowModel }}{% endblock %}
+
+{% block body %}
+
+    <twig:Dialog title="Create new {{ flowModel }}">
+        {{ include('shared/form_flow/_form.html.twig', {'button_label': 'Create '~flowModel}) }}
+        {% if flowBackLink is not null %}
+            <p class="mt-3 text-sm font-light text-gray-500 dark:text-gray-400">
+                <a href="{{ flowBackLink }}" class="hover:underline">Back to list</a>
+            </p>
+        {% endif %}
+    </twig:Dialog>
+
+{% endblock %}

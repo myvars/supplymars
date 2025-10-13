@@ -9,7 +9,7 @@
         {{ include('order/_order_summary_card.html.twig', {order: result}) }}
         {{ include('order/_order_items_card.html.twig', {order: result}) }}
         {% for purchaseOrder in result.purchaseOrders %}
-            {{ include('purchase_order/_order_po_card.html.twig', {purchaseOrder: purchaseOrder}) }}
+            {{ include('purchasing/purchase_order/_order_po_card.html.twig', {purchaseOrder: purchaseOrder}) }}
         {% endfor %}
     </div>
 

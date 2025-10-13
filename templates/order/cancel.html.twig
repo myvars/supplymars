@@ -1,15 +1,15 @@
-{% extends 'modalBase.html.twig' %}
+{% extends 'shared/turbo/modal_base.html.twig' %}
 
 {% block title %}Cancel {{ section|title }}{% endblock %}
 
 {% block body %}
 
-    <twig:Dialog title="Cancel {{ section }}">
+    <twig:Dialog title="Cancel Order">
         <p class="mb-4 text-sm font-light text-gray-500 dark:text-gray-400">
-            Are you sure you want to cancel this {{ section }}?
+            Are you sure you want to cancel this Order?
         </p>
-        <form method="post" action="{{ path('app_order_cancel', {'id': result.id}) }}">
-            <input type="hidden" name="_token" value="{{ csrf_token('delete'~result.id) }}">
+        <form method="post" action="{{ path('app_order_cancel', {'id': result.publicId.value}) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete'~result.publicId.value) }}">
             <twig:Button type="submit" variant="warning" class="w-full">Cancel</twig:Button>
         </form>
     </twig:Dialog>

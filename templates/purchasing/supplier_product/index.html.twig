@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Supplier Product Search{% endblock %}
+
+{% block body %}
+    <twig:Search
+        flowModel="{{ flowModel }}"
+        flowRoute="{{ flowRoute }}"
+        results="{{ results }}"
+    >
+        <twig:block name="sort">
+            <twig:Card>
+                <div class="flex justify-between overflow-auto">
+                    <twig:SortLink sortValue="id">Id</twig:SortLink>
+                    <twig:SortLink sortValue="name">Product</twig:SortLink>
+                    <twig:SortLink sortValue="supplier.name">Supplier</twig:SortLink>
+                    <twig:SortLink sortValue="stock">Stock</twig:SortLink>
+                    <twig:SortLink sortValue="cost">Cost</twig:SortLink>
+                    <twig:SortLink sortValue="isActive">Status</twig:SortLink>
+                </div>
+            </twig:Card>
+        </twig:block>
+
+        <twig:block name="list_item">
+            <twig:Card
+                editLink="{{ path('app_purchasing_supplier_product_edit', {'id': result.publicId.value }) }}"
+                showLink="{{ path('app_purchasing_supplier_product_show', {'id': result.publicId.value }) }}"
+            >
+                <p class="mb-1 items-center text-lg text-gray-900 line-clamp-1 dark:text-white">{{ result.name }}</p>
+                <p class="mb-1 text-gray-600 dark:text-gray-500">
+                    {{ result.supplier.name }} : {{ result.productCode }}
+                </p>
+                <div class="flex items-center justify-between">
+                    <p class="text-lg font-extralight me-1">{{ result.cost|format_currency('GBP') }}</p>
+                    <p class="font-extralight me-1">{{ result.stock }} in stock</p>
+                    {% if result.isActive %}
+                        <p class="text-green-500">Active</p>
+                    {% else %}
+                        <p class="text-red-500">InActive</p>
+                    {% endif %}
+                </div>
+            </twig:Card>
+        </twig:block>
+
+        <twig:block name="add">
+            <twig:Button
+                tag="a"
+                href="{{ path('app_purchasing_supplier_product_new') }}"
+                class="flex items-center font-bold space-x-1"
+                data-turbo-frame="modal"
+            >
+                <twig:ux:icon name="flowbite:circle-plus-outline" class="w-5"/>
+                <span>Add Supplier Product</span>
+            </twig:Button>
+        </twig:block>
+
+    </twig:Search>
+
+{% endblock %}

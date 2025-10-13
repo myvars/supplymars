@@ -1,0 +1,30 @@
+<div class="mb-5 flex justify-center text-center text-sm font-medium text-gray-500 dark:border-gray-700 dark:text-gray-400">
+    <ul class="-mb-px flex flex-wrap">
+        <li class="me-2">
+            <a href="{{ path('app_catalog_product_show', { id: result.publicId.value }) }}"
+               class="inline-block p-3 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 {{ app.request.attributes.get('_route') == 'app_catalog_product_show' ? 'active dark:text-gray-300 dark:border-gray-300' : '' }}">
+                <span class="hidden md:inline">Product </span>Details
+            </a>
+        </li>
+        <li class="me-2">
+            <a href="{{ path('app_pricing_stock', { id: result.publicId.value }) }}" class="inline-block p-3 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 {{ app.request.attributes.get('_route') == 'app_product_stock' ? 'active dark:text-gray-300 dark:border-gray-300' : '' }}">
+                <span class="hidden md:inline">Product </span>Stock
+            </a>
+        </li>
+        <li class="me-2">
+            <a href="{{ path('app_pricing_cost', { id: result.publicId.value }) }}" class="inline-block p-3 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 {{ app.request.attributes.get('_route') == 'app_product_cost' ? 'active dark:text-gray-300 dark:border-gray-300' : '' }}">
+                <span class="hidden md:inline">Product </span>Cost
+            </a>
+        </li>
+        <li class="me-2">
+            <a href="{{ path('app_catalog_product_image_show', { id: result.publicId.value }) }}" class="inline-block p-3 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 {{ app.request.attributes.get('_route') == 'app_product_images' ? 'active dark:text-gray-300 dark:border-gray-300' : '' }}">
+                <span class="hidden md:inline">Product </span>Images
+            </a>
+        </li>
+        <li class="me-2">
+            <a href="{{ path('app_catalog_product_sales', { id: result.publicId.value }) }}" class="inline-block p-3 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 {{ app.request.attributes.get('_route') == 'app_catalog_product_sales' ? 'active dark:text-gray-300 dark:border-gray-300' : '' }}">
+                <span class="hidden md:inline">Product </span>Sales
+            </a>
+        </li>
+    </ul>
+</div>

@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Product Sales{% endblock %}
+
+{% block body %}
+
+    {{ include('catalog/product/_navigation.html.twig', {product: result}) }}
+
+    <div class="m-3 space-y-3">
+        {{ include('reporting/_dashboard_card.html.twig', {
+            dashboardSrc: path('app_reporting_dashboard_product_sales', {product_id: result.id})
+        }) }}
+    </div>
+
+{% endblock %}

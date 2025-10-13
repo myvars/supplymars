@@ -32,6 +32,12 @@ services:
       <<: *mailer-env
     # Prevent cron from running real jobs on local machine
     command: /bin/sh -c 'printenv | grep -v "no_proxy" > /etc/environment && tail -f /dev/null'
+    healthcheck:
+      test: [ "CMD-SHELL", "ps aux | grep -q '[t]ail -f /dev/null'" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
 
 
   # --- Nginx Webserver (Prod local) ---

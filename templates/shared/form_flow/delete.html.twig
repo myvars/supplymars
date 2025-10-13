@@ -1,0 +1,18 @@
+{% extends 'shared/turbo/modal_base.html.twig' %}
+
+{% block title %}Delete {{ flowModel }}{% endblock %}
+
+{% block body %}
+
+    <twig:Dialog title="Confirm Delete?">
+        <p class="mb-2 text-base text-gray-500 dark:text-white">{{ result.name }}</p>
+        <p class="mb-4 text-sm font-light text-gray-500 dark:text-gray-400">
+            Are you sure you want to delete this {{ flowModel }}?
+        </p>
+        <form method="post" action="{{ path('app_'~flowRoute~'_delete', {'id': result.publicId.value}) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete'~result.publicId.value) }}">
+            <twig:Button type="submit" variant="danger" class="w-full">Delete {{ flowModel }}</twig:Button>
+        </form>
+    </twig:Dialog>
+
+{% endblock %}

@@ -7,7 +7,7 @@ twig:
     paths:
         'assets/styles': styles
     globals:
-        domain: '%env(SITE_DOMAIN)%'
+        domain: '%env(DEFAULT_DOMAIN)%'
         product_uploads: '%app.product_uploads%'
     debug: true
 

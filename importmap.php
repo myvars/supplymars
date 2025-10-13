@@ -23,7 +23,7 @@ return [
         'version' => '3.2.2',
     ],
     '@hotwired/turbo' => [
-        'version' => '8.0.18',
+        'version' => '8.0.20',
     ],
     'stimulus-use' => [
         'version' => '0.52.3',
@@ -48,7 +48,7 @@ return [
         'version' => '6.2.0',
     ],
     'debounce' => [
-        'version' => '2.2.0',
+        'version' => '3.0.0',
     ],
     'dropzone/dist/dropzone.css' => [
         'version' => '6.0.0-beta.2',
@@ -64,22 +64,26 @@ return [
         'version' => '1.15.6',
     ],
     'flowbite/dist/flowbite.min.css' => [
-        'version' => '3.1.2',
+        'version' => '4.0.1',
         'type' => 'css',
     ],
     'flowbite' => [
-        'version' => '3.1.2',
+        'version' => '4.0.1',
     ],
     'flowbite-datepicker' => [
-        'version' => '1.3.2',
+        'version' => '2.0.0',
     ],
     'chart.js' => [
-        'version' => '4.5.0',
+        'version' => '4.5.1',
     ],
     '@kurkle/color' => [
         'version' => '0.4.0',
     ],
     'turbo-view-transitions' => [
         'version' => '0.3.0',
+    ],
+    'flowbite-datepicker/dist/css/datepicker.min.css' => [
+        'version' => '2.0.0',
+        'type' => 'css',
     ],
 ];

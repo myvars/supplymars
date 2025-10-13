@@ -28,7 +28,7 @@ services:
 
   # --- Redis Cache (Dev local) ---
   redis:
-    image: redis:8.2-alpine
+    image: redis:8.4-alpine
     ports:
       - "6379:6379"
     environment:
@@ -47,7 +47,7 @@ services:
 
   # --- RabbitMQ Message Broker (Dev local) ---
   rabbitmq:
-    image: rabbitmq:4.1.4-management
+    image: rabbitmq:4.2-management-alpine
     ports:
       - "5672:5672"      # AMQP protocol (internal use)
       - "15672:15672"    # RabbitMQ Management UI (dev only; see below)

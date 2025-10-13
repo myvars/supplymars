@@ -1,6 +1,7 @@
-import './bootstrap.js';
+import './stimulus_bootstrap.js';
 import './styles/app.css';
 import 'aos/dist/aos.css'
+import 'flowbite-datepicker/dist/css/datepicker.min.css'
 import { shouldPerformTransition, performTransition } from 'turbo-view-transitions';
 import { initFlowbite } from 'flowbite';
 

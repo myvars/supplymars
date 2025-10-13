@@ -1,0 +1,9 @@
+<twig:Card title="Products">
+    <a href="{{ path('app_catalog_product_index', {categoryId: result.id, subcategoryId: result.id}) }}"
+       class="flex items-center justify-start dark:hover:text-white"
+       data-turbo-frame="body"
+    >
+        <span class="me-1">{{ result.products.count }}</span>
+        {{ result.products.count == 1 ? 'product': 'products' }} in this subcategory
+    </a>
+</twig:Card>

@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Category Search{% endblock %}
+
+{% block body %}
+    <twig:Search
+        flowModel="{{ flowModel }}"
+        flowRoute="{{ flowRoute }}"
+        results="{{ results }}"
+    >
+        <twig:block name="sort">
+            <twig:Card>
+                <div class="flex justify-between overflow-auto">
+                    <twig:SortLink sortValue="id">Id</twig:SortLink>
+                    <twig:SortLink sortValue="name">Category</twig:SortLink>
+                    <twig:SortLink sortValue="defaultMarkup">Markup</twig:SortLink>
+                    <twig:SortLink sortValue="isActive">Status</twig:SortLink>
+                </div>
+            </twig:Card>
+        </twig:block>
+
+        <twig:block name="list_item">
+            <twig:Card
+                editLink="{{ path('app_catalog_category_edit', {'id': result.publicId.value }) }}"
+                showLink="{{ path('app_catalog_category_show', {'id': result.publicId.value }) }}"
+            >
+                <p class="mb-1 text-lg text-gray-900 line-clamp-1 dark:text-white">{{ result.name }}</p>
+                <p class="text-base font-extralight text-nowrap">
+                    {{ result.defaultMarkup|number_format(3) }}%
+                    <span class="text-sm"> mark-up</span>
+                </p>
+                <p class="mt-1 flex items-center justify-between">
+                    <span class="text-gray-600 me-1 dark:text-gray-500">Managed by {{ result.owner.fullName }}</span>
+                    {% if result.isActive %}
+                        <span class="text-green-500">Active</span>
+                    {% else %}
+                        <span class="text-red-500">InActive</span>
+                    {% endif %}
+                </p>
+            </twig:Card>
+        </twig:block>
+
+        <twig:block name="add">
+            <twig:Button
+                tag="a"
+                href="{{ path('app_catalog_category_new') }}"
+                class="flex items-center font-bold space-x-1"
+                data-turbo-frame="modal"
+            >
+                <twig:ux:icon name="flowbite:circle-plus-outline" class="w-5"/>
+                <span>Create Category</span>
+            </twig:Button>
+        </twig:block>
+
+    </twig:Search>
+
+{% endblock %}

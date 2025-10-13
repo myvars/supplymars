@@ -1,0 +1,10 @@
+<?php
+
+namespace App\Catalog\Domain\Model\Subcategory;
+
+use App\Shared\Domain\ValueObject\AbstractIntId;
+
+final readonly class SubcategoryId extends AbstractIntId
+{
+    // Inherits strict validation and factories.
+}

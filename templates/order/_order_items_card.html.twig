@@ -9,7 +9,7 @@
         {% if order.allowEdit %}
             <twig:Button
                 tag="a"
-                href="{{ path('app_order_item_new', {id: order.id}) }}"
+                href="{{ path('app_order_item_new', {id: order.publicId.value}) }}"
                 class="flex items-center font-bold space-x-1"
                 data-turbo-frame="modal"
             >
@@ -21,7 +21,7 @@
     <ul class="w-full space-y-3">
         {% for orderItem in order.customerOrderItems %}
             {% if orderItem.outstandingQty > 0 %}
-                {{ include('order_item/_order_item_card.html.twig', {orderItem: orderItem}) }}
+                {{ include('order/_order_item_card.html.twig', {orderItem: orderItem}) }}
             {% endif %}
         {% endfor %}
     </ul>

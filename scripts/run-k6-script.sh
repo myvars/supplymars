@@ -30,7 +30,7 @@ case "$ENV" in
     cp "$(pwd)/public/assets/manifest.json" "$MANIFEST_PATH"
     docker run --rm \
       -v "$(pwd)/tests/Performance/k6":/scripts \
-      -e SITE_URL="https://host.docker.internal:8000" \
+      -e DEFAULT_URI="https://host.docker.internal:8000" \
       $DASH_FLAGS \
       grafana/k6 run --insecure-skip-tls-verify /scripts/"$SCRIPT"
     ;;
@@ -38,7 +38,7 @@ case "$ENV" in
     docker compose cp php:/app/public/assets/manifest.json "$MANIFEST_PATH" && \
     docker run --rm \
       -v "$(pwd)/tests/Performance/k6":/scripts \
-      -e SITE_URL="https://host.docker.internal" \
+      -e DEFAULT_URI="https://host.docker.internal" \
       $DASH_FLAGS \
       grafana/k6 run --insecure-skip-tls-verify /scripts/"$SCRIPT"
     ;;
@@ -46,7 +46,7 @@ case "$ENV" in
     docker compose cp php:/app/public/assets/manifest.json "$MANIFEST_PATH" && \
     docker run --rm \
       -v "$(pwd)/tests/Performance/k6":/scripts \
-      -e SITE_URL="https://www.supplymars.com" \
+      -e DEFAULT_URI="https://www.supplymars.com" \
       $DASH_FLAGS \
       grafana/k6 run /scripts/"$SCRIPT"
     ;;

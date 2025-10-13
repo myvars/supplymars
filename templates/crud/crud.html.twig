@@ -1,9 +1,0 @@
-{% if template is not null %}
-   {% if section is not null %}
-       {{ include([section|lower|u.snake~'/'~template~'.html.twig', 'crud/'~template~'.html.twig' ]) }}
-   {% else %}
-       {{ include([template, 'crud/'~template~'.html.twig', 'common/missingTemplate.html.twig']) }}
-   {% endif %}
-{% else %}
-    {{ include(['common/missingTemplate.html.twig']) }}
-{% endif %}

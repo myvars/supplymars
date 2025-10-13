@@ -1,0 +1,197 @@
+<?php
+
+namespace App\Tests\Catalog\UI\Http;
+
+use tests\Shared\Factory\ManufacturerFactory;
+use tests\Shared\Factory\ProductFactory;
+use tests\Shared\Factory\SubcategoryFactory;
+use tests\Shared\Factory\UserFactory;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Zenstruck\Browser\Test\HasBrowser;
+use Zenstruck\Foundry\Test\Factories;
+
+class ProductControllerTest extends WebTestCase
+{
+    use HasBrowser;
+    use Factories;
+
+    public function testIndexProduct(): void
+    {
+        ProductFactory::createMany(3);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/product/')
+            ->assertSuccessful()
+            ->assertSee('Product Search')
+            ->assertSee('3 results');
+    }
+
+    public function testIndexProductPageNotInRange(): void
+    {
+        ProductFactory::createOne();
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/product/?page=2')
+            ->assertSuccessful()
+            ->assertOn('/product/?page=1')
+            ->assertSee('Product Search')
+            ->assertSee('Page 2 not found');
+    }
+
+    public function testProductSecurity(): void
+    {
+        $this->browser()
+            ->get('/product/')
+            ->assertOn('/login');
+    }
+
+    public function testFilterCategory(): void
+    {
+        ProductFactory::createMany(3);
+        ProductFactory::createOne(['mfrPartNumber' => 'TEST-0001']);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/product/')
+            ->assertSuccessful()
+            ->assertSee('Product Search')
+            ->assertSee('4 results')
+            ->get('/product/search/filter')
+            ->assertSuccessful()
+            ->fillField('product_search_filter[mfrPartNumber]', 'TEST-0001')
+            ->click('Update Filter')
+            ->assertOn('/product/?mfrPartNumber=TEST-0001&filter=on')
+            ->assertSee('Product Search')
+            ->assertSee('1 result');
+    }
+
+    public function testShowProduct(): void
+    {
+        $product = ProductFactory::createOne(['name' => 'Product to be shown']);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get("/product/" . $product->getId())
+            ->assertSuccessful()
+            ->assertSee('Product to be shown');
+    }
+
+    public function testNewProduct(): void
+    {
+        $subcategory = SubcategoryFactory::createOne(['name' => 'Test Subcategory']);
+        $manufacturer = ManufacturerFactory::createOne(['name' => 'Test Manufacturer']);
+        $owner = UserFactory::new()->asStaff()->create();
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/product/new')
+            ->assertSuccessful()
+            ->fillField('product[name]','Test Product')
+            ->fillField('product[description]','Test Product Description')
+            ->fillField('product[category]', $subcategory->getCategory()->getId())
+            ->click('Create Product')
+            ->fillField('product[subcategory]', $subcategory->getId())
+            ->fillField('product[manufacturer]', $manufacturer->getId())
+            ->fillField('product[mfrPartNumber]','12345')
+            ->fillField('product[cost]','500')
+            ->fillField('product[owner]', $owner->getId())
+            ->click('Create Product')
+            ->assertOn('/product/')
+            ->assertSee('Test Product');
+    }
+
+    public function testNewProductValidation(): void
+    {
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/product/new')
+            ->assertSuccessful()
+            // Intentionally filling form with invalid data
+            ->click('Create Product')
+            ->assertOn('/product/new')
+            ->assertSee('Please enter a product name')
+            ->assertSee('Please enter a category')
+            ->assertSee('Please enter a subcategory')
+            ->assertSee('Please enter a manufacturer')
+            ->assertSee('Please enter a cost')
+            ->assertSee('Please enter a manufacturer part number');
+    }
+
+    public function testEditProduct(): void
+    {
+        $subcategory = SubcategoryFactory::createOne(['name' => 'Test Subcategory']);
+        $product = ProductFactory::createOne([
+            'name' => 'Product to be edited',
+            'category' => $subcategory->getCategory(),
+            'subcategory' => $subcategory,
+        ]);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get("/product/" . $product->getId() . "/edit")
+            ->assertSuccessful()
+            ->fillField('product[name]','Edited Product')
+            ->click('Update Product')
+            ->assertOn('/product/')
+            ->assertSee('Edited Product');
+    }
+
+    public function testEditProductValidation(): void
+    {
+        $product = ProductFactory::createOne(['name' => 'Product to be edited']);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get("/product/" . $product->getId() . "/edit")
+            ->assertSuccessful()
+            // Intentionally filling form with invalid data
+            ->fillField('product[name]','')
+            ->fillField('product[category]', '')
+            ->fillField('product[subcategory]', '')
+            ->fillField('product[manufacturer]', '')
+            ->fillField('product[cost]','')
+            ->fillField('product[mfrPartNumber]','')
+            ->click('Update Product')
+            ->assertOn("/product/" . $product->getId() . "/edit")
+            ->assertSee('Please enter a product name')
+            ->assertSee('Please enter a category')
+            ->assertSee('Please enter a subcategory')
+            ->assertSee('Please enter a manufacturer')
+            ->assertSee('Please enter a cost')
+            ->assertSee('Please enter a manufacturer part number');
+    }
+
+    public function testDeleteProductConfirmation(): void
+    {
+        $product = ProductFactory::createOne(['name' => 'Product to be deleted']);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get("/product/" . $product->getId() . "/delete/confirm")
+            ->assertSuccessful()
+            ->assertSee('Are you sure you want to delete this Product');
+    }
+
+    public function testDeleteProduct(): void
+    {
+        $product = ProductFactory::createOne(['name' => 'Product to be deleted']);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get("/product/" . $product->getId() . "/delete/confirm")
+            ->assertSuccessful()
+            ->click('Delete')
+            ->assertOn('/product/')
+            ->assertNotSee('Product to be deleted');
+    }
+
+    public function testProductNotFound(): void
+    {
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get("/product/999")
+            ->assertSee("Product not found!");
+    }
+}

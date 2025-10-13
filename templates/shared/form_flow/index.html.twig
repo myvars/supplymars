@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ flowModel }} Search{% endblock %}
+
+{% block body %}
+    <twig:Search
+        flowModel="{{ flowModel }}"
+        flowRoute="{{ flowRoute }}"
+        results="{{ results }}"
+    >
+        <twig:block name="sort">
+            <twig:Card>
+                <div class="flex justify-between overflow-auto">
+                    <twig:SortLink sortValue="id">Id</twig:SortLink>
+                </div>
+            </twig:Card>
+        </twig:block>
+
+        <twig:block name="list_item">
+            <twig:Card>
+                <p class="mb-1 items-center text-base text-gray-900 dark:text-white">{{ result.publicId.value }}</p>
+            </twig:Card>
+        </twig:block>
+
+        <twig:block name="add">
+            <twig:Button
+                tag="a"
+                href="{{ path('app_'~flowRoute~'_new') }}"
+                class="flex items-center font-bold space-x-1"
+                data-turbo-frame="modal"
+            >
+                <twig:ux:icon name="flowbite:circle-plus-outline" class="w-5"/>
+                <span>Add {{ flowModel }}</span>
+            </twig:Button>
+        </twig:block>
+
+    </twig:Search>
+
+{% endblock %}

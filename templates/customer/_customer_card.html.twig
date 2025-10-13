@@ -1,4 +1,4 @@
-<twig:Card editLink="{{ path('app_customer_edit', {id: customer.id})}}" title="Customer">
+<twig:Card editLink="{{ path('app_customer_edit', {id: customer.publicId.value})}}" title="Customer">
     <p class="mb-2 text-xl text-gray-900 line-clamp-1 dark:text-white">
         {{ customer.fullName }}
         {% if result.isAdmin %}
