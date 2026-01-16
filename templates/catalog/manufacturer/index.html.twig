@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Manufacturer Search{% endblock %}
+
+{% block body %}
+    <twig:Search
+        flowModel="{{ flowModel }}"
+        flowRoute="{{ flowRoute }}"
+        results="{{ results }}"
+    >
+        <twig:block name="sort">
+            <twig:Card>
+                <div class="flex justify-between overflow-auto">
+                    <twig:SortLink sortValue="id">Id</twig:SortLink>
+                    <twig:SortLink sortValue="name">Manufacturer</twig:SortLink>
+                    <twig:SortLink sortValue="isActive">Status</twig:SortLink>
+                </div>
+            </twig:Card>
+        </twig:block>
+
+        <twig:block name="list_item">
+            <twig:Card
+                editLink="{{ path('app_catalog_manufacturer_edit', {'id': result.publicId.value }) }}"
+                showLink="{{ path('app_catalog_manufacturer_show', {'id': result.publicId.value }) }}"
+            >
+                <p class="mb-1 text-lg text-gray-900 line-clamp-1 dark:text-white">{{ result.name }}</p>
+                <p class="flex items-center justify-end">
+                    {% if result.isActive %}
+                        <span class="text-green-500">Active</span>
+                    {% else %}
+                        <span class="text-red-500">InActive</span>
+                    {% endif %}
+                </p>
+            </twig:Card>
+        </twig:block>
+
+        <twig:block name="add">
+            <twig:Button
+                tag="a"
+                href="{{ path('app_catalog_manufacturer_new') }}"
+                class="flex items-center font-bold space-x-1"
+                data-turbo-frame="modal"
+            >
+                <twig:ux:icon name="flowbite:circle-plus-outline" class="w-5"/>
+                <span>Create Manufacturer</span>
+            </twig:Button>
+        </twig:block>
+
+        <twig:block name="filter"></twig:block>
+    </twig:Search>
+
+{% endblock %}
+

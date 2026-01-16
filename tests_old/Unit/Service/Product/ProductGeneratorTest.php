@@ -1,0 +1,93 @@
+<?php
+
+namespace App\Tests\Unit\Service\Product;
+
+use App\Catalog\Domain\Model\Category\Category;
+use App\Catalog\Domain\Model\Manufacturer\Manufacturer;
+use App\Catalog\Domain\Model\Product\Product;
+use App\Catalog\Domain\Model\Subcategory\Subcategory;
+use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
+use App\Service\Crud\Common\CrudContext;
+use App\Service\Product\CategoryMapper;
+use App\Service\Product\ManufacturerMapper;
+use App\Service\Product\ProductGenerator;
+use App\Service\Product\ProductMapper;
+use App\Service\Product\ProductPriceCalculator;
+use App\Service\Product\SubcategoryMapper;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+
+class ProductGeneratorTest extends TestCase
+{
+    private MockObject $categoryMapper;
+
+    private MockObject $subcategoryMapper;
+
+    private MockObject $manufacturerMapper;
+
+    private MockObject $productMapper;
+
+    private MockObject $productPriceCalculator;
+
+    private ProductGenerator $productGenerator;
+
+    protected function setUp(): void
+    {
+        $this->categoryMapper = $this->createMock(CategoryMapper::class);
+        $this->subcategoryMapper = $this->createMock(SubcategoryMapper::class);
+        $this->manufacturerMapper = $this->createMock(ManufacturerMapper::class);
+        $this->productMapper = $this->createMock(ProductMapper::class);
+        $this->productPriceCalculator = $this->createMock(ProductPriceCalculator::class);
+        $this->productGenerator = new ProductGenerator(
+            $this->categoryMapper,
+            $this->subcategoryMapper,
+            $this->manufacturerMapper,
+            $this->productMapper,
+            $this->productPriceCalculator
+        );
+    }
+
+    public function testHandleWithNonSupplierProductEntity(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Entity must be an instance of SupplierProduct');
+
+        $context = $this->createMock(CrudContext::class);
+        $context->method('getEntity')->willReturn(new \stdClass());
+
+        ($this->productGenerator)($context);
+    }
+
+    public function testCreateFromSupplierProductWithExistingProduct(): void
+    {
+        $supplierProduct = $this->createMock(SupplierProduct::class);
+        $supplierProduct->method('getProduct')->willReturn($this->createMock(Product::class));
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessage('Product already exists');
+
+        $this->productGenerator->createFromSupplierProduct($supplierProduct);
+    }
+
+    public function testCreateFromSupplierProductSuccessfully(): void
+    {
+        $supplierProduct = $this->createMock(SupplierProduct::class);
+        $supplierProduct->method('getProduct')->willReturn(null);
+
+        $manufacturer = $this->createMock(Manufacturer::class);
+        $category = $this->createMock(Category::class);
+        $subcategory = $this->createMock(Subcategory::class);
+        $product = $this->createMock(Product::class);
+
+        $this->manufacturerMapper->method('createManufacturerFromSupplierProduct')->willReturn($manufacturer);
+        $this->categoryMapper->method('createCategoryFromSupplierProduct')->willReturn($category);
+        $this->subcategoryMapper->method('createSubcategoryFromSupplierProduct')->willReturn($subcategory);
+        $this->productMapper->method('createProductFromSupplierProduct')->willReturn($product);
+
+        $this->productPriceCalculator->expects($this->once())->method('recalculatePrice')->with($product, true);
+
+        $createdProduct = $this->productGenerator->createFromSupplierProduct($supplierProduct);
+
+        $this->assertInstanceOf(Product::class, $createdProduct);
+    }
+}

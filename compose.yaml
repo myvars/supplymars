@@ -25,7 +25,7 @@ services:
 
   # --- Redis Cache ---
   redis:
-    image: redis:8.2-alpine
+    image: redis:8.4-alpine
     volumes:
       - redis_data:/data  # Persist redis data between restarts
     healthcheck:
@@ -40,7 +40,7 @@ services:
 
   # --- RabbitMQ Message Broker ---
   rabbitmq:
-    image: rabbitmq:4.1.4-management
+    image: rabbitmq:4.2-management-alpine
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
       interval: 30s
@@ -54,7 +54,7 @@ services:
   php:
     build:
       context: .
-      dockerfile: docker/php/Dockerfile
+      dockerfile: docker/Dockerfile
       target: php-dev
     depends_on:
       database:
@@ -66,9 +66,8 @@ services:
     # Waits for database before starting PHP-FPM
     command: sh -c "wait-for-it database:3306 --timeout=60 --strict -- php-fpm"
     healthcheck:
-      # Checks the app is responding by running a Symfony command
-      test: [ "CMD", "php", "bin/console", "about" ]
-      interval: 60s
+      test: [ "CMD", "php-fpm", "-t" ]
+      interval: 30s
       timeout: 10s
       retries: 5
       start_period: 30s
@@ -79,7 +78,7 @@ services:
   messenger:
     build:
       context: .
-      dockerfile: docker/php/Dockerfile
+      dockerfile: docker/Dockerfile
       target: messenger-dev
     depends_on:
       database:
@@ -89,8 +88,8 @@ services:
     # Wait for database, then run messenger consumer
     command: sh -c "wait-for-it database:3306 --timeout=60 --strict -- php bin/console messenger:consume async --time-limit=3600 --sleep=5"
     healthcheck:
-      # Checks the app is responding by running a Symfony command
-      test: ["CMD", "php", "bin/console", "about"]
+      # Checks the messenger is running
+      test: ["CMD-SHELL", "ps aux | grep -q '[m]essenger:consume'"]
       interval: 60s
       timeout: 10s
       retries: 5
@@ -102,7 +101,7 @@ services:
   cron:
     build:
       context: .
-      dockerfile: docker/php/Dockerfile
+      dockerfile: docker/Dockerfile
       target: cron-dev
     depends_on:
       database:
@@ -112,8 +111,8 @@ services:
     # Export all env vars for cron, then start cron in foreground
     command: /bin/sh -c 'printenv | grep -v "no_proxy" > /etc/environment && cron -f'
     healthcheck:
-      # Checks the app is responding by running a Symfony command
-      test: [ "CMD", "php", "bin/console", "about" ]
+      # Checks cron is running
+      test: ["CMD-SHELL", "ps aux | grep -q '[c]ron -f'"]
       interval: 60s
       timeout: 10s
       retries: 5
@@ -125,11 +124,11 @@ services:
   nginx:
     build:
       context: .
-      dockerfile: docker/php/Dockerfile
+      dockerfile: docker/Dockerfile
       target: nginx-dev
     depends_on:
       php:
-        condition: service_healthy
+        condition: service_started
     ports:
       - "80:80"     # HTTP
       - "443:443"   # HTTPS (dev SSL cert)

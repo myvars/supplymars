@@ -1,0 +1,16 @@
+<twig:Modal closeButton="true">
+    <turbo-frame
+        id="modal"
+        data-basic-modal-target="dynamicContent"
+{#        data-action="turbo:before-fetch-request->basic-modal#showLoading"#}
+        class="aria-busy:opacity-10 transition-opacity aria-busy:delay-700"
+        refresh="morph"
+    >
+        {{ include ('shared/turbo/_frame_success_stream.html.twig', { frame: 'modal' }) }}
+    </turbo-frame>
+    <twig:block name="loading_template">
+{#        <div class="flex items-center justify-center rounded-sm bg-cover p-20 bg-space-pattern">#}
+{#            <twig:ux:icon name="icomoon-free:spinner9" class="h-10 w-10 text-gray-400/40"/>#}
+{#        </div>#}
+    </twig:block>
+</twig:Modal>

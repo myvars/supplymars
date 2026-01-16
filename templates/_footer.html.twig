@@ -1,0 +1,33 @@
+<footer class="rounded-b-lg bg-white shadow-sm dark:bg-gray-900">
+    <div class="mx-auto mt-4 w-full max-w-(--breakpoint-xl) p-3">
+        <div class="sm:flex sm:items-center sm:justify-between">
+            <a href="{{ path('app_homepage') }}"
+               class="mb-4 flex items-center space-x-3 rtl:space-x-reverse sm:mb-0">
+                {{ include('_logo.html.twig', { 'logoHeight': 35 }) }}
+            </a>
+            <ul class="mb-6 flex flex-wrap items-center text-sm font-medium text-gray-500 dark:text-gray-400 sm:mb-0">
+                <li>
+                    <a href="{{ path('app_about_page') }}" data-turbo-frame="body"
+                       class="me-4 hover:underline md:me-6">About</a>
+                </li>
+                <li>
+                    <a href="{{ path('app_terms_page') }}" data-turbo-frame="body"
+                       class="me-4 hover:underline md:me-6">T&Cs</a>
+                </li>
+                <li>
+                    <a href="{{ path('app_privacy_page') }}" data-turbo-frame="body"
+                       class="me-4 hover:underline md:me-6">Privacy Policy</a>
+                </li>
+                <li>
+                    <a href="{{ path('app_contact_page') }}" data-turbo-frame="body"
+                       class="hover:underline">Contact</a>
+                </li>
+            </ul>
+        </div>
+        <hr class="my-6 border-gray-200 dark:border-gray-700 sm:mx-auto lg:my-8"/>
+        <span class="block text-sm text-gray-500 dark:text-gray-400 sm:text-center">© 2024
+                <a href="{{ path('app_homepage') }}" class="hover:underline">{{ domain }}</a>
+                . All Rights Reserved.
+            </span>
+    </div>
+</footer>

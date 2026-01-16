@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Supplier Product Details{% endblock %}
+
+{% block body %}
+
+    <div class="m-3 space-y-3">
+        {{ include('purchasing/supplier_product/_supplier_product_card.html.twig', {supplierProduct: result}) }}
+    </div>
+
+{% endblock %}

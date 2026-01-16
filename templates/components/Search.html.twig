@@ -1,10 +1,10 @@
-{% props section, results %}
+{% props flowModel, flowRoute, results %}
 
 <div class="mx-auto max-w-(--breakpoint-xl) p-3">
     {% block result_count %}
-        <div id="{{ section|slug }}-result-count">
+        <div id="{{ flowModel|slug }}-result-count">
             <h1 class="text-xl text-gray-900 dark:text-white">
-                {{ section }} Search
+                {{ flowModel }} Search
                 <span class="text-base font-light text-gray-500 ms-2 dark:text-gray-400">
                         {{ results|length }} {% if results|length == 1 %}result{% else %}results{% endif %}
                     </span>
@@ -14,19 +14,19 @@
     <div class="flex flex-col items-center justify-between py-3 space-y-3 md:space-y-0 md:space-x-3 md:flex-row">
         <div class="w-full md:w-1/2">
             <form data-controller="searchbox"
-                  data-turbo-frame="{{ section|slug }}-table"
+                  data-turbo-frame="{{ flowModel|slug }}-table"
                   data-turbo-action="replace"
-                  data-searchbox-base-path-value="{{ path('app_'~section|lower|u.snake~'_index') }}"
+                  data-searchbox-base-path-value="{{ path('app_'~flowRoute~'_index') }}"
             >
                 <div class="relative w-full">
                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
                         <svg aria-hidden="true" class="h-5 w-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
                     </div>
                     {% block filter %}
-                        <a href="{{ path('app_'~section|lower|u.snake~'_search_filter', app.request.query.all) }}"
+                        <a href="{{ path('app_'~flowRoute~'_search_filter', app.request.query.all) }}"
                            class="absolute inset-y-0 right-0 flex items-center pr-3"
                            data-turbo-frame="modal"
-                           id="{{ section|slug }}-search-filter">
+                           id="{{ flowModel|slug }}-search-filter">
                             {% if app.request.query.get('filter') %}
                                 <twig:ux:icon name="mynaui:filter" class="h-6 w-6 text-yellow-400 hover:text-yellow-200"/>
                             {% else %}
@@ -53,7 +53,7 @@
         </div>
     </div>
 
-    <turbo-frame id="{{ section|slug }}-table" data-turbo-action="advance" refresh="morph">
+    <turbo-frame id="{{ flowModel|slug }}-table" data-turbo-action="advance" refresh="morph">
         {% block sort %}No sortable options{% endblock %}
         <ul class="space-y-3">
             {% for result in results %}
@@ -64,13 +64,13 @@
         </ul>
         <twig:Pagination pager="{{ results }}"></twig:Pagination>
 
-        <turbo-stream action="replace" target="{{ section|slug }}-result-count">
+        <turbo-stream action="replace" target="{{ flowModel|slug }}-result-count">
             <template>
                 {{ block('result_count') }}
             </template>
         </turbo-stream>
 
-        <turbo-stream action="replace" target="{{ section|slug }}-search-filter">
+        <turbo-stream action="replace" target="{{ flowModel|slug }}-search-filter">
             <template>
                 {{ block('filter') }}
             </template>

@@ -1,8 +1,8 @@
-<twig:Card editLink="{{ order.allowEdit ? path('app_order_cancel_confirm', {id: result.id}) : null }}"
+<twig:Card editLink="{{ order.allowEdit ? path('app_order_cancel_confirm', {id: result.publicId.value}) : null }}"
            editIcon="bi:x-lg">
     <h5 class="mb-2 flex items-center text-xl text-gray-900 dark:text-white">
         Order #{{ '%06d'|format(result.id) }}
-        <a href="{{ path('app_order_lock_toggle_status', {id: result.id}) }}"
+        <a href="{{ path('app_order_lock_toggle_status', {id: result.publicId.value}) }}"
            data-turbo-frame="body"
            data-turbo-prefetch="false"
            class="flex items-center text-base text-gray-500 ms-3 hover:text-yellow-600 dark:text-gray-400 dark:hover:text-yellow-300"
@@ -25,7 +25,7 @@
         </p>
         <p class="flex items-center justify-end">
             {% if order.allowEdit %}
-                <a href="{{ path('app_order_process', {id: result.id}) }}"
+                <a href="{{ path('app_order_allocate', {id: result.publicId.value}) }}"
                    data-turbo-frame="body"
                    data-turbo-prefetch="false"
                    class="py-1 text-sm text-yellow-700 hover:text-yellow-500 dark:text-yellow-500 dark:hover:text-yellow-300"
@@ -33,7 +33,7 @@
                     <twig:ux:icon name="f7:wand-stars" class="w-4 me-1.5"/>
                 </a>
             {% endif %}
-            <a href="{{ path('app_order_status_log', {'id':result.id }) }}"
+            <a href="{{ path('app_order_status_log', {'id': result.publicId.value }) }}"
                class="text-grey-500 dark:hover:text-gray-600"
                data-turbo-frame="modal"
             >

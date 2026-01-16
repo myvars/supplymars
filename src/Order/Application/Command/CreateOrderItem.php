@@ -1,0 +1,15 @@
+<?php
+
+namespace App\Order\Application\Command;
+
+use App\Order\Domain\Model\Order\OrderPublicId;
+
+final readonly class CreateOrderItem
+{
+    public function __construct(
+        public OrderPublicId $orderId,
+        public int $productId,
+        public int $quantity,
+    ) {
+    }
+}

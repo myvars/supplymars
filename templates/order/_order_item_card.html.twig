@@ -1,0 +1,47 @@
+<li class="first:mt-3">
+    <twig:Card
+        editLink="{{ orderItem.allowEdit ? path('app_order_item_edit', {'id': orderItem.publicId.value }) : null }}"
+        padding="p-0"
+    >
+        <div data-controller="toggle" data-action="click->toggle#toggle">
+            <div class="flex items-center justify-between rounded-sm dark:bg-gray-800 dark:hover:bg-gray-700">
+                <a href="{{ path('app_catalog_product_show', {'id': orderItem.product.publicId.value }) }}"
+                   data-turbo-frame="body"
+                   data-action="click->toggle#toggle"
+                >
+                    <twig:ProductImage
+                        imageName="{{ orderItem.product.hasProductImage ? orderItem.product.getFirstImage.imageName : null }}"
+                        filter="small_thumbnail"
+                        alt="{{ orderItem.product.name }}"
+                    ></twig:ProductImage>
+                </a>
+                <div class="m-3 w-full">
+                    <p class="mb-2 text-sm text-gray-300 line-clamp-1 dark:text-gray-200">{{ orderItem.product.name }}</p>
+                    <div class="flex items-center justify-between">
+                        <p class="text-base font-extralight me-3">
+                            {{ orderItem.priceIncVat|format_currency('GBP') }}
+                            <span class="text-sm ms-3">
+                                {% if orderItem.outstandingQty is same as orderItem.quantity %}
+                                    Qty: {{ orderItem.quantity }}
+                                {% else %}
+                                    Qty: {{ orderItem.outstandingQty }} of {{ orderItem.quantity }}
+                                {% endif %}
+                            </span>
+                            <span class="hidden text-sm ms-3 md:inline">Product #{{ '%05d'|format(orderItem.product.id) }}</span>
+                        </p>
+                        <p class="text-gray-600 dark:text-gray-500">
+                            <a href="{{ path('app_order_item_status_log', {'id':orderItem.publicId.value }) }}"
+                               class="hover:text-grey-500 dark:hover:text-white"
+                               data-turbo-frame="modal"
+                               data-action="click->toggle#toggle"
+                            >{{ orderItem.status.value|title }}</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            {% if orderItem.allowEdit %}
+                {{ include('order/_order_item_supplier_card.html.twig', {orderItem: orderItem}) }}
+            {% endif %}
+        </div>
+    </twig:Card>
+</li>

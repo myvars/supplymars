@@ -1,0 +1,17 @@
+<twig:Card title="Subcategories">
+    <ul class="space-y-1">
+        {% for subcategory in subcategories %}
+            <li class="flex justify-between">
+                <a href="{{ path('app_catalog_subcategory_show', {'id': subcategory.publicId.value }) }}"
+                   class="me-5 line-clamp-1 dark:hover:text-white"
+                   data-turbo-frame="body"
+                >{{ subcategory.name }}</a>
+                {% if subcategory.isActive %}
+                    <span class="text-green-500">Active</span>
+                {% else %}
+                    <span class="text-red-500">Inactive</span>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</twig:Card>

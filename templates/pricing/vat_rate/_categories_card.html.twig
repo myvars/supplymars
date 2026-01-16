@@ -1,0 +1,9 @@
+<twig:Card title="Categories">
+    <a href="{{ path('app_catalog_category_index', {vatRateId: result.id}) }}"
+       class="flex items-center justify-start font-light dark:hover:text-white"
+       data-turbo-frame="body"
+    >
+        <span class="me-1">{{ result.categories.count }}</span>
+        {{ result.categories.count == 1 ? 'category': 'categories' }} with this VAT rate
+    </a>
+</twig:Card>
