@@ -46,7 +46,7 @@ class AddressTest extends TestCase
 
     public function testAddCustomerOrder(): void
     {
-        $address= new Address();
+        $address = new Address();
         $customerOrder = $this->createMock(CustomerOrder::class);
 
         // Test adding a customer order
@@ -61,7 +61,7 @@ class AddressTest extends TestCase
 
     public function testRemoveCustomerOrder(): void
     {
-        $address= new Address();
+        $address = new Address();
         $customerOrder = $this->createMock(CustomerOrder::class);
 
         // Add the customer order first to set up the state
@@ -78,7 +78,7 @@ class AddressTest extends TestCase
 
     public function testAddPurchaseOrder(): void
     {
-        $address= new Address();
+        $address = new Address();
         $purchaseOrder = $this->createMock(PurchaseOrder::class);
 
         // Test adding a customer order
@@ -93,7 +93,7 @@ class AddressTest extends TestCase
 
     public function testRemovePurchaseOrder(): void
     {
-        $address= new Address();
+        $address = new Address();
         $purchaseOrder = $this->createMock(PurchaseOrder::class);
 
         // Add the purchase order first to set up the state

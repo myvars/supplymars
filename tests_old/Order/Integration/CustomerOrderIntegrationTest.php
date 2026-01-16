@@ -5,12 +5,12 @@ namespace App\Tests\Order\Integration;
 use App\Customer\Domain\Model\User\User;
 use App\Order\Domain\Model\Order\OrderStatus;
 use App\Shared\Domain\ValueObject\ShippingMethod;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use tests\Shared\Factory\CustomerOrderFactory;
 use tests\Shared\Factory\CustomerOrderItemFactory;
 use tests\Shared\Factory\UserFactory;
 use tests\Shared\Factory\VatRateFactory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Zenstruck\Foundry\Test\Factories;
 
 class CustomerOrderIntegrationTest extends KernelTestCase
@@ -36,7 +36,7 @@ class CustomerOrderIntegrationTest extends KernelTestCase
             'customer' => $customer,
             'shippingMethod' => $shippingMethod,
             'vatRate' => $vatRate,
-            'customerOrderRef' => $customerOrderRef
+            'customerOrderRef' => $customerOrderRef,
         ]);
 
         $errors = $this->validator->validate($order);

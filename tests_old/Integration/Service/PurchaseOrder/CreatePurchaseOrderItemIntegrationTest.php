@@ -10,14 +10,14 @@ use App\Service\PurchaseOrder\CreatePurchaseOrder;
 use App\Service\PurchaseOrder\CreatePurchaseOrderItem;
 use App\Shared\Domain\Service\Pricing\MarkupCalculator;
 use Doctrine\ORM\EntityManagerInterface;
+use Story\StaffUserStory;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use tests\Shared\Factory\CustomerOrderFactory;
 use tests\Shared\Factory\CustomerOrderItemFactory;
 use tests\Shared\Factory\ProductFactory;
 use tests\Shared\Factory\PurchaseOrderItemFactory;
 use tests\Shared\Factory\SupplierProductFactory;
-use Story\StaffUserStory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Zenstruck\Foundry\Test\Factories;
 
 class CreatePurchaseOrderItemIntegrationTest extends KernelTestCase
@@ -29,7 +29,6 @@ class CreatePurchaseOrderItemIntegrationTest extends KernelTestCase
     private EntityManagerInterface $em;
 
     private EditOrderItem $editOrderItem;
-
 
     protected function setUp(): void
     {
@@ -54,7 +53,7 @@ class CreatePurchaseOrderItemIntegrationTest extends KernelTestCase
         $supplierProduct = SupplierProductFactory::createOne();
         $customerOrderItem = CustomerOrderItemFactory::new()->with([
             'customerOrder' => $customerOrder,
-            'product' => $supplierProduct->getProduct()
+            'product' => $supplierProduct->getProduct(),
         ])->create();
 
         $context = new CrudContext();
@@ -65,7 +64,7 @@ class CreatePurchaseOrderItemIntegrationTest extends KernelTestCase
 
         $purchaseOrderItem = PurchaseOrderItemFactory::repository()->findOneBy([
             'customerOrderItem' => $customerOrderItem,
-            'supplierProduct' => $supplierProduct
+            'supplierProduct' => $supplierProduct,
         ]);
 
         $this->assertInstanceOf(PurchaseOrderItem::class, $purchaseOrderItem);

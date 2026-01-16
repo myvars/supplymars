@@ -3,9 +3,9 @@
 namespace App\Tests\Integration\Service\Product;
 
 use App\Service\Product\ActiveSourceCalculator;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use tests\Shared\Factory\ProductFactory;
 use tests\Shared\Factory\SupplierProductFactory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 
 class ActiveSourceCalculatorIntegrationTest extends KernelTestCase
@@ -26,7 +26,7 @@ class ActiveSourceCalculatorIntegrationTest extends KernelTestCase
         $supplierProduct = SupplierProductFactory::createOne([
             'product' => null,
             'cost' => '100.00',
-            'stock' => 10
+            'stock' => 10,
         ]);
         $product->addSupplierProduct($supplierProduct);
 
@@ -48,7 +48,7 @@ class ActiveSourceCalculatorIntegrationTest extends KernelTestCase
     {
         $supplierProduct = SupplierProductFactory::createOne([
             'cost' => '100.00',
-            'stock' => 10
+            'stock' => 10,
         ]);
         $supplierProduct->getSupplier()->setIsActive(false);
 
@@ -63,7 +63,7 @@ class ActiveSourceCalculatorIntegrationTest extends KernelTestCase
     {
         $supplierProduct = SupplierProductFactory::createOne([
             'cost' => '100.00',
-            'stock' => 10
+            'stock' => 10,
         ]);
         $supplierProduct->setIsActive(false);
 
@@ -78,7 +78,7 @@ class ActiveSourceCalculatorIntegrationTest extends KernelTestCase
     {
         $supplierProduct = SupplierProductFactory::createOne([
             'cost' => '100.00',
-            'stock' => 10
+            'stock' => 10,
         ]);
         $supplierProduct->changeStock(0);
 
@@ -93,7 +93,7 @@ class ActiveSourceCalculatorIntegrationTest extends KernelTestCase
     {
         $supplierProduct = SupplierProductFactory::createOne([
             'cost' => '100.00',
-            'stock' => 10
+            'stock' => 10,
         ]);
         $supplierProduct->setCost(0);
 
@@ -108,12 +108,12 @@ class ActiveSourceCalculatorIntegrationTest extends KernelTestCase
     {
         $supplierProduct = SupplierProductFactory::createOne([
             'cost' => '100.00',
-            'stock' => 10
+            'stock' => 10,
         ]);
         $supplierProduct2 = SupplierProductFactory::createOne([
             'product' => null,
             'cost' => '50.00',
-            'stock' => 10
+            'stock' => 10,
         ]);
         $supplierProduct->getProduct()->addSupplierProduct($supplierProduct2);
 
@@ -128,12 +128,12 @@ class ActiveSourceCalculatorIntegrationTest extends KernelTestCase
     {
         $supplierProduct = SupplierProductFactory::createOne([
             'cost' => '100.00',
-            'stock' => 5
+            'stock' => 5,
         ]);
         $supplierProduct2 = SupplierProductFactory::createOne([
             'product' => null,
             'cost' => '100.00',
-            'stock' => 10
+            'stock' => 10,
         ]);
         $supplierProduct->getProduct()->addSupplierProduct($supplierProduct2);
 
@@ -148,12 +148,12 @@ class ActiveSourceCalculatorIntegrationTest extends KernelTestCase
     {
         $supplierProduct = SupplierProductFactory::createOne([
             'cost' => '100.00',
-            'stock' => 10
+            'stock' => 10,
         ]);
         $supplierProduct2 = SupplierProductFactory::createOne([
             'product' => null,
             'cost' => '100.00',
-            'stock' => 5
+            'stock' => 5,
         ]);
         $supplierProduct->getProduct()->addSupplierProduct($supplierProduct2);
 
@@ -168,16 +168,16 @@ class ActiveSourceCalculatorIntegrationTest extends KernelTestCase
     {
         $supplierProduct1 = SupplierProductFactory::createOne([
             'cost' => '100.00',
-            'stock' => 10
+            'stock' => 10,
         ]);
         $supplierProduct2 = SupplierProductFactory::createOne([
             'cost' => '200.00',
-            'stock' => 20
+            'stock' => 20,
         ]);
 
         $this->activeSourceCalculator->recalculateActiveSourceFromArray([
             $supplierProduct1->getProduct(),
-            $supplierProduct2->getProduct()
+            $supplierProduct2->getProduct(),
         ]);
 
         $this->assertNotNull($supplierProduct1->getProduct()->getActiveProductSource());

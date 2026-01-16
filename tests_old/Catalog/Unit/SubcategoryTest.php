@@ -17,7 +17,7 @@ class SubcategoryTest extends TestCase
         $user = $this->createMock(User::class);
         $category = $this->createMock(Category::class);
 
-        $subcategory = new SubCategory()
+        $subcategory = new Subcategory()
             ->setName('Electronics')
             ->setDefaultMarkup('10.000')
             ->setOwner($user)

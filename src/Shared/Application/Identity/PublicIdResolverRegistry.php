@@ -22,7 +22,7 @@ final class PublicIdResolverRegistry
 
     public function resolve(AbstractUlidId $publicId): ?int
     {
-        $key = $publicId::class.'|'.$publicId->value();
+        $key = $publicId::class . '|' . $publicId->value();
         if (array_key_exists($key, $this->cache)) {
             return $this->cache[$key];
         }

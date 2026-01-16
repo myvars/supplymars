@@ -73,7 +73,7 @@ class ProductImageCreatorTest extends TestCase
         $productImage->method('getImageFile')->willReturn($imageFile);
 
         $this->em->method('getRepository')->willReturnMap([
-            [ProductImage::class, $this->createMock(ProductImageDoctrineRepository::class)]
+            [ProductImage::class, $this->createMock(ProductImageDoctrineRepository::class)],
         ]);
         $this->em->getRepository(ProductImage::class)->method('getNextPositionForProduct')->willReturn(1);
 

@@ -128,7 +128,8 @@ class SubcategoryController extends AbstractController
     }
 
     #[Route(path: '/subcategory/{id}', name: 'app_catalog_subcategory_show', methods: ['GET'])]
-    public function show(#[ValueResolver('public_id')] Subcategory $subcategory): Response {
+    public function show(#[ValueResolver('public_id')] Subcategory $subcategory): Response
+    {
         return $this->render('/catalog/subcategory/show.html.twig', ['result' => $subcategory]);
     }
 }

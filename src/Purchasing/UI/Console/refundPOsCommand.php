@@ -39,12 +39,14 @@ readonly class refundPOsCommand
 
         if ($poCount < 1) {
             $io->error('poCount must be > 0.');
+
             return Command::INVALID;
         }
 
         $purchaseOrders = $this->getRejectedPurchaseOrders($poCount);
-        if (!$purchaseOrders) {
+        if ($purchaseOrders === []) {
             $io->note('No rejected purchase orders.');
+
             return Command::SUCCESS;
         }
 
@@ -69,7 +71,7 @@ readonly class refundPOsCommand
 
             $this->orderAllocator->process($purchaseOrder->getCustomerOrder());
 
-            $processedIds[] = $purchaseOrder->getId().' : '.$purchaseOrder->getStatus()->value;
+            $processedIds[] = $purchaseOrder->getId() . ' : ' . $purchaseOrder->getStatus()->value;
             ++$processed;
             $progress->advance();
         }

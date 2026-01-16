@@ -18,6 +18,7 @@ final class UpdateCategoryHandlerTest extends KernelTestCase
     use Factories;
 
     private UpdateCategoryHandler $handler;
+
     private CategoryRepository $categories;
 
     protected function setUp(): void

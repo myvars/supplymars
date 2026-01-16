@@ -3,10 +3,10 @@
 namespace App\Tests\Catalog\UI\Http;
 
 use App\Shared\Domain\ValueObject\PriceModel;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use tests\Shared\Factory\CategoryFactory;
 use tests\Shared\Factory\UserFactory;
 use tests\Shared\Factory\VatRateFactory;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
 
@@ -60,7 +60,7 @@ class CategoryControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/category/" . $category->getPublicId())
+            ->get('/category/' . $category->getPublicId())
             ->assertSuccessful()
             ->assertSee('Test Category');
     }
@@ -75,12 +75,12 @@ class CategoryControllerTest extends WebTestCase
             ->actingAs(UserFactory::new()->asStaff()->create())
             ->get('/category/new')
             ->assertSuccessful()
-            ->fillField('category[name]','Test Category')
+            ->fillField('category[name]', 'Test Category')
             ->fillField('category[vatRate]', $vatRate->getId())
-            ->fillField('category[defaultMarkup]','0.21')
+            ->fillField('category[defaultMarkup]', '0.21')
             ->fillField('category[priceModel]', $priceModel->value)
             ->fillField('category[owner]', $owner->getId())
-            ->fillField('category[isActive]','1')
+            ->fillField('category[isActive]', '1')
             ->click('Create Category')
             ->assertOn('/category/')
             ->assertSee('Test Category');
@@ -108,9 +108,9 @@ class CategoryControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs($user)
-            ->get("/category/" . $category->getPublicId() . "/edit")
+            ->get('/category/' . $category->getPublicId() . '/edit')
             ->assertSuccessful()
-            ->fillField('category[name]','Edited Category')
+            ->fillField('category[name]', 'Edited Category')
             ->click('Update Category')
             ->assertOn('/category/')
             ->assertSee('Edited Category');
@@ -122,16 +122,16 @@ class CategoryControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/category/" . $category->getPublicId() . "/edit")
+            ->get('/category/' . $category->getPublicId() . '/edit')
             ->assertSuccessful()
             // Intentionally filling form with invalid data
-            ->fillField('category[name]','')
+            ->fillField('category[name]', '')
             ->fillField('category[vatRate]', '')
-            ->fillField('category[defaultMarkup]','-1')
+            ->fillField('category[defaultMarkup]', '-1')
             ->fillField('category[priceModel]', '')
             ->fillField('category[owner]', '')
             ->click('Update Category')
-            ->assertOn("/category/" . $category->getPublicId() . "/edit")
+            ->assertOn('/category/' . $category->getPublicId() . '/edit')
             ->assertSee('Please enter a category name')
             ->assertSee('Please choose a VAT rate')
             ->assertSee('Please enter a positive or zero category markup %')
@@ -145,7 +145,7 @@ class CategoryControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/category/" . $category->getPublicId() . "/delete/confirm")
+            ->get('/category/' . $category->getPublicId() . '/delete/confirm')
             ->assertSuccessful()
             ->assertSee('Are you sure you want to delete this Category');
     }
@@ -156,7 +156,7 @@ class CategoryControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/category/" . $category->getPublicId() . "/delete/confirm")
+            ->get('/category/' . $category->getPublicId() . '/delete/confirm')
             ->assertSuccessful()
             ->click('Delete')
             ->assertOn('/category/')
@@ -167,7 +167,7 @@ class CategoryControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/category/999")
+            ->get('/category/999')
             ->assertStatus(500);
     }
 }

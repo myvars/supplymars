@@ -27,7 +27,7 @@ final readonly class RandomAddressFactory
             street2: 1 === random_int(1, 5) ? $this->faker->streetName() : null,
             city: $cityData->value,
             county: 'Red Zone',
-            postCode: $cityData->sectorCode().'-'.random_int(10, 50),
+            postCode: $cityData->sectorCode() . '-' . random_int(10, 50),
             country: 'Mars Colony',
             phoneNumber: $this->faker->phoneNumber(),
             email: $user->getEmail(),

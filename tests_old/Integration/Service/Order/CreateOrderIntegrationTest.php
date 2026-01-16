@@ -8,13 +8,13 @@ use App\Service\Crud\Common\CrudContext;
 use App\Service\Order\CreateOrder;
 use App\Shared\Domain\ValueObject\ShippingMethod;
 use Doctrine\ORM\EntityManagerInterface;
+use Story\StaffUserStory;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use tests\Shared\Factory\AddressFactory;
 use tests\Shared\Factory\CustomerOrderFactory;
 use tests\Shared\Factory\UserFactory;
 use tests\Shared\Factory\VatRateFactory;
-use Story\StaffUserStory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Zenstruck\Foundry\Test\Factories;
 
 class CreateOrderIntegrationTest extends KernelTestCase
@@ -38,7 +38,7 @@ class CreateOrderIntegrationTest extends KernelTestCase
         $address = AddressFactory::createOne([
             'customer' => $customer,
             'isDefaultBillingAddress' => true,
-            'isDefaultShippingAddress' => true
+            'isDefaultShippingAddress' => true,
         ]);
         $customer->addAddress($address);
 
@@ -56,7 +56,7 @@ class CreateOrderIntegrationTest extends KernelTestCase
 
         $customerOrder = CustomerOrderFactory::repository()->findOneBy([
             'customer' => $customer,
-            'customerOrderRef' => 'order_ref'
+            'customerOrderRef' => 'order_ref',
         ]);
 
         $this->assertInstanceOf(CustomerOrder::class, $customerOrder);

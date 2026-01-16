@@ -2,8 +2,12 @@
 
 namespace App\Tests\Shared\Factory;
 
+use App\Catalog\Domain\Model\Product\Product;
 use App\Purchasing\Domain\Model\Supplier\Supplier;
+use App\Purchasing\Domain\Model\SupplierProduct\SupplierCategory;
+use App\Purchasing\Domain\Model\SupplierProduct\SupplierManufacturer;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
+use App\Purchasing\Domain\Model\SupplierProduct\SupplierSubcategory;
 use App\Shared\Domain\Service\Pricing\MarkupCalculator;
 use Zenstruck\Foundry\LazyValue;
 use Zenstruck\Foundry\Object\Instantiator;
@@ -43,11 +47,11 @@ final class SupplierProductFactory extends PersistentObjectFactory
             'supplierManufacturer' => null,
             'mfrPartNumber' => self::faker()->numerify('PART-####'),
             'weight' => self::faker()->numberBetween(1, 10000),
-            'supplier' => LazyValue::memoize(fn () => SupplierFactory::createOne()),
+            'supplier' => LazyValue::memoize(fn (): Supplier => SupplierFactory::createOne()),
             'stock' => self::faker()->numberBetween(1, 1000),
             'leadTimeDays' => self::faker()->numberBetween(1, 99),
             'cost' => (string) self::faker()->numberBetween(1, 100000) / 100,
-            'product' => LazyValue::memoize(fn () => ProductFactory::createOne()),
+            'product' => LazyValue::memoize(fn (): Product => ProductFactory::createOne()),
             'isActive' => true,
         ];
     }
@@ -62,16 +66,16 @@ final class SupplierProductFactory extends PersistentObjectFactory
             ->beforeInstantiate(function (array $attributes): array {
                 if (null !== $attributes['supplier']) {
                     $attributes['supplierCategory'] ??= LazyValue::memoize(
-                        fn () => SupplierCategoryFactory::createOne(['supplier' => $attributes['supplier']])
+                        fn (): SupplierCategory => SupplierCategoryFactory::createOne(['supplier' => $attributes['supplier']])
                     );
                     $attributes['supplierSubcategory'] ??= LazyValue::memoize(
-                        fn () => SupplierSubcategoryFactory::createOne([
+                        fn (): SupplierSubcategory => SupplierSubcategoryFactory::createOne([
                             'supplier' => $attributes['supplier'],
                             'supplierCategory' => $attributes['supplierCategory'],
                         ])
                     );
                     $attributes['supplierManufacturer'] ??= LazyValue::memoize(
-                        fn () => SupplierManufacturerFactory::createOne(['supplier' => $attributes['supplier']])
+                        fn (): SupplierManufacturer => SupplierManufacturerFactory::createOne(['supplier' => $attributes['supplier']])
                     );
                 }
 

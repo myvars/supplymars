@@ -102,6 +102,7 @@ class SupplierManufacturer
         if ($name === '') {
             throw new \InvalidArgumentException('Manufacturer name cannot be empty');
         }
+
         $this->name = $name;
     }
 

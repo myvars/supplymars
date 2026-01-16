@@ -4,8 +4,8 @@ namespace App\Tests\Pricing\Integration;
 
 use App\Catalog\Domain\Model\Product\Product;
 use Doctrine\ORM\EntityManagerInterface;
-use tests\Shared\Factory\ProductFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use tests\Shared\Factory\ProductFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class ProductPriceUpdaterIntegrationTest extends KernelTestCase

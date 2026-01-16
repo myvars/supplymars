@@ -2,7 +2,6 @@
 
 namespace App\Tests\Purchasing\Domain;
 
-
 use App\Purchasing\Domain\Model\Supplier\Supplier;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierCategory;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierSubcategory;

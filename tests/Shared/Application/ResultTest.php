@@ -14,19 +14,19 @@ final class ResultTest extends TestCase
 
         $result = Result::ok('done', ['payload' => 1], $redirect);
 
-        self::assertTrue($result ->ok);
-        self::assertSame('done', $result ->message);
-        self::assertSame(['payload' => 1], $result ->payload);
-        self::assertSame($redirect, $result ->redirect);
+        self::assertTrue($result->ok);
+        self::assertSame('done', $result->message);
+        self::assertSame(['payload' => 1], $result->payload);
+        self::assertSame($redirect, $result->redirect);
     }
 
     public function testFailFactorySetsFieldsAndNoRedirect(): void
     {
-        $result  = Result::fail('error', ['payload' => 'x']);
+        $result = Result::fail('error', ['payload' => 'x']);
 
-        self::assertFalse($result ->ok);
-        self::assertSame('error', $result ->message);
-        self::assertSame(['payload' => 'x'], $result ->payload);
-        self::assertNull($result ->redirect);
+        self::assertFalse($result->ok);
+        self::assertSame('error', $result->message);
+        self::assertSame(['payload' => 'x'], $result->payload);
+        self::assertNull($result->redirect);
     }
 }

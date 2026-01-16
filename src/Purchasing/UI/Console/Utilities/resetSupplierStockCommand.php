@@ -36,7 +36,7 @@ readonly class resetSupplierStockCommand
         InputInterface $input,
         OutputInterface $output,
         #[Argument(description: 'Supplier to process', name: 'supplierId')]
-        string $supplierId
+        string $supplierId,
     ): int {
         $io = new SymfonyStyle($input, $output);
 
@@ -58,7 +58,7 @@ readonly class resetSupplierStockCommand
         $io->success(sprintf('Resetting stock for supplier %s', $supplier->getName()));
 
         $supplierProducts = $this->getSupplierProducts($supplier);
-        if (!$supplierProducts) {
+        if ($supplierProducts === []) {
             $io->note('No supplier products found.');
 
             return Command::SUCCESS;

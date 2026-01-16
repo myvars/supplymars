@@ -23,7 +23,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class ProductImageController extends AbstractController
 {
     #[Route(path: '/product_image/{id}/images', name: 'app_catalog_product_image_show', methods: ['GET'])]
-    public function show(#[ValueResolver('public_id')] Product $product): Response {
+    public function show(#[ValueResolver('public_id')] Product $product): Response
+    {
         return $this->render('/catalog/product_image/show.html.twig', ['result' => $product]);
     }
 
@@ -41,7 +42,7 @@ class ProductImageController extends AbstractController
             ),
             handler: $handler,
             context: FlowContext::forSuccess('app_catalog_product_image_show', [
-                'id' => $product->getPublicId()->value()
+                'id' => $product->getPublicId()->value(),
             ]),
         );
 
@@ -64,7 +65,7 @@ class ProductImageController extends AbstractController
             command: new DeleteProductImage($productImage->getPublicId()),
             handler: $handler,
             context: FlowContext::forSuccess('app_catalog_product_image_show', [
-                'id' => $productImage->getProduct()->getPublicId()->value()
+                'id' => $productImage->getProduct()->getPublicId()->value(),
             ]),
         );
     }
@@ -81,12 +82,12 @@ class ProductImageController extends AbstractController
             return $this->json(['detail' => 'Invalid body'], 400);
         }
 
-        $response = $flow->process(
+        $flow->process(
             request: $request,
             command: new ReorderProductImage($product->getPublicId(), array_flip($imageIdOrder)),
             handler: $handler,
             context: FlowContext::forSuccess('app_catalog_product_image_show', [
-                'id' => $product->getPublicId()->value()
+                'id' => $product->getPublicId()->value(),
             ]),
         );
 

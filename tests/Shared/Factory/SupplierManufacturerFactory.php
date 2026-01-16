@@ -2,6 +2,7 @@
 
 namespace App\Tests\Shared\Factory;
 
+use App\Purchasing\Domain\Model\Supplier\Supplier;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierManufacturer;
 use Zenstruck\Foundry\LazyValue;
 use Zenstruck\Foundry\Object\Instantiator;
@@ -35,7 +36,7 @@ final class SupplierManufacturerFactory extends PersistentObjectFactory
     {
         return [
             'name' => self::faker()->company(),
-            'supplier' => LazyValue::memoize(fn () => SupplierFactory::createOne()),
+            'supplier' => LazyValue::memoize(fn (): Supplier => SupplierFactory::createOne()),
         ];
     }
 

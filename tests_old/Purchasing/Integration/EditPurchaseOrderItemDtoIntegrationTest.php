@@ -3,9 +3,9 @@
 namespace App\Tests\Purchasing\Integration;
 
 use App\Purchasing\Application\DTO\EditPurchaseOrderItemDto;
-use tests\Shared\Factory\PurchaseOrderItemFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use tests\Shared\Factory\PurchaseOrderItemFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class EditPurchaseOrderItemDtoIntegrationTest extends KernelTestCase

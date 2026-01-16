@@ -107,7 +107,8 @@ class ManufacturerController extends AbstractController
     }
 
     #[Route(path: '/manufacturer/{id}', name: 'app_catalog_manufacturer_show', methods: ['GET'])]
-    public function show(#[ValueResolver('public_id')] Manufacturer $manufacturer): Response {
+    public function show(#[ValueResolver('public_id')] Manufacturer $manufacturer): Response
+    {
         return $this->render('/catalog/manufacturer/show.html.twig', ['result' => $manufacturer]);
     }
 }

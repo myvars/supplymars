@@ -39,6 +39,7 @@ final class AddressUpdateDeleteMappingTest extends KernelTestCase
 
         $this->em->persist($addr);
         $this->em->flush();
+
         $id = $addr->getId();
 
         $this->em->clear();
@@ -81,6 +82,7 @@ final class AddressUpdateDeleteMappingTest extends KernelTestCase
 
         $this->em->persist($addr);
         $this->em->flush();
+
         $id = $addr->getId();
 
         $this->em->remove($addr);

@@ -63,5 +63,3 @@ final readonly class UpdateSubcategoryHandler
         return Result::ok('Subcategory updated');
     }
 }
-
-

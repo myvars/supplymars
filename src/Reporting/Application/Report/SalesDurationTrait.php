@@ -7,8 +7,8 @@ use App\Reporting\Domain\Metric\SalesDuration;
 trait SalesDurationTrait
 {
     protected const SalesDuration DURATION_DEFAULT = SalesDuration::LAST_30;
-    private ?SalesDuration $duration = null;
 
+    private ?SalesDuration $duration = null;
 
     public function getDuration(): SalesDuration
     {

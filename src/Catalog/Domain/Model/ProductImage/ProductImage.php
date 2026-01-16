@@ -86,6 +86,7 @@ class ProductImage
         if ($position <= 0) {
             throw new \InvalidArgumentException('Position must be greater than 0');
         }
+
         $this->position = $position;
     }
 

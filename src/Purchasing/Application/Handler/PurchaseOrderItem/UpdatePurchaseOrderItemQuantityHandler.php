@@ -35,7 +35,6 @@ final readonly class UpdatePurchaseOrderItemQuantityHandler
         return $this->handleUpdate($purchaseOrderItem, $command);
     }
 
-
     private function handleRemove(PurchaseOrderItem $purchaseOrderItem): Result
     {
         $customerOrderItem = $purchaseOrderItem->getCustomerOrderItem();
@@ -59,7 +58,7 @@ final readonly class UpdatePurchaseOrderItemQuantityHandler
 
     private function handleUpdate(
         PurchaseOrderItem $purchaseOrderItem,
-        UpdatePurchaseOrderItemQuantity $command
+        UpdatePurchaseOrderItemQuantity $command,
     ): Result {
         try {
             $purchaseOrderItem->updateItemQuantity(
@@ -80,4 +79,3 @@ final readonly class UpdatePurchaseOrderItemQuantityHandler
         return Result::ok('Order item updated');
     }
 }
-

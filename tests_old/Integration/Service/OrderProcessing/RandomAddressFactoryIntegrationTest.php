@@ -4,9 +4,9 @@ namespace App\Tests\Integration\Service\OrderProcessing;
 
 use App\Customer\Domain\Model\Address\Address;
 use App\Customer\Infrastructure\Factory\RandomAddressFactory;
-use tests\Shared\Factory\UserFactory;
 use Faker\Generator;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use tests\Shared\Factory\UserFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class RandomAddressFactoryIntegrationTest extends KernelTestCase

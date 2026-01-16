@@ -2,9 +2,9 @@
 
 namespace App\Tests\Purchasing\UI\Http;
 
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use tests\Shared\Factory\SupplierFactory;
 use tests\Shared\Factory\UserFactory;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
 
@@ -38,7 +38,7 @@ class SupplierControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/supplier/" . $supplier->getId())
+            ->get('/supplier/' . $supplier->getId())
             ->assertSuccessful()
             ->assertSee('Test Supplier');
     }
@@ -49,8 +49,8 @@ class SupplierControllerTest extends WebTestCase
             ->actingAs(UserFactory::new()->asStaff()->create())
             ->get('/supplier/new')
             ->assertSuccessful()
-            ->fillField('supplier[name]','Test Supplier')
-            ->fillField('supplier[isActive]','1')
+            ->fillField('supplier[name]', 'Test Supplier')
+            ->fillField('supplier[isActive]', '1')
             ->click('Create Supplier')
             ->assertOn('/supplier/')
             ->assertSee('Test Supplier');
@@ -74,9 +74,9 @@ class SupplierControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/supplier/" . $supplier->getId() . "/edit")
+            ->get('/supplier/' . $supplier->getId() . '/edit')
             ->assertSuccessful()
-            ->fillField('supplier[name]','Edited Supplier')
+            ->fillField('supplier[name]', 'Edited Supplier')
             ->click('Update Supplier')
             ->assertOn('/supplier/')
             ->assertSee('Edited Supplier');
@@ -88,12 +88,12 @@ class SupplierControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/supplier/" . $supplier->getId() . "/edit")
+            ->get('/supplier/' . $supplier->getId() . '/edit')
             ->assertSuccessful()
             // Intentionally filling form with invalid data
-            ->fillField('supplier[name]','')
+            ->fillField('supplier[name]', '')
             ->click('Update Supplier')
-            ->assertOn("/supplier/" . $supplier->getId() . "/edit")
+            ->assertOn('/supplier/' . $supplier->getId() . '/edit')
             ->assertSee('Please enter a supplier name');
     }
 
@@ -103,7 +103,7 @@ class SupplierControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/supplier/" . $supplier->getId() . "/delete/confirm")
+            ->get('/supplier/' . $supplier->getId() . '/delete/confirm')
             ->assertSuccessful()
             ->assertSee('Are you sure you want to delete this Supplier');
     }
@@ -114,7 +114,7 @@ class SupplierControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/supplier/" . $supplier->getId() . "/delete/confirm")
+            ->get('/supplier/' . $supplier->getId() . '/delete/confirm')
             ->assertSuccessful()
             ->click('Delete')
             ->assertOn('/supplier/')
@@ -125,7 +125,7 @@ class SupplierControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/supplier/999")
-            ->assertSee("Supplier not found!");
+            ->get('/supplier/999')
+            ->assertSee('Supplier not found!');
     }
 }

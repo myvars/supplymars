@@ -2,8 +2,8 @@
 
 namespace App\Tests\Customer\UI\Http;
 
-use tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use tests\Shared\Factory\UserFactory;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
 
@@ -39,7 +39,7 @@ class CustomerControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs($user)
-            ->get("/customer/" . $customer->getPublicId())
+            ->get('/customer/' . $customer->getPublicId())
             ->assertSuccessful()
             ->assertSee('Test Customer');
     }
@@ -51,7 +51,7 @@ class CustomerControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs($user)
-            ->get("/customer/" . $customer->getPublicId() . "/edit")
+            ->get('/customer/' . $customer->getPublicId() . '/edit')
             ->assertSuccessful()
             ->fillField('customer[fullName]', 'Edited Customer')
             ->click('Update Customer')
@@ -66,13 +66,13 @@ class CustomerControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs($user)
-            ->get("/customer/" . $customer->getId() . "/edit")
+            ->get('/customer/' . $customer->getId() . '/edit')
             ->assertSuccessful()
             // Intentionally filling form with invalid data
-            ->fillField('customer[fullName]','')
+            ->fillField('customer[fullName]', '')
             ->fillField('customer[email]', '')
             ->click('Update Customer')
-            ->assertOn("/customer/" . $customer->getId() . "/edit")
+            ->assertOn('/customer/' . $customer->getId() . '/edit')
             ->assertSee('Please enter a full name')
             ->assertSee('Please enter a valid email');
     }
@@ -84,11 +84,11 @@ class CustomerControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/customer/" . $customer->getId() . "/edit")
+            ->get('/customer/' . $customer->getId() . '/edit')
             ->assertSuccessful()
             ->fillField('customer[email]', 'customer@exists.com')
             ->click('Update Customer')
-            ->assertOn("/customer/" . $customer->getId() . "/edit")
+            ->assertOn('/customer/' . $customer->getId() . '/edit')
             ->assertSee('There is already an account with this email');
     }
 
@@ -99,7 +99,7 @@ class CustomerControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs($user)
-            ->get("/customer/" . $customer->getId() . "/delete/confirm")
+            ->get('/customer/' . $customer->getId() . '/delete/confirm')
             ->assertSuccessful()
             ->assertSee('Are you sure you want to delete this Customer');
     }
@@ -111,7 +111,7 @@ class CustomerControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs($user)
-            ->get("/customer/" . $customer->getId() . "/delete/confirm")
+            ->get('/customer/' . $customer->getId() . '/delete/confirm')
             ->assertSuccessful()
             ->click('Delete')
             ->assertOn('/customer/')
@@ -122,7 +122,7 @@ class CustomerControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/customer/999")
-            ->assertSee("Customer not found!");
+            ->get('/customer/999')
+            ->assertSee('Customer not found!');
     }
 }

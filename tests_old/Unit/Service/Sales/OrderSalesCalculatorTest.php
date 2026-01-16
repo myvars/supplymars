@@ -35,13 +35,13 @@ class OrderSalesCalculatorTest extends TestCase
             [
                 'orderCount' => 10,
                 'orderValue' => '1000.00',
-                'averageOrderValue' => '100.00'
-            ]
+                'averageOrderValue' => '100.00',
+            ],
         ];
 
         $this->em->method('getRepository')->willReturnMap([
             [CustomerOrder::class, $this->createMock(CustomerOrderDoctrineRepository::class)],
-            [OrderSales::class, $this->createMock(OrderSalesDoctrineRepository::class)]
+            [OrderSales::class, $this->createMock(OrderSalesDoctrineRepository::class)],
         ]);
 
         $this->em->getRepository(CustomerOrder::class)
@@ -63,13 +63,13 @@ class OrderSalesCalculatorTest extends TestCase
             [
                 'orderCount' => 10,
                 'orderValue' => '1000.00',
-                'averageOrderValue' => '100.00'
-            ]
+                'averageOrderValue' => '100.00',
+            ],
         ];
 
         $this->em->method('getRepository')->willReturnMap([
             [CustomerOrder::class, $this->createMock(CustomerOrderDoctrineRepository::class)],
-            [OrderSales::class, $this->createMock(OrderSalesDoctrineRepository::class)]
+            [OrderSales::class, $this->createMock(OrderSalesDoctrineRepository::class)],
         ]);
 
         $this->em->getRepository(CustomerOrder::class)

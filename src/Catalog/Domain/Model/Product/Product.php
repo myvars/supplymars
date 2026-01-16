@@ -15,6 +15,7 @@ use App\Shared\Domain\ValueObject\PriceModel;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapping\HasPublicUlid;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -26,6 +27,7 @@ class Product
     use HasPublicUlid;
 
     public const string DEFAULT_MARKUP = '0.000';
+
     public const PriceModel DEFAULT_PRICE_MODEL = PriceModel::NONE;
 
     #[ORM\Id]
@@ -58,25 +60,25 @@ class Product
     #[Assert\Range(notInRangeMessage: 'Please enter a product weight (0 to 100000)', min: 0, max: 100000)]
     private ?int $weight = 0;
 
-    #[ORM\Column(type: 'decimal', precision: 9, scale: 3)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 9, scale: 3)]
     #[Assert\NotBlank(message: 'Please enter a product markup %')]
     #[Assert\PositiveOrZero(message: 'Please enter a positive or zero product markup %')]
     private ?string $defaultMarkup = self::DEFAULT_MARKUP;
 
-    #[ORM\Column(type: 'decimal', precision: 9, scale: 3)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 9, scale: 3)]
     #[Assert\PositiveOrZero]
     private ?string $markup = '0';
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     #[Assert\NotBlank(message: 'Please enter a cost')]
     #[Assert\PositiveOrZero(message: 'Please enter a positive or zero cost')]
     private ?string $cost = '0.00';
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     #[Assert\PositiveOrZero]
     private ?string $sellPrice = '0';
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     #[Assert\PositiveOrZero]
     private ?string $sellPriceIncVat = '0';
 
@@ -173,7 +175,7 @@ class Product
         MarkupCalculator $markupCalculator,
         string $defaultMarkup,
         PriceModel $priceModel,
-        bool $isActive
+        bool $isActive,
     ): void {
         $this->applyDefaultMarkup($defaultMarkup);
         $this->priceModel = $priceModel;
@@ -455,6 +457,7 @@ class Product
         if ($name === '') {
             throw new \InvalidArgumentException('Product name cannot be empty');
         }
+
         $this->name = $name;
     }
 
@@ -463,6 +466,7 @@ class Product
         if ($stock < 0) {
             throw new \InvalidArgumentException('Stock level cannot be negative');
         }
+
         $this->stock = $stock;
     }
 
@@ -471,6 +475,7 @@ class Product
         if ($leadTimeDays < 0) {
             throw new \InvalidArgumentException('Lead time(days) cannot be negative');
         }
+
         $this->leadTimeDays = $leadTimeDays;
     }
 
@@ -479,6 +484,7 @@ class Product
         if ((float) $markup < 0) {
             throw new \InvalidArgumentException('Markup cannot be negative');
         }
+
         $this->markup = $markup;
     }
 
@@ -487,6 +493,7 @@ class Product
         if ((float) $cost < 0) {
             throw new \InvalidArgumentException('Cost cannot be negative');
         }
+
         $this->cost = $cost;
     }
 
@@ -495,6 +502,7 @@ class Product
         if ((float) $defaultMarkup < 0) {
             throw new \InvalidArgumentException('Markup cannot be negative');
         }
+
         $this->defaultMarkup = $defaultMarkup;
     }
 
@@ -503,6 +511,7 @@ class Product
         if ((float) $sellPrice < 0) {
             throw new \InvalidArgumentException('Sell price cannot be negative');
         }
+
         $this->sellPrice = $sellPrice;
     }
 
@@ -511,6 +520,7 @@ class Product
         if ((float) $sellPriceIncVat < 0) {
             throw new \InvalidArgumentException('Sell price (inc VAT) cannot be negative');
         }
+
         $this->sellPriceIncVat = $sellPriceIncVat;
     }
 
@@ -535,20 +545,25 @@ class Product
             if (!$supplierProduct->hasStock()) {
                 continue;
             }
+
             if ($supplierProduct->getStock() < $minQuantity) {
                 continue;
             }
+
             if (!$supplierProduct->hasPositiveCost()) {
                 continue;
             }
+
             if ($activeSource === null) {
                 $activeSource = $supplierProduct;
                 continue;
             }
+
             if ($supplierProduct->getCost() < $activeSource->getCost()) {
                 $activeSource = $supplierProduct;
                 continue;
             }
+
             if ($supplierProduct->getCost() === $activeSource->getCost()
                 && $supplierProduct->getStock() > $activeSource->getStock()
             ) {
@@ -559,7 +574,8 @@ class Product
         return $activeSource;
     }
 
-    private function applyActiveSource(SupplierProduct $activeSource): void {
+    private function applyActiveSource(SupplierProduct $activeSource): void
+    {
         $this->changeCost($activeSource->getCost());
         $this->changeLeadTimeDays($activeSource->getLeadTimeDays());
         $this->changeStock($activeSource->getStock());
@@ -631,7 +647,7 @@ class Product
     {
         $images = $this->productImages->toArray();
 
-        \usort($images, fn (ProductImage $a, ProductImage $b) => $a->getPosition() <=> $b->getPosition());
+        \usort($images, fn (ProductImage $a, ProductImage $b): int => $a->getPosition() <=> $b->getPosition());
 
         return new ArrayCollection($images);
     }

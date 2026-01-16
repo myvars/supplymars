@@ -8,10 +8,10 @@ use App\Order\Domain\Model\Order\Event\OrderStatusWasChangedEvent;
 use App\Order\Domain\Model\Order\OrderStatus;
 use App\Shared\Domain\ValueObject\StatusChange;
 use Doctrine\ORM\EntityManagerInterface;
-use tests\Shared\Factory\CustomerOrderFactory;
-use tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use tests\Shared\Factory\CustomerOrderFactory;
+use tests\Shared\Factory\UserFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class StatusChangeLoggerIntegrationTest extends KernelTestCase
@@ -49,7 +49,7 @@ class StatusChangeLoggerIntegrationTest extends KernelTestCase
             ->findOneBy([
                 'eventTypeId' => $customerOrder->getId(),
                 'eventType' => $event->type(),
-                'status' => OrderStatus::PROCESSING->value
+                'status' => OrderStatus::PROCESSING->value,
             ]);
 
         $this->assertInstanceOf(StatusChangeLog::class, $statusChangeLog);

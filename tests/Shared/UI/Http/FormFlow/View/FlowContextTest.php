@@ -19,7 +19,8 @@ final class FlowContextTest extends TestCase
         $stub->method('generate')->willReturnCallback(
             static function (string $name, array $parameters = [], int $referenceType = UrlGeneratorInterface::ABSOLUTE_PATH): string {
                 ksort($parameters);
-                $query = $parameters ? '?' . http_build_query($parameters) : '';
+                $query = $parameters !== [] ? '?' . http_build_query($parameters) : '';
+
                 return '/gen/' . $name . $query;
             }
         );
@@ -74,7 +75,7 @@ final class FlowContextTest extends TestCase
 
     public function testResolveSuccessUrlFallsBackToReferer(): void
     {
-        $ctx = FlowContext::new()->model('OrderItem')->template('x')->successRoute('', []);
+        FlowContext::new()->model('OrderItem')->template('x')->successRoute('', []);
         $req = Request::create('/current');
         $req->headers->set('referer', '/prev');
         // Clear successRoute to trigger fallback

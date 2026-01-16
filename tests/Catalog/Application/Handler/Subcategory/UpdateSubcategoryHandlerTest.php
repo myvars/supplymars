@@ -19,6 +19,7 @@ class UpdateSubcategoryHandlerTest extends KernelTestCase
     use Factories;
 
     private UpdateSubcategoryHandler $handler;
+
     private SubcategoryRepository $subcategories;
 
     protected function setUp(): void

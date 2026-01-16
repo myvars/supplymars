@@ -66,8 +66,7 @@ class SupplierSubcategory
         string $name,
         Supplier $supplier,
         SupplierCategory $supplierCategory,
-    ): void
-    {
+    ): void {
         $this->rename($name);
         $this->assignSupplier($supplier);
         $this->assignSupplierCategory($supplierCategory);
@@ -124,6 +123,7 @@ class SupplierSubcategory
         if ($name === '') {
             throw new \InvalidArgumentException('Subcategory name cannot be empty');
         }
+
         $this->name = $name;
     }
 

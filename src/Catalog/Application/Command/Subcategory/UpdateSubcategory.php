@@ -19,5 +19,3 @@ final readonly class UpdateSubcategory
     ) {
     }
 }
-
-

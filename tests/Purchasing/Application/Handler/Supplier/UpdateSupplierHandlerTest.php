@@ -15,6 +15,7 @@ final class UpdateSupplierHandlerTest extends KernelTestCase
     use Factories;
 
     private UpdateSupplierHandler $handler;
+
     private SupplierRepository $suppliers;
 
     protected function setUp(): void

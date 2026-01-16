@@ -2,7 +2,6 @@
 
 namespace App\Tests\Pricing\Unit;
 
-
 use App\Catalog\Domain\Model\Product\Product;
 use App\Pricing\Infrastructure\Persistence\Doctrine\EventListener\SupplierProductStockUpdater;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
@@ -21,7 +20,7 @@ class SupplierProductStockUpdaterTest extends TestCase
         $supplierProduct->method('getId')->willReturn(1);
 
         $eventArgsMock->method('hasChangedField')
-            ->willReturnCallback(fn($fieldName): bool => $fieldName == 'isActive');
+            ->willReturnCallback(fn ($fieldName): bool => $fieldName == 'isActive');
 
         $listener = new SupplierProductStockUpdater($activeSourceCalculatorMock);
         $listener->preUpdate($supplierProduct, $eventArgsMock);
@@ -35,7 +34,7 @@ class SupplierProductStockUpdaterTest extends TestCase
         $eventArgsMock = $this->createMock(PreUpdateEventArgs::class);
 
         $eventArgsMock->method('hasChangedField')
-            ->willReturnCallback(fn($fieldName): bool => $fieldName == 'none');
+            ->willReturnCallback(fn ($fieldName): bool => $fieldName == 'none');
 
         $listener = new SupplierProductStockUpdater($activeSourceCalculatorMock);
         $listener->preUpdate(new SupplierProduct(), $eventArgsMock);

@@ -2,14 +2,13 @@
 
 namespace App\Tests\Pricing\Integration;
 
-
 use App\Catalog\Domain\Model\Product\Product;
 use App\Shared\Domain\ValueObject\PriceModel;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use tests\Shared\Factory\CategoryFactory;
 use tests\Shared\Factory\SupplierProductFactory;
 use tests\Shared\Factory\VatRateFactory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 
 class CategoryPriceUpdaterIntegrationTest extends KernelTestCase
@@ -25,7 +24,7 @@ class CategoryPriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testCategoryProductsRecalculateWhenVatRateChanges(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"]);
+        $supplierProduct = SupplierProductFactory::createOne(['cost' => '100.00']);
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals('126.00', $product->getSellPriceIncVat());
@@ -41,7 +40,7 @@ class CategoryPriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testCategoryProductsRecalculateWhenDefaultMarkupChanges(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"]);
+        $supplierProduct = SupplierProductFactory::createOne(['cost' => '100.00']);
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals('126.00', $product->getSellPriceIncVat());
@@ -56,7 +55,7 @@ class CategoryPriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testNoUpdateWhenDefaultMarkupChangesOnDifferentCategory(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"]);
+        $supplierProduct = SupplierProductFactory::createOne(['cost' => '100.00']);
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals('126.00', $product->getSellPriceIncVat());
@@ -73,7 +72,7 @@ class CategoryPriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testCategoryProductsSkipWhenDefaultMarkupChangesAndProductMarkupSet(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"]);
+        $supplierProduct = SupplierProductFactory::createOne(['cost' => '100.00']);
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals('126.00', $product->getSellPriceIncVat());
@@ -90,7 +89,7 @@ class CategoryPriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testCategoryProductsSkipWhenDefaultMarkupChangesAndSubcategoryMarkupSet(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"]);
+        $supplierProduct = SupplierProductFactory::createOne(['cost' => '100.00']);
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals('126.00', $product->getSellPriceIncVat());
@@ -107,7 +106,7 @@ class CategoryPriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testCategoryProductsRecalculateWhenPriceModelChanges(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"]);
+        $supplierProduct = SupplierProductFactory::createOne(['cost' => '100.00']);
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals('126.00', $product->getSellPriceIncVat());
@@ -122,7 +121,7 @@ class CategoryPriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testCategoryProductsSkipWhenPriceModelChangesAndProductPriceModelSet(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"]);
+        $supplierProduct = SupplierProductFactory::createOne(['cost' => '100.00']);
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals('126.00', $product->getSellPriceIncVat());
@@ -139,7 +138,7 @@ class CategoryPriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testCategoryProductsSkipWhenPriceModelChangesAndSubcategoryPriceModelSet(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"]);
+        $supplierProduct = SupplierProductFactory::createOne(['cost' => '100.00']);
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals('126.00', $product->getSellPriceIncVat());

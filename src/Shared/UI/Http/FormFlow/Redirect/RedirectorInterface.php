@@ -17,4 +17,3 @@ interface RedirectorInterface
      */
     public function to(Request $request, string $url, bool $refresh = false, int $status = 303): Response;
 }
-

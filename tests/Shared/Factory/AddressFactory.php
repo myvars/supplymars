@@ -4,6 +4,7 @@ namespace App\Tests\Shared\Factory;
 
 use App\Customer\Domain\Model\Address\Address;
 use App\Customer\Domain\Model\Address\MarsCity;
+use App\Customer\Domain\Model\User\User;
 use Zenstruck\Foundry\LazyValue;
 use Zenstruck\Foundry\Object\Instantiator;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
@@ -43,11 +44,11 @@ final class AddressFactory extends PersistentObjectFactory
             'street2' => 1 === random_int(1, 5) ? self::faker()->streetName() : null,
             'city' => $cityData->value,
             'county' => 'Red Zone',
-            'postCode' => $cityData->sectorCode().'-'.random_int(10, 50),
+            'postCode' => $cityData->sectorCode() . '-' . random_int(10, 50),
             'country' => 'Mars Colony',
             'phoneNumber' => self::faker()->phoneNumber(),
             'email' => self::faker()->email(),
-            'customer' => LazyValue::memoize(fn () => UserFactory::createOne()),
+            'customer' => LazyValue::memoize(fn (): User => UserFactory::createOne()),
             'isDefaultShippingAddress' => false,
             'isDefaultBillingAddress' => false,
         ];

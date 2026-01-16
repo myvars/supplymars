@@ -22,11 +22,11 @@ final class UpdateProductCostFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs($admin)
-            ->get('/pricing/'.$publicId.'/cost/product/edit')
+            ->get('/pricing/' . $publicId . '/cost/product/edit')
             ->fillField('product_cost[defaultMarkup]', '7.500')
             ->fillField('product_cost[priceModel]', PriceModel::PRETTY_99->value)
             ->click('Update Pricing')
-            ->assertOn('/pricing/'.$publicId.'/cost')
+            ->assertOn('/pricing/' . $publicId . '/cost')
             ->assertSee('Product cost updated');
     }
 
@@ -38,10 +38,10 @@ final class UpdateProductCostFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs($admin)
-            ->get('/pricing/'.$publicId.'/cost/product/edit')
+            ->get('/pricing/' . $publicId . '/cost/product/edit')
             ->fillField('product_cost[defaultMarkup]', '-1.000')
             ->click('Update')
-            ->assertOn('/pricing/'.$publicId.'/cost/product/edit')
+            ->assertOn('/pricing/' . $publicId . '/cost/product/edit')
             ->assertSee('Please enter a positive or zero product markup %');
     }
 }

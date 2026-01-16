@@ -20,12 +20,10 @@ use Pagerfanta\Doctrine\ORM\QueryAdapter;
  *
  * @method PurchaseOrder|null find($id, $lockMode = null, $lockVersion = null)
  * @method PurchaseOrder|null findOneBy(array $criteria, array $orderBy = null)
- * @method PurchaseOrder[] findAll()
- * @method PurchaseOrder[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method PurchaseOrder[]    findAll()
+ * @method PurchaseOrder[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class PurchaseOrderDoctrineRepository extends ServiceEntityRepository implements
-    FindByCriteriaInterface,
-    PurchaseOrderRepository
+class PurchaseOrderDoctrineRepository extends ServiceEntityRepository implements FindByCriteriaInterface, PurchaseOrderRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -61,7 +59,7 @@ class PurchaseOrderDoctrineRepository extends ServiceEntityRepository implements
 
         if ($criteria->getQuery()) {
             $qb->andWhere('p.id LIKE :query')
-                ->setParameter('query', '%'.$criteria->getQuery().'%');
+                ->setParameter('query', '%' . $criteria->getQuery() . '%');
         }
 
         if ($criteria->purchaseOrderId) {
@@ -116,7 +114,7 @@ class PurchaseOrderDoctrineRepository extends ServiceEntityRepository implements
         if (str_starts_with($sort, 'customerOrder.')) {
             $qb->leftJoin('p.customerOrder', 'customerOrder')->orderBy($sort, $sortDirection);
         } else {
-            $qb->orderBy('p.'.$sort, $sortDirection);
+            $qb->orderBy('p.' . $sort, $sortDirection);
         }
 
         return new QueryAdapter($qb);

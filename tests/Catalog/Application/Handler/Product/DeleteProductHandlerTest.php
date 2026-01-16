@@ -15,6 +15,7 @@ final class DeleteProductHandlerTest extends KernelTestCase
     use Factories;
 
     private DeleteProductHandler $handler;
+
     private ProductRepository $products;
 
     protected function setUp(): void

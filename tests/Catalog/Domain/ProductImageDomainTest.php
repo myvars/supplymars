@@ -11,7 +11,7 @@ final class ProductImageDomainTest extends TestCase
 {
     private function uploadedFile(string $name = 'test.png'): UploadedFile
     {
-        $path = sys_get_temp_dir().'/'.$name;
+        $path = sys_get_temp_dir() . '/' . $name;
         file_put_contents($path, random_bytes(10));
 
         return new UploadedFile(

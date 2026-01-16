@@ -49,7 +49,7 @@ class EditPurchaseOrderItemTest extends TestCase
         $context->method('getEntity')->willReturn($dto);
 
         $this->em->method('getRepository')->willReturnMap([
-            [PurchaseOrderItem::class, $this->createMock(PurchaseOrderItemDoctrineRepository::class)]
+            [PurchaseOrderItem::class, $this->createMock(PurchaseOrderItemDoctrineRepository::class)],
         ]);
         $this->em->getRepository(PurchaseOrderItem::class)->method('find')->willReturn(null);
 
@@ -71,7 +71,7 @@ class EditPurchaseOrderItemTest extends TestCase
         $purchaseOrderItem->method('allowEdit')->willReturn(false);
 
         $this->em->method('getRepository')->willReturnMap([
-            [PurchaseOrderItem::class, $this->createMock(PurchaseOrderItemDoctrineRepository::class)]
+            [PurchaseOrderItem::class, $this->createMock(PurchaseOrderItemDoctrineRepository::class)],
         ]);
         $this->em->getRepository(PurchaseOrderItem::class)->method('find')->willReturn($purchaseOrderItem);
 
@@ -92,7 +92,7 @@ class EditPurchaseOrderItemTest extends TestCase
         $purchaseOrderItem->method('allowEdit')->willReturn(true);
 
         $this->em->method('getRepository')->willReturnMap([
-            [PurchaseOrderItem::class, $this->createMock(PurchaseOrderItemDoctrineRepository::class)]
+            [PurchaseOrderItem::class, $this->createMock(PurchaseOrderItemDoctrineRepository::class)],
         ]);
         $this->em->getRepository(PurchaseOrderItem::class)->method('find')->willReturn($purchaseOrderItem);
 
@@ -125,7 +125,7 @@ class EditPurchaseOrderItemTest extends TestCase
         $purchaseOrderItem->method('getPurchaseOrder')->willReturn($purchaseOrder);
 
         $this->em->method('getRepository')->willReturnMap([
-            [PurchaseOrderItem::class, $this->createMock(PurchaseOrderItemDoctrineRepository::class)]
+            [PurchaseOrderItem::class, $this->createMock(PurchaseOrderItemDoctrineRepository::class)],
         ]);
         $this->em->getRepository(PurchaseOrderItem::class)->method('find')->willReturn($purchaseOrderItem);
 
@@ -156,7 +156,7 @@ class EditPurchaseOrderItemTest extends TestCase
         $purchaseOrderItem->expects($this->once())->method('updateItemQuantity')->with(5);
 
         $this->em->method('getRepository')->willReturnMap([
-            [PurchaseOrderItem::class, $this->createMock(PurchaseOrderItemDoctrineRepository::class)]
+            [PurchaseOrderItem::class, $this->createMock(PurchaseOrderItemDoctrineRepository::class)],
         ]);
         $this->em->getRepository(PurchaseOrderItem::class)->method('find')->willReturn($purchaseOrderItem);
 

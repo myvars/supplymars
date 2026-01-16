@@ -18,12 +18,10 @@ use Pagerfanta\Doctrine\ORM\QueryAdapter;
  *
  * @method Supplier|null find($id, $lockMode = null, $lockVersion = null)
  * @method Supplier|null findOneBy(array $criteria, array $orderBy = null)
- * @method Supplier[] findAll()
- * @method Supplier[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Supplier[]    findAll()
+ * @method Supplier[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class SupplierDoctrineRepository extends ServiceEntityRepository implements
-    FindByCriteriaInterface,
-    SupplierRepository
+class SupplierDoctrineRepository extends ServiceEntityRepository implements FindByCriteriaInterface, SupplierRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -66,10 +64,10 @@ class SupplierDoctrineRepository extends ServiceEntityRepository implements
 
         if ($criteria->getQuery()) {
             $qb->andWhere('s.name LIKE :query')
-                ->setParameter('query', '%'.$criteria->getQuery().'%');
+                ->setParameter('query', '%' . $criteria->getQuery() . '%');
         }
 
-        $qb->orderBy('s.'.$sort, $sortDirection);
+        $qb->orderBy('s.' . $sort, $sortDirection);
 
         return new QueryAdapter($qb);
     }

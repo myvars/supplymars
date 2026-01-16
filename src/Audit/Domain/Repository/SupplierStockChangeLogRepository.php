@@ -12,7 +12,10 @@ use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 interface SupplierStockChangeLogRepository
 {
     public function add(SupplierStockChangeLog $supplierStockChangeLog): void;
+
     public function remove(SupplierStockChangeLog $supplierStockChangeLog): void;
+
     public function get(SupplierStockChangeLogId $id): ?SupplierStockChangeLog;
+
     public function getByPublicId(SupplierStockChangeLogPublicId $publicId): ?SupplierStockChangeLog;
 }

@@ -70,7 +70,7 @@ class ProductDomainTest extends TestCase
         int $stock,
         int $leadTimeDays,
         bool $active = true,
-        ?Supplier $supplier = null
+        ?Supplier $supplier = null,
     ): SupplierProduct {
         $sp = $this->createStub(SupplierProduct::class);
 
@@ -88,7 +88,7 @@ class ProductDomainTest extends TestCase
     private function stubCalculator(
         string $pretty = '99.99',
         string $customMarkup = '12.345',
-        string $sell = '88.88'
+        string $sell = '88.88',
     ): MarkupCalculator {
         $calc = $this->createStub(MarkupCalculator::class);
         $calc->method('calculatePrettyPrice')->willReturn($pretty);

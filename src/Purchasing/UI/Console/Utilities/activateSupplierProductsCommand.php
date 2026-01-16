@@ -46,7 +46,7 @@ readonly class activateSupplierProductsCommand
         $io->section(sprintf('Activating up to %d supplier products', $productCount));
 
         $supplierProducts = $this->getSupplierProducts($productCount);
-        if (!$supplierProducts) {
+        if ($supplierProducts === []) {
             $io->note('No supplier products found.');
 
             return Command::SUCCESS;

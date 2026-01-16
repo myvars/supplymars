@@ -38,7 +38,7 @@ class ProductMapperTest extends TestCase
         $existingProduct = $this->createMock(Product::class);
 
         $this->em->method('getRepository')->willReturnMap([
-            [Product::class, $this->createMock(ProductDoctrineRepository::class)]
+            [Product::class, $this->createMock(ProductDoctrineRepository::class)],
         ]);
         $this->em->getRepository(Product::class)->method('findOneBy')->willReturn($existingProduct);
 
@@ -67,7 +67,7 @@ class ProductMapperTest extends TestCase
         $subcategory->method('getCategory')->willReturn($this->createMock(Category::class));
 
         $this->em->method('getRepository')->willReturnMap([
-            [Product::class, $this->createMock(ProductDoctrineRepository::class)]
+            [Product::class, $this->createMock(ProductDoctrineRepository::class)],
         ]);
         $this->em->getRepository(Product::class)->method('findOneBy')->willReturn(null);
 

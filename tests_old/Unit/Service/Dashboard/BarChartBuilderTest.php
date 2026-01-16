@@ -5,7 +5,6 @@ namespace App\Tests\Unit\Service\Dashboard;
 use App\Reporting\Domain\Metric\SalesDuration;
 use App\Reporting\Domain\Metric\SalesMetricInterface;
 use App\Reporting\UI\Http\Dashboard\Chart\BarChartBuilder;
-use DateTimeImmutable;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
@@ -26,8 +25,8 @@ class BarChartBuilderTest extends TestCase
     public function testCreate(): void
     {
         $salesData = [
-            ['salesDate' => new DateTimeImmutable('2023-10-01'), 'orderValue' => 100],
-            ['salesDate' => new DateTimeImmutable('2023-10-02'), 'orderValue' => 200],
+            ['salesDate' => new \DateTimeImmutable('2023-10-01'), 'orderValue' => 100],
+            ['salesDate' => new \DateTimeImmutable('2023-10-02'), 'orderValue' => 200],
         ];
         $salesDuration = SalesDuration::DAY;
         $salesMetric = $this->createMock(SalesMetricInterface::class);

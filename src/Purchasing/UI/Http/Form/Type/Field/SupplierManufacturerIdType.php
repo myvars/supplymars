@@ -32,6 +32,7 @@ final class SupplierManufacturerIdType extends AbstractType
         ]);
     }
 
+    #[\Override]
     public function getParent(): string
     {
         return EntityType::class;

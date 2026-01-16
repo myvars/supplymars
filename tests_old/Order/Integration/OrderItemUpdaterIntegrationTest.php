@@ -8,8 +8,8 @@ use App\Service\Crud\Common\CrudContext;
 use App\Service\Order\EditOrderItem;
 use App\Shared\Domain\Service\Pricing\MarkupCalculator;
 use Doctrine\ORM\EntityManagerInterface;
-use tests\Shared\Factory\CustomerOrderItemFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use tests\Shared\Factory\CustomerOrderItemFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class OrderItemUpdaterIntegrationTest extends KernelTestCase

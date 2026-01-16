@@ -41,7 +41,7 @@ final readonly class calculateOrderSalesCommand
         ));
 
         for ($day = 0; $day < $dayCount; ++$day) {
-            $startDate = new \DateTime('-'.($day + $dayOffset).' day')->format(self::DATE_FORMAT);
+            $startDate = new \DateTime('-' . ($day + $dayOffset) . ' day')->format(self::DATE_FORMAT);
             $io->note(sprintf('Processing sales for %s', $startDate));
 
             $this->orderSalesCalculator->process($startDate);

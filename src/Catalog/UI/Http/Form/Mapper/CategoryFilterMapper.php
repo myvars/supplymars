@@ -2,7 +2,6 @@
 
 namespace App\Catalog\UI\Http\Form\Mapper;
 
-
 use App\Catalog\Application\Command\Category\CategoryFilter;
 use App\Catalog\Application\Search\CategorySearchCriteria;
 

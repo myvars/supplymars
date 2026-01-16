@@ -30,10 +30,10 @@ final class MapSupplierProductFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs($user)
-            ->get('/supplier-product/'.$publicId.'/map')
+            ->get('/supplier-product/' . $publicId . '/map')
             ->assertStatus(200) // redirect to show after success
             ->followRedirect()
-            ->assertOn('/supplier-product/'.$supplierProduct->getPublicId())
+            ->assertOn('/supplier-product/' . $supplierProduct->getPublicId())
             ->assertSee('Supplier product mapped');
 
         self::assertNotNull($supplierProduct->getProduct());
@@ -48,10 +48,10 @@ final class MapSupplierProductFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs($user)
-            ->get('/supplier-product/'.$publicId.'/map')
+            ->get('/supplier-product/' . $publicId . '/map')
             ->assertStatus(200)
             ->followRedirect()
-            ->assertOn('/supplier-product/'.$supplierProduct->getPublicId())
+            ->assertOn('/supplier-product/' . $supplierProduct->getPublicId())
             ->assertSee('Supplier product already mapped');
     }
 }

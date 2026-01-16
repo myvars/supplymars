@@ -49,6 +49,7 @@ final readonly class SupplierProductMappingService
         $manufacturer = $this->getOrCreateManufacturer($supplierManufacturer);
         $category = $this->getOrCreateCategory($supplierCategory);
         $subcategory = $this->getOrCreateSubcategory($supplierSubcategory, $category);
+
         return $this->getOrCreateProduct($supplierProduct, $manufacturer, $subcategory);
     }
 
@@ -95,6 +96,7 @@ final readonly class SupplierProductMappingService
 
         $this->validate($category);
         $this->em->persist($category);
+
         return $category;
     }
 
@@ -102,7 +104,6 @@ final readonly class SupplierProductMappingService
     {
         $subcategory = $this->em->getRepository(Subcategory::class)->findOneBy(['name' => $ss->getName()]);
         if (!$subcategory instanceof Subcategory) {
-
             $subcategory = Subcategory::create(
                 name: $ss->getName(),
                 category: $category,
@@ -128,11 +129,10 @@ final readonly class SupplierProductMappingService
     private function getOrCreateProduct(
         SupplierProduct $sp,
         Manufacturer $manufacturer,
-        Subcategory $subcategory
+        Subcategory $subcategory,
     ): Product {
         $product = $this->em->getRepository(Product::class)->findOneBy(['name' => $sp->getName()]);
         if (!$product instanceof Product) {
-
             $product = Product::create(
                 name: $sp->getName(),
                 description: null,
@@ -161,7 +161,7 @@ final readonly class SupplierProductMappingService
     {
         $owner = $this->em->getRepository(User::class)->findOneBy([
             'email' => self::DEFAULT_OWNER,
-            'isStaff' => true
+            'isStaff' => true,
         ]);
         if (!$owner instanceof User) {
             throw new \RuntimeException('Default owner not found');

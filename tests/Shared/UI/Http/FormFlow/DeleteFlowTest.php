@@ -25,23 +25,22 @@ final class DeleteFlowTest extends TestCase
     {
         $r = Request::create($uri, $method);
         $r->setSession(new Session(new MockArraySessionStorage()));
+
         return $r;
     }
 
     public function testDeleteConfirmRendersBaseTemplate(): void
     {
-        $entity = (object)['id' => 5, 'name' => 'Test'];
+        $entity = (object) ['id' => 5, 'name' => 'Test'];
         $context = FlowContext::forDelete('OrderItem');
 
         $twig = $this->createMock(Environment::class);
         $twig->expects($this->once())->method('render')
             ->with(
                 ModelPath::BASE_TEMPLATE,
-                $this->callback(function (array $vars) use ($entity, $context) {
-                    return $vars['result'] === $entity
-                        && $vars['flowOperation'] === $context->getOperation()->value
-                        && $vars['flowModel'] === 'OrderItem';
-                })
+                $this->callback(fn (array $vars): bool => $vars['result'] === $entity
+                    && $vars['flowOperation'] === $context->getOperation()->value
+                    && $vars['flowModel'] === 'OrderItem')
             )
             ->willReturn('<html>confirm</html>');
 
@@ -64,7 +63,7 @@ final class DeleteFlowTest extends TestCase
         $request = $this->newRequest(method: 'POST');
         $request->request->set('_token', 'bad-token');
 
-        $command = (object)['id' => 5];
+        $command = (object) ['id' => 5];
         $context = FlowContext::forDelete('OrderItem');
 
         $twig = $this->createStub(Environment::class);
@@ -72,7 +71,7 @@ final class DeleteFlowTest extends TestCase
 
         $csrf = $this->createMock(CsrfTokenManagerInterface::class);
         $csrf->expects($this->once())->method('isTokenValid')
-            ->with($this->callback(fn(CsrfToken $t) => $t->getId() === 'delete5' && $t->getValue() === 'bad-token'))
+            ->with($this->callback(fn (CsrfToken $t): bool => $t->getId() === 'delete5' && $t->getValue() === 'bad-token'))
             ->willReturn(false);
 
         $urls = $this->createMock(UrlGeneratorInterface::class);
@@ -88,7 +87,7 @@ final class DeleteFlowTest extends TestCase
         $commandFlow = new CommandFlow($flashes, $redirector, $urls);
         $flow = new DeleteFlow($twig, $flashes, $csrf, $commandFlow);
 
-        $response = $flow->delete($request, $command, fn() => null, $context);
+        $response = $flow->delete($request, $command, fn (): null => null, $context);
 
         self::assertSame(303, $response->getStatusCode());
         self::assertSame(['Invalid CSRF token.'], $request->getSession()->getFlashBag()->get('danger'));
@@ -100,7 +99,7 @@ final class DeleteFlowTest extends TestCase
         $request = $this->newRequest(method: 'POST');
         $request->request->set('_token', 'good-token');
 
-        $command = (object)['id' => 9];
+        $command = (object) ['id' => 9];
         $context = FlowContext::forDelete('OrderItem');
 
         $twig = $this->createStub(Environment::class);
@@ -108,7 +107,7 @@ final class DeleteFlowTest extends TestCase
 
         $csrf = $this->createMock(CsrfTokenManagerInterface::class);
         $csrf->expects($this->once())->method('isTokenValid')
-            ->with($this->callback(fn(CsrfToken $t) => $t->getId() === 'delete9' && $t->getValue() === 'good-token'))
+            ->with($this->callback(fn (CsrfToken $t): bool => $t->getId() === 'delete9' && $t->getValue() === 'good-token'))
             ->willReturn(true);
 
         $urls = $this->createMock(UrlGeneratorInterface::class);
@@ -121,7 +120,7 @@ final class DeleteFlowTest extends TestCase
             ->with($request, '/gen/app_orderitem_index', false, 303)
             ->willReturn(new Response('', 303));
 
-        $handler = fn(object $cmd) => Result::ok('Deleted');
+        $handler = fn (object $cmd): Result => Result::ok('Deleted');
 
         $commandFlow = new CommandFlow($flashes, $redirector, $urls);
         $flow = new DeleteFlow($twig, $flashes, $csrf, $commandFlow);

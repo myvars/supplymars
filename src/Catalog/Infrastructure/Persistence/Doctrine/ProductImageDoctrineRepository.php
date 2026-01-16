@@ -17,10 +17,10 @@ use Doctrine\Persistence\ManagerRegistry;
  *
  * @method ProductImage|null find($id, $lockMode = null, $lockVersion = null)
  * @method ProductImage|null findOneBy(array $criteria, array $orderBy = null)
- * @method ProductImage[] findAll()
- * @method ProductImage[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method ProductImage[]    findAll()
+ * @method ProductImage[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ProductImageDoctrineRepository extends ServiceEntityRepository implements productImageRepository
+class ProductImageDoctrineRepository extends ServiceEntityRepository implements ProductImageRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -37,7 +37,7 @@ class ProductImageDoctrineRepository extends ServiceEntityRepository implements 
         $this->getEntityManager()->remove($productImage);
     }
 
-    public function get(productImageId $id): ?productImage
+    public function get(productImageId $id): ?ProductImage
     {
         return $this->find($id->value());
     }

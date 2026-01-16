@@ -21,11 +21,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: SupplierDoctrineRepository::class)]
 class Supplier implements DomainEventProviderInterface
 {
-    public const string DEFAULT_WAREHOUSE_NAME = 'Turtle Inc';
-
     use TimestampableEntity;
     use DomainEventProviderTrait;
     use HasPublicUlid;
+
+    public const string DEFAULT_WAREHOUSE_NAME = 'Turtle Inc';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -108,7 +108,7 @@ class Supplier implements DomainEventProviderInterface
     public function getColourScheme(): string
     {
         // return a colour scheme based on the supplier ID
-        return 'supplier'.($this->getId() < 5 ? $this->getId() : 1);
+        return 'supplier' . ($this->getId() < 5 ? $this->getId() : 1);
     }
 
     public function isWarehouse(): bool
@@ -127,6 +127,7 @@ class Supplier implements DomainEventProviderInterface
         if ($name === '') {
             throw new \InvalidArgumentException('Supplier name cannot be empty');
         }
+
         $this->name = $name;
     }
 

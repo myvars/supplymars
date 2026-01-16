@@ -29,7 +29,7 @@ final readonly class CreateProductImageHandler
 
     public function __invoke(CreateProductImage $command): Result
     {
-        if ($command->imageFiles === [] ) {
+        if ($command->imageFiles === []) {
             return Result::fail('No image files provided.');
         }
 

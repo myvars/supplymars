@@ -16,7 +16,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Twig\Environment;
 
 /**
- * Renders an index view with pagination and handles out‑of‑range page requests
+ * Renders an index view with pagination and handles out‑of‑range page requests.
  */
 final readonly class SearchFlow
 {

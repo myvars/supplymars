@@ -2,6 +2,7 @@
 
 namespace App\Order\Application\Handler;
 
+use App\Customer\Domain\Model\User\User;
 use App\Order\Application\Command\LockOrder;
 use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Order\Domain\Repository\OrderRepository;
@@ -14,7 +15,7 @@ final readonly class LockOrderHandler
     public function __construct(
         private OrderRepository $orders,
         private FlusherInterface $flusher,
-        private CurrentUserProvider $userProvider
+        private CurrentUserProvider $userProvider,
     ) {
     }
 
@@ -25,12 +26,13 @@ final readonly class LockOrderHandler
             return Result::fail('Order not found.');
         }
 
-        if (null === $order->getOrderLock()) {
+        if (!$order->getOrderLock() instanceof User) {
             try {
                 $user = $this->userProvider->get();
             } catch (\RuntimeException) {
                 return Result::fail('User not found.');
             }
+
             $order->lockOrder($user);
         } else {
             $order->lockOrder(null);

@@ -13,8 +13,7 @@ final readonly class DeleteCustomerHandler
     public function __construct(
         private UserRepository $customers,
         private FlusherInterface $flusher,
-    )
-    {
+    ) {
     }
 
     public function __invoke(DeleteCustomer $command): Result

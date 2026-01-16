@@ -25,8 +25,8 @@ final readonly class CancelOrderHandler
 
         try {
             $order->cancelOrder();
-        } catch (\LogicException $e) {
-            return Result::fail($e->getMessage());
+        } catch (\LogicException $logicException) {
+            return Result::fail($logicException->getMessage());
         }
 
         $this->flusher->flush();

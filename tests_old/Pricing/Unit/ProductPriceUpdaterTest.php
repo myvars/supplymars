@@ -18,7 +18,7 @@ class ProductPriceUpdaterTest extends TestCase
         $product = $this->createMock(Product::class);
 
         $eventArgsMock->method('hasChangedField')
-            ->willReturnCallback(fn($fieldName): bool => in_array($fieldName, ['cost', 'defaultMarkup', 'priceModel', 'subcategory', 'isActive']));
+            ->willReturnCallback(fn ($fieldName): bool => in_array($fieldName, ['cost', 'defaultMarkup', 'priceModel', 'subcategory', 'isActive']));
 
         $priceCalculatorMock->expects($this->once())
             ->method('recalculatePrice')
@@ -36,7 +36,7 @@ class ProductPriceUpdaterTest extends TestCase
         $product = $this->createMock(Product::class);
 
         $eventArgsMock->method('hasChangedField')
-            ->willReturnCallback(fn($fieldName): bool => $fieldName == 'none');
+            ->willReturnCallback(fn ($fieldName): bool => $fieldName == 'none');
 
         $priceCalculatorMock->expects($this->never())
             ->method('recalculatePrice');

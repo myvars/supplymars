@@ -2,13 +2,13 @@
 
 namespace App\Tests\Purchasing\Integration;
 
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use tests\Shared\Factory\SupplierCategoryFactory;
 use tests\Shared\Factory\SupplierFactory;
 use tests\Shared\Factory\SupplierManufacturerFactory;
 use tests\Shared\Factory\SupplierProductFactory;
 use tests\Shared\Factory\SupplierSubcategoryFactory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Zenstruck\Foundry\Test\Factories;
 
 class SupplierIntegrationTest extends KernelTestCase
@@ -50,9 +50,8 @@ class SupplierIntegrationTest extends KernelTestCase
         $this->assertEquals('Global Supplies', $persistedSupplier->getName());
         $this->assertTrue($persistedSupplier->isActive());
 
-        $colourScheme = $persistedSupplier->getId() < 5 ? 'supplier'.$persistedSupplier->getId() : 'supplier1';
+        $colourScheme = $persistedSupplier->getId() < 5 ? 'supplier' . $persistedSupplier->getId() : 'supplier1';
         $this->assertSame($colourScheme, $persistedSupplier->getColourScheme());
-
     }
 
     public function testAddSupplierCategoryToSupplier(): void

@@ -2,13 +2,13 @@
 
 namespace App\Order\UI\Http\Controller;
 
+use App\Order\Application\Command\AllocateOrder;
 use App\Order\Application\Command\CancelOrder;
 use App\Order\Application\Command\LockOrder;
-use App\Order\Application\Command\AllocateOrder;
+use App\Order\Application\Handler\AllocateOrderHandler;
 use App\Order\Application\Handler\CancelOrderHandler;
 use App\Order\Application\Handler\CreateOrderHandler;
 use App\Order\Application\Handler\LockOrderHandler;
-use App\Order\Application\Handler\AllocateOrderHandler;
 use App\Order\Application\Handler\OrderFilterHandler;
 use App\Order\Application\Search\OrderSearchCriteria;
 use App\Order\Domain\Model\Order\CustomerOrder;
@@ -120,7 +120,7 @@ class OrderController extends AbstractController
             command: new AllocateOrder($order->getPublicId()),
             handler: $handler,
             context: FlowContext::forSuccess('app_order_show', [
-                'id' => $order->getPublicId()->value()
+                'id' => $order->getPublicId()->value(),
             ]),
         );
     }
@@ -137,13 +137,14 @@ class OrderController extends AbstractController
             command: new LockOrder($order->getPublicId()),
             handler: $handler,
             context: FlowContext::forSuccess('app_order_show', [
-                'id' => $order->getPublicId()->value()
+                'id' => $order->getPublicId()->value(),
             ]),
         );
     }
 
     #[Route(path: '/order/{id}', name: 'app_order_show', methods: ['GET'])]
-    public function show(#[ValueResolver('public_id')] CustomerOrder $order): Response {
+    public function show(#[ValueResolver('public_id')] CustomerOrder $order): Response
+    {
         return $this->render('/order/show.html.twig', ['result' => $order]);
     }
 }

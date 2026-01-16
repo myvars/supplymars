@@ -34,7 +34,7 @@ final class UserFactory extends PersistentObjectFactory
     protected function defaults(): array
     {
         return [
-            'fullName' => self::faker()->firstName().' '.self::faker()->lastName(),
+            'fullName' => self::faker()->firstName() . ' ' . self::faker()->lastName(),
             'email' => self::faker()->unique()->safeEmail(),
             'isVerified' => true,
             'isStaff' => false,

@@ -35,7 +35,7 @@ class RegistrationController extends AbstractController
         Request $request,
         UserPasswordHasherInterface $userPasswordHasher,
         UserAuthenticatorInterface $userAuthenticator,
-        EntityManagerInterface $em
+        EntityManagerInterface $em,
     ): Response {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user, [
@@ -81,7 +81,7 @@ class RegistrationController extends AbstractController
         Request $request,
         TranslatorInterface $translator,
         UserDoctrineRepository $userRepository,
-        UserAuthenticatorInterface $userAuthenticator
+        UserAuthenticatorInterface $userAuthenticator,
     ): Response {
         $id = $request->query->get('id');
         if (null === $id) {

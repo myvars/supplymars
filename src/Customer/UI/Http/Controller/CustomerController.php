@@ -88,7 +88,8 @@ class CustomerController extends AbstractController
     }
 
     #[Route(path: '/customer/{id}', name: 'app_customer_show', methods: ['GET'])]
-    public function show(#[ValueResolver('public_id')] User $customer): Response {
+    public function show(#[ValueResolver('public_id')] User $customer): Response
+    {
         return $this->render('/customer/show.html.twig', ['result' => $customer]);
     }
 }

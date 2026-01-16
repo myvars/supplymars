@@ -2,9 +2,9 @@
 
 namespace App\Tests\Audit\UI\Http;
 
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use tests\Shared\Factory\PurchaseOrderItemFactory;
 use tests\Shared\Factory\UserFactory;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
 
@@ -20,7 +20,7 @@ class StatusLogControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/status/log/order/" . $order->getPublicId())
+            ->get('/status/log/order/' . $order->getPublicId())
             ->assertSuccessful()
             ->assertSee('Status Log')
             ->assertSee('Customer Order Created');
@@ -32,7 +32,7 @@ class StatusLogControllerTest extends WebTestCase
         $order = $purchaseOrderItem->getPurchaseOrder()->getCustomerOrder();
 
         $this->browser()
-            ->get("/status/log/order/" . $order->getPublicId())
+            ->get('/status/log/order/' . $order->getPublicId())
             ->assertOn('/login');
     }
 
@@ -40,7 +40,7 @@ class StatusLogControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/status/log/order/999")
+            ->get('/status/log/order/999')
             ->assertStatus(500);
     }
 
@@ -51,7 +51,7 @@ class StatusLogControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/status/log/order/item/" . $orderItem->getPublicId())
+            ->get('/status/log/order/item/' . $orderItem->getPublicId())
             ->assertSuccessful()
             ->assertSee('Status Log')
             ->assertSee('Customer Order Item Created');
@@ -63,7 +63,7 @@ class StatusLogControllerTest extends WebTestCase
         $orderItem = $purchaseOrderItem->getCustomerOrderItem();
 
         $this->browser()
-            ->get("/status/log/order/item/" . $orderItem->getPublicId())
+            ->get('/status/log/order/item/' . $orderItem->getPublicId())
             ->assertOn('/login');
     }
 
@@ -71,7 +71,7 @@ class StatusLogControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/status/log/order/item/999")
+            ->get('/status/log/order/item/999')
             ->assertStatus(500);
     }
 
@@ -82,7 +82,7 @@ class StatusLogControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/status/log/purchase/order/" . $purchaseOrder->getPublicId())
+            ->get('/status/log/purchase/order/' . $purchaseOrder->getPublicId())
             ->assertSuccessful()
             ->assertSee('Status Log')
             ->assertSee('Purchase Order Created');
@@ -94,7 +94,7 @@ class StatusLogControllerTest extends WebTestCase
         $purchaseOrder = $purchaseOrderItem->getPurchaseOrder();
 
         $this->browser()
-            ->get("/status/log/purchase/order/" . $purchaseOrder->getPublicId())
+            ->get('/status/log/purchase/order/' . $purchaseOrder->getPublicId())
             ->assertOn('/login');
     }
 
@@ -102,7 +102,7 @@ class StatusLogControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/status/log/purchase/order/999")
+            ->get('/status/log/purchase/order/999')
             ->assertStatus(500);
     }
 
@@ -112,7 +112,7 @@ class StatusLogControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/status/log/purchase/order/item/" . $purchaseOrderItem->getPublicId())
+            ->get('/status/log/purchase/order/item/' . $purchaseOrderItem->getPublicId())
             ->assertSuccessful()
             ->assertSee('Status Log')
             ->assertSee('Purchase Order Item Created');
@@ -123,7 +123,7 @@ class StatusLogControllerTest extends WebTestCase
         $purchaseOrderItem = PurchaseOrderItemFactory::createOne();
 
         $this->browser()
-            ->get("/status/log/purchase/order/item/" . $purchaseOrderItem->getPublicId())
+            ->get('/status/log/purchase/order/item/' . $purchaseOrderItem->getPublicId())
             ->assertOn('/login');
     }
 
@@ -131,7 +131,7 @@ class StatusLogControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/status/log/purchase/order/item/999")
+            ->get('/status/log/purchase/order/item/999')
             ->assertStatus(500);
     }
 }

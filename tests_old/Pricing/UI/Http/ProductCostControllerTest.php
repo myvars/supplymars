@@ -3,10 +3,10 @@
 namespace App\Tests\Pricing\UI\Http;
 
 use App\Service\Product\ProductPriceCalculator;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use tests\Shared\Factory\ProductFactory;
 use tests\Shared\Factory\SupplierProductFactory;
 use tests\Shared\Factory\UserFactory;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
 
@@ -28,7 +28,7 @@ class ProductCostControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/" . $product->getId() . "/cost")
+            ->get('/product/' . $product->getId() . '/cost')
             ->assertSuccessful()
             ->assertSee('Product Cost');
     }
@@ -38,7 +38,7 @@ class ProductCostControllerTest extends WebTestCase
         $product = ProductFactory::createOne(['name' => 'Product to be shown']);
 
         $this->browser()
-            ->get("/product/" . $product->getId() . "/cost")
+            ->get('/product/' . $product->getId() . '/cost')
             ->assertOn('/login');
     }
 
@@ -49,7 +49,7 @@ class ProductCostControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/" . $product->getId() . "/cost")
+            ->get('/product/' . $product->getId() . '/cost')
             ->assertSuccessful()
             ->assertSee('Product Cost')
             ->assertNotSee('Inactive Product');
@@ -66,7 +66,7 @@ class ProductCostControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/" . $product->getId() . "/cost")
+            ->get('/product/' . $product->getId() . '/cost')
             ->assertSuccessful()
             ->assertSee('Product Cost')
             ->assertSee('Incomplete Product');
@@ -82,7 +82,7 @@ class ProductCostControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/" . $product->getId() . "/cost")
+            ->get('/product/' . $product->getId() . '/cost')
             ->assertSuccessful()
             ->assertSee('Product Cost')
             ->assertSee('Incomplete Product');
@@ -98,7 +98,7 @@ class ProductCostControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/" . $product->getId() . "/cost")
+            ->get('/product/' . $product->getId() . '/cost')
             ->assertSuccessful()
             ->assertSee('Product Cost')
             ->assertSee('Incomplete Product');
@@ -108,7 +108,7 @@ class ProductCostControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/999/cost")
+            ->get('/product/999/cost')
             ->assertStatus(404);
     }
 
@@ -118,26 +118,26 @@ class ProductCostControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/" . $product->getId() . "/cost/edit")
+            ->get('/product/' . $product->getId() . '/cost/edit')
             ->assertSuccessful()
-            ->fillField('product_cost[defaultMarkup]','12.345')
+            ->fillField('product_cost[defaultMarkup]', '12.345')
             ->click('Update Product Cost')
-            ->assertOn("/product/" . $product->getId() . "/cost")
+            ->assertOn('/product/' . $product->getId() . '/cost')
             ->assertSee('12.345');
     }
 
     public function testEditProductCostValidation(): void
     {
-        $product = ProductFactory::createOne([ 'name' => 'Test Product']);
+        $product = ProductFactory::createOne(['name' => 'Test Product']);
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/" . $product->getId() . "/cost/edit")
+            ->get('/product/' . $product->getId() . '/cost/edit')
             ->assertSuccessful()
-            ->fillField('product_cost[defaultMarkup]','-1')
-            ->fillField('product_cost[priceModel]','')
+            ->fillField('product_cost[defaultMarkup]', '-1')
+            ->fillField('product_cost[priceModel]', '')
             ->click('Update Product Cost')
-            ->assertOn("/product/" . $product->getId() . "/cost/edit")
+            ->assertOn('/product/' . $product->getId() . '/cost/edit')
             ->assertSee('Please enter a positive or zero product markup %')
             ->assertSee('Please enter a price model');
     }
@@ -146,7 +146,7 @@ class ProductCostControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/999/cost/edit")
+            ->get('/product/999/cost/edit')
             ->assertStatus(404);
     }
 
@@ -156,26 +156,26 @@ class ProductCostControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/" . $product->getId() . "/cost/category/edit")
+            ->get('/product/' . $product->getId() . '/cost/category/edit')
             ->assertSuccessful()
-            ->fillField('category_cost[defaultMarkup]','12.345')
+            ->fillField('category_cost[defaultMarkup]', '12.345')
             ->click('Update Category Cost')
-            ->assertOn("/product/" . $product->getId() . "/cost")
+            ->assertOn('/product/' . $product->getId() . '/cost')
             ->assertSee('12.345');
     }
 
     public function testEditCategoryCostValidation(): void
     {
-        $product = ProductFactory::createOne([ 'name' => 'Test Product']);
+        $product = ProductFactory::createOne(['name' => 'Test Product']);
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/" . $product->getId() . "/cost/category/edit")
+            ->get('/product/' . $product->getId() . '/cost/category/edit')
             ->assertSuccessful()
-            ->fillField('category_cost[defaultMarkup]','-1')
-            ->fillField('category_cost[priceModel]','')
+            ->fillField('category_cost[defaultMarkup]', '-1')
+            ->fillField('category_cost[priceModel]', '')
             ->click('Update Category Cost')
-            ->assertOn("/product/" . $product->getId() . "/cost/category/edit")
+            ->assertOn('/product/' . $product->getId() . '/cost/category/edit')
             ->assertSee('Please enter a positive or zero category markup %')
             ->assertSee('Please enter a price model');
     }
@@ -184,7 +184,7 @@ class ProductCostControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/999/cost/category/edit")
+            ->get('/product/999/cost/category/edit')
             ->assertStatus(404);
     }
 
@@ -194,26 +194,26 @@ class ProductCostControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/" . $product->getId() . "/cost/subcategory/edit")
+            ->get('/product/' . $product->getId() . '/cost/subcategory/edit')
             ->assertSuccessful()
-            ->fillField('subcategory_cost[defaultMarkup]','12.345')
+            ->fillField('subcategory_cost[defaultMarkup]', '12.345')
             ->click('Update Subcategory Cost')
-            ->assertOn("/product/" . $product->getId() . "/cost")
+            ->assertOn('/product/' . $product->getId() . '/cost')
             ->assertSee('12.345');
     }
 
     public function testEditSubcategoryCostValidation(): void
     {
-        $product = ProductFactory::createOne([ 'name' => 'Test Product']);
+        $product = ProductFactory::createOne(['name' => 'Test Product']);
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/" . $product->getId() . "/cost/subcategory/edit")
+            ->get('/product/' . $product->getId() . '/cost/subcategory/edit')
             ->assertSuccessful()
-            ->fillField('subcategory_cost[defaultMarkup]','-1')
-            ->fillField('subcategory_cost[priceModel]','')
+            ->fillField('subcategory_cost[defaultMarkup]', '-1')
+            ->fillField('subcategory_cost[priceModel]', '')
             ->click('Update Subcategory Cost')
-            ->assertOn("/product/" . $product->getId() . "/cost/subcategory/edit")
+            ->assertOn('/product/' . $product->getId() . '/cost/subcategory/edit')
             ->assertSee('Please enter a positive or zero subcategory markup %')
             ->assertSee('Please enter a price model');
     }
@@ -222,7 +222,7 @@ class ProductCostControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/999/cost/subcategory/edit")
+            ->get('/product/999/cost/subcategory/edit')
             ->assertStatus(404);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Purchasing\Application\Service;
 
-
 use App\Order\Domain\Model\Order\CustomerOrderItem;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrder;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItem;

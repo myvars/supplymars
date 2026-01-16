@@ -111,7 +111,6 @@ class CustomerOrder implements DomainEventProviderInterface
         VatRate $vatRate,
         ?string $customerOrderRef,
     ): self {
-
         $self = new self();
         $self->assignCustomer($customer);
         $self->shippingAddress = $customer->getShippingAddress();

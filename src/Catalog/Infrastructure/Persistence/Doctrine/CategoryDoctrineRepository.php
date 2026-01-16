@@ -18,12 +18,10 @@ use Pagerfanta\Doctrine\ORM\QueryAdapter;
  *
  * @method Category|null find($id, $lockMode = null, $lockVersion = null)
  * @method Category|null findOneBy(array $criteria, array $orderBy = null)
- * @method Category[] findAll()
- * @method Category[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Category[]    findAll()
+ * @method Category[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CategoryDoctrineRepository extends ServiceEntityRepository implements
-    FindByCriteriaInterface,
-    CategoryRepository
+class CategoryDoctrineRepository extends ServiceEntityRepository implements FindByCriteriaInterface, CategoryRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -59,7 +57,7 @@ class CategoryDoctrineRepository extends ServiceEntityRepository implements
 
         if ($criteria->getQuery()) {
             $qb->andWhere('c.name LIKE :query')
-                ->setParameter('query', '%'.$criteria->getQuery().'%');
+                ->setParameter('query', '%' . $criteria->getQuery() . '%');
         }
 
         if ($criteria->vatRateId) {
@@ -77,7 +75,7 @@ class CategoryDoctrineRepository extends ServiceEntityRepository implements
                 ->setParameter('managerId', $criteria->managerId);
         }
 
-        $qb->orderBy('c.'.$sort, $sortDirection);
+        $qb->orderBy('c.' . $sort, $sortDirection);
 
         return new QueryAdapter($qb);
     }

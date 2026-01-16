@@ -107,7 +107,8 @@ class VatRateController extends AbstractController
     }
 
     #[Route(path: '/vat-rate/{id}', name: 'app_pricing_vat_rate_show', methods: ['GET'])]
-    public function show(#[ValueResolver('public_id')] VatRate $vatRate): Response {
+    public function show(#[ValueResolver('public_id')] VatRate $vatRate): Response
+    {
         return $this->render('/pricing/vat_rate/show.html.twig', ['result' => $vatRate]);
     }
 }

@@ -115,11 +115,10 @@ class CreatePurchaseOrderItemTest extends TestCase
         $supplierProduct->method('getCost')->willReturn('10.00');
         $supplierProduct->method('getWeight')->willReturn(500);
 
-
         $this->createPurchaseOrder->method('fromOrder')->willReturn($purchaseOrder);
         $this->em->method('getRepository')->willReturnMap([
             [CustomerOrder::class, $this->createMock(CustomerOrderDoctrineRepository::class)],
-            [SupplierProduct::class, $this->createMock(SupplierProductDoctrineRepository::class)]
+            [SupplierProduct::class, $this->createMock(SupplierProductDoctrineRepository::class)],
         ]);
 
         $this->validator->method('validate')->willReturn($this->createMock(ConstraintViolationListInterface::class));

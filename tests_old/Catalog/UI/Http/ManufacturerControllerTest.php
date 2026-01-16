@@ -2,9 +2,9 @@
 
 namespace App\Tests\Catalog\UI\Http;
 
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use tests\Shared\Factory\ManufacturerFactory;
 use tests\Shared\Factory\UserFactory;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
 
@@ -38,7 +38,7 @@ class ManufacturerControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/manufacturer/" . $manufacturer->getId())
+            ->get('/manufacturer/' . $manufacturer->getId())
             ->assertSuccessful()
             ->assertSee('Test Manufacturer');
     }
@@ -49,8 +49,8 @@ class ManufacturerControllerTest extends WebTestCase
             ->actingAs(UserFactory::new()->asStaff()->create())
             ->get('/manufacturer/new')
             ->assertSuccessful()
-            ->fillField('manufacturer[name]','Test Manufacturer')
-            ->fillField('manufacturer[isActive]','1')
+            ->fillField('manufacturer[name]', 'Test Manufacturer')
+            ->fillField('manufacturer[isActive]', '1')
             ->click('Create Manufacturer')
             ->assertOn('/manufacturer/')
             ->assertSee('Test Manufacturer');
@@ -74,10 +74,10 @@ class ManufacturerControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/manufacturer/" . $manufacturer->getId() . "/edit")
+            ->get('/manufacturer/' . $manufacturer->getId() . '/edit')
             ->assertSuccessful()
-            ->fillField('manufacturer[name]','Edited Manufacturer')
-            ->fillField('manufacturer[isActive]','1')
+            ->fillField('manufacturer[name]', 'Edited Manufacturer')
+            ->fillField('manufacturer[isActive]', '1')
             ->click('Update Manufacturer')
             ->assertOn('/manufacturer/')
             ->assertSee('Edited Manufacturer');
@@ -89,12 +89,12 @@ class ManufacturerControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/manufacturer/" . $manufacturer->getId() . "/edit")
+            ->get('/manufacturer/' . $manufacturer->getId() . '/edit')
             ->assertSuccessful()
             // Intentionally filling form with invalid data
-            ->fillField('manufacturer[name]','')
+            ->fillField('manufacturer[name]', '')
             ->click('Update Manufacturer')
-            ->assertOn("/manufacturer/" . $manufacturer->getId() . "/edit")
+            ->assertOn('/manufacturer/' . $manufacturer->getId() . '/edit')
             ->assertSee('Please enter a manufacturer name');
     }
 
@@ -104,7 +104,7 @@ class ManufacturerControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/manufacturer/" . $manufacturer->getId() . "/delete/confirm")
+            ->get('/manufacturer/' . $manufacturer->getId() . '/delete/confirm')
             ->assertSuccessful()
             ->assertSee('Are you sure you want to delete this Manufacturer');
     }
@@ -115,7 +115,7 @@ class ManufacturerControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/manufacturer/" . $manufacturer->getId() . "/delete/confirm")
+            ->get('/manufacturer/' . $manufacturer->getId() . '/delete/confirm')
             ->assertSuccessful()
             ->click('Delete')
             ->assertOn('/manufacturer/')
@@ -126,7 +126,7 @@ class ManufacturerControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/manufacturer/999")
-            ->assertSee("Manufacturer not found!");
+            ->get('/manufacturer/999')
+            ->assertSee('Manufacturer not found!');
     }
 }

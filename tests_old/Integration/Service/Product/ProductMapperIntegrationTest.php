@@ -5,12 +5,12 @@ namespace App\Tests\Integration\Service\Product;
 use App\Catalog\Domain\Model\Product\Product;
 use App\Service\Product\ProductMapper;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use tests\Shared\Factory\ManufacturerFactory;
 use tests\Shared\Factory\ProductFactory;
 use tests\Shared\Factory\SubcategoryFactory;
 use tests\Shared\Factory\SupplierProductFactory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Zenstruck\Foundry\Test\Factories;
 
 class ProductMapperIntegrationTest extends KernelTestCase
@@ -58,7 +58,7 @@ class ProductMapperIntegrationTest extends KernelTestCase
         $existingProduct = ProductFactory::createOne(['name' => 'Test Product']);
         $supplierProduct = SupplierProductFactory::createOne([
             'name' => 'Test Product',
-            'product' => null
+            'product' => null,
         ]);
 
         $product = $this->productMapper->createProductFromSupplierProduct(

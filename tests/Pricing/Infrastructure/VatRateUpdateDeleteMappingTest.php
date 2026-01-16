@@ -25,6 +25,7 @@ final class VatRateUpdateDeleteMappingTest extends KernelTestCase
 
         $this->em->persist($vat);
         $this->em->flush();
+
         $id = $vat->getId();
 
         $loaded = $this->em->getRepository(VatRate::class)->find($id);
@@ -50,6 +51,7 @@ final class VatRateUpdateDeleteMappingTest extends KernelTestCase
 
         $this->em->persist($vat);
         $this->em->flush();
+
         $id = $vat->getId();
 
         $this->em->remove($vat);

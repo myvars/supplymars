@@ -31,4 +31,3 @@ final class SubcategoryCostForm
         return $form;
     }
 }
-

@@ -30,12 +30,14 @@ class PricingController extends AbstractController
     public const string MODEL = 'pricing';
 
     #[Route(path: '/pricing/{id}/stock', name: 'app_pricing_stock', methods: ['GET'])]
-    public function showStock(#[ValueResolver('public_id')] Product $product): Response {
+    public function showStock(#[ValueResolver('public_id')] Product $product): Response
+    {
         return $this->render('/pricing/stock.html.twig', ['result' => $product]);
     }
 
     #[Route(path: '/pricing/{id}/cost', name: 'app_pricing_cost', methods: ['GET'])]
-    public function showCost(#[ValueResolver('public_id')] Product $product): Response {
+    public function showCost(#[ValueResolver('public_id')] Product $product): Response
+    {
         return $this->render('/pricing/cost.html.twig', ['result' => $product]);
     }
 

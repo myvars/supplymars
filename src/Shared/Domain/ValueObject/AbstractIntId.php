@@ -11,7 +11,7 @@ abstract readonly class AbstractIntId implements \Stringable, \JsonSerializable
     public static function fromInt(int $value): static
     {
         if ($value <= 0) {
-            throw new \InvalidArgumentException(static::class.' must be a positive integer');
+            throw new \InvalidArgumentException(static::class . ' must be a positive integer');
         }
 
         return new static($value);
@@ -37,4 +37,3 @@ abstract readonly class AbstractIntId implements \Stringable, \JsonSerializable
         return $this->value;
     }
 }
-

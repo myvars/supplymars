@@ -14,8 +14,8 @@ use Doctrine\Persistence\ManagerRegistry;
  *
  * @method SupplierSubcategory|null find($id, $lockMode = null, $lockVersion = null)
  * @method SupplierSubcategory|null findOneBy(array $criteria, array $orderBy = null)
- * @method SupplierSubcategory[] findAll()
- * @method SupplierSubcategory[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method SupplierSubcategory[]    findAll()
+ * @method SupplierSubcategory[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class SupplierSubcategoryDoctrineRepository extends ServiceEntityRepository implements SupplierSubcategoryRepository
 {

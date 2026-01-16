@@ -10,6 +10,7 @@ use App\Shared\Domain\Event\DomainEventProviderTrait;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapping\HasPublicUlid;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -17,12 +18,13 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: VatRateDoctrineRepository::class)]
 class VatRate implements DomainEventProviderInterface
 {
-    public const string STANDARD_VAT_NAME = 'Standard Rate';
-    public const string STANDARD_VAT_RATE = '20.00';
-
     use TimestampableEntity;
     use DomainEventProviderTrait;
     use HasPublicUlid;
+
+    public const string STANDARD_VAT_NAME = 'Standard Rate';
+
+    public const string STANDARD_VAT_RATE = '20.00';
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -33,7 +35,7 @@ class VatRate implements DomainEventProviderInterface
     #[Assert\NotBlank(message: 'Please enter a VAT rate name')]
     private ?string $name = null;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     #[Assert\NotBlank(message: 'Please enter a VAT rate %')]
     #[Assert\PositiveOrZero(message: 'Please enter a positive or zero VAT rate')]
     private ?string $rate = '0.00';
@@ -101,6 +103,7 @@ class VatRate implements DomainEventProviderInterface
         if ($name === '') {
             throw new \InvalidArgumentException('Rate name cannot be empty');
         }
+
         $this->name = $name;
     }
 

@@ -37,13 +37,13 @@ class OrderSalesSummaryCalculatorTest extends TestCase
                 'dateString' => '2023-10-01',
                 'orderCount' => 10,
                 'orderValue' => '1000.00',
-                'averageOrderValue' => '100.00'
-            ]
+                'averageOrderValue' => '100.00',
+            ],
         ];
 
         $this->em->method('getRepository')->willReturnMap([
             [OrderSales::class, $this->createMock(OrderSalesDoctrineRepository::class)],
-            [OrderSalesSummary::class, $this->createMock(OrderSalesSummaryDoctrineRepository::class)]
+            [OrderSalesSummary::class, $this->createMock(OrderSalesSummaryDoctrineRepository::class)],
         ]);
 
         $this->em->getRepository(OrderSales::class)->method('findOrderSalesSummary')->willReturn($salesData);
@@ -63,13 +63,13 @@ class OrderSalesSummaryCalculatorTest extends TestCase
                 'dateString' => '2023-10-01',
                 'orderCount' => 10,
                 'orderValue' => '1000.00',
-                'averageOrderValue' => '100.00'
-            ]
+                'averageOrderValue' => '100.00',
+            ],
         ];
 
         $this->em->method('getRepository')->willReturnMap([
             [OrderSales::class, $this->createMock(OrderSalesDoctrineRepository::class)],
-            [OrderSalesSummary::class, $this->createMock(OrderSalesSummaryDoctrineRepository::class)]
+            [OrderSalesSummary::class, $this->createMock(OrderSalesSummaryDoctrineRepository::class)],
         ]);
 
         $this->em->getRepository(OrderSales::class)

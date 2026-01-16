@@ -58,7 +58,7 @@ class SubcategoryMapperTest extends TestCase
         $subcategory->expects($this->once())->method('addSupplierSubcategory')->with($supplierSubcategory);
 
         $this->em->method('getRepository')->willReturnMap([
-            [Subcategory::class, $this->createMock(SubcategoryDoctrineRepository::class)]
+            [Subcategory::class, $this->createMock(SubcategoryDoctrineRepository::class)],
         ]);
         $this->em->getRepository(Subcategory::class)->method('findOneBy')->willReturn($subcategory);
 
@@ -85,7 +85,7 @@ class SubcategoryMapperTest extends TestCase
         $supplierProduct->method('getSupplierSubcategory')->willReturn($supplierSubcategory);
 
         $this->em->method('getRepository')->willReturnMap([
-            [Subcategory::class, $this->createMock(SubcategoryDoctrineRepository::class)]
+            [Subcategory::class, $this->createMock(SubcategoryDoctrineRepository::class)],
         ]);
         $this->em->getRepository(Subcategory::class)->method('findOneBy')->willReturn(null);
 

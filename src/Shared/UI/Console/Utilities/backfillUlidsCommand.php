@@ -73,14 +73,14 @@ final readonly class backfillUlidsCommand
             ->getSingleScalarResult();
 
         if (0 === $total) {
-            $io->section($entityClass.': nothing to backfill.');
+            $io->section($entityClass . ': nothing to backfill.');
 
             return;
         }
 
         $target = null !== $limit ? min($total, $limit) : $total;
 
-        $io->section('Backfilling '.$entityClass);
+        $io->section('Backfilling ' . $entityClass);
         $io->writeln(sprintf('  Missing: <comment>%s</comment>  |  Processing: <comment>%d</comment>  |  Batch: <comment>%d</comment>', $total, $target, $batchSize));
         $io->writeln(''); // blank line
 

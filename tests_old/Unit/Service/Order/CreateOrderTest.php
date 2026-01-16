@@ -63,7 +63,7 @@ class CreateOrderTest extends TestCase
 
         $this->em->method('getRepository')->willReturnMap([
             [User::class, $this->createMock(UserDoctrineRepository::class)],
-            [VatRate::class, $this->createMock(VatRateDoctrineRepository::class)]
+            [VatRate::class, $this->createMock(VatRateDoctrineRepository::class)],
         ]);
 
         $this->em->getRepository(User::class)->method('find')->willReturn($user);

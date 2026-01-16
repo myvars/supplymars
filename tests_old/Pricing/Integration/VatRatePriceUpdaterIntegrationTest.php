@@ -4,9 +4,9 @@ namespace App\Tests\Pricing\Integration;
 
 use App\Catalog\Domain\Model\Product\Product;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use tests\Shared\Factory\SupplierProductFactory;
 use tests\Shared\Factory\VatRateFactory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 
 class VatRatePriceUpdaterIntegrationTest extends KernelTestCase
@@ -22,7 +22,7 @@ class VatRatePriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testVatRateProductsRecalculateWhenVatRateChanges(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"]);
+        $supplierProduct = SupplierProductFactory::createOne(['cost' => '100.00']);
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals('126.00', $product->getSellPriceIncVat());
@@ -37,7 +37,7 @@ class VatRatePriceUpdaterIntegrationTest extends KernelTestCase
 
     public function testNoUpdateWhenDifferentVatRateChanges(): void
     {
-        $supplierProduct = SupplierProductFactory::createOne(['cost' => "100.00"]);
+        $supplierProduct = SupplierProductFactory::createOne(['cost' => '100.00']);
         $product = $supplierProduct->getProduct();
 
         $this->assertEquals('126.00', $product->getSellPriceIncVat());

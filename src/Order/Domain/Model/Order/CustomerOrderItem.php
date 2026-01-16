@@ -113,7 +113,7 @@ class CustomerOrderItem implements DomainEventProviderInterface
     ): void {
         $qtyAddedToPurchaseOrders = $this->getQtyAddedToPurchaseOrders();
         if ($qtyAddedToPurchaseOrders > $quantity) {
-            throw new \LogicException('Cannot edit this allocated qty below '.$qtyAddedToPurchaseOrders);
+            throw new \LogicException('Cannot edit this allocated qty below ' . $qtyAddedToPurchaseOrders);
         }
 
         $this->changeQuantity($quantity);
@@ -378,7 +378,6 @@ class CustomerOrderItem implements DomainEventProviderInterface
         $this->changeStatus($orderItemStatus);
         $this->customerOrder->generateStatus();
     }
-
 
     /**
      * @return Collection<int, PurchaseOrderItem>

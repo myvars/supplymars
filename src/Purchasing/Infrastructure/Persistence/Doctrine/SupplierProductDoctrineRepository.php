@@ -19,12 +19,10 @@ use Pagerfanta\Doctrine\ORM\QueryAdapter;
  *
  * @method SupplierProduct|null find($id, $lockMode = null, $lockVersion = null)
  * @method SupplierProduct|null findOneBy(array $criteria, array $orderBy = null)
- * @method SupplierProduct[] findAll()
- * @method SupplierProduct[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method SupplierProduct[]    findAll()
+ * @method SupplierProduct[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class SupplierProductDoctrineRepository extends ServiceEntityRepository implements
-    FindByCriteriaInterface,
-    SupplierProductRepository
+class SupplierProductDoctrineRepository extends ServiceEntityRepository implements FindByCriteriaInterface, SupplierProductRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -60,7 +58,7 @@ class SupplierProductDoctrineRepository extends ServiceEntityRepository implemen
 
         if ($criteria->getQuery()) {
             $qb->andWhere('s.name LIKE :query')
-                ->setParameter('query', '%'.$criteria->getQuery().'%');
+                ->setParameter('query', '%' . $criteria->getQuery() . '%');
         }
 
         if ($criteria->productCode) {
@@ -96,11 +94,11 @@ class SupplierProductDoctrineRepository extends ServiceEntityRepository implemen
             $qb->andWhere($criteria->isActive > 0 ? 's.isActive = 1' : 's.isActive = 0');
         }
 
-        if ($sort) {
+        if ($sort !== '' && $sort !== '0') {
             if (str_starts_with($sort, 'supplier.')) {
                 $qb->leftJoin('s.supplier', 'supplier')->orderBy($sort, $sortDirection);
             } else {
-                $qb->orderBy('s.'.$sort, $sortDirection);
+                $qb->orderBy('s.' . $sort, $sortDirection);
             }
         }
 

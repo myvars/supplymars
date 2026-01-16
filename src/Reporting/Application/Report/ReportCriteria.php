@@ -2,23 +2,26 @@
 
 namespace App\Reporting\Application\Report;
 
-
-use App\Reporting\Domain\Metric\SalesDuration;
-
 abstract class ReportCriteria implements ReportCriteriaInterface
 {
     use SalesDurationTrait;
 
     public const int LIMIT_MAX = 50;
+
     protected const int LIMIT_DEFAULT = 10;
+
     protected const string SORT_DIRECTION_DEFAULT = 'ASC';
+
     private const array ALLOWED_SORT_DIRECTIONS = ['ASC', 'DESC'];
 
     protected ?string $sort = null;
+
     private ?string $sortDirection = null;
+
     private ?int $limit = null;
 
     abstract protected static function defaultSortField(): string;
+
     abstract public function setSort(?string $sort): void;
 
     public function setSortDirection(?string $sortDirection): void
@@ -38,6 +41,7 @@ abstract class ReportCriteria implements ReportCriteriaInterface
 
             return;
         }
+
         $this->limit = max(1, min($limit, static::LIMIT_MAX));
     }
 

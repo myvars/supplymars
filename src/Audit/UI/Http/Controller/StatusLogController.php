@@ -17,15 +17,18 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 class StatusLogController extends AbstractController
 {
+    public function __construct(private readonly StatusChangeLogRepository $logs)
+    {
+    }
+
     #[Route(path: '/status/log/order/{id}', name: 'app_order_status_log', methods: ['GET'])]
     public function orderStatusLog(
         #[ValueResolver('public_id')] CustomerOrder $order,
-        StatusChangeLogRepository $logs,
     ): Response {
         return $this->render('audit/log.html.twig', [
             'entity' => 'Customer Order',
             'result' => $order,
-            'statusLog' => $logs->findByEvent(
+            'statusLog' => $this->logs->findByEvent(
                 DomainEventType::ORDER_STATUS_CHANGED,
                 $order->getId()
             ),
@@ -35,12 +38,11 @@ class StatusLogController extends AbstractController
     #[Route(path: '/status/log/order/item/{id}', name: 'app_order_item_status_log', methods: ['GET'])]
     public function orderItemStatusLog(
         #[ValueResolver('public_id')] CustomerOrderItem $orderItem,
-        StatusChangeLogRepository $logs,
     ): Response {
         return $this->render('audit/log.html.twig', [
             'entity' => 'Customer Order Item',
             'result' => $orderItem,
-            'statusLog' => $logs->find(
+            'statusLog' => $this->logs->find(
                 DomainEventType::ORDER_ITEM_STATUS_CHANGED,
                 $orderItem->getId()
             ),
@@ -50,13 +52,12 @@ class StatusLogController extends AbstractController
     #[Route(path: '/status/log/purchase/order/{id}', name: 'app_purchase_order_status_log', methods: ['GET'])]
     public function poStatusLog(
         #[ValueResolver('public_id')] PurchaseOrder $purchaseOrder,
-        StatusChangeLogRepository $logs,
     ): Response {
         return $this->render('audit/log.html.twig', [
             'entity' => 'Purchase Order',
             'colourScheme' => $purchaseOrder->getSupplier()->getColourScheme(),
             'result' => $purchaseOrder,
-            'statusLog' => $logs->find(
+            'statusLog' => $this->logs->find(
                 DomainEventType::PURCHASE_ORDER_STATUS_CHANGED,
                 $purchaseOrder->getId()
             ),
@@ -70,13 +71,12 @@ class StatusLogController extends AbstractController
     ]
     public function poItemStatusLog(
         #[ValueResolver('public_id')] PurchaseOrderItem $purchaseOrderItem,
-        StatusChangeLogRepository $logs,
     ): Response {
         return $this->render('audit/log.html.twig', [
             'entity' => 'Purchase Order Item',
             'colourScheme' => $purchaseOrderItem->getPurchaseOrder()->getSupplier()->getColourScheme(),
             'result' => $purchaseOrderItem,
-            'statusLog' => $logs->find(
+            'statusLog' => $this->logs->find(
                 DomainEventType::PURCHASE_ORDER_ITEM_STATUS_CHANGED,
                 $purchaseOrderItem->getId()
             ),

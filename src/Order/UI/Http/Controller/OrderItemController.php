@@ -2,7 +2,6 @@
 
 namespace App\Order\UI\Http\Controller;
 
-
 use App\Order\Application\Command\CancelOrderItem;
 use App\Order\Application\Handler\CancelOrderItemHandler;
 use App\Order\Application\Handler\CreateOrderItemHandler;
@@ -88,7 +87,7 @@ class OrderItemController extends AbstractController
             command: new CancelOrderItem($orderItem->getPublicId()),
             handler: $handler,
             context: FlowContext::forSuccess('app_order_show', [
-                'id' => $orderItem->getCustomerOrder()->getPublicId()->value()
+                'id' => $orderItem->getCustomerOrder()->getPublicId()->value(),
             ]),
         );
     }
@@ -113,13 +112,14 @@ class OrderItemController extends AbstractController
             ),
             handler: $handler,
             context: FlowContext::forSuccess('app_order_show', [
-                'id' => $orderItem->getCustomerOrder()->getPublicId()->value()
+                'id' => $orderItem->getCustomerOrder()->getPublicId()->value(),
             ]),
         );
     }
 
     #[Route(path: '/order/item/{id}', name: 'app_order_item_show', methods: ['GET'])]
-    public function show(#[ValueResolver('public_id')] CustomerOrderItem $orderItem): Response {
+    public function show(#[ValueResolver('public_id')] CustomerOrderItem $orderItem): Response
+    {
         return $this->render('/order/show_item.html.twig', ['result' => $orderItem]);
     }
 }

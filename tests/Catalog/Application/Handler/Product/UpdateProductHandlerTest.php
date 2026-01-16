@@ -18,6 +18,7 @@ class UpdateProductHandlerTest extends KernelTestCase
     use Factories;
 
     private UpdateProductHandler $handler;
+
     private ProductRepository $products;
 
     protected function setUp(): void

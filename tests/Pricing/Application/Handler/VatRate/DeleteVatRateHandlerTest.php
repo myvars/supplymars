@@ -15,6 +15,7 @@ final class DeleteVatRateHandlerTest extends KernelTestCase
     use Factories;
 
     private DeleteVatRateHandler $handler;
+
     private VatRateRepository $rates;
 
     protected function setUp(): void

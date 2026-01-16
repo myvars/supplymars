@@ -13,7 +13,10 @@ use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 interface OrderRepository extends FindByCriteriaInterface
 {
     public function add(CustomerOrder $order): void;
+
     public function remove(CustomerOrder $order): void;
+
     public function get(OrderId $id): ?CustomerOrder;
+
     public function getByPublicId(OrderPublicId $publicId): ?CustomerOrder;
 }

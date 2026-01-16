@@ -16,6 +16,7 @@ final class UpdateSubcategoryCostHandlerTest extends KernelTestCase
     use Factories;
 
     private UpdateSubcategoryCostHandler $handler;
+
     private SubcategoryRepository $subcategories;
 
     protected function setUp(): void

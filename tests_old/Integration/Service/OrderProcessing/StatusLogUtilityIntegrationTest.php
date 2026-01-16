@@ -5,12 +5,12 @@ namespace App\Tests\Integration\Service\OrderProcessing;
 use App\Service\OrderProcessing\StatusLogUtility;
 use App\Shared\Domain\Event\DomainEventType;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use tests\Shared\Factory\CustomerOrderFactory;
 use tests\Shared\Factory\CustomerOrderItemFactory;
 use tests\Shared\Factory\PurchaseOrderFactory;
 use tests\Shared\Factory\PurchaseOrderItemFactory;
 use tests\Shared\Factory\StatusChangeLogFactory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 
 class StatusLogUtilityIntegrationTest extends KernelTestCase
@@ -31,7 +31,7 @@ class StatusLogUtilityIntegrationTest extends KernelTestCase
         $customerOrder = CustomerOrderFactory::createOne();
         $statusChangeLog = StatusChangeLogFactory::createOne([
             'eventType' => DomainEventType::ORDER_STATUS_CHANGED,
-            'eventTypeId' => $customerOrder->getId()
+            'eventTypeId' => $customerOrder->getId(),
         ]);
 
         $logs = $this->statusLogUtility->forCustomerOrder($customerOrder);
@@ -44,7 +44,7 @@ class StatusLogUtilityIntegrationTest extends KernelTestCase
         $customerOrderItem = CustomerOrderItemFactory::createOne();
         $statusChangeLog = StatusChangeLogFactory::createOne([
             'eventType' => DomainEventType::ORDER_ITEM_STATUS_CHANGED,
-            'eventTypeId' => $customerOrderItem->getId()
+            'eventTypeId' => $customerOrderItem->getId(),
         ]);
 
         $logs = $this->statusLogUtility->forCustomerOrderItem($customerOrderItem);
@@ -57,7 +57,7 @@ class StatusLogUtilityIntegrationTest extends KernelTestCase
         $purchaseOrder = PurchaseOrderFactory::createOne();
         $statusChangeLog = StatusChangeLogFactory::createOne([
             'eventType' => DomainEventType::PURCHASE_ORDER_STATUS_CHANGED,
-            'eventTypeId' => $purchaseOrder->getId()
+            'eventTypeId' => $purchaseOrder->getId(),
         ]);
 
         $logs = $this->statusLogUtility->forPurchaseOrder($purchaseOrder);
@@ -70,7 +70,7 @@ class StatusLogUtilityIntegrationTest extends KernelTestCase
         $purchaseOrderItem = PurchaseOrderItemFactory::createOne();
         $statusChangeLog = StatusChangeLogFactory::createOne([
             'eventType' => DomainEventType::PURCHASE_ORDER_ITEM_STATUS_CHANGED,
-            'eventTypeId' => $purchaseOrderItem->getId()
+            'eventTypeId' => $purchaseOrderItem->getId(),
         ]);
 
         $logs = $this->statusLogUtility->forPurchaseOrderItem($purchaseOrderItem);

@@ -5,6 +5,7 @@ namespace App\Tests\Shared\Infrastructure\FileStorage;
 use App\Shared\Infrastructure\FileStorage\UploadHelper;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Visibility;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -12,31 +13,20 @@ use Symfony\Component\String\UnicodeString;
 
 final class UploadHelperTest extends TestCase
 {
-    private Filesystem $filesystem;
-    private SluggerInterface $slugger;
+    private MockObject $filesystem;
+
     private UploadHelper $helper;
 
     protected function setUp(): void
     {
         $this->filesystem = $this->createMock(Filesystem::class);
 
-        $this->slugger = $this->createStub(SluggerInterface::class);
-        $this->slugger
+        $slugger = $this->createStub(SluggerInterface::class);
+        $slugger
             ->method('slug')
             ->willReturn(new UnicodeString('dummy-image'));
 
-        $this->helper = new UploadHelper($this->filesystem, $this->slugger);
-    }
-
-    private function stubFile(string $path, string $mimeType, string $extension, string $filename): File
-    {
-        $file = $this->createStub(File::class);
-        $file->method('getPathname')->willReturn($path);
-        $file->method('getMimeType')->willReturn($mimeType);
-        $file->method('guessExtension')->willReturn($extension);
-
-        // when interaction is asserted, use expects\(\) on a dedicated mock in that test
-        return $file;
+        $this->helper = new UploadHelper($this->filesystem, $slugger);
     }
 
     public function testUploadFileWritesStreamWithPublicVisibility(): void

@@ -51,6 +51,7 @@ final class SupplierCategoryUpdateDeleteMappingTest extends KernelTestCase
 
         $this->em->persist($supplierProduct);
         $this->em->flush();
+
         $id = $supplierProduct->getId();
 
         // Reload and update to new related entities and values
@@ -132,6 +133,7 @@ final class SupplierCategoryUpdateDeleteMappingTest extends KernelTestCase
 
         $this->em->persist($supplierProduct);
         $this->em->flush();
+
         $id = $supplierProduct->getId();
 
         // Delete and verify removal

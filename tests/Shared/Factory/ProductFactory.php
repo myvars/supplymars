@@ -3,7 +3,10 @@
 namespace App\Tests\Shared\Factory;
 
 use App\Catalog\Domain\Model\Category\Category;
+use App\Catalog\Domain\Model\Manufacturer\Manufacturer;
 use App\Catalog\Domain\Model\Product\Product;
+use App\Catalog\Domain\Model\Subcategory\Subcategory;
+use App\Customer\Domain\Model\User\User;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
 use App\Shared\Domain\Service\Pricing\MarkupCalculator;
 use Zenstruck\Foundry\LazyValue;
@@ -39,11 +42,11 @@ final class ProductFactory extends PersistentObjectFactory
         return [
             'name' => ucfirst(implode(' ', self::faker()->words(random_int(1, 3)))),
             'description' => ucfirst(implode(' ', self::faker()->words(random_int(5, 10)))),
-            'category' => LazyValue::memoize(fn () => CategoryFactory::createOne()),
+            'category' => LazyValue::memoize(fn (): Category => CategoryFactory::createOne()),
             'subcategory' => null,
-            'manufacturer' => LazyValue::memoize(fn () => ManufacturerFactory::createOne()),
+            'manufacturer' => LazyValue::memoize(fn (): Manufacturer => ManufacturerFactory::createOne()),
             'mfrPartNumber' => self::faker()->regexify('[A-Z]{4}[0-4]{4}'),
-            'owner' => LazyValue::memoize(fn () => UserFactory::createOne()),
+            'owner' => LazyValue::memoize(fn (): User => UserFactory::createOne()),
             'isActive' => true,
         ];
     }
@@ -58,7 +61,7 @@ final class ProductFactory extends PersistentObjectFactory
             ->beforeInstantiate(function (array $attributes): array {
                 if (null !== $attributes['category']) {
                     $attributes['subcategory'] ??= LazyValue::memoize(
-                        fn () => SubcategoryFactory::createOne(['category' => $attributes['category']])
+                        fn (): Subcategory => SubcategoryFactory::createOne(['category' => $attributes['category']])
                     );
                 }
 
@@ -76,6 +79,7 @@ final class ProductFactory extends PersistentObjectFactory
                 if (!$supplierProduct instanceof SupplierProduct) {
                     $supplierProduct = SupplierProductFactory::createOne(['product' => null]);
                 }
+
                 $product->addSupplierProduct($this->markupCalculator, $supplierProduct);
             });
     }

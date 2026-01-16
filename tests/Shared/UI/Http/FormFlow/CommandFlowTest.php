@@ -21,17 +21,18 @@ final class CommandFlowTest extends TestCase
     {
         $request = Request::create($uri, $method);
         $request->setSession(new Session(new MockArraySessionStorage()));
+
         return $request;
     }
 
     private function handlerOk(?string $msg = 'Done', ?RedirectTarget $rt = null): callable
     {
-        return fn(object $cmd) => Result::ok($msg, redirect: $rt);
+        return fn (object $cmd): Result => Result::ok($msg, redirect: $rt);
     }
 
     private function handlerFail(?string $msg = 'Failed'): callable
     {
-        return fn(object $cmd) => Result::fail($msg);
+        return fn (object $cmd): Result => Result::fail($msg);
     }
 
     public function testProcessSuccessAddsSuccessFlashAndRedirectsToSuccessRoute(): void

@@ -8,9 +8,9 @@ use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use App\Service\Crud\Common\CrudContext;
 use App\Service\PurchaseOrder\ChangePurchaseOrderItemStatus;
 use Doctrine\ORM\EntityManagerInterface;
-use tests\Shared\Factory\PurchaseOrderItemFactory;
 use Story\StaffUserStory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use tests\Shared\Factory\PurchaseOrderItemFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class ChangePurchaseOrderItemStatusIntegrationTest extends KernelTestCase

@@ -15,6 +15,7 @@ use App\Shared\Infrastructure\Persistence\Doctrine\Mapping\HasPublicUlid;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\Common\Collections\Criteria;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -27,6 +28,7 @@ class Category implements DomainEventProviderInterface
     use HasPublicUlid;
 
     public const string DEFAULT_MARKUP = '5.000';
+
     public const PriceModel DEFAULT_PRICE_MODEL = PriceModel::DEFAULT;
 
     #[ORM\Id]
@@ -38,7 +40,7 @@ class Category implements DomainEventProviderInterface
     #[Assert\NotBlank(message: 'Please enter a category name')]
     private ?string $name = null;
 
-    #[ORM\Column(type: 'decimal', precision: 9, scale: 3)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 9, scale: 3)]
     #[Assert\NotBlank(message: 'Please enter a category markup %')]
     #[Assert\PositiveOrZero(message: 'Please enter a positive or zero category markup %')]
     private ?string $defaultMarkup = self::DEFAULT_MARKUP;
@@ -81,7 +83,7 @@ class Category implements DomainEventProviderInterface
         VatRate $vatRate,
         string $defaultMarkup,
         PriceModel $priceModel,
-        bool $isActive
+        bool $isActive,
     ): self {
         $self = new self();
         $self->rename($name);
@@ -97,7 +99,7 @@ class Category implements DomainEventProviderInterface
         VatRate $vatRate,
         string $defaultMarkup,
         PriceModel $priceModel,
-        bool $isActive
+        bool $isActive,
     ): void {
         $this->rename($name);
         $this->assignOwner($owner);
@@ -108,7 +110,7 @@ class Category implements DomainEventProviderInterface
         VatRate $vatRate,
         string $defaultMarkup,
         PriceModel $priceModel,
-        bool $isActive
+        bool $isActive,
     ): void {
         $vatRateChanged = $vatRate !== $this->vatRate;
         $markupChanged = $defaultMarkup !== $this->defaultMarkup;
@@ -190,6 +192,7 @@ class Category implements DomainEventProviderInterface
         if ($name === '') {
             throw new \InvalidArgumentException('Category name cannot be empty');
         }
+
         $this->name = $name;
     }
 
@@ -198,6 +201,7 @@ class Category implements DomainEventProviderInterface
         if ((float) $defaultMarkup < 0) {
             throw new \InvalidArgumentException('Markup cannot be negative');
         }
+
         $this->defaultMarkup = $defaultMarkup;
     }
 
@@ -206,6 +210,7 @@ class Category implements DomainEventProviderInterface
         if ($priceModel === PriceModel::NONE) {
             throw new \InvalidArgumentException('A category must have a price model');
         }
+
         $this->priceModel = $priceModel;
     }
 

@@ -54,7 +54,7 @@ final readonly class CreatePurchaseOrderItemHandler
                 $orderItem,
                 $supplierProduct,
             );
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return Result::fail('Cannot edit purchase order item');
         }
 

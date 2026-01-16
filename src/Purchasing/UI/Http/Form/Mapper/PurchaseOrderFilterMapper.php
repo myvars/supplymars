@@ -2,7 +2,6 @@
 
 namespace App\Purchasing\UI\Http\Form\Mapper;
 
-
 use App\Purchasing\Application\Command\PurchaseOrder\PurchaseOrderFilter;
 use App\Purchasing\Application\Search\PurchaseOrderSearchCriteria;
 

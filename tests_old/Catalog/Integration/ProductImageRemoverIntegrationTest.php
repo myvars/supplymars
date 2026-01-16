@@ -5,9 +5,9 @@ namespace App\Tests\Catalog\Integration;
 use App\Catalog\Domain\Model\ProductImage\ProductImage;
 use App\Shared\Infrastructure\FileStorage\UploadHelper;
 use Doctrine\ORM\EntityManagerInterface;
-use tests\Shared\Factory\SupplierProductFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use tests\Shared\Factory\SupplierProductFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class ProductImageRemoverIntegrationTest extends KernelTestCase

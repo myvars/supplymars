@@ -13,6 +13,7 @@ class CreateSupplierHandlerTest extends KernelTestCase
     use Factories;
 
     private CreateSupplierHandler $handler;
+
     private SupplierRepository $suppliers;
 
     protected function setUp(): void

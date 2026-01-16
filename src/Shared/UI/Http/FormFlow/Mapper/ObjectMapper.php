@@ -12,7 +12,7 @@ final readonly class ObjectMapper
     public function __construct(
         private ObjectMapperInterface $mapper,
         private string $targetClass,
-        private array $context = []
+        private array $context = [],
     ) {
     }
 
@@ -27,4 +27,3 @@ final readonly class ObjectMapper
         return $this->mapper->map($data, $this->targetClass, $this->context);
     }
 }
-

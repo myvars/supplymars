@@ -15,6 +15,7 @@ final class ReorderProductImageHandlerTest extends KernelTestCase
     use Factories;
 
     private ReorderProductImageHandler $handler;
+
     private ProductRepository $products;
 
     protected function setUp(): void

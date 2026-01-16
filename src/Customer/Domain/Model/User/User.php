@@ -11,6 +11,7 @@ use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapping\HasPublicUlid;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -49,10 +50,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
     #[Assert\Length(max: 50, maxMessage: 'Max 50 characters')]
     private ?string $fullName = null;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $isVerified = false;
 
-    #[ORM\Column(type: 'boolean')]
+    #[ORM\Column(type: Types::BOOLEAN)]
     private bool $isStaff = false;
 
     #[ORM\OneToMany(targetEntity: Category::class, mappedBy: 'owner')]

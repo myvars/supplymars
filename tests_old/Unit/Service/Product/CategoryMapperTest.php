@@ -64,7 +64,7 @@ class CategoryMapperTest extends TestCase
         $this->em->method('getRepository')->willReturnMap([
             [Category::class, $this->createMock(CategoryDoctrineRepository::class)],
             [User::class, $this->createMock(UserDoctrineRepository::class)],
-            [VatRate::class, $this->createMock(VatRateDoctrineRepository::class)]
+            [VatRate::class, $this->createMock(VatRateDoctrineRepository::class)],
         ]);
         $this->em->getRepository(Category::class)->method('findOneBy')->willReturn(null);
         $this->em->getRepository(User::class)->method('findOneBy')->willReturn($user);

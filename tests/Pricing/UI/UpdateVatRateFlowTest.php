@@ -20,7 +20,7 @@ final class UpdateVatRateFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/vat-rate/'.$publicId.'/edit')
+            ->get('/vat-rate/' . $publicId . '/edit')
             ->fillField('vat_rate[name]', 'After Edit VAT')
             ->fillField('vat_rate[rate]', '7.25')
             ->click('Update VAT Rate')
@@ -35,10 +35,10 @@ final class UpdateVatRateFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/vat-rate/'.$publicId.'/edit')
+            ->get('/vat-rate/' . $publicId . '/edit')
             ->fillField('vat_rate[name]', '')
             ->click('Update VAT Rate')
-            ->assertOn('/vat-rate/'.$publicId.'/edit')
+            ->assertOn('/vat-rate/' . $publicId . '/edit')
             ->assertSee('Please enter a VAT rate name');
     }
 }

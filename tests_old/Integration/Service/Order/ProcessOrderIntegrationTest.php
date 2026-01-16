@@ -7,12 +7,12 @@ use App\Service\Crud\Common\CrudContext;
 use App\Service\Order\ProcessOrder;
 use App\Service\PurchaseOrder\ChangePurchaseOrderItemStatus;
 use App\Service\PurchaseOrder\CreatePurchaseOrderItem;
+use Story\StaffUserStory;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use tests\Shared\Factory\CustomerOrderItemFactory;
 use tests\Shared\Factory\ProductFactory;
 use tests\Shared\Factory\PurchaseOrderItemFactory;
 use tests\Shared\Factory\SupplierProductFactory;
-use Story\StaffUserStory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 
 class ProcessOrderIntegrationTest extends KernelTestCase
@@ -52,7 +52,7 @@ class ProcessOrderIntegrationTest extends KernelTestCase
         $supplierProduct = SupplierProductFactory::createOne();
         $customerOrderItem = CustomerOrderItemFactory::createOne([
             'customerOrder' => $customerOrder,
-            'product' => $supplierProduct->getProduct()
+            'product' => $supplierProduct->getProduct(),
         ]);
 
         $context = new CrudContext();
@@ -84,11 +84,11 @@ class ProcessOrderIntegrationTest extends KernelTestCase
         $product = ProductFactory::createOne(['stock' => 1]);
         $supplierProduct = SupplierProductFactory::createOne([
             'product' => $product,
-            'stock' => 1
+            'stock' => 1,
         ]);
         $customerOrderItem = CustomerOrderItemFactory::createOne([
             'product' => $supplierProduct->getProduct(),
-            'quantity' => 2
+            'quantity' => 2,
         ]);
 
         $context = new CrudContext();

@@ -11,6 +11,7 @@ final class HasPublicUlidTest extends TestCase
         $entity = new DummyEntityForUlid();
 
         $entity->initializePublicId();
+
         $first = $entity->publicId();
 
         $entity->initializePublicId();
@@ -25,6 +26,7 @@ final class HasPublicUlidTest extends TestCase
         $entity = new DummyEntityForUlid();
 
         $entity->ensurePublicId();
+
         $id = $entity->publicId();
 
         self::assertMatchesRegularExpression('/^[0-7][0-9A-HJKMNP-TV-Z]{25}$/', $id);
@@ -34,6 +36,7 @@ final class HasPublicUlidTest extends TestCase
     {
         $entity = new DummyEntityForUlid();
         $entity->initializePublicId();
+
         $first = $entity->publicId();
 
         $entity->ensurePublicId();

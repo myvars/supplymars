@@ -3,10 +3,10 @@
 namespace App\Tests\Catalog\UI\Http;
 
 use App\Shared\Domain\ValueObject\PriceModel;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use tests\Shared\Factory\CategoryFactory;
 use tests\Shared\Factory\SubcategoryFactory;
 use tests\Shared\Factory\UserFactory;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
 
@@ -60,7 +60,7 @@ class SubcategoryControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/subcategory/" . $subcategory->getId())
+            ->get('/subcategory/' . $subcategory->getId())
             ->assertSuccessful()
             ->assertSee('Test Subcategory');
     }
@@ -75,12 +75,12 @@ class SubcategoryControllerTest extends WebTestCase
             ->actingAs(UserFactory::new()->asStaff()->create())
             ->get('/subcategory/new')
             ->assertSuccessful()
-            ->fillField('subcategory[name]','Test Subcategory')
+            ->fillField('subcategory[name]', 'Test Subcategory')
             ->fillField('subcategory[category]', $category->getId())
-            ->fillField('subcategory[defaultMarkup]','0.21')
+            ->fillField('subcategory[defaultMarkup]', '0.21')
             ->fillField('subcategory[priceModel]', $priceModel->value)
             ->fillField('subcategory[owner]', $owner->getId())
-            ->fillField('subcategory[isActive]','1')
+            ->fillField('subcategory[isActive]', '1')
             ->click('Create Subcategory')
             ->assertOn('/subcategory/')
             ->assertSee('Test Subcategory');
@@ -93,7 +93,7 @@ class SubcategoryControllerTest extends WebTestCase
             ->get('/subcategory/new')
             ->assertSuccessful()
             // Intentionally filling form with invalid data
-            ->fillField('subcategory[defaultMarkup]','-1')
+            ->fillField('subcategory[defaultMarkup]', '-1')
             ->click('Create Subcategory')
             ->assertOn('/subcategory/new')
             ->assertSee('Please enter a Subcategory name')
@@ -107,9 +107,9 @@ class SubcategoryControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/subcategory/" . $subcategory->getId() . "/edit")
+            ->get('/subcategory/' . $subcategory->getId() . '/edit')
             ->assertSuccessful()
-            ->fillField('subcategory[name]','Edited Subcategory')
+            ->fillField('subcategory[name]', 'Edited Subcategory')
             ->click('Update Subcategory')
             ->assertOn('/subcategory/')
             ->assertSee('Edited Subcategory');
@@ -121,15 +121,15 @@ class SubcategoryControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/subcategory/" . $subcategory->getId() . "/edit")
+            ->get('/subcategory/' . $subcategory->getId() . '/edit')
             ->assertSuccessful()
             // Intentionally filling form with invalid data
-            ->fillField('subcategory[name]','')
+            ->fillField('subcategory[name]', '')
             ->fillField('subcategory[category]', '')
-            ->fillField('subcategory[defaultMarkup]','-1')
+            ->fillField('subcategory[defaultMarkup]', '-1')
             ->fillField('subcategory[priceModel]', '')
             ->click('Update Subcategory')
-            ->assertOn("/subcategory/" . $subcategory->getId() . "/edit")
+            ->assertOn('/subcategory/' . $subcategory->getId() . '/edit')
             ->assertSee('Please enter a Subcategory name')
             ->assertSee('Please enter a category')
             ->assertSee('Please enter a positive or zero subcategory markup %')
@@ -142,7 +142,7 @@ class SubcategoryControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/subcategory/" . $subcategory->getId() . "/delete/confirm")
+            ->get('/subcategory/' . $subcategory->getId() . '/delete/confirm')
             ->assertSuccessful()
             ->assertSee('Are you sure you want to delete this Subcategory');
     }
@@ -153,7 +153,7 @@ class SubcategoryControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/subcategory/" . $subcategory->getId() . "/delete/confirm")
+            ->get('/subcategory/' . $subcategory->getId() . '/delete/confirm')
             ->assertSuccessful()
             ->click('Delete')
             ->assertOn('/subcategory/')
@@ -164,7 +164,7 @@ class SubcategoryControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/subcategory/999")
+            ->get('/subcategory/999')
             ->assertStatus(404);
     }
 }

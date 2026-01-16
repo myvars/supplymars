@@ -20,7 +20,7 @@ final readonly class OverdueOrdersReport implements ReportInterface
     ) {
     }
 
-    public function build(object $dto): ?array
+    public function build(object $dto): array
     {
         if (!$dto instanceof OverdueOrderSearchCriteria) {
             throw new \InvalidArgumentException('Invalid DTO');

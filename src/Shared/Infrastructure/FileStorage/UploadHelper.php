@@ -34,7 +34,7 @@ final readonly class UploadHelper
         return $newFileName;
     }
 
-    public function deleteFile(string $path): ?bool
+    public function deleteFile(string $path): bool
     {
         try {
             if ($this->uploadFilesystem->fileExists($path)) {
@@ -99,6 +99,6 @@ final readonly class UploadHelper
 
     private function createFilePath(?string $directory, string $fileName): string
     {
-        return null === $directory || '' === $directory || '0' === $directory ? $fileName : $directory.'/'.$fileName;
+        return null === $directory || '' === $directory || '0' === $directory ? $fileName : $directory . '/' . $fileName;
     }
 }

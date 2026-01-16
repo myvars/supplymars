@@ -23,7 +23,7 @@ final readonly class VatRateWasChanged
 
     public function __invoke(VatRateWasChangedEvent $event): void
     {
-        $vatRate= $this->vatRates->getByPublicId($event->getId());
+        $vatRate = $this->vatRates->getByPublicId($event->getId());
         if (!$vatRate instanceof VatRate) {
             return;
         }

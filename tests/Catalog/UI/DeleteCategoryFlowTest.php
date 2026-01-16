@@ -20,7 +20,7 @@ final class DeleteCategoryFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/category/'.$publicId.'/delete/confirm')
+            ->get('/category/' . $publicId . '/delete/confirm')
             ->click('Delete Category')
             ->assertOn('/category/')
             ->assertSee('Category deleted');

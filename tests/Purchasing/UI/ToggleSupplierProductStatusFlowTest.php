@@ -26,14 +26,14 @@ final class ToggleSupplierProductStatusFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs($user)
-            ->get('/supplier-product/'.$publicId.'/status/toggle')
+            ->get('/supplier-product/' . $publicId . '/status/toggle')
             ->assertStatus(200);
 
         self::assertFalse($supplierProduct->isActive());
 
         $this->browser()
             ->actingAs($user)
-            ->get('/supplier-product/'.$publicId.'/status/toggle')
+            ->get('/supplier-product/' . $publicId . '/status/toggle')
             ->assertStatus(200);
 
         self::assertTrue($supplierProduct->isActive());
@@ -51,7 +51,7 @@ final class ToggleSupplierProductStatusFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs($user)
-            ->get('/supplier-product/'.$publicId.'/status/toggle')
-            ->assertStatus(500) ;
+            ->get('/supplier-product/' . $publicId . '/status/toggle')
+            ->assertStatus(500);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Pricing\Application\Listener;
 
 use App\Catalog\Domain\Model\Product\Product;
+use App\Catalog\Domain\Model\Product\ProductId;
 use App\Catalog\Domain\Repository\ProductRepository;
 use App\Purchasing\Domain\Model\SupplierProduct\Event\SupplierProductPricingWasChangedEvent;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
@@ -32,26 +33,26 @@ final readonly class SupplierProductPricingWasChanged
         $newProduct = $supplierProduct->getProduct();
 
         $previousProduct = null;
-        if ($event->getPreviousMappedProductId() !== null) {
+        if ($event->getPreviousMappedProductId() instanceof ProductId) {
             $previousProduct = $this->products->get($event->getPreviousMappedProductId());
         }
 
         // No mapping before and no mapping now -> nothing to do
-        if ($newProduct === null && $previousProduct === null) {
+        if (!$newProduct instanceof Product && !$previousProduct instanceof Product) {
             return;
         }
 
         $updated = false;
-        if ($previousProduct !== null && $newProduct !== null && $previousProduct->getId() !== $newProduct->getId()) {
+        if ($previousProduct instanceof Product && $newProduct instanceof Product && $previousProduct->getId() !== $newProduct->getId()) {
             // Move between different products
             $previousProduct->removeSupplierProduct($this->markupCalculator, $supplierProduct);
             $newProduct->addSupplierProduct($this->markupCalculator, $supplierProduct);
             $updated = true;
-        } elseif ($previousProduct !== null && $newProduct === null) {
+        } elseif ($previousProduct instanceof Product && !$newProduct instanceof Product) {
             // Removed mapping
             $previousProduct->removeSupplierProduct($this->markupCalculator, $supplierProduct);
             $updated = true;
-        } elseif ($previousProduct === null && $newProduct instanceof Product) {
+        } elseif (!$previousProduct instanceof Product && $newProduct instanceof Product) {
             // New mapping
             $newProduct->addSupplierProduct($this->markupCalculator, $supplierProduct);
             $updated = true;
@@ -66,4 +67,3 @@ final readonly class SupplierProductPricingWasChanged
         }
     }
 }
-

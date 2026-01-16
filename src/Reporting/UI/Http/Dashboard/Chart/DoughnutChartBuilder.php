@@ -8,11 +8,11 @@ use App\Reporting\Domain\Metric\SalesMetricInterface;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
 
-final class DoughnutChartBuilder
+final readonly class DoughnutChartBuilder
 {
     private const string CHART_TYPE = Chart::TYPE_DOUGHNUT;
 
-    public function __construct(private readonly ChartBuilderInterface $chartBuilder)
+    public function __construct(private ChartBuilderInterface $chartBuilder)
     {
     }
 

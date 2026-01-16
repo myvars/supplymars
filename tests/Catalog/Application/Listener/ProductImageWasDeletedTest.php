@@ -11,11 +11,6 @@ use PHPUnit\Framework\TestCase;
 
 final class ProductImageWasDeletedTest extends TestCase
 {
-    private function productId(): ProductPublicId
-    {
-        return $this->createStub(ProductPublicId::class);
-    }
-
     public function testDoesNothingWhenImageNameEmpty(): void
     {
         $uploadHelper = $this->createMock(UploadHelper::class);

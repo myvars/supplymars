@@ -16,7 +16,8 @@ final readonly class ProductImageWasDeleted
         private CacheManager $cacheManager,
         #[Autowire('%app.product_uploads%')]
         private string $uploadsDir,
-    ) {}
+    ) {
+    }
 
     public function __invoke(ProductImageWasDeletedEvent $event): void
     {
@@ -24,7 +25,7 @@ final readonly class ProductImageWasDeleted
             return;
         }
 
-        $path = $this->uploadsDir.$event->getImageName();
+        $path = $this->uploadsDir . $event->getImageName();
         if ($this->uploadHelper->deleteFile($path)) {
             $this->cacheManager->remove($path);
         }

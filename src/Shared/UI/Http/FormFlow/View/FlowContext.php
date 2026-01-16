@@ -12,12 +12,19 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 final class FlowContext
 {
     private ?string $model = null;
+
     private ?string $template = null;
+
     private ?FormOperation $operation = null;
+
     private ?string $successRoute = null;
+
     private array $successParams = [];
+
     private bool $allowDelete = false;
+
     private bool $redirectRefresh = false;
+
     private int $redirectStatus = 303;
 
     public static function new(): self
@@ -46,13 +53,13 @@ final class FlowContext
     /** Factory for delete operation defaults. */
     public static function forDelete(string $model): self
     {
-        return self::fromOperation($model,FormOperation::Delete);
+        return self::fromOperation($model, FormOperation::Delete);
     }
 
     /** Factory for filter operation defaults. */
     public static function forFilter(string $model): self
     {
-        return self::fromOperation($model,FormOperation::Filter);
+        return self::fromOperation($model, FormOperation::Filter);
     }
 
     /** Factory for generic operation defaults. */
@@ -174,6 +181,7 @@ final class FlowContext
         if ($this->successRoute) {
             return $urls->generate($this->successRoute, $this->successParams);
         }
+
         $referer = $request->headers->get('referer');
 
         return ($referer !== null && $referer !== '') ? $referer : $request->getPathInfo();

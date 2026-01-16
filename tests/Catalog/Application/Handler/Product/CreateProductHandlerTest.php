@@ -20,6 +20,7 @@ class CreateProductHandlerTest extends KernelTestCase
     use Factories;
 
     private CreateProductHandler $handler;
+
     private ProductRepository $products;
 
     protected function setUp(): void

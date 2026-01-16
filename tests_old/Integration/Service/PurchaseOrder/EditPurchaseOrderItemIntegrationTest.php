@@ -6,12 +6,12 @@ use App\Purchasing\Application\DTO\EditPurchaseOrderItemDto;
 use App\Service\Crud\Common\CrudContext;
 use App\Service\PurchaseOrder\EditPurchaseOrderItem;
 use Doctrine\ORM\EntityManagerInterface;
+use Story\StaffUserStory;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use tests\Shared\Factory\CustomerOrderItemFactory;
 use tests\Shared\Factory\PurchaseOrderFactory;
 use tests\Shared\Factory\PurchaseOrderItemFactory;
 use tests\Shared\Factory\SupplierProductFactory;
-use Story\StaffUserStory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 
 class EditPurchaseOrderItemIntegrationTest extends KernelTestCase
@@ -33,14 +33,14 @@ class EditPurchaseOrderItemIntegrationTest extends KernelTestCase
         $supplierProduct = SupplierProductFactory::createOne(['stock' => 100]);
         $customerOrderItem = CustomerOrderItemFactory::createOne([
             'quantity' => 10,
-            'product' => $supplierProduct->getProduct()
+            'product' => $supplierProduct->getProduct(),
         ]);
         $purchaseOrderItem = PurchaseOrderItemFactory::createOne([
             'product' => $supplierProduct->getProduct(),
             'supplier' => $supplierProduct->getSupplier(),
             'customerOrderItem' => $customerOrderItem,
             'supplierProduct' => $supplierProduct,
-            'quantity' => 3
+            'quantity' => 3,
         ]);
 
         $dto = new EditPurchaseOrderItemDto(
@@ -61,14 +61,14 @@ class EditPurchaseOrderItemIntegrationTest extends KernelTestCase
         $supplierProduct = SupplierProductFactory::createOne(['stock' => 100]);
         $customerOrderItem = CustomerOrderItemFactory::createOne([
             'quantity' => 10,
-            'product' => $supplierProduct->getProduct()
+            'product' => $supplierProduct->getProduct(),
         ]);
         $purchaseOrderItem = PurchaseOrderItemFactory::createOne([
             'product' => $supplierProduct->getProduct(),
             'supplier' => $supplierProduct->getSupplier(),
             'customerOrderItem' => $customerOrderItem,
             'supplierProduct' => $supplierProduct,
-            'quantity' => 3
+            'quantity' => 3,
         ]);
         $purchaseOrderItemId = $purchaseOrderItem->getId();
         $purchaseOrderId = $purchaseOrderItem->getPurchaseOrder()->getId();

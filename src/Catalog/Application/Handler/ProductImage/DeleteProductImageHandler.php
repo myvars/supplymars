@@ -30,6 +30,7 @@ final readonly class DeleteProductImageHandler
         $product = $productImage->getProduct();
 
         $product->removeProductImage($productImage);
+
         $this->productImages->remove($productImage);
 
         $this->flusher->flush();

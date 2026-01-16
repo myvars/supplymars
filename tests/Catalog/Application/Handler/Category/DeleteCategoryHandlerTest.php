@@ -6,8 +6,8 @@ use App\Catalog\Application\Command\Category\DeleteCategory;
 use App\Catalog\Application\Handler\Category\DeleteCategoryHandler;
 use App\Catalog\Domain\Model\Category\CategoryPublicId;
 use App\Catalog\Domain\Repository\CategoryRepository;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use App\Tests\Shared\Factory\CategoryFactory;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 
 final class DeleteCategoryHandlerTest extends KernelTestCase
@@ -15,6 +15,7 @@ final class DeleteCategoryHandlerTest extends KernelTestCase
     use Factories;
 
     private DeleteCategoryHandler $handler;
+
     private CategoryRepository $categories;
 
     protected function setUp(): void

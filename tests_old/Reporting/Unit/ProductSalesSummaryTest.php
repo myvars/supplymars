@@ -6,7 +6,6 @@ use App\Reporting\Domain\Metric\SalesDuration;
 use App\Reporting\Domain\Metric\SalesType;
 use App\Reporting\Domain\Model\SalesType\ProductSalesSummary;
 use App\Reporting\Domain\Model\SalesType\ProductSalesType;
-use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
 class ProductSalesSummaryTest extends TestCase
@@ -32,7 +31,7 @@ class ProductSalesSummaryTest extends TestCase
         $this->assertEquals($salesQty, $productSalesSummary->getSalesQty());
         $this->assertEquals($salesCost, $productSalesSummary->getSalesCost());
         $this->assertEquals($salesValue, $productSalesSummary->getSalesValue());
-        $this->assertInstanceOf(DateTimeImmutable::class, $productSalesSummary->getSalesDate());
+        $this->assertInstanceOf(\DateTimeImmutable::class, $productSalesSummary->getSalesDate());
         $this->assertEquals($dateString, $productSalesSummary->getSalesDate()->format('Y-m-d'));
     }
 }

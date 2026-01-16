@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 final class CreateVatRateHandlerTest extends KernelTestCase
 {
     private CreateVatRateHandler $handler;
+
     private VatRateRepository $rates;
 
     protected function setUp(): void

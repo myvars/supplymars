@@ -24,7 +24,7 @@ class UpdateSubcategoryFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/subcategory/'.$publicId.'/edit')
+            ->get('/subcategory/' . $publicId . '/edit')
             ->fillField('subcategory[category]', $newCategory->getId())
             ->fillField('subcategory[name]', 'Flow Updated Subcategory')
             ->fillField('subcategory[defaultMarkup]', '7.500')
@@ -43,10 +43,10 @@ class UpdateSubcategoryFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/subcategory/'.$publicId.'/edit')
+            ->get('/subcategory/' . $publicId . '/edit')
             ->fillField('subcategory[name]', '')
             ->click('Update Subcategory')
-            ->assertOn('/subcategory/'.$publicId.'/edit')
+            ->assertOn('/subcategory/' . $publicId . '/edit')
             ->assertSee('Please enter a subcategory name');
     }
 }

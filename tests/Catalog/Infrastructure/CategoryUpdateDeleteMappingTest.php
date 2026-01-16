@@ -35,6 +35,7 @@ final class CategoryUpdateDeleteMappingTest extends KernelTestCase
 
         $this->em->persist($category);
         $this->em->flush();
+
         $id = $category->getId();
 
         $loaded = $this->em->getRepository(Category::class)->find($id);
@@ -79,6 +80,7 @@ final class CategoryUpdateDeleteMappingTest extends KernelTestCase
 
         $this->em->persist($category);
         $this->em->flush();
+
         $id = $category->getId();
 
         $this->em->remove($category);

@@ -38,6 +38,7 @@ readonly class buildPOsCommand
 
         if ($orderCount < 1) {
             $io->error('orderCount must be > 0.');
+
             return Command::INVALID;
         }
 
@@ -46,6 +47,7 @@ readonly class buildPOsCommand
         $customerOrders = $this->getNextCustomerOrders($orderCount);
         if (!$customerOrders) {
             $io->note('No customer orders to process.');
+
             return Command::SUCCESS;
         }
 

@@ -2,7 +2,6 @@
 
 namespace App\Purchasing\Application\Handler\PurchaseOrder;
 
-
 use App\Purchasing\Application\Command\PurchaseOrder\PurchaseOrderFilter;
 use App\Shared\Application\RedirectTarget;
 use App\Shared\Application\Result;

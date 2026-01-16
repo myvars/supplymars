@@ -30,7 +30,7 @@ final class CategoryFilterFlowTest extends WebTestCase
         // Assert query parameters
         $uri = $browser->crawler()->getUri();
         $query = [];
-        parse_str((string) parse_url($uri, PHP_URL_QUERY), $query);
+        parse_str((string) parse_url((string) $uri, PHP_URL_QUERY), $query);
 
         self::assertSame('id', $query['sort']);
         self::assertSame('ASC', $query['sortDirection']);

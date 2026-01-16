@@ -22,7 +22,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 readonly class updateSupplierStockCommand
 {
     public const int COST_VARIANCE_PERCENT = 10;
+
     public const int STOCK_VARIANCE_PERCENT = 10;
+
     public const int STOCK_REPLENISH_LEVEL = 20;
 
     public function __construct(

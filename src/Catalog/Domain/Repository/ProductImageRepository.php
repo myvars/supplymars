@@ -12,7 +12,10 @@ use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 interface ProductImageRepository
 {
     public function add(ProductImage $productImage): void;
+
     public function remove(ProductImage $productImage): void;
-    public function get(ProductImageId $id): ?productImage;
+
+    public function get(productImageId $id): ?ProductImage;
+
     public function getByPublicId(ProductImagePublicId $publicId): ?ProductImage;
 }

@@ -3,6 +3,7 @@
 namespace App\Shared\UI\Http\ValueResolver;
 
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Attribute\AsTargetedValueResolver;
 use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
@@ -24,7 +25,7 @@ final readonly class PublicIdResolver implements ValueResolverInterface
         }
 
         $em = $this->doctrine->getManagerForClass($class);
-        if ($em === null) {
+        if (!$em instanceof ObjectManager) {
             return [];
         }
 

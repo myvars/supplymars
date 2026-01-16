@@ -6,8 +6,8 @@ use App\Customer\Application\Handler\DeleteCustomerHandler;
 use App\Customer\Domain\Repository\UserRepository;
 use App\Service\Crud\Common\CrudContext;
 use Doctrine\ORM\EntityManagerInterface;
-use tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use tests\Shared\Factory\UserFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class DeleteCustomerIntegrationTest extends KernelTestCase

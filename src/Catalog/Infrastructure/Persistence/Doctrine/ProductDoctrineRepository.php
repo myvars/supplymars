@@ -18,12 +18,10 @@ use Pagerfanta\Doctrine\ORM\QueryAdapter;
  *
  * @method Product|null find($id, $lockMode = null, $lockVersion = null)
  * @method Product|null findOneBy(array $criteria, array $orderBy = null)
- * @method Product[] findAll()
- * @method Product[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Product[]    findAll()
+ * @method Product[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ProductDoctrineRepository extends ServiceEntityRepository implements
-    FindByCriteriaInterface,
-    productRepository
+class ProductDoctrineRepository extends ServiceEntityRepository implements FindByCriteriaInterface, ProductRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -40,7 +38,7 @@ class ProductDoctrineRepository extends ServiceEntityRepository implements
         $this->getEntityManager()->remove($product);
     }
 
-    public function get(ProductId $id): ?product
+    public function get(ProductId $id): ?Product
     {
         return $this->find($id->value());
     }
@@ -59,7 +57,7 @@ class ProductDoctrineRepository extends ServiceEntityRepository implements
 
         if ($criteria->getQuery()) {
             $qb->andWhere('p.name LIKE :query')
-                ->setParameter('query', '%'.$criteria->getQuery().'%');
+                ->setParameter('query', '%' . $criteria->getQuery() . '%');
         }
 
         if ($criteria->mfrPartNumber) {
@@ -86,7 +84,7 @@ class ProductDoctrineRepository extends ServiceEntityRepository implements
             $qb->andWhere($criteria->inStock > 0 ? 'p.stock > 0' : 'p.stock = 0');
         }
 
-        $qb->orderBy('p.'.$sort, $sortDirection);
+        $qb->orderBy('p.' . $sort, $sortDirection);
 
         return new QueryAdapter($qb);
     }

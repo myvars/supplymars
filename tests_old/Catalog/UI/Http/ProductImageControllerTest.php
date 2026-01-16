@@ -4,9 +4,9 @@ namespace App\Tests\Catalog\UI\Http;
 
 use App\Catalog\Domain\Model\Product\Product;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use tests\Shared\Factory\ProductFactory;
 use tests\Shared\Factory\UserFactory;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
 
@@ -23,7 +23,7 @@ class ProductImageControllerTest extends WebTestCase
 
     protected function setUp(): void
     {
-        $this->dummyImagePath =  __DIR__ . '/../../../Shared/Resources/dummy-image.jpg';
+        $this->dummyImagePath = __DIR__ . '/../../../Shared/Resources/dummy-image.jpg';
         $this->invalidImagePath = __DIR__ . '/../../../Shared/Resources/invalid-image.txt';
         $this->em = static::getContainer()->get(EntityManagerInterface::class);
     }
@@ -39,7 +39,7 @@ class ProductImageControllerTest extends WebTestCase
             ->assertSee('0 Product Images');
     }
 
-    public function testShowProductImagesNotFound() : void
+    public function testShowProductImagesNotFound(): void
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
@@ -71,7 +71,6 @@ class ProductImageControllerTest extends WebTestCase
         $this->assertCount(2, $productImages);
 
         foreach ($productImages as $productImage) {
-
             $this->assertFileExists($uploadDir . $productImage->getImageName());
 
             $this->browser()
@@ -88,7 +87,6 @@ class ProductImageControllerTest extends WebTestCase
             ->assertSuccessful()
             ->assertSee('0 Product Images');
     }
-
 
     public function testCreateImageWithInvalidType(): void
     {

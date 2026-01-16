@@ -40,4 +40,3 @@ final readonly class UpdateSupplierHandler
         return Result::ok('Supplier updated');
     }
 }
-

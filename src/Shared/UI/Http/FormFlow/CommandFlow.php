@@ -19,7 +19,7 @@ final readonly class CommandFlow
     public function __construct(
         private FlashMessenger $flashes,
         private RedirectorInterface $redirector,
-        private UrlGeneratorInterface $urls
+        private UrlGeneratorInterface $urls,
     ) {
     }
 
@@ -31,7 +31,7 @@ final readonly class CommandFlow
         Request $request,
         object $command,
         callable $handler,
-        FlowContext $context
+        FlowContext $context,
     ): Response {
         // Delegate to the application‑level handler.
         $result = $handler($command);

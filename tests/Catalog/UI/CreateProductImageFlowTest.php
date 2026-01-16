@@ -45,13 +45,13 @@ final class CreateProductImageFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs($user)
-            ->get('/product_image/'.$product->getPublicId()->value().'/images')
+            ->get('/product_image/' . $product->getPublicId()->value() . '/images')
             ->assertSuccessful()
             ->assertSee('0 Product Images')
             ->attachFile('imageFile[]', [$file1->getPathname(), $file2->getPathname()])
             ->click('Upload')
             ->followRedirects()
-            ->assertOn('/product_image/'.$product->getPublicId()->value().'/images')
+            ->assertOn('/product_image/' . $product->getPublicId()->value() . '/images')
             ->assertSee('2 images added')
             ->assertSee('2 Product Images');
     }
@@ -63,13 +63,13 @@ final class CreateProductImageFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs($user)
-            ->get('/product_image/'.$product->getPublicId()->value().'/images')
+            ->get('/product_image/' . $product->getPublicId()->value() . '/images')
             ->assertSuccessful()
             ->assertSee('0 Product Images')
             ->attachFile('imageFile[]', [$this->invalidPath()])
             ->click('Upload')
             ->followRedirects()
-            ->assertOn('/product_image/'.$product->getPublicId()->value().'/images')
+            ->assertOn('/product_image/' . $product->getPublicId()->value() . '/images')
             ->assertSee('0 Product Images');
     }
 
@@ -80,9 +80,9 @@ final class CreateProductImageFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs($user)
-            ->post('/product/'.$product->getPublicId()->value().'/images/create')
+            ->post('/product/' . $product->getPublicId()->value() . '/images/create')
             ->followRedirects()
-            ->assertOn('/product_image/'.$product->getPublicId()->value().'/images')
+            ->assertOn('/product_image/' . $product->getPublicId()->value() . '/images')
             ->assertSee('No image files provided');
     }
 }

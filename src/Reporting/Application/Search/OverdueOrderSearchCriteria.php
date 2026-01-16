@@ -13,5 +13,6 @@ final class OverdueOrderSearchCriteria extends SearchCriteria implements ReportC
     protected const string SORT_DEFAULT = 'dueDate';
 
     protected const array SORT_OPTIONS = ['id', 'dueDate', 'customer.fullName', 'totalPrice', 'status'];
+
     protected const int LIMIT_DEFAULT = 10;
 }

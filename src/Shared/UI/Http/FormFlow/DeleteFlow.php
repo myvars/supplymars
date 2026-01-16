@@ -64,6 +64,7 @@ final readonly class DeleteFlow
 
         if (!$valid) {
             $this->flashes->error($request, 'Invalid CSRF token.');
+
             // Invalid token => just go back to the success URL
             return $this->flow->successRedirect($request, $context);
         }

@@ -15,6 +15,7 @@ final class UpdateVatRateHandlerTest extends KernelTestCase
     use Factories;
 
     private UpdateVatRateHandler $handler;
+
     private VatRateRepository $rates;
 
     protected function setUp(): void

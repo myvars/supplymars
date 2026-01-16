@@ -20,7 +20,7 @@ final class UpdateManufacturerFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/manufacturer/'.$publicId.'/edit')
+            ->get('/manufacturer/' . $publicId . '/edit')
             ->fillField('manufacturer[name]', 'After')
             ->checkField('manufacturer[isActive]')
             ->click('Update Manufacturer')
@@ -35,10 +35,10 @@ final class UpdateManufacturerFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/manufacturer/'.$publicId.'/edit')
+            ->get('/manufacturer/' . $publicId . '/edit')
             ->fillField('manufacturer[name]', '')
             ->click('Update Manufacturer')
-            ->assertOn('/manufacturer/'.$publicId.'/edit')
+            ->assertOn('/manufacturer/' . $publicId . '/edit')
             ->assertSee('Please enter a manufacturer name');
     }
 }

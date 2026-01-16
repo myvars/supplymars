@@ -100,7 +100,7 @@ class Address
         ?string $email,
         ?User $customer,
         bool $isDefaultShippingAddress,
-        bool $isDefaultBillingAddress
+        bool $isDefaultBillingAddress,
     ): self {
         $self = new self();
         $self->fullName = $fullName;

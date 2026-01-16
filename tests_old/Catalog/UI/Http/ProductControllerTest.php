@@ -2,11 +2,11 @@
 
 namespace App\Tests\Catalog\UI\Http;
 
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use tests\Shared\Factory\ManufacturerFactory;
 use tests\Shared\Factory\ProductFactory;
 use tests\Shared\Factory\SubcategoryFactory;
 use tests\Shared\Factory\UserFactory;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
 
@@ -73,7 +73,7 @@ class ProductControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/" . $product->getId())
+            ->get('/product/' . $product->getId())
             ->assertSuccessful()
             ->assertSee('Product to be shown');
     }
@@ -88,14 +88,14 @@ class ProductControllerTest extends WebTestCase
             ->actingAs(UserFactory::new()->asStaff()->create())
             ->get('/product/new')
             ->assertSuccessful()
-            ->fillField('product[name]','Test Product')
-            ->fillField('product[description]','Test Product Description')
+            ->fillField('product[name]', 'Test Product')
+            ->fillField('product[description]', 'Test Product Description')
             ->fillField('product[category]', $subcategory->getCategory()->getId())
             ->click('Create Product')
             ->fillField('product[subcategory]', $subcategory->getId())
             ->fillField('product[manufacturer]', $manufacturer->getId())
-            ->fillField('product[mfrPartNumber]','12345')
-            ->fillField('product[cost]','500')
+            ->fillField('product[mfrPartNumber]', '12345')
+            ->fillField('product[cost]', '500')
             ->fillField('product[owner]', $owner->getId())
             ->click('Create Product')
             ->assertOn('/product/')
@@ -130,9 +130,9 @@ class ProductControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/" . $product->getId() . "/edit")
+            ->get('/product/' . $product->getId() . '/edit')
             ->assertSuccessful()
-            ->fillField('product[name]','Edited Product')
+            ->fillField('product[name]', 'Edited Product')
             ->click('Update Product')
             ->assertOn('/product/')
             ->assertSee('Edited Product');
@@ -144,17 +144,17 @@ class ProductControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/" . $product->getId() . "/edit")
+            ->get('/product/' . $product->getId() . '/edit')
             ->assertSuccessful()
             // Intentionally filling form with invalid data
-            ->fillField('product[name]','')
+            ->fillField('product[name]', '')
             ->fillField('product[category]', '')
             ->fillField('product[subcategory]', '')
             ->fillField('product[manufacturer]', '')
-            ->fillField('product[cost]','')
-            ->fillField('product[mfrPartNumber]','')
+            ->fillField('product[cost]', '')
+            ->fillField('product[mfrPartNumber]', '')
             ->click('Update Product')
-            ->assertOn("/product/" . $product->getId() . "/edit")
+            ->assertOn('/product/' . $product->getId() . '/edit')
             ->assertSee('Please enter a product name')
             ->assertSee('Please enter a category')
             ->assertSee('Please enter a subcategory')
@@ -169,7 +169,7 @@ class ProductControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/" . $product->getId() . "/delete/confirm")
+            ->get('/product/' . $product->getId() . '/delete/confirm')
             ->assertSuccessful()
             ->assertSee('Are you sure you want to delete this Product');
     }
@@ -180,7 +180,7 @@ class ProductControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/" . $product->getId() . "/delete/confirm")
+            ->get('/product/' . $product->getId() . '/delete/confirm')
             ->assertSuccessful()
             ->click('Delete')
             ->assertOn('/product/')
@@ -191,7 +191,7 @@ class ProductControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/999")
-            ->assertSee("Product not found!");
+            ->get('/product/999')
+            ->assertSee('Product not found!');
     }
 }

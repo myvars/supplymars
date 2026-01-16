@@ -81,6 +81,4 @@ class SupplierSubcategoryTest extends TestCase
 
         $this->assertSame($subcategory, $supplierSubcategory->getMappedSubcategory());
     }
-
-
 }

@@ -5,19 +5,29 @@ namespace App\Shared\Application\Search;
 abstract class SearchCriteria implements SearchCriteriaInterface
 {
     public const string TEMPLATE = 'shared/form_flow/search_filter.html.twig';
+
     public const int PAGE_DEFAULT = 1;
+
     public const int LIMIT_MAX = 50;
 
     protected const int LIMIT_DEFAULT = 5;
+
     protected const string SORT_DEFAULT = 'id';
+
     protected const string SORT_DIRECTION_DEFAULT = 'ASC';
+
     protected const array SORT_OPTIONS = ['id'];
+
     private const array ALLOWED_SORT_DIRECTIONS = ['ASC', 'DESC'];
 
     private ?string $query = null;
+
     private ?string $sort = null;
+
     private ?string $sortDirection = null;
+
     private ?int $page = null;
+
     private ?int $limit = null;
 
     public function setQuery(?string $query): void
@@ -38,7 +48,7 @@ abstract class SearchCriteria implements SearchCriteriaInterface
     {
         $direction = strtoupper((string) $sortDirection);
         if (!in_array($direction, self::ALLOWED_SORT_DIRECTIONS, true)) {
-            $direction =static::SORT_DIRECTION_DEFAULT;
+            $direction = static::SORT_DIRECTION_DEFAULT;
         }
 
         $this->sortDirection = $direction;
@@ -51,6 +61,7 @@ abstract class SearchCriteria implements SearchCriteriaInterface
 
             return;
         }
+
         $this->page = max(static::PAGE_DEFAULT, $page);
     }
 
@@ -61,6 +72,7 @@ abstract class SearchCriteria implements SearchCriteriaInterface
 
             return;
         }
+
         $this->limit = max(1, min($limit, static::LIMIT_MAX));
     }
 
@@ -76,7 +88,7 @@ abstract class SearchCriteria implements SearchCriteriaInterface
 
     public function getSortDirection(): string
     {
-        return $this->sortDirection ??static::SORT_DIRECTION_DEFAULT;
+        return $this->sortDirection ?? static::SORT_DIRECTION_DEFAULT;
     }
 
     public function getPage(): int

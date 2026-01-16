@@ -20,7 +20,7 @@ final class DeleteManufacturerFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/manufacturer/'.$publicId.'/delete/confirm')
+            ->get('/manufacturer/' . $publicId . '/delete/confirm')
             ->click('Delete')
             ->assertOn('/manufacturer/')
             ->assertSee('Manufacturer deleted');

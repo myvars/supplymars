@@ -26,7 +26,7 @@ final readonly class SupplierStockChangeLogger
         $legacyId = $this->publicIdResolver->resolve($event->getId()); // VO in, ?int out
         if (null === $legacyId) {
             $this->logger->warning('Could not resolve legacy ID for public ID', [
-                'publicId' => (string)$event->getId(),
+                'publicId' => (string) $event->getId(),
                 'eventClass' => $event::class,
             ]);
 

@@ -20,7 +20,6 @@ final readonly class PurchaseOrderFilter extends FilterCommand
         public ?string $purchaseOrderStatus,
         public ?string $startDate,
         public ?string $endDate,
-
     ) {
         parent::__construct($query, $sort, $sortDirection, $page, $limit);
     }

@@ -41,7 +41,7 @@ final class UpdateSupplierProductFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs($user)
-            ->get('/supplier-product/'.$publicId.'/edit')
+            ->get('/supplier-product/' . $publicId . '/edit')
             ->fillField('supplier_product[name]', 'After Edit')
             ->fillField('supplier_product[productCode]', 'NEWCODE-999')
             ->fillField('supplier_product[supplier]', $supplier->getId())
@@ -71,10 +71,10 @@ final class UpdateSupplierProductFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs($user)
-            ->get('/supplier-product/'.$publicId.'/edit')
+            ->get('/supplier-product/' . $publicId . '/edit')
             ->fillField('supplier_product[name]', '')
             ->click('Update Supplier product')
-            ->assertOn('/supplier-product/'.$publicId.'/edit')
+            ->assertOn('/supplier-product/' . $publicId . '/edit')
             ->assertSee('Please enter a supplier product name');
     }
 }

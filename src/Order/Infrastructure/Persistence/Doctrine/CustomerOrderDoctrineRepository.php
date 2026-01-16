@@ -21,12 +21,10 @@ use Pagerfanta\Doctrine\ORM\QueryAdapter;
  *
  * @method CustomerOrder|null find($id, $lockMode = null, $lockVersion = null)
  * @method CustomerOrder|null findOneBy(array $criteria, array $orderBy = null)
- * @method CustomerOrder[] findAll()
- * @method CustomerOrder[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method CustomerOrder[]    findAll()
+ * @method CustomerOrder[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
-    FindByCriteriaInterface,
-    OrderRepository
+class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements FindByCriteriaInterface, OrderRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -62,7 +60,7 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
 
         if ($criteria->getQuery()) {
             $qb->andWhere('o.id LIKE :query')
-                ->setParameter('query', '%'.$criteria->getQuery().'%');
+                ->setParameter('query', '%' . $criteria->getQuery() . '%');
         }
 
         if ($criteria->orderId) {
@@ -111,7 +109,7 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
         if (str_starts_with($sort, 'customer.')) {
             $qb->leftJoin('o.customer', 'customer')->orderBy($sort, $sortDirection);
         } else {
-            $qb->orderBy('o.'.$sort, $sortDirection);
+            $qb->orderBy('o.' . $sort, $sortDirection);
         }
 
         return new QueryAdapter($qb);
@@ -165,8 +163,8 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
 
     public function findOverdueOrders(OverdueOrderSearchCriteria $dto): AdapterInterface
     {
-        $sort = $dto->getSort() ?: $dto::SORT_DEFAULT;
-        $sortDirection = $dto->getSortDirection() ?: $dto::SORT_DIRECTION_DEFAULT;
+        $sort = $dto->getSort();
+        $sortDirection = $dto->getSortDirection();
         $startDate = new \DateTime($dto->getDuration()->getStartDate());
 
         $qb = $this->getOverdueOrders($startDate)
@@ -175,7 +173,7 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
         if (str_starts_with($sort, 'customer.')) {
             $qb->leftJoin('co.customer', 'customer')->orderBy($sort, $sortDirection);
         } else {
-            $qb->orderBy('co.'.$sort, $sortDirection);
+            $qb->orderBy('co.' . $sort, $sortDirection);
         }
 
         return new QueryAdapter($qb);

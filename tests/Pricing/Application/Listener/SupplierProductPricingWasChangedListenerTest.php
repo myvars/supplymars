@@ -19,8 +19,11 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 final class SupplierProductPricingWasChangedListenerTest extends KernelTestCase
 {
     private EntityManagerInterface $em;
+
     private SupplierProductRepository $supplierProducts;
+
     private ProductRepository $products;
+
     private MarkupCalculator $calculator;
 
     protected function setUp(): void
@@ -65,7 +68,7 @@ final class SupplierProductPricingWasChangedListenerTest extends KernelTestCase
             supplier: $sp->getSupplier(),
             stock: $sp->getStock(),
             leadTimeDays: $sp->getLeadTimeDays(),
-            cost: bcadd($sp->getCost(), '1.00', 2), // change cost to trigger event
+            cost: bcadd((string) $sp->getCost(), '1.00', 2), // change cost to trigger event
             product: $sp->getProduct(),
             isActive: $sp->isActive() ?? true
         );
@@ -74,6 +77,7 @@ final class SupplierProductPricingWasChangedListenerTest extends KernelTestCase
             if (!$event instanceof SupplierProductPricingWasChangedEvent) {
                 continue;
             }
+
             $listener($event);
         }
 
@@ -126,6 +130,7 @@ final class SupplierProductPricingWasChangedListenerTest extends KernelTestCase
             if (!$event instanceof SupplierProductPricingWasChangedEvent) {
                 continue;
             }
+
             $listener($event);
         }
 

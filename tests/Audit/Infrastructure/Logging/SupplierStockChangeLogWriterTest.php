@@ -17,7 +17,9 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 final class SupplierStockChangeLogWriterTest extends KernelTestCase
 {
     private EntityManagerInterface $em;
+
     private SupplierStockChangeLogRepository $repo;
+
     private ValidatorInterface $validator;
 
     protected function setUp(): void

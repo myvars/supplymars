@@ -43,12 +43,14 @@ readonly class deliverPOItemsCommand
 
         if ($poItemCount < 1) {
             $io->error('poItemCount must be > 0.');
+
             return Command::INVALID;
         }
 
         $supplier = $this->suppliers->getRandomSupplier();
         if (!$supplier instanceof Supplier) {
             $io->error('No supplier found');
+
             return Command::FAILURE;
         }
 
@@ -58,8 +60,9 @@ readonly class deliverPOItemsCommand
         ));
 
         $purchaseOrderItems = $this->getShippedPurchaseOrderItems($supplier, $poItemCount);
-        if (!$purchaseOrderItems) {
+        if ($purchaseOrderItems === []) {
             $io->note('No shipped PO items to deliver.');
+
             return Command::SUCCESS;
         }
 
@@ -126,8 +129,8 @@ readonly class deliverPOItemsCommand
 
         $now = new \DateTimeImmutable();
         $intervalTime = $now->sub(\DateInterval::createFromDateString('12 hours'));
-        $startTime = (new \DateTimeImmutable())->setTime(7, 0);
-        $endTime = (new \DateTimeImmutable())->setTime(21, 0);
+        $startTime = new \DateTimeImmutable()->setTime(7, 0);
+        $endTime = new \DateTimeImmutable()->setTime(21, 0);
 
         if ($now < $startTime || $now > $endTime || $statusChangeLog->getEventTimestamp() > $intervalTime) {
             return false;

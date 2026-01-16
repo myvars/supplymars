@@ -15,6 +15,7 @@ final class DeleteProductImageHandlerTest extends KernelTestCase
     use Factories;
 
     private DeleteProductImageHandler $handler;
+
     private ProductImageRepository $productImages;
 
     protected function setUp(): void

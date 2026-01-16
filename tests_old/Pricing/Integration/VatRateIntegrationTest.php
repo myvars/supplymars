@@ -2,15 +2,14 @@
 
 namespace App\Tests\Pricing\Integration;
 
-use tests\Shared\Factory\CategoryFactory;
-use tests\Shared\Factory\VatRateFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use tests\Shared\Factory\CategoryFactory;
+use tests\Shared\Factory\VatRateFactory;
 use Zenstruck\Foundry\Test\Factories;
 
-class VatRateIntegrationTest  extends KernelTestCase
+class VatRateIntegrationTest extends KernelTestCase
 {
-
     use Factories;
 
     private ValidatorInterface $validator;
@@ -25,7 +24,7 @@ class VatRateIntegrationTest  extends KernelTestCase
     {
         $vatRate = VatRateFactory::createOne([
             'name' => 'Standard rate',
-            'rate' => '20.00'
+            'rate' => '20.00',
         ]);
 
         $errors = $this->validator->validate($vatRate);

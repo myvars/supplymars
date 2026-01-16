@@ -2,14 +2,14 @@
 
 namespace App\Tests\Customer\Integration;
 
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use tests\Shared\Factory\AddressFactory;
 use tests\Shared\Factory\CategoryFactory;
 use tests\Shared\Factory\CustomerOrderFactory;
 use tests\Shared\Factory\StatusChangeLogFactory;
 use tests\Shared\Factory\SubcategoryFactory;
 use tests\Shared\Factory\UserFactory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Zenstruck\Foundry\Test\Factories;
 
 class UserIntegrationTest extends KernelTestCase
@@ -60,8 +60,8 @@ class UserIntegrationTest extends KernelTestCase
 
         $persistedUser = UserFactory::repository()->find($user->getId());
         $this->assertTrue($persistedUser->isStaff());
-        $this->assertEquals("Staff Member", $persistedUser->getFullName());
-        $this->assertContains("ROLE_ADMIN", $persistedUser->getRoles());
+        $this->assertEquals('Staff Member', $persistedUser->getFullName());
+        $this->assertContains('ROLE_ADMIN', $persistedUser->getRoles());
     }
 
     public function testUserPersistence(): void
@@ -180,7 +180,7 @@ class UserIntegrationTest extends KernelTestCase
         $address = AddressFactory::createOne([
             'customer' => $user,
             'isDefaultBillingAddress' => true,
-            'isDefaultShippingAddress' => true
+            'isDefaultShippingAddress' => true,
         ]);
         $customerOrder = CustomerOrderFactory::createOne(['customer' => $user, 'billingAddress' => $address]);
 
@@ -194,7 +194,7 @@ class UserIntegrationTest extends KernelTestCase
         $address = AddressFactory::createOne([
             'customer' => $user,
             'isDefaultBillingAddress' => true,
-            'isDefaultShippingAddress' => true
+            'isDefaultShippingAddress' => true,
         ]);
         $customerOrder = CustomerOrderFactory::createOne(['customer' => $user, 'billingAddress' => $address]);
 
@@ -209,7 +209,7 @@ class UserIntegrationTest extends KernelTestCase
         $address = AddressFactory::createOne([
             'customer' => $user,
             'isDefaultBillingAddress' => true,
-            'isDefaultShippingAddress' => true
+            'isDefaultShippingAddress' => true,
         ]);
         $customerOrder = CustomerOrderFactory::createOne(['customer' => $user, 'billingAddress' => $address]);
 

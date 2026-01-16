@@ -64,7 +64,7 @@ class OrderSearchCriteriaIntegrationTest extends KernelTestCase
     public function testInvalidProductId(): void
     {
         $criteria = new OrderSearchCriteria();
-        $criteria->productId = 0 ;
+        $criteria->productId = 0;
 
         $errors = $this->validator->validate($criteria);
         $this->assertSame('Please enter a valid Product Id', $errors[0]->getMessage());

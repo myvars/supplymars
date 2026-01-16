@@ -17,7 +17,7 @@ final readonly class RandomUserFactory
     public function create(): User
     {
         $user = User::create(
-            fullName: $this->faker->firstName().' '.$this->faker->lastName(),
+            fullName: $this->faker->firstName() . ' ' . $this->faker->lastName(),
             email: $this->faker->unique()->safeEmail(),
             isStaff: false,
             isVerified: true,

@@ -21,9 +21,7 @@ use Pagerfanta\Doctrine\ORM\QueryAdapter;
  * @method VatRate[]    findAll()
  * @method VatRate[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class VatRateDoctrineRepository extends ServiceEntityRepository implements
-    FindByCriteriaInterface,
-    VatRateRepository
+class VatRateDoctrineRepository extends ServiceEntityRepository implements FindByCriteriaInterface, VatRateRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -64,10 +62,10 @@ class VatRateDoctrineRepository extends ServiceEntityRepository implements
 
         if ($criteria->getQuery()) {
             $qb->andWhere('v.name LIKE :query')
-                ->setParameter('query', '%'.$criteria->getQuery().'%');
+                ->setParameter('query', '%' . $criteria->getQuery() . '%');
         }
 
-        $qb->orderBy('v.'.$sort, $sortDirection);
+        $qb->orderBy('v.' . $sort, $sortDirection);
 
         return new QueryAdapter($qb);
     }

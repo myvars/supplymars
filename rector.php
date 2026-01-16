@@ -1,12 +1,12 @@
 <?php
 
 use Rector\Config\RectorConfig;
-use Zenstruck\Foundry\Utils\Rector\FoundrySetList;
 
 return RectorConfig::configure()
     ->withPaths([
         __DIR__ . '/src',
-        __DIR__ . '/tests'
+        __DIR__ . '/templates',
+        __DIR__ . '/tests',
     ])
     ->withRootFiles()
     ->withComposerBased(twig: true, doctrine: true, phpunit: true, symfony: true)
@@ -19,7 +19,7 @@ return RectorConfig::configure()
         privatization: true,
         instanceOf: true,
         earlyReturn: true,
+        doctrineCodeQuality: true,
     )
     ->withImportNames(importShortClasses: false, removeUnusedImports: true)
-    ->withAttributesSets()
     ->withSkip([]);

@@ -21,9 +21,9 @@ final class DeleteProductImageFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/product/images/'.$publicId.'/remove')
+            ->get('/product/images/' . $publicId . '/remove')
             ->followRedirect()
-            ->assertOn('/product_image/'.$product->getPublicId()->value().'/images')
+            ->assertOn('/product_image/' . $product->getPublicId()->value() . '/images')
             ->assertSee('Product image deleted')
             ->assertSee('0 Product Images');
     }

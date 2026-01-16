@@ -12,7 +12,10 @@ use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 interface ResetPasswordRequestRepository
 {
     public function add(ResetPasswordRequest $resetPasswordRequest): void;
+
     public function remove(ResetPasswordRequest $resetPasswordRequest): void;
+
     public function get(ResetPasswordRequestId $id): ?ResetPasswordRequest;
+
     public function getByPublicId(ResetPasswordRequestPublicId $publicId): ?ResetPasswordRequest;
 }

@@ -55,7 +55,7 @@ class ProcessOrderTest extends TestCase
 
         $customerOrder->method('getCustomerOrderItems')->willReturn(new ArrayCollection([$customerOrderItem]));
         $customerOrder->method('getPurchaseOrders')->willReturn(new ArrayCollection([$purchaseOrder]));
-        $customerOrderItem->method('getOutstandingQty')->willReturnOnConsecutiveCalls(5,0);
+        $customerOrderItem->method('getOutstandingQty')->willReturnOnConsecutiveCalls(5, 0);
         $customerOrderItem->method('getProduct')->willReturn($product);
         $product->method('getActiveSupplierProducts')->willReturn(new ArrayCollection([$supplierProduct]));
         $supplierProduct->method('getStock')->willReturn(10);

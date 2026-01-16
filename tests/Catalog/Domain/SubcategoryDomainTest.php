@@ -2,7 +2,6 @@
 
 namespace App\Tests\Catalog\Domain;
 
-
 use App\Catalog\Domain\Model\Category\Category;
 use App\Catalog\Domain\Model\Subcategory\Event\SubcategoryPricingWasChangedEvent;
 use App\Catalog\Domain\Model\Subcategory\Subcategory;

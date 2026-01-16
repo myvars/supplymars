@@ -2,8 +2,10 @@
 
 namespace App\Tests\Shared\Factory;
 
+use App\Customer\Domain\Model\Address\Address;
 use App\Customer\Domain\Model\User\User;
 use App\Order\Domain\Model\Order\CustomerOrder;
+use App\Pricing\Domain\Model\VatRate\VatRate;
 use App\Shared\Domain\ValueObject\ShippingMethod;
 use Zenstruck\Foundry\LazyValue;
 use Zenstruck\Foundry\Object\Instantiator;
@@ -36,10 +38,10 @@ final class CustomerOrderFactory extends PersistentObjectFactory
     protected function defaults(): array
     {
         return [
-            'customer' => LazyValue::memoize(fn () => UserFactory::createOne()),
+            'customer' => LazyValue::memoize(fn (): User => UserFactory::createOne()),
             'billingAddress' => null,
             'shippingMethod' => LazyValue::memoize(fn () => self::faker()->randomElement(ShippingMethod::cases())),
-            'vatRate' => LazyValue::memoize(fn () => VatRateFactory::new()->withStandardRate()->create()),
+            'vatRate' => LazyValue::memoize(fn (): VatRate => VatRateFactory::new()->withStandardRate()->create()),
             'customerOrderRef' => self::faker()->word(),
         ];
     }
@@ -54,7 +56,7 @@ final class CustomerOrderFactory extends PersistentObjectFactory
             ->beforeInstantiate(function (array $attributes): array {
                 if (null !== $attributes['customer']) {
                     $attributes['billingAddress'] ??= LazyValue::memoize(
-                        fn () => AddressFactory::createOne([
+                        fn (): Address => AddressFactory::createOne([
                             'customer' => $attributes['customer'],
                             'isDefaultBillingAddress' => true,
                             'isDefaultShippingAddress' => true,

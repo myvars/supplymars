@@ -18,12 +18,10 @@ use Pagerfanta\Doctrine\ORM\QueryAdapter;
  *
  * @method Subcategory|null find($id, $lockMode = null, $lockVersion = null)
  * @method Subcategory|null findOneBy(array $criteria, array $orderBy = null)
- * @method Subcategory[] findAll()
- * @method Subcategory[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Subcategory[]    findAll()
+ * @method Subcategory[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class SubcategoryDoctrineRepository extends ServiceEntityRepository implements
-    FindByCriteriaInterface,
-    SubcategoryRepository
+class SubcategoryDoctrineRepository extends ServiceEntityRepository implements FindByCriteriaInterface, SubcategoryRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -59,7 +57,7 @@ class SubcategoryDoctrineRepository extends ServiceEntityRepository implements
 
         if ($criteria->getQuery()) {
             $qb->andWhere('s.name LIKE :query')
-                ->setParameter('query', '%'.$criteria->getQuery().'%');
+                ->setParameter('query', '%' . $criteria->getQuery() . '%');
         }
 
         if ($criteria->categoryId) {
@@ -77,11 +75,11 @@ class SubcategoryDoctrineRepository extends ServiceEntityRepository implements
                 ->setParameter('managerId', $criteria->managerId);
         }
 
-        if ($sort) {
+        if ($sort !== '' && $sort !== '0') {
             if (str_starts_with($sort, 'category.')) {
                 $qb->leftJoin('s.category', 'category')->orderBy($sort, $sortDirection);
             } else {
-                $qb->orderBy('s.'.$sort, $sortDirection);
+                $qb->orderBy('s.' . $sort, $sortDirection);
             }
         }
 

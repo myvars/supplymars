@@ -5,8 +5,8 @@ namespace App\Tests\Integration\Service\Search;
 use App\Customer\Domain\Model\User\User;
 use App\Service\Search\Paginator;
 use Doctrine\ORM\EntityManagerInterface;
-use tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use tests\Shared\Factory\UserFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class PaginatorIntegrationTest extends KernelTestCase

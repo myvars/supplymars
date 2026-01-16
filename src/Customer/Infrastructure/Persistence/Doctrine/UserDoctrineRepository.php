@@ -23,11 +23,10 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
  *
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
  * @method User|null findOneBy(array $criteria, array $orderBy = null)
- * @method User[] findAll()
- * @method User[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method User[]    findAll()
+ * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class UserDoctrineRepository extends ServiceEntityRepository implements
-    PasswordUpgraderInterface, FindByCriteriaInterface, UserRepository
+class UserDoctrineRepository extends ServiceEntityRepository implements PasswordUpgraderInterface, FindByCriteriaInterface, UserRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -77,10 +76,10 @@ class UserDoctrineRepository extends ServiceEntityRepository implements
 
         if ($criteria->getQuery()) {
             $qb->andWhere('u.fullName LIKE :query OR u.email LIKE :query')
-                ->setParameter('query', '%'.$criteria->getQuery().'%');
+                ->setParameter('query', '%' . $criteria->getQuery() . '%');
         }
 
-        $qb->orderBy('u.'.$sort, $sortDirection);
+        $qb->orderBy('u.' . $sort, $sortDirection);
 
         return new QueryAdapter($qb);
     }

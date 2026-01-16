@@ -20,7 +20,7 @@ final class DeleteSubcategoryFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/subcategory/'.$publicId.'/delete/confirm')
+            ->get('/subcategory/' . $publicId . '/delete/confirm')
             ->click('Delete Subcategory')
             ->assertOn('/subcategory/')
             ->assertSee('Subcategory deleted');

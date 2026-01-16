@@ -13,7 +13,10 @@ use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 interface UserRepository extends FindByCriteriaInterface
 {
     public function add(User $user): void;
+
     public function remove(User $user): void;
+
     public function get(UserId $id): ?User;
+
     public function getByPublicId(UserPublicId $publicId): ?User;
 }

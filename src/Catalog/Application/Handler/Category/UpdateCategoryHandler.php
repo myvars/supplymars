@@ -60,4 +60,3 @@ final readonly class UpdateCategoryHandler
         return Result::ok('Category updated');
     }
 }
-

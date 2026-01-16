@@ -14,6 +14,7 @@ use App\Shared\Domain\Event\DomainEventProviderTrait;
 use App\Shared\Domain\ValueObject\CostChange;
 use App\Shared\Domain\ValueObject\StockChange;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapping\HasPublicUlid;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -71,7 +72,7 @@ class SupplierProduct implements DomainEventProviderInterface
     #[Assert\Range(notInRangeMessage: 'Please enter a lead time(days)', min: 0, max: 1000)]
     private ?int $leadTimeDays = null;
 
-    #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     #[Assert\NotBlank(message: 'Please enter a cost')]
     #[Assert\PositiveOrZero(message: 'Please enter a positive or zero cost')]
     private ?string $cost = '0.00';
@@ -100,7 +101,7 @@ class SupplierProduct implements DomainEventProviderInterface
         int $leadTimeDays,
         string $cost,
         ?Product $product,
-        bool $isActive
+        bool $isActive,
     ): self {
         $self = new self();
         $self->rename($name);
@@ -128,7 +129,7 @@ class SupplierProduct implements DomainEventProviderInterface
         int $leadTimeDays,
         string $cost,
         ?Product $product,
-        bool $isActive
+        bool $isActive,
     ): void {
         $this->rename($name);
         $this->productCode = $productCode;
@@ -146,7 +147,7 @@ class SupplierProduct implements DomainEventProviderInterface
         int $leadTimeDays,
         string $cost,
         ?Product $product,
-        bool $isActive
+        bool $isActive,
     ): void {
         $supplierChanged = $supplier !== $this->supplier;
         $stockChanged = $stock !== $this->stock;
@@ -155,8 +156,8 @@ class SupplierProduct implements DomainEventProviderInterface
         $productChanged = $product !== $this->product;
         $isActiveChanged = $isActive !== $this->isActive;
 
-        if (!$supplierChanged && !$stockChanged && !$leadTimeDaysChanged &&
-            !$costChanged && !$productChanged && !$isActiveChanged
+        if (!$supplierChanged && !$stockChanged && !$leadTimeDaysChanged
+            && !$costChanged && !$productChanged && !$isActiveChanged
         ) {
             return;
         }
@@ -358,6 +359,7 @@ class SupplierProduct implements DomainEventProviderInterface
         if ($name === '') {
             throw new \InvalidArgumentException('Product name cannot be empty');
         }
+
         $this->name = $name;
     }
 
@@ -366,6 +368,7 @@ class SupplierProduct implements DomainEventProviderInterface
         if ($leadTimeDays < 0) {
             throw new \InvalidArgumentException('Lead time days cannot be negative');
         }
+
         $this->leadTimeDays = $leadTimeDays;
     }
 
@@ -374,6 +377,7 @@ class SupplierProduct implements DomainEventProviderInterface
         if ($weight < 0) {
             throw new \InvalidArgumentException('Weight cannot be negative');
         }
+
         $this->weight = $weight;
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Purchasing\Application\Search;
+
 use App\Shared\Application\Search\SearchCriteria;
 use App\Shared\UI\Http\Validation\DateRange;
 use Symfony\Component\Validator\Constraints as Assert;

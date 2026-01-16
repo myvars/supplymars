@@ -4,11 +4,11 @@ namespace App\Tests\Integration\Service\Product;
 
 use App\Service\Product\ProductPriceCalculator;
 use App\Shared\Domain\ValueObject\PriceModel;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use tests\Shared\Factory\CategoryFactory;
 use tests\Shared\Factory\ProductFactory;
 use tests\Shared\Factory\SubcategoryFactory;
 use tests\Shared\Factory\VatRateFactory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 
 class ProductPriceCalculatorIntegrationTest extends KernelTestCase
@@ -31,7 +31,7 @@ class ProductPriceCalculatorIntegrationTest extends KernelTestCase
             'category' => $category,
             'cost' => '100.00',
             'defaultMarkup' => '15.000',
-            'priceModel' => PriceModel::PRETTY_99
+            'priceModel' => PriceModel::PRETTY_99,
         ]);
 
         $this->productPriceCalculator->recalculatePrice($product);
@@ -52,7 +52,7 @@ class ProductPriceCalculatorIntegrationTest extends KernelTestCase
         $category = CategoryFactory::createOne([
             'defaultMarkup' => '10.000',
             'priceModel' => PriceModel::PRETTY_99,
-            'vatRate' => $vatRate
+            'vatRate' => $vatRate,
         ]);
         $product = ProductFactory::createOne([
             'category' => $category,
@@ -77,7 +77,7 @@ class ProductPriceCalculatorIntegrationTest extends KernelTestCase
         $subcategory = SubcategoryFactory::createOne([
             'defaultMarkup' => '20.000',
             'priceModel' => PriceModel::PRETTY_99,
-            'category' => $category
+            'category' => $category,
         ]);
         $product = ProductFactory::createOne([
             'category' => $category,

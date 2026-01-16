@@ -4,9 +4,9 @@ namespace App\Tests\Order\Integration;
 
 use App\Order\Application\DTO\CreateOrderDto;
 use App\Shared\Domain\ValueObject\ShippingMethod;
-use tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use tests\Shared\Factory\UserFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class CreateOrderDtoIntegrationTest extends KernelTestCase

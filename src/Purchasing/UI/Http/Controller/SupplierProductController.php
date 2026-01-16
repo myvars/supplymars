@@ -105,7 +105,7 @@ class SupplierProductController extends AbstractController
         return $flow->form(
             request: $request,
             formType: SupplierProductType::class,
-            data: SupplierproductForm::fromEntity($supplierProduct),
+            data: SupplierProductForm::fromEntity($supplierProduct),
             mapper: $mapper,
             handler: $handler,
             context: FlowContext::forUpdate(self::MODEL)->allowDelete(true),
@@ -143,7 +143,8 @@ class SupplierProductController extends AbstractController
     }
 
     #[Route(path: '/supplier-product/{id}', name: 'app_purchasing_supplier_product_show', methods: ['GET'])]
-    public function show(#[ValueResolver('public_id')] SupplierProduct $supplierProduct): Response {
+    public function show(#[ValueResolver('public_id')] SupplierProduct $supplierProduct): Response
+    {
         return $this->render('/purchasing/supplier_product/show.html.twig', ['result' => $supplierProduct]);
     }
 
@@ -171,7 +172,7 @@ class SupplierProductController extends AbstractController
             handler: $handler,
             context: FlowContext::forDelete(self::MODEL)
             ->successRoute('app_pricing_stock', [
-                'id' => $supplierProduct->getProduct()->getPublicId()->value()
+                'id' => $supplierProduct->getProduct()->getPublicId()->value(),
             ]),
         );
     }
@@ -192,7 +193,7 @@ class SupplierProductController extends AbstractController
             command: new ToggleSupplierProductStatus($supplierProduct->getPublicId()),
             handler: $handler,
             context: FlowContext::forSuccess('app_pricing_stock', [
-                'id' => $supplierProduct->getProduct()?->getPublicId()->value()
+                'id' => $supplierProduct->getProduct()?->getPublicId()->value(),
             ]),
         );
     }
@@ -209,7 +210,7 @@ class SupplierProductController extends AbstractController
             command: new MapSupplierProduct($supplierProduct->getPublicId()),
             handler: $handler,
             context: FlowContext::forSuccess('app_purchasing_supplier_product_show', [
-                'id' => $supplierProduct->getPublicId()->value()
+                'id' => $supplierProduct->getPublicId()->value(),
             ]),
         );
     }

@@ -42,7 +42,6 @@ class CustomerOrderItemTest extends TestCase
         $product->method('getSellPrice')->willReturn('100.00');
         $product->method('getSellPriceIncVat')->willReturn('120.00');
 
-
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('The quantity must be positive');
         CustomerOrderItem::createFromProduct($customerOrder, $product, -1);
@@ -57,7 +56,6 @@ class CustomerOrderItemTest extends TestCase
         $product->method('getSellPrice')->willReturn('-100.00');
         $product->method('getSellPriceIncVat')->willReturn('120.00');
 
-
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('The price must greater than 0');
         CustomerOrderItem::createFromProduct($customerOrder, $product, 1);
@@ -71,7 +69,6 @@ class CustomerOrderItemTest extends TestCase
         $product->method('getWeight')->willReturn(-10);
         $product->method('getSellPrice')->willReturn('100.00');
         $product->method('getSellPriceIncVat')->willReturn('120.00');
-
 
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('The weight must be greater than 0');

@@ -9,14 +9,17 @@ use App\Shared\Infrastructure\Persistence\Doctrine\EventListener\DomainEventDisp
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\UnitOfWork;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 final class DomainEventDispatcherTest extends TestCase
 {
-    private EventDispatcherInterface $eventDispatcher;
-    private MessageBusInterface $messageBus;
+    private MockObject $eventDispatcher;
+
+    private MockObject $messageBus;
+
     private DomainEventDispatcher $listener;
 
     protected function setUp(): void

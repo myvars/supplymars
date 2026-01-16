@@ -32,7 +32,6 @@ final class SupplierStockChangeLoggerTest extends KernelTestCase
     public function testPersistsLogAndFlushesOnStockChangeEvent(): void
     {
         $sp = SupplierProductFactory::createOne();
-        $publicId = $sp->getPublicId();
         $beforeStock = $sp->getStock();
 
         // Trigger a stock change domain event

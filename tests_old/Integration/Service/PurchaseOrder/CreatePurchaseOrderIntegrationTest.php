@@ -4,11 +4,11 @@ namespace App\Tests\Integration\Service\PurchaseOrder;
 
 use App\Service\PurchaseOrder\CreatePurchaseOrder;
 use Doctrine\ORM\EntityManagerInterface;
-use tests\Shared\Factory\CustomerOrderFactory;
-use tests\Shared\Factory\SupplierFactory;
 use Story\StaffUserStory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use tests\Shared\Factory\CustomerOrderFactory;
+use tests\Shared\Factory\SupplierFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class CreatePurchaseOrderIntegrationTest extends KernelTestCase

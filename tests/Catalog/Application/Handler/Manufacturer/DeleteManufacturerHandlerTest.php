@@ -15,6 +15,7 @@ final class DeleteManufacturerHandlerTest extends KernelTestCase
     use Factories;
 
     private DeleteManufacturerHandler $handler;
+
     private ManufacturerRepository $manufacturers;
 
     protected function setUp(): void

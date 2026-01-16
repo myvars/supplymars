@@ -22,7 +22,7 @@ final class CreateSubcategoryFlowTest extends WebTestCase
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
             ->get('/subcategory/new')
-            ->fillField('subcategory[category]',$category->getId())
+            ->fillField('subcategory[category]', $category->getId())
             ->fillField('subcategory[name]', 'Flow Subcategory')
             ->fillField('subcategory[defaultMarkup]', '5.000')
             ->fillField('subcategory[priceModel]', PriceModel::NONE->value)

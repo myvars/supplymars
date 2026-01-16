@@ -29,7 +29,7 @@ final readonly class UpdatePurchaseOrderItemStatusHandler
             $purchaseOrderItem->updateItemStatus(
                 newStatus: $command->purchaseOrderStatus,
             );
-        } catch (\Exception $e) {
+        } catch (\Exception) {
             return Result::fail('Status cannot be updated.');
         }
 
@@ -43,4 +43,3 @@ final readonly class UpdatePurchaseOrderItemStatusHandler
         return Result::ok('Purchase order item status updated.');
     }
 }
-

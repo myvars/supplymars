@@ -26,7 +26,7 @@ final class RemoveSupplierProductFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs($user)
-            ->get('/supplier-product/'.$publicId.'/remove/confirm')
+            ->get('/supplier-product/' . $publicId . '/remove/confirm')
             ->click('Remove')
             ->assertStatus(200);
 
@@ -44,7 +44,7 @@ final class RemoveSupplierProductFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs($user)
-            ->get('/supplier-product/'.$publicId.'/remove/confirm')
+            ->get('/supplier-product/' . $publicId . '/remove/confirm')
             ->click('Remove')
             ->assertStatus(500);
     }

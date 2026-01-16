@@ -29,10 +29,10 @@ final class CategoryType extends AbstractType
     {
         $builder
             ->add('id', HiddenType::class, [
-                'required' => false
+                'required' => false,
             ])
             ->add('name', null, [
-                'label' => 'Category Name'
+                'label' => 'Category Name',
             ])
             ->add('vatRate', EntityType::class, [
                 'class' => VatRate::class,

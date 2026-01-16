@@ -24,7 +24,9 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
     use Factories;
 
     private EntityManagerInterface $em;
+
     private ValidatorInterface $validator;
+
     private SupplierProductMappingService $service;
 
     protected function setUp(): void
@@ -44,7 +46,7 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
         $sc = $sp->getSupplierCategory();
         $ss = $sp->getSupplierSubcategory();
 
-        $product = ($this->service)->map($sp);
+        $product = $this->service->map($sp);
         $this->em->flush();
 
         self::assertInstanceOf(Product::class, $product);
@@ -80,7 +82,7 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
         ]);
 
         // map and ensure reuse
-        $product = ($this->service)->map($sp);
+        $product = $this->service->map($sp);
         $this->em->flush();
 
         self::assertSame($existingProduct->getId(), $product->getId());
@@ -102,7 +104,7 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
 
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Supplier manufacturer is missing');
-        ($this->service)->map($sp);
+        $this->service->map($sp);
     }
 
     public function testMapThrowsWhenSupplierCategoryMissing(): void
@@ -112,7 +114,7 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
 
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Supplier category is missing');
-        ($this->service)->map($sp);
+        $this->service->map($sp);
     }
 
     public function testMapThrowsWhenSupplierSubcategoryMissing(): void
@@ -122,6 +124,6 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
 
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Supplier subcategory is missing');
-        ($this->service)->map($sp);
+        $this->service->map($sp);
     }
 }

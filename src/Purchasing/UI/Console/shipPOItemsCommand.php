@@ -62,7 +62,7 @@ readonly class shipPOItemsCommand
         ));
 
         $purchaseOrderItems = $this->getAcceptedPurchaseOrderItems($supplier, $poItemCount);
-        if (!$purchaseOrderItems) {
+        if ($purchaseOrderItems === []) {
             $io->note('No accepted PO items to ship.');
 
             return Command::SUCCESS;
@@ -82,7 +82,7 @@ readonly class shipPOItemsCommand
             if ($this->realWorldPoShippingSimulator($purchaseOrderItem)) {
                 $purchaseOrderItem->updateItemStatus(newStatus: PurchaseOrderStatus::SHIPPED);
 
-                $processedIds[] = $purchaseOrderItem->getId().' : '.$purchaseOrderItem->getStatus()->value;
+                $processedIds[] = $purchaseOrderItem->getId() . ' : ' . $purchaseOrderItem->getStatus()->value;
                 ++$processed;
             }
 
@@ -123,7 +123,7 @@ readonly class shipPOItemsCommand
     private function realWorldPoShippingSimulator(PurchaseOrderItem $purchaseOrderItem): bool
     {
         $statusChangeLog = $this->getAcceptedPoStatusChange($purchaseOrderItem);
-        if (!$statusChangeLog) {
+        if (!$statusChangeLog instanceof StatusChangeLog) {
             return false;
         }
 

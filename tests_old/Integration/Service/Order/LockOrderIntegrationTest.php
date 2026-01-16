@@ -6,10 +6,10 @@ use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Service\Crud\Common\CrudContext;
 use App\Service\Order\LockOrder;
 use Doctrine\ORM\EntityManagerInterface;
-use tests\Shared\Factory\CustomerOrderFactory;
 use Story\StaffUserStory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Bundle\SecurityBundle\Security;
+use tests\Shared\Factory\CustomerOrderFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class LockOrderIntegrationTest extends KernelTestCase

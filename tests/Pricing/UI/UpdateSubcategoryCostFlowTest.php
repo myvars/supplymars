@@ -22,11 +22,11 @@ final class UpdateSubcategoryCostFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs($admin)
-            ->get('/pricing/'.$publicId.'/cost/subcategory/edit')
+            ->get('/pricing/' . $publicId . '/cost/subcategory/edit')
             ->fillField('subcategory_cost[defaultMarkup]', '7.500')
             ->fillField('subcategory_cost[priceModel]', PriceModel::PRETTY_99->value)
             ->click('Update Pricing')
-            ->assertOn('/pricing/'.$publicId.'/cost')
+            ->assertOn('/pricing/' . $publicId . '/cost')
             ->assertSee('Subcategory cost updated');
     }
 
@@ -38,11 +38,11 @@ final class UpdateSubcategoryCostFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs($admin)
-            ->get('/pricing/'.$publicId.'/cost/subcategory/edit')
+            ->get('/pricing/' . $publicId . '/cost/subcategory/edit')
             ->fillField('subcategory_cost[defaultMarkup]', '-1.000')
             ->fillField('subcategory_cost[priceModel]', PriceModel::NONE->value)
             ->click('Update')
-            ->assertOn('/pricing/'.$publicId.'/cost/subcategory/edit')
+            ->assertOn('/pricing/' . $publicId . '/cost/subcategory/edit')
             ->assertSee('Please enter a positive or zero subcategory markup %');
     }
 }

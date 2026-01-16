@@ -19,7 +19,7 @@ final class DeleteCustomerFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/customer/'.$publicId.'/delete/confirm')
+            ->get('/customer/' . $publicId . '/delete/confirm')
             ->click('Delete Customer')
             ->assertOn('/customer/')
             ->assertSee('Customer deleted');

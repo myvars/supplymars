@@ -13,7 +13,10 @@ use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 interface SupplierRepository extends FindByCriteriaInterface
 {
     public function add(Supplier $supplier): void;
+
     public function remove(Supplier $supplier): void;
+
     public function get(SupplierId $id): ?Supplier;
+
     public function getByPublicId(SupplierPublicId $publicId): ?Supplier;
 }

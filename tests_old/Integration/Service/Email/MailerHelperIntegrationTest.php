@@ -4,10 +4,10 @@ namespace App\Tests\Integration\Service\Email;
 
 use App\Customer\Domain\Model\User\EmailVerifier;
 use App\Customer\Infrastructure\Mailer\MailerHelper;
-use tests\Shared\Factory\UserFactory;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use SymfonyCasts\Bundle\ResetPassword\Model\ResetPasswordToken;
+use tests\Shared\Factory\UserFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class MailerHelperIntegrationTest extends KernelTestCase

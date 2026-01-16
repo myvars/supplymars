@@ -35,6 +35,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class createCustomerOrdersCommand
 {
     public const int MAX_ORDER_LINES = 5;
+
     public const int MAX_LINE_QTY = 5;
 
     public function __construct(
@@ -103,7 +104,7 @@ class createCustomerOrdersCommand
         $io->newLine(2);
         $io->success(sprintf('Created %d customer orders.', $processed));
 
-        if ($processed > 0 && $output->isVerbose()) {
+        if ($output->isVerbose()) {
             $io->section('Created Order IDs');
             $io->listing($processedIds);
         }
@@ -146,7 +147,7 @@ class createCustomerOrdersCommand
             new CreateOrder(
                 $user->getId(),
                 $shippingMethods[array_rand($shippingMethods)],
-                'TEST-'.sprintf('%04d', $user->getId()),
+                'TEST-' . sprintf('%04d', $user->getId()),
             )
         );
 

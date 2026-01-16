@@ -58,4 +58,3 @@ final readonly class CreateCategoryHandler
         return Result::ok('Category created', CategoryId::fromInt($category->getId()));
     }
 }
-

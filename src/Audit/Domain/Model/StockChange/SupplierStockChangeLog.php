@@ -6,6 +6,7 @@ use App\Audit\Infrastructure\Persistence\Doctrine\SupplierStockChangeLogDoctrine
 use App\Shared\Domain\Event\DomainEventType;
 use App\Shared\Domain\ValueObject\CostChange;
 use App\Shared\Domain\ValueObject\StockChange;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -33,7 +34,7 @@ class SupplierStockChangeLog
         #[Assert\Range(notInRangeMessage: 'Please enter a stock level', min: 0, max: 10000)]
         private readonly int $stock,
 
-        #[ORM\Column(type: 'decimal', precision: 10, scale: 2)]
+        #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
         #[Assert\PositiveOrZero(message: 'Please enter a positive or zero cost')]
         private readonly string $cost,
 

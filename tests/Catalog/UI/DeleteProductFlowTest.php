@@ -21,7 +21,7 @@ final class DeleteProductFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs($user)
-            ->get('/product/' . $publicId. '/delete/confirm')
+            ->get('/product/' . $publicId . '/delete/confirm')
             ->click('Delete Product')
             ->assertOn('/product/')
             ->assertSee('Product deleted');

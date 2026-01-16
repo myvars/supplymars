@@ -2,7 +2,6 @@
 
 namespace App\Tests\Catalog\Unit;
 
-
 use App\Catalog\Domain\Model\Product\Product;
 use App\Catalog\Domain\Model\ProductImage\ProductImage;
 use App\Catalog\Infrastructure\Persistence\Doctrine\EventListener\ProductImageRemover;

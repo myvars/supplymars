@@ -2,11 +2,11 @@
 
 namespace App\Tests\Catalog\Integration;
 
-use tests\Shared\Factory\ProductFactory;
-use tests\Shared\Factory\ProductImageFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use tests\Shared\Factory\ProductFactory;
+use tests\Shared\Factory\ProductImageFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class ProductImageIntegrationTest extends KernelTestCase

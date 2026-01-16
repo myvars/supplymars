@@ -5,13 +5,13 @@ namespace App\Tests\Integration\Service\Product;
 use App\Catalog\Domain\Model\Subcategory\Subcategory;
 use App\Service\Product\SubcategoryMapper;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use tests\Shared\Factory\CategoryFactory;
 use tests\Shared\Factory\SupplierCategoryFactory;
 use tests\Shared\Factory\SupplierFactory;
 use tests\Shared\Factory\SupplierProductFactory;
 use tests\Shared\Factory\SupplierSubcategoryFactory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Zenstruck\Foundry\Test\Factories;
 
 class SubcategoryMapperIntegrationTest extends KernelTestCase
@@ -33,17 +33,17 @@ class SubcategoryMapperIntegrationTest extends KernelTestCase
         $supplier = SupplierFactory::createOne();
         $supplierCategory = SupplierCategoryFactory::createOne([
             'name' => 'Electronics',
-            'supplier' => $supplier
+            'supplier' => $supplier,
         ]);
         $supplierSubcategory = SupplierSubcategoryFactory::createOne([
             'name' => 'Laptops',
             'supplier' => $supplier,
-            'supplierCategory' => $supplierCategory
+            'supplierCategory' => $supplierCategory,
         ]);
         $supplierProduct = SupplierProductFactory::createOne([
             'supplier' => $supplier,
             'supplierCategory' => $supplierCategory,
-            'supplierSubcategory' => $supplierSubcategory
+            'supplierSubcategory' => $supplierSubcategory,
         ]);
 
         $category = CategoryFactory::createOne(['name' => 'Electronics']);

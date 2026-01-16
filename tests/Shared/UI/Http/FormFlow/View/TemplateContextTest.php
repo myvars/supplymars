@@ -27,7 +27,7 @@ final class TemplateContextTest extends TestCase
 
     public function testFromWithTemplateOverride(): void
     {
-        $context= TemplateContext::from('OrderItem', 'show', 'custom.html.twig');
+        $context = TemplateContext::from('OrderItem', 'show', 'custom.html.twig');
         self::assertSame('OrderItem', $context->flowModel);
         self::assertSame('orderitem', $context->flowRoute);
         self::assertSame('orderitem/', $context->flowPath);

@@ -2,10 +2,10 @@
 
 namespace App\Tests\Pricing\UI\Http;
 
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use tests\Shared\Factory\ProductFactory;
 use tests\Shared\Factory\SupplierProductFactory;
 use tests\Shared\Factory\UserFactory;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
 
@@ -14,13 +14,12 @@ class ProductStockControllerTest extends WebTestCase
     use HasBrowser;
     use Factories;
 
-
     public function testProductStockSecurity(): void
     {
         $product = ProductFactory::createOne(['name' => 'Product to be shown']);
 
         $this->browser()
-            ->get("/product/" . $product->getId() . "/stock")
+            ->get('/product/' . $product->getId() . '/stock')
             ->assertOn('/login');
     }
 
@@ -30,7 +29,7 @@ class ProductStockControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/" . $product->getId() . "/stock")
+            ->get('/product/' . $product->getId() . '/stock')
             ->assertSuccessful()
             ->assertSee('Product Stock');
     }
@@ -44,11 +43,10 @@ class ProductStockControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/" . $product->getId() . "/stock")
+            ->get('/product/' . $product->getId() . '/stock')
             ->assertSuccessful()
             ->assertSee('Product Stock')
             ->assertSee('Incomplete Product');
-
     }
 
     public function testProductStockWithSource(): void
@@ -58,7 +56,7 @@ class ProductStockControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/" . $product->getId() . "/stock")
+            ->get('/product/' . $product->getId() . '/stock')
             ->assertSuccessful()
             ->assertSee('Product Stock')
             ->assertNotSee('Incomplete Product');
@@ -68,7 +66,7 @@ class ProductStockControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/999/stock")
+            ->get('/product/999/stock')
             ->assertStatus(404);
     }
 }

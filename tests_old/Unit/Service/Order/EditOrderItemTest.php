@@ -54,7 +54,7 @@ class EditOrderItemTest extends TestCase
         $customerOrder = $this->createMock(CustomerOrder::class);
 
         $this->em->method('getRepository')->willReturnMap([
-            [CustomerOrderItem::class, $this->createMock(CustomerOrderItemDoctrineRepository::class)]
+            [CustomerOrderItem::class, $this->createMock(CustomerOrderItemDoctrineRepository::class)],
         ]);
 
         $vatRate = $this->createMock(VatRate::class);
@@ -86,7 +86,7 @@ class EditOrderItemTest extends TestCase
         $customerOrder = $this->createMock(CustomerOrder::class);
 
         $this->em->method('getRepository')->willReturnMap([
-            [CustomerOrderItem::class, $this->createMock(CustomerOrderItemDoctrineRepository::class)]
+            [CustomerOrderItem::class, $this->createMock(CustomerOrderItemDoctrineRepository::class)],
         ]);
 
         $this->em->getRepository(CustomerOrderItem::class)->method('find')->willReturn($customerOrderItem);
@@ -113,7 +113,7 @@ class EditOrderItemTest extends TestCase
         $customerOrder = $this->createMock(CustomerOrder::class);
 
         $this->em->method('getRepository')->willReturnMap([
-            [CustomerOrderItem::class, $this->createMock(CustomerOrderItemDoctrineRepository::class)]
+            [CustomerOrderItem::class, $this->createMock(CustomerOrderItemDoctrineRepository::class)],
         ]);
 
         $this->em->getRepository(CustomerOrderItem::class)->method('find')->willReturn($customerOrderItem);

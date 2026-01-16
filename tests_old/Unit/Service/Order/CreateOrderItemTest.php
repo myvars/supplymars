@@ -59,7 +59,7 @@ class CreateOrderItemTest extends TestCase
 
         $this->em->method('getRepository')->willReturnMap([
             [CustomerOrder::class, $this->createMock(CustomerOrderDoctrineRepository::class)],
-            [Product::class, $this->createMock(ProductDoctrineRepository::class)]
+            [Product::class, $this->createMock(ProductDoctrineRepository::class)],
         ]);
 
         $this->em->getRepository(CustomerOrder::class)->method('find')->willReturn($customerOrder);

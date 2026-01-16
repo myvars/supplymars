@@ -2,13 +2,13 @@
 
 namespace App\Tests\Purchasing\Integration;
 
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use tests\Shared\Factory\SupplierCategoryFactory;
 use tests\Shared\Factory\SupplierFactory;
 use tests\Shared\Factory\SupplierManufacturerFactory;
 use tests\Shared\Factory\SupplierProductFactory;
 use tests\Shared\Factory\SupplierSubcategoryFactory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Zenstruck\Foundry\Test\Factories;
 
 class SupplierProductIntegrationTest extends KernelTestCase
@@ -136,7 +136,7 @@ class SupplierProductIntegrationTest extends KernelTestCase
         $supplierCategory = SupplierCategoryFactory::createOne(['supplier' => $supplier]);
         $supplierSubcategory = SupplierSubcategoryFactory::createOne([
             'supplier' => $supplier,
-            'supplierCategory' => $supplierCategory
+            'supplierCategory' => $supplierCategory,
         ]);
         $supplerManufacturer = SupplierManufacturerFactory::createOne(['supplier' => $supplier]);
 

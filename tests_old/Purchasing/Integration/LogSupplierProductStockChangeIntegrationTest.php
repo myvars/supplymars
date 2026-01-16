@@ -3,10 +3,10 @@
 namespace App\Tests\Purchasing\Integration;
 
 use App\Shared\Domain\Event\DomainEventType;
-use tests\Shared\Factory\SupplierProductFactory;
-use tests\Shared\Factory\SupplierStockChangeLogFactory;
 use Story\StaffUserStory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use tests\Shared\Factory\SupplierProductFactory;
+use tests\Shared\Factory\SupplierStockChangeLogFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class LogSupplierProductStockChangeIntegrationTest extends KernelTestCase

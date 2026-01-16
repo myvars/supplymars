@@ -5,9 +5,9 @@ namespace App\Tests\Reporting\Integration;
 use App\Reporting\Domain\Metric\SalesDuration;
 use App\Reporting\Domain\Metric\SalesType;
 use App\Reporting\Domain\Model\SalesType\ProductSalesType;
-use tests\Shared\Factory\ProductSalesSummaryFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use tests\Shared\Factory\ProductSalesSummaryFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class ProductSalesSummaryIntegrationTest extends KernelTestCase

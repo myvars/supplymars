@@ -20,7 +20,7 @@ class OrderItemUpdaterTest extends TestCase
         $customerOrderItem->method('getCustomerOrder')->willReturn($customerOrder);
 
         $eventArgsMock->method('hasChangedField')
-            ->willReturnCallback(fn($fieldName): bool => in_array($fieldName, ['quantity', 'price', 'priceIncVat', 'weight']));
+            ->willReturnCallback(fn ($fieldName): bool => in_array($fieldName, ['quantity', 'price', 'priceIncVat', 'weight']));
 
         $customerOrderItem->expects($this->once())->method('recalculateTotal');
 
@@ -36,7 +36,7 @@ class OrderItemUpdaterTest extends TestCase
         $customerOrderItem = $this->createMock(CustomerOrderItem::class);
 
         $eventArgsMock->method('hasChangedField')
-            ->willReturnCallback(fn($fieldName): bool => $fieldName == 'none');
+            ->willReturnCallback(fn ($fieldName): bool => $fieldName == 'none');
 
         $customerOrderItem->expects($this->never())->method('recalculateTotal');
 

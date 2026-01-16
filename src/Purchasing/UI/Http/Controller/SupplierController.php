@@ -107,7 +107,8 @@ class SupplierController extends AbstractController
     }
 
     #[Route(path: '/supplier/{id}', name: 'app_purchasing_supplier_show', methods: ['GET'])]
-    public function show(#[ValueResolver('public_id')] Supplier $supplier): Response {
+    public function show(#[ValueResolver('public_id')] Supplier $supplier): Response
+    {
         return $this->render('/purchasing/supplier/show.html.twig', ['result' => $supplier]);
     }
 }

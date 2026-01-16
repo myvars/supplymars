@@ -20,6 +20,3 @@ final class CreateSubcategoryMapper
         );
     }
 }
-
-
-

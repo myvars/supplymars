@@ -42,4 +42,3 @@ final class SubcategoryForm
         return $form;
     }
 }
-

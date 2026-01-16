@@ -19,15 +19,18 @@ use App\Shared\Application\Identity\PublicIdResolverRegistry;
 use App\Shared\Domain\Event\DomainEventType;
 use App\Shared\Domain\ValueObject\StatusChange;
 use App\Shared\Infrastructure\Security\CurrentUserProvider;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 final class StatusChangeLoggerTest extends TestCase
 {
-    private StatusChangeLogWriter $writer;
+    private MockObject $writer;
+
     private PublicIdResolverRegistry $resolver;
-    private LoggerInterface $logger;
+
     private StatusChangeLogger $listener;
+
     private User $user;
 
     protected function setUp(): void
@@ -35,20 +38,20 @@ final class StatusChangeLoggerTest extends TestCase
         $this->writer = $this->createMock(StatusChangeLogWriter::class);
         $currentUserProvider = $this->createStub(CurrentUserProvider::class);
         $this->resolver = $this->createStub(PublicIdResolverRegistry::class);
-        $this->logger = $this->createStub(LoggerInterface::class);
+        $logger = $this->createStub(LoggerInterface::class);
 
         $this->listener = new StatusChangeLogger(
             changeLogWriter: $this->writer,
             currentUserProvider: $currentUserProvider,
             publicIdResolverRegistry: $this->resolver,
-            logger: $this->logger,
+            logger: $logger,
         );
 
         $this->user = $this->createStub(User::class);
         $currentUserProvider->method('get')->willReturn($this->user);
     }
 
-    public function test_it_writes_log_for_order_status_event(): void
+    public function testItWritesLogForOrderStatusEvent(): void
     {
         $publicId = OrderPublicId::new();
         $statusChange = StatusChange::from(OrderStatus::PENDING, OrderStatus::PROCESSING);
@@ -73,7 +76,7 @@ final class StatusChangeLoggerTest extends TestCase
         ($this->listener)($event);
     }
 
-    public function test_it_writes_log_for_order_item_status_event(): void
+    public function testItWritesLogForOrderItemStatusEvent(): void
     {
         $publicId = OrderItemPublicId::new();
         $statusChange = StatusChange::from(OrderStatus::PENDING, OrderStatus::PROCESSING);
@@ -98,7 +101,7 @@ final class StatusChangeLoggerTest extends TestCase
         ($this->listener)($event);
     }
 
-    public function test_it_writes_log_for_purchase_order_status_event(): void
+    public function testItWritesLogForPurchaseOrderStatusEvent(): void
     {
         $publicId = PurchaseOrderPublicId::new();
         $statusChange = StatusChange::from(PurchaseOrderStatus::PENDING, PurchaseOrderStatus::PROCESSING);
@@ -123,7 +126,7 @@ final class StatusChangeLoggerTest extends TestCase
         ($this->listener)($event);
     }
 
-    public function test_it_writes_log_for_purchase_order_item_status_event(): void
+    public function testItWritesLogForPurchaseOrderItemStatusEvent(): void
     {
         $publicId = PurchaseOrderItemPublicId::new();
         $statusChange = StatusChange::from(PurchaseOrderStatus::PENDING, PurchaseOrderStatus::PROCESSING);
@@ -148,7 +151,7 @@ final class StatusChangeLoggerTest extends TestCase
         ($this->listener)($event);
     }
 
-    public function test_it_skips_when_legacy_id_not_resolved_and_warns(): void
+    public function testItSkipsWhenLegacyIdNotResolvedAndWarns(): void
     {
         $publicId = OrderPublicId::new();
         $statusChange = StatusChange::from(OrderStatus::PENDING, OrderStatus::PROCESSING);
@@ -181,7 +184,7 @@ final class StatusChangeLoggerTest extends TestCase
         ($this->listener)($event);
     }
 
-    public function test_it_propagates_validation_error_from_writer(): void
+    public function testItPropagatesValidationErrorFromWriter(): void
     {
         $publicId = OrderPublicId::new();
         $statusChange = StatusChange::from(OrderStatus::PENDING, OrderStatus::PROCESSING);

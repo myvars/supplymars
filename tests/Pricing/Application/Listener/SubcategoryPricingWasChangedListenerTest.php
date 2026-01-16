@@ -16,7 +16,9 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 final class SubcategoryPricingWasChangedListenerTest extends KernelTestCase
 {
     private EntityManagerInterface $em;
+
     private SubcategoryRepository $subcategories;
+
     private MarkupCalculator $calculator;
 
     protected function setUp(): void

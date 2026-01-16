@@ -14,7 +14,7 @@ use App\Shared\Application\Result;
 final readonly class MapSupplierProductHandler
 {
     public function __construct(
-        private SupplierproductRepository $supplierProducts,
+        private SupplierProductRepository $supplierProducts,
         private FlusherInterface $flusher,
         private SupplierProductMappingService $productMapper,
     ) {
@@ -26,14 +26,15 @@ final readonly class MapSupplierProductHandler
         if (!$supplierProduct instanceof SupplierProduct) {
             return Result::fail('Supplier product not found.');
         }
+
         if ($supplierProduct->getProduct() instanceof Product) {
             return Result::fail('Supplier product already mapped.');
         }
 
         try {
             $product = $this->productMapper->map($supplierProduct);
-        } catch (\InvalidArgumentException $e) {
-            return Result::fail('Mapping failed: ' . $e->getMessage());
+        } catch (\InvalidArgumentException $invalidArgumentException) {
+            return Result::fail('Mapping failed: ' . $invalidArgumentException->getMessage());
         }
 
         $this->flusher->flush();

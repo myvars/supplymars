@@ -2,9 +2,9 @@
 
 namespace App\Tests\Reporting\Integration;
 
-use tests\Shared\Factory\OrderSalesFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use tests\Shared\Factory\OrderSalesFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class OrderSalesIntegrationTest extends KernelTestCase
@@ -73,7 +73,7 @@ class OrderSalesIntegrationTest extends KernelTestCase
         ]);
 
         $persistedOrderSales = OrderSalesFactory::repository()->findOneBy([
-            'dateString' => '2023-01-01'
+            'dateString' => '2023-01-01',
         ]);
 
         $this->assertEquals(10, $persistedOrderSales->getOrderCount());

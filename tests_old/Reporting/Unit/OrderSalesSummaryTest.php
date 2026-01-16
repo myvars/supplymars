@@ -5,7 +5,6 @@ namespace App\Tests\Reporting\Unit;
 use App\Reporting\Domain\Metric\SalesDuration;
 use App\Reporting\Domain\Model\SalesType\OrderSalesSummary;
 use App\Reporting\Domain\Model\SalesType\OrderSalesType;
-use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
 class OrderSalesSummaryTest extends TestCase
@@ -27,7 +26,7 @@ class OrderSalesSummaryTest extends TestCase
         $this->assertEquals($orderCount, $orderSalesSummary->getOrderCount());
         $this->assertEquals($orderValue, $orderSalesSummary->getOrderValue());
         $this->assertEquals($averageOrderValue, $orderSalesSummary->getAverageOrderValue());
-        $this->assertInstanceOf(DateTimeImmutable::class, $orderSalesSummary->getSalesDate());
+        $this->assertInstanceOf(\DateTimeImmutable::class, $orderSalesSummary->getSalesDate());
         $this->assertEquals($dateString, $orderSalesSummary->getSalesDate()->format('Y-m-d'));
     }
 }

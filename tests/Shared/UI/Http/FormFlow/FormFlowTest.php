@@ -26,6 +26,7 @@ final class FormFlowTest extends TestCase
     {
         $request = Request::create($uri, $method);
         $request->setSession(new Session(new MockArraySessionStorage()));
+
         return $request;
     }
 
@@ -37,22 +38,23 @@ final class FormFlowTest extends TestCase
         $form->method('isValid')->willReturn($valid);
         $form->method('getData')->willReturn($data);
         $form->method('createView')->willReturn(new FormView());
+
         return $form;
     }
 
     private function mapper(): callable
     {
-        return fn(mixed $d) => (object)['mapped' => $d];
+        return fn (mixed $d) => (object) ['mapped' => $d];
     }
 
     private function handlerOk(string $msg = 'Saved', ?RedirectTarget $rt = null): callable
     {
-        return fn(object $cmd) => Result::ok($msg, payload: null, redirect: $rt);
+        return fn (object $cmd): Result => Result::ok($msg, payload: null, redirect: $rt);
     }
 
     private function handlerFail(string $msg = 'Failed'): callable
     {
-        return fn(object $cmd) => Result::fail($msg);
+        return fn (object $cmd): Result => Result::fail($msg);
     }
 
     public function testGetRequestRendersTemplateOk(): void
@@ -62,7 +64,7 @@ final class FormFlowTest extends TestCase
 
         $forms = $this->createMock(FormFactoryInterface::class);
         $forms->expects($this->once())->method('create')
-            ->with('FormType', $this->equalTo([]), $this->callback(fn($opts) => $opts['action'] === $request->getUri()))
+            ->with('FormType', $this->equalTo([]), $this->callback(fn ($opts): bool => $opts['action'] === $request->getUri()))
             ->willReturn($form);
 
         $twig = $this->createMock(Environment::class);

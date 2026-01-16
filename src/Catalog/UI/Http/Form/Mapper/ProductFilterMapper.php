@@ -2,7 +2,6 @@
 
 namespace App\Catalog\UI\Http\Form\Mapper;
 
-
 use App\Catalog\Application\Command\Product\ProductFilter;
 use App\Catalog\Application\Search\ProductSearchCriteria;
 

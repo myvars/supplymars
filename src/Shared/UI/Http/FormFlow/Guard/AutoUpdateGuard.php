@@ -5,7 +5,7 @@ namespace App\Shared\UI\Http\FormFlow\Guard;
 use Symfony\Component\Form\FormInterface;
 
 /**
- * Detects clicks on a dedicated `auto-update` submit and can clear form errors
+ * Detects clicks on a dedicated `auto-update` submit and can clear form errors.
  */
 final class AutoUpdateGuard
 {

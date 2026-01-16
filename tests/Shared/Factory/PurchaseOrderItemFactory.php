@@ -4,8 +4,10 @@ namespace App\Tests\Shared\Factory;
 
 use App\Catalog\Domain\Model\Product\Product;
 use App\Order\Domain\Model\Order\CustomerOrder;
+use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrder;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItem;
 use App\Purchasing\Domain\Model\Supplier\Supplier;
+use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
 use Zenstruck\Foundry\LazyValue;
 use Zenstruck\Foundry\Object\Instantiator;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
@@ -37,9 +39,9 @@ final class PurchaseOrderItemFactory extends PersistentObjectFactory
     protected function defaults(): array
     {
         return [
-            'product' => LazyValue::memoize(fn () => ProductFactory::createOne()),
-            'supplier' => LazyValue::memoize(fn () => SupplierFactory::createOne()),
-            'customerOrder' => LazyValue::memoize(fn () => CustomerOrderFactory::createOne()),
+            'product' => LazyValue::memoize(fn (): Product => ProductFactory::createOne()),
+            'supplier' => LazyValue::memoize(fn (): Supplier => SupplierFactory::createOne()),
+            'customerOrder' => LazyValue::memoize(fn (): CustomerOrder => CustomerOrderFactory::createOne()),
             'quantity' => 1,
             'supplierProduct' => null,
             'customerOrderItem' => null,
@@ -56,21 +58,21 @@ final class PurchaseOrderItemFactory extends PersistentObjectFactory
         return $this
             ->beforeInstantiate(function (array $attributes): array {
                 $attributes['supplierProduct'] ??= LazyValue::memoize(
-                    fn () => SupplierProductFactory::createOne([
+                    fn (): SupplierProduct => SupplierProductFactory::createOne([
                         'supplier' => $attributes['supplier'],
                         'product' => $attributes['product'],
                         'stock' => $attributes['quantity'] ?? 1,
                     ])
                 );
                 $attributes['customerOrderItem'] ??= LazyValue::memoize(
-                    fn () => CustomerOrderItemFactory::createOne([
+                    fn (): CustomerOrder => CustomerOrderItemFactory::createOne([
                         'customerOrder' => $attributes['customerOrder'],
                         'product' => $attributes['product'],
                         'quantity' => $attributes['quantity'] ?? 1,
                     ])
                 );
                 $attributes['purchaseOrder'] ??= LazyValue::memoize(
-                    fn () => PurchaseOrderFactory::createOne([
+                    fn (): PurchaseOrder => PurchaseOrderFactory::createOne([
                         'customerOrder' => $attributes['customerOrder'],
                         'supplier' => $attributes['supplier'],
                     ])

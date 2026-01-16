@@ -46,9 +46,9 @@ final class SubcategoryUpdateDeleteMappingTest extends KernelTestCase
 
         $this->em->persist($subcategory);
         $this->em->flush();
+
         $id = $subcategory->getId();
 
-        /** @var Subcategory $loaded */
         $reloaded = $this->em->getRepository(Subcategory::class)->find($id);
 
         $newOwner = UserFactory::new()->asStaff()->create();
@@ -111,6 +111,7 @@ final class SubcategoryUpdateDeleteMappingTest extends KernelTestCase
 
         $this->em->persist($subcategory);
         $this->em->flush();
+
         $id = $subcategory->getId();
 
         $this->em->remove($subcategory);

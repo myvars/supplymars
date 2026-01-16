@@ -15,7 +15,8 @@ final class DeleteSubcategoryHandlerTest extends KernelTestCase
     use Factories;
 
     private DeleteSubcategoryHandler $handler;
-    private SubcategoryRepository $categories;
+
+    private SubcategoryRepository $subcategories;
 
     protected function setUp(): void
     {

@@ -2,13 +2,13 @@
 
 namespace App\Tests\Purchasing\UI\Http;
 
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use tests\Shared\Factory\SupplierFactory;
 use tests\Shared\Factory\SupplierManufacturerFactory;
 use tests\Shared\Factory\SupplierProductFactory;
 use tests\Shared\Factory\SupplierSubcategoryFactory;
 use tests\Shared\Factory\UserFactory;
 use tests\Shared\Factory\VatRateFactory;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
 
@@ -62,7 +62,7 @@ class SupplierProductControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/supplier-product/" . $supplierProduct->getId())
+            ->get('/supplier-product/' . $supplierProduct->getId())
             ->assertSuccessful()
             ->assertSee('Supplier Product to be shown');
     }
@@ -77,19 +77,19 @@ class SupplierProductControllerTest extends WebTestCase
             ->actingAs(UserFactory::new()->asStaff()->create())
             ->get('/supplier-product/new')
             ->assertSuccessful()
-            ->fillField('supplier_product[name]','Test Supplier Product')
-            ->fillField('supplier_product[productCode]','12345')
+            ->fillField('supplier_product[name]', 'Test Supplier Product')
+            ->fillField('supplier_product[productCode]', '12345')
             ->fillField('supplier_product[supplier]', $supplier->getId())
             ->click('supplier_product_auto-update')
             ->fillField('supplier_product[supplierCategory]', $supplierSubcategory->getSupplierCategory()->getId())
             ->click('supplier_product_auto-update')
             ->fillField('supplier_product[supplierSubcategory]', $supplierSubcategory->getId())
             ->fillField('supplier_product[supplierManufacturer]', $supplierManufacturer->getId())
-            ->fillField('supplier_product[cost]','500')
-            ->fillField('supplier_product[stock]','1')
-            ->fillField('supplier_product[leadTimeDays]','7')
-            ->fillField('supplier_product[weight]','100')
-            ->fillField('supplier_product[mfrPartNumber]','12345')
+            ->fillField('supplier_product[cost]', '500')
+            ->fillField('supplier_product[stock]', '1')
+            ->fillField('supplier_product[leadTimeDays]', '7')
+            ->fillField('supplier_product[weight]', '100')
+            ->fillField('supplier_product[mfrPartNumber]', '12345')
             ->click('Create Supplier Product')
             ->assertOn('/supplier-product/')
             ->assertSee('Test Supplier Product');
@@ -102,9 +102,9 @@ class SupplierProductControllerTest extends WebTestCase
             ->get('/supplier-product/new')
             ->assertSuccessful()
             // Intentionally filling form with invalid data
-            ->fillField('supplier_product[stock]','-1')
-            ->fillField('supplier_product[leadTimeDays]','-1')
-            ->fillField('supplier_product[weight]','-1')
+            ->fillField('supplier_product[stock]', '-1')
+            ->fillField('supplier_product[leadTimeDays]', '-1')
+            ->fillField('supplier_product[weight]', '-1')
             ->click('Create Supplier Product')
             ->assertOn('/supplier-product/new')
             ->assertSee('Please enter a supplier product name')
@@ -124,9 +124,9 @@ class SupplierProductControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/supplier-product/" . $supplierProduct->getId() . "/edit")
+            ->get('/supplier-product/' . $supplierProduct->getId() . '/edit')
             ->assertSuccessful()
-            ->fillField('supplier_product[name]','Edited Supplier Product')
+            ->fillField('supplier_product[name]', 'Edited Supplier Product')
             ->click('Update Supplier Product')
             ->assertOn('/supplier-product/')
             ->assertSee('Edited Supplier Product');
@@ -138,19 +138,19 @@ class SupplierProductControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/supplier-product/" . $supplierProduct->getId() . "/edit")
+            ->get('/supplier-product/' . $supplierProduct->getId() . '/edit')
             ->assertSuccessful()
             // Intentionally filling form with invalid data
-            ->fillField('supplier_product[name]','')
-            ->fillField('supplier_product[productCode]','')
+            ->fillField('supplier_product[name]', '')
+            ->fillField('supplier_product[productCode]', '')
             ->fillField('supplier_product[supplier]', '')
-            ->fillField('supplier_product[cost]','')
-            ->fillField('supplier_product[stock]','-1')
-            ->fillField('supplier_product[leadTimeDays]','-1')
-            ->fillField('supplier_product[weight]','-1')
-            ->fillField('supplier_product[mfrPartNumber]','')
+            ->fillField('supplier_product[cost]', '')
+            ->fillField('supplier_product[stock]', '-1')
+            ->fillField('supplier_product[leadTimeDays]', '-1')
+            ->fillField('supplier_product[weight]', '-1')
+            ->fillField('supplier_product[mfrPartNumber]', '')
             ->click('Update Supplier Product')
-            ->assertOn("/supplier-product/" . $supplierProduct->getId() . "/edit")
+            ->assertOn('/supplier-product/' . $supplierProduct->getId() . '/edit')
             ->assertSee('Please enter a supplier product name')
             ->assertSee('Please enter a product code')
             ->assertSee('Please enter a supplier')
@@ -167,7 +167,7 @@ class SupplierProductControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/supplier-product/" . $supplierProduct->getId() . "/delete/confirm")
+            ->get('/supplier-product/' . $supplierProduct->getId() . '/delete/confirm')
             ->assertSuccessful()
             ->assertSee('Are you sure you want to delete this Supplier Product');
     }
@@ -176,12 +176,12 @@ class SupplierProductControllerTest extends WebTestCase
     {
         $supplierProduct = SupplierProductFactory::createOne([
             'product' => null,
-            'name' => 'Supplier Product to be deleted'
+            'name' => 'Supplier Product to be deleted',
         ]);
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/supplier-product/" . $supplierProduct->getId() . "/delete/confirm")
+            ->get('/supplier-product/' . $supplierProduct->getId() . '/delete/confirm')
             ->assertSuccessful()
             ->click('Delete')
             ->assertOn('/supplier-product/')
@@ -194,7 +194,7 @@ class SupplierProductControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/supplier-product/" . $supplierProduct->getId() . "/remove/confirm")
+            ->get('/supplier-product/' . $supplierProduct->getId() . '/remove/confirm')
             ->assertSuccessful()
             ->assertSee('Are you sure you want to remove this Supplier Product');
     }
@@ -206,13 +206,13 @@ class SupplierProductControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/" . $productId . "/stock")
+            ->get('/product/' . $productId . '/stock')
             ->assertSuccessful()
             ->assertSee('Supplier Product to be removed')
-            ->get("/supplier-product/" . $supplierProduct->getId() . "/remove/confirm")
+            ->get('/supplier-product/' . $supplierProduct->getId() . '/remove/confirm')
             ->assertSuccessful()
             ->click('Remove')
-            ->assertOn("/product/" . $productId . "/stock")
+            ->assertOn('/product/' . $productId . '/stock')
             ->assertSee('Supplier product removed')
             ->assertNotSee('Supplier Product to be removed');
     }
@@ -221,7 +221,7 @@ class SupplierProductControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/supplier-product/999/remove/confirm")
+            ->get('/supplier-product/999/remove/confirm')
             ->assertStatus(404);
     }
 
@@ -232,12 +232,12 @@ class SupplierProductControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/product/" . $productId . "/stock")
+            ->get('/product/' . $productId . '/stock')
             ->assertSuccessful()
             ->assertSee('Supplier Product to be toggled')
             ->assertSee('Active')
-            ->get("/supplier-product/" . $supplierProduct->getId() . "/status/toggle")
-            ->assertOn("/product/" . $productId . "/stock")
+            ->get('/supplier-product/' . $supplierProduct->getId() . '/status/toggle')
+            ->assertOn('/product/' . $productId . '/stock')
             ->assertSee('Supplier product status updated')
             ->assertSee('InActive')
             ->assertSee('Incomplete Product');
@@ -247,7 +247,7 @@ class SupplierProductControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/supplier-product/999/status/toggle")
+            ->get('/supplier-product/999/status/toggle')
             ->assertStatus(404);
     }
 
@@ -256,19 +256,19 @@ class SupplierProductControllerTest extends WebTestCase
         VatRateFactory::new()->withStandardRate()->create();
         $supplierProduct = SupplierProductFactory::createOne([
             'name' => 'Supplier Product to be mapped',
-            'product' => null
+            'product' => null,
         ]);
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/supplier-product/" . $supplierProduct->getId())
+            ->get('/supplier-product/' . $supplierProduct->getId())
             ->assertSuccessful()
             ->assertSee('Supplier Product to be mapped')
             ->assertSee('Map Product')
             ->click('Map Product')
             ->assertSee('Supplier product mapped')
-            ->get("/supplier-product/" . $supplierProduct->getId())
-            ->assertOn("/supplier-product/" . $supplierProduct->getId())
+            ->get('/supplier-product/' . $supplierProduct->getId())
+            ->assertOn('/supplier-product/' . $supplierProduct->getId())
             ->assertNotSee('Map Product');
     }
 
@@ -276,7 +276,7 @@ class SupplierProductControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/supplier-product/999")
-            ->assertSee("Supplier product not found!");
+            ->get('/supplier-product/999')
+            ->assertSee('Supplier product not found!');
     }
 }

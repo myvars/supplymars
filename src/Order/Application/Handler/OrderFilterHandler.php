@@ -2,7 +2,6 @@
 
 namespace App\Order\Application\Handler;
 
-
 use App\Order\Application\Command\OrderFilter;
 use App\Shared\Application\RedirectTarget;
 use App\Shared\Application\Result;

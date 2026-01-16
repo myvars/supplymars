@@ -29,6 +29,7 @@ final class SupplierManufacturerUpdateDeleteMappingTest extends KernelTestCase
 
         $this->em->persist($manufacturer);
         $this->em->flush();
+
         $id = $manufacturer->getId();
 
         /** @var SupplierManufacturer $loaded */
@@ -57,6 +58,7 @@ final class SupplierManufacturerUpdateDeleteMappingTest extends KernelTestCase
         );
         $this->em->persist($manufacturer);
         $this->em->flush();
+
         $id = $manufacturer->getId();
 
         $this->em->remove($manufacturer);

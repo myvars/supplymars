@@ -14,8 +14,8 @@ use Doctrine\Persistence\ManagerRegistry;
  *
  * @method SupplierManufacturer|null find($id, $lockMode = null, $lockVersion = null)
  * @method SupplierManufacturer|null findOneBy(array $criteria, array $orderBy = null)
- * @method SupplierManufacturer[] findAll()
- * @method SupplierManufacturer[] findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method SupplierManufacturer[]    findAll()
+ * @method SupplierManufacturer[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class SupplierManufacturerDoctrineRepository extends ServiceEntityRepository implements SupplierManufacturerRepository
 {

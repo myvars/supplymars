@@ -7,18 +7,18 @@ use App\Reporting\Domain\Metric\SalesMetricInterface;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
 
-final class BarChartBuilder
+final readonly class BarChartBuilder
 {
     private const string CHART_TYPE = Chart::TYPE_BAR;
 
-    public function __construct(private readonly ChartBuilderInterface $chartBuilder)
+    public function __construct(private ChartBuilderInterface $chartBuilder)
     {
     }
 
     public function create(array $salesData, SalesDuration $salesDuration, SalesMetricInterface $salesMetric): Chart
     {
         $dateRange = $this->generateDateRange(
-            new \DateTimeImmutable(static::getSalesRangeStartDate($salesDuration)),
+            new \DateTimeImmutable(self::getSalesRangeStartDate($salesDuration)),
             new \DateTimeImmutable(),
             $salesDuration->getChartLabelFormat(),
             $salesDuration->getChartGranularity()

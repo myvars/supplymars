@@ -108,8 +108,8 @@ final class SupplierProductType extends AbstractType
                 $field->add(SupplierSubcategoryIdType::class, [
                     'choices' => $supplierCategory?->getSupplierSubcategories() ?? [],
                     'priority' => 2,
-            ]);
-        });
+                ]);
+            });
 
         $builder->get('supplier')
             ->addModelTransformer($this->transformer->for(Supplier::class));

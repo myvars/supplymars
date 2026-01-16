@@ -17,7 +17,9 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 final class SupplierProductStatusWasChangedListenerTest extends KernelTestCase
 {
     private EntityManagerInterface $em;
+
     private SupplierProductRepository $supplierProducts;
+
     private MarkupCalculator $calculator;
 
     protected function setUp(): void
@@ -56,6 +58,7 @@ final class SupplierProductStatusWasChangedListenerTest extends KernelTestCase
             if (!$event instanceof SupplierProductStatusWasChangedEvent) {
                 continue;
             }
+
             $listener($event);
         }
 
@@ -89,6 +92,7 @@ final class SupplierProductStatusWasChangedListenerTest extends KernelTestCase
             if (!$event instanceof SupplierProductStatusWasChangedEvent) {
                 continue;
             }
+
             $listener($event);
         }
     }
@@ -115,6 +119,7 @@ final class SupplierProductStatusWasChangedListenerTest extends KernelTestCase
             if (!$event instanceof SupplierProductStatusWasChangedEvent) {
                 continue;
             }
+
             $listener($event);
         }
     }

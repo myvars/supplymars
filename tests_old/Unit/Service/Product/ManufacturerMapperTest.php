@@ -52,7 +52,7 @@ class ManufacturerMapperTest extends TestCase
         $manufacturer->expects($this->once())->method('addSupplierManufacturer')->with($supplierManufacturer);
 
         $this->em->method('getRepository')->willReturnMap([
-            [Manufacturer::class, $this->createMock(ManufacturerDoctrineRepository::class)]
+            [Manufacturer::class, $this->createMock(ManufacturerDoctrineRepository::class)],
         ]);
         $this->em->getRepository(Manufacturer::class)->method('findOneBy')->willReturn($manufacturer);
 
@@ -76,7 +76,7 @@ class ManufacturerMapperTest extends TestCase
         $supplierProduct->method('getSupplierManufacturer')->willReturn($supplierManufacturer);
 
         $this->em->method('getRepository')->willReturnMap([
-            [Manufacturer::class, $this->createMock(ManufacturerDoctrineRepository::class)]
+            [Manufacturer::class, $this->createMock(ManufacturerDoctrineRepository::class)],
         ]);
         $this->em->getRepository(Manufacturer::class)->method('findOneBy')->willReturn(null);
 

@@ -13,7 +13,10 @@ use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 interface CategoryRepository extends FindByCriteriaInterface
 {
     public function add(Category $category): void;
+
     public function remove(Category $category): void;
+
     public function get(CategoryId $id): ?Category;
+
     public function getByPublicId(CategoryPublicId $publicId): ?Category;
 }

@@ -2,7 +2,6 @@
 
 namespace App\Purchasing\UI\Http\Controller;
 
-
 use App\Purchasing\Application\Handler\PurchaseOrderItem\UpdatePurchaseOrderItemQuantityHandler;
 use App\Purchasing\Application\Handler\PurchaseOrderItem\UpdatePurchaseOrderItemStatusHandler;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItem;
@@ -33,9 +32,10 @@ class PurchaseOrderItemController extends AbstractController
     }
 
     #[Route(path: '/purchase/order/item/{id}', name: 'app_purchasing_purchase_order_item_show', methods: ['GET'])]
-    public function show(#[ValueResolver('public_id')] PurchaseOrderItem $purchaseOrderItem): Response {
+    public function show(#[ValueResolver('public_id')] PurchaseOrderItem $purchaseOrderItem): Response
+    {
         return $this->render('/purchasing/purchase_order_item/show.html.twig', [
-            'result' => $purchaseOrderItem
+            'result' => $purchaseOrderItem,
         ]);
     }
 

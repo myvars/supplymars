@@ -41,4 +41,3 @@ final readonly class UpdateSubcategoryCostHandler
         return Result::ok('Subcategory cost updated');
     }
 }
-

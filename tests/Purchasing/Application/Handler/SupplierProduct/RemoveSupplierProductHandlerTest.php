@@ -16,6 +16,7 @@ final class RemoveSupplierProductHandlerTest extends KernelTestCase
     use Factories;
 
     private RemoveSupplierProductHandler $handler;
+
     private SupplierProductRepository $supplierProducts;
 
     protected function setUp(): void

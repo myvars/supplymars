@@ -3,13 +3,13 @@
 namespace App\Tests\Purchasing\Integration;
 
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use tests\Shared\Factory\CustomerOrderFactory;
 use tests\Shared\Factory\CustomerOrderItemFactory;
 use tests\Shared\Factory\PurchaseOrderFactory;
 use tests\Shared\Factory\PurchaseOrderItemFactory;
 use tests\Shared\Factory\SupplierFactory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Zenstruck\Foundry\Test\Factories;
 
 class PurchaseOrderIntegrationTest extends KernelTestCase

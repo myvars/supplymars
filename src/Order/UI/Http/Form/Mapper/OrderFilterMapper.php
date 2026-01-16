@@ -2,7 +2,6 @@
 
 namespace App\Order\UI\Http\Form\Mapper;
 
-
 use App\Order\Application\Command\OrderFilter;
 use App\Order\Application\Search\OrderSearchCriteria;
 

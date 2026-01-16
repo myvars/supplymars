@@ -14,11 +14,10 @@ final readonly class Paginator
     }
 
     // helper to create search pagination directly from repository and search criteria
-    function searchPagination(
+    public function searchPagination(
         FindByCriteriaInterface $repository,
         SearchCriteriaInterface $criteria,
-    ): Pagerfanta
-    {
+    ): Pagerfanta {
         return $this->createPagination(
             $repository->findByCriteria($criteria),
             $criteria->getPage(),

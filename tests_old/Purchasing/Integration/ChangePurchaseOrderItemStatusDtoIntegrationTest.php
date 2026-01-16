@@ -4,9 +4,9 @@ namespace App\Tests\Purchasing\Integration;
 
 use App\Purchasing\Application\DTO\ChangePurchaseOrderItemStatusDto;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
-use tests\Shared\Factory\PurchaseOrderItemFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use tests\Shared\Factory\PurchaseOrderItemFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class ChangePurchaseOrderItemStatusDtoIntegrationTest extends KernelTestCase
@@ -49,7 +49,6 @@ class ChangePurchaseOrderItemStatusDtoIntegrationTest extends KernelTestCase
 
     public function testInvalidPurchaseOrderItemId(): void
     {
-
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('PurchaseOrderItem not found');
 

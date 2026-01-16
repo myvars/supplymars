@@ -35,6 +35,6 @@ final readonly class StockChange
 
     public function describe(): string
     {
-        return $this->before.' → '.$this->after;
+        return $this->before . ' → ' . $this->after;
     }
 }

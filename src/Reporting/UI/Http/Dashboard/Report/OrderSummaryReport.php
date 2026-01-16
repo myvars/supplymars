@@ -5,7 +5,6 @@ namespace App\Reporting\UI\Http\Dashboard\Report;
 use App\Order\Infrastructure\Persistence\Doctrine\CustomerOrderDoctrineRepository;
 use App\Reporting\Application\Report\OrderSummaryReportCriteria;
 use App\Reporting\Domain\Metric\OrderSalesMetric;
-use App\Reporting\Domain\Metric\SalesMetricInterface;
 use App\Reporting\Infrastructure\Persistence\Doctrine\OrderSalesSummaryDoctrineRepository;
 use App\Reporting\UI\Http\Dashboard\Chart\BarChartBuilder;
 use App\Reporting\UI\Http\Dashboard\Chart\DoughnutChartBuilder;

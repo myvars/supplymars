@@ -3,15 +3,15 @@
 namespace App\Catalog\UI\Http\Controller;
 
 use App\Catalog\Application\Command\Category\DeleteCategory;
+use App\Catalog\Application\Handler\Category\CategoryFilterHandler;
 use App\Catalog\Application\Handler\Category\CreateCategoryHandler;
 use App\Catalog\Application\Handler\Category\DeleteCategoryHandler;
-use App\Catalog\Application\Handler\Category\CategoryFilterHandler;
 use App\Catalog\Application\Handler\Category\UpdateCategoryHandler;
 use App\Catalog\Application\Search\CategorySearchCriteria;
 use App\Catalog\Domain\Model\Category\Category;
 use App\Catalog\Domain\Repository\CategoryRepository;
-use App\Catalog\UI\Http\Form\Mapper\CreateCategoryMapper;
 use App\Catalog\UI\Http\Form\Mapper\CategoryFilterMapper;
+use App\Catalog\UI\Http\Form\Mapper\CreateCategoryMapper;
 use App\Catalog\UI\Http\Form\Mapper\UpdateCategoryMapper;
 use App\Catalog\UI\Http\Form\Model\CategoryForm;
 use App\Catalog\UI\Http\Form\Type\CategoryFilterType;
@@ -128,7 +128,8 @@ class CategoryController extends AbstractController
     }
 
     #[Route(path: '/category/{id}', name: 'app_catalog_category_show', methods: ['GET'])]
-    public function show(#[ValueResolver('public_id')] Category $category): Response {
+    public function show(#[ValueResolver('public_id')] Category $category): Response
+    {
         return $this->render('/catalog/category/show.html.twig', ['result' => $category]);
     }
 }

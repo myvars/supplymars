@@ -2,11 +2,11 @@
 
 namespace App\Tests\Reporting\Integration;
 
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use tests\Shared\Factory\ProductFactory;
 use tests\Shared\Factory\ProductSalesFactory;
 use tests\Shared\Factory\SupplierFactory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Zenstruck\Foundry\Test\Factories;
 
 class ProductSalesIntegrationTest extends KernelTestCase

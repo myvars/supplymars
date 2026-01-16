@@ -36,7 +36,7 @@ final class CategoryCostType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => CategoryCostForm::class
+            'data_class' => CategoryCostForm::class,
         ]);
     }
 }

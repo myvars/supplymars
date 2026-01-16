@@ -12,7 +12,10 @@ use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 interface StatusChangeLogRepository
 {
     public function add(StatusChangeLog $statusChangeLog): void;
+
     public function remove(StatusChangeLog $statusChangeLog): void;
+
     public function get(StatusChangeLogId $id): ?StatusChangeLog;
+
     public function getByPublicId(StatusChangeLogPublicId $publicId): ?StatusChangeLog;
 }

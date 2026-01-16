@@ -21,7 +21,7 @@ final class UpdateCustomerFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs($actor)
-            ->get('/customer/'.$publicId.'/edit')
+            ->get('/customer/' . $publicId . '/edit')
             ->fillField('customer[fullName]', 'After Edit')
             ->fillField('customer[email]', 'after@example.com')
             ->uncheckField('customer[isVerified]')
@@ -40,10 +40,10 @@ final class UpdateCustomerFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs($actor)
-            ->get('/customer/'.$publicId.'/edit')
+            ->get('/customer/' . $publicId . '/edit')
             ->fillField('customer[fullName]', '')
             ->click('Update Customer')
-            ->assertOn('/customer/'.$publicId.'/edit')
+            ->assertOn('/customer/' . $publicId . '/edit')
             ->assertSee('Please enter a full name');
     }
 }

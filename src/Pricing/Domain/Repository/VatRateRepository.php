@@ -13,7 +13,10 @@ use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 interface VatRateRepository extends FindByCriteriaInterface
 {
     public function add(VatRate $vatRate): void;
+
     public function remove(VatRate $vatRate): void;
+
     public function get(VatRateId $id): ?VatRate;
+
     public function getByPublicId(VatRatePublicId $publicId): ?VatRate;
 }

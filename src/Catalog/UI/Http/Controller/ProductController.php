@@ -128,7 +128,8 @@ class ProductController extends AbstractController
     }
 
     #[Route(path: '/product/{id}', name: 'app_catalog_product_show', methods: ['GET'])]
-    public function show(#[ValueResolver('public_id')] Product $product): Response {
+    public function show(#[ValueResolver('public_id')] Product $product): Response
+    {
         return $this->render('/catalog/product/show.html.twig', ['result' => $product]);
     }
 

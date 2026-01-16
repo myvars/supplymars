@@ -2,10 +2,10 @@
 
 namespace App\Tests\Purchasing\UI\Http;
 
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use tests\Shared\Factory\PurchaseOrderFactory;
 use tests\Shared\Factory\SupplierFactory;
 use tests\Shared\Factory\UserFactory;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
 
@@ -39,7 +39,7 @@ class PurchaseOrderControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/purchase/order/" . $purchaseOrder->getId())
+            ->get('/purchase/order/' . $purchaseOrder->getId())
             ->assertSuccessful()
             ->assertSee($purchaseOrder->getId())
             ->assertSee($purchaseOrder->getSupplier()->getName());
@@ -70,7 +70,7 @@ class PurchaseOrderControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/purchase/order/999")
-            ->assertSee("Purchase order not found!");
+            ->get('/purchase/order/999')
+            ->assertSee('Purchase order not found!');
     }
 }

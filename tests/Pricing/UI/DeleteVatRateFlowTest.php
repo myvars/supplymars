@@ -20,7 +20,7 @@ final class DeleteVatRateFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/vat-rate/'.$publicId.'/delete/confirm')
+            ->get('/vat-rate/' . $publicId . '/delete/confirm')
             ->click('Delete VAT Rate')
             ->assertOn('/vat-rate/')
             ->assertSee('VAT rate deleted');

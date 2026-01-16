@@ -14,15 +14,30 @@ class RandomUserFactoryTest extends TestCase
     {
         // Stub Faker\Generator with required methods and correct method signature
         $faker = new class extends Generator {
-            public function unique($reset = false, $maxRetries = 10000) { return $this; }
+            public function unique($reset = false, $maxRetries = 10000)
+            {
+                return $this;
+            }
 
-            public function safeEmail(): string { return 'test@example.com'; }
+            public function safeEmail(): string
+            {
+                return 'test@example.com';
+            }
 
-            public function firstName(): string { return 'John'; }
+            public function firstName(): string
+            {
+                return 'John';
+            }
 
-            public function lastName(): string { return 'Doe'; }
+            public function lastName(): string
+            {
+                return 'Doe';
+            }
 
-            public function password(): string { return 'plainPassword'; }
+            public function password(): string
+            {
+                return 'plainPassword';
+            }
         };
 
         $passwordEncoder = $this->createMock(UserPasswordHasherInterface::class);

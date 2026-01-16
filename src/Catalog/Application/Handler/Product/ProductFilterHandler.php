@@ -2,7 +2,6 @@
 
 namespace App\Catalog\Application\Handler\Product;
 
-
 use App\Catalog\Application\Command\Product\ProductFilter;
 use App\Shared\Application\RedirectTarget;
 use App\Shared\Application\Result;

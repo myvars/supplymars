@@ -2,7 +2,6 @@
 
 namespace App\Shared\UI\Form\DataTransformer;
 
-use Closure;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
@@ -10,13 +9,13 @@ use Symfony\Component\Form\Exception\TransformationFailedException;
 final readonly class IdToEntityTransformer implements DataTransformerInterface
 {
     /**
-     * @param class-string<object> $entityClass
-     * @param null|Closure(EntityManagerInterface, int): ?object $finder
+     * @param class-string<object>                                $entityClass
+     * @param \Closure(EntityManagerInterface, int): ?object|null $finder
      */
     public function __construct(
         private EntityManagerInterface $em,
         private string $entityClass,
-        private ?Closure $finder = null
+        private ?\Closure $finder = null,
     ) {
     }
 

@@ -7,13 +7,13 @@ use App\Purchasing\Domain\Model\Supplier\Supplier;
 use App\Service\OrderProcessing\SupplierUtility;
 use App\Service\PurchaseOrder\ChangePurchaseOrderItemStatus;
 use Doctrine\ORM\EntityManagerInterface;
-use tests\Shared\Factory\PurchaseOrderItemFactory;
-use tests\Shared\Factory\SupplierFactory;
-use tests\Shared\Factory\UserFactory;
 use Story\StaffUserStory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use tests\Shared\Factory\PurchaseOrderItemFactory;
+use tests\Shared\Factory\SupplierFactory;
+use tests\Shared\Factory\UserFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class SupplierUtilityIntegrationTest extends KernelTestCase

@@ -39,10 +39,11 @@ final class IdToEntityTransformerTest extends TestCase
         $entity = new \stdClass();
         $called = false;
 
-        $finder = function (EntityManagerInterface $passedEm, int $id) use ($em, &$called, $entity) {
+        $finder = function (EntityManagerInterface $passedEm, int $id) use ($em, &$called, $entity): \stdClass {
             $called = true;
             TestCase::assertSame($em, $passedEm);
             TestCase::assertSame(7, $id);
+
             return $entity;
         };
 
@@ -82,8 +83,11 @@ final class IdToEntityTransformerTest extends TestCase
         $em = $this->createStub(EntityManagerInterface::class);
         $transformer = new IdToEntityTransformer($em, \stdClass::class);
 
-        $entity = new class() {
-            public function getId(): string { return '123'; }
+        $entity = new class {
+            public function getId(): string
+            {
+                return '123';
+            }
         };
 
         self::assertSame(123, $transformer->reverseTransform($entity));

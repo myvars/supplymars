@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 final class CreateManufacturerHandlerTest extends KernelTestCase
 {
     private CreateManufacturerHandler $handler;
+
     private ManufacturerRepository $manufacturers;
 
     protected function setUp(): void

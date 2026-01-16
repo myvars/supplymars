@@ -263,6 +263,7 @@ class PurchaseOrder implements DomainEventProviderInterface
         if ((float) $shippingPrice < 0) {
             throw new \InvalidArgumentException('Shipping price cannot be negative');
         }
+
         $this->shippingPrice = $shippingPrice;
     }
 
@@ -271,6 +272,7 @@ class PurchaseOrder implements DomainEventProviderInterface
         if ((float) $shippingPriceIncVat < 0) {
             throw new \InvalidArgumentException('Shipping price inc VAT cannot be negative');
         }
+
         $this->shippingPriceIncVat = $shippingPriceIncVat;
     }
 
@@ -290,6 +292,7 @@ class PurchaseOrder implements DomainEventProviderInterface
         if ((float) $totalPrice < 0) {
             throw new \InvalidArgumentException('Total price cannot be negative');
         }
+
         $this->totalPrice = $totalPrice;
     }
 
@@ -298,6 +301,7 @@ class PurchaseOrder implements DomainEventProviderInterface
         if ((float) $totalPriceIncVat < 0) {
             throw new \InvalidArgumentException('Total price inc VAT cannot be negative');
         }
+
         $this->totalPriceIncVat = $totalPriceIncVat;
     }
 
@@ -306,6 +310,7 @@ class PurchaseOrder implements DomainEventProviderInterface
         if ($totalWeight < 0) {
             throw new \InvalidArgumentException('Total weight cannot be negative');
         }
+
         $this->totalWeight = $totalWeight;
     }
 

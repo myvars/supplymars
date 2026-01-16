@@ -2,10 +2,10 @@
 
 namespace App\Tests\Customer\Integration;
 
-use tests\Shared\Factory\ResetPasswordRequestFactory;
-use tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use tests\Shared\Factory\ResetPasswordRequestFactory;
+use tests\Shared\Factory\UserFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class ResetPasswordRequestIntegrationTest extends KernelTestCase
@@ -55,7 +55,7 @@ class ResetPasswordRequestIntegrationTest extends KernelTestCase
         ]);
 
         $persistedResetPasswordRequest = ResetPasswordRequestFactory::repository()->findOneBy([
-            'selector' => 'selector'
+            'selector' => 'selector',
         ]);
 
         $this->assertEquals('hashedToken', $persistedResetPasswordRequest->getHashedToken());

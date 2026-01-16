@@ -46,7 +46,7 @@ final class FilterParamBuilder
     {
         return array_filter(
             $params,
-            static fn ($value) => $value !== null && $value !== ''
+            static fn ($value): bool => $value !== null && $value !== ''
         );
     }
 }

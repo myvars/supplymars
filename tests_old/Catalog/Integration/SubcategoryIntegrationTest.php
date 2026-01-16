@@ -3,13 +3,13 @@
 namespace App\Tests\Catalog\Integration;
 
 use App\Shared\Domain\ValueObject\PriceModel;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use tests\Shared\Factory\CategoryFactory;
 use tests\Shared\Factory\ProductFactory;
 use tests\Shared\Factory\SubcategoryFactory;
 use tests\Shared\Factory\SupplierSubcategoryFactory;
 use tests\Shared\Factory\UserFactory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Zenstruck\Foundry\Test\Factories;
 
 class SubcategoryIntegrationTest extends KernelTestCase

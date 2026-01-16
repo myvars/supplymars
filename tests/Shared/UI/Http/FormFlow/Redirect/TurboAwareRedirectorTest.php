@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Tests\Shared\UI\Http\FormFlow\Redirect;
 
 use App\Shared\UI\Http\FormFlow\Redirect\TurboAwareRedirector;
@@ -18,6 +19,7 @@ final class TurboAwareRedirectorTest extends TestCase
         } else {
             $twig->method('render')->willReturn($renderResult);
         }
+
         return $twig;
     }
 

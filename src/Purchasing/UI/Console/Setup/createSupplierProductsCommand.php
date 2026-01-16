@@ -45,7 +45,7 @@ readonly class createSupplierProductsCommand
         $io->section('Processing supplier products');
 
         $suppliers = $this->getSuppliers();
-        if (!$suppliers) {
+        if ($suppliers === []) {
             $io->error('No suppliers found');
 
             return Command::FAILURE;
@@ -116,10 +116,10 @@ readonly class createSupplierProductsCommand
     {
         $io->success(sprintf("Processed supplier products for '%s':", $supplierName));
         $io->listing([
-            'New products created: '.$statistics['new'],
-            'Products mapped: '.$statistics['mapped'],
-            'Products skipped (already mapped): '.$statistics['skipped'],
-            'Inactive products skipped: '.$statistics['inactive'],
+            'New products created: ' . $statistics['new'],
+            'Products mapped: ' . $statistics['mapped'],
+            'Products skipped (already mapped): ' . $statistics['skipped'],
+            'Inactive products skipped: ' . $statistics['inactive'],
         ]);
     }
 

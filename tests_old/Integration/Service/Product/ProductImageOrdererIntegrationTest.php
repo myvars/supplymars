@@ -5,9 +5,9 @@ namespace App\Tests\Integration\Service\Product;
 use App\Service\Crud\Common\CrudContext;
 use App\Service\Product\ProductImageOrderer;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use tests\Shared\Factory\ProductFactory;
 use tests\Shared\Factory\ProductImageFactory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 
 class ProductImageOrdererIntegrationTest extends KernelTestCase

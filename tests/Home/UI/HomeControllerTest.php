@@ -14,7 +14,7 @@ class HomeControllerTest extends WebTestCase
     public function testShowHome(): void
     {
         $this->browser()
-            ->get("/")
+            ->get('/')
             ->assertSuccessful()
             ->assertSee('Welcome');
     }
@@ -22,7 +22,7 @@ class HomeControllerTest extends WebTestCase
     public function testShowAbout(): void
     {
         $this->browser()
-            ->get("/about")
+            ->get('/about')
             ->assertSuccessful()
             ->assertSee('About');
     }
@@ -30,7 +30,7 @@ class HomeControllerTest extends WebTestCase
     public function testShowContact(): void
     {
         $this->browser()
-            ->get("/about")
+            ->get('/about')
             ->assertSuccessful()
             ->assertSee('Contact');
     }
@@ -38,7 +38,7 @@ class HomeControllerTest extends WebTestCase
     public function testShowPrivacy(): void
     {
         $this->browser()
-            ->get("/about")
+            ->get('/about')
             ->assertSuccessful()
             ->assertSee('Privacy');
     }
@@ -46,7 +46,7 @@ class HomeControllerTest extends WebTestCase
     public function testShowTerms(): void
     {
         $this->browser()
-            ->get("/terms")
+            ->get('/terms')
             ->assertSuccessful()
             ->assertSee('Terms');
     }

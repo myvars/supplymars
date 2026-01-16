@@ -9,13 +9,14 @@ use App\Reporting\Application\Handler\CalculateProductSalesHandler;
 use App\Reporting\Domain\Model\SalesType\ProductSales;
 use App\Service\PurchaseOrder\ChangePurchaseOrderItemStatus;
 use Doctrine\ORM\EntityManagerInterface;
-use tests\Shared\Factory\ProductSalesFactory;
-use tests\Shared\Factory\PurchaseOrderItemFactory;
-use tests\Shared\Factory\SupplierProductFactory;
 use Story\StaffUserStory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use tests\Shared\Factory\ProductSalesFactory;
+use tests\Shared\Factory\PurchaseOrderItemFactory;
+use tests\Shared\Factory\SupplierProductFactory;
 use Zenstruck\Foundry\Test\Factories;
+
 use function Zenstruck\Foundry\Persistence\save;
 
 class ProductSalesCalculatorIntegrationTest extends KernelTestCase
@@ -76,7 +77,7 @@ class ProductSalesCalculatorIntegrationTest extends KernelTestCase
 
     private function changePurchaseOrderItemStatus(
         PurchaseOrderItem $purchaseOrderItem,
-        PurchaseOrderStatus $newStatus
+        PurchaseOrderStatus $newStatus,
     ): void {
         $dto = new ChangePurchaseOrderItemStatusDto($purchaseOrderItem->getId(), $newStatus);
         $this->changePurchaseOrderItemStatus->fromDto($dto);

@@ -18,21 +18,17 @@ final class ValidPOItemStatusChangeValidator extends ConstraintValidator
     public function validate($value, Constraint $constraint): void
     {
         if (!$constraint instanceof ValidPOItemStatusChange) {
-            throw new \InvalidArgumentException('Constraint must be instance of '.ValidPOItemStatusChange::class);
+            throw new \InvalidArgumentException('Constraint must be instance of ' . ValidPOItemStatusChange::class);
         }
 
         $data = $this->context->getObject();
         if (!$data instanceof PurchaseOrderItemStatusForm) {
-            throw new \InvalidArgumentException(
-                'The ValidPOItemStatus constraint can only be used on PurchaseOrderItemStatusForm'
-            );
+            throw new \InvalidArgumentException('The ValidPOItemStatus constraint can only be used on PurchaseOrderItemStatusForm');
         }
 
         $purchaseOrderItem = $this->purchaseOrderItems->getByPublicId(PurchaseOrderItemPublicId::fromString($data->id));
         if (!$purchaseOrderItem instanceof PurchaseOrderItem) {
-            throw new \InvalidArgumentException(
-                'The ValidPOItemStatus constraint can only be used with a valid purchaseOrderItemId'
-            );
+            throw new \InvalidArgumentException('The ValidPOItemStatus constraint can only be used with a valid purchaseOrderItemId');
         }
 
         if ($purchaseOrderItem->getStatus() === $value) {

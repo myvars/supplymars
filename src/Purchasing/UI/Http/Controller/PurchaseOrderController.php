@@ -58,7 +58,8 @@ class PurchaseOrderController extends AbstractController
     }
 
     #[Route(path: '/purchase/order/{id}', name: 'app_purchasing_purchase_order_show', methods: ['GET'])]
-    public function show(#[ValueResolver('public_id')] PurchaseOrder $purchaseOrder): Response {
+    public function show(#[ValueResolver('public_id')] PurchaseOrder $purchaseOrder): Response
+    {
         return $this->render('/purchasing/purchase_order/show.html.twig', ['result' => $purchaseOrder]);
     }
 }

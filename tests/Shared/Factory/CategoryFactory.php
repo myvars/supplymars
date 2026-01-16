@@ -3,6 +3,8 @@
 namespace App\Tests\Shared\Factory;
 
 use App\Catalog\Domain\Model\Category\Category;
+use App\Customer\Domain\Model\User\User;
+use App\Pricing\Domain\Model\VatRate\VatRate;
 use Zenstruck\Foundry\LazyValue;
 use Zenstruck\Foundry\Object\Instantiator;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
@@ -35,8 +37,8 @@ final class CategoryFactory extends PersistentObjectFactory
     {
         return [
             'name' => ucfirst(implode(' ', self::faker()->words(random_int(1, 3)))),
-            'owner' => LazyValue::memoize(fn () => UserFactory::new()->asStaff()->create()),
-            'vatRate' => LazyValue::memoize(fn () => VatRateFactory::new()->withStandardRate()->create()),
+            'owner' => LazyValue::memoize(fn (): User => UserFactory::new()->asStaff()->create()),
+            'vatRate' => LazyValue::memoize(fn (): VatRate => VatRateFactory::new()->withStandardRate()->create()),
             'defaultMarkup' => Category::DEFAULT_MARKUP,
             'priceModel' => Category::DEFAULT_PRICE_MODEL,
             'isActive' => true,

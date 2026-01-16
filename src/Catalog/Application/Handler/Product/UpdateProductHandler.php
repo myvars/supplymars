@@ -48,6 +48,7 @@ final readonly class UpdateProductHandler
         if (!$subcategory instanceof Subcategory) {
             return Result::fail('Subcategory not found.');
         }
+
         if ($subcategory->getCategory()?->getId() !== $category->getId()) {
             return Result::fail('Subcategory does not belong to selected category.');
         }

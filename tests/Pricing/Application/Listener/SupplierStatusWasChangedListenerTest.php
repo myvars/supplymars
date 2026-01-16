@@ -18,7 +18,9 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 final class SupplierStatusWasChangedListenerTest extends KernelTestCase
 {
     private EntityManagerInterface $em;
+
     private SupplierRepository $suppliers;
+
     private MarkupCalculator $calculator;
 
     protected function setUp(): void
@@ -64,6 +66,7 @@ final class SupplierStatusWasChangedListenerTest extends KernelTestCase
             if (!$event instanceof SupplierStatusWasChangedEvent) {
                 continue;
             }
+
             $listener($event);
         }
 
@@ -84,15 +87,15 @@ final class SupplierStatusWasChangedListenerTest extends KernelTestCase
         $product = ProductFactory::createOne();
         $supplier1 = SupplierFactory::createOne();
         $spActiveSource = SupplierProductFactory::createOne([
-                'supplier' => $supplier1,
-                'product' => $product,
-                'cost' => '10.00'
+            'supplier' => $supplier1,
+            'product' => $product,
+            'cost' => '10.00',
         ]);
         $supplier2 = SupplierFactory::createOne();
         $sp2 = SupplierProductFactory::createOne([
-                'supplier' => $supplier2,
-                'product' => $product,
-                'cost' => '20.00'
+            'supplier' => $supplier2,
+            'product' => $product,
+            'cost' => '20.00',
         ]);
 
         $before = $product->getSellPriceIncVat();
@@ -120,6 +123,7 @@ final class SupplierStatusWasChangedListenerTest extends KernelTestCase
             if (!$event instanceof SupplierStatusWasChangedEvent) {
                 continue;
             }
+
             $listener($event);
         }
 
@@ -161,6 +165,7 @@ final class SupplierStatusWasChangedListenerTest extends KernelTestCase
             if (!$event instanceof SupplierStatusWasChangedEvent) {
                 continue;
             }
+
             $listener($event);
         }
     }
@@ -189,6 +194,7 @@ final class SupplierStatusWasChangedListenerTest extends KernelTestCase
             if (!$event instanceof SupplierStatusWasChangedEvent) {
                 continue;
             }
+
             $listener($event);
         }
     }

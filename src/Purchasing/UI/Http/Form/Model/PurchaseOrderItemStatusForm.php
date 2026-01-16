@@ -13,7 +13,7 @@ final class PurchaseOrderItemStatusForm
 
     #[Assert\NotBlank(message: 'Please enter a PO Item status')]
     #[ValidPOItemStatusChange]
-    public ?PurchaseOrderStatus $purchaseOrderItemStatus;
+    public ?PurchaseOrderStatus $purchaseOrderItemStatus = null;
 
     public static function fromEntity(PurchaseOrderItem $purchaseOrderItem): self
     {

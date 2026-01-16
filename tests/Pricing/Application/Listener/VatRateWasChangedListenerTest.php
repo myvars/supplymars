@@ -17,7 +17,9 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 final class VatRateWasChangedListenerTest extends KernelTestCase
 {
     private EntityManagerInterface $em;
+
     private VatRateRepository $vatRates;
+
     private MarkupCalculator $calculator;
 
     protected function setUp(): void

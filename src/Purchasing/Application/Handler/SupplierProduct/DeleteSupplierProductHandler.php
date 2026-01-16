@@ -11,7 +11,7 @@ use App\Shared\Application\Result;
 final readonly class DeleteSupplierProductHandler
 {
     public function __construct(
-        private SupplierproductRepository $supplierProducts,
+        private SupplierProductRepository $supplierProducts,
         private FlusherInterface $flusher,
     ) {
     }

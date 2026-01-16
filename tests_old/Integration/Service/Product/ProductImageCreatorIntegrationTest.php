@@ -6,10 +6,10 @@ use App\Service\Crud\Common\CrudContext;
 use App\Service\Product\ProductImageCreator;
 use App\Shared\Infrastructure\FileStorage\UploadHelper;
 use Doctrine\ORM\EntityManagerInterface;
-use tests\Shared\Factory\ProductFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use tests\Shared\Factory\ProductFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class ProductImageCreatorIntegrationTest extends KernelTestCase
@@ -57,7 +57,7 @@ class ProductImageCreatorIntegrationTest extends KernelTestCase
         $this->assertStringContainsString('dummy-image-', $productImages[0]->getImageName());
 
         // Clean up
-        $result = $this->uploadHelper->deleteFile($this->appProductUploads.$productImages[0]->getImageName());
+        $result = $this->uploadHelper->deleteFile($this->appProductUploads . $productImages[0]->getImageName());
         $this->assertTrue($result);
     }
 }

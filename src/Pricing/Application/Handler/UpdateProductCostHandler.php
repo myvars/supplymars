@@ -22,7 +22,7 @@ final readonly class UpdateProductCostHandler
 
     public function __invoke(UpdateProductCost $command): Result
     {
-        $product= $this->products->getByPublicId($command->id);
+        $product = $this->products->getByPublicId($command->id);
         if (!$product instanceof Product) {
             return Result::fail('Product not found.');
         }
@@ -44,4 +44,3 @@ final readonly class UpdateProductCostHandler
         return Result::ok('Product cost updated');
     }
 }
-

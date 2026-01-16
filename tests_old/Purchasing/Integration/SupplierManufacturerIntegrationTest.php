@@ -2,11 +2,11 @@
 
 namespace App\Tests\Purchasing\Integration;
 
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use tests\Shared\Factory\SupplierFactory;
 use tests\Shared\Factory\SupplierManufacturerFactory;
 use tests\Shared\Factory\SupplierProductFactory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Zenstruck\Foundry\Test\Factories;
 
 class SupplierManufacturerIntegrationTest extends KernelTestCase

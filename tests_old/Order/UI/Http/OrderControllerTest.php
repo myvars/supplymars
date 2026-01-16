@@ -3,12 +3,12 @@
 namespace App\Tests\Order\UI\Http;
 
 use App\Shared\Domain\ValueObject\ShippingMethod;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use tests\Shared\Factory\CustomerOrderFactory;
 use tests\Shared\Factory\CustomerOrderItemFactory;
 use tests\Shared\Factory\PurchaseOrderItemFactory;
 use tests\Shared\Factory\SupplierProductFactory;
 use tests\Shared\Factory\UserFactory;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
 
@@ -63,7 +63,7 @@ class OrderControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/order/" . $order->getId())
+            ->get('/order/' . $order->getId())
             ->assertSuccessful()
             ->assertSee('TEST12345');
     }
@@ -115,8 +115,8 @@ class OrderControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/order/999")
-            ->assertSee("Order not found!");
+            ->get('/order/999')
+            ->assertSee('Order not found!');
     }
 
     public function testCancelOrderConfirmation(): void
@@ -125,7 +125,7 @@ class OrderControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/order/" . $order->getId() . "/cancel/confirm")
+            ->get('/order/' . $order->getId() . '/cancel/confirm')
             ->assertSuccessful()
             ->assertSee('Are you sure you want to cancel this Order');
     }
@@ -134,7 +134,7 @@ class OrderControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/order/999/cancel/confirm")
+            ->get('/order/999/cancel/confirm')
             ->assertStatus(404);
     }
 
@@ -145,10 +145,10 @@ class OrderControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/order/" . $order->getId() . "/cancel/confirm")
+            ->get('/order/' . $order->getId() . '/cancel/confirm')
             ->assertSuccessful()
             ->click('Cancel')
-            ->assertOn("/order/" . $order->getId())
+            ->assertOn('/order/' . $order->getId())
             ->assertSee('Order cancelled')
             ->assertSee('Cancelled');
     }
@@ -160,10 +160,10 @@ class OrderControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/order/" . $order->getId() . "/cancel/confirm")
+            ->get('/order/' . $order->getId() . '/cancel/confirm')
             ->assertSuccessful()
             ->click('Cancel')
-            ->assertOn("/order/" . $order->getId())
+            ->assertOn('/order/' . $order->getId())
             ->assertSee('Order cannot be cancelled');
     }
 
@@ -173,16 +173,16 @@ class OrderControllerTest extends WebTestCase
         $order = CustomerOrderFactory::createOne(['customerOrderRef' => 'TEST12345']);
         CustomerOrderItemFactory::createOne([
             'customerOrder' => $order,
-            'product' => $supplierProduct->getProduct()
+            'product' => $supplierProduct->getProduct(),
         ]);
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/order/" . $order->getId())
+            ->get('/order/' . $order->getId())
             ->assertSuccessful()
             ->assertSee('Pending')
-            ->get("/order/" . $order->getId() . "/process")
-            ->assertOn("/order/" . $order->getId())
+            ->get('/order/' . $order->getId() . '/process')
+            ->assertOn('/order/' . $order->getId())
             ->assertSee('PO #')
             ->assertSee('Processing');
     }
@@ -191,7 +191,7 @@ class OrderControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/order/999/process")
+            ->get('/order/999/process')
             ->assertStatus(404);
     }
 
@@ -201,10 +201,10 @@ class OrderControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/order/" . $order->getId())
+            ->get('/order/' . $order->getId())
             ->assertSuccessful()
-            ->assertNotSee("Locked by Staff Member")
-            ->get("/order/" . $order->getId() . "/lock/toggle")
+            ->assertNotSee('Locked by Staff Member')
+            ->get('/order/' . $order->getId() . '/lock/toggle')
             ->assertSee('Locked by Staff Member');
     }
 
@@ -212,7 +212,7 @@ class OrderControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/order/999/lock/toggle")
+            ->get('/order/999/lock/toggle')
             ->assertStatus(404);
     }
 }

@@ -2,7 +2,6 @@
 
 namespace App\Catalog\Application\Handler\Subcategory;
 
-
 use App\Catalog\Application\Command\Subcategory\SubcategoryFilter;
 use App\Shared\Application\RedirectTarget;
 use App\Shared\Application\Result;

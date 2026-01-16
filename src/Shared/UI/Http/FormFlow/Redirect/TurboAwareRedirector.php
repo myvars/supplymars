@@ -17,6 +17,7 @@ use Twig\Environment;
 final readonly class TurboAwareRedirector implements RedirectorInterface
 {
     public const string TURBO_STREAM_REFRESH_TEMPLATE = 'shared/turbo/turbo_stream_refresh.html.twig';
+
     private const string TURBO_STREAM_MIME = 'text/vnd.turbo-stream.html';
 
     public function __construct(private Environment $twig)
@@ -55,4 +56,3 @@ final readonly class TurboAwareRedirector implements RedirectorInterface
         return new RedirectResponse($url, $status);
     }
 }
-

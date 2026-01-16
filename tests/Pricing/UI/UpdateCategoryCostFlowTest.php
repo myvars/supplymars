@@ -22,11 +22,11 @@ final class UpdateCategoryCostFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs($admin)
-            ->get('/pricing/'.$publicId.'/cost/category/edit')
+            ->get('/pricing/' . $publicId . '/cost/category/edit')
             ->fillField('category_cost[defaultMarkup]', '7.500')
             ->fillField('category_cost[priceModel]', PriceModel::PRETTY_99->value)
             ->click('Update Pricing')
-            ->assertOn('/pricing/'.$publicId.'/cost')
+            ->assertOn('/pricing/' . $publicId . '/cost')
             ->assertSee('Category cost updated');
     }
 
@@ -38,11 +38,11 @@ final class UpdateCategoryCostFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs($admin)
-            ->get('/pricing/'.$publicId.'/cost/category/edit')
+            ->get('/pricing/' . $publicId . '/cost/category/edit')
             ->fillField('category_cost[defaultMarkup]', '-1.000')
             ->fillField('category_cost[priceModel]', PriceModel::NONE->value)
             ->click('Update')
-            ->assertOn('/pricing/'.$publicId.'/cost/category/edit')
+            ->assertOn('/pricing/' . $publicId . '/cost/category/edit')
             ->assertSee('Please enter a positive or zero category markup %')
             ->assertSee('A category must have a price model');
     }

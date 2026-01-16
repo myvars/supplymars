@@ -34,7 +34,7 @@ class ProductSalesSummaryCalculatorTest extends TestCase
     {
         // Skip day duration for product sales since it is already processed
         // Skip week ago duration for product sales
-        $processCount = (count(SalesDuration::cases()) * count(SalesType::cases())) -2;
+        $processCount = (count(SalesDuration::cases()) * count(SalesType::cases())) - 2;
 
         $salesData = [
             [
@@ -42,13 +42,13 @@ class ProductSalesSummaryCalculatorTest extends TestCase
                 'dateString' => '2023-10-01',
                 'salesQty' => 10,
                 'salesCost' => '500.00',
-                'salesValue' => '1000.00'
-            ]
+                'salesValue' => '1000.00',
+            ],
         ];
 
         $this->em->method('getRepository')->willReturnMap([
             [ProductSales::class, $this->createMock(ProductSalesDoctrineRepository::class)],
-            [ProductSalesSummary::class, $this->createMock(ProductSalesSummaryDoctrineRepository::class)]
+            [ProductSalesSummary::class, $this->createMock(ProductSalesSummaryDoctrineRepository::class)],
         ]);
 
         $this->em->getRepository(ProductSales::class)->method('findProductSalesSummary')->willReturn($salesData);
@@ -69,13 +69,13 @@ class ProductSalesSummaryCalculatorTest extends TestCase
                 'dateString' => '2023-10-01',
                 'salesQty' => 10,
                 'salesCost' => '500.00',
-                'salesValue' => '1000.00'
-            ]
+                'salesValue' => '1000.00',
+            ],
         ];
 
         $this->em->method('getRepository')->willReturnMap([
             [ProductSales::class, $this->createMock(ProductSalesDoctrineRepository::class)],
-            [ProductSalesSummary::class, $this->createMock(ProductSalesSummaryDoctrineRepository::class)]
+            [ProductSalesSummary::class, $this->createMock(ProductSalesSummaryDoctrineRepository::class)],
         ]);
 
         $this->em->getRepository(ProductSales::class)->method('findProductSalesSummary')->willReturn($salesData);

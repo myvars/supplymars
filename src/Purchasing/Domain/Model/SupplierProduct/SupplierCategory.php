@@ -90,6 +90,7 @@ class SupplierCategory
         if ($name === '') {
             throw new \InvalidArgumentException('Category name cannot be empty');
         }
+
         $this->name = $name;
     }
 

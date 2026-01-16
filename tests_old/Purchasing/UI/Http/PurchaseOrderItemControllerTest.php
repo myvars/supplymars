@@ -3,10 +3,10 @@
 namespace App\Tests\Purchasing\UI\Http;
 
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use tests\Shared\Factory\PurchaseOrderItemFactory;
 use tests\Shared\Factory\SupplierProductFactory;
 use tests\Shared\Factory\UserFactory;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
 
@@ -37,12 +37,12 @@ class PurchaseOrderItemControllerTest extends WebTestCase
         $purchaseOrderItem = PurchaseOrderItemFactory::createOne([
             'supplier' => $supplierProduct->getSupplier(),
             'product' => $supplierProduct->getProduct(),
-            'supplierProduct' => $supplierProduct
+            'supplierProduct' => $supplierProduct,
         ]);
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/purchase/order/item/" . $purchaseOrderItem->getId())
+            ->get('/purchase/order/item/' . $purchaseOrderItem->getId())
             ->assertSuccessful()
             ->assertSee('Test Product');
     }
@@ -51,8 +51,8 @@ class PurchaseOrderItemControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/purchase/order/item/999")
-            ->assertSee("Purchase order item not found!");
+            ->get('/purchase/order/item/999')
+            ->assertSee('Purchase order item not found!');
     }
 
     public function testEditPurchaseOrderItem(): void
@@ -61,14 +61,14 @@ class PurchaseOrderItemControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/purchase/order/item/" . $purchaseOrderItem->getId() . "/edit")
+            ->get('/purchase/order/item/' . $purchaseOrderItem->getId() . '/edit')
             ->assertSuccessful()
             ->fillField('edit_purchase_order_item[quantity]', 1)
             ->click('Update Purchase Order Item')
             ->assertOn('/purchase/order/' . $purchaseOrderItem->getPurchaseOrder()->getId())
             ->assertSee('Qty: 1')
             ->assertSee('Purchase order item updated')
-            ->get("/order/" . $purchaseOrderItem->getPurchaseOrder()->getCustomerOrder()->getId())
+            ->get('/order/' . $purchaseOrderItem->getPurchaseOrder()->getCustomerOrder()->getId())
             ->assertSee('PO #' . sprintf('%06d', $purchaseOrderItem->getPurchaseOrder()->getId()))
             ->assertSee('Qty: 1 of 2');
     }
@@ -79,11 +79,11 @@ class PurchaseOrderItemControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/purchase/order/item/" . $purchaseOrderItem->getId() . "/edit")
+            ->get('/purchase/order/item/' . $purchaseOrderItem->getId() . '/edit')
             ->assertSuccessful()
             ->fillField('edit_purchase_order_item[quantity]', '')
             ->click('Update Purchase Order Item')
-            ->assertOn("/purchase/order/item/" . $purchaseOrderItem->getId() . "/edit")
+            ->assertOn('/purchase/order/item/' . $purchaseOrderItem->getId() . '/edit')
             ->assertSee('Please enter a product quantity');
     }
 
@@ -93,14 +93,14 @@ class PurchaseOrderItemControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/order/" . $purchaseOrderItem->getPurchaseOrder()->getCustomerOrder()->getId())
+            ->get('/order/' . $purchaseOrderItem->getPurchaseOrder()->getCustomerOrder()->getId())
             ->assertSuccessful()
             ->assertSee('PO #' . sprintf('%06d', $purchaseOrderItem->getPurchaseOrder()->getId()))
-            ->get("/purchase/order/item/" . $purchaseOrderItem->getId() . "/edit")
+            ->get('/purchase/order/item/' . $purchaseOrderItem->getId() . '/edit')
             ->assertSuccessful()
             ->fillField('edit_purchase_order_item[quantity]', '0')
             ->click('Update Purchase Order Item')
-            ->assertOn("/order/" . $purchaseOrderItem->getPurchaseOrder()->getCustomerOrder()->getId())
+            ->assertOn('/order/' . $purchaseOrderItem->getPurchaseOrder()->getCustomerOrder()->getId())
             ->assertSee('Purchase order item updated')
             ->assertNotSee('PO #' . sprintf('%06d', $purchaseOrderItem->getPurchaseOrder()->getId()))
             ->assertSee('Qty: 2');
@@ -112,11 +112,11 @@ class PurchaseOrderItemControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/purchase/order/item/" . $purchaseOrderItem->getId() . "/edit")
+            ->get('/purchase/order/item/' . $purchaseOrderItem->getId() . '/edit')
             ->assertSuccessful()
             ->fillField('edit_purchase_order_item[quantity]', 3)
             ->click('Update Purchase Order Item')
-            ->assertOn("/purchase/order/item/" . $purchaseOrderItem->getId() . "/edit")
+            ->assertOn('/purchase/order/item/' . $purchaseOrderItem->getId() . '/edit')
             ->assertSee('maximum quantity is 2');
     }
 
@@ -124,7 +124,7 @@ class PurchaseOrderItemControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/purchase/order/item/999/edit")
+            ->get('/purchase/order/item/999/edit')
             ->assertStatus(404);
     }
 
@@ -134,7 +134,7 @@ class PurchaseOrderItemControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/purchase/order/item/" . $purchaseOrderItem->getId() . "/edit/status")
+            ->get('/purchase/order/item/' . $purchaseOrderItem->getId() . '/edit/status')
             ->fillField(
                 'change_purchase_order_item_status[purchaseOrderItemStatus]',
                 PurchaseOrderStatus::PROCESSING->value
@@ -151,13 +151,13 @@ class PurchaseOrderItemControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/purchase/order/item/" . $purchaseOrderItem->getId() . "/edit/status")
+            ->get('/purchase/order/item/' . $purchaseOrderItem->getId() . '/edit/status')
             ->fillField(
                 'change_purchase_order_item_status[purchaseOrderItemStatus]',
                 PurchaseOrderStatus::SHIPPED->value
             )
             ->click('Update Purchase Order Item')
-            ->assertOn("/purchase/order/item/" . $purchaseOrderItem->getId() . "/edit/status")
+            ->assertOn('/purchase/order/item/' . $purchaseOrderItem->getId() . '/edit/status')
             ->assertSee('Status can not be set to Shipped.');
     }
 
@@ -165,7 +165,7 @@ class PurchaseOrderItemControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/purchase/order/item/999/edit/status")
+            ->get('/purchase/order/item/999/edit/status')
             ->assertStatus(404);
     }
 }

@@ -6,9 +6,9 @@ use App\Order\Domain\Model\Order\OrderStatus;
 use App\Service\Crud\Common\CrudContext;
 use App\Service\Order\CancelOrder;
 use Doctrine\ORM\EntityManagerInterface;
-use tests\Shared\Factory\CustomerOrderItemFactory;
 use Story\StaffUserStory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use tests\Shared\Factory\CustomerOrderItemFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class CancelOrderIntegrationTest extends KernelTestCase

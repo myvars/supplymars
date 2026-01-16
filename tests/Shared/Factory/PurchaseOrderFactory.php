@@ -2,7 +2,9 @@
 
 namespace App\Tests\Shared\Factory;
 
+use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrder;
+use App\Purchasing\Domain\Model\Supplier\Supplier;
 use Zenstruck\Foundry\LazyValue;
 use Zenstruck\Foundry\Object\Instantiator;
 use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
@@ -34,8 +36,8 @@ final class PurchaseOrderFactory extends PersistentObjectFactory
     protected function defaults(): array
     {
         return [
-            'customerOrder' => LazyValue::memoize(fn () => CustomerOrderFactory::createOne()),
-            'supplier' => LazyValue::memoize(fn () => SupplierFactory::createOne()),
+            'customerOrder' => LazyValue::memoize(fn (): CustomerOrder => CustomerOrderFactory::createOne()),
+            'supplier' => LazyValue::memoize(fn (): Supplier => SupplierFactory::createOne()),
         ];
     }
 

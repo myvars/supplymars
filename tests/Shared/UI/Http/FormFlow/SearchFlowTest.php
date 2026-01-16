@@ -25,6 +25,7 @@ final class SearchFlowTest extends TestCase
     {
         $r = Request::create($uri, 'GET', $query);
         $r->setSession(new Session(new MockArraySessionStorage()));
+
         return $r;
     }
 
@@ -35,8 +36,11 @@ final class SearchFlowTest extends TestCase
 
     private function repository(array $items): FindByCriteriaInterface
     {
-        return new class($items) implements FindByCriteriaInterface {
-            public function __construct(private array $items) {}
+        return new readonly class($items) implements FindByCriteriaInterface {
+            public function __construct(private array $items)
+            {
+            }
+
             public function findByCriteria(SearchCriteriaInterface $criteria): AdapterInterface
             {
                 return new ArrayAdapter($this->items);
@@ -48,20 +52,18 @@ final class SearchFlowTest extends TestCase
     {
         $request = $this->newRequest();
         $criteria = $this->criteria(1, 2);
-        $repository = $this->repository(['A','B','C','D','E']);
+        $repository = $this->repository(['A', 'B', 'C', 'D', 'E']);
 
         $twig = $this->createMock(Environment::class);
         $twig->expects($this->once())->method('render')
             ->with(
                 'shared/form_flow/base.html.twig',
-                $this->callback(function (array $vars) {
-                    return $vars['flowModel'] === 'OrderItem'
-                        && $vars['flowRoute'] === 'orderitem'
-                        && $vars['flowPath'] === 'orderitem/'
-                        && $vars['flowOperation'] === 'index'
-                        && $vars['template'] === 'orderitem/index.html.twig'
-                        && $vars['results'] instanceof Pagerfanta;
-                })
+                $this->callback(fn (array $vars): bool => $vars['flowModel'] === 'OrderItem'
+                    && $vars['flowRoute'] === 'orderitem'
+                    && $vars['flowPath'] === 'orderitem/'
+                    && $vars['flowOperation'] === 'index'
+                    && $vars['template'] === 'orderitem/index.html.twig'
+                    && $vars['results'] instanceof Pagerfanta)
             )->willReturn('<html>OK</html>');
 
         $redirector = $this->createStub(RedirectorInterface::class);
@@ -80,7 +82,7 @@ final class SearchFlowTest extends TestCase
     {
         $request = $this->newRequest('/order-item', ['foo' => 'bar']);
         $criteria = $this->criteria(99, 2);
-        $repository = $this->repository(['A','B','C','D','E']);
+        $repository = $this->repository(['A', 'B', 'C', 'D', 'E']);
 
         $twig = $this->createStub(Environment::class);
 

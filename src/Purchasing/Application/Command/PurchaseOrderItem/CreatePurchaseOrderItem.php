@@ -9,7 +9,7 @@ final readonly class CreatePurchaseOrderItem
 {
     public function __construct(
         public OrderItemPublicId $id,
-        public SupplierProductPublicId $supplierProductId
+        public SupplierProductPublicId $supplierProductId,
     ) {
     }
 }

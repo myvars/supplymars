@@ -16,6 +16,8 @@ final class ProductUpdateDeleteMappingTest extends KernelTestCase
 {
     private EntityManagerInterface $em;
 
+    private MarkupCalculator $markupCalculator;
+
     protected function setUp(): void
     {
         self::bootKernel();
@@ -45,6 +47,7 @@ final class ProductUpdateDeleteMappingTest extends KernelTestCase
 
         $this->em->persist($product);
         $this->em->flush();
+
         $id = $product->getId();
 
         $loaded = $this->em->getRepository(Product::class)->find($id);
@@ -103,6 +106,7 @@ final class ProductUpdateDeleteMappingTest extends KernelTestCase
 
         $this->em->persist($product);
         $this->em->flush();
+
         $id = $product->getId();
 
         $this->em->remove($product);

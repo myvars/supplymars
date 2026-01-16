@@ -7,12 +7,12 @@ use App\Order\Domain\Model\Order\CustomerOrderItem;
 use App\Service\Crud\Common\CrudContext;
 use App\Service\Order\CreateOrderItem;
 use Doctrine\ORM\EntityManagerInterface;
-use tests\Shared\Factory\CustomerOrderFactory;
-use tests\Shared\Factory\CustomerOrderItemFactory;
-use tests\Shared\Factory\ProductFactory;
 use Story\StaffUserStory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use tests\Shared\Factory\CustomerOrderFactory;
+use tests\Shared\Factory\CustomerOrderItemFactory;
+use tests\Shared\Factory\ProductFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class CreateOrderItemIntegrationTest extends KernelTestCase
@@ -48,7 +48,7 @@ class CreateOrderItemIntegrationTest extends KernelTestCase
 
         $customerOrderItem = CustomerOrderItemFactory::repository()->findOneBy([
             'customerOrder' => $customerOrder,
-            'product' => $product
+            'product' => $product,
         ]);
 
         $this->assertInstanceOf(CustomerOrderItem::class, $customerOrderItem);

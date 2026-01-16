@@ -79,7 +79,7 @@ final class SupplierProductFilterType extends AbstractType
             'supplier',
             function (
                 DependentField $field,
-                ?int $supplierId
+                ?int $supplierId,
             ): void {
                 $field->add(SupplierCategoryIdType::class, [
                     'choices' => $this->em->getRepository(SupplierCategory::class)->findBy(['supplier' => $supplierId]) ?? [],
@@ -94,7 +94,7 @@ final class SupplierProductFilterType extends AbstractType
             'supplierCategory',
             function (
                 DependentField $field,
-                ?int $supplierCategoryId
+                ?int $supplierCategoryId,
             ): void {
                 $field->add(SupplierSubcategoryIdType::class, [
                     'choices' => $this->em->getRepository(SupplierSubcategory::class)->findBy(['supplierCategory' => $supplierCategoryId]) ?? [],

@@ -2,6 +2,7 @@
 
 namespace App\Tests\Shared\Factory;
 
+use App\Purchasing\Domain\Model\Supplier\Supplier;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierCategory;
 use Zenstruck\Foundry\LazyValue;
 use Zenstruck\Foundry\Object\Instantiator;
@@ -35,7 +36,7 @@ final class SupplierCategoryFactory extends PersistentObjectFactory
     {
         return [
             'name' => ucfirst(implode(' ', self::faker()->words(random_int(1, 3)))),
-            'supplier' => LazyValue::memoize(fn () => SupplierFactory::createOne()),
+            'supplier' => LazyValue::memoize(fn (): Supplier => SupplierFactory::createOne()),
         ];
     }
 

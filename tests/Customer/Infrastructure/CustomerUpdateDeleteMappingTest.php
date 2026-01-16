@@ -28,6 +28,7 @@ final class CustomerUpdateDeleteMappingTest extends KernelTestCase
 
         $this->em->persist($customer);
         $this->em->flush();
+
         $id = $customer->getId();
 
         $loaded = $this->em->getRepository(User::class)->find($id);
@@ -62,6 +63,7 @@ final class CustomerUpdateDeleteMappingTest extends KernelTestCase
 
         $this->em->persist($customer);
         $this->em->flush();
+
         $id = $customer->getId();
 
         $this->em->remove($customer);

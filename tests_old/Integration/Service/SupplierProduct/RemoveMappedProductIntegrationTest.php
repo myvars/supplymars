@@ -5,9 +5,9 @@ namespace App\Tests\Integration\Service\SupplierProduct;
 use App\Service\Crud\Common\CrudContext;
 use App\Service\Product\ActiveSourceCalculator;
 use App\Service\SupplierProduct\RemoveMappedProduct;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use tests\Shared\Factory\ProductFactory;
 use tests\Shared\Factory\SupplierProductFactory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 
 class RemoveMappedProductIntegrationTest extends KernelTestCase
@@ -28,7 +28,7 @@ class RemoveMappedProductIntegrationTest extends KernelTestCase
         $product = ProductFactory::createOne();
         $supplierProduct = SupplierProductFactory::createOne([
             'stock' => 100,
-            'product' => $product
+            'product' => $product,
         ]);
 
         $this->assertSame($supplierProduct, $product->getActiveProductSource());
@@ -48,12 +48,12 @@ class RemoveMappedProductIntegrationTest extends KernelTestCase
         $supplierProduct1 = SupplierProductFactory::createOne([
             'stock' => 100,
             'cost' => '5.00',
-            'product' => $product
+            'product' => $product,
         ]);
         $supplierProduct2 = SupplierProductFactory::createOne([
             'stock' => 100,
             'cost' => '10.00',
-            'product' => $product
+            'product' => $product,
         ]);
 
         $this->assertSame($supplierProduct1, $product->getActiveProductSource());

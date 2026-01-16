@@ -65,7 +65,7 @@ final class PublicIdResolverTest extends TestCase
 
     public function testResolvesEntityWhenFound(): void
     {
-        $entity = new class() {
+        $entity = new class {
             public string $publicId = 'abc';
         };
 

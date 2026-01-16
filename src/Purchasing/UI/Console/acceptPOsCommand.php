@@ -56,8 +56,9 @@ readonly class acceptPOsCommand
         $io->section(sprintf('Processing up to %d purchase orders for supplier %s', $poCount, $supplier->getName()));
 
         $purchaseOrders = $this->getWaitingPurchaseOrders($supplier, $poCount);
-        if (!$purchaseOrders) {
+        if ($purchaseOrders === []) {
             $io->note('No waiting purchase orders.');
+
             return Command::SUCCESS;
         }
 
@@ -78,7 +79,7 @@ readonly class acceptPOsCommand
                 $purchaseOrderItem->updateItemStatus(newStatus: $this->simulateStatus());
             }
 
-            $processedIds[] = $purchaseOrder->getId().' : '.$purchaseOrder->getStatus()->value;
+            $processedIds[] = $purchaseOrder->getId() . ' : ' . $purchaseOrder->getStatus()->value;
 
             ++$processed;
             $progress->advance();

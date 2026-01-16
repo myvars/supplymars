@@ -19,7 +19,6 @@ final readonly class SupplierProductFilter extends FilterCommand
         public ?int $supplierManufacturerId,
         public ?bool $inStock,
         public ?bool $isActive,
-
     ) {
         parent::__construct($query, $sort, $sortDirection, $page, $limit);
     }

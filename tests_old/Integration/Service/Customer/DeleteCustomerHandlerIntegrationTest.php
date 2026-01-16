@@ -4,10 +4,10 @@ namespace App\Tests\Integration\Service\Customer;
 
 use App\Customer\Application\Handler\DeleteCustomerHandler;
 use App\Service\Crud\Common\CrudContext;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use tests\Shared\Factory\AddressFactory;
 use tests\Shared\Factory\CustomerOrderFactory;
 use tests\Shared\Factory\UserFactory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 
 class DeleteCustomerHandlerIntegrationTest extends KernelTestCase

@@ -6,9 +6,9 @@ use App\Catalog\Application\Command\Category\CreateCategory;
 use App\Catalog\Application\Handler\Category\CreateCategoryHandler;
 use App\Catalog\Domain\Repository\CategoryRepository;
 use App\Shared\Domain\ValueObject\PriceModel;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Factory\VatRateFactory;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 
 class CreateCategoryHandlerTest extends KernelTestCase
@@ -16,6 +16,7 @@ class CreateCategoryHandlerTest extends KernelTestCase
     use Factories;
 
     private CreateCategoryHandler $handler;
+
     private CategoryRepository $categories;
 
     protected function setUp(): void
@@ -52,7 +53,7 @@ class CreateCategoryHandlerTest extends KernelTestCase
         $owner = UserFactory::new()->asStaff()->create();
 
         $command = new CreateCategory(
-            name:'Bad',
+            name: 'Bad',
             vatRateId: 999999,
             defaultMarkup: '5.000',
             priceModel: PriceModel::DEFAULT,
@@ -72,7 +73,7 @@ class CreateCategoryHandlerTest extends KernelTestCase
         $nonStaff = UserFactory::new()->create(); // not asStaff()
 
         $command = new CreateCategory(
-            name:'Bad',
+            name: 'Bad',
             vatRateId: $vatRate->getId(),
             defaultMarkup: '5.000',
             priceModel: PriceModel::DEFAULT,

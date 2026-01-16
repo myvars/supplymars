@@ -17,14 +17,12 @@ final class ShowFlowTest extends TestCase
         $twig->expects($this->once())->method('render')
             ->with(
                 ModelPath::BASE_TEMPLATE,
-                $this->callback(function (array $vars) {
-                    return $vars['flowModel'] === 'OrderItem'
-                        && $vars['flowRoute'] === 'orderitem'
-                        && $vars['flowPath'] === 'orderitem/'
-                        && $vars['flowOperation'] === 'show'
-                        && $vars['template'] === 'orderitem/show.html.twig'
-                        && $vars['foo'] === 'bar';
-                })
+                $this->callback(fn (array $vars): bool => $vars['flowModel'] === 'OrderItem'
+                    && $vars['flowRoute'] === 'orderitem'
+                    && $vars['flowPath'] === 'orderitem/'
+                    && $vars['flowOperation'] === 'show'
+                    && $vars['template'] === 'orderitem/show.html.twig'
+                    && $vars['foo'] === 'bar')
             )->willReturn('<html>OK</html>');
 
         $flow = new ShowFlow($twig);
@@ -43,11 +41,9 @@ final class ShowFlowTest extends TestCase
         $twig->expects($this->once())->method('render')
             ->with(
                 ModelPath::BASE_TEMPLATE,
-                $this->callback(function (array $vars) use ($override) {
-                    return $vars['template'] === $override
-                        && $vars['flowOperation'] === 'show'
-                        && $vars['flowRoute'] === 'orderitem';
-                })
+                $this->callback(fn (array $vars): bool => $vars['template'] === $override
+                    && $vars['flowOperation'] === 'show'
+                    && $vars['flowRoute'] === 'orderitem')
             )->willReturn('<html>OVERRIDE</html>');
 
         $flow = new ShowFlow($twig);
@@ -64,11 +60,9 @@ final class ShowFlowTest extends TestCase
         $twig->expects($this->once())->method('render')
             ->with(
                 ModelPath::BASE_TEMPLATE,
-                $this->callback(function (array $vars) {
-                    return $vars['flowModel'] === 'CustomModel'
-                        && $vars['flowOperation'] === 'OVERRIDE'
-                        && $vars['template'] === 'orderitem/show.html.twig';
-                })
+                $this->callback(fn (array $vars): bool => $vars['flowModel'] === 'CustomModel'
+                    && $vars['flowOperation'] === 'OVERRIDE'
+                    && $vars['template'] === 'orderitem/show.html.twig')
             )->willReturn('<html>OVERRIDDEN VARS</html>');
 
         $flow = new ShowFlow($twig);

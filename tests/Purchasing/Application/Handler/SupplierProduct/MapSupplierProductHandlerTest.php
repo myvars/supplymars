@@ -19,6 +19,7 @@ final class MapSupplierProductHandlerTest extends KernelTestCase
     use Factories;
 
     private MapSupplierProductHandler $handler;
+
     private SupplierProductRepository $supplierProducts;
 
     protected function setUp(): void

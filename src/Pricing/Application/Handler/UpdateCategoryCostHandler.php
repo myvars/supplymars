@@ -42,4 +42,3 @@ final readonly class UpdateCategoryCostHandler
         return Result::ok('Category cost updated');
     }
 }
-

@@ -41,14 +41,13 @@ final class ReorderProductImageFlowTest extends WebTestCase
         // upload two images via the flow
         $this->browser()
             ->actingAs($user)
-            ->get('/product_image/'.$product->getPublicId()->value().'/images')
+            ->get('/product_image/' . $product->getPublicId()->value() . '/images')
             ->assertSuccessful()
             ->attachFile('imageFile[]', [$file1->getPathname(), $file2->getPathname()])
             ->click('Upload')
             ->followRedirects()
             ->assertSee('2 images added')
             ->assertSee('2 Product Images');
-
 
         $product = ProductFactory::repository()->find($product->getId());
         $productImages = $product->getProductImages();

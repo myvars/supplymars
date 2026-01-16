@@ -3,13 +3,13 @@
 namespace App\Tests\Order\UI\Http;
 
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use tests\Shared\Factory\CustomerOrderFactory;
 use tests\Shared\Factory\CustomerOrderItemFactory;
 use tests\Shared\Factory\ProductFactory;
 use tests\Shared\Factory\PurchaseOrderItemFactory;
 use tests\Shared\Factory\SupplierProductFactory;
 use tests\Shared\Factory\UserFactory;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
 
@@ -41,7 +41,7 @@ class OrderItemControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/order/item/" . $orderItem->getId())
+            ->get('/order/item/' . $orderItem->getId())
             ->assertSuccessful()
             ->assertSee('Test Product');
     }
@@ -50,7 +50,7 @@ class OrderItemControllerTest extends WebTestCase
     {
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/order/item/999")
+            ->get('/order/item/999')
             ->assertStatus(404);
     }
 
@@ -120,7 +120,7 @@ class OrderItemControllerTest extends WebTestCase
             ->get('/order/' . $orderItem->getCustomerOrder()->getId())
             ->assertSee('1 line')
             ->assertSee('1 item')
-            ->get("/order/item/" . $orderItem->getId() . "/edit")
+            ->get('/order/item/' . $orderItem->getId() . '/edit')
             ->assertSuccessful()
             ->fillField('edit_order_item[quantity]', 2)
             ->fillField('edit_order_item[priceIncVat]', '100.00')
@@ -141,12 +141,12 @@ class OrderItemControllerTest extends WebTestCase
             ->get('/order/' . $orderItem->getCustomerOrder()->getId())
             ->assertSee('1 line')
             ->assertSee('1 item')
-            ->get("/order/item/" . $orderItem->getId() . "/edit")
+            ->get('/order/item/' . $orderItem->getId() . '/edit')
             ->assertSuccessful()
             ->fillField('edit_order_item[quantity]', '')
             ->fillField('edit_order_item[priceIncVat]', '')
             ->click('Update Order Item')
-            ->assertOn("/order/item/" . $orderItem->getId() . "/edit")
+            ->assertOn('/order/item/' . $orderItem->getId() . '/edit')
             ->assertSee('Please enter a product quantity')
             ->assertSee('Please enter a product price inc VAT');
     }
@@ -161,7 +161,7 @@ class OrderItemControllerTest extends WebTestCase
             ->get('/order/' . $orderItem->getCustomerOrder()->getId())
             ->assertSee('1 line')
             ->assertSee('1 item')
-            ->get("/order/item/" . $orderItem->getId() . "/edit")
+            ->get('/order/item/' . $orderItem->getId() . '/edit')
             ->assertSuccessful()
             ->fillField('edit_order_item[quantity]', 0)
             ->click('Update Order Item')
@@ -181,13 +181,12 @@ class OrderItemControllerTest extends WebTestCase
             ->assertSuccessful()
             ->assertSee('1 line')
             ->assertSee('1 item')
-            ->get("/order/item/" . $orderItem->getId() . "/edit")
+            ->get('/order/item/' . $orderItem->getId() . '/edit')
             ->assertSuccessful()
             ->fillField('edit_order_item[quantity]', 0)
             ->click('Update Order Item')
-            ->assertOn("/order/item/" . $orderItem->getId() . "/edit")
+            ->assertOn('/order/item/' . $orderItem->getId() . '/edit')
             ->assertSee('minimum quantity is 1');
-
     }
 
     public function testEditOrderItemNotFound(): void
@@ -205,7 +204,7 @@ class OrderItemControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/order/item/" . $orderItem->getId() . "/supplier/product/" . $supplierProduct->getId() . "/po/add")
+            ->get('/order/item/' . $orderItem->getId() . '/supplier/product/' . $supplierProduct->getId() . '/po/add')
             ->assertSuccessful()
             ->assertOn('/order/' . $orderItem->getCustomerOrder()->getId())
             ->assertSee($supplierProduct->getSupplier()->getName())
@@ -219,7 +218,7 @@ class OrderItemControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/order/item/999/supplier/product/' . $supplierProduct->getId() . "/po/add")
+            ->get('/order/item/999/supplier/product/' . $supplierProduct->getId() . '/po/add')
             ->assertStatus(404);
     }
 
@@ -229,7 +228,7 @@ class OrderItemControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/order/item/" . $orderItem->getId() . "/supplier/product/999/po/add")
+            ->get('/order/item/' . $orderItem->getId() . '/supplier/product/999/po/add')
             ->assertOn('/order/' . $orderItem->getCustomerOrder()->getId())
             ->assertSee('PO item could not be added');
     }
@@ -242,8 +241,8 @@ class OrderItemControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/order/item/" . $orderItem->getId() . "/supplier/product/"
-                . $unmatchedSupplierProduct->getId() . "/po/add"
+            ->get('/order/item/' . $orderItem->getId() . '/supplier/product/'
+                . $unmatchedSupplierProduct->getId() . '/po/add'
             )
             ->assertOn('/order/' . $orderItem->getCustomerOrder()->getId())
             ->assertSee('PO item could not be added');
@@ -256,23 +255,23 @@ class OrderItemControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/order/" . $orderItem->getCustomerOrder()->getId() . "/process")
-            ->get("/purchase/order/item/" . $purchaseOrderItem->getId() . "/edit/status")
+            ->get('/order/' . $orderItem->getCustomerOrder()->getId() . '/process')
+            ->get('/purchase/order/item/' . $purchaseOrderItem->getId() . '/edit/status')
             ->fillField(
                 'change_purchase_order_item_status[purchaseOrderItemStatus]',
                 PurchaseOrderStatus::ACCEPTED->value
             )
             ->click('Update Purchase Order Item')
-            ->get("/purchase/order/item/" . $purchaseOrderItem->getId() . "/edit/status")
+            ->get('/purchase/order/item/' . $purchaseOrderItem->getId() . '/edit/status')
             ->fillField(
                 'change_purchase_order_item_status[purchaseOrderItemStatus]',
                 PurchaseOrderStatus::SHIPPED->value
             )
             ->click('Update Purchase Order Item')
-            ->get("/order/" . $orderItem->getCustomerOrder()->getId() . "/process")
+            ->get('/order/' . $orderItem->getCustomerOrder()->getId() . '/process')
             ->assertSee('Shipped')
-            ->get("/order/item/" . $orderItem->getId() . "/supplier/product/"
-                . $purchaseOrderItem->getSupplierProduct()->getId() . "/po/add"
+            ->get('/order/item/' . $orderItem->getId() . '/supplier/product/'
+                . $purchaseOrderItem->getSupplierProduct()->getId() . '/po/add'
             )
             ->assertOn('/order/' . $orderItem->getCustomerOrder()->getId())
             ->assertSee('PO item could not be added');
@@ -283,19 +282,19 @@ class OrderItemControllerTest extends WebTestCase
         $purchaseOrderItem = PurchaseOrderItemFactory::createOne(['quantity' => 2]);
         $orderItem = $purchaseOrderItem->getCustomerOrderItem();
         $newSupplierProduct = SupplierProductFactory::new()->recalculatePrice()->create([
-            'product' => $orderItem->getProduct()
+            'product' => $orderItem->getProduct(),
         ]);
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/purchase/order/item/" . $purchaseOrderItem->getId() . "/edit")
+            ->get('/purchase/order/item/' . $purchaseOrderItem->getId() . '/edit')
             ->fillField('edit_purchase_order_item[quantity]', 1)
             ->click('Update Purchase Order Item')
-            ->get("/order/" . $purchaseOrderItem->getPurchaseOrder()->getCustomerOrder()->getId())
+            ->get('/order/' . $purchaseOrderItem->getPurchaseOrder()->getCustomerOrder()->getId())
             ->assertSee('PO #' . sprintf('%06d', $purchaseOrderItem->getPurchaseOrder()->getId()))
             ->assertSee('Qty: 1 of 2')
-            ->get("/order/item/" . $purchaseOrderItem->getCustomerOrderItem()->getId()
-                . "/supplier/product/" . $newSupplierProduct->getId() . "/po/add"
+            ->get('/order/item/' . $purchaseOrderItem->getCustomerOrderItem()->getId()
+                . '/supplier/product/' . $newSupplierProduct->getId() . '/po/add'
             )
             ->assertSuccessful()
             ->assertOn('/order/' . $orderItem->getCustomerOrder()->getId())
@@ -312,14 +311,14 @@ class OrderItemControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/purchase/order/item/" . $purchaseOrderItem->getId() . "/edit")
+            ->get('/purchase/order/item/' . $purchaseOrderItem->getId() . '/edit')
             ->fillField('edit_purchase_order_item[quantity]', 1)
             ->click('Update Purchase Order Item')
-            ->get("/order/" . $purchaseOrderItem->getPurchaseOrder()->getCustomerOrder()->getId())
+            ->get('/order/' . $purchaseOrderItem->getPurchaseOrder()->getCustomerOrder()->getId())
             ->assertSee('PO #' . sprintf('%06d', $purchaseOrderItem->getPurchaseOrder()->getId()))
             ->assertSee('Qty: 1 of 2')
-            ->get("/order/item/" . $purchaseOrderItem->getCustomerOrderItem()->getId()
-                . "/supplier/product/" . $purchaseOrderItem->getSupplierProduct()->getId() . "/po/add"
+            ->get('/order/item/' . $purchaseOrderItem->getCustomerOrderItem()->getId()
+                . '/supplier/product/' . $purchaseOrderItem->getSupplierProduct()->getId() . '/po/add'
             )
             ->assertSuccessful()
             ->assertOn('/order/' . $orderItem->getCustomerOrder()->getId())
@@ -336,7 +335,7 @@ class OrderItemControllerTest extends WebTestCase
             ->actingAs(UserFactory::new()->asStaff()->create())
             ->get('/order/' . $orderItem->getCustomerOrder()->getId())
             ->assertNotSee('Cancelled')
-            ->get("/order/item/" . $orderItem->getId() . "/cancel")
+            ->get('/order/item/' . $orderItem->getId() . '/cancel')
             ->assertOn('/order/' . $orderItem->getCustomerOrder()->getId())
             ->assertSee('Cancelled')
             ->assertSee('Order item cancelled');
@@ -349,8 +348,8 @@ class OrderItemControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/order/item/" . $orderItem->getId() . "/cancel")
-            ->get("/order/item/" . $orderItem->getId() . "/cancel")
+            ->get('/order/item/' . $orderItem->getId() . '/cancel')
+            ->get('/order/item/' . $orderItem->getId() . '/cancel')
             ->assertOn('/order/' . $orderItem->getCustomerOrder()->getId())
             ->assertSee('Order item cannot be cancelled');
     }
@@ -362,16 +361,16 @@ class OrderItemControllerTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get("/order/" . $orderItem->getCustomerOrder()->getId() . "/process")
-            ->get("/purchase/order/item/" . $purchaseOrderItem->getId() . "/edit/status")
+            ->get('/order/' . $orderItem->getCustomerOrder()->getId() . '/process')
+            ->get('/purchase/order/item/' . $purchaseOrderItem->getId() . '/edit/status')
             ->fillField(
                 'change_purchase_order_item_status[purchaseOrderItemStatus]',
                 PurchaseOrderStatus::ACCEPTED->value
             )
             ->click('Update Purchase Order Item')
-            ->get("/order/" . $orderItem->getCustomerOrder()->getId() . "/process")
+            ->get('/order/' . $orderItem->getCustomerOrder()->getId() . '/process')
             ->assertSee('Accepted')
-            ->get("/order/item/" . $orderItem->getId() . "/cancel")
+            ->get('/order/item/' . $orderItem->getId() . '/cancel')
             ->assertOn('/order/' . $orderItem->getCustomerOrder()->getId())
             ->assertSee('Order item cannot be cancelled');
     }

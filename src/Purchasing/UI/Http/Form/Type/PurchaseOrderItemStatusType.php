@@ -16,7 +16,7 @@ final class PurchaseOrderItemStatusType extends AbstractType
     {
         $builder
             ->add('id', HiddenType::class, [
-                'required' => false
+                'required' => false,
             ])
             ->add('purchaseOrderItemStatus', EnumType::class, [
                 'class' => PurchaseOrderStatus::class,

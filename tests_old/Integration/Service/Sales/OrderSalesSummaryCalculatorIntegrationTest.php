@@ -6,10 +6,10 @@ use App\Reporting\Application\Handler\CalculateOrderSalesSummaryHandler;
 use App\Reporting\Domain\Metric\SalesDuration;
 use App\Reporting\Domain\Model\SalesType\OrderSalesSummary;
 use Doctrine\ORM\EntityManagerInterface;
-use tests\Shared\Factory\OrderSalesFactory;
-use tests\Shared\Factory\OrderSalesSummaryFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use tests\Shared\Factory\OrderSalesFactory;
+use tests\Shared\Factory\OrderSalesSummaryFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class OrderSalesSummaryCalculatorIntegrationTest extends KernelTestCase
@@ -33,14 +33,14 @@ class OrderSalesSummaryCalculatorIntegrationTest extends KernelTestCase
             'dateString' => $date,
             'orderCount' => 10,
             'orderValue' => '1000.00',
-            'averageOrderValue' => '100.00'
+            'averageOrderValue' => '100.00',
         ]);
 
         $this->orderSalesSummaryCalculator->process();
 
         $orderSalesSummary = OrderSalesSummaryFactory::repository()->findOneBy([
             'duration' => SalesDuration::LAST_7->value,
-            'dateString' => SalesDuration::LAST_7->getStartDate()
+            'dateString' => SalesDuration::LAST_7->getStartDate(),
         ]);
 
         $this->assertInstanceOf(OrderSalesSummary::class, $orderSalesSummary);

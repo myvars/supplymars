@@ -41,7 +41,6 @@ class LogStatusWasChangedTest extends TestCase
             $currentUserProvider,
             $publicIdResolverRegistry,
             $logger
-
         );
 
         $listener->__invoke($event);

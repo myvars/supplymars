@@ -4,6 +4,8 @@ namespace App\Tests\Catalog\Integration;
 
 use App\Shared\Domain\Service\Pricing\MarkupCalculator;
 use App\Shared\Domain\ValueObject\PriceModel;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use tests\Shared\Factory\CategoryFactory;
 use tests\Shared\Factory\ManufacturerFactory;
 use tests\Shared\Factory\ProductFactory;
@@ -11,8 +13,6 @@ use tests\Shared\Factory\ProductImageFactory;
 use tests\Shared\Factory\SubcategoryFactory;
 use tests\Shared\Factory\SupplierProductFactory;
 use tests\Shared\Factory\UserFactory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Zenstruck\Foundry\Test\Factories;
 
 class ProductIntegrationTest extends KernelTestCase

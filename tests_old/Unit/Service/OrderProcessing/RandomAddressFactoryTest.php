@@ -17,13 +17,25 @@ class RandomAddressFactoryTest extends TestCase
         $user->method('getFullName')->willReturn('John Doe');
 
         $faker = new class extends Generator {
-            public function streetAddress(): string { return '123 Mars St'; }
+            public function streetAddress(): string
+            {
+                return '123 Mars St';
+            }
 
-            public function phoneNumber(): string { return '555-1234'; }
+            public function phoneNumber(): string
+            {
+                return '555-1234';
+            }
 
-            public function company(): string { return 'Mars Corp'; }
+            public function company(): string
+            {
+                return 'Mars Corp';
+            }
 
-            public function streetName(): string { return 'Red Dune Ave'; }
+            public function streetName(): string
+            {
+                return 'Red Dune Ave';
+            }
         };
 
         $factory = new RandomAddressFactory($faker);

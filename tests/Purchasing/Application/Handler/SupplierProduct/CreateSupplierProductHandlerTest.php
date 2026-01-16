@@ -23,6 +23,7 @@ final class CreateSupplierProductHandlerTest extends KernelTestCase
     use Factories;
 
     private CreateSupplierProductHandler $handler;
+
     private SupplierProductRepository $supplierProducts;
 
     protected function setUp(): void
@@ -75,7 +76,7 @@ final class CreateSupplierProductHandlerTest extends KernelTestCase
         $category = SupplierCategoryFactory::createOne();
         $subcategory = SupplierSubcategoryFactory::createOne([
             'supplierCategory' => $category,
-            'supplier' => $category->getSupplier()
+            'supplier' => $category->getSupplier(),
         ]);
         $manufacturer = SupplierManufacturerFactory::createOne(['supplier' => $category->getSupplier()]);
 

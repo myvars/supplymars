@@ -5,11 +5,11 @@ namespace App\Tests\Integration\Service\Sales;
 use App\Reporting\Application\Handler\CalculateOrderSalesHandler;
 use App\Reporting\Domain\Model\SalesType\OrderSales;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use tests\Shared\Factory\CustomerOrderItemFactory;
 use tests\Shared\Factory\OrderSalesFactory;
 use tests\Shared\Factory\ProductFactory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Zenstruck\Foundry\Test\Factories;
 
 class OrderSalesCalculatorIntegrationTest extends KernelTestCase
@@ -31,7 +31,7 @@ class OrderSalesCalculatorIntegrationTest extends KernelTestCase
         $date = new \DateTime()->format('Y-m-d');
         $product = ProductFactory::createOne([
             'stock' => 100,
-            'sellPrice' => 100.00
+            'sellPrice' => 100.00,
         ]);
         CustomerOrderItemFactory::createMany(10, ['product' => $product]);
 

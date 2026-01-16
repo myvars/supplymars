@@ -2,7 +2,6 @@
 
 namespace App\Purchasing\Application\Handler\SupplierProduct;
 
-
 use App\Purchasing\Application\Command\SupplierProduct\SupplierProductFilter;
 use App\Shared\Application\RedirectTarget;
 use App\Shared\Application\Result;

@@ -3,10 +3,10 @@
 namespace App\Tests\Order\Integration;
 
 use App\Order\Application\DTO\CreateOrderItemDto;
-use tests\Shared\Factory\CustomerOrderFactory;
-use tests\Shared\Factory\ProductFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use tests\Shared\Factory\CustomerOrderFactory;
+use tests\Shared\Factory\ProductFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class CreateOrderItemDtoIntegrationTest extends KernelTestCase

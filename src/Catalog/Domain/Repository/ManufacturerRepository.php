@@ -13,7 +13,10 @@ use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 interface ManufacturerRepository extends FindByCriteriaInterface
 {
     public function add(Manufacturer $manufacturer): void;
+
     public function remove(Manufacturer $manufacturer): void;
+
     public function get(ManufacturerId $id): ?Manufacturer;
+
     public function getByPublicId(ManufacturerPublicId $publicId): ?Manufacturer;
 }

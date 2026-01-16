@@ -61,7 +61,6 @@ final readonly class FormFlow
 
         // Success path: submitted, valid, and not an auto‑update submit.
         if ($form->isSubmitted() && $form->isValid() && !$this->autoUpdateForm->is($form)) {
-
             $command = $this->map($mapper, $form->getData());
             $result = $handler($command);
 
@@ -112,6 +111,7 @@ final readonly class FormFlow
         if (!\is_object($command)) {
             throw new \LogicException('Mapper must return an object.');
         }
+
         return $command;
     }
 
@@ -144,7 +144,6 @@ final readonly class FormFlow
 
         return new Response($html, $status);
     }
-
 
     /**
      * Redirect to the configured success URL.

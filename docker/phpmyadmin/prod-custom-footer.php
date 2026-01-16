@@ -1,4 +1,5 @@
 <?php
+
 echo '<style>
 body::before {
     content: "!!! PRODUCTION DATABASE !!!";

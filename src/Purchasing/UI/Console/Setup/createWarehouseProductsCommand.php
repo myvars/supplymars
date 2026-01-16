@@ -23,7 +23,7 @@ readonly class createWarehouseProductsCommand
 {
     public function __construct(
         private SupplierRepository $suppliers,
-        private SupplierproductRepository $supplierProducts,
+        private SupplierProductRepository $supplierProducts,
         private MapSupplierProductHandler $mapSupplierProductHandler,
         private DefaultUserAuthenticator $defaultUserAuthenticator,
     ) {
@@ -31,7 +31,7 @@ readonly class createWarehouseProductsCommand
 
     public function __invoke(
         InputInterface $input,
-        OutputInterface $output
+        OutputInterface $output,
     ): int {
         $io = new SymfonyStyle($input, $output);
 
@@ -43,7 +43,7 @@ readonly class createWarehouseProductsCommand
         }
 
         $supplierProducts = $this->getSupplierProducts($supplier);
-        if (!$supplierProducts) {
+        if ($supplierProducts === []) {
             $io->note('No supplier products found.');
 
             return Command::SUCCESS;
@@ -66,7 +66,7 @@ readonly class createWarehouseProductsCommand
                 new MapSupplierProduct($supplierProduct->getPublicId())
             );
 
-            $processedIds[] = $supplierProduct->getProductCode() . ' : ' . $result->ok ? 'Mapped' : 'Skipped';
+            $processedIds[] = $supplierProduct->getProductCode() . ' : ' . ($result->ok ? 'Mapped' : 'Skipped');
 
             ++$processed;
             $progress->advance();

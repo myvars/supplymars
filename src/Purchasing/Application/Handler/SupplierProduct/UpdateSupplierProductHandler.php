@@ -8,9 +8,12 @@ use App\Catalog\Domain\Repository\ProductRepository;
 use App\Purchasing\Application\Command\SupplierProduct\UpdateSupplierProduct;
 use App\Purchasing\Domain\Model\Supplier\Supplier;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierCategory;
+use App\Purchasing\Domain\Model\SupplierProduct\SupplierCategoryId;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierManufacturer;
+use App\Purchasing\Domain\Model\SupplierProduct\SupplierManufacturerId;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierSubcategory;
+use App\Purchasing\Domain\Model\SupplierProduct\SupplierSubcategoryId;
 use App\Purchasing\Domain\Repository\SupplierCategoryRepository;
 use App\Purchasing\Domain\Repository\SupplierManufacturerRepository;
 use App\Purchasing\Domain\Repository\SupplierProductRepository;
@@ -47,7 +50,7 @@ final readonly class UpdateSupplierProductHandler
         }
 
         $supplierCategory = null;
-        if (null !== $command->supplierCategoryId) {
+        if ($command->supplierCategoryId instanceof SupplierCategoryId) {
             $supplierCategory = $this->supplierCategories->get($command->supplierCategoryId);
             if (!$supplierCategory instanceof SupplierCategory) {
                 return Result::fail('Supplier category not found.');
@@ -55,7 +58,7 @@ final readonly class UpdateSupplierProductHandler
         }
 
         $supplierSubcategory = null;
-        if (null !== $command->supplierSubcategoryId) {
+        if ($command->supplierSubcategoryId instanceof SupplierSubcategoryId) {
             $supplierSubcategory = $this->supplierSubcategories->get($command->supplierSubcategoryId);
             if (!$supplierSubcategory instanceof SupplierSubcategory) {
                 return Result::fail('Supplier subcategory not found.');
@@ -63,7 +66,7 @@ final readonly class UpdateSupplierProductHandler
         }
 
         $supplierManufacturer = null;
-        if (null !== $command->supplierManufacturerId) {
+        if ($command->supplierManufacturerId instanceof SupplierManufacturerId) {
             $supplierManufacturer = $this->supplierManufacturers->get($command->supplierManufacturerId);
             if (!$supplierManufacturer instanceof SupplierManufacturer) {
                 return Result::fail('Supplier manufacturer not found.');

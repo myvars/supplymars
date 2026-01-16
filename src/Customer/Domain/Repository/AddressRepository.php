@@ -12,7 +12,10 @@ use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 interface AddressRepository
 {
     public function add(Address $address): void;
+
     public function remove(Address $address): void;
+
     public function get(AddressId $id): ?Address;
+
     public function getByPublicId(AddressPublicId $publicId): ?Address;
 }

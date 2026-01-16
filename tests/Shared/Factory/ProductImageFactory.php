@@ -2,6 +2,7 @@
 
 namespace App\Tests\Shared\Factory;
 
+use App\Catalog\Domain\Model\Product\Product;
 use App\Catalog\Domain\Model\ProductImage\ProductImage;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Zenstruck\Foundry\LazyValue;
@@ -35,8 +36,8 @@ final class ProductImageFactory extends PersistentObjectFactory
     protected function defaults(): array
     {
         return [
-            'product' => LazyValue::memoize(fn () => ProductFactory::createOne()),
-            'uploadedFile' => LazyValue::memoize(fn () => new UploadedFile(
+            'product' => LazyValue::memoize(fn (): Product => ProductFactory::createOne()),
+            'uploadedFile' => LazyValue::memoize(fn (): UploadedFile => new UploadedFile(
                 __DIR__ . '/../../../tests/Shared/Resources/dummy-image.jpg',
                 'dummy-image.jpg',
                 'image/jpeg',

@@ -52,10 +52,8 @@ final class DefaultUserAuthenticatorTest extends TestCase
         $tokenStorage
             ->expects(self::once())
             ->method('setToken')
-            ->with(self::callback(function ($token) use ($domainUser) {
-                return $token instanceof PostAuthenticationToken
-                    && $token->getUser() === $domainUser;
-            }));
+            ->with(self::callback(fn ($token): bool => $token instanceof PostAuthenticationToken
+                && $token->getUser() === $domainUser));
 
         $requestStack = $this->createStub(RequestStack::class);
         $requestStack->method('getMainRequest')->willReturn(null);

@@ -90,7 +90,7 @@ class ProductSalesDoctrineRepository extends ServiceEntityRepository implements 
             'manufacturer' => $qb->join('p.manufacturer', 'm')->addSelect('m.id AS salesId, m.name'),
             'supplier' => $qb->join('ps.supplier', 's')->addSelect('s.id AS salesId, s.name'),
             'all' => $qb->addSelect("1 AS salesId, 'all' AS name"),
-            default => throw new \InvalidArgumentException('Unknown entity: '.$salesTypeValue),
+            default => throw new \InvalidArgumentException('Unknown entity: ' . $salesTypeValue),
         };
 
         return $qb->getQuery()

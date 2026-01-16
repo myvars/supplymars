@@ -15,6 +15,7 @@ final class UpdateManufacturerHandlerTest extends KernelTestCase
     use Factories;
 
     private UpdateManufacturerHandler $handler;
+
     private ManufacturerRepository $manufacturers;
 
     protected function setUp(): void

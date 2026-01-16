@@ -31,6 +31,7 @@ final class SubcategoryIdType extends AbstractType
         ]);
     }
 
+    #[\Override]
     public function getParent(): string
     {
         return EntityType::class;

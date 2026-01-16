@@ -13,7 +13,7 @@ use App\Shared\Domain\Service\Pricing\MarkupCalculator;
 final readonly class RemoveSupplierProductHandler
 {
     public function __construct(
-        private SupplierproductRepository $supplierProducts,
+        private SupplierProductRepository $supplierProducts,
         private MarkupCalculator $markupCalculator,
         private FlusherInterface $flusher,
     ) {

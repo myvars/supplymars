@@ -113,6 +113,7 @@ class PurchaseOrderItem implements DomainEventProviderInterface
         if (!$this->allowStatusChange()) {
             throw new \LogicException('Status cannot be changed');
         }
+
         $this->changeStatus($newStatus);
     }
 
@@ -235,7 +236,7 @@ class PurchaseOrderItem implements DomainEventProviderInterface
         }
 
         if ($quantity > $this->getMaxQuantity()) {
-            throw new \InvalidArgumentException('Quantity cannot be greater than '.$this->getMaxQuantity());
+            throw new \InvalidArgumentException('Quantity cannot be greater than ' . $this->getMaxQuantity());
         }
 
         $this->quantity = $quantity;

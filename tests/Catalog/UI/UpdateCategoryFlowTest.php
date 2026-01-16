@@ -36,7 +36,7 @@ final class UpdateCategoryFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/category/'.$publicId.'/edit')
+            ->get('/category/' . $publicId . '/edit')
             ->fillField('category[name]', 'After Edit')
             ->fillField('category[vatRate]', $vatRate2->getId())
             ->fillField('category[defaultMarkup]', '7.500')
@@ -66,10 +66,10 @@ final class UpdateCategoryFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/category/'.$publicId.'/edit')
+            ->get('/category/' . $publicId . '/edit')
             ->fillField('category[name]', '')
             ->click('Update Category')
-            ->assertOn('/category/'.$publicId.'/edit')
+            ->assertOn('/category/' . $publicId . '/edit')
             ->assertSee('Please enter a category name');
     }
 }

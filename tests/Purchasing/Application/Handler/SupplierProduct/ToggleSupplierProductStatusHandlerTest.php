@@ -16,6 +16,7 @@ final class ToggleSupplierProductStatusHandlerTest extends KernelTestCase
     use Factories;
 
     private ToggleSupplierProductStatusHandler $handler;
+
     private SupplierProductRepository $supplierProducts;
 
     protected function setUp(): void

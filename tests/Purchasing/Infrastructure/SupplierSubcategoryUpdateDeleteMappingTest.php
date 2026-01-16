@@ -32,6 +32,7 @@ final class SupplierSubcategoryUpdateDeleteMappingTest extends KernelTestCase
         );
         $this->em->persist($subcategory);
         $this->em->flush();
+
         $id = $subcategory->getId();
 
         /** @var SupplierSubcategory $loaded */
@@ -64,6 +65,7 @@ final class SupplierSubcategoryUpdateDeleteMappingTest extends KernelTestCase
         );
         $this->em->persist($subcategory);
         $this->em->flush();
+
         $id = $subcategory->getId();
 
         $this->em->remove($subcategory);

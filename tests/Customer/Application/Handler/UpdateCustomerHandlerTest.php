@@ -15,6 +15,7 @@ final class UpdateCustomerHandlerTest extends KernelTestCase
     use Factories;
 
     private UpdateCustomerHandler $handler;
+
     private UserRepository $users;
 
     protected function setUp(): void

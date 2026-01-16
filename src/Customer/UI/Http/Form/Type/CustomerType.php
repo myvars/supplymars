@@ -27,7 +27,7 @@ final class CustomerType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => CustomerForm::Class,
+            'data_class' => CustomerForm::class,
         ]);
     }
 }

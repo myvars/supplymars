@@ -25,6 +25,7 @@ final class SupplierUpdateDeleteMappingTest extends KernelTestCase
 
         $this->em->persist($supplier);
         $this->em->flush();
+
         $id = $supplier->getId();
 
         /** @var Supplier $loaded */
@@ -52,6 +53,7 @@ final class SupplierUpdateDeleteMappingTest extends KernelTestCase
 
         $this->em->persist($supplier);
         $this->em->flush();
+
         $id = $supplier->getId();
 
         $this->em->remove($supplier);

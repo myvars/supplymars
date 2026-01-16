@@ -61,7 +61,7 @@ enum ShippingMethod: string
 
     private function bcround(string $number, int $precision): string
     {
-        $adjustment = '0.'.str_repeat('0', $precision).'5';
+        $adjustment = '0.' . str_repeat('0', $precision) . '5';
         $number = bcadd($number, $adjustment, $precision + 1);
 
         return bcmul($number, '1', $precision);

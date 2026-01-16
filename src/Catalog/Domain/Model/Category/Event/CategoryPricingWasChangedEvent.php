@@ -36,6 +36,4 @@ final class CategoryPricingWasChangedEvent extends AbstractDomainEvent
     {
         return $this->priceModelChanged;
     }
-
-
 }

@@ -13,7 +13,10 @@ use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 interface PurchaseOrderRepository extends FindByCriteriaInterface
 {
     public function add(PurchaseOrder $purchaseOrder): void;
+
     public function remove(PurchaseOrder $purchaseOrder): void;
+
     public function get(PurchaseOrderId $id): ?PurchaseOrder;
+
     public function getByPublicId(PurchaseOrderPublicId $publicId): ?PurchaseOrder;
 }

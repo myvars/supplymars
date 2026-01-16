@@ -15,6 +15,7 @@ final class DeleteSupplierHandlerTest extends KernelTestCase
     use Factories;
 
     private DeleteSupplierHandler $handler;
+
     private SupplierRepository $suppliers;
 
     protected function setUp(): void

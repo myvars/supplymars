@@ -16,7 +16,9 @@ final class CreateProductImageHandlerTest extends KernelTestCase
     use Factories;
 
     private CreateProductImageHandler $handler;
+
     private ProductImageRepository $productImages;
+
     private ProductRepository $products;
 
     protected function setUp(): void

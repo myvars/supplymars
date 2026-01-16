@@ -20,20 +20,20 @@ class SubcategorySearchCriteriaIntegrationTest extends KernelTestCase
     public function testValidSubcategorySearchDto(): void
     {
         $criteria = new SubcategorySearchCriteria();
-        $criteria ->setSort('name');
-        $criteria ->setSortDirection('ASC');
-        $criteria ->categoryId = 123;
-        $criteria ->priceModel = PriceModel::PRETTY_99->value;
-        $criteria ->managerId = 456;
+        $criteria->setSort('name');
+        $criteria->setSortDirection('ASC');
+        $criteria->categoryId = 123;
+        $criteria->priceModel = PriceModel::PRETTY_99->value;
+        $criteria->managerId = 456;
 
-        $errors = $this->validator->validate($criteria );
+        $errors = $this->validator->validate($criteria);
         $this->assertCount(0, $errors);
     }
 
     public function testInvalidCategoryId(): void
     {
-        $criteria  = new SubcategorySearchCriteria();
-        $criteria ->categoryId = 0;
+        $criteria = new SubcategorySearchCriteria();
+        $criteria->categoryId = 0;
 
         $errors = $this->validator->validate($criteria);
         $this->assertSame('Please enter a valid Category Id', $errors[0]->getMessage());
@@ -41,10 +41,10 @@ class SubcategorySearchCriteriaIntegrationTest extends KernelTestCase
 
     public function testInvalidManagerId(): void
     {
-        $criteria  = new SubcategorySearchCriteria();
-        $criteria ->managerId = 0;
+        $criteria = new SubcategorySearchCriteria();
+        $criteria->managerId = 0;
 
-        $errors = $this->validator->validate($criteria );
+        $errors = $this->validator->validate($criteria);
         $this->assertSame('Please enter a valid Manager Id', $errors[0]->getMessage());
     }
 }

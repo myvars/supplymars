@@ -60,4 +60,3 @@ final readonly class CreateSubcategoryHandler
         return Result::ok('Subcategory created', SubcategoryId::fromInt($subcategory->getId()));
     }
 }
-

@@ -41,8 +41,8 @@ class ProductSalesCalculatorTest extends TestCase
                 'supplierId' => 1,
                 'salesQty' => 10,
                 'salesCost' => 500.00,
-                'salesValue' => 1000.00
-            ]
+                'salesValue' => 1000.00,
+            ],
         ];
 
         $product = $this->createMock(Product::class);
@@ -52,7 +52,7 @@ class ProductSalesCalculatorTest extends TestCase
             [PurchaseOrderItem::class, $this->createMock(PurchaseOrderItemDoctrineRepository::class)],
             [Product::class, $this->createMock(ProductDoctrineRepository::class)],
             [Supplier::class, $this->createMock(SupplierDoctrineRepository::class)],
-            [ProductSales::class, $this->createMock(ProductSalesDoctrineRepository::class)]
+            [ProductSales::class, $this->createMock(ProductSalesDoctrineRepository::class)],
         ]);
 
         $this->em->getRepository(PurchaseOrderItem::class)->method('calculateProductSales')->willReturn($salesData);
@@ -76,8 +76,8 @@ class ProductSalesCalculatorTest extends TestCase
                 'supplierId' => 1,
                 'salesQty' => 10,
                 'salesCost' => 500.00,
-                'salesValue' => 1000.00
-            ]
+                'salesValue' => 1000.00,
+            ],
         ];
 
         $product = $this->createMock(Product::class);
@@ -87,7 +87,7 @@ class ProductSalesCalculatorTest extends TestCase
             [PurchaseOrderItem::class, $this->createMock(PurchaseOrderItemDoctrineRepository::class)],
             [Product::class, $this->createMock(ProductDoctrineRepository::class)],
             [Supplier::class, $this->createMock(SupplierDoctrineRepository::class)],
-            [ProductSales::class, $this->createMock(ProductSalesDoctrineRepository::class)]
+            [ProductSales::class, $this->createMock(ProductSalesDoctrineRepository::class)],
         ]);
 
         $this->em->getRepository(PurchaseOrderItem::class)->method('calculateProductSales')->willReturn($salesData);

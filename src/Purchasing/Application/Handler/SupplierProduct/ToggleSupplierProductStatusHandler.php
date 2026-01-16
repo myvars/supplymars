@@ -2,7 +2,6 @@
 
 namespace App\Purchasing\Application\Handler\SupplierProduct;
 
-use App\Catalog\Domain\Model\Product\Product;
 use App\Purchasing\Application\Command\SupplierProduct\ToggleSupplierProductStatus;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
 use App\Purchasing\Domain\Repository\SupplierProductRepository;
@@ -12,7 +11,7 @@ use App\Shared\Application\Result;
 final readonly class ToggleSupplierProductStatusHandler
 {
     public function __construct(
-        private SupplierproductRepository $supplierProducts,
+        private SupplierProductRepository $supplierProducts,
         private FlusherInterface $flusher,
     ) {
     }

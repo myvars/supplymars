@@ -5,10 +5,10 @@ namespace App\Tests\Integration\Service\Product;
 use App\Catalog\Domain\Model\Product\Product;
 use App\Service\Crud\Common\CrudContext;
 use App\Service\Product\ProductGenerator;
-use tests\Shared\Factory\SupplierProductFactory;
-use tests\Shared\Factory\VatRateFactory;
 use Story\StaffUserStory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use tests\Shared\Factory\SupplierProductFactory;
+use tests\Shared\Factory\VatRateFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class ProductGeneratorIntegrationTest extends KernelTestCase

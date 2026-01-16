@@ -31,4 +31,3 @@ final class ProductCostForm
         return $form;
     }
 }
-

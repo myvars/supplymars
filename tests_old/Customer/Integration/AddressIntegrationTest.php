@@ -2,12 +2,12 @@
 
 namespace App\Tests\Customer\Integration;
 
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use tests\Shared\Factory\AddressFactory;
 use tests\Shared\Factory\CategoryFactory;
 use tests\Shared\Factory\CustomerOrderFactory;
 use tests\Shared\Factory\UserFactory;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Zenstruck\Foundry\Test\Factories;
 
 class AddressIntegrationTest extends KernelTestCase
@@ -115,7 +115,7 @@ class AddressIntegrationTest extends KernelTestCase
         $address = AddressFactory::createOne([
             'customer' => $user,
             'isDefaultBillingAddress' => true,
-            'isDefaultShippingAddress' => true
+            'isDefaultShippingAddress' => true,
         ]);
         $customerOrder = CustomerOrderFactory::createOne(['customer' => $user, 'billingAddress' => $address]);
 
@@ -129,7 +129,7 @@ class AddressIntegrationTest extends KernelTestCase
         $address = AddressFactory::createOne([
             'customer' => $user,
             'isDefaultBillingAddress' => true,
-            'isDefaultShippingAddress' => true
+            'isDefaultShippingAddress' => true,
         ]);
         $customerOrder = CustomerOrderFactory::createOne(['customer' => $user, 'billingAddress' => $address]);
 

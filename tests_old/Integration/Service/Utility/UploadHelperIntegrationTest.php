@@ -3,8 +3,8 @@
 namespace App\Tests\Integration\Service\Utility;
 
 use App\Shared\Infrastructure\FileStorage\UploadHelper;
-use tests\Shared\Factory\ProductImageFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use tests\Shared\Factory\ProductImageFactory;
 use Zenstruck\Foundry\Test\Factories;
 
 class UploadHelperIntegrationTest extends KernelTestCase
@@ -30,7 +30,7 @@ class UploadHelperIntegrationTest extends KernelTestCase
         $this->assertStringContainsString('dummy-image-', $newFileName);
 
         // Clean up
-        $result = $this->uploadHelper->deleteFile($this->appProductUploads.$newFileName);
+        $result = $this->uploadHelper->deleteFile($this->appProductUploads . $newFileName);
         $this->assertTrue($result);
     }
 }
