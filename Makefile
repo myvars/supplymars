@@ -9,7 +9,7 @@ up-prod:
 	APP_ENV=prod docker compose -f compose.yaml -f compose.prod.yaml up -d --build --remove-orphans --wait
 
 up-prod-local:
-	docker compose --env-file .env.prod.local -f compose.yaml -f compose.prod.yaml -f compose.prod.local.yaml up -d --build --remove-orphans --wait
+	docker compose --env-file ../supplymars-secrets/prod-local.env -f compose.yaml -f compose.prod.yaml -f compose.prod.local.yaml up -d --build --remove-orphans --wait
 
 up-dev-tools:
 	docker compose -f compose.dev-tools.yaml up -d --wait --build
