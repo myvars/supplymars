@@ -17,12 +17,6 @@ up-dev-tools:
 down:
 	docker compose -f compose.yaml -f compose.dev-tools.yaml down --remove-orphans
 
-migrate:
-	docker compose exec php php bin/console doctrine:migrations:migrate --no-interaction
-
-messenger:
-	docker compose run --rm messenger
-
 test:
 	docker compose run --rm -e APP_ENV=test php ./scripts/run-tests.sh
 
@@ -44,13 +38,10 @@ clean-build:
 prune:
 	docker system prune -af
 
-cache-clear:
-	docker compose exec php php bin/console cache:clear
-
 k6:
 	./scripts/run-k6-script.sh $(SCRIPT) $(ENV) false
 
 k6-dash:
 	./scripts/run-k6-script.sh $(SCRIPT) $(ENV) true
 
-.PHONY: up up-prod up-prod-local up-dev-tools down migrate messenger test test-% bash logs logs-% clean-build prune cache-clear k6 k6-dash
+.PHONY: up up-prod up-prod-local up-dev-tools down test test-% bash logs logs-% clean-build prune k6 k6-dash
