@@ -5,6 +5,7 @@
         <a href="{{ path('app_order_lock_toggle_status', {id: result.publicId.value}) }}"
            data-turbo-frame="body"
            data-turbo-prefetch="false"
+           data-order-lock="{{ result.orderLock ? 'locked' : 'unlocked' }}"
            class="flex items-center text-base text-gray-500 ms-3 hover:text-yellow-600 dark:text-gray-400 dark:hover:text-yellow-300"
         >
             {% if result.orderLock is not null %}

@@ -36,8 +36,8 @@ final class DoctrineFlusherTest extends TestCase
 
         $flusher = new DoctrineFlusher($em);
 
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('db error');
+        self::expectException(\RuntimeException::class);
+        self::expectExceptionMessage('db error');
 
         $flusher->flush();
     }

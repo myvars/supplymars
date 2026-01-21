@@ -11,6 +11,7 @@ use App\Tests\Shared\Factory\ManufacturerFactory;
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\SubcategoryFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
+use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Factory\VatRateFactory;
 use App\Tests\Shared\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
@@ -125,5 +126,53 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Supplier subcategory is missing');
         $this->service->map($sp);
+    }
+
+    public function testMapUsesDefaultOwnerWhenNoAuthenticatedUser(): void
+    {
+        // Create the default owner that the service looks for when no authenticated user
+        UserFactory::createOne(['email' => 'adam@admin.com', 'isStaff' => true]);
+
+        $sp = SupplierProductFactory::createOne(['product' => null]);
+        $sc = $sp->getSupplierCategory();
+
+        $product = $this->service->map($sp);
+        $this->em->flush();
+
+        $category = $product->getCategory();
+        self::assertSame($sc->getName(), $category->getName());
+        self::assertSame('adam@admin.com', $category->getOwner()->getEmail());
+    }
+
+    #[WithStory(StaffUserStory::class)]
+    public function testMapEstablishesBidirectionalRelationships(): void
+    {
+        $sp = SupplierProductFactory::createOne(['product' => null]);
+        $sm = $sp->getSupplierManufacturer();
+        $ss = $sp->getSupplierSubcategory();
+
+        $product = $this->service->map($sp);
+        $this->em->flush();
+
+        $manufacturer = $product->getManufacturer();
+        $subcategory = $product->getSubcategory();
+
+        // Verify bidirectional relationship: manufacturer -> supplierManufacturers
+        self::assertTrue(
+            $manufacturer->getSupplierManufacturers()->contains($sm),
+            'Manufacturer should contain the mapped SupplierManufacturer'
+        );
+
+        // Verify bidirectional relationship: subcategory -> supplierSubcategories
+        self::assertTrue(
+            $subcategory->getSupplierSubcategories()->contains($ss),
+            'Subcategory should contain the mapped SupplierSubcategory'
+        );
+
+        // Verify bidirectional relationship: product -> supplierProducts
+        self::assertTrue(
+            $product->getSupplierProducts()->contains($sp),
+            'Product should contain the mapped SupplierProduct'
+        );
     }
 }

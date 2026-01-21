@@ -264,6 +264,7 @@ tests/
 - Use factories for test data creation
 - Database is automatically reset before each test run via `scripts/run-tests.sh`
 - Each test runs in an isolated transaction (auto-rollback)
+- Use #[WithStory(StaffUserStory::class)] method attribute if authenticated (staff) user is required for test (uses zenstruck stories)
 
 ## Common Symfony Console Commands
 
@@ -369,7 +370,7 @@ When creating new features:
 
 ## Code Style Expectations
 
-- Strict types enabled (`declare(strict_types=1)`)
+- Strict types enabled (`declare(strict_types=1)`) - handled by Symfony
 - Readonly properties where possible (PHP 8.1+)
 - Constructor property promotion
 - No Yoda-style conditions

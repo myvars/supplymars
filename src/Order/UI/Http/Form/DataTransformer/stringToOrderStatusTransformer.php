@@ -17,7 +17,7 @@ final readonly class stringToOrderStatusTransformer implements DataTransformerIn
 
         try {
             return OrderStatus::from(strtoupper((string) $value));
-        } catch (\InvalidArgumentException) {
+        } catch (\ValueError) {
             throw new TransformationFailedException('Invalid status value: ' . $value);
         }
     }

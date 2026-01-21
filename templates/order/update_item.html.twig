@@ -4,7 +4,7 @@
 
 {% block body %}
 <twig:Dialog title="Edit Order Item">
-        {{ include('form_flow/_form.html.twig', {'button_label': 'Update Order Item'}) }}
+        {{ include('shared/form_flow/_form.html.twig', {'button_label': 'Update Order Item'}) }}
         {% if form.vars.value.allowCancel %}
             <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">
                 <a href="{{ path('app_order_item_cancel', {'id': result.orderItemId}) }}"

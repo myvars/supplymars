@@ -73,4 +73,67 @@ final class SupplierStockChangeLogWriterTest extends KernelTestCase
             occurredAt: new \DateTimeImmutable(),
         );
     }
+
+    public function testThrowsOnNegativeCost(): void
+    {
+        /** @var MockObject&FlusherInterface $flusher */
+        $flusher = $this->createMock(FlusherInterface::class);
+        $flusher->expects(self::never())->method('flush');
+
+        $writer = new SupplierStockChangeLogWriter($this->repo, $this->validator, $flusher);
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        $writer->write(
+            type: DomainEventType::SUPPLIER_PRODUCT_STOCK_CHANGED,
+            supplierProductId: 1,
+            stockChange: StockChange::from(5, 10),
+            costChange: CostChange::from('1.00', '-5.00'), // invalid per PositiveOrZero
+            occurredAt: new \DateTimeImmutable(),
+        );
+    }
+
+    public function testThrowsOnStockExceedingMax(): void
+    {
+        /** @var MockObject&FlusherInterface $flusher */
+        $flusher = $this->createMock(FlusherInterface::class);
+        $flusher->expects(self::never())->method('flush');
+
+        $writer = new SupplierStockChangeLogWriter($this->repo, $this->validator, $flusher);
+
+        $this->expectException(\InvalidArgumentException::class);
+
+        $writer->write(
+            type: DomainEventType::SUPPLIER_PRODUCT_STOCK_CHANGED,
+            supplierProductId: 1,
+            stockChange: StockChange::from(100, 10001), // invalid per Range(max:10000)
+            costChange: CostChange::from('1.00', '1.00'),
+            occurredAt: new \DateTimeImmutable(),
+        );
+    }
+
+    public function testWritesWithCostChangedEventType(): void
+    {
+        /** @var MockObject&FlusherInterface $flusher */
+        $flusher = $this->createMock(FlusherInterface::class);
+        $flusher->expects(self::once())->method('flush');
+
+        $writer = new SupplierStockChangeLogWriter($this->repo, $this->validator, $flusher);
+
+        $writer->write(
+            type: DomainEventType::SUPPLIER_PRODUCT_COST_CHANGED,
+            supplierProductId: 456,
+            stockChange: StockChange::from(20, 20),
+            costChange: CostChange::from('5.00', '8.00'),
+            occurredAt: new \DateTimeImmutable(),
+        );
+
+        $this->em->flush();
+        $this->em->clear();
+
+        $rows = $this->em->getRepository(SupplierStockChangeLog::class)->findBy(['supplierProductId' => 456]);
+        self::assertCount(1, $rows);
+        self::assertSame(DomainEventType::SUPPLIER_PRODUCT_COST_CHANGED, $rows[0]->getEventType());
+        self::assertSame('8.00', $rows[0]->getCost());
+    }
 }

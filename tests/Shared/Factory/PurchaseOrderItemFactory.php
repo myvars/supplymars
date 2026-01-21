@@ -4,6 +4,7 @@ namespace App\Tests\Shared\Factory;
 
 use App\Catalog\Domain\Model\Product\Product;
 use App\Order\Domain\Model\Order\CustomerOrder;
+use App\Order\Domain\Model\Order\CustomerOrderItem;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrder;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItem;
 use App\Purchasing\Domain\Model\Supplier\Supplier;
@@ -65,7 +66,7 @@ final class PurchaseOrderItemFactory extends PersistentObjectFactory
                     ])
                 );
                 $attributes['customerOrderItem'] ??= LazyValue::memoize(
-                    fn (): CustomerOrder => CustomerOrderItemFactory::createOne([
+                    fn (): CustomerOrderItem => CustomerOrderItemFactory::createOne([
                         'customerOrder' => $attributes['customerOrder'],
                         'product' => $attributes['product'],
                         'quantity' => $attributes['quantity'] ?? 1,

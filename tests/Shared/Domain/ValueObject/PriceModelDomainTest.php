@@ -11,7 +11,7 @@ final class PriceModelDomainTest extends TestCase
     #[DataProvider('nameProvider')]
     public function testName(PriceModel $model, string $expectedName): void
     {
-        $this->assertSame($expectedName, $model->getName());
+        self::assertSame($expectedName, $model->getName());
     }
 
     public static function nameProvider(): array
@@ -30,7 +30,7 @@ final class PriceModelDomainTest extends TestCase
     #[DataProvider('descriptionProvider')]
     public function testDescription(PriceModel $model, string $expectedDescription): void
     {
-        $this->assertSame($expectedDescription, $model->getDescription());
+        self::assertSame($expectedDescription, $model->getDescription());
     }
 
     public static function descriptionProvider(): array
@@ -49,7 +49,7 @@ final class PriceModelDomainTest extends TestCase
     #[DataProvider('prettyPriceProvider')]
     public function testGetPrettyPrice(PriceModel $model, string $price, string $expected): void
     {
-        $this->assertSame($expected, $model->getPrettyPrice($price));
+        self::assertSame($expected, $model->getPrettyPrice($price));
     }
 
     public static function prettyPriceProvider(): array

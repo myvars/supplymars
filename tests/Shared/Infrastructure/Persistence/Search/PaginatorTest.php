@@ -6,6 +6,8 @@ use App\Shared\Application\Search\SearchCriteriaInterface;
 use App\Shared\Infrastructure\Persistence\Search\FindByCriteriaInterface;
 use App\Shared\Infrastructure\Persistence\Search\Paginator;
 use Pagerfanta\Adapter\AdapterInterface;
+use Pagerfanta\Exception\LessThan1CurrentPageException;
+use Pagerfanta\Exception\OutOfRangeCurrentPageException;
 use Pagerfanta\Pagerfanta;
 use PHPUnit\Framework\TestCase;
 
@@ -47,5 +49,40 @@ final class PaginatorTest extends TestCase
         self::assertSame(3, $pager->getCurrentPage());
         self::assertSame(25, $pager->getMaxPerPage());
         self::assertSame(75, $pager->getNbResults());
+    }
+
+    public function testCreatePaginationThrowsExceptionForInvalidPage(): void
+    {
+        $adapter = $this->createStub(AdapterInterface::class);
+        $adapter->method('getNbResults')->willReturn(10);
+
+        $paginator = new Paginator();
+
+        self::expectException(LessThan1CurrentPageException::class);
+        $paginator->createPagination($adapter, page: 0, limit: 5);
+    }
+
+    public function testCreatePaginationThrowsExceptionForOutOfRangePage(): void
+    {
+        $adapter = $this->createStub(AdapterInterface::class);
+        $adapter->method('getNbResults')->willReturn(10);
+
+        $paginator = new Paginator();
+
+        self::expectException(OutOfRangeCurrentPageException::class);
+        $paginator->createPagination($adapter, page: 100, limit: 5);
+    }
+
+    public function testCreatePaginationHandlesEmptyResultSet(): void
+    {
+        $adapter = $this->createStub(AdapterInterface::class);
+        $adapter->method('getNbResults')->willReturn(0);
+
+        $paginator = new Paginator();
+        $pager = $paginator->createPagination($adapter, page: 1, limit: 10);
+
+        self::assertInstanceOf(Pagerfanta::class, $pager);
+        self::assertSame(1, $pager->getCurrentPage());
+        self::assertSame(0, $pager->getNbResults());
     }
 }

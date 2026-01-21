@@ -19,50 +19,50 @@ final class MarkupCalculatorDomainTest extends TestCase
     public function testCalculateMarkupFromSellPrice(): void
     {
         $markup = $this->calculator->calculateMarkupFromSellPrice('100', '120');
-        self::assertEquals('20.000', $markup);
+        self::assertSame('20.000', $markup);
     }
 
     public function testCalculateSellPrice(): void
     {
         $sell = $this->calculator->calculateSellPrice('100', '20');
-        self::assertEquals('120.00', $sell);
+        self::assertSame('120.00', $sell);
     }
 
     public function testCalculateSellPriceIncVat(): void
     {
         $sellInc = $this->calculator->calculateSellPriceIncVat('100', '20', '15');
-        self::assertEquals('138.00', $sellInc);
+        self::assertSame('138.00', $sellInc);
     }
 
     public function testCalculateSellPriceIncVatWithZeroVat(): void
     {
         $sellInc = $this->calculator->calculateSellPriceIncVat('100', '20', '0');
-        self::assertEquals('120.00', $sellInc);
+        self::assertSame('120.00', $sellInc);
     }
 
     public function testCalculateSellPriceBeforeVat(): void
     {
         $beforeVat = $this->calculator->calculateSellPriceBeforeVat('138', '15');
-        self::assertEquals('120.00', $beforeVat);
+        self::assertSame('120.00', $beforeVat);
     }
 
     public function testCalculatePrettyPrice(): void
     {
         $pretty = $this->calculator->calculatePrettyPrice('100', '20', '15', PriceModel::PRETTY_99);
-        self::assertEquals('138.99', $pretty);
+        self::assertSame('138.99', $pretty);
     }
 
     public function testCalculateCustomMarkup(): void
     {
         $custom = $this->calculator->calculateCustomMarkup('100', '138', '15');
-        self::assertEquals('20.000', $custom);
+        self::assertSame('20.000', $custom);
     }
 
     #[DataProvider('sellPriceRoundingProvider')]
     public function testSellPriceRounding(string $cost, string $markup, string $expected): void
     {
         $sell = $this->calculator->calculateSellPrice($cost, $markup);
-        self::assertEquals($expected, $sell);
+        self::assertSame($expected, $sell);
     }
 
     public static function sellPriceRoundingProvider(): array
@@ -76,7 +76,7 @@ final class MarkupCalculatorDomainTest extends TestCase
     public function testBeforeVatRoundingEdge(): void
     {
         $beforeVat = $this->calculator->calculateSellPriceBeforeVat('119.99', '20');
-        self::assertEquals('99.99', $beforeVat);
+        self::assertSame('99.99', $beforeVat);
     }
 
     public function testInvalidCostForSellPrice(): void
