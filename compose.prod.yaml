@@ -53,6 +53,7 @@ services:
       target: php-prod
     environment:
       <<: *common-php-env
+      RUN_MIGRATIONS: "true"  # Only php container runs migrations/messenger-setup
     # No code mounts—built artifacts only; code changes require a new build.
 
 
@@ -61,7 +62,7 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
-      target: messenger-prod
+      target: php-prod
     environment:
       <<: *common-php-env
     # No volume mounts—worker runs using baked production code and environment

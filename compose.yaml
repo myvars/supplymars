@@ -63,8 +63,9 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-    # Waits for database before starting PHP-FPM
-    command: sh -c "wait-for-it database:3306 --timeout=60 --strict -- php-fpm"
+    environment:
+      RUN_MIGRATIONS: "true"  # Only php container runs migrations/messenger-setup
+    command: php-fpm
     healthcheck:
       test: [ "CMD", "php-fpm", "-t" ]
       interval: 30s
@@ -79,14 +80,11 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
-      target: messenger-dev
+      target: php-dev
     depends_on:
-      database:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
-    # Wait for database, then run messenger consumer
-    command: sh -c "wait-for-it database:3306 --timeout=60 --strict -- php bin/console messenger:consume async --time-limit=3600 --sleep=5"
+      php:
+        condition: service_healthy  # Wait for php to finish setup
+    command: sh -c "php bin/console messenger:consume async --time-limit=3600 --sleep=5"
     healthcheck:
       # Checks the messenger is running
       test: ["CMD-SHELL", "ps aux | grep -q '[m]essenger:consume'"]
@@ -102,12 +100,10 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
-      target: cron-dev
+      target: php-dev
     depends_on:
-      database:
-        condition: service_healthy
-      rabbitmq:
-        condition: service_healthy
+      php:
+        condition: service_healthy  # Wait for php to finish setup
     # Export all env vars for cron, then start cron in foreground
     command: /bin/sh -c 'printenv | grep -v "no_proxy" > /etc/environment && cron -f'
     healthcheck:
@@ -128,7 +124,7 @@ services:
       target: nginx-dev
     depends_on:
       php:
-        condition: service_started
+        condition: service_healthy
     ports:
       - "80:80"     # HTTP
       - "443:443"   # HTTPS (dev SSL cert)

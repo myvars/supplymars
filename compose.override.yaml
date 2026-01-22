@@ -53,6 +53,7 @@ services:
   messenger:
     environment:
       <<: *common-php-env
+      SKIP_ASSET_BUILD: "true"  # Messenger doesn't serve HTTP; email CSS uses source files
     volumes:
       - .:/app                    # Mount source for code reload
       - messenger-var:/app/var    # Dedicated volume for var/ (cache/logs)
@@ -62,6 +63,7 @@ services:
   cron:
     environment:
       <<: *common-php-env
+      SKIP_ASSET_BUILD: "true"  # Cron doesn't serve HTTP
     volumes:
       - ./docker/php/cron/dev-crontab:/etc/cron.d/app-cron:ro   # Mount dev crontab
       - .:/app                    # Mount source for code reload

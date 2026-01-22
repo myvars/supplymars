@@ -32,14 +32,13 @@ ENV PHP_INI_SCAN_DIR="$PHP_INI_DIR/conf.d:$PHP_INI_DIR/app.conf.d"
 
 # Copy PHP configuration, wait-for-it script, and entrypoint script
 COPY --link docker/php/conf.d/10-app.ini $PHP_INI_DIR/app.conf.d/
-COPY --link docker/wait-for-it.sh /usr/local/bin/wait-for-it
 COPY --link docker/php/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 # Configure PHP-FPM to listen on port 9000
 RUN sed -i 's/^listen = .*/listen = 9000/' /usr/local/etc/php-fpm.d/www.conf
 
 # Make scripts executable
-RUN chmod +x /usr/local/bin/wait-for-it /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Set the working directory
 WORKDIR /app
@@ -115,19 +114,9 @@ COPY --from=php-prod-builder /app /app
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 
-# ---- Messenger Dev Stage ----
-FROM php-dev AS messenger-dev
-
-
-# ---- Messenger Production Stage ----
-FROM php-prod AS messenger-prod
-
-
-# ---- Cron Dev Stage ----
-FROM php-dev AS cron-dev
-
-
 # ---- Cron Production Stage ----
+# Note: messenger uses php-dev/php-prod directly (no separate stage needed)
+# Note: cron-dev uses php-dev directly (no separate stage needed)
 FROM php-prod AS cron-prod
 
 # Copy crontab file for the cron service
