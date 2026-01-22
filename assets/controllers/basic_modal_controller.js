@@ -4,6 +4,7 @@ export default class extends Controller {
     static targets = ['dialog', 'dynamicContent', 'loadingTemplate'];
 
     observer = null;
+    mouseDownTarget = null;
 
     connect() {
         if (this.hasDynamicContentTarget) {
@@ -45,13 +46,20 @@ export default class extends Controller {
         document.body.classList.remove('overflow-hidden');
     }
 
+    onMouseDown(event) {
+        this.mouseDownTarget = event.target;
+    }
+
     clickOutside(event) {
-        if (event.target !== this.dialogTarget) {
+        // Only close if BOTH mousedown and mouseup were on the dialog backdrop
+        if (event.target !== this.dialogTarget || this.mouseDownTarget !== this.dialogTarget) {
+            this.mouseDownTarget = null;
             return;
         }
         if (!this.#isClickInElement(event, this.dialogTarget)) {
             this.dialogTarget.close();
         }
+        this.mouseDownTarget = null;
     }
 
     showLoading() {

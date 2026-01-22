@@ -15,7 +15,7 @@
         data-basic-modal-target="dialog"
         class="open:flex m-auto bg-gray-800 border border-gray-700 rounded-sm shadow-xl inset-0 w-full md:w-fit md:max-w-[50%] {{ allowSmallWidth ? '' : 'md:min-w-[50%] ' }}
         max-h-full animate-fade-in backdrop:bg-slate-700/80 {{ fixedTop ? ' mt-14' : '' }}"
-        data-action="close->basic-modal#close click->basic-modal#clickOutside"
+        data-action="close->basic-modal#close mousedown->basic-modal#onMouseDown click->basic-modal#clickOutside"
     >
         <div class="grow overflow-auto p-1">
             {% block content %}{% endblock %}
