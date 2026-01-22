@@ -45,7 +45,7 @@
         {{ include('shared/turbo/_modal.html.twig') }}
 
         <!-- Flash Container -->
-        <div id="flash-container">
+        <div id="flash-container" class="fixed z-10 top-5 right-5 flex flex-col gap-3">
             {% if not app.request.headers.has('Turbo-Frame') %}
                 {{ include('_flashes.html.twig') }}
             {% endif %}
