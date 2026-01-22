@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Tests\Shared\UI\Http\FormFlow\View;
+namespace App\Tests\Shared\UI\Http\FormFlow;
 
 use App\Shared\UI\Http\FormFlow\ShowFlow;
 use App\Shared\UI\Http\FormFlow\View\ModelPath;

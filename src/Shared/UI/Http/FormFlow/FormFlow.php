@@ -4,6 +4,7 @@ namespace App\Shared\UI\Http\FormFlow;
 
 use App\Shared\Application\RedirectTarget;
 use App\Shared\UI\Http\FlashMessenger;
+use App\Shared\UI\Http\FormFlow\Concerns\RedirectsResponses;
 use App\Shared\UI\Http\FormFlow\Guard\AutoUpdateGuard;
 use App\Shared\UI\Http\FormFlow\Redirect\RedirectorInterface;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
@@ -22,6 +23,8 @@ use Twig\Environment;
  */
 final readonly class FormFlow
 {
+    use RedirectsResponses;
+
     public function __construct(
         private FormFactoryInterface $forms,
         private FlashMessenger $flashes,
@@ -30,6 +33,16 @@ final readonly class FormFlow
         private RedirectorInterface $redirector,
         private AutoUpdateGuard $autoUpdateForm,
     ) {
+    }
+
+    private function getRedirector(): RedirectorInterface
+    {
+        return $this->redirector;
+    }
+
+    private function getUrlGenerator(): UrlGeneratorInterface
+    {
+        return $this->urls;
     }
 
     /**
@@ -143,31 +156,5 @@ final readonly class FormFlow
         ));
 
         return new Response($html, $status);
-    }
-
-    /**
-     * Redirect to the configured success URL.
-     */
-    public function successRedirect(Request $request, FlowContext $preset): Response
-    {
-        return $this->redirector->to(
-            $request,
-            $preset->resolveSuccessUrl($request, $this->urls),
-            $preset->isRedirectRefresh(),
-            $preset->getRedirectStatus()
-        );
-    }
-
-    /**
-     * Redirect to a target URL.
-     */
-    public function redirectToTarget(Request $request, RedirectTarget $redirect): Response
-    {
-        return $this->redirector->to(
-            $request,
-            $this->urls->generate($redirect->route, $redirect->params),
-            $redirect->redirectRefresh,
-            $redirect->redirectStatus,
-        );
     }
 }

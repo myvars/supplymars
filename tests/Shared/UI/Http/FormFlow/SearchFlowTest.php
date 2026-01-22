@@ -8,6 +8,7 @@ use App\Shared\Infrastructure\Persistence\Search\Paginator;
 use App\Shared\UI\Http\FlashMessenger;
 use App\Shared\UI\Http\FormFlow\Redirect\RedirectorInterface;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
+use App\Shared\UI\Http\FormFlow\View\FlowContext;
 use Pagerfanta\Adapter\AdapterInterface;
 use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Pagerfanta;
@@ -71,7 +72,7 @@ final class SearchFlowTest extends TestCase
 
         $flow = new SearchFlow(new Paginator(), $twig, new FlashMessenger(), $redirector, $urls);
 
-        $response = $flow->search($request, 'OrderItem', $repository, $criteria);
+        $response = $flow->search($request, $repository, $criteria, FlowContext::forSearch('OrderItem'));
 
         self::assertSame(Response::HTTP_OK, $response->getStatusCode());
         self::assertSame('<html>OK</html>', $response->getContent());
@@ -98,9 +99,27 @@ final class SearchFlowTest extends TestCase
 
         $flow = new SearchFlow(new Paginator(), $twig, new FlashMessenger(), $redirector, $urls);
 
-        $response = $flow->search($request, 'OrderItem', $repository, $criteria);
+        $response = $flow->search($request, $repository, $criteria, FlowContext::forSearch('OrderItem'));
 
         self::assertSame(303, $response->getStatusCode());
         self::assertSame(['Page 99 not found.'], $request->getSession()->getFlashBag()->get('warning'));
+    }
+
+    public function testSearchThrowsWhenModelNotConfigured(): void
+    {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('Model not configured.');
+
+        $request = $this->newRequest();
+        $context = FlowContext::new();
+        $criteria = $this->criteria(1, 10);
+        $repository = $this->repository([]);
+
+        $twig = $this->createStub(Environment::class);
+        $urls = $this->createStub(UrlGeneratorInterface::class);
+        $redirector = $this->createStub(RedirectorInterface::class);
+
+        $flow = new SearchFlow(new Paginator(), $twig, new FlashMessenger(), $redirector, $urls);
+        $flow->search($request, $repository, $criteria, $context);
     }
 }

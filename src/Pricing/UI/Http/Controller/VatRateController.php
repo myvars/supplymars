@@ -39,9 +39,9 @@ class VatRateController extends AbstractController
     ): Response {
         return $flow->search(
             request: $request,
-            model: self::MODEL,
             repository: $repository,
-            criteria: $criteria
+            criteria: $criteria,
+            context: FlowContext::forSearch(self::MODEL),
         );
     }
 

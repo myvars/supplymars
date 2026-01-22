@@ -4,6 +4,7 @@ namespace App\Shared\UI\Http\FormFlow;
 
 use App\Shared\Application\RedirectTarget;
 use App\Shared\UI\Http\FlashMessenger;
+use App\Shared\UI\Http\FormFlow\Concerns\RedirectsResponses;
 use App\Shared\UI\Http\FormFlow\Redirect\RedirectorInterface;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
 use Symfony\Component\HttpFoundation\Request;
@@ -11,16 +12,28 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
- * Coordinates delete confirmation and delete POST for a model.
- * Handles CSRF validation, user feedback, and Turbo‑aware redirects.
+ * Executes commands directly without forms (state transitions, actions).
+ * Handles user feedback and Turbo‑aware redirects.
  */
 final readonly class CommandFlow
 {
+    use RedirectsResponses;
+
     public function __construct(
         private FlashMessenger $flashes,
         private RedirectorInterface $redirector,
         private UrlGeneratorInterface $urls,
     ) {
+    }
+
+    private function getRedirector(): RedirectorInterface
+    {
+        return $this->redirector;
+    }
+
+    private function getUrlGenerator(): UrlGeneratorInterface
+    {
+        return $this->urls;
     }
 
     /**
@@ -33,6 +46,9 @@ final readonly class CommandFlow
         callable $handler,
         FlowContext $context,
     ): Response {
+        // Validate context preconditions up front.
+        $context->validateForCommand();
+
         // Delegate to the application‑level handler.
         $result = $handler($command);
 
@@ -49,31 +65,5 @@ final readonly class CommandFlow
         }
 
         return $this->successRedirect($request, $context);
-    }
-
-    /**
-     * Redirect to the configured success URL, using Turbo stream when applicable.
-     */
-    public function successRedirect(Request $request, FlowContext $preset): Response
-    {
-        return $this->redirector->to(
-            $request,
-            $preset->resolveSuccessUrl($request, $this->urls),
-            $preset->isRedirectRefresh(),
-            $preset->getRedirectStatus()
-        );
-    }
-
-    /**
-     * Redirect to a target URL, using Turbo stream when applicable.
-     */
-    public function redirectToTarget(Request $request, RedirectTarget $redirect): Response
-    {
-        return $this->redirector->to(
-            $request,
-            $this->urls->generate($redirect->route, $redirect->params),
-            $redirect->redirectRefresh,
-            $redirect->redirectStatus,
-        );
     }
 }

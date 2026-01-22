@@ -9,6 +9,7 @@ enum FormOperation: string
     case Delete = 'delete';
     case Filter = 'filter';
     case Command = 'process';
+    case Index = 'index';
 
     public function past(): string
     {
@@ -18,6 +19,7 @@ enum FormOperation: string
             self::Delete => 'deleted',
             self::Filter => 'filtered',
             self::Command => 'processed',
+            self::Index => 'indexed',
         };
     }
 }

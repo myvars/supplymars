@@ -35,7 +35,18 @@ final class FlowContext
     /** Factory for successRoute convenience. */
     public static function forSuccess(string $route, array $params = []): self
     {
-        return new self()->successRoute($route, $params);
+        return self::new()->successRoute($route, $params);
+    }
+
+    /** Factory for command operation (no model, just success route). */
+    public static function forCommand(string $route, array $params = []): self
+    {
+        $self = new self();
+        $self->operation = FormOperation::Command;
+        $self->successRoute = $route;
+        $self->successParams = $params;
+
+        return $self;
     }
 
     /** Factory for create operation defaults. */
@@ -60,6 +71,17 @@ final class FlowContext
     public static function forFilter(string $model): self
     {
         return self::fromOperation($model, FormOperation::Filter);
+    }
+
+    /** Factory for search/index operation defaults. */
+    public static function forSearch(string $model): self
+    {
+        $self = new self();
+        $self->model = $model;
+        $self->operation = FormOperation::Index;
+        $self->template = ModelPath::template($model, FormOperation::Index->value);
+
+        return $self;
     }
 
     /** Factory for generic operation defaults. */
@@ -172,6 +194,30 @@ final class FlowContext
 
         if (!$this->operation instanceof FormOperation) {
             throw new \LogicException('Form operation not configured.');
+        }
+    }
+
+    /**
+     * Validate for command flows (only needs success route).
+     *
+     * @throws \LogicException if successRoute not configured
+     */
+    public function validateForCommand(): void
+    {
+        if (null === $this->successRoute) {
+            throw new \LogicException('Success route not configured.');
+        }
+    }
+
+    /**
+     * Validate for search flows (needs model only).
+     *
+     * @throws \LogicException if model not configured
+     */
+    public function validateForSearch(): void
+    {
+        if (null === $this->model) {
+            throw new \LogicException('Model not configured.');
         }
     }
 

@@ -164,4 +164,44 @@ final class CommandFlowTest extends TestCase
         self::assertEmpty($request->getSession()->getFlashBag()->get('success'));
         self::assertEmpty($request->getSession()->getFlashBag()->get('danger'));
     }
+
+    public function testProcessThrowsWhenSuccessRouteNotConfigured(): void
+    {
+        $this->expectException(\LogicException::class);
+        $this->expectExceptionMessage('Success route not configured.');
+
+        $request = $this->newRequest();
+        $context = FlowContext::new(); // No success route
+
+        $urls = $this->createStub(UrlGeneratorInterface::class);
+        $redirector = $this->createStub(RedirectorInterface::class);
+
+        $flow = new CommandFlow(new FlashMessenger(), $redirector, $urls);
+        $flow->process($request, new \stdClass(), $this->handlerOk(), $context);
+    }
+
+    public function testProcessWithForCommandFactoryWorks(): void
+    {
+        $request = $this->newRequest();
+        $context = FlowContext::forCommand('app_order_show', ['id' => 1]);
+
+        $urls = $this->createMock(UrlGeneratorInterface::class);
+        $urls->expects($this->once())
+            ->method('generate')
+            ->with('app_order_show', ['id' => 1])
+            ->willReturn('/gen/app_order_show?id=1');
+
+        $redirector = $this->createMock(RedirectorInterface::class);
+        $redirector->expects($this->once())
+            ->method('to')
+            ->with($request, '/gen/app_order_show?id=1', false, 303)
+            ->willReturn(new Response('', 303));
+
+        $flow = new CommandFlow(new FlashMessenger(), $redirector, $urls);
+
+        $response = $flow->process($request, new \stdClass(), $this->handlerOk('Processed'), $context);
+
+        self::assertSame(303, $response->getStatusCode());
+        self::assertSame(['Processed'], $request->getSession()->getFlashBag()->get('success'));
+    }
 }

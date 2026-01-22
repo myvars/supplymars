@@ -7,6 +7,7 @@ use App\Shared\Infrastructure\Persistence\Search\FindByCriteriaInterface;
 use App\Shared\Infrastructure\Persistence\Search\Paginator;
 use App\Shared\UI\Http\FlashMessenger;
 use App\Shared\UI\Http\FormFlow\Redirect\RedirectorInterface;
+use App\Shared\UI\Http\FormFlow\View\FlowContext;
 use App\Shared\UI\Http\FormFlow\View\ModelPath;
 use App\Shared\UI\Http\FormFlow\View\TemplateContext;
 use Pagerfanta\Exception\OutOfRangeCurrentPageException;
@@ -20,8 +21,6 @@ use Twig\Environment;
  */
 final readonly class SearchFlow
 {
-    public const string OPERATION = 'index';
-
     public function __construct(
         private Paginator $paginator,
         private Environment $twig,
@@ -33,10 +32,14 @@ final readonly class SearchFlow
 
     public function search(
         Request $request,
-        string $model,
         FindByCriteriaInterface $repository,
         SearchCriteriaInterface $criteria,
+        FlowContext $context,
     ): Response {
+        $context->validateForSearch();
+        $model = $context->getModel();
+        $operation = $context->getOperation()->value;
+
         try {
             $pagination = $this->paginator->searchPagination($repository, $criteria);
         } catch (OutOfRangeCurrentPageException) {
@@ -49,7 +52,7 @@ final readonly class SearchFlow
             return $this->redirector->to($request, $url);
         }
 
-        $templateContext = TemplateContext::from($model, self::OPERATION);
+        $templateContext = TemplateContext::from($model, $operation);
         $html = $this->twig->render(ModelPath::BASE_TEMPLATE, array_merge(
             $templateContext->toArray(),
             ['results' => $pagination],
