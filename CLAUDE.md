@@ -2,377 +2,378 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Quick Reference
+
+### Common Commands
+```bash
+# Development (preferred)
+symfony serve -d              # Start local dev server (https://127.0.0.1:8000)
+make up-dev-tools             # Start DB, Redis, RabbitMQ, Mailpit
+
+# Tests
+make test                     # Run all tests
+make test-SomeTest            # Run filtered tests
+vendor/bin/phpunit            # Run tests locally (ensure test DB exists)
+
+# Code Quality (run locally or via Docker)
+vendor/bin/php-cs-fixer fix
+vendor/bin/phpstan analyse
+vendor/bin/rector process
+
+# Full Docker (alternative to symfony serve)
+make up                       # Start full containerized environment
+make down                     # Stop all services
+make bash                     # Shell into PHP container
+```
+
+### Local Dev URLs
+| Service | URL                    |
+|---------|------------------------|
+| App | https://localhost:8000 |
+| PHPMyAdmin | http://localhost:8080  |
+| Mailpit | http://localhost:8025  |
+| RabbitMQ Management | http://localhost:15672 |
+
+### Key Directories
+```
+src/{Context}/Application/    # Commands, Handlers, Search
+src/{Context}/Domain/Model/   # Entities, Value Objects
+src/{Context}/Domain/Repository/  # Repository interfaces
+src/{Context}/Infrastructure/ # Doctrine repositories
+src/{Context}/UI/Http/        # Controllers, Forms, DTOs
+tests/Shared/Factory/         # Test factories (Foundry)
+tests/Shared/Story/           # Test stories (e.g., StaffUserStory)
+```
+
 ## Project Overview
 
-SupplyMars is a **Mars-themed e-commerce and operations demo platform** built to showcase modern PHP/Symfony architecture in a realistic, end-to-end system. It models products, categories, suppliers, pricing, orders, purchase orders, fulfilment, reporting, and automation. The project is fully Dockerized and uses modern PHP development practices with strict type checking and code quality tools.
+SupplyMars is a **Mars-themed e-commerce and operations demo platform** built with modern PHP/Symfony architecture. It models products, categories, suppliers, pricing, orders, purchase orders, fulfilment, reporting, and automation.
 
-Architecturally, SupplyMars is a **modular monolith with strong DDD influences**. The goal is long-term clarity, explicit domain modelling, and automation — not novelty, over-abstraction, or frontend complexity.
+Architecturally, SupplyMars is a **modular monolith with strong DDD influences**. The goal is long-term clarity, explicit domain modelling, and automation.
 
+### Key Technologies
+- **PHP 8.5+** / **Symfony 8.0.x**
+- **Doctrine ORM** with MySQL 8.4
+- **RabbitMQ** for async messaging
+- **Redis** for caching
+- **Tailwind CSS** + **Turbo** (Hotwire)
+- **Zenstruck Foundry** + **DAMA Doctrine Test Bundle** for testing
 
 ## Development Environment
 
-### Starting the Application
+### Preferred Setup: Symfony Server + Dev Tools
 
 ```bash
-# Start Symfony local server in the background (preferred for development)
-symfony serve -d
-
-# Start required development tools (DB, PHPMyAdmin, etc.)
-make up-dev-tools
-
-# Start full containerized development environment (PHP, Nginx, DB, etc) - alternative for development
-make up
-
-# Start with production configuration locally
-make up-prod-local
-
-# Stop all services
-make down
+symfony serve -d          # Start local PHP server
+make up-dev-tools         # Start MySQL, Redis, RabbitMQ, Mailpit, PHPMyAdmin
 ```
+
+This gives you fast iteration with hot reload while Docker provides the infrastructure services.
+
+### Alternative: Full Docker Stack
+
+```bash
+make up                   # Start everything in containers
+make bash                 # Shell into PHP container
+```
+
+Use this when you need a fully isolated environment or for CI-like testing.
 
 ### Running Tests
 
+Tests can run via Docker (recommended) or locally:
+
 ```bash
-# Run all tests (via Docker)
+# Via Docker (handles DB setup automatically)
 make test
+make test-SomeTest
 
-# Run specific test by filter
-make test-NameOfTest
-
-# The test script (scripts/run-tests.sh) automatically:
-# - Drops and recreates the test database
-# - Creates schema
-# - Sets up messenger transports
-# - Runs PHPUnit
+# Locally (ensure test database exists first)
+symfony console doctrine:database:create --env=test
+symfony console doctrine:schema:create --env=test
+vendor/bin/phpunit
 ```
 
-**Important**: Tests use `APP_ENV=test` and rely on DAMA Doctrine Test Bundle for database transaction rollback between tests.
+Tests use `APP_ENV=test` and DAMA Doctrine Test Bundle for transaction rollback between tests.
 
 ### Code Quality Tools
 
+Run locally or via Docker:
+
 ```bash
-# PHP-CS-Fixer (code style - PSR-12 + Symfony conventions)
+# Locally
+vendor/bin/php-cs-fixer fix
+vendor/bin/phpstan analyse
+vendor/bin/rector process
+
+# Via Docker
 docker compose exec php vendor/bin/php-cs-fixer fix
-
-# PHPStan (static analysis - Level 6)
 docker compose exec php vendor/bin/phpstan analyse
-
-# Rector (automated refactoring and upgrades)
 docker compose exec php vendor/bin/rector process
 ```
 
-**Configuration files**:
-- `.php-cs-fixer.dist.php` - Uses `@Symfony` rules with `yoda_style: false`
+**Configuration**:
+- `.php-cs-fixer.dist.php` - `@Symfony` rules, `yoda_style: false`, single-space concatenation
 - `phpstan.dist.neon` - Level 6 analysis
-- `rector.php` - Configured for dead code removal, code quality, type declarations, Doctrine, and Symfony
+- `rector.php` - Dead code, code quality, type declarations, Doctrine/Symfony sets
 
 ## Architecture
 
-### Domain-Driven Design Structure
-
-The codebase follows a **DDD layered architecture**, organized by bounded contexts.
+### Bounded Contexts
 
 ```
 src/
-├── Audit/           - Audit logging domain
-├── Catalog/         - Product catalog domain
-├── Customer/        - Customer management domain
+├── Audit/           - Audit logging (status changes, stock changes)
+├── Catalog/         - Products, categories, manufacturers, subcategories
+├── Customer/        - Users, addresses, authentication
 ├── Home/            - Homepage (simple, no DDD layers)
-├── Order/           - Order management domain
-├── Pricing/         - Pricing strategies domain
-├── Purchasing/      - Purchase order domain
-├── Reporting/       - Business reporting domain
-└── Shared/          - Shared kernel
+├── Order/           - Customer orders and order items
+├── Pricing/         - VAT rates, pricing strategies
+├── Purchasing/      - Purchase orders, suppliers, supplier products
+├── Reporting/       - Business reporting and dashboards
+└── Shared/          - Shared kernel (cross-cutting concerns)
 ```
 
 ### DDD Layers
 
-Each bounded context generally follows this structure — pragmatism beats purity.
+Each bounded context follows this structure:
 
-**Application Layer** (`Application/`)
-- **Commands** - Write operations (CQRS command objects)
-  - Example: `CreateManufacturer.php` - Readonly DTOs with constructor parameters
-- **Handlers** - Command handlers (one per command)
-- **Listeners** - Domain event listeners
-- **Search** - Read model queries (CQRS query objects)
+```
+{Context}/
+├── Application/
+│   ├── Command/     # Write operations (readonly DTOs)
+│   ├── Handler/     # Command handlers (one per command)
+│   ├── Listener/    # Domain event listeners
+│   └── Search/      # Read model queries
+├── Domain/
+│   ├── Model/       # Entities, Aggregates, Value Objects
+│   ├── Repository/  # Repository interfaces
+│   ├── Event/       # Domain events
+│   └── Service/     # Domain services
+├── Infrastructure/
+│   └── Persistence/ # Doctrine repositories
+└── UI/
+    └── Http/        # Controllers, Forms, DTOs
+```
 
-**Domain Layer** (`Domain/`)
-- **Model** - Entities, Aggregates, Value Objects
-- **Repository** - Repository interfaces (implementation in Infrastructure)
-- **Event** - Domain events
-- **Service** - Domain services
+### Entity Patterns
 
-**Infrastructure Layer** (`Infrastructure/`)
-- **Persistence** - Doctrine repositories, ORM mappings
-- Concrete implementations of domain repository interfaces
+**ULID Public IDs**: Entities use auto-increment `id` internally but expose ULID-based `publicId` for URLs and APIs:
 
-**UI Layer** (`UI/`)
-- **Http** - Controllers, Forms, DTOs
-- Presentation logic
+```php
+use App\Shared\Infrastructure\Persistence\Doctrine\Mapping\HasPublicUlid;
 
-### Shared Kernel (`Shared/`)
+class Manufacturer
+{
+    use HasPublicUlid;
 
-The `Shared/` module contains cross-cutting concerns:
+    public function __construct()
+    {
+        $this->initializePublicId();  // Call in constructor
+    }
 
-**Application Layer**:
-- `FlusherInterface` - Abstraction for persisting changes
-- `Result` - Result object pattern for operations
-- `RedirectTarget` - For handling redirects
-- `Identity/` - Identity and access management
-- `Search/` - Shared search/query abstractions
+    public function getPublicId(): ManufacturerPublicId
+    {
+        return ManufacturerPublicId::fromString($this->publicIdString());
+    }
+}
+```
 
-**Domain Layer**:
-- `Event/` - Base domain event classes
-  - `DomainEventInterface` - Marker interface for all domain events
-  - `AsyncDomainEventInterface` - Events processed asynchronously via messenger
-  - `DomainEventProviderInterface` & `DomainEventProviderTrait` - For entities that emit events
-  - `StatusWasChangedEventInterface` - Marker for status change events
-- `Service/` - Shared domain services
-- `ValueObject/` - Shared value objects (Money, Email, etc.)
+Each entity has a typed `{Entity}PublicId` value object extending `AbstractUlidId`.
 
-**Infrastructure Layer**:
-- `Security/` - Authentication and authorization
-- `FileStorage/` - File upload handling
-- `Persistence/Search/` - Pagination and search infrastructure
+**ValueResolver**: Controllers use `#[ValueResolver('public_id')]` to resolve entities by ULID:
+
+```php
+#[Route('/manufacturer/{id}/edit')]
+public function edit(#[ValueResolver('public_id')] Manufacturer $manufacturer): Response
+```
+
+**Timestampable**: Use `TimestampableEntity` trait from Gedmo for `createdAt`/`updatedAt`.
 
 ### CQRS Pattern
 
-This codebase often implements Command-Query Responsibility Segregation:
+- **Commands** (`Application/Command/`) - Readonly DTOs for write operations
+- **Handlers** (`Application/Handler/`) - Process commands, return `Result` objects
+- **Search** (`Application/Search/`) - Query criteria objects for read operations
 
-- **Commands** (`Application/Command/`) - Write operations, return `Result` objects
-- **Handlers** (`Application/Handler/`) - Process commands, modify domain models
-- **Search/Queries** (`Application/Search/`) - Read operations, optimized for queries
+**Result Pattern**:
+```php
+Result::ok('Manufacturer created');
+Result::fail('Name cannot be empty');
+```
 
-### Domain Events & Messaging
+### Domain Events
 
-Domain events are used for cross-bounded-context communication:
+Events enable cross-context communication:
 
-- Events implementing `AsyncDomainEventInterface` are routed to RabbitMQ (see `config/packages/messenger.yaml`)
-- Use `DomainEventProviderTrait` in aggregates to collect and release events
-- Messenger handles asynchronous processing with retry strategy (max 3 retries, 2x multiplier)
+- `DomainEventInterface` - Marker for sync events
+- `AsyncDomainEventInterface` - Routed to RabbitMQ
+- `DomainEventProviderTrait` - Use in aggregates to collect/release events
 
-Rule:
-> If the behavior must succeed immediately → sync  
-> If it can fail, retry, or lag → async
+Rule: If behavior must succeed immediately → sync. If it can fail/retry/lag → async.
 
-**Messenger Transports**:
-- `async` - RabbitMQ transport for async processing
-- `failed` - Doctrine-based failed message storage
+## Controller & FormFlow Patterns
 
-## Key Technologies
+Controllers are thin orchestrators using FormFlow classes.
 
-- **PHP 8.x** - Latest PHP with modern features
-- **Symfony 8.x** - Full-stack framework
-- **Doctrine ORM** - Database abstraction with migrations
-- **RabbitMQ** - Message broker for async operations
-- **Redis** - Caching layer
-- **MySQL 8.x** - Primary database
-- **Tailwind CSS** (via SymfonyCasts bundle) - Frontend styling
-- **Turbo** - Hotwire Turbo for SPA-like experience
-- **Zenstruck Foundry** - Test factories
-- **DAMA Doctrine Test Bundle** - Database transaction management in tests
-- **Docker** - Containerized development and deployment
-- **Chart.js** - Data visualization in reporting (via Symfony UX)
+### FormFlow Types
 
-## Twig, Templates & Components
+| Flow | Purpose | Example |
+|------|---------|---------|
+| `FormFlow` | Create/update with Symfony forms | New manufacturer form |
+| `CommandFlow` | Direct command execution (no form) | State transitions |
+| `DeleteFlow` | Delete with confirmation | Delete manufacturer |
+| `SearchFlow` | Paginated index pages | Manufacturer list |
+| `ShowFlow` | Simple detail pages | Manufacturer detail |
 
-- **Twig is the primary rendering layer**
-- Templates are organized by bounded context in `templates/`:
-- Templates are kept **boring, explicit, and readable**
-- Business logic does **not** live in Twig
-- Conditionals are simple; complex decisions belong in PHP
-- Twig works hand-in-hand with **Turbo Frames and Streams**
-- Templates may render:
-    - Full pages
-    - Frame fragments
-    - Stream responses
+### Example Controller
 
-### Symfony UX Twig Components
+```php
+#[Route('/manufacturer/new', methods: ['GET', 'POST'])]
+public function new(
+    Request $request,
+    CreateManufacturerMapper $mapper,
+    CreateManufacturerHandler $handler,
+    FormFlow $flow,
+): Response {
+    return $flow->form(
+        request: $request,
+        formType: ManufacturerType::class,
+        data: new ManufacturerForm(),
+        mapper: $mapper,
+        handler: $handler,
+        context: FlowContext::forCreate(self::MODEL),
+    );
+}
+```
 
-- Symfony **Twig Components** are used where UI structure or presentation logic is often reused
-- Shared components → `src/Shared/UI/Twig/Components/` + `templates/components/`
+### Route Naming Convention
 
-### UX Icons
+Routes follow: `app_{context}_{entity}_{action}`
 
-Icons are rendered using Symfony UX Icons:
+Examples:
+- `app_catalog_manufacturer_index`
+- `app_catalog_manufacturer_new`
+- `app_catalog_manufacturer_edit`
+- `app_catalog_manufacturer_delete`
 
-## Docker Architecture
+## Testing
 
-### Overview
+### Test Organization
 
-The project uses a **multi-stage Dockerfile** with **layered Docker Compose files** to support different environments. The Makefile orchestrates these combinations.
-
-This describes the typical setup; not all services run in all environments.
-
-**Development Approaches:**
-1. **Symfony Server + Dev Tools** (Recommended) - Run `symfony serve -d` + `make up-dev-tools`
-2. **Full Docker Stack** - Run `make up` for complete containerized environment
-
-### Multi-Stage Dockerfile
-
-**Location**: `docker/Dockerfile`
-
-### Docker Compose Files (Layered)
-
-Docker Compose automatically merges files to build configurations:
-
-#### 1. `compose.yaml` - Base Services
-
-Defines core services with sensible defaults:
-
-#### 2. `compose.override.yaml` - Development Overrides
-
-**Automatically loaded** with `docker compose up`. Adds development conveniences:
-
-#### 3. `compose.prod.yaml` - Production Overrides
-
-Used with `-f compose.yaml -f compose.prod.yaml` for production deployments.
-
-#### 4. `compose.prod.local.yaml` - Local Production Testing
-
-Combines with `compose.yaml` + `compose.prod.yaml` for testing production build locally.
-
-Uses secrets from `../supplymars-secrets/prod-local.env` (outside repo).
-
-#### 5. `compose.dev-tools.yaml` - Standalone Dev Tools
-
-**Separate file** for use with Symfony local server. Provides just the infrastructure:
-
-**Usage**: `make up-dev-tools` then `symfony serve -d`
-
-## Testing Approach
-
-Tests are organized by bounded context in `tests/`:
+Tests mirror the `src/` structure:
 
 ```
 tests/
-├── Audit/
-├── Catalog/
-├── Customer/
-├── Home/
-├── Pricing/
-├── Purchasing/
+├── {Context}/           # Tests for each bounded context
 └── Shared/
+    ├── Factory/         # Zenstruck Foundry factories
+    └── Story/           # Reusable test stories
 ```
 
-**Test Extensions Configured**:
-- **Zenstruck Foundry** - Object factories for tests
-- **DAMA Doctrine Test Bundle** - Wraps each test in a database transaction
-- **DG Bypass Finals** - Allows mocking of final classes
+### Writing Tests
 
-**Best Practices**:
-- Use factories for test data creation
-- Database is automatically reset before each test run via `scripts/run-tests.sh`
+```php
+use App\Tests\Shared\Factory\ManufacturerFactory;
+use App\Tests\Shared\Story\StaffUserStory;
+use Zenstruck\Foundry\Test\Factories;
+
+class ManufacturerTest extends WebTestCase
+{
+    use Factories;
+
+    #[WithStory(StaffUserStory::class)]  // Authenticated user
+    public function testCreateManufacturer(): void
+    {
+        $manufacturer = ManufacturerFactory::createOne(['name' => 'Test']);
+        // ...
+    }
+}
+```
+
+**Key Points**:
+- Use `#[WithStory(StaffUserStory::class)]` for authenticated requests
+- Factories are in `tests/Shared/Factory/`
 - Each test runs in an isolated transaction (auto-rollback)
-- Use #[WithStory(StaffUserStory::class)] method attribute if authenticated (staff) user is required for test (uses zenstruck stories)
 
-## Common Symfony Console Commands
+## Shared Kernel
+
+Located in `src/Shared/`, contains cross-cutting concerns:
+
+### Application Layer
+- `Result` - Success/failure result objects
+- `RedirectTarget` - Redirect handling
+- `FlusherInterface` - Persistence abstraction
+
+### Domain Layer
+- `ValueObject/AbstractUlidId` - Base class for ULID value objects
+- `Event/*` - Domain event infrastructure
+
+### Infrastructure Layer
+- `Persistence/Doctrine/Mapping/HasPublicUlid` - ULID trait for entities
+- `Security/` - Authentication/authorization
+
+### UI Layer
+- `Http/FormFlow/` - FormFlow classes
+- `Twig/Components/` - Shared Twig components
+
+## Templates
+
+- Twig is the primary rendering layer
+- Organized by bounded context in `templates/`
+- Use Turbo Frames and Streams for SPA-like experience
+- Symfony UX Twig Components are used where UI structure or presentation logic is often reused - found in `templates/components/`
+- Icons are rendered using Symfony UX Icons
+- Chart.js for data visualization, reporting (via Symfony UX)
+- Keep templates simple; complex logic belongs in PHP
+
+## Common Console Commands
 
 ```bash
-# When using symfony server, use symfony command instead of php bin/console:
+# When using symfony server:
 symfony console <command>
 
-# Access container shell first if using full Docker setup
-docker compose exec php bash
-
-# Doctrine commands
-php bin/console doctrine:migrations:migrate
+# Doctrine
+symfony console doctrine:migrations:migrate
+symfony console doctrine:schema:validate
 
 # Messenger
-php bin/console messenger:consume async
-php bin/console messenger:setup-transports
+symfony console messenger:consume async
+symfony console messenger:setup-transports
 
-# Cache
-php bin/console cache:clear
-php bin/console cache:warmup
+# Cache (useful when things break)
+symfony console cache:clear
 
 # Debug
-php bin/console debug:router
-php bin/console debug:container
-php bin/console debug:autowiring
+symfony console debug:router
+symfony console debug:container
+symfony console debug:autowiring
 ```
 
-## Controller Rules
+## Git Commit Messages
 
-- Controllers orchestrate only
-- No business logic in controllers
-- No persistence logic in controllers
-- Controllers delegate to:
-    - FormFlow / CommandFlow
-    - Application handlers
-- Controllers may choose responses, not outcomes
+Commit messages must be clear, concise, and written as if by a human contributor.
+- Do not mention Claude, AI automation.
 
-## FormFlow Pattern
+## Code Style
 
-### Overview
-
-Controllers use **FormFlow classes** to keep them thin and consistent. FormFlows centralize common HTTP patterns: form rendering, validation, command mapping, handler invocation, flash messages, and redirects.
-
-**Location**: `src/Shared/UI/Http/FormFlow/`
-
-#### 1. FormFlow - Create/Update Forms
-
-Handles GET/POST for Symfony forms with validation and command mapping.
-
-#### 2. CommandFlow - Direct Command Execution
-
-Executes commands without forms (e.g., state transitions, actions).
-
-#### 3. DeleteFlow - Delete with Confirmation
-
-Handles delete confirmation page and CSRF-validated delete POST.
-
-#### 4. SearchFlow - Index/List Pages
-
-Handles paginated search/index pages with out-of-range protection.
-
-### Benefits
-
-1. **Thin Controllers** - Controllers become simple coordinators
-2. **Consistency** - All forms handle validation, errors, redirects the same way
-3. **Turbo Integration** - Automatic Turbo frame/stream support
-4. **Testing** - Flows are tested once; controllers test only routing/auth
-5. **Readability** - Clear intent with named parameters
-
-### Best Practices
-
-- Use `FormFlow` for forms that create/update entities
-- Use `CommandFlow` for POST-only actions (state changes, operations)
-- Use `DeleteFlow` for destructive operations requiring confirmation
-- Use `SearchFlow` for paginated lists
-- Use `ShowFlow` for simple detail pages
-- Keep mappers simple - no business logic
-- Let handlers return `Result` objects with success/error messages
-- Flows do not contain domain rules — only orchestration
-
-## File Organization Conventions
-
-When creating new features:
-
-1. **Determine the bounded context** - Does it belong to Catalog, Order, Pricing, etc.?
-2. **Follow the DDD layers**:
-   - Commands and Handlers in `Application/`
-   - Entities and Value Objects in `Domain/Model/`
-   - Repository interfaces in `Domain/Repository/`
-   - Repository implementations in `Infrastructure/Persistence/`
-   - Controllers and Forms in `UI/Http/`
-3. **Use readonly DTOs** for commands and queries
-4. **Implement domain events** for cross-context communication
-5. **Place tests** in the corresponding `tests/` subdirectory
-
-## Environment Configuration
-
-- `.env` - Main environment file (not committed with secrets in production)
-- `.env.dev` - Development-specific overrides
-- `.env.test` - Test environment configuration
-- Production secrets for local production are stored in `../supplymars-secrets/prod-local.env` (outside repo)
-- Actual Production secrets are added via deployment pipeline, not stored in the repo
-
-## Code Style Expectations
-
-- Strict types enabled (`declare(strict_types=1)`) - handled by Symfony
-- Readonly properties where possible (PHP 8.1+)
+- `declare(strict_types=1)` - Handled by Symfony
+- Readonly properties where possible
 - Constructor property promotion
-- No Yoda-style conditions
+- No Yoda-style conditions (`$value === null`, not `null === $value`)
 - Full type hints on all methods
-- String concatenation with single space: `'foo' . $bar`
+- String concatenation: `'foo' . $bar` (single space around `.`)
+
+## File Organization for New Features
+
+1. **Determine the bounded context** - Catalog, Order, Pricing, etc.
+2. **Follow DDD layers**:
+   - Commands/Handlers in `Application/`
+   - Entities/Value Objects in `Domain/Model/`
+   - Repository interfaces in `Domain/Repository/`
+   - Doctrine repositories in `Infrastructure/Persistence/`
+   - Controllers/Forms in `UI/Http/`
+3. **Create typed PublicId** value object extending `AbstractUlidId`
+4. **Use `HasPublicUlid` trait** in entities, call `initializePublicId()` in constructor
+5. **Place tests** in corresponding `tests/` subdirectory
+6. **Create Foundry factory** in `tests/Shared/Factory/` if needed
