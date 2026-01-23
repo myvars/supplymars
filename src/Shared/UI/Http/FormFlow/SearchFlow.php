@@ -46,7 +46,7 @@ final readonly class SearchFlow
             $this->flashes->warning($request, 'Page ' . $criteria->getPage() . ' not found.');
             $url = $this->urls->generate('app_' . ModelPath::route($model) . '_index', array_merge(
                 $request->query->all(),
-                ['page' => $criteria::PAGE_DEFAULT],
+                ['page' => '1'],
             ));
 
             return $this->redirector->to($request, $url);

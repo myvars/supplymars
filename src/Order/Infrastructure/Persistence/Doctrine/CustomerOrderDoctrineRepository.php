@@ -2,6 +2,7 @@
 
 namespace App\Order\Infrastructure\Persistence\Doctrine;
 
+use App\Order\Application\Search\OrderSearchCriteria;
 use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Order\Domain\Model\Order\OrderId;
 use App\Order\Domain\Model\Order\OrderPublicId;
@@ -20,9 +21,9 @@ use Pagerfanta\Doctrine\ORM\QueryAdapter;
  * @extends ServiceEntityRepository<CustomerOrder>
  *
  * @method CustomerOrder|null find($id, $lockMode = null, $lockVersion = null)
- * @method CustomerOrder|null findOneBy(array $criteria, array $orderBy = null)
+ * @method CustomerOrder|null findOneBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null)
  * @method CustomerOrder[]    findAll()
- * @method CustomerOrder[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method CustomerOrder[]    findBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null, $limit = null, $offset = null)
  */
 class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements FindByCriteriaInterface, OrderRepository
 {
@@ -51,8 +52,15 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
         return $this->findOneBy(['publicId' => $publicId->value()]);
     }
 
+    /**
+     * @return AdapterInterface<CustomerOrder>
+     */
     public function findByCriteria(SearchCriteriaInterface $criteria): AdapterInterface
     {
+        if (!$criteria instanceof OrderSearchCriteria) {
+            throw new \InvalidArgumentException('Expected OrderSearchCriteria');
+        }
+
         $sort = $criteria->getSort();
         $sortDirection = $criteria->getSortDirection();
 
@@ -115,6 +123,9 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
         return new QueryAdapter($qb);
     }
 
+    /**
+     * @return array<int, CustomerOrder>|null
+     */
     public function findNextOrdersToBeProcessed(int $orderCount = 1): ?array
     {
         return $this->createQueryBuilder('co')
@@ -129,6 +140,9 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
             ->getResult();
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function findOrderSalesByDate(\DateTime $startDate, \DateTime $endDate): array
     {
         return $this->getOrderSales($startDate, $endDate)
@@ -139,6 +153,9 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
             ->getResult();
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function findOrderSalesByStatus(\DateTime $startDate, \DateTime $endDate): array
     {
         return $this->getOrderSales($startDate, $endDate)
@@ -161,6 +178,9 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
             ->setParameter('endDate', $endDate);
     }
 
+    /**
+     * @return AdapterInterface<CustomerOrder>
+     */
     public function findOverdueOrders(OverdueOrderSearchCriteria $dto): AdapterInterface
     {
         $sort = $dto->getSort();
@@ -179,6 +199,9 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
         return new QueryAdapter($qb);
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function findOverdueOrdersSummary(\DateTime $startDate): ?array
     {
         return $this->getOverdueOrders($startDate)
@@ -197,6 +220,9 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
             ->andWhere('co.dueDate < CURRENT_DATE()');
     }
 
+    /**
+     * @return array<int, CustomerOrder>
+     */
     public function findLatestOrders(\DateTime $startDate, int $limit = 10): array
     {
         return $this->createQueryBuilder('co')

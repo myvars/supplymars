@@ -22,6 +22,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfonycasts\DynamicForms\DependentField;
 use Symfonycasts\DynamicForms\DynamicFormBuilder;
 
+/**
+ * @extends AbstractType<SupplierProductSearchCriteria>
+ */
 final class SupplierProductFilterType extends AbstractType
 {
     public function __construct(
@@ -82,7 +85,7 @@ final class SupplierProductFilterType extends AbstractType
                 ?int $supplierId,
             ): void {
                 $field->add(SupplierCategoryIdType::class, [
-                    'choices' => $this->em->getRepository(SupplierCategory::class)->findBy(['supplier' => $supplierId]) ?? [],
+                    'choices' => $this->em->getRepository(SupplierCategory::class)->findBy(['supplier' => $supplierId]),
                     'placeholder' => 'Any Category',
                     'attr' => ['data-action' => 'change->submit-form#submitForm'],
                     'priority' => 4,
@@ -97,7 +100,7 @@ final class SupplierProductFilterType extends AbstractType
                 ?int $supplierCategoryId,
             ): void {
                 $field->add(SupplierSubcategoryIdType::class, [
-                    'choices' => $this->em->getRepository(SupplierSubcategory::class)->findBy(['supplierCategory' => $supplierCategoryId]) ?? [],
+                    'choices' => $this->em->getRepository(SupplierSubcategory::class)->findBy(['supplierCategory' => $supplierCategoryId]),
                     'placeholder' => 'Any Subcategory',
                     'attr' => ['data-action' => 'change->submit-form#submitForm'],
                     'priority' => 3,

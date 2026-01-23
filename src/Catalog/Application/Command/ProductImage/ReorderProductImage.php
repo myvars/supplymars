@@ -6,6 +6,9 @@ use App\Catalog\Domain\Model\Product\ProductPublicId;
 
 final readonly class ReorderProductImage
 {
+    /**
+     * @param array<int, int> $newImageOrder
+     */
     public function __construct(
         public ProductPublicId $id,
         public array $newImageOrder = [],

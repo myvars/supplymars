@@ -11,6 +11,8 @@ use App\Shared\UI\Http\FormFlow\View\FlowContext;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use Symfony\Component\HttpFoundation\Session\FlashBagAwareSessionInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -23,6 +25,14 @@ final class CommandFlowTest extends TestCase
         $request->setSession(new Session(new MockArraySessionStorage()));
 
         return $request;
+    }
+
+    private function getFlashBag(Request $request): FlashBagInterface
+    {
+        $session = $request->getSession();
+        assert($session instanceof FlashBagAwareSessionInterface);
+
+        return $session->getFlashBag();
     }
 
     private function handlerOk(?string $msg = 'Done', ?RedirectTarget $rt = null): callable
@@ -57,8 +67,8 @@ final class CommandFlowTest extends TestCase
         $response = $flow->process($request, new \stdClass(), $this->handlerOk('Saved'), $context);
 
         self::assertSame(303, $response->getStatusCode());
-        self::assertSame(['Saved'], $request->getSession()->getFlashBag()->get('success'));
-        self::assertEmpty($request->getSession()->getFlashBag()->get('danger'));
+        self::assertSame(['Saved'], $this->getFlashBag($request)->get('success'));
+        self::assertEmpty($this->getFlashBag($request)->get('danger'));
     }
 
     public function testProcessFailureAddsErrorFlashAndRedirectsToSuccessRoute(): void
@@ -83,8 +93,8 @@ final class CommandFlowTest extends TestCase
         $response = $flow->process($request, new \stdClass(), $this->handlerFail('Failed'), $context);
 
         self::assertSame(303, $response->getStatusCode());
-        self::assertSame(['Failed'], $request->getSession()->getFlashBag()->get('danger'));
-        self::assertEmpty($request->getSession()->getFlashBag()->get('success'));
+        self::assertSame(['Failed'], $this->getFlashBag($request)->get('danger'));
+        self::assertEmpty($this->getFlashBag($request)->get('success'));
     }
 
     public function testProcessSuccessWithRedirectTargetOverridesSuccessRoute(): void
@@ -111,7 +121,7 @@ final class CommandFlowTest extends TestCase
         $response = $flow->process($request, new \stdClass(), $this->handlerOk('Shown', $target), $context);
 
         self::assertSame(302, $response->getStatusCode());
-        self::assertSame(['Shown'], $request->getSession()->getFlashBag()->get('success'));
+        self::assertSame(['Shown'], $this->getFlashBag($request)->get('success'));
     }
 
     public function testProcessUsesContextRedirectOptions(): void
@@ -136,7 +146,7 @@ final class CommandFlowTest extends TestCase
         $response = $flow->process($request, new \stdClass(), $this->handlerOk('Updated'), $context);
 
         self::assertSame(307, $response->getStatusCode());
-        self::assertSame(['Updated'], $request->getSession()->getFlashBag()->get('success'));
+        self::assertSame(['Updated'], $this->getFlashBag($request)->get('success'));
     }
 
     public function testProcessSuccessWithNullMessageDoesNotFlash(): void
@@ -161,8 +171,8 @@ final class CommandFlowTest extends TestCase
         $response = $flow->process($request, new \stdClass(), $this->handlerOk(null), $context);
 
         self::assertSame(303, $response->getStatusCode());
-        self::assertEmpty($request->getSession()->getFlashBag()->get('success'));
-        self::assertEmpty($request->getSession()->getFlashBag()->get('danger'));
+        self::assertEmpty($this->getFlashBag($request)->get('success'));
+        self::assertEmpty($this->getFlashBag($request)->get('danger'));
     }
 
     public function testProcessThrowsWhenSuccessRouteNotConfigured(): void
@@ -202,6 +212,6 @@ final class CommandFlowTest extends TestCase
         $response = $flow->process($request, new \stdClass(), $this->handlerOk('Processed'), $context);
 
         self::assertSame(303, $response->getStatusCode());
-        self::assertSame(['Processed'], $request->getSession()->getFlashBag()->get('success'));
+        self::assertSame(['Processed'], $this->getFlashBag($request)->get('success'));
     }
 }

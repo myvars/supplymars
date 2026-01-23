@@ -15,7 +15,7 @@ final class ValidPOItemStatusChangeValidator extends ConstraintValidator
     {
     }
 
-    public function validate($value, Constraint $constraint): void
+    public function validate(mixed $value, Constraint $constraint): void
     {
         if (!$constraint instanceof ValidPOItemStatusChange) {
             throw new \InvalidArgumentException('Constraint must be instance of ' . ValidPOItemStatusChange::class);

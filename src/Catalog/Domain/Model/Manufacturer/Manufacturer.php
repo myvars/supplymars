@@ -30,13 +30,15 @@ class Manufacturer
     #[ORM\Column]
     private bool $isActive = false;
 
+    /** @var Collection<int, Product> */
     #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'manufacturer')]
     private Collection $products;
 
+    /** @var Collection<int, SupplierManufacturer> */
     #[ORM\OneToMany(targetEntity: SupplierManufacturer::class, mappedBy: 'mappedManufacturer')]
     private Collection $supplierManufacturers;
 
-    public function __construct()
+    final public function __construct()
     {
         $this->initializePublicId();
         $this->products = new ArrayCollection();

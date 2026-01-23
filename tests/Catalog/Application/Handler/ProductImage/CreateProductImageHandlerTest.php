@@ -4,7 +4,6 @@ namespace App\Tests\Catalog\Application\Handler\ProductImage;
 
 use App\Catalog\Application\Command\ProductImage\CreateProductImage;
 use App\Catalog\Application\Handler\ProductImage\CreateProductImageHandler;
-use App\Catalog\Domain\Repository\ProductImageRepository;
 use App\Catalog\Domain\Repository\ProductRepository;
 use App\Tests\Shared\Factory\ProductFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -17,15 +16,12 @@ final class CreateProductImageHandlerTest extends KernelTestCase
 
     private CreateProductImageHandler $handler;
 
-    private ProductImageRepository $productImages;
-
     private ProductRepository $products;
 
     protected function setUp(): void
     {
         self::bootKernel();
         $this->handler = self::getContainer()->get(CreateProductImageHandler::class);
-        $this->productImages = self::getContainer()->get(ProductImageRepository::class);
         $this->products = self::getContainer()->get(ProductRepository::class);
     }
 
@@ -57,6 +53,7 @@ final class CreateProductImageHandlerTest extends KernelTestCase
     {
         $product = ProductFactory::new()->create();
 
+        /** @phpstan-ignore argument.type (intentionally passing invalid array for testing) */
         $command = new CreateProductImage($product->getPublicId(), ['not-a-file', $this->validImage()]);
         $result = ($this->handler)($command);
 
@@ -74,7 +71,7 @@ final class CreateProductImageHandlerTest extends KernelTestCase
 
         self::assertTrue($result->ok);
 
-        $reloaded = $this->products->find($product->getId());
+        $reloaded = $this->products->getByPublicId($product->getPublicId());
         $productImages = $reloaded->getProductImages();
         self::assertCount(1, $productImages);
 

@@ -85,7 +85,7 @@ readonly class activateSupplierProductsCommand
         $io->newLine(2);
         $io->success(sprintf('Processed %d items.', $processed));
 
-        if ($processed > 0 && $output->isVerbose()) {
+        if ($output->isVerbose()) {
             $io->section('Processed Supplier products');
             $io->listing($processedItems);
         }
@@ -93,8 +93,11 @@ readonly class activateSupplierProductsCommand
         return Command::SUCCESS;
     }
 
+    /**
+     * @return array<int, SupplierProduct>
+     */
     public function getSupplierProducts(int $productCount): array
     {
-        return $this->supplierProducts->findBy(['isActive' => false], null, $productCount);
+        return $this->supplierProducts->findInactive($productCount);
     }
 }

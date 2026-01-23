@@ -66,10 +66,6 @@ class AppFixtures extends Fixture
 
     public function createAdditionalSuppliers(object $warehouse): void
     {
-        if (self::EDI_SUPPLIER_PRODUCT_COUNT < 1) {
-            return;
-        }
-
         $mappedProductCount = (int) floor(
             self::EDI_SUPPLIER_PRODUCT_COUNT * (self::EDI_SUPPLIER_COMMON_PRODUCT_PERCENT / 100)
         );
@@ -120,7 +116,7 @@ class AppFixtures extends Fixture
 
     private function createCommonProducts(object $warehouse, object $supplier, int $productMapCount): void
     {
-        $commonProducts = SupplierProductFactory::randomSet($productMapCount, [
+        $commonProducts = SupplierProductFactory::randomSet(max(1, $productMapCount), [
             'supplier' => $warehouse,
         ]);
 

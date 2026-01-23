@@ -53,7 +53,7 @@ class CreateProductHandlerTest extends KernelTestCase
         self::assertTrue($result->ok);
 
         $productId = $result->payload;
-        $persisted = $this->products->get($productId);
+        $persisted = $this->products->getByPublicId($productId);
 
         self::assertSame('New Product', $persisted->getName());
         self::assertSame('MFR-0001', $persisted->getMfrPartNumber());

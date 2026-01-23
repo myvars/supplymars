@@ -6,6 +6,9 @@ use App\Order\Domain\Model\Order\OrderStatus;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 
+/**
+ * @implements DataTransformerInterface<string|null, OrderStatus|null>
+ */
 final readonly class stringToOrderStatusTransformer implements DataTransformerInterface
 {
     // Transforms a string (status) to an enum (OrderStatus)

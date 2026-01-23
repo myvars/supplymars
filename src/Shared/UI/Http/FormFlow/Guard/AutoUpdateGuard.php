@@ -2,6 +2,7 @@
 
 namespace App\Shared\UI\Http\FormFlow\Guard;
 
+use Symfony\Component\Form\ClickableInterface;
 use Symfony\Component\Form\FormInterface;
 
 /**
@@ -13,14 +14,24 @@ final class AutoUpdateGuard
 
     /**
      * True when the `auto-update` button exists and was clicked.
+     *
+     * @param FormInterface<mixed> $form
      */
     public function is(FormInterface $form): bool
     {
-        return $form->has(self::FIELD) && $form->get(self::FIELD)->isClicked();
+        if (!$form->has(self::FIELD)) {
+            return false;
+        }
+
+        $button = $form->get(self::FIELD);
+
+        return $button instanceof ClickableInterface && $button->isClicked();
     }
 
     /**
      * Clears current form errors when in auto-update mode, if supported by the form.
+     *
+     * @param FormInterface<mixed> $form
      */
     public function clear(FormInterface $form): void
     {

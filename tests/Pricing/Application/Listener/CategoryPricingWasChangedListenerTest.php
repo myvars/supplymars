@@ -2,6 +2,7 @@
 
 namespace App\Tests\Pricing\Application\Listener;
 
+use App\Catalog\Domain\Model\Category\Event\CategoryPricingWasChangedEvent;
 use App\Catalog\Domain\Model\Product\Product;
 use App\Catalog\Domain\Repository\CategoryRepository;
 use App\Pricing\Application\Listener\CategoryPricingWasChanged;
@@ -54,6 +55,7 @@ final class CategoryPricingWasChangedListenerTest extends KernelTestCase
         );
 
         foreach ($category->releaseDomainEvents() as $event) {
+            \assert($event instanceof CategoryPricingWasChangedEvent);
             $listener($event);
         }
 
@@ -85,6 +87,7 @@ final class CategoryPricingWasChangedListenerTest extends KernelTestCase
         );
 
         foreach ($category->releaseDomainEvents() as $event) {
+            \assert($event instanceof CategoryPricingWasChangedEvent);
             $listener($event);
         }
     }
@@ -110,6 +113,7 @@ final class CategoryPricingWasChangedListenerTest extends KernelTestCase
         );
 
         foreach ($category->releaseDomainEvents() as $event) {
+            \assert($event instanceof CategoryPricingWasChangedEvent);
             $listener($event);
         }
 

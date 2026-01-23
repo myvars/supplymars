@@ -19,6 +19,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfonycasts\DynamicForms\DependentField;
 use Symfonycasts\DynamicForms\DynamicFormBuilder;
 
+/**
+ * @extends AbstractType<ProductForm>
+ */
 final class ProductType extends AbstractType
 {
     public function __construct(

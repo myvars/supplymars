@@ -44,6 +44,7 @@ final class SupplierProductForm
     #[Assert\Range(notInRangeMessage: 'Please enter a lead time(days)', min: 0, max: 1000)]
     public ?int $leadTimeDays = null;
 
+    /** @var numeric-string|null */
     #[Assert\NotBlank(message: 'Please enter a cost')]
     #[Assert\PositiveOrZero(message: 'Please enter a positive or zero cost')]
     public ?string $cost = '0.00';

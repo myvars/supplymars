@@ -20,14 +20,17 @@ use App\Shared\Domain\Event\DomainEventType;
 use App\Shared\Domain\ValueObject\StatusChange;
 use App\Shared\Infrastructure\Security\CurrentUserProvider;
 use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
 final class StatusChangeLoggerTest extends TestCase
 {
-    private MockObject $writer;
+    /** @phpstan-ignore property.unresolvableNativeType */
+    private StatusChangeLogWriter&MockObject $writer;
 
-    private PublicIdResolverRegistry $resolver;
+    /** @phpstan-ignore property.unresolvableNativeType */
+    private PublicIdResolverRegistry&Stub $resolver;
 
     private StatusChangeLogger $listener;
 
@@ -35,8 +38,11 @@ final class StatusChangeLoggerTest extends TestCase
 
     protected function setUp(): void
     {
+        // @phpstan-ignore method.unresolvableReturnType
         $this->writer = $this->createMock(StatusChangeLogWriter::class);
+        // @phpstan-ignore method.unresolvableReturnType
         $currentUserProvider = $this->createStub(CurrentUserProvider::class);
+        // @phpstan-ignore method.unresolvableReturnType
         $this->resolver = $this->createStub(PublicIdResolverRegistry::class);
         $logger = $this->createStub(LoggerInterface::class);
 
@@ -174,9 +180,11 @@ final class StatusChangeLoggerTest extends TestCase
                 self::arrayHasKey('publicId')
             );
 
+        // @phpstan-ignore method.unresolvableReturnType
+        $userProvider = $this->createStub(CurrentUserProvider::class);
         $this->listener = new StatusChangeLogger(
             changeLogWriter: $this->writer,
-            currentUserProvider: $this->createStub(CurrentUserProvider::class),
+            currentUserProvider: $userProvider,
             publicIdResolverRegistry: $this->resolver,
             logger: $logger,
         );

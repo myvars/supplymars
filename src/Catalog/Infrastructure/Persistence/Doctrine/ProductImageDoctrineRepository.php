@@ -16,9 +16,9 @@ use Doctrine\Persistence\ManagerRegistry;
  * @extends ServiceEntityRepository<ProductImage>
  *
  * @method ProductImage|null find($id, $lockMode = null, $lockVersion = null)
- * @method ProductImage|null findOneBy(array $criteria, array $orderBy = null)
+ * @method ProductImage|null findOneBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null)
  * @method ProductImage[]    findAll()
- * @method ProductImage[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method ProductImage[]    findBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null, $limit = null, $offset = null)
  */
 class ProductImageDoctrineRepository extends ServiceEntityRepository implements ProductImageRepository
 {

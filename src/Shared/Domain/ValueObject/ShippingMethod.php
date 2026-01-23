@@ -17,6 +17,9 @@ enum ShippingMethod: string
         };
     }
 
+    /**
+     * @return numeric-string
+     */
     public function getPrice(): string
     {
         return match ($this) {
@@ -25,13 +28,18 @@ enum ShippingMethod: string
         };
     }
 
+    /**
+     * @return numeric-string
+     */
     public function getPriceIncVat(VatRate $vatRate): string
     {
-        if (1 !== bccomp((string) $vatRate->getRate(), '0', 2)) {
+        $rate = $vatRate->getRate() ?? '0.00';
+
+        if (1 !== bccomp($rate, '0', 2)) {
             throw new \InvalidArgumentException('VAT Rate must be greater than 0');
         }
 
-        $vatMultiplier = bcadd('1', bcdiv((string) $vatRate->getRate(), '100', 4), 4);
+        $vatMultiplier = bcadd('1', bcdiv($rate, '100', 4), 4);
 
         return $this->bcround(bcmul(self::getPrice(), $vatMultiplier, 3), 2);
     }
@@ -44,7 +52,7 @@ enum ShippingMethod: string
         };
     }
 
-    public function calculateDueDate(int $days): ?\DateTimeImmutable
+    public function calculateDueDate(int $days): \DateTimeImmutable
     {
         if ($days < 1) {
             throw new \InvalidArgumentException('Days must be greater than 0');
@@ -59,8 +67,14 @@ enum ShippingMethod: string
         return $date;
     }
 
+    /**
+     * @param numeric-string $number
+     *
+     * @return numeric-string
+     */
     private function bcround(string $number, int $precision): string
     {
+        /** @var numeric-string $adjustment @phpstan-ignore varTag.nativeType */
         $adjustment = '0.' . str_repeat('0', $precision) . '5';
         $number = bcadd($number, $adjustment, $precision + 1);
 

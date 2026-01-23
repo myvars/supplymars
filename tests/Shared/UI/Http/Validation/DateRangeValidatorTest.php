@@ -7,6 +7,9 @@ use App\Shared\UI\Http\Validation\DateRangeValidator;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
 
+/**
+ * @extends ConstraintValidatorTestCase<DateRangeValidator>
+ */
 final class DateRangeValidatorTest extends ConstraintValidatorTestCase
 {
     protected function createValidator(): DateRangeValidator

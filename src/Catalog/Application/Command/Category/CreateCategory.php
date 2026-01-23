@@ -6,6 +6,9 @@ use App\Shared\Domain\ValueObject\PriceModel;
 
 final readonly class CreateCategory
 {
+    /**
+     * @param numeric-string $defaultMarkup
+     */
     public function __construct(
         public string $name,
         public int $vatRateId,

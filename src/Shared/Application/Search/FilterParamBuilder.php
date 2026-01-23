@@ -6,6 +6,8 @@ final class FilterParamBuilder
 {
     /**
      * Build shared search params from a normalized source.
+     *
+     * @return array<string, mixed>
      */
     public function base(SearchCriteriaInterface $src): array
     {
@@ -20,6 +22,10 @@ final class FilterParamBuilder
 
     /**
      * Build full params from source plus extras. Adds `filter=on` if extras present and $addFilterFlag is true.
+     *
+     * @param array<string, mixed> $extras
+     *
+     * @return array<string, mixed>
      */
     public function build(SearchCriteriaInterface $src, array $extras = [], bool $addFilterFlag = true): array
     {
@@ -36,12 +42,21 @@ final class FilterParamBuilder
 
     /**
      * Merge arbitrary param arrays, then clean.
+     *
+     * @param array<string, mixed> ...$sets
+     *
+     * @return array<string, mixed>
      */
     public function mergeArrays(array ...$sets): array
     {
         return $this->clean(array_merge(...$sets));
     }
 
+    /**
+     * @param array<string, mixed> $params
+     *
+     * @return array<string, mixed>
+     */
     private function clean(array $params): array
     {
         return array_filter(

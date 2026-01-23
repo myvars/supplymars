@@ -98,7 +98,7 @@ final class SupplierCategoryUpdateDeleteMappingTest extends KernelTestCase
         self::assertSame('99.99', $reloaded->getCost());
         self::assertFalse($reloaded->isActive());
 
-        self::assertSame($supplierB->getId(), $reloaded->getSupplier()?->getId());
+        self::assertSame($supplierB->getId(), $reloaded->getSupplier()->getId());
         self::assertSame($categoryB->getId(), $reloaded->getSupplierCategory()?->getId());
         self::assertSame($subcategoryB->getId(), $reloaded->getSupplierSubcategory()?->getId());
         self::assertSame($manufacturerB->getId(), $reloaded->getSupplierManufacturer()?->getId());

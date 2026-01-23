@@ -90,6 +90,7 @@ class ProductDomainTest extends TestCase
         string $customMarkup = '12.345',
         string $sell = '88.88',
     ): MarkupCalculator {
+        // @phpstan-ignore method.unresolvableReturnType
         $calc = $this->createStub(MarkupCalculator::class);
         $calc->method('calculatePrettyPrice')->willReturn($pretty);
         $calc->method('calculateCustomMarkup')->willReturn($customMarkup);

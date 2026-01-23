@@ -77,7 +77,7 @@ readonly class buildPOsCommand
         $io->newLine(2);
         $io->success(sprintf('Processed %d customer orders.', $processed));
 
-        if ($processed > 0 && $output->isVerbose()) {
+        if ($output->isVerbose()) {
             $io->section('Processed Order IDs');
             $io->listing($processedIds);
         }
@@ -85,6 +85,9 @@ readonly class buildPOsCommand
         return Command::SUCCESS;
     }
 
+    /**
+     * @return array<int, CustomerOrder>|null
+     */
     private function getNextCustomerOrders(int $orderCount): ?array
     {
         return $this->orders->findNextOrdersToBeProcessed($orderCount);

@@ -59,7 +59,7 @@ final class PurchaseOrderItemUpdateDeleteMappingTest extends KernelTestCase
         $reloaded = $this->em->getRepository(PurchaseOrderItem::class)->find($id);
         self::assertNotNull($reloaded);
         self::assertSame(8, $reloaded->getQuantity());
-        self::assertSame(bcmul('8', $reloaded->getPrice(), 2), $reloaded->getTotalPrice());
+        self::assertSame(bcmul('8', $reloaded->getPrice() ?? '0', 2), $reloaded->getTotalPrice());
     }
 
     public function testAllMappedColumnsRoundTripCorrectly(): void

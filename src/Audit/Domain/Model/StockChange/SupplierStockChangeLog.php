@@ -19,7 +19,7 @@ class SupplierStockChangeLog
     #[ORM\Column]
     private ?int $id = null;
 
-    private function __construct(
+    final private function __construct(
         #[ORM\Column(length: 255)]
         #[Assert\Choice(choices: [
             DomainEventType::SUPPLIER_PRODUCT_STOCK_CHANGED,

@@ -67,7 +67,7 @@ final class UpdateVatRateHandlerTest extends KernelTestCase
         $command = new UpdateVatRate(
             id: $vatRate->getPublicId(),
             name: 'Valid Name',
-            rate: '',
+            rate: '', // @phpstan-ignore argument.type (intentionally testing invalid input)
         );
 
         $result = ($this->handler)($command);

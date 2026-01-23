@@ -16,6 +16,7 @@ final class UpdateOrderItemForm
     #[MinOrderItemQty]
     public ?int $quantity = null;
 
+    /** @var numeric-string|null */
     #[Assert\NotNull(message: 'Please enter a product price inc VAT')]
     #[Assert\Range(notInRangeMessage: 'Please enter a product price inc VAT (0 to 100000)', min: 0, max: 100000)]
     public ?string $priceIncVat = null;

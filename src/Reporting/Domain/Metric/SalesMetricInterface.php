@@ -12,6 +12,9 @@ interface SalesMetricInterface
 
     public function getDataLabel(): string;
 
+    /**
+     * @return array<string, string>
+     */
     public function getChartColors(): array;
 
     public function getYAxisType(): ?string;

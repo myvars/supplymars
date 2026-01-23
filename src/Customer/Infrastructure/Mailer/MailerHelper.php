@@ -15,6 +15,9 @@ final readonly class MailerHelper
     ) {
     }
 
+    /**
+     * @param array<string, mixed> $emailSignatureContext
+     */
     public function sendEmailVerificationMessage(User $user, array $emailSignatureContext): TemplatedEmail
     {
         $email = new TemplatedEmail()

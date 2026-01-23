@@ -9,10 +9,12 @@ use Symfony\Component\ObjectMapper\ObjectMapperInterface;
  */
 final readonly class ObjectMapper
 {
+    /**
+     * @param class-string<object> $targetClass
+     */
     public function __construct(
         private ObjectMapperInterface $mapper,
         private string $targetClass,
-        private array $context = [],
     ) {
     }
 
@@ -24,6 +26,6 @@ final readonly class ObjectMapper
         }
 
         // Let ObjectMapper handle array|object -> object mapping.
-        return $this->mapper->map($data, $this->targetClass, $this->context);
+        return $this->mapper->map($data, $this->targetClass);
     }
 }

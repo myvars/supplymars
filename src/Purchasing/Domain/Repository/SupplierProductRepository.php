@@ -2,6 +2,7 @@
 
 namespace App\Purchasing\Domain\Repository;
 
+use App\Purchasing\Domain\Model\Supplier\Supplier;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProductId;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProductPublicId;
@@ -19,4 +20,13 @@ interface SupplierProductRepository extends FindByCriteriaInterface
     public function get(SupplierProductId $id): ?SupplierProduct;
 
     public function getByPublicId(SupplierProductPublicId $publicId): ?SupplierProduct;
+
+    /** @return SupplierProduct[] */
+    public function findRandomSupplierProducts(Supplier $supplier, int $itemCount): array;
+
+    /** @return SupplierProduct[] */
+    public function findBySupplier(Supplier $supplier): array;
+
+    /** @return SupplierProduct[] */
+    public function findInactive(int $limit): array;
 }

@@ -35,7 +35,7 @@ class CreateSupplierHandlerTest extends KernelTestCase
         self::assertTrue($result->ok);
         $supplierId = $result->payload;
 
-        $persisted = $this->suppliers->get($supplierId);
+        $persisted = $this->suppliers->getByPublicId($supplierId);
         self::assertSame('New Supplier', $persisted->getName());
         self::assertTrue($persisted->isActive());
     }

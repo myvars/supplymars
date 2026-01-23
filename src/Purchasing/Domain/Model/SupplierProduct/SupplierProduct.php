@@ -72,6 +72,7 @@ class SupplierProduct implements DomainEventProviderInterface
     #[Assert\Range(notInRangeMessage: 'Please enter a lead time(days)', min: 0, max: 1000)]
     private ?int $leadTimeDays = null;
 
+    /** @var numeric-string|null */
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     #[Assert\NotBlank(message: 'Please enter a cost')]
     #[Assert\PositiveOrZero(message: 'Please enter a positive or zero cost')]
@@ -83,11 +84,14 @@ class SupplierProduct implements DomainEventProviderInterface
     #[ORM\Column]
     private ?bool $isActive = null;
 
-    public function __construct()
+    final public function __construct()
     {
         $this->initializePublicId();
     }
 
+    /**
+     * @param numeric-string $cost
+     */
     public static function create(
         string $name,
         string $productCode,
@@ -116,6 +120,9 @@ class SupplierProduct implements DomainEventProviderInterface
         return $self;
     }
 
+    /**
+     * @param numeric-string $cost
+     */
     public function update(
         string $name,
         string $productCode,
@@ -141,6 +148,9 @@ class SupplierProduct implements DomainEventProviderInterface
         $this->changePricing($supplier, $stock, $leadTimeDays, $cost, $product, $isActive);
     }
 
+    /**
+     * @param numeric-string $cost
+     */
     private function changePricing(
         Supplier $supplier,
         int $stock,
@@ -224,6 +234,9 @@ class SupplierProduct implements DomainEventProviderInterface
         );
     }
 
+    /**
+     * @param numeric-string $newCost
+     */
     public function updateCost(string $newCost): void
     {
         $costChange = CostChange::from($this->getCost() ?? '0.00', $newCost);
@@ -293,9 +306,9 @@ class SupplierProduct implements DomainEventProviderInterface
         return $this->productCode;
     }
 
-    public function getSupplier(): ?Supplier
+    public function getSupplier(): Supplier
     {
-        return $this->supplier;
+        return $this->supplier ?? throw new \LogicException('Supplier must be set');
     }
 
     public function getSupplierCategory(): ?SupplierCategory
@@ -333,6 +346,9 @@ class SupplierProduct implements DomainEventProviderInterface
         return $this->leadTimeDays;
     }
 
+    /**
+     * @return numeric-string|null
+     */
     public function getCost(): ?string
     {
         return $this->cost;

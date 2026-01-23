@@ -12,18 +12,21 @@ use Symfony\Component\DependencyInjection\Attribute\AsTaggedItem;
 use Symfony\UX\Chartjs\Model\Chart;
 
 #[AsTaggedItem('order-summary', priority: 10)]
-final readonly class OrderSummaryReport implements ReportInterface
+final class OrderSummaryReport implements ReportInterface
 {
     private OrderSummaryReportCriteria $dto;
 
     public function __construct(
-        private CustomerOrderDoctrineRepository $orderRepository,
-        private OrderSalesSummaryDoctrineRepository $summaryRepository,
-        private BarChartBuilder $barChartBuilder,
-        private DoughnutChartBuilder $doughnutChartBuilder,
+        private readonly CustomerOrderDoctrineRepository $orderRepository,
+        private readonly OrderSalesSummaryDoctrineRepository $summaryRepository,
+        private readonly BarChartBuilder $barChartBuilder,
+        private readonly DoughnutChartBuilder $doughnutChartBuilder,
     ) {
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function build(object $dto): array
     {
         if (!$dto instanceof OrderSummaryReportCriteria) {
@@ -39,6 +42,9 @@ final readonly class OrderSummaryReport implements ReportInterface
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function getSummary(): array
     {
         $summary = $this->summaryRepository->findOrderSalesSummary($this->dto->getDuration());

@@ -10,6 +10,9 @@ use App\Purchasing\Domain\Model\SupplierProduct\SupplierSubcategoryId;
 
 final readonly class UpdateSupplierProduct
 {
+    /**
+     * @param numeric-string $cost
+     */
     public function __construct(
         public SupplierProductPublicId $id,
         public string $name,

@@ -47,7 +47,7 @@ final class SupplierManufacturerDomainTest extends TestCase
         );
 
         self::assertSame('New', $manufacturer->getName());
-        self::assertSame($supplierB->getId(), $manufacturer->getSupplier()?->getId());
+        self::assertSame($supplierB->getId(), $manufacturer->getSupplier()->getId());
     }
 
     public function testEmptyNameThrows(): void

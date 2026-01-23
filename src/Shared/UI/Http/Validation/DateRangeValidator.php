@@ -2,7 +2,7 @@
 
 namespace App\Shared\UI\Http\Validation;
 
-use App\Shared\Application\Search\SearchCriteria;
+use App\Shared\Application\Search\DateRangeSearchCriteriaInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -16,15 +16,18 @@ final class DateRangeValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, DateRange::class);
         }
 
-        if (!$value instanceof SearchCriteria) {
-            throw new UnexpectedValueException($value, SearchCriteria::class);
+        if (!$value instanceof DateRangeSearchCriteriaInterface) {
+            throw new UnexpectedValueException($value, DateRangeSearchCriteriaInterface::class);
         }
 
-        if ($value->startDate && $value->endDate) {
-            $startDate = \DateTime::createFromFormat('Y-m-d', $value->startDate);
-            $endDate = \DateTime::createFromFormat('Y-m-d', $value->endDate);
+        $startDate = $value->getStartDate();
+        $endDate = $value->getEndDate();
 
-            if ($startDate && $endDate && $startDate > $endDate) {
+        if ($startDate && $endDate) {
+            $start = \DateTime::createFromFormat('Y-m-d', $startDate);
+            $end = \DateTime::createFromFormat('Y-m-d', $endDate);
+
+            if ($start && $end && $start > $end) {
                 $this->context->buildViolation($constraint->message)
                     ->atPath('startDate')
                     ->addViolation();

@@ -55,7 +55,7 @@ final class AddressUpdateDeleteMappingTest extends KernelTestCase
         self::assertSame('Mars Colony', $reloaded->getCountry());
         self::assertNull($reloaded->getPhoneNumber());
         self::assertSame('before@example.com', $reloaded->getEmail());
-        self::assertSame($customer->getId(), $reloaded->getCustomer()?->getId());
+        self::assertSame($customer->getId(), $reloaded->getCustomer()->getId());
         self::assertFalse($reloaded->isDefaultShippingAddress());
         self::assertFalse($reloaded->isDefaultBillingAddress());
     }

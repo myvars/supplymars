@@ -10,16 +10,19 @@ use Pagerfanta\Pagerfanta;
 use Symfony\Component\DependencyInjection\Attribute\AsTaggedItem;
 
 #[AsTaggedItem('overdue-orders')]
-final readonly class OverdueOrdersReport implements ReportInterface
+final class OverdueOrdersReport implements ReportInterface
 {
     private OverdueOrderSearchCriteria $dto;
 
     public function __construct(
-        private CustomerOrderDoctrineRepository $orderRepository,
-        private Paginator $paginator,
+        private readonly CustomerOrderDoctrineRepository $orderRepository,
+        private readonly Paginator $paginator,
     ) {
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function build(object $dto): array
     {
         if (!$dto instanceof OverdueOrderSearchCriteria) {
@@ -41,6 +44,9 @@ final readonly class OverdueOrdersReport implements ReportInterface
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function getSummary(): array
     {
         $summary = $this->orderRepository->findOverdueOrdersSummary(
@@ -50,6 +56,9 @@ final readonly class OverdueOrdersReport implements ReportInterface
         return $summary ?? [];
     }
 
+    /**
+     * @return Pagerfanta<mixed>
+     */
     private function getOverdueOrders(): Pagerfanta
     {
         return $this->paginator->createPagination(

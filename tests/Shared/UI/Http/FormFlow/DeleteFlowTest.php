@@ -12,6 +12,8 @@ use App\Shared\UI\Http\FormFlow\View\ModelPath;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use Symfony\Component\HttpFoundation\Session\FlashBagAwareSessionInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -27,6 +29,14 @@ final class DeleteFlowTest extends TestCase
         $r->setSession(new Session(new MockArraySessionStorage()));
 
         return $r;
+    }
+
+    private function getFlashBag(Request $request): FlashBagInterface
+    {
+        $session = $request->getSession();
+        assert($session instanceof FlashBagAwareSessionInterface);
+
+        return $session->getFlashBag();
     }
 
     public function testDeleteConfirmRendersBaseTemplate(): void
@@ -90,8 +100,8 @@ final class DeleteFlowTest extends TestCase
         $response = $flow->delete($request, $command, fn (): null => null, $context);
 
         self::assertSame(303, $response->getStatusCode());
-        self::assertSame(['Invalid CSRF token.'], $request->getSession()->getFlashBag()->get('danger'));
-        self::assertEmpty($request->getSession()->getFlashBag()->get('success'));
+        self::assertSame(['Invalid CSRF token.'], $this->getFlashBag($request)->get('danger'));
+        self::assertEmpty($this->getFlashBag($request)->get('success'));
     }
 
     public function testDeleteValidCsrfDelegatesToCommandFlowProcess(): void
@@ -128,7 +138,7 @@ final class DeleteFlowTest extends TestCase
         $response = $flow->delete($request, $command, $handler, $context);
 
         self::assertSame(303, $response->getStatusCode());
-        self::assertSame(['Deleted'], $request->getSession()->getFlashBag()->get('success'));
-        self::assertEmpty($request->getSession()->getFlashBag()->get('danger'));
+        self::assertSame(['Deleted'], $this->getFlashBag($request)->get('success'));
+        self::assertEmpty($this->getFlashBag($request)->get('danger'));
     }
 }

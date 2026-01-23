@@ -7,7 +7,7 @@ use App\Purchasing\Application\Handler\SupplierProduct\CreateSupplierProductHand
 use App\Purchasing\Domain\Model\Supplier\SupplierId;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierCategoryId;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierManufacturerId;
-use App\Purchasing\Domain\Model\SupplierProduct\SupplierProductId;
+use App\Purchasing\Domain\Model\SupplierProduct\SupplierProductPublicId;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierSubcategoryId;
 use App\Purchasing\Domain\Repository\SupplierProductRepository;
 use App\Tests\Shared\Factory\ProductFactory;
@@ -63,8 +63,8 @@ final class CreateSupplierProductHandlerTest extends KernelTestCase
         $result = ($this->handler)($command);
 
         self::assertTrue($result->ok);
-        self::assertInstanceOf(SupplierProductId::class, $result->payload);
-        $persisted = $this->supplierProducts->get($result->payload);
+        self::assertInstanceOf(SupplierProductPublicId::class, $result->payload);
+        $persisted = $this->supplierProducts->getByPublicId($result->payload);
         self::assertSame('New Supplier Product', $persisted->getName());
         self::assertSame('CODE123', $persisted->getProductCode());
         self::assertTrue($persisted->isActive());

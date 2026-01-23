@@ -50,7 +50,7 @@ class UpdateSubcategoryHandlerTest extends KernelTestCase
         self::assertTrue($result->ok);
         $persisted = $this->subcategories->getByPublicId($subcategory->getPublicId());
         self::assertSame('Updated Subcategory', $persisted->getName());
-        self::assertSame($newCategory->getId(), $persisted->getCategory()?->getId());
+        self::assertSame($newCategory->getId(), $persisted->getCategory()->getId());
         self::assertSame($newOwner->getId(), $persisted->getOwner()?->getId());
         self::assertSame('7.500', $persisted->getDefaultMarkup());
         self::assertSame(PriceModel::PRETTY_99, $persisted->getPriceModel());

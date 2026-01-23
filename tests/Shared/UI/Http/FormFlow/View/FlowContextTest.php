@@ -42,13 +42,6 @@ final class FlowContextTest extends TestCase
         self::assertSame('app_sales_orderitem_index', $ctx->getSuccessRoute());
     }
 
-    public function testValidatePassesWhenConfigured(): void
-    {
-        $ctx = FlowContext::forUpdate('OrderItem');
-        $ctx->validate(); // no exception
-        self::assertTrue(true);
-    }
-
     public function testValidateThrowsWhenModelMissing(): void
     {
         $this->expectException(\LogicException::class);

@@ -40,6 +40,7 @@ class Subcategory implements DomainEventProviderInterface
     #[Assert\NotBlank(message: 'Please enter a Subcategory name')]
     private ?string $name = null;
 
+    /** @var numeric-string|null */
     #[ORM\Column(type: Types::DECIMAL, precision: 9, scale: 3)]
     #[Assert\NotBlank(message: 'Please enter a subcategory markup %')]
     #[Assert\PositiveOrZero(message: 'Please enter a positive or zero subcategory markup %')]
@@ -60,19 +61,24 @@ class Subcategory implements DomainEventProviderInterface
     #[ORM\Column]
     private bool $isActive = false;
 
+    /** @var Collection<int, Product> */
     #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'subcategory')]
     private Collection $products;
 
+    /** @var Collection<int, SupplierSubcategory> */
     #[ORM\OneToMany(targetEntity: SupplierSubcategory::class, mappedBy: 'mappedSubcategory')]
     private Collection $supplierSubcategories;
 
-    public function __construct()
+    final public function __construct()
     {
         $this->initializePublicId();
         $this->products = new ArrayCollection();
         $this->supplierSubcategories = new ArrayCollection();
     }
 
+    /**
+     * @param numeric-string $defaultMarkup
+     */
     public static function create(
         string $name,
         Category $category,
@@ -90,6 +96,9 @@ class Subcategory implements DomainEventProviderInterface
         return $self;
     }
 
+    /**
+     * @param numeric-string $defaultMarkup
+     */
     public function update(
         string $name,
         Category $category,
@@ -104,6 +113,9 @@ class Subcategory implements DomainEventProviderInterface
         $this->changePricing($defaultMarkup, $priceModel, $isActive);
     }
 
+    /**
+     * @param numeric-string $defaultMarkup
+     */
     public function changePricing(
         string $defaultMarkup,
         PriceModel $priceModel,
@@ -166,6 +178,9 @@ class Subcategory implements DomainEventProviderInterface
         return $this->name;
     }
 
+    /**
+     * @return numeric-string|null
+     */
     public function getDefaultMarkup(): ?string
     {
         return $this->defaultMarkup;
@@ -176,9 +191,9 @@ class Subcategory implements DomainEventProviderInterface
         return $this->owner;
     }
 
-    public function getCategory(): ?Category
+    public function getCategory(): Category
     {
-        return $this->category;
+        return $this->category ?? throw new \LogicException('Category must be set');
     }
 
     public function getPriceModel(): ?PriceModel
@@ -201,6 +216,9 @@ class Subcategory implements DomainEventProviderInterface
         $this->name = $name;
     }
 
+    /**
+     * @param numeric-string $defaultMarkup
+     */
     private function applyDefaultMarkup(string $defaultMarkup): void
     {
         if ((float) $defaultMarkup < 0) {

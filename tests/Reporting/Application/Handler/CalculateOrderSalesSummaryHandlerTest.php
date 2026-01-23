@@ -17,6 +17,7 @@ class CalculateOrderSalesSummaryHandlerTest extends KernelTestCase
     use Factories;
 
     private CalculateOrderSalesSummaryHandler $handler;
+
     private EntityManagerInterface $em;
 
     protected function setUp(): void
@@ -46,10 +47,10 @@ class CalculateOrderSalesSummaryHandlerTest extends KernelTestCase
         $this->handler->process();
 
         $summaries = $this->em->getRepository(OrderSalesSummary::class)->findAll();
-        $durations = array_map(fn ($s) => $s->getDuration(), $summaries);
+        $durations = array_map(fn (OrderSalesSummary $s): ?SalesDuration => $s->getDuration(), $summaries);
 
         foreach (SalesDuration::cases() as $duration) {
-            self::assertContains($duration, $durations, "Missing duration: {$duration->value}");
+            self::assertContains($duration, $durations, 'Missing duration: ' . $duration->value);
         }
     }
 
@@ -95,7 +96,7 @@ class CalculateOrderSalesSummaryHandlerTest extends KernelTestCase
         $now = new \DateTime();
 
         for ($i = 0; $i < 7; ++$i) {
-            $date = (clone $now)->modify("-{$i} days")->format('Y-m-d');
+            $date = (clone $now)->modify(sprintf('-%d days', $i))->format('Y-m-d');
             OrderSalesFactory::createOne([
                 'dateString' => $date,
                 'orderCount' => 10,
@@ -119,7 +120,7 @@ class CalculateOrderSalesSummaryHandlerTest extends KernelTestCase
         $now = new \DateTime();
 
         for ($i = 0; $i < 30; ++$i) {
-            $date = (clone $now)->modify("-{$i} days")->format('Y-m-d');
+            $date = (clone $now)->modify(sprintf('-%d days', $i))->format('Y-m-d');
             OrderSalesFactory::createOne([
                 'dateString' => $date,
                 'orderCount' => 1,
@@ -143,7 +144,7 @@ class CalculateOrderSalesSummaryHandlerTest extends KernelTestCase
         $now = new \DateTime();
 
         for ($i = 0; $i < 5; ++$i) {
-            $date = (clone $now)->modify("-{$i} days")->format('Y-m-d');
+            $date = (clone $now)->modify(sprintf('-%d days', $i))->format('Y-m-d');
             OrderSalesFactory::createOne([
                 'dateString' => $date,
                 'orderCount' => 10,

@@ -40,8 +40,8 @@ final class ProductFactory extends PersistentObjectFactory
     protected function defaults(): array
     {
         return [
-            'name' => ucfirst(implode(' ', self::faker()->words(random_int(1, 3)))),
-            'description' => ucfirst(implode(' ', self::faker()->words(random_int(5, 10)))),
+            'name' => ucfirst(implode(' ', (array) self::faker()->words(random_int(1, 3)))),
+            'description' => ucfirst(implode(' ', (array) self::faker()->words(random_int(5, 10)))),
             'category' => LazyValue::memoize(fn (): Category => CategoryFactory::createOne()),
             'subcategory' => null,
             'manufacturer' => LazyValue::memoize(fn (): Manufacturer => ManufacturerFactory::createOne()),

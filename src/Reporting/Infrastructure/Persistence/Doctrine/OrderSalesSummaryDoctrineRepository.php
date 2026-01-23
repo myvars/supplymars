@@ -20,6 +20,9 @@ class OrderSalesSummaryDoctrineRepository extends ServiceEntityRepository implem
         parent::__construct($registry, OrderSalesSummary::class);
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function findOrderSalesSummary(SalesDuration $duration): ?array
     {
         return $this->getOrderSalesSummaryQuery()
@@ -28,6 +31,9 @@ class OrderSalesSummaryDoctrineRepository extends ServiceEntityRepository implem
             ->getOneOrNullResult();
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function findOrderSalesSummaryRange(SalesDuration $duration, string $startDate): array
     {
         return $this->getOrderSalesSummaryQuery()

@@ -8,7 +8,6 @@ use App\Catalog\Domain\Repository\ProductRepository;
 use App\Order\Application\Command\CreateOrderItem;
 use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Order\Domain\Model\Order\CustomerOrderItem;
-use App\Order\Domain\Model\Order\OrderItemId;
 use App\Order\Domain\Repository\OrderItemRepository;
 use App\Order\Domain\Repository\OrderRepository;
 use App\Shared\Application\FlusherInterface;
@@ -53,6 +52,6 @@ final readonly class CreateOrderItemHandler
 
         $this->flusher->flush();
 
-        return Result::ok('Order item created', OrderItemId::fromInt($orderItem->getId()));
+        return Result::ok('Order item created', $orderItem->getPublicId());
     }
 }

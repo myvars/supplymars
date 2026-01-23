@@ -60,24 +60,29 @@ class Product
     #[Assert\Range(notInRangeMessage: 'Please enter a product weight (0 to 100000)', min: 0, max: 100000)]
     private ?int $weight = 0;
 
+    /** @var numeric-string|null */
     #[ORM\Column(type: Types::DECIMAL, precision: 9, scale: 3)]
     #[Assert\NotBlank(message: 'Please enter a product markup %')]
     #[Assert\PositiveOrZero(message: 'Please enter a positive or zero product markup %')]
     private ?string $defaultMarkup = self::DEFAULT_MARKUP;
 
+    /** @var numeric-string|null */
     #[ORM\Column(type: Types::DECIMAL, precision: 9, scale: 3)]
     #[Assert\PositiveOrZero]
     private ?string $markup = '0';
 
+    /** @var numeric-string|null */
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     #[Assert\NotBlank(message: 'Please enter a cost')]
     #[Assert\PositiveOrZero(message: 'Please enter a positive or zero cost')]
     private ?string $cost = '0.00';
 
+    /** @var numeric-string|null */
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     #[Assert\PositiveOrZero]
     private ?string $sellPrice = '0';
 
+    /** @var numeric-string|null */
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     #[Assert\PositiveOrZero]
     private ?string $sellPriceIncVat = '0';
@@ -110,15 +115,17 @@ class Product
     #[ORM\Column]
     private bool $isActive = false;
 
+    /** @var Collection<int, SupplierProduct> */
     #[ORM\OneToMany(targetEntity: SupplierProduct::class, mappedBy: 'product')]
     #[ORM\OrderBy(['cost' => 'ASC'])]
     private Collection $supplierProducts;
 
+    /** @var Collection<int, ProductImage> */
     #[ORM\OneToMany(targetEntity: ProductImage::class, mappedBy: 'product')]
     #[ORM\OrderBy(['position' => 'ASC'])]
     private Collection $productImages;
 
-    public function __construct()
+    final public function __construct()
     {
         $this->initializePublicId();
         $this->supplierProducts = new ArrayCollection();
@@ -171,6 +178,9 @@ class Product
         $this->recalculatePrice($markupCalculator);
     }
 
+    /**
+     * @param numeric-string $defaultMarkup
+     */
     public function changePricing(
         MarkupCalculator $markupCalculator,
         string $defaultMarkup,
@@ -239,6 +249,9 @@ class Product
         $this->changeSellPriceIncVat($prettyPriceIncVat);
     }
 
+    /**
+     * @param array<int, int> $newImageOrder
+     */
     public function reorderProductImagesBy(array $newImageOrder): void
     {
         foreach ($this->getProductImages() as $productImage) {
@@ -256,6 +269,9 @@ class Product
         return $this->calculateBestActiveSource($minQuantity);
     }
 
+    /**
+     * @return numeric-string|null
+     */
     public function getActiveMarkup(): ?string
     {
         if ($this->hasDefaultMarkup()) {
@@ -373,49 +389,64 @@ class Product
         return $this->weight;
     }
 
+    /**
+     * @return numeric-string|null
+     */
     public function getDefaultMarkup(): ?string
     {
         return $this->defaultMarkup;
     }
 
+    /**
+     * @return numeric-string|null
+     */
     public function getMarkup(): ?string
     {
         return $this->markup;
     }
 
+    /**
+     * @return numeric-string|null
+     */
     public function getCost(): ?string
     {
         return $this->cost;
     }
 
+    /**
+     * @return numeric-string|null
+     */
     public function getSellPrice(): ?string
     {
         return $this->sellPrice;
     }
 
+    /**
+     * @return numeric-string|null
+     */
     public function getSellPriceIncVat(): ?string
     {
         return $this->sellPriceIncVat;
     }
 
-    public function getCategory(): ?Category
+    public function getCategory(): Category
     {
-        return $this->category;
+        return $this->category ?? throw new \LogicException('Category must be set');
     }
 
-    public function getCategoryVatRate(): ?VatRate
+    public function getCategoryVatRate(): VatRate
     {
         return $this->getCategory()->getVatRate();
     }
 
-    public function getSubcategory(): ?Subcategory
+    public function getSubcategory(): Subcategory
     {
-        return $this->subcategory;
+        return $this->subcategory ?? throw new \LogicException('Subcategory must be set');
     }
 
-    public function getManufacturer(): ?Manufacturer
+    public function getManufacturer(): Manufacturer
     {
-        return $this->manufacturer;
+        return $this->manufacturer ?? throw new \LogicException('Manufacturer must be set');
     }
 
     public function getOwner(): ?User
@@ -435,7 +466,9 @@ class Product
 
     public function getFirstImage(): ?ProductImage
     {
-        return $this->productImages->first();
+        $first = $this->productImages->first();
+
+        return $first ?: null;
     }
 
     public function isActive(): bool
@@ -479,6 +512,9 @@ class Product
         $this->leadTimeDays = $leadTimeDays;
     }
 
+    /**
+     * @param numeric-string $markup
+     */
     private function applyMarkup(string $markup): void
     {
         if ((float) $markup < 0) {
@@ -488,6 +524,9 @@ class Product
         $this->markup = $markup;
     }
 
+    /**
+     * @param numeric-string $cost
+     */
     private function changeCost(string $cost): void
     {
         if ((float) $cost < 0) {
@@ -497,6 +536,9 @@ class Product
         $this->cost = $cost;
     }
 
+    /**
+     * @param numeric-string $defaultMarkup
+     */
     private function applyDefaultMarkup(string $defaultMarkup): void
     {
         if ((float) $defaultMarkup < 0) {
@@ -506,6 +548,9 @@ class Product
         $this->defaultMarkup = $defaultMarkup;
     }
 
+    /**
+     * @param numeric-string $sellPrice
+     */
     private function changeSellPrice(string $sellPrice): void
     {
         if ((float) $sellPrice < 0) {
@@ -515,6 +560,9 @@ class Product
         $this->sellPrice = $sellPrice;
     }
 
+    /**
+     * @param numeric-string $sellPriceIncVat
+     */
     private function changeSellPriceIncVat(string $sellPriceIncVat): void
     {
         if ((float) $sellPriceIncVat < 0) {
@@ -604,6 +652,9 @@ class Product
         return $this->supplierProducts;
     }
 
+    /**
+     * @return Collection<int, SupplierProduct>
+     */
     public function getActiveSupplierProducts(): Collection
     {
         $activeSupplierProducts = new ArrayCollection();

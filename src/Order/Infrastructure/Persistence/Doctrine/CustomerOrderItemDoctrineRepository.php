@@ -13,9 +13,9 @@ use Doctrine\Persistence\ManagerRegistry;
  * @extends ServiceEntityRepository<CustomerOrderItem>
  *
  * @method CustomerOrderItem|null find($id, $lockMode = null, $lockVersion = null)
- * @method CustomerOrderItem|null findOneBy(array $criteria, array $orderBy = null)
+ * @method CustomerOrderItem|null findOneBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null)
  * @method CustomerOrderItem[]    findAll()
- * @method CustomerOrderItem[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method CustomerOrderItem[]    findBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null, $limit = null, $offset = null)
  */
 class CustomerOrderItemDoctrineRepository extends ServiceEntityRepository implements OrderItemRepository
 {

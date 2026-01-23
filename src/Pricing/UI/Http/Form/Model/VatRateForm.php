@@ -12,6 +12,7 @@ final class VatRateForm
     #[Assert\NotBlank(message: 'Please enter a VAT rate name')]
     public ?string $name = null;
 
+    /** @var numeric-string|null */
     #[Assert\NotBlank(message: 'Please enter a VAT rate %')]
     #[Assert\PositiveOrZero(message: 'Please enter a positive or zero VAT rate')]
     public ?string $rate = '0.00';

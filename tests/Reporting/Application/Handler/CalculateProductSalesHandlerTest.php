@@ -19,6 +19,7 @@ class CalculateProductSalesHandlerTest extends KernelTestCase
     use Factories;
 
     private CalculateProductSalesHandler $handler;
+
     private EntityManagerInterface $em;
 
     protected function setUp(): void

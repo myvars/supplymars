@@ -32,6 +32,8 @@ final readonly class TemplateContext
 
     /**
      * Export keys expected by Twig templates.
+     *
+     * @return array<string, string>
      */
     public function toArray(): array
     {

@@ -39,9 +39,11 @@ class PurchaseOrderItem implements DomainEventProviderInterface
     #[Assert\Range(notInRangeMessage: 'Quantity must be between {{ min }} and {{ max }}', min: 1, max: 10000)]
     private int $quantity = 0;
 
+    /** @var numeric-string */
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private string $price = '0';
 
+    /** @var numeric-string */
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private string $priceIncVat = '0';
 
@@ -54,9 +56,11 @@ class PurchaseOrderItem implements DomainEventProviderInterface
     #[ORM\ManyToOne(inversedBy: 'purchaseOrderItems')]
     private ?CustomerOrderItem $customerOrderItem = null;
 
+    /** @var numeric-string */
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private string $totalPrice = '0';
 
+    /** @var numeric-string */
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private string $totalPriceIncVat = '0';
 
@@ -66,7 +70,7 @@ class PurchaseOrderItem implements DomainEventProviderInterface
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $deliveredAt = null;
 
-    private function __construct()
+    final private function __construct()
     {
         $this->initializePublicId();
         $this->status = PurchaseOrderStatus::getDefault();
@@ -78,20 +82,20 @@ class PurchaseOrderItem implements DomainEventProviderInterface
         SupplierProduct $supplierProduct,
         int $quantity,
     ): static {
-        $self = new self();
-        $self->assignCustomerOrderItem($customerOrderItem);
-        $self->assignPurchaseOrder($purchaseOrder);
-        $self->supplierProduct = $supplierProduct;
-        $self->changePrice($supplierProduct->getCost());
-        $self->changePriceIncVat($supplierProduct->getCost());
-        $self->changeWeight($supplierProduct->getWeight());
-        $self->changeQuantity($quantity);
+        $static = new static();
+        $static->assignCustomerOrderItem($customerOrderItem);
+        $static->assignPurchaseOrder($purchaseOrder);
+        $static->supplierProduct = $supplierProduct;
+        $static->changePrice($supplierProduct->getCost());
+        $static->changePriceIncVat($supplierProduct->getCost());
+        $static->changeWeight($supplierProduct->getWeight());
+        $static->changeQuantity($quantity);
 
-        $self->getPurchaseOrder()->addPurchaseOrderItem($self);
-        $self->getCustomerOrderItem()->addPurchaseOrderItem($self);
-        $self->recalculateTotal();
+        $static->getPurchaseOrder()->addPurchaseOrderItem($static);
+        $static->getCustomerOrderItem()->addPurchaseOrderItem($static);
+        $static->recalculateTotal();
 
-        return $self;
+        return $static;
     }
 
     public function updateItemQuantity(int $quantity): void
@@ -141,7 +145,7 @@ class PurchaseOrderItem implements DomainEventProviderInterface
     {
         $this->changeTotalPrice(bcmul((string) $this->quantity, $this->price, 2));
         $this->changeTotalPriceIncVat(bcmul((string) $this->quantity, $this->priceIncVat, 2));
-        $this->changeTotalWeight(bcmul((string) $this->quantity, (string) $this->weight, 3));
+        $this->changeTotalWeight((int) bcmul((string) $this->quantity, (string) $this->weight, 3));
     }
 
     public function getId(): ?int
@@ -174,11 +178,17 @@ class PurchaseOrderItem implements DomainEventProviderInterface
         return $this->getCustomerOrderItem()->getOutstandingQty() + $this->getQuantity();
     }
 
+    /**
+     * @return numeric-string|null
+     */
     public function getPrice(): ?string
     {
         return $this->price;
     }
 
+    /**
+     * @return numeric-string
+     */
     public function getPriceIncVat(): string
     {
         return $this->priceIncVat;
@@ -199,11 +209,17 @@ class PurchaseOrderItem implements DomainEventProviderInterface
         return $this->customerOrderItem;
     }
 
+    /**
+     * @return numeric-string
+     */
     public function getTotalPrice(): string
     {
         return $this->totalPrice;
     }
 
+    /**
+     * @return numeric-string
+     */
     public function getTotalPriceIncVat(): string
     {
         return $this->totalPriceIncVat;
@@ -242,6 +258,9 @@ class PurchaseOrderItem implements DomainEventProviderInterface
         $this->quantity = $quantity;
     }
 
+    /**
+     * @param numeric-string $price
+     */
     private function changePrice(string $price): void
     {
         if ((float) $price < 0) {
@@ -251,6 +270,9 @@ class PurchaseOrderItem implements DomainEventProviderInterface
         $this->price = $price;
     }
 
+    /**
+     * @param numeric-string $priceIncVat
+     */
     private function changePriceIncVat(string $priceIncVat): void
     {
         if ((float) $priceIncVat < 0) {
@@ -269,6 +291,9 @@ class PurchaseOrderItem implements DomainEventProviderInterface
         $this->weight = $weight;
     }
 
+    /**
+     * @param numeric-string $totalPrice
+     */
     private function changeTotalPrice(string $totalPrice): void
     {
         if ((float) $totalPrice < 0) {
@@ -278,6 +303,9 @@ class PurchaseOrderItem implements DomainEventProviderInterface
         $this->totalPrice = $totalPrice;
     }
 
+    /**
+     * @param numeric-string $totalPriceIncVat
+     */
     private function changeTotalPriceIncVat(string $totalPriceIncVat): void
     {
         if ((float) $totalPriceIncVat < 0) {

@@ -35,6 +35,7 @@ class VatRate implements DomainEventProviderInterface
     #[Assert\NotBlank(message: 'Please enter a VAT rate name')]
     private ?string $name = null;
 
+    /** @var numeric-string|null */
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     #[Assert\NotBlank(message: 'Please enter a VAT rate %')]
     #[Assert\PositiveOrZero(message: 'Please enter a positive or zero VAT rate')]
@@ -43,15 +44,19 @@ class VatRate implements DomainEventProviderInterface
     #[ORM\Column]
     private bool $isDefaultVatRate = false;
 
+    /** @var Collection<int, Category> */
     #[ORM\OneToMany(targetEntity: Category::class, mappedBy: 'vatRate')]
     private Collection $categories;
 
-    public function __construct()
+    final public function __construct()
     {
         $this->initializePublicId();
         $this->categories = new ArrayCollection();
     }
 
+    /**
+     * @param numeric-string $rate
+     */
     public static function create(string $name, string $rate): self
     {
         $self = new self();
@@ -61,6 +66,9 @@ class VatRate implements DomainEventProviderInterface
         return $self;
     }
 
+    /**
+     * @param numeric-string $rate
+     */
     public function update(string $name, string $rate): void
     {
         $this->rename($name);
@@ -87,6 +95,9 @@ class VatRate implements DomainEventProviderInterface
         return $this->name;
     }
 
+    /**
+     * @return numeric-string|null
+     */
     public function getRate(): ?string
     {
         return $this->rate;
@@ -107,6 +118,9 @@ class VatRate implements DomainEventProviderInterface
         $this->name = $name;
     }
 
+    /**
+     * @param numeric-string|null $rate
+     */
     private function changeRate(?string $rate): void
     {
         if ((float) $rate < 0) {

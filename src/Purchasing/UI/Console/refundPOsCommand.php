@@ -82,7 +82,7 @@ readonly class refundPOsCommand
         $io->newLine(2);
         $io->success(sprintf('Processed %d purchase orders.', $processed));
 
-        if ($processed > 0 && $output->isVerbose()) {
+        if ($output->isVerbose()) {
             $io->section('Processed PO IDs');
             $io->listing($processedIds);
         }
@@ -90,12 +90,11 @@ readonly class refundPOsCommand
         return Command::SUCCESS;
     }
 
+    /**
+     * @return array<int, PurchaseOrder>
+     */
     private function getRejectedPurchaseOrders(int $poCount): array
     {
-        return $this->purchaseOrders->findBy(
-            ['status' => PurchaseOrderStatus::REJECTED],
-            null,
-            $poCount
-        );
+        return $this->purchaseOrders->findByStatus(PurchaseOrderStatus::REJECTED, $poCount);
     }
 }

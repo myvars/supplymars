@@ -76,7 +76,7 @@ readonly class createWarehouseProductsCommand
         $io->newLine(2);
         $io->success(sprintf('Processed %d supplier products.', $processed));
 
-        if ($processed > 0 && $output->isVerbose()) {
+        if ($output->isVerbose()) {
             $io->section('Processed Product IDs');
             $io->listing($processedIds);
         }
@@ -86,11 +86,14 @@ readonly class createWarehouseProductsCommand
 
     private function getDefaultSupplier(): ?Supplier
     {
-        return $this->suppliers->findOneBy(['is_warehouse' => true]);
+        return $this->suppliers->getWarehouseSupplier();
     }
 
+    /**
+     * @return array<int, SupplierProduct>
+     */
     private function getSupplierProducts(Supplier $supplier): array
     {
-        return $this->supplierProducts->findBy(['supplier' => $supplier]);
+        return $this->supplierProducts->findBySupplier($supplier);
     }
 }

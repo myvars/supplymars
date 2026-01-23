@@ -82,7 +82,7 @@ class PurchaseOrder implements DomainEventProviderInterface
     #[ORM\OrderBy(['id' => 'ASC'])]
     private Collection $purchaseOrderItems;
 
-    private function __construct()
+    final private function __construct()
     {
         $this->initializePublicId();
         $this->status = PurchaseOrderStatus::getDefault();
@@ -91,20 +91,20 @@ class PurchaseOrder implements DomainEventProviderInterface
 
     public static function createFromOrder(CustomerOrder $customerOrder, Supplier $supplier): static
     {
-        $self = new self();
-        $self->customerOrder = $customerOrder;
-        $self->shippingAddress = $customerOrder->getShippingAddress();
-        $self->shippingMethod = $customerOrder->getShippingMethod();
-        $self->dueDate = $customerOrder->getShippingMethod()->getDueDate();
-        $self->changeShippingPrice($customerOrder->getShippingMethod()->getPrice());
-        $self->changeShippingPriceIncVat($customerOrder->getShippingMethod()->getPrice());
-        $self->orderRef = $customerOrder->getCustomerOrderRef();
-        $self->supplier = $supplier;
+        $static = new static();
+        $static->customerOrder = $customerOrder;
+        $static->shippingAddress = $customerOrder->getShippingAddress();
+        $static->shippingMethod = $customerOrder->getShippingMethod();
+        $static->dueDate = $customerOrder->getShippingMethod()->getDueDate();
+        $static->changeShippingPrice($customerOrder->getShippingMethod()->getPrice());
+        $static->changeShippingPriceIncVat($customerOrder->getShippingMethod()->getPrice());
+        $static->orderRef = $customerOrder->getCustomerOrderRef();
+        $static->supplier = $supplier;
 
-        $self->getCustomerOrder()->addPurchaseOrder($self);
-        $self->recalculateTotal();
+        $static->getCustomerOrder()->addPurchaseOrder($static);
+        $static->recalculateTotal();
 
-        return $self;
+        return $static;
     }
 
     public function assignCustomerOrder(?CustomerOrder $customerOrder): void
@@ -183,7 +183,7 @@ class PurchaseOrder implements DomainEventProviderInterface
         return PurchaseOrderPublicId::fromString($this->publicIdString());
     }
 
-    public function getCustomerOrder(): ?CustomerOrder
+    public function getCustomerOrder(): CustomerOrder
     {
         return $this->customerOrder;
     }

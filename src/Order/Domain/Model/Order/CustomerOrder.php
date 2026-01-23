@@ -97,7 +97,7 @@ class CustomerOrder implements DomainEventProviderInterface
     #[ORM\ManyToOne]
     private ?User $orderLock = null;
 
-    private function __construct()
+    final private function __construct()
     {
         $this->initializePublicId();
         $this->status = OrderStatus::getDefault();

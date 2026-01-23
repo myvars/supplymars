@@ -19,6 +19,9 @@ class OrderSalesDoctrineRepository extends ServiceEntityRepository implements Or
         parent::__construct($registry, OrderSales::class);
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function findOrderSalesSummary(OrderSalesType $orderSalesType): array
     {
         return $this->getOrderSalesQuery($orderSalesType->getStartDate(), $orderSalesType->getEndDate())

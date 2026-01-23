@@ -2,6 +2,7 @@
 
 namespace App\Catalog\Infrastructure\Persistence\Doctrine;
 
+use App\Catalog\Application\Search\CategorySearchCriteria;
 use App\Catalog\Domain\Model\Category\Category;
 use App\Catalog\Domain\Model\Category\CategoryId;
 use App\Catalog\Domain\Model\Category\CategoryPublicId;
@@ -17,9 +18,9 @@ use Pagerfanta\Doctrine\ORM\QueryAdapter;
  * @extends ServiceEntityRepository<Category>
  *
  * @method Category|null find($id, $lockMode = null, $lockVersion = null)
- * @method Category|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Category|null findOneBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null)
  * @method Category[]    findAll()
- * @method Category[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Category[]    findBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null, $limit = null, $offset = null)
  */
 class CategoryDoctrineRepository extends ServiceEntityRepository implements FindByCriteriaInterface, CategoryRepository
 {
@@ -48,8 +49,15 @@ class CategoryDoctrineRepository extends ServiceEntityRepository implements Find
         return $this->findOneBy(['publicId' => $publicId->value()]);
     }
 
+    /**
+     * @return AdapterInterface<Category>
+     */
     public function findByCriteria(SearchCriteriaInterface $criteria): AdapterInterface
     {
+        if (!$criteria instanceof CategorySearchCriteria) {
+            throw new \InvalidArgumentException('Expected CategorySearchCriteria');
+        }
+
         $sort = $criteria->getSort();
         $sortDirection = $criteria->getSortDirection();
 
@@ -80,6 +88,11 @@ class CategoryDoctrineRepository extends ServiceEntityRepository implements Find
         return new QueryAdapter($qb);
     }
 
+    /**
+     * @param array<int, int> $categoryIds
+     *
+     * @return array<int, Category>
+     */
     public function findFromCategoryArray(array $categoryIds): array
     {
         return $this->createQueryBuilder('c')

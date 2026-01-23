@@ -10,6 +10,7 @@ final class SubcategoryCostForm
 {
     public ?string $id = null;
 
+    /** @var numeric-string|null */
     #[Assert\NotBlank(message: 'Please enter a subcategory markup %')]
     #[Assert\PositiveOrZero(message: 'Please enter a positive or zero subcategory markup %')]
     public ?string $defaultMarkup = Subcategory::DEFAULT_MARKUP;

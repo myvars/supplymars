@@ -12,6 +12,7 @@ use App\Shared\UI\Http\FormFlow\View\ModelPath;
 use App\Shared\UI\Http\FormFlow\View\TemplateContext;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormTypeInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -50,6 +51,9 @@ final readonly class FormFlow
      *
      * On invalid submission, re‑renders the form with validation errors.
      * On success, flashes feedback and redirects (Turbo‑aware).
+     *
+     * @param class-string<FormTypeInterface<mixed>> $formType
+     * @param array<string, mixed>                   $formOptions
      */
     public function form(
         Request $request,
@@ -103,6 +107,8 @@ final readonly class FormFlow
 
     /**
      * Determine HTTP status for rendering the form page.
+     *
+     * @param FormInterface<mixed> $form
      */
     private function getResponseStatus(FormInterface $form): int
     {
@@ -130,6 +136,8 @@ final readonly class FormFlow
 
     /**
      * Render the base template.
+     *
+     * @param FormInterface<mixed> $form
      */
     private function render(
         Request $request,

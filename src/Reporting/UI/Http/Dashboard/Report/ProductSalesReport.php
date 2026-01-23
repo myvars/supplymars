@@ -13,17 +13,20 @@ use Symfony\Component\DependencyInjection\Attribute\AsTaggedItem;
 use Symfony\UX\Chartjs\Model\Chart;
 
 #[AsTaggedItem('product-sales')]
-final readonly class ProductSalesReport implements ReportInterface
+final class ProductSalesReport implements ReportInterface
 {
     private ProductSalesReportCriteria $dto;
 
     public function __construct(
-        private ProductSalesDoctrineRepository $salesRepository,
-        private ProductSalesSummaryDoctrineRepository $summaryRepository,
-        private BarChartBuilder $barChartBuilder,
+        private readonly ProductSalesDoctrineRepository $salesRepository,
+        private readonly ProductSalesSummaryDoctrineRepository $summaryRepository,
+        private readonly BarChartBuilder $barChartBuilder,
     ) {
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function build(object $dto): array
     {
         if (!$dto instanceof ProductSalesReportCriteria) {
@@ -40,6 +43,9 @@ final readonly class ProductSalesReport implements ReportInterface
         ];
     }
 
+    /**
+     * @return array<int, array<string, mixed>>|null
+     */
     private function getSales(): ?array
     {
         if (null !== $this->dto->productId) {
@@ -51,6 +57,9 @@ final readonly class ProductSalesReport implements ReportInterface
         return [] === $sales ? null : $sales;
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     private function getSummary(): ?array
     {
         $singleSalesType = $this->dto->getSingleSalesType();
@@ -86,6 +95,9 @@ final readonly class ProductSalesReport implements ReportInterface
         );
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     private function getSalesData(int $salesTypeId, SalesType $salesType): array
     {
         $salesRangeDuration = $this->barChartBuilder::getSalesRangeDuration($this->dto->getDuration());

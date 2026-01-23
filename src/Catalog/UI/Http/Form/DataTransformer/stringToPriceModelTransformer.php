@@ -6,6 +6,9 @@ use App\Shared\Domain\ValueObject\PriceModel;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 
+/**
+ * @implements DataTransformerInterface<string|null, PriceModel|null>
+ */
 final readonly class stringToPriceModelTransformer implements DataTransformerInterface
 {
     // Transforms a string (model) to an enum (PriceModel)

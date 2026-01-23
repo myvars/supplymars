@@ -8,22 +8,22 @@ namespace App\Shared\Domain\ValueObject;
 final readonly class StatusChange
 {
     private function __construct(
-        private \UnitEnum $before,
-        private \UnitEnum $after,
+        private \BackedEnum $before,
+        private \BackedEnum $after,
     ) {
     }
 
-    public static function from(\UnitEnum $before, \UnitEnum $after): self
+    public static function from(\BackedEnum $before, \BackedEnum $after): self
     {
         return new self($before, $after);
     }
 
-    public function before(): \UnitEnum
+    public function before(): \BackedEnum
     {
         return $this->before;
     }
 
-    public function after(): \UnitEnum
+    public function after(): \BackedEnum
     {
         return $this->after;
     }

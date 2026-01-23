@@ -15,7 +15,7 @@ use App\Order\Application\Command\CreateOrderItem;
 use App\Order\Application\Handler\CreateOrderHandler;
 use App\Order\Application\Handler\CreateOrderItemHandler;
 use App\Order\Domain\Model\Order\CustomerOrder;
-use App\Order\Domain\Model\Order\OrderId;
+use App\Order\Domain\Model\Order\OrderPublicId;
 use App\Order\Domain\Repository\OrderRepository;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Domain\ValueObject\ShippingMethod;
@@ -151,7 +151,7 @@ class createCustomerOrdersCommand
             )
         );
 
-        if (!$result->payload instanceof OrderId) {
+        if (!$result->payload instanceof OrderPublicId) {
             throw new \RuntimeException('Failed to create customer order');
         }
 
@@ -180,13 +180,16 @@ class createCustomerOrdersCommand
         }
     }
 
+    /**
+     * @return array<int, Product>
+     */
     private function getRandomProducts(int $productCount): array
     {
         return $this->products->findRandomProducts($productCount);
     }
 
-    private function getCustomerOrder(OrderId $id): CustomerOrder
+    private function getCustomerOrder(OrderPublicId $id): CustomerOrder
     {
-        return $this->orders->get($id);
+        return $this->orders->getByPublicId($id);
     }
 }

@@ -8,17 +8,26 @@ use Symfony\Contracts\Service\ServiceCollectionInterface;
 
 final readonly class ReportHandler
 {
+    /**
+     * @param ServiceCollectionInterface<ReportInterface> $reports
+     */
     public function __construct(
         #[AutowireLocator(ReportInterface::class, indexAttribute: 'key')]
         private ServiceCollectionInterface $reports,
     ) {
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function build(string $name, object $dto): ?array
     {
         return $this->reports->get($name)->build($dto);
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function reports(): iterable
     {
         return array_keys($this->reports->getProvidedServices());

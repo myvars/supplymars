@@ -7,7 +7,6 @@ use App\Customer\Domain\Model\User\UserId;
 use App\Customer\Domain\Repository\UserRepository;
 use App\Order\Application\Command\CreateOrder;
 use App\Order\Domain\Model\Order\CustomerOrder;
-use App\Order\Domain\Model\Order\OrderId;
 use App\Order\Domain\Repository\OrderRepository;
 use App\Pricing\Domain\Model\VatRate\VatRate;
 use App\Pricing\Domain\Repository\VatRateRepository;
@@ -33,7 +32,7 @@ final readonly class CreateOrderHandler
             return Result::fail('Customer not found.');
         }
 
-        $vatRate = $this->vatRates->findOneBy(['isDefaultVatRate' => true]);
+        $vatRate = $this->vatRates->getDefaultVatRate();
         if (!$vatRate instanceof VatRate) {
             return Result::fail('Default VAT rate not found.');
         }
@@ -54,6 +53,6 @@ final readonly class CreateOrderHandler
 
         $this->flusher->flush();
 
-        return Result::ok('Order created', OrderId::fromInt($order->getId()));
+        return Result::ok('Order created', $order->getPublicId());
     }
 }

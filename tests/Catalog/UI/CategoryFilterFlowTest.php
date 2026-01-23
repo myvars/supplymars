@@ -23,8 +23,8 @@ final class CategoryFilterFlowTest extends WebTestCase
             ->actingAs(UserFactory::new()->asStaff()->create())
             ->get('/category/search/filter')
             ->fillField('category_filter[priceModel]', PriceModel::DEFAULT->value)
-            ->fillField('category_filter[manager]', $manager->getId())
-            ->fillField('category_filter[vatRate]', $vat->getId())
+            ->fillField('category_filter[manager]', (string) $manager->getId())
+            ->fillField('category_filter[vatRate]', (string) $vat->getId())
             ->click('Apply Filter');
 
         // Assert query parameters

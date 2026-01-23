@@ -18,6 +18,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfonycasts\DynamicForms\DependentField;
 use Symfonycasts\DynamicForms\DynamicFormBuilder;
 
+/**
+ * @extends AbstractType<ProductSearchCriteria>
+ */
 final class ProductFilterType extends AbstractType
 {
     public function __construct(

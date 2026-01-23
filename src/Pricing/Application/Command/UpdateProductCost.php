@@ -7,6 +7,9 @@ use App\Shared\Domain\ValueObject\PriceModel;
 
 final readonly class UpdateProductCost
 {
+    /**
+     * @param numeric-string $defaultMarkup
+     */
     public function __construct(
         public ProductPublicId $id,
         public string $defaultMarkup,

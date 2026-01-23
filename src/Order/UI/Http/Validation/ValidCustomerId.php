@@ -15,5 +15,5 @@ final class ValidCustomerId extends Constraint
      * Any public properties become valid options for the annotation.
      * Then, use these in your validator class.
      */
-    public $message = 'Customer with Id "{{ value }}" not found.';
+    public string $message = 'Customer with Id "{{ value }}" not found.';
 }

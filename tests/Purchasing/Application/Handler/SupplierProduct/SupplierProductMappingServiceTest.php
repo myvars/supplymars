@@ -16,7 +16,6 @@ use App\Tests\Shared\Factory\VatRateFactory;
 use App\Tests\Shared\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
@@ -26,15 +25,12 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
 
     private EntityManagerInterface $em;
 
-    private ValidatorInterface $validator;
-
     private SupplierProductMappingService $service;
 
     protected function setUp(): void
     {
         self::bootKernel();
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
-        $this->validator = self::getContainer()->get(ValidatorInterface::class);
         $this->service = self::getContainer()->get(SupplierProductMappingService::class);
         VatRateFactory::new()->withStandardRate()->create();
     }

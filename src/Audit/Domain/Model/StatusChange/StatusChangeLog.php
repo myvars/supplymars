@@ -20,7 +20,7 @@ class StatusChangeLog
     #[ORM\Column]
     private ?int $id = null;
 
-    public function __construct(
+    final public function __construct(
         #[ORM\Column(length: 255)]
         private readonly DomainEventType $eventType,
 

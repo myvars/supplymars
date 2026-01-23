@@ -32,6 +32,9 @@ final class ProductSalesReportCriteria extends SearchCriteria implements ReportC
     #[Assert\Range(notInRangeMessage: 'Please enter a valid Supplier Id', min: 1, max: 1000000)]
     public ?int $supplierId = null;
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getSingleSalesType(): ?array
     {
         $identifiers = [

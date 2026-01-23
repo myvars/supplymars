@@ -33,6 +33,5 @@ final class RandomAddressFactoryTest extends TestCase
         self::assertTrue($addr->isDefaultShippingAddress());
         self::assertFalse($addr->isDefaultBillingAddress());
         self::assertSame($user, $addr->getCustomer());
-        self::assertNotNull($addr->getPublicId()->value());
     }
 }

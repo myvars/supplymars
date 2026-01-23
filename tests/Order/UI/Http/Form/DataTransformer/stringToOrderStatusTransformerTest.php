@@ -41,6 +41,7 @@ final class stringToOrderStatusTransformerTest extends TestCase
 
     public function testReverseTransformReturnsNullOnEmptyString(): void
     {
+        // @phpstan-ignore argument.type (intentionally testing falsy input handling)
         self::assertNull($this->transformer->reverseTransform(''));
     }
 
@@ -54,6 +55,7 @@ final class stringToOrderStatusTransformerTest extends TestCase
         $this->expectException(TransformationFailedException::class);
         $this->expectExceptionMessage('Expected an OrderStatus.');
 
+        // @phpstan-ignore argument.type (intentionally testing wrong type handling)
         $this->transformer->reverseTransform(new \stdClass());
     }
 }

@@ -49,6 +49,9 @@ final readonly class CalculateProductSalesHandler
         $this->em->flush();
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     private function getPurchaseOrderItemSales(string $date): array
     {
         return $this->em

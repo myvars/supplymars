@@ -31,7 +31,7 @@ final class CreateManufacturerHandlerTest extends KernelTestCase
 
         self::assertTrue($result->ok);
         $manufacturerId = $result->payload;
-        $persisted = $this->manufacturers->get($manufacturerId);
+        $persisted = $this->manufacturers->getByPublicId($manufacturerId);
         self::assertSame('New Manufacturer', $persisted->getName());
         self::assertTrue($persisted->isActive());
     }

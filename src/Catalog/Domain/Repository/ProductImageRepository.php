@@ -2,6 +2,7 @@
 
 namespace App\Catalog\Domain\Repository;
 
+use App\Catalog\Domain\Model\Product\Product;
 use App\Catalog\Domain\Model\ProductImage\ProductImage;
 use App\Catalog\Domain\Model\ProductImage\productImageId;
 use App\Catalog\Domain\Model\ProductImage\ProductImagePublicId;
@@ -18,4 +19,6 @@ interface ProductImageRepository
     public function get(productImageId $id): ?ProductImage;
 
     public function getByPublicId(ProductImagePublicId $publicId): ?ProductImage;
+
+    public function getNextPositionForProduct(Product $product): int;
 }

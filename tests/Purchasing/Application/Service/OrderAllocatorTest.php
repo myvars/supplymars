@@ -306,6 +306,7 @@ class OrderAllocatorTest extends KernelTestCase
 
         self::assertCount(1, $order->getPurchaseOrders());
         $purchaseOrder = $order->getPurchaseOrders()->first();
+        self::assertNotFalse($purchaseOrder);
         self::assertSame($supplier->getId(), $purchaseOrder->getSupplier()->getId());
     }
 
@@ -351,6 +352,8 @@ class OrderAllocatorTest extends KernelTestCase
 
         // Should reuse existing PO, not create a new one
         self::assertCount(1, $order->getPurchaseOrders());
-        self::assertSame($existingPurchaseOrder->getId(), $order->getPurchaseOrders()->first()->getId());
+        $firstPurchaseOrder = $order->getPurchaseOrders()->first();
+        self::assertNotFalse($firstPurchaseOrder);
+        self::assertSame($existingPurchaseOrder->getId(), $firstPurchaseOrder->getId());
     }
 }

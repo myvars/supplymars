@@ -16,6 +16,7 @@ final class CategoryForm
     #[Assert\NotNull(message: 'Please choose a VAT rate')]
     public ?int $vatRateId = null;
 
+    /** @var numeric-string|null */
     #[Assert\NotBlank(message: 'Please enter a category markup %')]
     #[Assert\PositiveOrZero(message: 'Please enter a positive or zero category markup %')]
     public ?string $defaultMarkup = Category::DEFAULT_MARKUP;
@@ -35,10 +36,10 @@ final class CategoryForm
 
         $form->id = $category->getPublicId()->value();
         $form->name = $category->getName();
-        $form->vatRateId = $category->getVatRate()?->getId();
+        $form->vatRateId = $category->getVatRate()->getId();
         $form->defaultMarkup = $category->getDefaultMarkup();
         $form->priceModel = $category->getPriceModel();
-        $form->ownerId = $category->getOwner()?->getId();
+        $form->ownerId = $category->getOwner()->getId();
         $form->isActive = $category->isActive();
 
         return $form;

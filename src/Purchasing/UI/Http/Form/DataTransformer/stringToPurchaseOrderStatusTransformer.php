@@ -6,6 +6,9 @@ use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 
+/**
+ * @implements DataTransformerInterface<string|null, PurchaseOrderStatus|null>
+ */
 final readonly class stringToPurchaseOrderStatusTransformer implements DataTransformerInterface
 {
     // Transforms a string (status) to an enum (PurchaseOrderStatus)

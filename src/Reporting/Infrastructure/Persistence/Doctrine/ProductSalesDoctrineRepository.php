@@ -20,6 +20,9 @@ class ProductSalesDoctrineRepository extends ServiceEntityRepository implements 
         parent::__construct($registry, ProductSales::class);
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function findByCriteria(ProductSalesReportCriteria $criteria): array
     {
         $qb = $this->getProductSalesQuery(
@@ -60,6 +63,9 @@ class ProductSalesDoctrineRepository extends ServiceEntityRepository implements 
             ->getResult();
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function findLatestProductSales(ProductSalesType $productSalesType, int $limit = 10): array
     {
         $qb = $this->getProductSalesQuery(
@@ -75,6 +81,9 @@ class ProductSalesDoctrineRepository extends ServiceEntityRepository implements 
             ->getResult();
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function findProductSalesSummary(ProductSalesType $productSalesType): array
     {
         $qb = $this->getProductSalesQuery($productSalesType->getStartDate(), $productSalesType->getEndDate())
@@ -111,6 +120,9 @@ class ProductSalesDoctrineRepository extends ServiceEntityRepository implements 
             ->setParameter('endDate', $endDate);
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function findProductSalesRange(int $productId, string $startDate, string $endDate): array
     {
         return $this->getProductSalesQuery($startDate, $endDate)

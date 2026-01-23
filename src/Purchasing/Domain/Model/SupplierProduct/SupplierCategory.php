@@ -31,13 +31,15 @@ class SupplierCategory
     #[ORM\JoinColumn(nullable: false)]
     private ?Supplier $supplier = null;
 
+    /** @var Collection<int, SupplierProduct> */
     #[ORM\OneToMany(targetEntity: SupplierProduct::class, mappedBy: 'supplierCategory')]
     private Collection $supplierProducts;
 
+    /** @var Collection<int, SupplierSubcategory> */
     #[ORM\OneToMany(targetEntity: SupplierSubcategory::class, mappedBy: 'supplierCategory')]
     private Collection $supplierSubcategories;
 
-    public function __construct()
+    final public function __construct()
     {
         $this->initializePublicId();
         $this->supplierProducts = new ArrayCollection();
@@ -79,9 +81,9 @@ class SupplierCategory
         return $this->name;
     }
 
-    public function getSupplier(): ?Supplier
+    public function getSupplier(): Supplier
     {
-        return $this->supplier;
+        return $this->supplier ?? throw new \LogicException('Supplier must be set');
     }
 
     private function rename(string $name): void

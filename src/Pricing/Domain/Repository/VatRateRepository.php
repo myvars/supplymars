@@ -19,4 +19,6 @@ interface VatRateRepository extends FindByCriteriaInterface
     public function get(VatRateId $id): ?VatRate;
 
     public function getByPublicId(VatRatePublicId $publicId): ?VatRate;
+
+    public function getDefaultVatRate(): ?VatRate;
 }

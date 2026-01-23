@@ -2,6 +2,7 @@
 
 namespace App\Purchasing\Infrastructure\Persistence\Doctrine;
 
+use App\Purchasing\Application\Search\SupplierSearchCriteria;
 use App\Purchasing\Domain\Model\Supplier\Supplier;
 use App\Purchasing\Domain\Model\Supplier\SupplierId;
 use App\Purchasing\Domain\Model\Supplier\SupplierPublicId;
@@ -17,9 +18,9 @@ use Pagerfanta\Doctrine\ORM\QueryAdapter;
  * @extends ServiceEntityRepository<Supplier>
  *
  * @method Supplier|null find($id, $lockMode = null, $lockVersion = null)
- * @method Supplier|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Supplier|null findOneBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null)
  * @method Supplier[]    findAll()
- * @method Supplier[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Supplier[]    findBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null, $limit = null, $offset = null)
  */
 class SupplierDoctrineRepository extends ServiceEntityRepository implements FindByCriteriaInterface, SupplierRepository
 {
@@ -55,8 +56,25 @@ class SupplierDoctrineRepository extends ServiceEntityRepository implements Find
         return $suppliers[array_rand($suppliers)] ?? null;
     }
 
+    public function getWarehouseSupplier(): ?Supplier
+    {
+        return $this->findOneBy(['isWarehouse' => true]);
+    }
+
+    public function findNonWarehouseSupplier(): array
+    {
+        return $this->findBy(['isWarehouse' => false]);
+    }
+
+    /**
+     * @return AdapterInterface<Supplier>
+     */
     public function findByCriteria(SearchCriteriaInterface $criteria): AdapterInterface
     {
+        if (!$criteria instanceof SupplierSearchCriteria) {
+            throw new \InvalidArgumentException('Expected SupplierSearchCriteria');
+        }
+
         $sort = $criteria->getSort();
         $sortDirection = $criteria->getSortDirection();
 

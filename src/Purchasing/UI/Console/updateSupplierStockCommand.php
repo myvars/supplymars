@@ -49,18 +49,6 @@ readonly class updateSupplierStockCommand
             return Command::INVALID;
         }
 
-        if (self::COST_VARIANCE_PERCENT <= 0) {
-            $io->error('Cost variance percent must be greater than 0');
-
-            return Command::FAILURE;
-        }
-
-        if (self::STOCK_VARIANCE_PERCENT <= 0) {
-            $io->error('Stock variance percent must be greater than 0');
-
-            return Command::FAILURE;
-        }
-
         $supplier = $this->suppliers->getRandomSupplier();
         if (!$supplier instanceof Supplier) {
             $io->error('No supplier found');
@@ -76,7 +64,7 @@ readonly class updateSupplierStockCommand
         ));
 
         $supplierProducts = $this->getRandomSupplierProducts($supplier, $productCount);
-        if (!$supplierProducts) {
+        if ($supplierProducts === []) {
             $io->note('No supplier products found.');
 
             return Command::SUCCESS;
@@ -116,7 +104,7 @@ readonly class updateSupplierStockCommand
         $io->newLine(2);
         $io->success(sprintf('Processed %d supplier products.', $processed));
 
-        if ($processed > 0 && $output->isVerbose()) {
+        if ($output->isVerbose()) {
             $io->section('Processed Supplier products:');
             $io->listing($processedItems);
         }
@@ -124,7 +112,10 @@ readonly class updateSupplierStockCommand
         return Command::SUCCESS;
     }
 
-    private function getRandomSupplierProducts(Supplier $supplier, int $itemCount): ?array
+    /**
+     * @return array<int, SupplierProduct>
+     */
+    private function getRandomSupplierProducts(Supplier $supplier, int $itemCount): array
     {
         return $this->supplierProducts->findRandomSupplierProducts($supplier, $itemCount);
     }
@@ -155,8 +146,8 @@ readonly class updateSupplierStockCommand
         }
 
         // allow stock level to decrease by up to 10% of current stock level
-        $stockPercent = bcdiv((string) $supplierProduct->getStock(), self::STOCK_VARIANCE_PERCENT, 2);
-        $stockChange = random_int(0, ceil($stockPercent));
+        $stockPercent = bcdiv((string) $supplierProduct->getStock(), (string) self::STOCK_VARIANCE_PERCENT, 2);
+        $stockChange = random_int(0, (int) ceil((float) $stockPercent));
         $supplierProduct->updateStock($supplierProduct->getStock() - $stockChange);
     }
 
@@ -168,15 +159,17 @@ readonly class updateSupplierStockCommand
 
     public function changeCost(SupplierProduct $supplierProduct): void
     {
+        $cost = $supplierProduct->getCost() ?? '0.00';
+
         // check cost is greater than 0
-        if (1 !== bccomp((string) $supplierProduct->getCost(), '0', 2)) {
+        if (1 !== bccomp($cost, '0', 2)) {
             return;
         }
 
-        $percentCost = bcdiv((string) $supplierProduct->getCost(), self::COST_VARIANCE_PERCENT, 2);
-        $randomCost = bcdiv(random_int(0, bcmul($percentCost, 100, 0)), 100, 2);
-        $randomCost = 0 === random_int(0, 1) ? $randomCost : -$randomCost;
+        $percentCost = bcdiv($cost, (string) self::COST_VARIANCE_PERCENT, 2);
+        $randomCost = bcdiv((string) random_int(0, (int) bcmul($percentCost, '100', 0)), '100', 2);
+        $randomCost = 0 === random_int(0, 1) ? $randomCost : bcsub('0', $randomCost, 2);
 
-        $supplierProduct->updateCost(bcadd((string) $supplierProduct->getCost(), $randomCost, 2));
+        $supplierProduct->updateCost(bcadd($cost, $randomCost, 2));
     }
 }

@@ -55,7 +55,9 @@ final class TurboAwareRedirectorTest extends TestCase
         $redirector = new TurboAwareRedirector($this->twigMock('<stream/>'));
 
         $response = $redirector->to($request, '/new', true);
-        self::assertStringContainsString('stream', $response->getContent());
+        $content = $response->getContent();
+        self::assertIsString($content);
+        self::assertStringContainsString('stream', $content);
     }
 
     public function testTwigFailureFallsBackToEmptyContent(): void

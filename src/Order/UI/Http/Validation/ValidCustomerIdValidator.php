@@ -12,9 +12,11 @@ final class ValidCustomerIdValidator extends ConstraintValidator
     {
     }
 
-    public function validate($value, Constraint $constraint): void
+    public function validate(mixed $value, Constraint $constraint): void
     {
-        /* @var ValidCustomerId $constraint */
+        if (!$constraint instanceof ValidCustomerId) {
+            throw new \InvalidArgumentException('Expected instance of ' . ValidCustomerId::class);
+        }
 
         if (!is_numeric($value) || 0 === (int) $value) {
             return;
@@ -25,7 +27,7 @@ final class ValidCustomerIdValidator extends ConstraintValidator
         }
 
         $this->context->buildViolation($constraint->message)
-            ->setParameter('{{ value }}', $value)
+            ->setParameter('{{ value }}', (string) $value)
             ->addViolation();
     }
 }

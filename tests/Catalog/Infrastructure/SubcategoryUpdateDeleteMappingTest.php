@@ -81,7 +81,7 @@ final class SubcategoryUpdateDeleteMappingTest extends KernelTestCase
         self::assertSame('3.250', $reloaded->getDefaultMarkup());
         self::assertSame(PriceModel::PRETTY_99, $reloaded->getPriceModel());
         self::assertSame($newOwner->getId(), $reloaded->getOwner()?->getId());
-        self::assertSame($newCategory->getId(), $reloaded->getCategory()?->getId());
+        self::assertSame($newCategory->getId(), $reloaded->getCategory()->getId());
         self::assertFalse($reloaded->isActive());
     }
 

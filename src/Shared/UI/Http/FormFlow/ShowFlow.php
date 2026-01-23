@@ -18,6 +18,9 @@ final readonly class ShowFlow
     {
     }
 
+    /**
+     * @param array<string, mixed> $extraVars
+     */
     public function show(string $model, array $extraVars = [], ?string $template = null): Response
     {
         // Build a consistent set of Twig variables for template.

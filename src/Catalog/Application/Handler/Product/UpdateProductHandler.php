@@ -12,6 +12,7 @@ use App\Catalog\Domain\Repository\ManufacturerRepository;
 use App\Catalog\Domain\Repository\ProductRepository;
 use App\Catalog\Domain\Repository\SubcategoryRepository;
 use App\Customer\Domain\Model\User\User;
+use App\Customer\Domain\Model\User\UserId;
 use App\Customer\Domain\Repository\UserRepository;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Application\Result;
@@ -49,7 +50,7 @@ final readonly class UpdateProductHandler
             return Result::fail('Subcategory not found.');
         }
 
-        if ($subcategory->getCategory()?->getId() !== $category->getId()) {
+        if ($subcategory->getCategory()->getId() !== $category->getId()) {
             return Result::fail('Subcategory does not belong to selected category.');
         }
 
@@ -60,7 +61,7 @@ final readonly class UpdateProductHandler
 
         $owner = null;
         if ($command->ownerId !== null) {
-            $owner = $this->owners->findOneBy(['id' => $command->ownerId, 'isStaff' => true]);
+            $owner = $this->owners->getStaffById(UserId::fromInt($command->ownerId));
             if (!$owner instanceof User) {
                 return Result::fail('Product manager not found.');
             }

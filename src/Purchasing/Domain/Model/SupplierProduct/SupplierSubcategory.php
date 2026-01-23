@@ -40,10 +40,11 @@ class SupplierSubcategory
     #[ORM\ManyToOne(inversedBy: 'supplierSubcategories')]
     private ?Subcategory $mappedSubcategory = null;
 
+    /** @var Collection<int, SupplierProduct> */
     #[ORM\OneToMany(targetEntity: SupplierProduct::class, mappedBy: 'supplierSubcategory')]
     private Collection $supplierProducts;
 
-    public function __construct()
+    final public function __construct()
     {
         $this->initializePublicId();
         $this->supplierProducts = new ArrayCollection();
@@ -102,14 +103,14 @@ class SupplierSubcategory
         return $this->name;
     }
 
-    public function getSupplier(): ?Supplier
+    public function getSupplier(): Supplier
     {
-        return $this->supplier;
+        return $this->supplier ?? throw new \LogicException('Supplier must be set');
     }
 
-    public function getSupplierCategory(): ?SupplierCategory
+    public function getSupplierCategory(): SupplierCategory
     {
-        return $this->supplierCategory;
+        return $this->supplierCategory ?? throw new \LogicException('SupplierCategory must be set');
     }
 
     public function getMappedSubcategory(): ?Subcategory

@@ -59,6 +59,6 @@ final readonly class calculateOrderSalesCommand
     public function runTheOrderSalesSummaryCommand(OutputInterface $output): void
     {
         $input = new ArrayInput([]);
-        $this->orderSalesSummaryCommand->__invoke($input, $output, false);
+        $this->orderSalesSummaryCommand->__invoke($input, $output, 0);
     }
 }

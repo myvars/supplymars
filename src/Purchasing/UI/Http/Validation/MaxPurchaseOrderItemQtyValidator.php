@@ -15,7 +15,7 @@ final class MaxPurchaseOrderItemQtyValidator extends ConstraintValidator
     {
     }
 
-    public function validate($value, Constraint $constraint): void
+    public function validate(mixed $value, Constraint $constraint): void
     {
         if (!$constraint instanceof MaxPurchaseOrderItemQty) {
             throw new \InvalidArgumentException('Constraint must be an instance of ' . MaxPurchaseOrderItemQty::class);
@@ -39,7 +39,7 @@ final class MaxPurchaseOrderItemQtyValidator extends ConstraintValidator
 
         if ($value > $maxQuantity) {
             $this->context->buildViolation($constraint->message)
-                ->setParameter('{{ maxQuantity }}', $maxQuantity)
+                ->setParameter('{{ maxQuantity }}', (string) $maxQuantity)
                 ->addViolation();
         }
     }

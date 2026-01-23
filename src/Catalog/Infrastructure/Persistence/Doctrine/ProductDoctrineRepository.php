@@ -2,6 +2,7 @@
 
 namespace App\Catalog\Infrastructure\Persistence\Doctrine;
 
+use App\Catalog\Application\Search\ProductSearchCriteria;
 use App\Catalog\Domain\Model\Product\Product;
 use App\Catalog\Domain\Model\Product\ProductId;
 use App\Catalog\Domain\Model\Product\ProductPublicId;
@@ -17,9 +18,9 @@ use Pagerfanta\Doctrine\ORM\QueryAdapter;
  * @extends ServiceEntityRepository<Product>
  *
  * @method Product|null find($id, $lockMode = null, $lockVersion = null)
- * @method Product|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Product|null findOneBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null)
  * @method Product[]    findAll()
- * @method Product[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Product[]    findBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null, $limit = null, $offset = null)
  */
 class ProductDoctrineRepository extends ServiceEntityRepository implements FindByCriteriaInterface, ProductRepository
 {
@@ -48,8 +49,15 @@ class ProductDoctrineRepository extends ServiceEntityRepository implements FindB
         return $this->findOneBy(['publicId' => $publicId->value()]);
     }
 
+    /**
+     * @return AdapterInterface<Product>
+     */
     public function findByCriteria(SearchCriteriaInterface $criteria): AdapterInterface
     {
+        if (!$criteria instanceof ProductSearchCriteria) {
+            throw new \InvalidArgumentException('Expected ProductSearchCriteria');
+        }
+
         $sort = $criteria->getSort();
         $sortDirection = $criteria->getSortDirection();
 
@@ -89,6 +97,9 @@ class ProductDoctrineRepository extends ServiceEntityRepository implements FindB
         return new QueryAdapter($qb);
     }
 
+    /**
+     * @return array<int, Product>
+     */
     public function findRandomProducts(int $limit = 10): array
     {
         return $this->createQueryBuilder('p')
@@ -103,6 +114,11 @@ class ProductDoctrineRepository extends ServiceEntityRepository implements FindB
             ->getResult();
     }
 
+    /**
+     * @param array<int, int> $productIds
+     *
+     * @return array<int, Product>
+     */
     public function findFromProductArray(array $productIds): array
     {
         return $this->createQueryBuilder('p')
@@ -110,5 +126,10 @@ class ProductDoctrineRepository extends ServiceEntityRepository implements FindB
             ->setParameter('ids', $productIds)
             ->getQuery()
             ->getResult();
+    }
+
+    public function findByMfrPartNumber(string $mfrPartNumber): ?Product
+    {
+        return $this->findOneBy(['mfrPartNumber' => $mfrPartNumber]);
     }
 }

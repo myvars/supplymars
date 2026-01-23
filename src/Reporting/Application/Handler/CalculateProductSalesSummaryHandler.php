@@ -64,7 +64,10 @@ final readonly class CalculateProductSalesSummaryHandler
         $this->em->flush();
     }
 
-    private function getSales(ProductSalesType $productSalesType): ?array
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function getSales(ProductSalesType $productSalesType): array
     {
         return $this->em->getRepository(ProductSales::class)
             ->findProductSalesSummary($productSalesType);

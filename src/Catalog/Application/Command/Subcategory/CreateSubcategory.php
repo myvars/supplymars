@@ -7,6 +7,9 @@ use App\Shared\Domain\ValueObject\PriceModel;
 
 final readonly class CreateSubcategory
 {
+    /**
+     * @param numeric-string $defaultMarkup
+     */
     public function __construct(
         public string $name,
         public CategoryId $categoryId,

@@ -6,6 +6,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 
+/**
+ * @implements DataTransformerInterface<int|null, object|null>
+ */
 final readonly class IdToEntityTransformer implements DataTransformerInterface
 {
     /**

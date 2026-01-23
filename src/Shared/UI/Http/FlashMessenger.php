@@ -3,6 +3,8 @@
 namespace App\Shared\UI\Http;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use Symfony\Component\HttpFoundation\Session\FlashBagAwareSessionInterface;
 
 /**
  * Thin wrapper around Symfony flash bag for consistent success/error/warning messages.
@@ -26,7 +28,7 @@ final class FlashMessenger
             return;
         }
 
-        $request->getSession()->getFlashBag()->add(self::SUCCESS_KEY, $message);
+        $this->getFlashBag($request)->add(self::SUCCESS_KEY, $message);
     }
 
     public function warning(Request $request, ?string $message): void
@@ -35,7 +37,7 @@ final class FlashMessenger
             return;
         }
 
-        $request->getSession()->getFlashBag()->add(self::WARNING_KEY, $message);
+        $this->getFlashBag($request)->add(self::WARNING_KEY, $message);
     }
 
     /**
@@ -49,6 +51,14 @@ final class FlashMessenger
             return;
         }
 
-        $request->getSession()->getFlashBag()->add(self::ERROR_KEY, $message);
+        $this->getFlashBag($request)->add(self::ERROR_KEY, $message);
+    }
+
+    private function getFlashBag(Request $request): FlashBagInterface
+    {
+        $session = $request->getSession();
+        assert($session instanceof FlashBagAwareSessionInterface);
+
+        return $session->getFlashBag();
     }
 }

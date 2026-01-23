@@ -4,9 +4,9 @@ namespace App\Catalog\Application\Handler\Category;
 
 use App\Catalog\Application\Command\Category\CreateCategory;
 use App\Catalog\Domain\Model\Category\Category;
-use App\Catalog\Domain\Model\Category\CategoryId;
 use App\Catalog\Domain\Repository\CategoryRepository;
 use App\Customer\Domain\Model\User\User;
+use App\Customer\Domain\Model\User\UserId;
 use App\Customer\Domain\Repository\UserRepository;
 use App\Pricing\Domain\Model\VatRate\VatRate;
 use App\Pricing\Domain\Model\VatRate\VatRateId;
@@ -33,7 +33,7 @@ final readonly class CreateCategoryHandler
             return Result::fail('VAT rate not found.');
         }
 
-        $owner = $this->owners->findOneBy(['id' => $command->ownerId, 'isStaff' => true]);
+        $owner = $this->owners->getStaffById(UserId::fromInt($command->ownerId));
         if (!$owner instanceof User) {
             return Result::fail('Category manager not found.');
         }
@@ -55,6 +55,6 @@ final readonly class CreateCategoryHandler
         $this->categories->add($category);
         $this->flusher->flush();
 
-        return Result::ok('Category created', CategoryId::fromInt($category->getId()));
+        return Result::ok('Category created', $category->getPublicId());
     }
 }

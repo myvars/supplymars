@@ -35,10 +35,11 @@ class SupplierManufacturer
     #[ORM\ManyToOne(inversedBy: 'supplierManufacturers')]
     private ?Manufacturer $mappedManufacturer = null;
 
+    /** @var Collection<int, SupplierProduct> */
     #[ORM\OneToMany(targetEntity: SupplierProduct::class, mappedBy: 'supplierManufacturer')]
     private Collection $supplierProducts;
 
-    public function __construct()
+    final public function __construct()
     {
         $this->initializePublicId();
         $this->supplierProducts = new ArrayCollection();
@@ -86,9 +87,9 @@ class SupplierManufacturer
         return $this->name;
     }
 
-    public function getSupplier(): ?Supplier
+    public function getSupplier(): Supplier
     {
-        return $this->supplier;
+        return $this->supplier ?? throw new \LogicException('Supplier must be set');
     }
 
     public function getMappedManufacturer(): ?Manufacturer

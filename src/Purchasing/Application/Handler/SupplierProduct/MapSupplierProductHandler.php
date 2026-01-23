@@ -3,7 +3,6 @@
 namespace App\Purchasing\Application\Handler\SupplierProduct;
 
 use App\Catalog\Domain\Model\Product\Product;
-use App\Catalog\Domain\Model\Product\ProductId;
 use App\Purchasing\Application\Command\SupplierProduct\MapSupplierProduct;
 use App\Purchasing\Application\Service\SupplierProductMappingService;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
@@ -39,6 +38,6 @@ final readonly class MapSupplierProductHandler
 
         $this->flusher->flush();
 
-        return Result::ok('Supplier product mapped.', ProductId::fromInt($product->getId()));
+        return Result::ok('Supplier product mapped.', $product->getPublicId());
     }
 }

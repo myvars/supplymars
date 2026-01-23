@@ -8,6 +8,7 @@ use App\Catalog\Domain\Model\Subcategory\Subcategory;
 use App\Catalog\Domain\Repository\CategoryRepository;
 use App\Catalog\Domain\Repository\SubcategoryRepository;
 use App\Customer\Domain\Model\User\User;
+use App\Customer\Domain\Model\User\UserId;
 use App\Customer\Domain\Repository\UserRepository;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Application\Result;
@@ -38,7 +39,7 @@ final readonly class UpdateSubcategoryHandler
 
         $owner = null;
         if (null !== $command->ownerId) {
-            $owner = $this->owners->findOneBy(['id' => $command->ownerId, 'isStaff' => true]);
+            $owner = $this->owners->getStaffById(UserId::fromInt($command->ownerId));
             if (!$owner instanceof User) {
                 return Result::fail('Subcategory manager not found.');
             }

@@ -2,12 +2,13 @@
 
 namespace App\Order\Application\Search;
 
+use App\Shared\Application\Search\DateRangeSearchCriteriaInterface;
 use App\Shared\Application\Search\SearchCriteria;
 use App\Shared\UI\Http\Validation\DateRange;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[DateRange]
-final class OrderSearchCriteria extends SearchCriteria
+final class OrderSearchCriteria extends SearchCriteria implements DateRangeSearchCriteriaInterface
 {
     protected const array SORT_OPTIONS = ['id', 'createdAt', 'customer.fullName', 'totalPriceIncVat', 'status'];
 
@@ -32,4 +33,14 @@ final class OrderSearchCriteria extends SearchCriteria
     public ?string $endDate = null;
 
     public ?string $orderStatus = null;
+
+    public function getStartDate(): ?string
+    {
+        return $this->startDate;
+    }
+
+    public function getEndDate(): ?string
+    {
+        return $this->endDate;
+    }
 }

@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: OrderSalesSummaryDoctrineRepository::class)]
 class OrderSalesSummary
 {
-    private function __construct(
+    final private function __construct(
         #[ORM\Id]
         #[ORM\Column(length: 50)]
         #[Assert\NotBlank(message: 'Sales duration must not be blank')]

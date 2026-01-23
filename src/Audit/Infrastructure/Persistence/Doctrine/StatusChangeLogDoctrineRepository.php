@@ -64,6 +64,9 @@ class StatusChangeLogDoctrineRepository extends ServiceEntityRepository implemen
             ->getOneOrNullResult();
     }
 
+    /**
+     * @return array<int, StatusChangeLog>
+     */
     public function findStatusChanges(DomainEventType $eventType, int $id): array
     {
         return $this->createQueryBuilder('sc')

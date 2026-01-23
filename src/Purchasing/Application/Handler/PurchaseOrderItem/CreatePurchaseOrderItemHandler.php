@@ -7,7 +7,6 @@ use App\Order\Domain\Repository\OrderItemRepository;
 use App\Purchasing\Application\Command\PurchaseOrderItem\CreatePurchaseOrderItem;
 use App\Purchasing\Application\Service\EditablePurchaseOrderProvider;
 use App\Purchasing\Application\Service\OrderItemAllocator;
-use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItemId;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
 use App\Purchasing\Domain\Repository\SupplierProductRepository;
 use App\Shared\Application\FlusherInterface;
@@ -62,7 +61,7 @@ final readonly class CreatePurchaseOrderItemHandler
 
         return Result::ok(
             'Purchase order item updated',
-            PurchaseOrderItemId::fromInt($purchaseOrderItem->getId())
+            $purchaseOrderItem->getPublicId()
         );
     }
 }

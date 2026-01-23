@@ -5,7 +5,6 @@ namespace App\Tests\Order\Application\Handler;
 use App\Order\Application\Command\AllocateOrder;
 use App\Order\Application\Handler\AllocateOrderHandler;
 use App\Order\Domain\Model\Order\OrderPublicId;
-use App\Order\Domain\Repository\OrderRepository;
 use App\Tests\Shared\Factory\CustomerOrderFactory;
 use App\Tests\Shared\Factory\CustomerOrderItemFactory;
 use App\Tests\Shared\Factory\ProductFactory;
@@ -23,13 +22,10 @@ class AllocateOrderHandlerTest extends KernelTestCase
 
     private AllocateOrderHandler $handler;
 
-    private OrderRepository $orders;
-
     protected function setUp(): void
     {
         self::bootKernel();
         $this->handler = self::getContainer()->get(AllocateOrderHandler::class);
-        $this->orders = self::getContainer()->get(OrderRepository::class);
     }
 
     #[WithStory(StaffUserStory::class)]

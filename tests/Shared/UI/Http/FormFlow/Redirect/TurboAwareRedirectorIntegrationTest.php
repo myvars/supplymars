@@ -24,8 +24,10 @@ final class TurboAwareRedirectorIntegrationTest extends KernelTestCase
         $response = $this->redirector->to($request, '/target-url', refresh: true);
 
         self::assertSame(200, $response->getStatusCode());
-        self::assertStringContainsString('turbo-stream', $response->getContent());
-        self::assertStringContainsString('/target-url', $response->getContent());
+        $content = $response->getContent();
+        self::assertIsString($content);
+        self::assertStringContainsString('turbo-stream', $content);
+        self::assertStringContainsString('/target-url', $content);
     }
 
     public function testTurboRequestWithoutRefreshOmitsUrl(): void
@@ -36,9 +38,11 @@ final class TurboAwareRedirectorIntegrationTest extends KernelTestCase
         $response = $this->redirector->to($request, '/ignored-url', refresh: false);
 
         self::assertSame(200, $response->getStatusCode());
-        self::assertStringContainsString('turbo-stream', $response->getContent());
+        $content = $response->getContent();
+        self::assertIsString($content);
+        self::assertStringContainsString('turbo-stream', $content);
         // URL should not appear when refresh=false
-        self::assertStringNotContainsString('/ignored-url', $response->getContent());
+        self::assertStringNotContainsString('/ignored-url', $content);
     }
 
     public function testNonTurboRequestReturnsRedirectResponse(): void
@@ -60,6 +64,8 @@ final class TurboAwareRedirectorIntegrationTest extends KernelTestCase
         $response = $this->redirector->to($request, '/frame-url', refresh: true);
 
         self::assertSame(200, $response->getStatusCode());
-        self::assertStringContainsString('turbo-stream', $response->getContent());
+        $content = $response->getContent();
+        self::assertIsString($content);
+        self::assertStringContainsString('turbo-stream', $content);
     }
 }

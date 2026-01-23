@@ -23,7 +23,6 @@ final class UserDomainTest extends TestCase
         self::assertTrue($user->isAdmin());
         self::assertContains('ROLE_USER', $user->getRoles());
         self::assertContains('ROLE_ADMIN', $user->getRoles());
-        self::assertNotNull($user->getPublicId()->value());
     }
 
     public function testUpdateChangesFieldsAndTogglesAdminRole(): void

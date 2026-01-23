@@ -33,7 +33,7 @@ final class CreateVatRateHandlerTest extends KernelTestCase
         self::assertSame('VAT rate created', $result->message);
 
         $id = $result->payload;
-        $persisted = $this->rates->get($id);
+        $persisted = $this->rates->getByPublicId($id);
         self::assertSame('New VAT', $persisted->getName());
         self::assertSame('12.50', $persisted->getRate());
     }

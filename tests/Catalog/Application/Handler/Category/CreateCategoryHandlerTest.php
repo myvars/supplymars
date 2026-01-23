@@ -44,7 +44,7 @@ class CreateCategoryHandlerTest extends KernelTestCase
 
         $this->assertTrue($result->ok);
         $categoryId = $result->payload;
-        $persisted = $this->categories->get($categoryId);
+        $persisted = $this->categories->getByPublicId($categoryId);
         self::assertSame('New Category', $persisted->getName());
     }
 

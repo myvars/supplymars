@@ -2,6 +2,7 @@
 
 namespace App\Catalog\Infrastructure\Persistence\Doctrine;
 
+use App\Catalog\Application\Search\SubcategorySearchCriteria;
 use App\Catalog\Domain\Model\Subcategory\Subcategory;
 use App\Catalog\Domain\Model\Subcategory\SubcategoryId;
 use App\Catalog\Domain\Model\Subcategory\SubcategoryPublicId;
@@ -17,9 +18,9 @@ use Pagerfanta\Doctrine\ORM\QueryAdapter;
  * @extends ServiceEntityRepository<Subcategory>
  *
  * @method Subcategory|null find($id, $lockMode = null, $lockVersion = null)
- * @method Subcategory|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Subcategory|null findOneBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null)
  * @method Subcategory[]    findAll()
- * @method Subcategory[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Subcategory[]    findBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null, $limit = null, $offset = null)
  */
 class SubcategoryDoctrineRepository extends ServiceEntityRepository implements FindByCriteriaInterface, SubcategoryRepository
 {
@@ -48,8 +49,15 @@ class SubcategoryDoctrineRepository extends ServiceEntityRepository implements F
         return $this->findOneBy(['publicId' => $publicId->value()]);
     }
 
+    /**
+     * @return AdapterInterface<Subcategory>
+     */
     public function findByCriteria(SearchCriteriaInterface $criteria): AdapterInterface
     {
+        if (!$criteria instanceof SubcategorySearchCriteria) {
+            throw new \InvalidArgumentException('Expected SubcategorySearchCriteria');
+        }
+
         $sort = $criteria->getSort();
         $sortDirection = $criteria->getSortDirection();
 

@@ -2,6 +2,7 @@
 
 namespace App\Purchasing\Infrastructure\Persistence\Doctrine;
 
+use App\Purchasing\Application\Search\PurchaseOrderSearchCriteria;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrder;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderId;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderPublicId;
@@ -19,9 +20,9 @@ use Pagerfanta\Doctrine\ORM\QueryAdapter;
  * @extends ServiceEntityRepository<PurchaseOrder>
  *
  * @method PurchaseOrder|null find($id, $lockMode = null, $lockVersion = null)
- * @method PurchaseOrder|null findOneBy(array $criteria, array $orderBy = null)
+ * @method PurchaseOrder|null findOneBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null)
  * @method PurchaseOrder[]    findAll()
- * @method PurchaseOrder[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method PurchaseOrder[]    findBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null, $limit = null, $offset = null)
  */
 class PurchaseOrderDoctrineRepository extends ServiceEntityRepository implements FindByCriteriaInterface, PurchaseOrderRepository
 {
@@ -50,8 +51,15 @@ class PurchaseOrderDoctrineRepository extends ServiceEntityRepository implements
         return $this->findOneBy(['publicId' => $publicId->value()]);
     }
 
+    /**
+     * @return AdapterInterface<PurchaseOrder>
+     */
     public function findByCriteria(SearchCriteriaInterface $criteria): AdapterInterface
     {
+        if (!$criteria instanceof PurchaseOrderSearchCriteria) {
+            throw new \InvalidArgumentException('Expected PurchaseOrderSearchCriteria');
+        }
+
         $sort = $criteria->getSort();
         $sortDirection = $criteria->getSortDirection();
 
@@ -135,6 +143,9 @@ class PurchaseOrderDoctrineRepository extends ServiceEntityRepository implements
             ->getResult();
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function findRejectedPoSummary(\DateTime $startDate): array
     {
         return $this->createQueryBuilder('po')
@@ -145,5 +156,10 @@ class PurchaseOrderDoctrineRepository extends ServiceEntityRepository implements
             ->setParameter('startDate', $startDate)
             ->getQuery()
             ->getSingleResult();
+    }
+
+    public function findByStatus(PurchaseOrderStatus $status, int $limit): array
+    {
+        return $this->findBy(['status' => $status], null, $limit);
     }
 }

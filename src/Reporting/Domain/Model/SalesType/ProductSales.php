@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: ProductSalesDoctrineRepository::class)]
 class ProductSales
 {
-    private function __construct(
+    final private function __construct(
         #[ORM\Id]
         #[ORM\ManyToOne]
         #[ORM\JoinColumn(nullable: false)]
@@ -68,37 +68,37 @@ class ProductSales
         );
     }
 
-    public function getProduct(): ?Product
+    public function getProduct(): Product
     {
         return $this->product;
     }
 
-    public function getSupplier(): ?Supplier
+    public function getSupplier(): Supplier
     {
         return $this->supplier;
     }
 
-    public function getDateString(): ?string
+    public function getDateString(): string
     {
         return $this->dateString;
     }
 
-    public function getSalesQty(): ?int
+    public function getSalesQty(): int
     {
         return $this->salesQty;
     }
 
-    public function getSalesCost(): ?string
+    public function getSalesCost(): string
     {
         return $this->salesCost;
     }
 
-    public function getSalesValue(): ?string
+    public function getSalesValue(): string
     {
         return $this->salesValue;
     }
 
-    public function getSalesDate(): ?\DateTimeImmutable
+    public function getSalesDate(): \DateTimeImmutable
     {
         return $this->salesDate;
     }

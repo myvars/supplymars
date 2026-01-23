@@ -36,6 +36,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
     #[Assert\Email]
     private ?string $email = null;
 
+    /** @var array<int, string> */
     #[ORM\Column]
     private array $roles = [];
 
@@ -56,9 +57,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $isStaff = false;
 
+    /** @var Collection<int, Category> */
     #[ORM\OneToMany(targetEntity: Category::class, mappedBy: 'owner')]
     private Collection $categories;
 
+    /** @var Collection<int, Subcategory> */
     #[ORM\OneToMany(targetEntity: Subcategory::class, mappedBy: 'owner')]
     private Collection $subcategories;
 
@@ -80,7 +83,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
     #[ORM\OneToMany(targetEntity: StatusChangeLog::class, mappedBy: 'user')]
     private Collection $statusChangeLogs;
 
-    public function __construct()
+    final public function __construct()
     {
         $this->initializePublicId();
         $this->categories = new ArrayCollection();
@@ -154,6 +157,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
         return $this;
     }
 
+    /**
+     * @param array<int, string> $roles
+     */
     public function setRoles(array $roles): static
     {
         $this->roles = $roles;
@@ -180,10 +186,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
      * A visual identifier that represents this user.
      *
      * @see UserInterface
+     *
+     * @return non-empty-string
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->email;
+        \assert($this->email !== null && $this->email !== '');
+
+        return $this->email;
     }
 
     /**

@@ -47,7 +47,7 @@ final class SupplierCategoryDomainTest extends TestCase
         );
 
         self::assertSame('New', $category->getName());
-        self::assertSame($supplierB->getId(), $category->getSupplier()?->getId());
+        self::assertSame($supplierB->getId(), $category->getSupplier()->getId());
     }
 
     public function testEmptyNameThrows(): void

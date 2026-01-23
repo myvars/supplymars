@@ -19,4 +19,8 @@ interface UserRepository extends FindByCriteriaInterface
     public function get(UserId $id): ?User;
 
     public function getByPublicId(UserPublicId $publicId): ?User;
+
+    public function getStaffById(UserId $id): ?User;
+
+    public function getRandomUser(): ?User;
 }

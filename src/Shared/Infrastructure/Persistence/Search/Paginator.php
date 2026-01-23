@@ -8,12 +8,23 @@ use Pagerfanta\Pagerfanta;
 
 final readonly class Paginator
 {
+    /**
+     * @template T
+     *
+     * @param AdapterInterface<T> $adapter
+     *
+     * @return Pagerfanta<T>
+     */
     public function createPagination(AdapterInterface $adapter, int $page, int $limit): Pagerfanta
     {
         return Pagerfanta::createForCurrentPageWithMaxPerPage($adapter, $page, $limit);
     }
 
-    // helper to create search pagination directly from repository and search criteria
+    /**
+     * Helper to create search pagination directly from repository and search criteria.
+     *
+     * @return Pagerfanta<mixed>
+     */
     public function searchPagination(
         FindByCriteriaInterface $repository,
         SearchCriteriaInterface $criteria,

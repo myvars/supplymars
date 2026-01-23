@@ -40,13 +40,7 @@ readonly class resetSupplierStockCommand
     ): int {
         $io = new SymfonyStyle($input, $output);
 
-        if (self::MAX_STOCK_LEVEL < 0) {
-            $io->error('Max stock level must be greater than 0');
-
-            return Command::FAILURE;
-        }
-
-        $supplier = $this->getSupplier($supplierId);
+        $supplier = $this->getSupplier((int) $supplierId);
         if (!$supplier instanceof Supplier) {
             $io->error('No supplier found');
 
@@ -94,7 +88,7 @@ readonly class resetSupplierStockCommand
         $io->newLine(2);
         $io->success(sprintf('Processed %d items.', $processed));
 
-        if ($processed > 0 && $output->isVerbose()) {
+        if ($output->isVerbose()) {
             $io->section('Processed product codes');
             $io->listing($processedItems);
         }
@@ -107,8 +101,11 @@ readonly class resetSupplierStockCommand
         return $this->suppliers->get(SupplierId::fromInt($supplierId));
     }
 
+    /**
+     * @return array<int, SupplierProduct>
+     */
     private function getSupplierProducts(Supplier $supplier): array
     {
-        return $this->supplierProducts->findBy(['supplier' => $supplier]);
+        return $this->supplierProducts->findBySupplier($supplier);
     }
 }

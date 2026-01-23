@@ -12,13 +12,21 @@ final class ModelPath
 {
     public const string BASE_TEMPLATE = 'shared/form_flow/base.html.twig';
 
-    /** Split a resource into bounded context and model name. */
+    /**
+     * Split a resource into bounded context and model name.
+     *
+     * @return array{0: string|null, 1: string}
+     */
     private static function split(string $resource): array
     {
         // Support "boundedContext/domainModel" syntax.
-        return str_contains($resource, '/')
-            ? explode('/', $resource, 2)
-            : [null, $resource];
+        if (str_contains($resource, '/')) {
+            $parts = explode('/', $resource, 2);
+
+            return [$parts[0], $parts[1]];
+        }
+
+        return [null, $resource];
     }
 
     /** Extract the bounded context from a namespaced path. */

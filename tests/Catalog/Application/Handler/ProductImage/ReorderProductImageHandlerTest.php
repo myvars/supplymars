@@ -45,6 +45,7 @@ final class ReorderProductImageHandlerTest extends KernelTestCase
         $productImages = $reloaded->getProductImages();
         self::assertCount(2, $productImages);
 
+        /** @var array<int, int> $newOrder */
         $newOrder = [
             $productImages[1]->getId() => 0,
             $productImages[0]->getId() => 1,

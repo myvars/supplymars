@@ -6,8 +6,10 @@ use App\Catalog\Application\Command\Category\UpdateCategory;
 use App\Catalog\Domain\Model\Category\Category;
 use App\Catalog\Domain\Repository\CategoryRepository;
 use App\Customer\Domain\Model\User\User;
+use App\Customer\Domain\Model\User\UserId;
 use App\Customer\Domain\Repository\UserRepository;
 use App\Pricing\Domain\Model\VatRate\VatRate;
+use App\Pricing\Domain\Model\VatRate\VatRateId;
 use App\Pricing\Domain\Repository\VatRateRepository;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Application\Result;
@@ -31,12 +33,12 @@ final readonly class UpdateCategoryHandler
             return Result::fail('Category not found.');
         }
 
-        $vatRate = $this->vatRates->find($command->vatRateId);
+        $vatRate = $this->vatRates->get(VatRateId::fromInt($command->vatRateId));
         if (!$vatRate instanceof VatRate) {
             return Result::fail('VAT rate not found.');
         }
 
-        $owner = $this->owners->findOneBy(['id' => $command->ownerId, 'isStaff' => true]);
+        $owner = $this->owners->getStaffById(UserId::fromInt($command->ownerId));
         if (!$owner instanceof User) {
             return Result::fail('Category manager not found.');
         }

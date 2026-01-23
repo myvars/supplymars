@@ -4,7 +4,6 @@ namespace App\Catalog\Application\Handler\Manufacturer;
 
 use App\Catalog\Application\Command\Manufacturer\CreateManufacturer;
 use App\Catalog\Domain\Model\Manufacturer\Manufacturer;
-use App\Catalog\Domain\Model\Manufacturer\ManufacturerId;
 use App\Catalog\Domain\Repository\ManufacturerRepository;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Application\Result;
@@ -34,6 +33,6 @@ final readonly class CreateManufacturerHandler
         $this->manufacturers->add($manufacturer);
         $this->flusher->flush();
 
-        return Result::ok('Manufacturer created', ManufacturerId::fromInt($manufacturer->getId()));
+        return Result::ok('Manufacturer created', $manufacturer->getPublicId());
     }
 }

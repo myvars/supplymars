@@ -15,5 +15,5 @@ final class MinOrderItemQty extends Constraint
      * Any public properties become valid options for the annotation.
      * Then, use these in your validator class.
      */
-    public $message = 'minimum quantity is {{ minQuantity }}';
+    public string $message = 'minimum quantity is {{ minQuantity }}';
 }

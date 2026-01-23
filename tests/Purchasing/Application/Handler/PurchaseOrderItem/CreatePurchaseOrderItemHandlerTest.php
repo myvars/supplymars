@@ -57,7 +57,7 @@ class CreatePurchaseOrderItemHandlerTest extends KernelTestCase
         $result = ($this->handler)($command);
 
         self::assertTrue($result->ok);
-        $purchaseOrderItem = $this->purchaseOrderItems->get($result->payload);
+        $purchaseOrderItem = $this->purchaseOrderItems->getByPublicId($result->payload);
         self::assertNotNull($purchaseOrderItem);
         self::assertSame($supplierProduct->getId(), $purchaseOrderItem->getSupplierProduct()->getId());
         self::assertSame(5, $purchaseOrderItem->getQuantity());

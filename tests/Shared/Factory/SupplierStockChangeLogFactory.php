@@ -57,8 +57,8 @@ final class SupplierStockChangeLogFactory extends PersistentObjectFactory
                     $attributes['supplierProduct']->getStock() + 1
                 );
                 $attributes['costChange'] ??= CostChange::from(
-                    $attributes['supplierProduct']->getCost(),
-                    bcadd((string) $attributes['supplierProduct']->getCost(), '1.00', 2)
+                    $attributes['supplierProduct']->getCost() ?? '0.00',
+                    bcadd($attributes['supplierProduct']->getCost() ?? '0.00', '1.00', 2)
                 );
 
                 return $attributes;

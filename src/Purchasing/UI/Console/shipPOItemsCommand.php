@@ -103,6 +103,9 @@ readonly class shipPOItemsCommand
         return Command::SUCCESS;
     }
 
+    /**
+     * @return array<int, PurchaseOrderItem>
+     */
     private function getAcceptedPurchaseOrderItems(Supplier $supplier, int $count): array
     {
         return $this->purchaseOrderItems->findPurchaseOrderItemsByStatus(

@@ -16,6 +16,9 @@ final readonly class DoughnutChartBuilder
     {
     }
 
+    /**
+     * @param array<int, array<string, mixed>> $salesData
+     */
     public function create(array $salesData, SalesDuration $salesDuration, SalesMetricInterface $salesMetric): Chart
     {
         $chartData = $this->createChartData($salesData, $salesMetric->getValue());
@@ -23,6 +26,9 @@ final readonly class DoughnutChartBuilder
         return $this->buildChart($chartData, $salesMetric);
     }
 
+    /**
+     * @param array<string, int|float> $data
+     */
     private function buildChart(array $data, SalesMetricInterface $salesMetric): Chart
     {
         return $this->chartBuilder
@@ -62,6 +68,11 @@ final readonly class DoughnutChartBuilder
             ]);
     }
 
+    /**
+     * @param array<int, array<string, mixed>> $salesData
+     *
+     * @return array<string, int|float>
+     */
     private function createChartData(array $salesData, string $salesMetric): array
     {
         $chartData = [];
@@ -72,6 +83,11 @@ final readonly class DoughnutChartBuilder
         return $this->sortChartData($chartData);
     }
 
+    /**
+     * @param array<string, int|float> $chartData
+     *
+     * @return array<string, int|float>
+     */
     private function sortChartData(array $chartData): array
     {
         $order = [];
@@ -79,7 +95,7 @@ final readonly class DoughnutChartBuilder
             $order[strtolower($status->value)] = $status->getLevel();
         }
 
-        uksort($chartData, fn ($a, $b): int => $order[strtolower((string) $a)] <=> $order[strtolower((string) $b)]);
+        uksort($chartData, fn ($a, $b): int => $order[strtolower($a)] <=> $order[strtolower($b)]);
 
         return $chartData;
     }

@@ -47,7 +47,7 @@ class CreateOrderHandlerTest extends KernelTestCase
 
         self::assertTrue($result->ok);
         $orderId = $result->payload;
-        $persisted = $this->orders->get($orderId);
+        $persisted = $this->orders->getByPublicId($orderId);
         self::assertNotNull($persisted);
         self::assertSame($customer->getId(), $persisted->getCustomer()->getId());
         self::assertSame(ShippingMethod::THREE_DAY, $persisted->getShippingMethod());

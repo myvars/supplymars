@@ -4,7 +4,6 @@ namespace App\Purchasing\Application\Handler\Supplier;
 
 use App\Purchasing\Application\Command\Supplier\CreateSupplier;
 use App\Purchasing\Domain\Model\Supplier\Supplier;
-use App\Purchasing\Domain\Model\Supplier\SupplierId;
 use App\Purchasing\Domain\Repository\SupplierRepository;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Application\Result;
@@ -34,6 +33,6 @@ final readonly class CreateSupplierHandler
         $this->suppliers->add($supplier);
         $this->flusher->flush();
 
-        return Result::ok('Supplier created', SupplierId::fromInt($supplier->getId()));
+        return Result::ok('Supplier created', $supplier->getPublicId());
     }
 }

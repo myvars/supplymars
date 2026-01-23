@@ -36,7 +36,7 @@ final class SubcategoryFactory extends PersistentObjectFactory
     protected function defaults(): array
     {
         return [
-            'name' => ucfirst(implode(' ', self::faker()->words(random_int(1, 3)))),
+            'name' => ucfirst(implode(' ', (array) self::faker()->words(random_int(1, 3)))),
             'category' => LazyValue::memoize(fn (): Category => CategoryFactory::createOne()),
             'owner' => LazyValue::memoize(fn (): User => UserFactory::createOne()),
             'defaultMarkup' => Subcategory::DEFAULT_MARKUP,

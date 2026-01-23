@@ -76,6 +76,7 @@ final class SubcategoryDomainTest extends TestCase
         $events = $subcategory->releaseDomainEvents();
         self::assertCount(1, $events);
         $event = $events[0];
+        self::assertInstanceOf(SubcategoryPricingWasChangedEvent::class, $event);
         self::assertTrue($event->isMarkupChanged());
         self::assertTrue($event->isPriceModelChanged());
     }

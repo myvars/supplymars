@@ -22,9 +22,9 @@ final class SubcategoryFilterFlowTest extends WebTestCase
         $browser = $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
             ->get('/subcategory/search/filter')
-            ->fillField('subcategory_filter[category]', $category->getId())
+            ->fillField('subcategory_filter[category]', (string) $category->getId())
             ->fillField('subcategory_filter[priceModel]', PriceModel::PRETTY_99->value)
-            ->fillField('subcategory_filter[manager]', $manager->getId())
+            ->fillField('subcategory_filter[manager]', (string) $manager->getId())
             ->click('Apply Filter');
 
         $uri = $browser->crawler()->getUri();
@@ -36,7 +36,7 @@ final class SubcategoryFilterFlowTest extends WebTestCase
         self::assertSame('1', $query['page']);
         self::assertSame('5', $query['limit']);
         self::assertSame(strtolower(PriceModel::PRETTY_99->value), $query['priceModel']);
-        self::assertSame((string) $category->getId(), (string) $query['categoryId']);
-        self::assertSame((string) $manager->getId(), (string) $query['managerId']);
+        self::assertSame((string) $category->getId(), is_string($query['categoryId']) ? $query['categoryId'] : '');
+        self::assertSame((string) $manager->getId(), is_string($query['managerId']) ? $query['managerId'] : '');
     }
 }

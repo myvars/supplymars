@@ -20,7 +20,7 @@ class ResetPasswordRequest implements ResetPasswordRequestInterface
     #[ORM\Column]
     private ?int $id = null;
 
-    public function __construct(
+    final public function __construct(
         #[ORM\ManyToOne]
         #[ORM\JoinColumn(nullable: false)]
         #[Assert\NotNull(message: 'User should not be null')]

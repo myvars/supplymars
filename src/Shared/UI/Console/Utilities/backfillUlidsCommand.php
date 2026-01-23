@@ -47,11 +47,11 @@ final readonly class backfillUlidsCommand
     }
 
     /**
-     * @return list<ClassMetadata>
+     * @return list<ClassMetadata<object>>
      */
     private function entitiesUsingHasPublicUlid(): array
     {
-        /** @var list<ClassMetadata> $all */
+        /** @var list<ClassMetadata<object>> $all */
         $all = $this->em->getMetadataFactory()->getAllMetadata();
 
         return array_values(array_filter(
@@ -60,6 +60,9 @@ final readonly class backfillUlidsCommand
         ));
     }
 
+    /**
+     * @param ClassMetadata<object> $meta
+     */
     private function backfillForEntity(SymfonyStyle $io, ClassMetadata $meta, int $batchSize, ?int $limit): void
     {
         $entityClass = $meta->getName();

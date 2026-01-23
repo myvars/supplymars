@@ -108,6 +108,9 @@ final class DomainEventDispatcherTest extends TestCase
         $this->listener->postFlush($args);
     }
 
+    /**
+     * @param array<string, array<string, object>> $identityMap
+     */
     private function makeArgs(array $identityMap): PostFlushEventArgs
     {
         $uow = $this->createStub(UnitOfWork::class);

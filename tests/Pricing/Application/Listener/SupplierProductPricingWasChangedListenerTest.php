@@ -68,7 +68,7 @@ final class SupplierProductPricingWasChangedListenerTest extends KernelTestCase
             supplier: $sp->getSupplier(),
             stock: $sp->getStock(),
             leadTimeDays: $sp->getLeadTimeDays(),
-            cost: bcadd((string) $sp->getCost(), '1.00', 2), // change cost to trigger event
+            cost: bcadd($sp->getCost() ?? '0.00', '1.00', 2), // change cost to trigger event
             product: $sp->getProduct(),
             isActive: $sp->isActive() ?? true
         );
@@ -182,6 +182,10 @@ final class SupplierProductPricingWasChangedListenerTest extends KernelTestCase
         );
 
         foreach ($sp->releaseDomainEvents() as $event) {
+            if (!$event instanceof SupplierProductPricingWasChangedEvent) {
+                continue;
+            }
+
             $listener($event);
         }
     }

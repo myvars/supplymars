@@ -17,8 +17,8 @@ final class PublicIdResolverRegistry
     ) {
     }
 
-    /** simple in-request cache */
-    private array $cache = []; // ["VOClass|value" => int|null]
+    /** @var array<string, int|null> simple in-request cache ["VOClass|value" => int|null] */
+    private array $cache = [];
 
     public function resolve(AbstractUlidId $publicId): ?int
     {

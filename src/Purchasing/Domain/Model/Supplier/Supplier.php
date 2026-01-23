@@ -39,15 +39,19 @@ class Supplier implements DomainEventProviderInterface
     #[ORM\Column]
     private bool $isActive = false;
 
+    /** @var Collection<int, SupplierCategory> */
     #[ORM\OneToMany(targetEntity: SupplierCategory::class, mappedBy: 'supplier')]
     private Collection $supplierCategories;
 
+    /** @var Collection<int, SupplierSubcategory> */
     #[ORM\OneToMany(targetEntity: SupplierSubcategory::class, mappedBy: 'supplier')]
     private Collection $supplierSubcategories;
 
+    /** @var Collection<int, SupplierManufacturer> */
     #[ORM\OneToMany(targetEntity: SupplierManufacturer::class, mappedBy: 'supplier')]
     private Collection $supplierManufacturers;
 
+    /** @var Collection<int, SupplierProduct> */
     #[ORM\OneToMany(targetEntity: SupplierProduct::class, mappedBy: 'supplier')]
     private Collection $supplierProducts;
 
@@ -60,7 +64,7 @@ class Supplier implements DomainEventProviderInterface
     #[ORM\Column]
     private bool $isWarehouse = false;
 
-    public function __construct()
+    final public function __construct()
     {
         $this->initializePublicId();
         $this->supplierCategories = new ArrayCollection();

@@ -36,7 +36,7 @@ final class CategoryFactory extends PersistentObjectFactory
     protected function defaults(): array
     {
         return [
-            'name' => ucfirst(implode(' ', self::faker()->words(random_int(1, 3)))),
+            'name' => ucfirst(implode(' ', (array) self::faker()->words(random_int(1, 3)))),
             'owner' => LazyValue::memoize(fn (): User => UserFactory::new()->asStaff()->create()),
             'vatRate' => LazyValue::memoize(fn (): VatRate => VatRateFactory::new()->withStandardRate()->create()),
             'defaultMarkup' => Category::DEFAULT_MARKUP,

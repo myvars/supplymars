@@ -52,6 +52,8 @@ final readonly class DeleteFlow
      * Process the delete POST.
      *
      * Validates CSRF then delegates to CommandFlow.
+     *
+     * @param object&object{id: int|string} $command
      */
     public function delete(
         Request $request,

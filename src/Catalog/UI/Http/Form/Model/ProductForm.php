@@ -37,9 +37,9 @@ final class ProductForm
         $form->id = $product->getPublicId()->value();
         $form->name = $product->getName();
         $form->description = $product->getDescription();
-        $form->categoryId = $product->getCategory()?->getId();
-        $form->subcategoryId = $product->getSubcategory()?->getId();
-        $form->manufacturerId = $product->getManufacturer()?->getId();
+        $form->categoryId = $product->getCategory()->getId();
+        $form->subcategoryId = $product->getSubcategory()->getId();
+        $form->manufacturerId = $product->getManufacturer()->getId();
         $form->mfrPartNumber = $product->getMfrPartNumber();
         $form->ownerId = $product->getOwner()?->getId();
         $form->isActive = $product->isActive();

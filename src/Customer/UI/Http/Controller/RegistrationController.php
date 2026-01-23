@@ -131,7 +131,7 @@ class RegistrationController extends AbstractController
     #[Route(path: 'verify/send', name: 'app_verify_send_email')]
     public function sendVerifyUserEmail(Request $request, UserDoctrineRepository $repository): Response
     {
-        $user = $repository->findOneBy(['email' => $request->get('email')]);
+        $user = $repository->getByEmail((string) $request->request->get('email'));
         if ($user instanceof User) {
             $this->emailVerification($user);
         }

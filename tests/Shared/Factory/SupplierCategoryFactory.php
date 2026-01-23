@@ -35,7 +35,7 @@ final class SupplierCategoryFactory extends PersistentObjectFactory
     protected function defaults(): array
     {
         return [
-            'name' => ucfirst(implode(' ', self::faker()->words(random_int(1, 3)))),
+            'name' => ucfirst(implode(' ', (array) self::faker()->words(random_int(1, 3)))),
             'supplier' => LazyValue::memoize(fn (): Supplier => SupplierFactory::createOne()),
         ];
     }

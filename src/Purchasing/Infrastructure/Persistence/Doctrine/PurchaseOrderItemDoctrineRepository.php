@@ -15,9 +15,9 @@ use Doctrine\Persistence\ManagerRegistry;
  * @extends ServiceEntityRepository<PurchaseOrderItem>
  *
  * @method PurchaseOrderItem|null find($id, $lockMode = null, $lockVersion = null)
- * @method PurchaseOrderItem|null findOneBy(array $criteria, array $orderBy = null)
+ * @method PurchaseOrderItem|null findOneBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null)
  * @method PurchaseOrderItem[]    findAll()
- * @method PurchaseOrderItem[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method PurchaseOrderItem[]    findBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null, $limit = null, $offset = null)
  */
 class PurchaseOrderItemDoctrineRepository extends ServiceEntityRepository implements PurchaseOrderItemRepository
 {
@@ -65,6 +65,9 @@ class PurchaseOrderItemDoctrineRepository extends ServiceEntityRepository implem
             ->getResult();
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function calculateProductSales(\DateTime $startDate, \DateTime $endDate): array
     {
         return $this->createQueryBuilder('poi')

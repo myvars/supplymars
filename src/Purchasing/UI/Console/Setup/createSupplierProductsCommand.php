@@ -65,6 +65,9 @@ readonly class createSupplierProductsCommand
         return Command::SUCCESS;
     }
 
+    /**
+     * @return array<string, int>
+     */
     private function processSupplierProducts(Supplier $supplier): array
     {
         $statistics = ['new' => 0, 'mapped' => 0, 'skipped' => 0, 'inactive' => 0];
@@ -112,6 +115,9 @@ readonly class createSupplierProductsCommand
         return 'new';
     }
 
+    /**
+     * @param array<string, int> $statistics
+     */
     private function reportResults(array $statistics, string $supplierName, SymfonyStyle $io): void
     {
         $io->success(sprintf("Processed supplier products for '%s':", $supplierName));
@@ -123,18 +129,24 @@ readonly class createSupplierProductsCommand
         ]);
     }
 
+    /**
+     * @return array<int, Supplier>
+     */
     private function getSuppliers(): array
     {
-        return $this->suppliers->findBy(['isWarehouse' => false]);
+        return $this->suppliers->findNonWarehouseSupplier();
     }
 
+    /**
+     * @return array<int, SupplierProduct>
+     */
     private function getSupplierProducts(Supplier $supplier): array
     {
-        return $this->supplierProducts->findBy(['supplier' => $supplier]);
+        return $this->supplierProducts->findBySupplier($supplier);
     }
 
     public function checkMfrPartNumber(string $mfrPartNumber): ?Product
     {
-        return $this->products->findOneBy(['mfrPartNumber' => $mfrPartNumber]);
+        return $this->products->findByMfrPartNumber($mfrPartNumber);
     }
 }

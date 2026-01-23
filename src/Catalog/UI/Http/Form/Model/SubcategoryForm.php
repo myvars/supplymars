@@ -16,6 +16,7 @@ final class SubcategoryForm
     #[Assert\NotBlank(message: 'Please enter a subcategory name')]
     public ?string $name = null;
 
+    /** @var numeric-string|null */
     #[Assert\NotBlank(message: 'Please enter a subcategory markup %')]
     #[Assert\PositiveOrZero(message: 'Please enter a positive or zero subcategory markup %')]
     public ?string $defaultMarkup = Subcategory::DEFAULT_MARKUP;
@@ -32,7 +33,7 @@ final class SubcategoryForm
         $form = new self();
 
         $form->id = $subcategory->getPublicId()->value();
-        $form->categoryId = $subcategory->getCategory()?->getId();
+        $form->categoryId = $subcategory->getCategory()->getId();
         $form->name = $subcategory->getName();
         $form->defaultMarkup = $subcategory->getDefaultMarkup();
         $form->priceModel = $subcategory->getPriceModel();

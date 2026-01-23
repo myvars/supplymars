@@ -13,8 +13,10 @@ final class ProductImageWasDeletedTest extends TestCase
 {
     public function testDoesNothingWhenImageNameEmpty(): void
     {
+        // @phpstan-ignore method.unresolvableReturnType
         $uploadHelper = $this->createMock(UploadHelper::class);
         $cacheManager = $this->createMock(CacheManager::class);
+        // @phpstan-ignore method.unresolvableReturnType
         $productId = $this->createStub(ProductPublicId::class);
 
         $uploadHelper->expects(self::never())->method('deleteFile');
@@ -26,14 +28,14 @@ final class ProductImageWasDeletedTest extends TestCase
             '/uploads/'
         );
         $listener(new ProductImageWasDeletedEvent($productId, ''));
-
-        self::assertTrue(true);
     }
 
     public function testDoesNotRemoveCacheWhenDeleteFails(): void
     {
+        // @phpstan-ignore method.unresolvableReturnType
         $uploadHelper = $this->createMock(UploadHelper::class);
         $cacheManager = $this->createMock(CacheManager::class);
+        // @phpstan-ignore method.unresolvableReturnType
         $productId = $this->createStub(ProductPublicId::class);
 
         $uploadHelper->expects(self::once())
@@ -49,14 +51,14 @@ final class ProductImageWasDeletedTest extends TestCase
             '/uploads/'
         );
         $listener(new ProductImageWasDeletedEvent($productId, 'image.jpg'));
-
-        self::assertTrue(true);
     }
 
     public function testRemovesCacheWhenDeleteSucceeds(): void
     {
+        // @phpstan-ignore method.unresolvableReturnType
         $uploadHelper = $this->createMock(UploadHelper::class);
         $cacheManager = $this->createMock(CacheManager::class);
+        // @phpstan-ignore method.unresolvableReturnType
         $productId = $this->createStub(ProductPublicId::class);
 
         $uploadHelper->expects(self::once())
@@ -70,7 +72,5 @@ final class ProductImageWasDeletedTest extends TestCase
 
         $listener = new ProductImageWasDeleted($uploadHelper, $cacheManager, '/uploads/');
         $listener(new ProductImageWasDeletedEvent($productId, 'image.jpg'));
-
-        self::assertTrue(true);
     }
 }

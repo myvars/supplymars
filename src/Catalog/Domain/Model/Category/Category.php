@@ -40,6 +40,7 @@ class Category implements DomainEventProviderInterface
     #[Assert\NotBlank(message: 'Please enter a category name')]
     private ?string $name = null;
 
+    /** @var numeric-string|null */
     #[ORM\Column(type: Types::DECIMAL, precision: 9, scale: 3)]
     #[Assert\NotBlank(message: 'Please enter a category markup %')]
     #[Assert\PositiveOrZero(message: 'Please enter a positive or zero category markup %')]
@@ -63,20 +64,25 @@ class Category implements DomainEventProviderInterface
     #[ORM\Column]
     private bool $isActive = false;
 
+    /** @var Collection<int, Subcategory> */
     #[ORM\OneToMany(targetEntity: Subcategory::class, mappedBy: 'category')]
     #[Assert\NotNull(message: 'Please enter a subcategory')]
     private Collection $subcategories;
 
+    /** @var Collection<int, Product> */
     #[ORM\OneToMany(targetEntity: Product::class, mappedBy: 'category')]
     private Collection $products;
 
-    public function __construct()
+    final public function __construct()
     {
         $this->initializePublicId();
         $this->subcategories = new ArrayCollection();
         $this->products = new ArrayCollection();
     }
 
+    /**
+     * @param numeric-string $defaultMarkup
+     */
     public static function create(
         string $name,
         User $owner,
@@ -93,6 +99,9 @@ class Category implements DomainEventProviderInterface
         return $self;
     }
 
+    /**
+     * @param numeric-string $defaultMarkup
+     */
     public function update(
         string $name,
         User $owner,
@@ -106,6 +115,9 @@ class Category implements DomainEventProviderInterface
         $this->changePricing($vatRate, $defaultMarkup, $priceModel, $isActive);
     }
 
+    /**
+     * @param numeric-string $defaultMarkup
+     */
     public function changePricing(
         VatRate $vatRate,
         string $defaultMarkup,
@@ -161,19 +173,22 @@ class Category implements DomainEventProviderInterface
         return $this->name;
     }
 
+    /**
+     * @return numeric-string|null
+     */
     public function getDefaultMarkup(): ?string
     {
         return $this->defaultMarkup;
     }
 
-    public function getOwner(): ?User
+    public function getOwner(): User
     {
-        return $this->owner;
+        return $this->owner ?? throw new \LogicException('Owner must be set');
     }
 
-    public function getVatRate(): ?VatRate
+    public function getVatRate(): VatRate
     {
-        return $this->vatRate;
+        return $this->vatRate ?? throw new \LogicException('VatRate must be set');
     }
 
     public function getPriceModel(): ?PriceModel
@@ -196,6 +211,9 @@ class Category implements DomainEventProviderInterface
         $this->name = $name;
     }
 
+    /**
+     * @param numeric-string $defaultMarkup
+     */
     private function applyDefaultMarkup(string $defaultMarkup): void
     {
         if ((float) $defaultMarkup < 0) {

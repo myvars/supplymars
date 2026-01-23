@@ -16,6 +16,9 @@ final readonly class DefaultUserAuthenticator
 
     public const string DEFAULT_FIREWALL = 'main';
 
+    /**
+     * @param UserProviderInterface<User> $userProvider
+     */
     public function __construct(
         private Security $security,
         private UserProviderInterface $userProvider,

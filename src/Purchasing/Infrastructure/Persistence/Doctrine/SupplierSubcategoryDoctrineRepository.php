@@ -13,9 +13,9 @@ use Doctrine\Persistence\ManagerRegistry;
  * @extends ServiceEntityRepository<SupplierSubcategory>
  *
  * @method SupplierSubcategory|null find($id, $lockMode = null, $lockVersion = null)
- * @method SupplierSubcategory|null findOneBy(array $criteria, array $orderBy = null)
+ * @method SupplierSubcategory|null findOneBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null)
  * @method SupplierSubcategory[]    findAll()
- * @method SupplierSubcategory[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method SupplierSubcategory[]    findBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null, $limit = null, $offset = null)
  */
 class SupplierSubcategoryDoctrineRepository extends ServiceEntityRepository implements SupplierSubcategoryRepository
 {
@@ -43,29 +43,4 @@ class SupplierSubcategoryDoctrineRepository extends ServiceEntityRepository impl
     {
         return $this->findOneBy(['publicId' => $publicId->value()]);
     }
-
-    //    /**
-    //     * @return SupplierSubcategory[] Returns an array of SupplierSubcategory objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('s.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?SupplierSubcategory
-    //    {
-    //        return $this->createQueryBuilder('s')
-    //            ->andWhere('s.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }

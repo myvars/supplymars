@@ -13,9 +13,9 @@ use Doctrine\Persistence\ManagerRegistry;
  * @extends ServiceEntityRepository<SupplierCategory>
  *
  * @method SupplierCategory|null find($id, $lockMode = null, $lockVersion = null)
- * @method SupplierCategory|null findOneBy(array $criteria, array $orderBy = null)
+ * @method SupplierCategory|null findOneBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null)
  * @method SupplierCategory[]    findAll()
- * @method SupplierCategory[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method SupplierCategory[]    findBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null, $limit = null, $offset = null)
  */
 class SupplierCategoryDoctrineRepository extends ServiceEntityRepository implements SupplierCategoryRepository
 {

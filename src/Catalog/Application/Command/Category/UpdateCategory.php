@@ -7,6 +7,9 @@ use App\Shared\Domain\ValueObject\PriceModel;
 
 final readonly class UpdateCategory
 {
+    /**
+     * @param numeric-string $defaultMarkup
+     */
     public function __construct(
         public CategoryPublicId $id,
         public string $name,

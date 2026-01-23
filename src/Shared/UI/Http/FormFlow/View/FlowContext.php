@@ -19,6 +19,7 @@ final class FlowContext
 
     private ?string $successRoute = null;
 
+    /** @var array<string, mixed> */
     private array $successParams = [];
 
     private bool $allowDelete = false;
@@ -32,13 +33,21 @@ final class FlowContext
         return new self();
     }
 
-    /** Factory for successRoute convenience. */
+    /**
+     * Factory for successRoute convenience.
+     *
+     * @param array<string, mixed> $params
+     */
     public static function forSuccess(string $route, array $params = []): self
     {
         return self::new()->successRoute($route, $params);
     }
 
-    /** Factory for command operation (no model, just success route). */
+    /**
+     * Factory for command operation (no model, just success route).
+     *
+     * @param array<string, mixed> $params
+     */
     public static function forCommand(string $route, array $params = []): self
     {
         $self = new self();
@@ -111,6 +120,9 @@ final class FlowContext
         return $this;
     }
 
+    /**
+     * @param array<string, mixed> $params
+     */
     public function successRoute(string $route, array $params = []): self
     {
         $this->successRoute = $route;
@@ -119,6 +131,9 @@ final class FlowContext
         return $this;
     }
 
+    /**
+     * @param array<string, mixed> $params
+     */
     public function successParams(array $params): self
     {
         $this->successParams = $params;
@@ -161,6 +176,9 @@ final class FlowContext
         return $this->successRoute;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function getSuccessParams(): array
     {
         return $this->successParams;

@@ -58,6 +58,10 @@ final class MarkupCalculatorDomainTest extends TestCase
         self::assertSame('20.000', $custom);
     }
 
+    /**
+     * @param numeric-string $cost
+     * @param numeric-string $markup
+     */
     #[DataProvider('sellPriceRoundingProvider')]
     public function testSellPriceRounding(string $cost, string $markup, string $expected): void
     {
@@ -65,6 +69,9 @@ final class MarkupCalculatorDomainTest extends TestCase
         self::assertSame($expected, $sell);
     }
 
+    /**
+     * @return array<int, array<int, numeric-string>>
+     */
     public static function sellPriceRoundingProvider(): array
     {
         return [

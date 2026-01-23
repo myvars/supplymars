@@ -9,6 +9,9 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * @extends AbstractType<int|null>
+ */
 final class SubcategoryIdType extends AbstractType
 {
     public function __construct(private readonly IdToEntityTransformerFactory $transformer)

@@ -10,6 +10,7 @@ final class CategoryCostForm
 {
     public ?string $id = null;
 
+    /** @var numeric-string|null */
     #[Assert\NotBlank(message: 'Please enter a category markup %')]
     #[Assert\PositiveOrZero(message: 'Please enter a positive or zero category markup %')]
     public ?string $defaultMarkup = Category::DEFAULT_MARKUP;

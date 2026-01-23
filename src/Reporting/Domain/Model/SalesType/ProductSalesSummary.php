@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: ProductSalesSummaryDoctrineRepository::class)]
 class ProductSalesSummary
 {
-    private function __construct(
+    final private function __construct(
         #[ORM\Id]
         #[ORM\Column]
         private readonly int $salesId,

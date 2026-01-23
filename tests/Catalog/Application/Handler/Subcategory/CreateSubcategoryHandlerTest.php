@@ -45,10 +45,10 @@ final class CreateSubcategoryHandlerTest extends KernelTestCase
 
         self::assertTrue($result->ok);
         $subcategoryId = $result->payload;
-        $persisted = $this->subcategories->get($subcategoryId);
+        $persisted = $this->subcategories->getByPublicId($subcategoryId);
 
         self::assertSame('New Subcategory', $persisted->getName());
-        self::assertSame($category->getId(), $persisted->getCategory()?->getId());
+        self::assertSame($category->getId(), $persisted->getCategory()->getId());
         self::assertSame($owner->getId(), $persisted->getOwner()?->getId());
         self::assertSame(PriceModel::NONE, $persisted->getPriceModel());
         self::assertTrue($persisted->isActive());
@@ -81,7 +81,7 @@ final class CreateSubcategoryHandlerTest extends KernelTestCase
         $command = new CreateSubcategory(
             name: 'Bad',
             categoryId: CategoryId::fromInt($category->getId()),
-            defaultMarkup: 5,
+            defaultMarkup: '5',
             priceModel: PriceModel::NONE,
             ownerId: $nonStaff->getId(),
             isActive: true,

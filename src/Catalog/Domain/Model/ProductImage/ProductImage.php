@@ -25,7 +25,7 @@ class ProductImage
     #[Assert\NotBlank(message: 'Please enter an image name')]
     private string $imageName = 'image';
 
-    private function __construct(
+    final private function __construct(
         #[ORM\ManyToOne(inversedBy: 'productImages')]
         #[ORM\JoinColumn(nullable: false)]
         private Product $product,

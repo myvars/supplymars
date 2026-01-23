@@ -21,6 +21,9 @@ class ProductSalesSummaryDoctrineRepository extends ServiceEntityRepository impl
         parent::__construct($registry, ProductSalesSummary::class);
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     public function findProductSalesSummary(int $salesTypeId, SalesType $salesType, SalesDuration $duration): ?array
     {
         return $this->getProductSalesSummaryQuery($salesTypeId, $salesType)
@@ -29,8 +32,11 @@ class ProductSalesSummaryDoctrineRepository extends ServiceEntityRepository impl
             ->getOneOrNullResult();
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     public function findProductSalesSummaryRange(
-        string $salesTypeId,
+        int $salesTypeId,
         SalesType $salesType,
         SalesDuration $duration,
         string $startDate,

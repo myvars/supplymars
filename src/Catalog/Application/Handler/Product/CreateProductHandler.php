@@ -6,13 +6,13 @@ use App\Catalog\Application\Command\Product\CreateProduct;
 use App\Catalog\Domain\Model\Category\Category;
 use App\Catalog\Domain\Model\Manufacturer\Manufacturer;
 use App\Catalog\Domain\Model\Product\Product;
-use App\Catalog\Domain\Model\Product\ProductId;
 use App\Catalog\Domain\Model\Subcategory\Subcategory;
 use App\Catalog\Domain\Repository\CategoryRepository;
 use App\Catalog\Domain\Repository\ManufacturerRepository;
 use App\Catalog\Domain\Repository\ProductRepository;
 use App\Catalog\Domain\Repository\SubcategoryRepository;
 use App\Customer\Domain\Model\User\User;
+use App\Customer\Domain\Model\User\UserId;
 use App\Customer\Domain\Repository\UserRepository;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Application\Result;
@@ -50,7 +50,7 @@ final readonly class CreateProductHandler
 
         $owner = null;
         if (null !== $command->ownerId) {
-            $owner = $this->owners->findOneBy(['id' => $command->ownerId, 'isStaff' => true]);
+            $owner = $this->owners->getStaffById(UserId::fromInt($command->ownerId));
             if (!$owner instanceof User) {
                 return Result::fail('Product manager not found.');
             }
@@ -75,6 +75,6 @@ final readonly class CreateProductHandler
         $this->products->add($product);
         $this->flusher->flush();
 
-        return Result::ok('Product created', ProductId::fromInt($product->getId()));
+        return Result::ok('Product created', $product->getPublicId());
     }
 }

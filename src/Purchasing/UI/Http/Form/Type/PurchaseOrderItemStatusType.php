@@ -10,6 +10,9 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * @extends AbstractType<PurchaseOrderItemStatusForm>
+ */
 final class PurchaseOrderItemStatusType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void

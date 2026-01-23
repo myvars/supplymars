@@ -38,6 +38,11 @@ enum PriceModel: string
         };
     }
 
+    /**
+     * @param numeric-string $price
+     *
+     * @return numeric-string
+     */
     public function getPrettyPrice(string $price): string
     {
         if (1 !== bccomp($price, '0', 2)) {
@@ -54,34 +59,59 @@ enum PriceModel: string
         };
     }
 
+    /**
+     * @param numeric-string $price
+     *
+     * @return numeric-string
+     */
     private function pretty00(string $price): string
     {
-        $fraction = bccomp(bcsub($price, bcdiv($price, 1, 0), 2), '0.00', 2) > 0 ? '1.00' : '0.00';
+        $fraction = bccomp(bcsub($price, bcdiv($price, '1', 0), 2), '0.00', 2) > 0 ? '1.00' : '0.00';
 
         return bcadd(bcmul($price, '1', 0), $fraction, 2);
     }
 
+    /**
+     * @param numeric-string $price
+     *
+     * @return numeric-string
+     */
     private function pretty10(string $price): string
     {
-        $fraction = bccomp(bcsub($price, bcdiv($price, 1, 1), 2), '0.00', 2) > 0 ? '0.10' : '0.00';
+        $fraction = bccomp(bcsub($price, bcdiv($price, '1', 1), 2), '0.00', 2) > 0 ? '0.10' : '0.00';
 
         return bcadd(bcmul($price, '1', 1), $fraction, 2);
     }
 
+    /**
+     * @param numeric-string $price
+     *
+     * @return numeric-string
+     */
     private function pretty49(string $price): string
     {
-        $fraction = bccomp(bcsub($price, bcdiv($price, 1, 0), 2), '0.50', 2) >= 0 ? '0.99' : '0.49';
+        $fraction = bccomp(bcsub($price, bcdiv($price, '1', 0), 2), '0.50', 2) >= 0 ? '0.99' : '0.49';
 
         return bcadd(bcmul($price, '1', 0), $fraction, 2);
     }
 
+    /**
+     * @param numeric-string $price
+     *
+     * @return numeric-string
+     */
     private function pretty95(string $price): string
     {
-        $fraction = bccomp(bcsub($price, bcdiv($price, 1, 0), 2), '0.95', 2) > 0 ? '1.95' : '0.95';
+        $fraction = bccomp(bcsub($price, bcdiv($price, '1', 0), 2), '0.95', 2) > 0 ? '1.95' : '0.95';
 
         return bcadd(bcmul($price, '1', 0), $fraction, 2);
     }
 
+    /**
+     * @param numeric-string $price
+     *
+     * @return numeric-string
+     */
     private function pretty99(string $price): string
     {
         return bcadd(bcmul($price, '1', 0), '0.99', 2);

@@ -4,7 +4,6 @@ namespace App\Customer\Application\Handler;
 
 use App\Customer\Application\Command\UpdateCustomer;
 use App\Customer\Domain\Model\User\User;
-use App\Customer\Domain\Model\User\UserId;
 use App\Customer\Domain\Repository\UserRepository;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Application\Result;
@@ -40,6 +39,6 @@ final readonly class UpdateCustomerHandler
 
         $this->flusher->flush();
 
-        return Result::ok('Customer updated.', UserId::fromInt($customer->getId()));
+        return Result::ok('Customer updated.', $customer->getPublicId());
     }
 }

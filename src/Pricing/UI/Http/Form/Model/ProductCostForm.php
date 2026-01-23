@@ -10,6 +10,7 @@ final class ProductCostForm
 {
     public ?string $id = null;
 
+    /** @var numeric-string|null */
     #[Assert\NotBlank(message: 'Please enter a product markup %')]
     #[Assert\PositiveOrZero(message: 'Please enter a positive or zero product markup %')]
     public ?string $defaultMarkup = Product::DEFAULT_MARKUP;

@@ -17,6 +17,9 @@ use Symfony\Component\Form\Extension\Core\Type\PercentType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * @extends AbstractType<CategoryForm>
+ */
 final class CategoryType extends AbstractType
 {
     public function __construct(

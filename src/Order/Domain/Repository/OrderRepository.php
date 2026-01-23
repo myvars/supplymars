@@ -19,4 +19,7 @@ interface OrderRepository extends FindByCriteriaInterface
     public function get(OrderId $id): ?CustomerOrder;
 
     public function getByPublicId(OrderPublicId $publicId): ?CustomerOrder;
+
+    /** @return CustomerOrder[]|null */
+    public function findNextOrdersToBeProcessed(int $orderCount = 1): ?array;
 }

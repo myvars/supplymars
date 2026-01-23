@@ -15,5 +15,5 @@ final class ValidPOItemStatusChange extends Constraint
      * Any public properties become valid options for the annotation.
      * Then, use these in your validator class.
      */
-    public $message = 'Status can not be set to {{ value }}.';
+    public string $message = 'Status can not be set to {{ value }}.';
 }

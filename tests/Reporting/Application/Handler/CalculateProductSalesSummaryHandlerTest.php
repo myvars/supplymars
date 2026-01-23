@@ -22,6 +22,7 @@ class CalculateProductSalesSummaryHandlerTest extends KernelTestCase
     use Factories;
 
     private CalculateProductSalesSummaryHandler $handler;
+
     private EntityManagerInterface $em;
 
     protected function setUp(): void
@@ -54,10 +55,10 @@ class CalculateProductSalesSummaryHandlerTest extends KernelTestCase
         $this->handler->process();
 
         $summaries = $this->em->getRepository(ProductSalesSummary::class)->findAll();
-        $salesTypeValues = array_unique(array_map(fn ($s) => $s->getSalesType()->value, $summaries));
+        $salesTypeValues = array_unique(array_map(fn (ProductSalesSummary $s) => $s->getSalesType()->value, $summaries));
 
         foreach (SalesType::cases() as $salesType) {
-            self::assertContains($salesType->value, $salesTypeValues, "Missing sales type: {$salesType->value}");
+            self::assertContains($salesType->value, $salesTypeValues, 'Missing sales type: ' . $salesType->value);
         }
     }
 

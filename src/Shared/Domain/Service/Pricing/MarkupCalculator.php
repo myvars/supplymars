@@ -6,6 +6,12 @@ use App\Shared\Domain\ValueObject\PriceModel;
 
 final class MarkupCalculator
 {
+    /**
+     * @param numeric-string $cost
+     * @param numeric-string $sellPrice
+     *
+     * @return numeric-string
+     */
     public function calculateMarkupFromSellPrice(
         string $cost,
         string $sellPrice,
@@ -23,6 +29,12 @@ final class MarkupCalculator
         return $this->bcround(bcmul($markupDecimal, '100', 4), 3);
     }
 
+    /**
+     * @param numeric-string $cost
+     * @param numeric-string $markup
+     *
+     * @return numeric-string
+     */
     public function calculateSellPrice(
         string $cost,
         string $markup,
@@ -40,6 +52,13 @@ final class MarkupCalculator
         return $this->bcround(bcmul($cost, $markupDecimal, 3), 2);
     }
 
+    /**
+     * @param numeric-string $cost
+     * @param numeric-string $markup
+     * @param numeric-string $vatRate
+     *
+     * @return numeric-string
+     */
     public function calculateSellPriceIncVat(
         string $cost,
         string $markup,
@@ -55,6 +74,12 @@ final class MarkupCalculator
         return $this->bcround(bcmul($sellPrice, $vatMultiplier, 3), 2);
     }
 
+    /**
+     * @param numeric-string $sellPriceIncVat
+     * @param numeric-string $vatRate
+     *
+     * @return numeric-string
+     */
     public function calculateSellPriceBeforeVat(
         string $sellPriceIncVat,
         string $vatRate,
@@ -72,6 +97,13 @@ final class MarkupCalculator
         return $this->bcround(bcdiv($sellPriceIncVat, $vatMultiplier, 3), 2);
     }
 
+    /**
+     * @param numeric-string $cost
+     * @param numeric-string $markup
+     * @param numeric-string $vatRate
+     *
+     * @return numeric-string
+     */
     public function calculatePrettyPrice(
         string $cost,
         string $markup,
@@ -83,6 +115,13 @@ final class MarkupCalculator
         return $priceModel->getPrettyPrice($sellPriceIncVat);
     }
 
+    /**
+     * @param numeric-string $cost
+     * @param numeric-string $sellPriceIncVat
+     * @param numeric-string $vatRate
+     *
+     * @return numeric-string
+     */
     public function calculateCustomMarkup(
         string $cost,
         string $sellPriceIncVat,
@@ -93,13 +132,24 @@ final class MarkupCalculator
         return $this->calculateMarkupFromSellPrice($cost, $sellPriceBeforeVat);
     }
 
+    /**
+     * @param numeric-string $vatRate
+     *
+     * @return numeric-string
+     */
     private function getVatMultiplier(string $vatRate): string
     {
         return bcadd('1', bcdiv($vatRate, '100', 4), 4);
     }
 
+    /**
+     * @param numeric-string $number
+     *
+     * @return numeric-string
+     */
     private function bcround(string $number, int $precision): string
     {
+        /** @var numeric-string $adjustment @phpstan-ignore varTag.nativeType */
         $adjustment = '0.' . str_repeat('0', $precision) . '5';
         $number = bcadd($number, $adjustment, $precision + 1);
 

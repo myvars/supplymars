@@ -15,6 +15,8 @@ use Pagerfanta\Pagerfanta;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
+use Symfony\Component\HttpFoundation\Session\FlashBagAwareSessionInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -22,6 +24,9 @@ use Twig\Environment;
 
 final class SearchFlowTest extends TestCase
 {
+    /**
+     * @param array<string, mixed> $query
+     */
     private function newRequest(string $uri = '/order-item', array $query = []): Request
     {
         $r = Request::create($uri, 'GET', $query);
@@ -30,14 +35,26 @@ final class SearchFlowTest extends TestCase
         return $r;
     }
 
+    private function getFlashBag(Request $request): FlashBagInterface
+    {
+        $session = $request->getSession();
+        assert($session instanceof FlashBagAwareSessionInterface);
+
+        return $session->getFlashBag();
+    }
+
     private function criteria(int $page, int $limit): SearchCriteriaInterface
     {
         return new TestSearchCriteria($page, $limit);
     }
 
+    /**
+     * @param array<int, mixed> $items
+     */
     private function repository(array $items): FindByCriteriaInterface
     {
         return new readonly class($items) implements FindByCriteriaInterface {
+            /** @param array<int, mixed> $items */
             public function __construct(private array $items)
             {
             }
@@ -76,7 +93,7 @@ final class SearchFlowTest extends TestCase
 
         self::assertSame(Response::HTTP_OK, $response->getStatusCode());
         self::assertSame('<html>OK</html>', $response->getContent());
-        self::assertEmpty($request->getSession()->getFlashBag()->get('warning'));
+        self::assertEmpty($this->getFlashBag($request)->get('warning'));
     }
 
     public function testSearchOutOfRangeRedirectsWithWarningFlash(): void
@@ -102,7 +119,7 @@ final class SearchFlowTest extends TestCase
         $response = $flow->search($request, $repository, $criteria, FlowContext::forSearch('OrderItem'));
 
         self::assertSame(303, $response->getStatusCode());
-        self::assertSame(['Page 99 not found.'], $request->getSession()->getFlashBag()->get('warning'));
+        self::assertSame(['Page 99 not found.'], $this->getFlashBag($request)->get('warning'));
     }
 
     public function testSearchThrowsWhenModelNotConfigured(): void

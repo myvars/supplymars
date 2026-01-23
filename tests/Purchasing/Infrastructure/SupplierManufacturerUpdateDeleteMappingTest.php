@@ -45,7 +45,7 @@ final class SupplierManufacturerUpdateDeleteMappingTest extends KernelTestCase
         /** @var SupplierManufacturer $reloaded */
         $reloaded = $this->em->getRepository(SupplierManufacturer::class)->find($id);
         self::assertSame('After', $reloaded->getName());
-        self::assertSame($supplierB->getId(), $reloaded->getSupplier()?->getId());
+        self::assertSame($supplierB->getId(), $reloaded->getSupplier()->getId());
     }
 
     public function testDeleteRemovesRow(): void

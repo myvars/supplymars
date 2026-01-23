@@ -9,6 +9,9 @@ use App\Purchasing\Domain\Model\SupplierProduct\SupplierSubcategoryId;
 
 final readonly class CreateSupplierProduct
 {
+    /**
+     * @param numeric-string $cost
+     */
     public function __construct(
         public string $name,
         public string $productCode,

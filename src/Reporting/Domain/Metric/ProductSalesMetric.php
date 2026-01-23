@@ -37,6 +37,9 @@ enum ProductSalesMetric: string implements SalesMetricInterface
         };
     }
 
+    /**
+     * @return array<string, string>
+     */
     public function getChartColors(): array
     {
         return match ($this) {

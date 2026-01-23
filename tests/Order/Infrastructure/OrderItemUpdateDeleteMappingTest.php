@@ -54,7 +54,7 @@ final class OrderItemUpdateDeleteMappingTest extends KernelTestCase
         $reloaded = $this->em->getRepository(CustomerOrderItem::class)->find($id);
         self::assertNotNull($reloaded);
         self::assertSame(10, $reloaded->getQuantity());
-        self::assertSame(bcmul('10', $reloaded->getPrice(), 2), $reloaded->getTotalPrice());
+        self::assertSame(bcmul('10', $reloaded->getPrice() ?? '0', 2), $reloaded->getTotalPrice());
     }
 
     public function testDeleteRemovesRow(): void

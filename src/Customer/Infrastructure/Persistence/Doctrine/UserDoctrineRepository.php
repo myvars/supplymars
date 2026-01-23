@@ -2,6 +2,7 @@
 
 namespace App\Customer\Infrastructure\Persistence\Doctrine;
 
+use App\Customer\Application\Search\CustomerSearchCriteria;
 use App\Customer\Domain\Model\User\User;
 use App\Customer\Domain\Model\User\UserId;
 use App\Customer\Domain\Model\User\UserPublicId;
@@ -19,12 +20,10 @@ use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 /**
  * @extends ServiceEntityRepository<User>
  *
- * @implements PasswordUpgraderInterface<User>
- *
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
- * @method User|null findOneBy(array $criteria, array $orderBy = null)
+ * @method User|null findOneBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null)
  * @method User[]    findAll()
- * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method User[]    findBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null, $limit = null, $offset = null)
  */
 class UserDoctrineRepository extends ServiceEntityRepository implements PasswordUpgraderInterface, FindByCriteriaInterface, UserRepository
 {
@@ -67,8 +66,15 @@ class UserDoctrineRepository extends ServiceEntityRepository implements Password
         $this->getEntityManager()->flush();
     }
 
+    /**
+     * @return AdapterInterface<User>
+     */
     public function findByCriteria(SearchCriteriaInterface $criteria): AdapterInterface
     {
+        if (!$criteria instanceof CustomerSearchCriteria) {
+            throw new \InvalidArgumentException('Expected CustomerSearchCriteria');
+        }
+
         $sort = $criteria->getSort();
         $sortDirection = $criteria->getSortDirection();
 
@@ -84,6 +90,9 @@ class UserDoctrineRepository extends ServiceEntityRepository implements Password
         return new QueryAdapter($qb);
     }
 
+    /**
+     * @return array<int, User>|null
+     */
     public function findStaff(): ?array
     {
         return $this->createQueryBuilder('u')
@@ -91,6 +100,16 @@ class UserDoctrineRepository extends ServiceEntityRepository implements Password
             ->setParameter('isStaff', true)
             ->getQuery()
             ->getResult();
+    }
+
+    public function getStaffById(UserId $id): ?User
+    {
+        return $this->findOneBy(['id' => $id->value(), 'isStaff' => true]);
+    }
+
+    public function getByEmail(string $email): ?User
+    {
+        return $this->findOneBy(['email' => $email]);
     }
 
     public function getRandomUser(): ?User

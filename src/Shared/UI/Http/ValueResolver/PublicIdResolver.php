@@ -17,6 +17,9 @@ final readonly class PublicIdResolver implements ValueResolverInterface
     {
     }
 
+    /**
+     * @return iterable<object>
+     */
     public function resolve(Request $request, ArgumentMetadata $argument): iterable
     {
         $class = $argument->getType();

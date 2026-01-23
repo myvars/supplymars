@@ -2,6 +2,7 @@
 
 namespace App\Catalog\Infrastructure\Persistence\Doctrine;
 
+use App\Catalog\Application\Search\ManufacturerSearchCriteria;
 use App\Catalog\Domain\Model\Manufacturer\Manufacturer;
 use App\Catalog\Domain\Model\Manufacturer\ManufacturerId;
 use App\Catalog\Domain\Model\Manufacturer\ManufacturerPublicId;
@@ -17,9 +18,9 @@ use Pagerfanta\Doctrine\ORM\QueryAdapter;
  * @extends ServiceEntityRepository<Manufacturer>
  *
  * @method Manufacturer|null find($id, $lockMode = null, $lockVersion = null)
- * @method Manufacturer|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Manufacturer|null findOneBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null)
  * @method Manufacturer[]    findAll()
- * @method Manufacturer[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Manufacturer[]    findBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null, $limit = null, $offset = null)
  */
 class ManufacturerDoctrineRepository extends ServiceEntityRepository implements FindByCriteriaInterface, ManufacturerRepository
 {
@@ -48,8 +49,15 @@ class ManufacturerDoctrineRepository extends ServiceEntityRepository implements 
         return $this->findOneBy(['publicId' => $publicId->value()]);
     }
 
+    /**
+     * @return AdapterInterface<Manufacturer>
+     */
     public function findByCriteria(SearchCriteriaInterface $criteria): AdapterInterface
     {
+        if (!$criteria instanceof ManufacturerSearchCriteria) {
+            throw new \InvalidArgumentException('Expected ManufacturerSearchCriteria');
+        }
+
         $sort = $criteria->getSort();
         $sortDirection = $criteria->getSortDirection();
 

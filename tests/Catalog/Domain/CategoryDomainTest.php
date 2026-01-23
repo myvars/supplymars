@@ -81,6 +81,7 @@ class CategoryDomainTest extends TestCase
         $events = $category->releaseDomainEvents();
         self::assertCount(1, $events);
         $event = $events[0];
+        self::assertInstanceOf(CategoryPricingWasChangedEvent::class, $event);
         self::assertTrue($event->isVatRateChanged());
         self::assertTrue($event->isMarkupChanged());
         self::assertTrue($event->isPriceModelChanged());

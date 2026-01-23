@@ -15,6 +15,9 @@ final readonly class BarChartBuilder
     {
     }
 
+    /**
+     * @param array<int, array<string, mixed>> $salesData
+     */
     public function create(array $salesData, SalesDuration $salesDuration, SalesMetricInterface $salesMetric): Chart
     {
         $dateRange = $this->generateDateRange(
@@ -34,6 +37,9 @@ final readonly class BarChartBuilder
         return $this->buildChart($chartData, $salesMetric);
     }
 
+    /**
+     * @param array<string, int|float> $data
+     */
     private function buildChart(array $data, SalesMetricInterface $salesMetric): Chart
     {
         return $this->chartBuilder
@@ -76,6 +82,9 @@ final readonly class BarChartBuilder
             ]);
     }
 
+    /**
+     * @return array<string, int>
+     */
     private function generateDateRange(
         \DateTimeImmutable $startDate,
         \DateTimeImmutable $endDate,
@@ -87,7 +96,9 @@ final readonly class BarChartBuilder
         }
 
         $dateRange = [];
-        $period = new \DatePeriod($startDate, \DateInterval::createFromDateString($granularity), $endDate);
+        $interval = \DateInterval::createFromDateString($granularity);
+        \assert($interval instanceof \DateInterval);
+        $period = new \DatePeriod($startDate, $interval, $endDate);
         foreach ($period as $date) {
             $dateRange[$date->format($labelFormat)] = 0;
         }
@@ -95,6 +106,12 @@ final readonly class BarChartBuilder
         return $dateRange;
     }
 
+    /**
+     * @param array<string, int>               $dateRange
+     * @param array<int, array<string, mixed>> $salesData
+     *
+     * @return array<string, int|float>
+     */
     private function mergeSalesData(
         array $dateRange,
         array $salesData,

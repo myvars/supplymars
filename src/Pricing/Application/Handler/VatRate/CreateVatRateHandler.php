@@ -4,7 +4,6 @@ namespace App\Pricing\Application\Handler\VatRate;
 
 use App\Pricing\Application\Command\VatRate\CreateVatRate;
 use App\Pricing\Domain\Model\VatRate\VatRate;
-use App\Pricing\Domain\Model\VatRate\VatRateId;
 use App\Pricing\Domain\Repository\VatRateRepository;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Application\Result;
@@ -34,6 +33,6 @@ final readonly class CreateVatRateHandler
         $this->vatRates->add($vatRate);
         $this->flusher->flush();
 
-        return Result::ok('VAT rate created', VatRateId::fromInt($vatRate->getId()));
+        return Result::ok('VAT rate created', $vatRate->getPublicId());
     }
 }

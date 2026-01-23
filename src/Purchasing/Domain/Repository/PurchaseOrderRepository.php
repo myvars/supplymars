@@ -5,6 +5,8 @@ namespace App\Purchasing\Domain\Repository;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrder;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderId;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderPublicId;
+use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
+use App\Purchasing\Domain\Model\Supplier\Supplier;
 use App\Purchasing\Infrastructure\Persistence\Doctrine\PurchaseOrderDoctrineRepository;
 use App\Shared\Infrastructure\Persistence\Search\FindByCriteriaInterface;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
@@ -19,4 +21,10 @@ interface PurchaseOrderRepository extends FindByCriteriaInterface
     public function get(PurchaseOrderId $id): ?PurchaseOrder;
 
     public function getByPublicId(PurchaseOrderPublicId $publicId): ?PurchaseOrder;
+
+    /** @return PurchaseOrder[] */
+    public function findWaitingPurchaseOrders(Supplier $supplier, int $limit = 10): array;
+
+    /** @return PurchaseOrder[] */
+    public function findByStatus(PurchaseOrderStatus $status, int $limit): array;
 }

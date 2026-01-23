@@ -50,7 +50,10 @@ final readonly class CalculateOrderSalesSummaryHandler
         $this->em->flush();
     }
 
-    private function getOrderSalesSummary(OrderSalesType $orderSalesType): ?array
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function getOrderSalesSummary(OrderSalesType $orderSalesType): array
     {
         return $this->em->getRepository(OrderSales::class)
             ->findOrderSalesSummary($orderSalesType);

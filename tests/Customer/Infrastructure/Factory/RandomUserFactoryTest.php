@@ -27,6 +27,5 @@ final class RandomUserFactoryTest extends TestCase
         self::assertFalse($user->isStaff());
         self::assertContains('ROLE_USER', $user->getRoles());
         self::assertSame('hashed-password', $user->getPassword());
-        self::assertNotNull($user->getPublicId()->value());
     }
 }

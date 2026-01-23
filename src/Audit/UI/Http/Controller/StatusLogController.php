@@ -42,7 +42,7 @@ class StatusLogController extends AbstractController
         return $this->render('audit/log.html.twig', [
             'entity' => 'Customer Order Item',
             'result' => $orderItem,
-            'statusLog' => $this->logs->find(
+            'statusLog' => $this->logs->findByEvent(
                 DomainEventType::ORDER_ITEM_STATUS_CHANGED,
                 $orderItem->getId()
             ),
@@ -57,7 +57,7 @@ class StatusLogController extends AbstractController
             'entity' => 'Purchase Order',
             'colourScheme' => $purchaseOrder->getSupplier()->getColourScheme(),
             'result' => $purchaseOrder,
-            'statusLog' => $this->logs->find(
+            'statusLog' => $this->logs->findByEvent(
                 DomainEventType::PURCHASE_ORDER_STATUS_CHANGED,
                 $purchaseOrder->getId()
             ),
@@ -76,7 +76,7 @@ class StatusLogController extends AbstractController
             'entity' => 'Purchase Order Item',
             'colourScheme' => $purchaseOrderItem->getPurchaseOrder()->getSupplier()->getColourScheme(),
             'result' => $purchaseOrderItem,
-            'statusLog' => $this->logs->find(
+            'statusLog' => $this->logs->findByEvent(
                 DomainEventType::PURCHASE_ORDER_ITEM_STATUS_CHANGED,
                 $purchaseOrderItem->getId()
             ),

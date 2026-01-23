@@ -28,7 +28,7 @@ class CreateOrderFlowTest extends WebTestCase
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
             ->get('/order/new')
-            ->fillField('order[customerId]', $customer->getId())
+            ->fillField('order[customerId]', (string) $customer->getId())
             ->fillField('order[shippingMethod]', ShippingMethod::THREE_DAY->value)
             ->fillField('order[customerOrderRef]', 'FLOW-REF-001')
             ->click('Create Order')

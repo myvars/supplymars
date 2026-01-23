@@ -19,4 +19,9 @@ interface ProductRepository extends FindByCriteriaInterface
     public function get(ProductId $id): ?Product;
 
     public function getByPublicId(ProductPublicId $publicId): ?Product;
+
+    /** @return Product[] */
+    public function findRandomProducts(int $limit = 10): array;
+
+    public function findByMfrPartNumber(string $mfrPartNumber): ?Product;
 }

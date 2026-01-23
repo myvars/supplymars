@@ -10,7 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: OrderSalesDoctrineRepository::class)]
 class OrderSales
 {
-    private function __construct(
+    final private function __construct(
         #[ORM\Id]
         #[ORM\Column(length: 10)]
         #[Assert\NotBlank(message: 'Date string must not be blank')]

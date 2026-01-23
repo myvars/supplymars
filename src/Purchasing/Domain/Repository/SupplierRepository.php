@@ -19,4 +19,11 @@ interface SupplierRepository extends FindByCriteriaInterface
     public function get(SupplierId $id): ?Supplier;
 
     public function getByPublicId(SupplierPublicId $publicId): ?Supplier;
+
+    public function getRandomSupplier(): ?Supplier;
+
+    public function getWarehouseSupplier(): ?Supplier;
+
+    /** @return Supplier[] */
+    public function findNonWarehouseSupplier(): array;
 }

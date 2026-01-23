@@ -58,6 +58,6 @@ final readonly class calculateProductSalesCommand
     public function runTheProductSalesSummaryCommand(OutputInterface $output): void
     {
         $input = new ArrayInput([]);
-        $this->productSalesSummaryCommand->__invoke($input, $output, false);
+        $this->productSalesSummaryCommand->__invoke($input, $output, 0);
     }
 }

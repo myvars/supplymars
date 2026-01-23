@@ -10,6 +10,9 @@ use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
 final class FlashMessengerTest extends TestCase
 {
+    /**
+     * @return array{Request, Session}
+     */
     private function makeRequestWithSession(): array
     {
         $session = new Session(new MockArraySessionStorage());

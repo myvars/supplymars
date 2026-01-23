@@ -2,6 +2,7 @@
 
 namespace App\Purchasing\Infrastructure\Persistence\Doctrine;
 
+use App\Purchasing\Application\Search\SupplierProductSearchCriteria;
 use App\Purchasing\Domain\Model\Supplier\Supplier;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProductId;
@@ -18,9 +19,9 @@ use Pagerfanta\Doctrine\ORM\QueryAdapter;
  * @extends ServiceEntityRepository<SupplierProduct>
  *
  * @method SupplierProduct|null find($id, $lockMode = null, $lockVersion = null)
- * @method SupplierProduct|null findOneBy(array $criteria, array $orderBy = null)
+ * @method SupplierProduct|null findOneBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null)
  * @method SupplierProduct[]    findAll()
- * @method SupplierProduct[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method SupplierProduct[]    findBy(array<string, mixed> $criteria, ?array<string, string> $orderBy = null, $limit = null, $offset = null)
  */
 class SupplierProductDoctrineRepository extends ServiceEntityRepository implements FindByCriteriaInterface, SupplierProductRepository
 {
@@ -49,8 +50,15 @@ class SupplierProductDoctrineRepository extends ServiceEntityRepository implemen
         return $this->findOneBy(['publicId' => $publicId->value()]);
     }
 
+    /**
+     * @return AdapterInterface<SupplierProduct>
+     */
     public function findByCriteria(SearchCriteriaInterface $criteria): AdapterInterface
     {
+        if (!$criteria instanceof SupplierProductSearchCriteria) {
+            throw new \InvalidArgumentException('Expected SupplierProductSearchCriteria');
+        }
+
         $sort = $criteria->getSort();
         $sortDirection = $criteria->getSortDirection();
 
@@ -114,5 +122,15 @@ class SupplierProductDoctrineRepository extends ServiceEntityRepository implemen
             ->addOrderBy('RAND()')
             ->getQuery()
             ->getResult();
+    }
+
+    public function findBySupplier(Supplier $supplier): array
+    {
+        return $this->findBy(['supplier' => $supplier]);
+    }
+
+    public function findInactive(int $limit): array
+    {
+        return $this->findBy(['isActive' => false], null, $limit);
     }
 }

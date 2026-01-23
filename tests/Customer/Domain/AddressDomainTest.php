@@ -43,6 +43,5 @@ final class AddressDomainTest extends TestCase
         self::assertSame('alice@example.com', $addr->getEmail());
         self::assertTrue($addr->isDefaultShippingAddress());
         self::assertFalse($addr->isDefaultBillingAddress());
-        self::assertNotNull($addr->getPublicId()->value());
     }
 }

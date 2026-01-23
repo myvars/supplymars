@@ -2,6 +2,7 @@
 
 namespace App\Reporting\UI\Http\Dashboard;
 
+use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Order\Infrastructure\Persistence\Doctrine\CustomerOrderDoctrineRepository;
 use App\Purchasing\Infrastructure\Persistence\Doctrine\PurchaseOrderDoctrineRepository;
 use App\Reporting\Domain\Metric\SalesDuration;
@@ -22,6 +23,9 @@ final readonly class DashboardViewer
     ) {
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function build(): array
     {
         return [
@@ -36,6 +40,9 @@ final readonly class DashboardViewer
         ];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function getOrderSalesSummary(SalesDuration $duration): array
     {
         $summary = $this->orderSummaryRepository->findOrderSalesSummary($duration);
@@ -43,6 +50,9 @@ final readonly class DashboardViewer
         return $summary ?? [];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function getProductSalesSummary(SalesDuration $duration): array
     {
         $summary = $this->productSummaryRepository->findProductSalesSummary(
@@ -54,6 +64,9 @@ final readonly class DashboardViewer
         return $summary ?? [];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function getOverdueOrderSummary(): array
     {
         $summary = $this->orderRepository->findOverdueOrdersSummary(
@@ -63,15 +76,19 @@ final readonly class DashboardViewer
         return $summary ?? [];
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function getRejectedPoSummary(): array
     {
-        $summary = $this->purchaseOrderRepository->findRejectedPoSummary(
+        return $this->purchaseOrderRepository->findRejectedPoSummary(
             new \DateTime(SalesDuration::LAST_30->getStartDate())
         );
-
-        return $summary ?? [];
     }
 
+    /**
+     * @return array<int, mixed>
+     */
     private function getLatestProductSales(): array
     {
         return $this->productSalesRepository->findLatestProductSales(
@@ -80,6 +97,9 @@ final readonly class DashboardViewer
         );
     }
 
+    /**
+     * @return array<int, CustomerOrder>
+     */
     private function getLatestOrders(): array
     {
         return $this->orderRepository->findLatestOrders(

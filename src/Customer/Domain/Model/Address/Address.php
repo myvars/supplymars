@@ -80,7 +80,7 @@ class Address
     #[ORM\OneToMany(targetEntity: PurchaseOrder::class, mappedBy: 'shippingAddress')]
     private Collection $purchaseOrders;
 
-    public function __construct()
+    final public function __construct()
     {
         $this->initializePublicId();
         $this->customerOrders = new ArrayCollection();
@@ -185,9 +185,9 @@ class Address
         return $this->email;
     }
 
-    public function getCustomer(): ?User
+    public function getCustomer(): User
     {
-        return $this->customer;
+        return $this->customer ?? throw new \LogicException('Customer must be set');
     }
 
     public function isDefaultShippingAddress(): bool

@@ -40,6 +40,9 @@ final readonly class CalculateOrderSalesHandler
         $this->em->flush();
     }
 
+    /**
+     * @return array<int, array<string, mixed>>
+     */
     private function getOrderSales(string $date): array
     {
         return $this->em->getRepository(CustomerOrder::class)

@@ -29,7 +29,7 @@ final readonly class StatusChangeLogWriter
         $statusChangeLog = new StatusChangeLog(
             $type,
             $entityId,
-            $statusChange->after()->value,
+            (string) $statusChange->after()->value,
             $occurredAt,
             $currentUser
         );

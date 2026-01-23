@@ -6,5 +6,8 @@ interface DomainEventProviderInterface
 {
     public function raiseDomainEvent(AbstractDomainEvent $event): void;
 
+    /**
+     * @return array<int, AbstractDomainEvent>
+     */
     public function releaseDomainEvents(): array;
 }

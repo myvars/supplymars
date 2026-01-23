@@ -14,9 +14,11 @@ final class ValidProductIdValidator extends ConstraintValidator
     {
     }
 
-    public function validate($value, Constraint $constraint): void
+    public function validate(mixed $value, Constraint $constraint): void
     {
-        /* @var ValidProductId $constraint */
+        if (!$constraint instanceof ValidProductId) {
+            throw new \InvalidArgumentException('Expected instance of ' . ValidProductId::class);
+        }
 
         if ($value === null || $value === '') {
             return;

@@ -4,6 +4,7 @@ namespace App\Tests\Pricing\Application\Listener;
 
 use App\Catalog\Domain\Model\Product\Product;
 use App\Pricing\Application\Listener\VatRateWasChanged;
+use App\Pricing\Domain\Model\VatRate\Event\VatRateWasChangedEvent;
 use App\Pricing\Domain\Repository\VatRateRepository;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Domain\Service\Pricing\MarkupCalculator;
@@ -50,6 +51,7 @@ final class VatRateWasChangedListenerTest extends KernelTestCase
         );
 
         foreach ($vatRate->releaseDomainEvents() as $event) {
+            \assert($event instanceof VatRateWasChangedEvent);
             $listener($event);
         }
 
@@ -79,6 +81,7 @@ final class VatRateWasChangedListenerTest extends KernelTestCase
         );
 
         foreach ($vatRate->releaseDomainEvents() as $event) {
+            \assert($event instanceof VatRateWasChangedEvent);
             $listener($event);
         }
     }
@@ -105,6 +108,7 @@ final class VatRateWasChangedListenerTest extends KernelTestCase
         $vatRate->update($vatRate->getName(), '15.00');
 
         foreach ($vatRate->releaseDomainEvents() as $event) {
+            \assert($event instanceof VatRateWasChangedEvent);
             $listener($event);
         }
 

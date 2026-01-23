@@ -49,8 +49,8 @@ final class SupplierSubcategoryUpdateDeleteMappingTest extends KernelTestCase
         /** @var SupplierSubcategory $reloaded */
         $reloaded = $this->em->getRepository(SupplierSubcategory::class)->find($id);
         self::assertSame('After', $reloaded->getName());
-        self::assertSame($supplierB->getId(), $reloaded->getSupplier()?->getId());
-        self::assertSame($categoryB->getId(), $reloaded->getSupplierCategory()?->getId());
+        self::assertSame($supplierB->getId(), $reloaded->getSupplier()->getId());
+        self::assertSame($categoryB->getId(), $reloaded->getSupplierCategory()->getId());
     }
 
     public function testDeleteRemovesRow(): void

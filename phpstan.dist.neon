@@ -1,8 +1,16 @@
+includes:
+    - vendor/phpstan/phpstan-symfony/extension.neon
+    - vendor/phpstan/phpstan-doctrine/extension.neon
+    - phpstan-baseline.neon
+
 parameters:
-    level: 6
+    level: 7
     paths:
         - bin/
         - config/
         - public/
         - src/
         - tests/
+    symfony:
+        containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
+    treatPhpDocTypesAsCertain: false
