@@ -189,4 +189,4 @@ src/Shared/Application/
 
 ## Related Documentation
 
-- [Usage Patterns and Examples](./Usage.md)
+- [Usage Patterns and Examples](Usage.md)
