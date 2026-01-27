@@ -2,7 +2,7 @@
 
 namespace App\Tests\Reporting\Unit;
 
-use App\Reporting\Application\Search\OverdueOrderSearchCriteria;
+use App\Reporting\Application\Report\OverdueOrderReportCriteria;
 use App\Reporting\Domain\Metric\SalesDuration;
 use PHPUnit\Framework\TestCase;
 
@@ -10,7 +10,7 @@ class OverdueOrderSearchDtoTest extends TestCase
 {
     public function testSettersAndGetters(): void
     {
-        $dto = new OverdueOrderSearchCriteria();
+        $dto = new OverdueOrderReportCriteria();
         $dto->setQueryString('queryString');
         $dto->setQuery('query');
         $dto->setSort('dueDate');
@@ -30,7 +30,7 @@ class OverdueOrderSearchDtoTest extends TestCase
 
     public function testInvalidSetDuration(): void
     {
-        $dto = new OverdueOrderSearchCriteria();
+        $dto = new OverdueOrderReportCriteria();
         $dto->setDuration('INVALID_DURATION');
 
         $this->assertSame(SalesDuration::default(), $dto->getDuration());

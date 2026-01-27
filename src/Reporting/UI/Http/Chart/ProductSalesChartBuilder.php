@@ -1,28 +1,37 @@
 <?php
 
-namespace App\Reporting\UI\Http\Dashboard\Chart;
+namespace App\Reporting\UI\Http\Chart;
 
 use App\Reporting\Domain\Metric\SalesDuration;
 use App\Reporting\Domain\Metric\SalesMetricInterface;
+use App\Reporting\Domain\Service\SalesDateRangeResolver;
+use Psr\Clock\ClockInterface;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
 
-final readonly class BarChartBuilder
+final readonly class ProductSalesChartBuilder
 {
     private const string CHART_TYPE = Chart::TYPE_BAR;
 
-    public function __construct(private ChartBuilderInterface $chartBuilder)
-    {
+    public function __construct(
+        private ChartBuilderInterface $chartBuilder,
+        private SalesDateRangeResolver $dateRangeResolver,
+        private ClockInterface $clock,
+    ) {
     }
 
     /**
      * @param array<int, array<string, mixed>> $salesData
      */
-    public function create(array $salesData, SalesDuration $salesDuration, SalesMetricInterface $salesMetric): Chart
+    public function create(array $salesData, SalesMetricInterface $salesMetric, ?SalesDuration $salesDuration = null): Chart
     {
-        $dateRange = $this->generateDateRange(
-            new \DateTimeImmutable(self::getSalesRangeStartDate($salesDuration)),
-            new \DateTimeImmutable(),
+        if (!$salesDuration instanceof SalesDuration) {
+            throw new \InvalidArgumentException('SalesDuration is required for bar charts.');
+        }
+
+        $dateRange = $this->dateRangeResolver->generateDateRange(
+            new \DateTimeImmutable($this->dateRangeResolver->getRangeStartDate($salesDuration)),
+            $this->clock->now(),
             $salesDuration->getChartLabelFormat(),
             $salesDuration->getChartGranularity()
         );
@@ -83,30 +92,6 @@ final readonly class BarChartBuilder
     }
 
     /**
-     * @return array<string, int>
-     */
-    private function generateDateRange(
-        \DateTimeImmutable $startDate,
-        \DateTimeImmutable $endDate,
-        string $labelFormat,
-        string $granularity,
-    ): array {
-        if ($startDate > $endDate) {
-            throw new \InvalidArgumentException('Start date must be less than or equal to end date.');
-        }
-
-        $dateRange = [];
-        $interval = \DateInterval::createFromDateString($granularity);
-        \assert($interval instanceof \DateInterval);
-        $period = new \DatePeriod($startDate, $interval, $endDate);
-        foreach ($period as $date) {
-            $dateRange[$date->format($labelFormat)] = 0;
-        }
-
-        return $dateRange;
-    }
-
-    /**
      * @param array<string, int>               $dateRange
      * @param array<int, array<string, mixed>> $salesData
      *
@@ -127,23 +112,5 @@ final readonly class BarChartBuilder
         }
 
         return $dateRange;
-    }
-
-    public static function getSalesRangeDuration(SalesDuration $salesDuration): SalesDuration
-    {
-        if (SalesDuration::MTD === $salesDuration) {
-            return SalesDuration::MONTH;
-        }
-
-        return SalesDuration::DAY;
-    }
-
-    public static function getSalesRangeStartDate(SalesDuration $salesDuration): string
-    {
-        if (SalesDuration::MTD === $salesDuration) {
-            return SalesDuration::MONTH->getStartDate(true);
-        }
-
-        return $salesDuration->getStartDate();
     }
 }

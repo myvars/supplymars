@@ -2,11 +2,13 @@
 
 namespace App\Reporting\UI\Http\Controller;
 
+use App\Reporting\Application\Handler\Report\DashboardReportHandler;
+use App\Reporting\Application\Handler\Report\OrderSummaryReportHandler;
+use App\Reporting\Application\Handler\Report\OverdueOrdersReportHandler;
+use App\Reporting\Application\Handler\Report\ProductSalesReportHandler;
 use App\Reporting\Application\Report\OrderSummaryReportCriteria;
+use App\Reporting\Application\Report\OverdueOrderReportCriteria;
 use App\Reporting\Application\Report\ProductSalesReportCriteria;
-use App\Reporting\Application\Search\OverdueOrderSearchCriteria;
-use App\Reporting\UI\Http\Dashboard\DashboardViewer;
-use App\Reporting\UI\Http\Dashboard\ReportHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
@@ -17,40 +19,48 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 class DashboardController extends AbstractController
 {
     #[Route(path: '/dashboard/', name: 'app_reporting_dashboard')]
-    public function show(DashboardViewer $dashboardViewer): Response
+    public function show(DashboardReportHandler $handler): Response
     {
+        $result = $handler();
+
         return $this->render('reporting/show.html.twig', [
-            'report' => $dashboardViewer->build(),
+            'report' => $result->payload,
         ]);
     }
 
     #[Route(path: '/dashboard/report/product/sales', name: 'app_reporting_dashboard_product_sales', methods: ['GET'])]
     public function productSales(
-        ReportHandler $handler,
-        #[MapQueryString] ProductSalesReportCriteria $dto = new ProductSalesReportCriteria(),
+        ProductSalesReportHandler $handler,
+        #[MapQueryString] ProductSalesReportCriteria $criteria = new ProductSalesReportCriteria(),
     ): Response {
+        $result = $handler($criteria);
+
         return $this->render('reporting/product_sales.html.twig', [
-            'report' => $handler->build('product-sales', $dto),
+            'report' => $result->payload,
         ]);
     }
 
     #[Route(path: '/dashboard/report/order/summary', name: 'app_reporting_dashboard_order_summary', methods: ['GET'])]
     public function orderSummary(
-        ReportHandler $handler,
-        #[MapQueryString] OrderSummaryReportCriteria $dto = new OrderSummaryReportCriteria(),
+        OrderSummaryReportHandler $handler,
+        #[MapQueryString] OrderSummaryReportCriteria $criteria = new OrderSummaryReportCriteria(),
     ): Response {
+        $result = $handler($criteria);
+
         return $this->render('reporting/order_summary.html.twig', [
-            'report' => $handler->build('order-summary', $dto),
+            'report' => $result->payload,
         ]);
     }
 
     #[Route(path: '/dashboard/report/overdue/orders', name: 'app_reporting_dashboard_overdue_orders', methods: ['GET'])]
     public function overdueOrders(
-        ReportHandler $handler,
-        #[MapQueryString] OverdueOrderSearchCriteria $dto = new OverdueOrderSearchCriteria(),
+        OverdueOrdersReportHandler $handler,
+        #[MapQueryString] OverdueOrderReportCriteria $criteria = new OverdueOrderReportCriteria(),
     ): Response {
+        $result = $handler($criteria);
+
         return $this->render('reporting/overdue_orders.html.twig', [
-            'report' => $handler->build('overdue-orders', $dto),
+            'report' => $result->payload,
         ]);
     }
 }

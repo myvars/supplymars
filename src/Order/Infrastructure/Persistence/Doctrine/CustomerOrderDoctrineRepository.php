@@ -8,7 +8,7 @@ use App\Order\Domain\Model\Order\OrderId;
 use App\Order\Domain\Model\Order\OrderPublicId;
 use App\Order\Domain\Model\Order\OrderStatus;
 use App\Order\Domain\Repository\OrderRepository;
-use App\Reporting\Application\Search\OverdueOrderSearchCriteria;
+use App\Reporting\Application\Report\OverdueOrderReportCriteria;
 use App\Shared\Application\Search\SearchCriteriaInterface;
 use App\Shared\Infrastructure\Persistence\Search\FindByCriteriaInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -181,7 +181,7 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
     /**
      * @return AdapterInterface<CustomerOrder>
      */
-    public function findOverdueOrders(OverdueOrderSearchCriteria $dto): AdapterInterface
+    public function findOverdueOrders(OverdueOrderReportCriteria $dto): AdapterInterface
     {
         $sort = $dto->getSort();
         $sortDirection = $dto->getSortDirection();

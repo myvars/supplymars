@@ -1,26 +1,28 @@
 <?php
 
-namespace App\Reporting\UI\Http\Dashboard\Chart;
+namespace App\Reporting\UI\Http\Chart;
 
-use App\Order\Domain\Model\Order\OrderStatus;
-use App\Reporting\Domain\Metric\SalesDuration;
 use App\Reporting\Domain\Metric\SalesMetricInterface;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
 
-final readonly class DoughnutChartBuilder
+final readonly class OrderProgressChartBuilder
 {
     private const string CHART_TYPE = Chart::TYPE_DOUGHNUT;
 
-    public function __construct(private ChartBuilderInterface $chartBuilder)
-    {
+    public function __construct(
+        private ChartBuilderInterface $chartBuilder,
+        private ChartColorProviderInterface $colorProvider,
+    ) {
     }
 
     /**
      * @param array<int, array<string, mixed>> $salesData
      */
-    public function create(array $salesData, SalesDuration $salesDuration, SalesMetricInterface $salesMetric): Chart
-    {
+    public function create(
+        array $salesData,
+        SalesMetricInterface $salesMetric,
+    ): Chart {
         $chartData = $this->createChartData($salesData, $salesMetric->getValue());
 
         return $this->buildChart($chartData, $salesMetric);
@@ -40,7 +42,7 @@ final readonly class DoughnutChartBuilder
                         'label' => ucfirst($salesMetric->getDataLabel()),
                         'data' => array_values($data),
                         'backgroundColor' => array_map(
-                            fn (int|string $status): string => OrderStatus::from($status)->getChartColor(),
+                            $this->colorProvider->getColor(...),
                             array_keys($data)
                         ),
                         'borderWidth' => 1,
@@ -90,13 +92,19 @@ final readonly class DoughnutChartBuilder
      */
     private function sortChartData(array $chartData): array
     {
-        $order = [];
-        foreach (OrderStatus::cases() as $status) {
-            $order[strtolower($status->value)] = $status->getLevel();
-        }
-
-        uksort($chartData, fn ($a, $b): int => $order[strtolower($a)] <=> $order[strtolower($b)]);
+        uksort(
+            $chartData,
+            fn (string $a, string $b): int => $this->getSortOrder($a) <=> $this->getSortOrder($b)
+        );
 
         return $chartData;
+    }
+
+    /**
+     * @return int Sort order for the key
+     */
+    private function getSortOrder(string $key): int
+    {
+        return $this->colorProvider->getSortOrder($key) ?? 0;
     }
 }

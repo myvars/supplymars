@@ -3,7 +3,6 @@
 namespace App\Reporting\Application\Report;
 
 use App\Reporting\Domain\Metric\ProductSalesMetric;
-use App\Reporting\Domain\Metric\SalesType;
 use App\Shared\Application\Search\SearchCriteria;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -31,39 +30,4 @@ final class ProductSalesReportCriteria extends SearchCriteria implements ReportC
 
     #[Assert\Range(notInRangeMessage: 'Please enter a valid Supplier Id', min: 1, max: 1000000)]
     public ?int $supplierId = null;
-
-    /**
-     * @return array<string, mixed>|null
-     */
-    public function getSingleSalesType(): ?array
-    {
-        $identifiers = [
-            'product' => $this->productId,
-            'category' => $this->categoryId,
-            'subcategory' => $this->subcategoryId,
-            'manufacturer' => $this->manufacturerId,
-            'supplier' => $this->supplierId,
-        ];
-
-        // Filter to get only non-null values
-        $nonEmptyIdentifiers = array_filter($identifiers, fn (?int $value): bool => !is_null($value));
-
-        if ([] === $nonEmptyIdentifiers) {
-            return [
-                'salesType' => SalesType::ALL,
-                'salesTypeId' => 1,
-            ];
-        }
-
-        if (1 === count($nonEmptyIdentifiers)) {
-            $salesType = array_key_first($nonEmptyIdentifiers);
-
-            return [
-                'salesType' => SalesType::from($salesType),
-                'salesTypeId' => $nonEmptyIdentifiers[$salesType],
-            ];
-        }
-
-        return null;
-    }
 }

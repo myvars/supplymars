@@ -1,12 +1,10 @@
 <?php
 
-namespace App\Reporting\Application\Search;
+namespace App\Reporting\Application\Report;
 
-use App\Reporting\Application\Report\ReportCriteriaInterface;
-use App\Reporting\Application\Report\SalesDurationTrait;
 use App\Shared\Application\Search\SearchCriteria;
 
-final class OverdueOrderSearchCriteria extends SearchCriteria implements ReportCriteriaInterface
+final class OverdueOrderReportCriteria extends SearchCriteria implements ReportCriteriaInterface
 {
     use SalesDurationTrait;
 

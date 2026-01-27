@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Reporting\UI\Http\Dashboard;
+namespace App\Reporting\Application\Handler\Report;
 
 use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Order\Infrastructure\Persistence\Doctrine\CustomerOrderDoctrineRepository;
@@ -11,8 +11,9 @@ use App\Reporting\Domain\Model\SalesType\ProductSalesType;
 use App\Reporting\Infrastructure\Persistence\Doctrine\OrderSalesSummaryDoctrineRepository;
 use App\Reporting\Infrastructure\Persistence\Doctrine\ProductSalesDoctrineRepository;
 use App\Reporting\Infrastructure\Persistence\Doctrine\ProductSalesSummaryDoctrineRepository;
+use App\Shared\Application\Result;
 
-final readonly class DashboardViewer
+final readonly class DashboardReportHandler
 {
     public function __construct(
         private OrderSalesSummaryDoctrineRepository $orderSummaryRepository,
@@ -23,57 +24,48 @@ final readonly class DashboardViewer
     ) {
     }
 
-    /**
-     * @return array<string, mixed>
-     */
-    public function build(): array
+    public function __invoke(): Result
     {
-        return [
-            'orderSalesSummary' => $this->getOrderSalesSummary(SalesDuration::TODAY),
-            'orderSalesCompareSummary' => $this->getOrderSalesSummary(SalesDuration::WEEK_AGO),
-            'productSalesSummary' => $this->getProductSalesSummary(SalesDuration::TODAY),
-            'productSalesCompareSummary' => $this->getProductSalesSummary(SalesDuration::WEEK_AGO),
-            'overdueOrderSummary' => $this->getOverdueOrderSummary(),
+        return Result::ok('Report created', [
+            'orderSalesSummary' => $this->getOrderSalesSummary(SalesDuration::TODAY) ?? [],
+            'orderSalesCompareSummary' => $this->getOrderSalesSummary(SalesDuration::WEEK_AGO) ?? [],
+            'productSalesSummary' => $this->getProductSalesSummary(SalesDuration::TODAY) ?? [],
+            'productSalesCompareSummary' => $this->getProductSalesSummary(SalesDuration::WEEK_AGO) ?? [],
+            'overdueOrderSummary' => $this->getOverdueOrderSummary() ?? [],
             'rejectedPoSummary' => $this->getRejectedPoSummary(),
             'latestProductSales' => $this->getLatestProductSales(),
             'latestOrders' => $this->getLatestOrders(),
-        ];
+        ]);
     }
 
     /**
      * @return array<string, mixed>
      */
-    private function getOrderSalesSummary(SalesDuration $duration): array
+    private function getOrderSalesSummary(SalesDuration $duration): ?array
     {
-        $summary = $this->orderSummaryRepository->findOrderSalesSummary($duration);
-
-        return $summary ?? [];
+        return $this->orderSummaryRepository->findOrderSalesSummary($duration);
     }
 
     /**
      * @return array<string, mixed>
      */
-    private function getProductSalesSummary(SalesDuration $duration): array
+    private function getProductSalesSummary(SalesDuration $duration): ?array
     {
-        $summary = $this->productSummaryRepository->findProductSalesSummary(
+        return $this->productSummaryRepository->findProductSalesSummary(
             1,
             SalesType::ALL,
             $duration
         );
-
-        return $summary ?? [];
     }
 
     /**
      * @return array<string, mixed>
      */
-    private function getOverdueOrderSummary(): array
+    private function getOverdueOrderSummary(): ?array
     {
-        $summary = $this->orderRepository->findOverdueOrdersSummary(
+        return $this->orderRepository->findOverdueOrdersSummary(
             new \DateTime(SalesDuration::LAST_30->getStartDate())
         );
-
-        return $summary ?? [];
     }
 
     /**
