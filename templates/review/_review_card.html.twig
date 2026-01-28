@@ -1,0 +1,26 @@
+<twig:Card
+    showLink="{{ path('app_review_show', {'id': review.publicId.value }) }}"
+    padding="p-0"
+>
+    <div class="flex items-center justify-between">
+        <twig:ProductImage
+            imageName="{{ review.product.hasProductImage ? review.product.getFirstImage.imageName : null }}"
+            filter="small_thumbnail"
+            alt="{{ review.product.name }}"
+        ></twig:ProductImage>
+        <div class="m-3 w-full">
+            <div class="flex items-center justify-between mb-1">
+                <p class="text-lg text-gray-900 line-clamp-1 dark:text-white">
+                    {{ review.title ?? 'Review #' ~ review.id }}
+                </p>
+                <span class="{{ review.status.color }} text-sm font-medium">{{ review.status.value }}</span>
+            </div>
+            <p class="text-sm text-gray-500 line-clamp-1 dark:text-gray-400">
+                {{ review.product.name }} (Product #{{ '%06d'|format(review.product.id) }})
+            </p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                {{ review.customer.fullName }} &middot; {{ review.createdAt|date('d M Y') }}
+            </p>
+        </div>
+    </div>
+</twig:Card>

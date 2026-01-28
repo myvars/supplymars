@@ -248,6 +248,8 @@ All factories are in `tests/Shared/Factory/`.
 | `CustomerOrderItemFactory` | CustomerOrderItem | Auto-creates Order, Product |
 | `PurchaseOrderFactory` | PurchaseOrder | Auto-creates Order, Supplier |
 | `PurchaseOrderItemFactory` | PurchaseOrderItem | Auto-creates PO, OrderItem |
+| `ProductReviewFactory` | ProductReview | `published()` - approved review, `hidden()` - hidden review |
+| `ProductReviewSummaryFactory` | ProductReviewSummary | - |
 
 ### Factory Usage
 

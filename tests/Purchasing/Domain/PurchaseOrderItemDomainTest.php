@@ -8,6 +8,7 @@ use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrder;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItem;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
+use App\Shared\Domain\Event\AbstractDomainEvent;
 use PHPUnit\Framework\TestCase;
 
 class PurchaseOrderItemDomainTest extends TestCase
@@ -188,7 +189,7 @@ class PurchaseOrderItemDomainTest extends TestCase
         $events = $purchaseOrderItem->releaseDomainEvents();
         $statusEvents = array_filter(
             $events,
-            fn ($event): bool => $event instanceof PurchaseOrderItemStatusWasChangedEvent
+            fn (AbstractDomainEvent $event): bool => $event instanceof PurchaseOrderItemStatusWasChangedEvent
         );
 
         self::assertNotEmpty($statusEvents);

@@ -58,8 +58,7 @@ class SupplierProductController extends AbstractController
     #[Route(
         path: '/supplier-product/search/filter',
         name: 'app_purchasing_supplier_product_search_filter',
-        methods: ['GET', 'POST'])
-    ]
+        methods: ['GET', 'POST'])]
     public function searchFilter(
         Request $request,
         SupplierProductFilterMapper $mapper,

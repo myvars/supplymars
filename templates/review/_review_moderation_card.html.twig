@@ -1,0 +1,20 @@
+<twig:Card title="Moderation">
+    <dl class="grid grid-cols-2 gap-2 text-sm">
+        {% if review.moderatedBy %}
+            <dt class="text-gray-500 dark:text-gray-400">Moderated By</dt>
+            <dd class="text-gray-900 dark:text-white">{{ review.moderatedBy.fullName }}</dd>
+        {% endif %}
+        {% if review.moderatedAt %}
+            <dt class="text-gray-500 dark:text-gray-400">Moderated At</dt>
+            <dd class="text-gray-900 dark:text-white">{{ review.moderatedAt|ago }}</dd>
+        {% endif %}
+        {% if review.rejectionReason %}
+            <dt class="text-gray-500 dark:text-gray-400">Rejection Reason</dt>
+            <dd class="text-red-500">{{ review.rejectionReason.label }}</dd>
+        {% endif %}
+        {% if review.moderationNotes %}
+            <dt class="text-gray-500 dark:text-gray-400">Notes</dt>
+            <dd class="text-gray-900 dark:text-white">{{ review.moderationNotes }}</dd>
+        {% endif %}
+    </dl>
+</twig:Card>

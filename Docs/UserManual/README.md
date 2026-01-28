@@ -52,6 +52,7 @@ Once you're familiar with the basics, refer to these guides based on what you ne
 | Set up pricing and VAT | [Pricing & VAT](12-pricing.md) |
 | View reports and KPIs | [Reports & Dashboard](13-reports.md) |
 | Run simulations | [Simulations](14-simulations.md) |
+| Manage product reviews | [Product Reviews](15-reviews.md) |
 
 ### Reference
 
@@ -85,6 +86,8 @@ If you encounter issues not covered in this manual or the troubleshooting guide,
 | **Customer Order** | A purchase made by a customer |
 | **Purchase Order (PO)** | An order placed with a supplier to fulfil a customer order |
 | **Allocation** | The process of assigning customer order items to supplier purchase orders |
+| **Product Review** | Customer feedback on a delivered product, subject to moderation before publishing |
+| **Review Summary** | Aggregated review statistics for a product (average rating, distribution, counts) |
 
 ### Status Meanings
 
@@ -108,3 +111,11 @@ If you encounter issues not covered in this manual or the troubleshooting guide,
 | Delivered | Items received |
 | Refunded | Rejected items refunded |
 | Cancelled | PO cancelled |
+
+**Review Status:**
+| Status | Meaning |
+|--------|---------|
+| Pending | Review submitted, awaiting moderation |
+| Published | Approved and visible on product page |
+| Rejected | Rejected by moderator (terminal) |
+| Hidden | Temporarily removed from product page |

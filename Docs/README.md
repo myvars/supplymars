@@ -43,12 +43,13 @@ SupplyMars is a **modular monolith** - bounded contexts are self-contained modul
 │  │ Mfrs      │ │  Items    │ │ Supplier  │ │ Models    │ │               │  │
 │  │           │ │           │ │ Products  │ │           │ │               │  │
 │  └───────────┘ └───────────┘ └───────────┘ └───────────┘ └───────────────┘  │
-│  ┌───────────┐ ┌───────────┐ ┌───────────────────────────────────────────┐  │
-│  │ Customer  │ │   Audit   │ │               Shared Kernel               │  │
-│  │           │ │           │ │  Events, Value Objects, Services, Result  │  │
-│  │ Users     │ │ Status    │ │  FormFlow, ULID IDs, MarkupCalculator     │  │
-│  │ Addresses │ │ Logs      │ │                                           │  │
-│  └───────────┘ └───────────┘ └───────────────────────────────────────────┘  │
+│  ┌───────────┐ ┌───────────┐ ┌───────────┐ ┌─────────────────────────────┐  │
+│  │ Customer  │ │  Review   │ │   Audit   │ │         Shared Kernel       │  │
+│  │           │ │           │ │           │ │  Events, Value Objects,     │  │
+│  │ Users     │ │ Product   │ │ Status    │ │  Services, Result, FormFlow │  │
+│  │ Addresses │ │ Reviews   │ │ Logs      │ │  ULID IDs, MarkupCalculator │  │
+│  │           │ │ Summaries │ │           │ │                             │  │
+│  └───────────┘ └───────────┘ └───────────┘ └─────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────────────────────┘
                                       │
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -124,6 +125,9 @@ symfony console app:build-purchase-orders 50       # Allocate to suppliers
 symfony console app:accept-purchase-orders 20      # Supplier acceptance
 symfony console app:ship-purchase-order-items 50   # Ship items
 symfony console app:deliver-purchase-order-items 50 # Deliver items
+
+# Product reviews
+symfony console app:generate-reviews 50            # Generate fake reviews
 
 # Stock simulation
 symfony console app:update-supplier-stock 50       # Fluctuate stock/costs

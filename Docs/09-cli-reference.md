@@ -431,6 +431,49 @@ symfony console app:calculate-order-sales-summary 1
 
 ---
 
+## Review Context
+
+### app:generate-reviews
+
+**Purpose:** Generate fake product reviews for eligible delivered purchases.
+
+**File:** `src/Review/UI/Console/GenerateReviewsCommand.php`
+
+**Arguments:**
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `count` | int | No | 20 | Maximum number of reviews to generate |
+| `productId` | int | No | - | Optional product ID to target |
+
+**Example:**
+```bash
+# Generate up to 20 reviews
+symfony console app:generate-reviews
+
+# Generate up to 100 reviews
+symfony console app:generate-reviews 100
+
+# Generate reviews for a specific product
+symfony console app:generate-reviews 50 42
+```
+
+**Side Effects:**
+- Creates ProductReview entities in PENDING status
+- Auto-generates weighted random ratings
+- Creates or updates ProductReviewSummary for affected products
+
+**Simulation Logic:**
+- Finds delivered orders without existing reviews
+- Applies weighted random rating distribution:
+  - 5 stars: 35%
+  - 4 stars: 35%
+  - 3 stars: 15%
+  - 2 stars: 10%
+  - 1 star: 5%
+- Selects from predefined title and body text per rating level
+
+---
+
 ## Shared Context
 
 ### app:backfill-ulids

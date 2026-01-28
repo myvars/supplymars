@@ -156,6 +156,7 @@ Located at `docker/php/cron/prod-crontab`:
 | Daily 00:03 | `app:calculate-product-sales 1` | Daily product sales ETL |
 | Daily 00:07 | `app:calculate-order-sales 1` | Daily order sales ETL |
 | */10,40 | `app:calculate-*-sales 1 0` | Hourly incremental updates |
+| On demand | `app:generate-reviews {count}` | Generate fake reviews for testing |
 
 ## Workers / Consumers
 
@@ -230,6 +231,9 @@ symfony console app:build-purchase-orders 200
 symfony console app:accept-purchase-orders 100
 symfony console app:ship-purchase-order-items 200
 symfony console app:deliver-purchase-order-items 200
+
+# Generate product reviews
+symfony console app:generate-reviews 100
 
 # Generate reporting data
 symfony console app:calculate-product-sales 30

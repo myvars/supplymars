@@ -11,6 +11,7 @@ use App\Purchasing\Domain\Model\SupplierProduct\SupplierCategory;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierManufacturer;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierSubcategory;
+use App\Shared\Domain\Event\AbstractDomainEvent;
 use PHPUnit\Framework\TestCase;
 
 final class SupplierProductDomainTest extends TestCase
@@ -99,8 +100,8 @@ final class SupplierProductDomainTest extends TestCase
 
         $events = $supplierProduct->releaseDomainEvents();
         self::assertCount(3, $events);
-        self::assertNotEmpty(array_filter($events, fn ($e): bool => $e instanceof SupplierProductPricingWasChangedEvent));
-        self::assertNotEmpty(array_filter($events, fn ($e): bool => $e instanceof SupplierProductStockWasChangedEvent));
+        self::assertNotEmpty(array_filter($events, fn (AbstractDomainEvent $e): bool => $e instanceof SupplierProductPricingWasChangedEvent));
+        self::assertNotEmpty(array_filter($events, fn (AbstractDomainEvent $e): bool => $e instanceof SupplierProductStockWasChangedEvent));
     }
 
     public function testUpdateEmitsEventsWhenValuesChange(): void
@@ -140,9 +141,9 @@ final class SupplierProductDomainTest extends TestCase
 
         $events = $supplierProduct->releaseDomainEvents();
         self::assertCount(4, $events);
-        self::assertNotEmpty(array_filter($events, fn ($e): bool => $e instanceof SupplierProductPricingWasChangedEvent));
-        self::assertNotEmpty(array_filter($events, fn ($e): bool => $e instanceof SupplierProductStockWasChangedEvent));
-        self::assertNotEmpty(array_filter($events, fn ($e): bool => $e instanceof SupplierProductStatusWasChangedEvent));
+        self::assertNotEmpty(array_filter($events, fn (AbstractDomainEvent $e): bool => $e instanceof SupplierProductPricingWasChangedEvent));
+        self::assertNotEmpty(array_filter($events, fn (AbstractDomainEvent $e): bool => $e instanceof SupplierProductStockWasChangedEvent));
+        self::assertNotEmpty(array_filter($events, fn (AbstractDomainEvent $e): bool => $e instanceof SupplierProductStatusWasChangedEvent));
     }
 
     public function testUpdateNoEventsWhenNothingChanges(): void

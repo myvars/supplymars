@@ -56,6 +56,12 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Reporting/Domain/Model'
                 prefix: 'App\Reporting\Domain\Model'
                 alias: Reporting
+            Review:
+                type: attribute
+                is_bundle: false
+                dir: '%kernel.project_dir%/src/Review/Domain/Model'
+                prefix: 'App\Review\Domain\Model'
+                alias: Review
         dql:
             numeric_functions:
                 rand: DoctrineExtensions\Query\Mysql\Rand

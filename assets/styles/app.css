@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 
+@source "../../templates/**/*.html.twig";
 @source '../../vendor/tales-from-a-dev/flowbite-bundle/templates!**!*.html.twig';
 
 @custom-variant dark (&:is(.dark *));
@@ -7,7 +8,14 @@
 @custom-variant modal (dialog &);
 
 @theme {
-  --color-primary-50: #eff6ff;
+    --color-danger-soft: var(--color-rose-50);
+    --color-danger-medium: var(--color-rose-100);
+    --color-danger-subtle: var(--color-rose-200);
+    --color-danger-strong: var(--color-rose-800);
+    --color-fg-danger: var(--color-rose-700);
+    --color-fg-danger-strong: var(--color-rose-900);
+
+    --color-primary-50: #eff6ff;
   --color-primary-100: #dbeafe;
   --color-primary-200: #bfdbfe;
   --color-primary-300: #93c5fd;

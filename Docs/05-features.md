@@ -420,6 +420,65 @@ Audit logs are primarily accessed via:
 
 ---
 
+## Product Reviews
+
+### Purpose
+
+The Review context provides a customer feedback and moderation system. Reviews are linked to delivered orders and moderated before publication. Published reviews generate per-product summaries with average ratings and rating distribution.
+
+### Main Workflows
+
+**Creating a Review:**
+1. Navigate to `/review/new`
+2. Provide customer ID, product ID, and order ID
+3. Set rating (1-5), optional title and body
+4. System validates eligibility (delivered order, correct customer/product, no duplicates)
+5. Review created in PENDING status
+
+**Moderating Reviews:**
+1. View pending review detail page
+2. Approve to publish, or reject with reason and optional notes
+3. Approved reviews appear on the product page
+4. Rejected reviews are terminal and cannot be recovered
+
+**Product Review Summary:**
+1. Summaries recalculate automatically on review creation, status change, or rating change
+2. Product detail page shows average rating, distribution chart, and latest reviews
+
+### Entry Points
+
+| Action | Controller | Route |
+|--------|------------|-------|
+| List reviews | `ReviewController::index` | `app_review_index` |
+| Filter reviews | `ReviewController::filter` | `app_review_search_filter` |
+| Create review | `ReviewController::new` | `app_review_new` |
+| View review | `ReviewController::show` | `app_review_show` |
+| Edit review | `ReviewController::edit` | `app_review_edit` |
+| Delete confirm | `ReviewController::deleteConfirm` | `app_review_delete_confirm` |
+| Delete review | `ReviewController::delete` | `app_review_delete` |
+| Approve review | `ReviewController::approve` | `app_review_approve` |
+| Reject review | `ReviewController::reject` | `app_review_reject` |
+| Hide review | `ReviewController::hide` | `app_review_hide` |
+| Republish review | `ReviewController::republish` | `app_review_republish` |
+
+**Key files:**
+- `src/Review/UI/Http/Controller/ReviewController.php`
+- `src/Review/Application/Handler/CreateReviewHandler.php`
+- `src/Review/Domain/Model/Review/ProductReview.php`
+- `src/Review/Domain/Model/ReviewSummary/ProductReviewSummary.php`
+- `src/Review/Application/Listener/ReviewSummaryUpdater.php`
+
+### Business Rules
+
+1. **Eligibility:** Order must be DELIVERED, belong to the customer, and contain the product
+2. **Status transitions:** PENDING can transition to PUBLISHED or REJECTED; PUBLISHED can transition to HIDDEN; HIDDEN can transition to PUBLISHED; REJECTED is terminal
+3. **Editable states:** Only PENDING and PUBLISHED reviews can be edited
+4. **Summary automation:** Product review summaries recalculate on any review change affecting published stats
+5. **Rating validation:** Rating must be an integer from 1 to 5
+6. **One per customer and product:** A customer can only submit one review per product (enforced by unique constraint)
+
+---
+
 ## FormFlow Pattern
 
 ### Purpose

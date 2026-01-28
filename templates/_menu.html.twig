@@ -83,6 +83,29 @@
                 </a>
             </li>
             <li>
+                <button type="button" class="flex w-full items-center rounded-sm p-2 text-base font-normal text-gray-900 transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-reviews" data-collapse-toggle="dropdown-reviews">
+                    <twig:ux:icon name="flowbite:star-solid" class="h-5 w-5 text-gray-400"/>
+                    <span class="ml-3 flex-1 whitespace-nowrap text-left">Reviews</span>
+                    <twig:ux:icon name="mingcute:down-line" class="h-5 w-5"/>
+                </button>
+                <ul id="dropdown-reviews" class="hidden py-2 space-y-2">
+                    <li>
+                        <a href="{{ path('app_review_index') }}"
+                           class="flex w-full items-center rounded-sm p-2 pl-11 text-base font-normal text-gray-900 transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                           data-turbo-frame="body"
+                           data-action="basic-drawer#close"
+                        >Search</a>
+                    </li>
+                    <li>
+                        <a href="{{ path('app_review_index', {reviewStatus: 'PENDING'}) }}"
+                           class="flex w-full items-center rounded-sm p-2 pl-11 text-base font-normal text-gray-900 transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700"
+                           data-turbo-frame="body"
+                           data-action="basic-drawer#close"
+                        >Moderation Queue</a>
+                    </li>
+                </ul>
+            </li>
+            <li>
                 <button type="button" class="flex w-full items-center rounded-sm p-2 text-base font-normal text-gray-900 transition duration-75 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="dropdown-suppliers" data-collapse-toggle="dropdown-suppliers">
                     <twig:ux:icon name="bxs:factory" class="h-5 w-5 text-gray-400"/>
                     <span class="ml-3 flex-1 whitespace-nowrap text-left">Suppliers</span>

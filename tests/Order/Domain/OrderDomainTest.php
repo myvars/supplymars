@@ -8,6 +8,7 @@ use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Order\Domain\Model\Order\Event\OrderStatusWasChangedEvent;
 use App\Order\Domain\Model\Order\OrderStatus;
 use App\Pricing\Domain\Model\VatRate\VatRate;
+use App\Shared\Domain\Event\AbstractDomainEvent;
 use App\Shared\Domain\ValueObject\ShippingMethod;
 use PHPUnit\Framework\TestCase;
 
@@ -150,7 +151,7 @@ class OrderDomainTest extends TestCase
         $events = $order->releaseDomainEvents();
         $statusEvents = array_filter(
             $events,
-            fn ($event): bool => $event instanceof OrderStatusWasChangedEvent
+            fn (AbstractDomainEvent $event): bool => $event instanceof OrderStatusWasChangedEvent
         );
 
         self::assertNotEmpty($statusEvents);

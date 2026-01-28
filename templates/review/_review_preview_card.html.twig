@@ -1,0 +1,24 @@
+<twig:Card>
+    <div class="space-y-2">
+        <div class="flex items-center justify-between">
+            <span class="text-sm font-medium text-gray-900 dark:text-white">{{ review.customer.fullName }}</span>
+            <span class="text-xs text-gray-500 dark:text-gray-400">{{ review.publishedAt|ago }}</span>
+        </div>
+        <div class="flex items-center space-x-1">
+            {% for i in 1..5 %}
+                {% if i <= review.rating %}
+                    <twig:ux:icon name="flowbite:star-solid" class="w-4 h-4 text-yellow-400"/>
+                {% else %}
+                    <twig:ux:icon name="flowbite:star-solid" class="w-4 h-4 text-gray-300"/>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% if review.title %}
+            <p class="font-medium text-gray-900 dark:text-white">{{ review.title }}</p>
+        {% endif %}
+        {% if review.body %}
+            <p class="text-sm text-gray-700 line-clamp-3 dark:text-gray-300">{{ review.body }}</p>
+        {% endif %}
+        <p class="text-xs text-green-600">Verified Purchase</p>
+    </div>
+</twig:Card>

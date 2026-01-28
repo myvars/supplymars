@@ -23,6 +23,7 @@ enum DomainEventType: string
     case SUPPLIER_PRODUCT_STATUS_WAS_CHANGED = 'supplier.product.status.was.changed';
     case SUPPLIER_STATUS_WAS_CHANGED = 'supplier.status.was.changed';
     case PRODUCT_IMAGE_WAS_DELETED = 'product.image.was.deleted';
-
-    // Add new domain event types here
+    case REVIEW_CREATED = 'review.created';
+    case REVIEW_STATUS_CHANGED = 'review.status.changed';
+    case REVIEW_RATING_CHANGED = 'review.rating.changed';
 }

@@ -1,0 +1,11 @@
+{% extends 'shared/turbo/modal_base.html.twig' %}
+
+{% block title %}Reject Review{% endblock %}
+
+{% block body %}
+
+    <twig:Dialog title="Reject Review">
+        {{ include('shared/form_flow/_form.html.twig', {'button_label': 'Reject Review'}) }}
+    </twig:Dialog>
+
+{% endblock %}

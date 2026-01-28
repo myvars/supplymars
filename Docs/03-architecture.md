@@ -18,6 +18,7 @@ src/
 ├── Pricing/                  # VAT rates, pricing listeners
 ├── Purchasing/               # Suppliers, supplier products, purchase orders
 ├── Reporting/                # Sales reporting and dashboards
+├── Review/                   # Product reviews and moderation
 └── Shared/                   # Cross-cutting concerns (Shared Kernel)
 ```
 
@@ -436,6 +437,9 @@ class Product implements DomainEventProviderInterface
 - `CategoryPricingWasChangedEvent` → Cascades to category products
 - `PurchaseOrderStatusWasChangedEvent` → Updates order item status
 - `OrderStatusWasChangedEvent` → Audit logging
+- `ReviewWasCreatedEvent` → Recalculates product review summary
+- `ReviewStatusWasChangedEvent` → Recalculates product review summary
+- `ReviewRatingWasChangedEvent` → Recalculates product review summary
 
 ## Simulation Boundaries
 
@@ -450,6 +454,7 @@ class Product implements DomainEventProviderInterface
 | Delivery | `app:deliver-purchase-order-items` (time-based) | Would be proof of delivery |
 | Stock files | `app:update-supplier-stock` (random variance) | Would be EDI stock feeds |
 | Pricing feeds | Stock command updates costs | Would be supplier price files |
+| Product reviews | `app:generate-reviews` (weighted random) | Would be customer-submitted |
 
 ### What Is Real
 

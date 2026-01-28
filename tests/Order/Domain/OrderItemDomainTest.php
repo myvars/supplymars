@@ -7,6 +7,7 @@ use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Order\Domain\Model\Order\CustomerOrderItem;
 use App\Order\Domain\Model\Order\Event\OrderItemStatusWasChangedEvent;
 use App\Order\Domain\Model\Order\OrderStatus;
+use App\Shared\Domain\Event\AbstractDomainEvent;
 use PHPUnit\Framework\TestCase;
 
 class OrderItemDomainTest extends TestCase
@@ -136,7 +137,7 @@ class OrderItemDomainTest extends TestCase
         $events = $orderItem->releaseDomainEvents();
         $statusEvents = array_filter(
             $events,
-            fn ($event): bool => $event instanceof OrderItemStatusWasChangedEvent
+            fn (AbstractDomainEvent $event): bool => $event instanceof OrderItemStatusWasChangedEvent
         );
 
         self::assertNotEmpty($statusEvents);

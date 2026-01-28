@@ -42,8 +42,7 @@ class PurchaseOrderItemController extends AbstractController
     #[Route(
         path: '/purchase/order/item/{id}/edit',
         name: 'app_purchasing_purchase_order_item_edit',
-        methods: ['GET', 'POST'])
-    ]
+        methods: ['GET', 'POST'])]
     public function editQuantity(
         Request $request,
         #[ValueResolver('public_id')] PurchaseOrderItem $purchaseOrderItem,

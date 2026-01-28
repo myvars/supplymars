@@ -67,8 +67,7 @@ class StatusLogController extends AbstractController
     #[Route(
         path: '/status/log/purchase/order/item/{id}',
         name: 'app_purchase_order_item_status_log',
-        methods: ['GET'])
-    ]
+        methods: ['GET'])]
     public function poItemStatusLog(
         #[ValueResolver('public_id')] PurchaseOrderItem $purchaseOrderItem,
     ): Response {

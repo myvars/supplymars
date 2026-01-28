@@ -26,5 +26,10 @@
                 <span class="hidden md:inline">Product </span>Sales
             </a>
         </li>
+        <li class="me-2">
+            <a href="{{ path('app_catalog_product_reviews', { id: result.publicId.value }) }}" class="inline-block p-3 border-b-2 border-transparent hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300 {{ app.request.attributes.get('_route') == 'app_catalog_product_reviews' ? 'active dark:text-gray-300 dark:border-gray-300' : '' }}">
+                <span class="hidden md:inline">Product </span>Reviews
+            </a>
+        </li>
     </ul>
 </div>

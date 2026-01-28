@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Review Details{% endblock %}
+
+{% block body %}
+
+    <div class="m-3 space-y-3">
+        {{ include('review/_review_detail_card.html.twig', {review: result}) }}
+
+        {% if result.status.value == 'PUBLISHED' or result.status.value == 'REJECTED' %}
+            {{ include('review/_review_moderation_card.html.twig', {review: result}) }}
+        {% endif %}
+    </div>
+
+{% endblock %}

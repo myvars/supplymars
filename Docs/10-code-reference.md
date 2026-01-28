@@ -14,6 +14,7 @@ src/
 ├── Pricing/                  # VAT and pricing logic
 ├── Purchasing/               # Suppliers and purchase orders
 ├── Reporting/                # Sales reporting
+├── Review/                   # Product reviews
 └── Shared/                   # Cross-cutting concerns
 ```
 
@@ -247,6 +248,71 @@ hasPositiveCost()             // cost > 0
 
 ---
 
+## Review Context
+
+### Domain Models
+
+| Entity | File | Description |
+|--------|------|-------------|
+| ProductReview | `src/Review/Domain/Model/Review/ProductReview.php` | Customer review linked to product, customer, and order |
+| ProductReviewSummary | `src/Review/Domain/Model/ReviewSummary/ProductReviewSummary.php` | Aggregated review stats per product |
+| ReviewStatus | `src/Review/Domain/Model/Review/ReviewStatus.php` | Status enum (PENDING, PUBLISHED, REJECTED, HIDDEN) |
+| RejectionReason | `src/Review/Domain/Model/Review/RejectionReason.php` | Rejection reason enum |
+
+### Value Objects
+
+| Class | File | Purpose |
+|-------|------|---------|
+| ReviewPublicId | `src/Review/Domain/Model/Review/ReviewPublicId.php` | ULID identifier for reviews |
+| ReviewSummaryPublicId | `src/Review/Domain/Model/ReviewSummary/ReviewSummaryPublicId.php` | ULID identifier for summaries |
+
+### Handlers
+
+| Handler | File | Operation |
+|---------|------|-----------|
+| CreateReviewHandler | `src/Review/Application/Handler/CreateReviewHandler.php` | Create review |
+| UpdateReviewHandler | `src/Review/Application/Handler/UpdateReviewHandler.php` | Update review |
+| ApproveReviewHandler | `src/Review/Application/Handler/ApproveReviewHandler.php` | Approve review |
+| RejectReviewHandler | `src/Review/Application/Handler/RejectReviewHandler.php` | Reject review |
+| HideReviewHandler | `src/Review/Application/Handler/HideReviewHandler.php` | Hide review |
+| RepublishReviewHandler | `src/Review/Application/Handler/RepublishReviewHandler.php` | Republish review |
+| DeleteReviewHandler | `src/Review/Application/Handler/DeleteReviewHandler.php` | Delete review |
+
+### Listeners
+
+| Listener | File | Trigger |
+|----------|------|---------|
+| ReviewSummaryUpdater | `src/Review/Application/Listener/ReviewSummaryUpdater.php` | Review created, status changed, or rating changed |
+
+### Repositories
+
+| Interface | Implementation |
+|-----------|----------------|
+| `Domain/Repository/ReviewRepository.php` | `Infrastructure/Persistence/Doctrine/ReviewDoctrineRepository.php` |
+| `Domain/Repository/ReviewSummaryRepository.php` | `Infrastructure/Persistence/Doctrine/ReviewSummaryDoctrineRepository.php` |
+
+### Domain Events
+
+| Event | File | Trigger |
+|-------|------|---------|
+| ReviewWasCreatedEvent | `src/Review/Domain/Model/Review/Event/ReviewWasCreatedEvent.php` | Review created |
+| ReviewStatusWasChangedEvent | `src/Review/Domain/Model/Review/Event/ReviewStatusWasChangedEvent.php` | Status transition |
+| ReviewRatingWasChangedEvent | `src/Review/Domain/Model/Review/Event/ReviewRatingWasChangedEvent.php` | Rating updated on published review |
+
+### Validation
+
+| Constraint | File | Purpose |
+|------------|------|---------|
+| ValidReviewEligibility | `src/Review/UI/Http/Validation/ValidReviewEligibilityValidator.php` | Validates order is delivered, belongs to customer, contains product, no duplicate |
+
+### Console Commands
+
+| Command | File | Purpose |
+|---------|------|---------|
+| `app:generate-reviews` | `src/Review/UI/Console/GenerateReviewsCommand.php` | Generate fake reviews for testing |
+
+---
+
 ## Shared Kernel
 
 ### Application Layer
@@ -368,6 +434,12 @@ hasPositiveCost()             // cost > 0
 1. `src/Order/Domain/Model/Order/OrderStatus.php`
 2. `src/Purchasing/Domain/Model/PurchaseOrder/PurchaseOrderStatus.php`
 3. Entity methods: `generateStatus()`, `canTransitionTo()`
+
+### "I need to understand product reviews"
+1. `src/Review/Domain/Model/Review/ProductReview.php` (entity, status transitions, moderation)
+2. `src/Review/Domain/Model/Review/ReviewStatus.php` (status enum, allowed transitions)
+3. `src/Review/Application/Listener/ReviewSummaryUpdater.php` (automatic summary recalculation)
+4. `src/Review/UI/Http/Validation/ValidReviewEligibilityValidator.php` (eligibility rules)
 
 ### "I need to add a new entity"
 1. Create entity in `src/{Context}/Domain/Model/{Entity}/`

@@ -234,7 +234,7 @@ Summaries refresh via scheduled commands.
 
 ## Bounded Contexts
 
-The system is organized into seven bounded contexts:
+The system is organized into eight bounded contexts:
 
 | Context | Responsibility | Key Entities |
 |---------|---------------|--------------|
@@ -245,6 +245,7 @@ The system is organized into seven bounded contexts:
 | **Reporting** | Business intelligence | ProductSales, OrderSales, Dashboards |
 | **Customer** | Users and addresses | User, Address |
 | **Audit** | Change tracking | StatusChangeLog, SupplierStockChangeLog |
+| **Review** | Product reviews | ProductReview, ProductReviewSummary |
 
 Plus a **Shared Kernel** containing cross-cutting concerns.
 

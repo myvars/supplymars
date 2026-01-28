@@ -16,6 +16,8 @@ use App\Catalog\UI\Http\Form\Mapper\UpdateProductMapper;
 use App\Catalog\UI\Http\Form\Model\ProductForm;
 use App\Catalog\UI\Http\Form\Type\ProductFilterType;
 use App\Catalog\UI\Http\Form\Type\ProductType;
+use App\Review\Domain\Repository\ReviewRepository;
+use App\Review\Domain\Repository\ReviewSummaryRepository;
 use App\Shared\UI\Http\FormFlow\DeleteFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
@@ -137,5 +139,18 @@ class ProductController extends AbstractController
     public function sales(#[ValueResolver('public_id')] Product $product): Response
     {
         return $this->render('catalog/product/sales.html.twig', ['result' => $product]);
+    }
+
+    #[Route(path: '/product/{id}/reviews', name: 'app_catalog_product_reviews', methods: ['GET'])]
+    public function reviews(
+        #[ValueResolver('public_id')] Product $product,
+        ReviewRepository $reviewRepository,
+        ReviewSummaryRepository $summaryRepository,
+    ): Response {
+        return $this->render('catalog/product/reviews.html.twig', [
+            'result' => $product,
+            'summary' => $summaryRepository->findByProduct($product),
+            'reviews' => $reviewRepository->findLatestPublishedForProduct($product, 5),
+        ]);
     }
 }
