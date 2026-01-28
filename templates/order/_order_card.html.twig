@@ -10,7 +10,7 @@
         >
             {% if result.orderLock is not null %}
                 <twig:ux:icon name="flowbite:lock-solid" class="w-4 me-1"/>
-                <span class="hidden text-sm me-1 md:inline">Locked by </span>
+                <span class="inline-flex text-sm me-1 max-md:hidden">Locked by </span>
                 <span class="text-sm">{{ result.orderLock.fullName }}</span>
             {% else %}
                 <twig:ux:icon name="flowbite:lock-open-solid" class="w-4 me-1.5"/>
@@ -21,7 +21,7 @@
         <p class="text-sm me-10">
             {{ order.createdAt|date('jS M Y H:i') }}
             {% if order.customerOrderRef is not null %}
-                <span class="hidden md:inline"> - {{ order.customerOrderRef }}</span>
+                <span class="inline-flex max-md:hidden"> - {{ order.customerOrderRef }}</span>
             {% endif %}
         </p>
         <p class="flex items-center justify-end">

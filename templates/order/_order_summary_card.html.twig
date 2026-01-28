@@ -13,7 +13,7 @@
         <div>
             <p class="mb-1 text-gray-300 dark:text-gray-200">Order Summary</p>
             <div class="flex justify-between">
-                <p class="me-10">Item(s)<span class="hidden md:inline"> subtotal</span>:</p>
+                <p class="me-10">Item(s)<span class="inline-flex max-md:hidden ms-1">subtotal</span>:</p>
                 {% if order.isCancelled %}
                     <p>{{ 0.00|format_currency('GBP') }}</p>
                 {% else %}
@@ -28,16 +28,12 @@
                     <p>{{ order.shippingPrice|format_currency('GBP') }}</p>
                 {% endif %}
             </div>
-            <div class="flex justify-between hidden md:inline-flex">
-                <p class="me-10">Total before VAT:</p>
-                <p>{{ order.totalPrice|format_currency('GBP') }}</p>
-            </div>
             <div class="flex justify-between">
                 <p class="me-10">VAT:</p>
                 <p>{{ (order.totalPriceIncVat - order.totalPrice)|format_currency('GBP') }}</p>
             </div>
             <div class="mt-1 flex justify-between text-gray-300 dark:text-gray-200">
-                <p class="me-10"><span class="hidden md:inline">Grand </span>Total:</p>
+                <p class="me-10">Total:</p>
                 <p>{{ order.totalPriceIncVat|format_currency('GBP') }}</p>
             </div>
         </div>
