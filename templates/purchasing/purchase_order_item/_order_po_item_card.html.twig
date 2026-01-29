@@ -4,38 +4,39 @@
         padding="p-0"
         borderColour="{{ colourScheme }}"
     >
-        <div class="flex items-center justify-between rounded-sm dark:bg-gray-800 dark:hover:bg-gray-700">
-            <twig:ProductImage
-                imageName="{{ purchaseOrderItem.customerOrderItem.product.hasProductImage ? purchaseOrderItem.customerOrderItem.product.getFirstImage.imageName : null }}"
-                filter="small_thumbnail"
-                alt="{{ purchaseOrderItem.customerOrderItem.product.name }}"
-                showLink="{{ path('app_catalog_product_show', {'id': purchaseOrderItem.customerOrderItem.product.publicId.value }) }}"
-            ></twig:ProductImage>
-            <div class="w-full p-3">
-                <p class="mb-2 text-sm text-gray-300 line-clamp-1 dark:text-gray-200">{{ purchaseOrderItem.customerOrderItem.product.name }}</p>
-                <div class="flex items-center justify-between">
-                    <p class="text-base font-extralight me-3">
-                        {{ purchaseOrderItem.customerOrderItem.priceIncVat|format_currency('GBP') }}
-                        <span class="text-sm ms-3">
-                            {% if purchaseOrderItem.isCancelled or purchaseOrderItem.isRefunded or purchaseOrderItem.quantity is same as purchaseOrderItem.customerOrderItem.quantity %}
-                                Qty: {{ purchaseOrderItem.quantity }}
-                            {% else %}
-                                Qty: {{ purchaseOrderItem.quantity }} of {{ purchaseOrderItem.customerOrderItem.quantity }}
+        <div class="overflow-hidden rounded-xl">
+            <div class="flex items-center hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700">
+                <twig:ProductImage
+                    imageName="{{ purchaseOrderItem.customerOrderItem.product.hasProductImage ? purchaseOrderItem.customerOrderItem.product.getFirstImage.imageName : null }}"
+                    filter="small_thumbnail"
+                    alt="{{ purchaseOrderItem.customerOrderItem.product.name }}"
+                    showLink="{{ path('app_catalog_product_show', {'id': purchaseOrderItem.customerOrderItem.product.publicId.value }) }}"
+                ></twig:ProductImage>
+                <div class="w-full p-3">
+                    <p class="mb-1.5 text-sm font-medium text-gray-700 line-clamp-1 dark:text-gray-200">{{ purchaseOrderItem.customerOrderItem.product.name }}</p>
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3 text-sm">
+                            <span class="font-medium tabular-nums text-gray-900 dark:text-white">{{ purchaseOrderItem.customerOrderItem.priceIncVat|format_currency('GBP') }}</span>
+                            <span class="text-gray-500 dark:text-gray-400">
+                                {% if purchaseOrderItem.isCancelled or purchaseOrderItem.isRefunded or purchaseOrderItem.quantity is same as purchaseOrderItem.customerOrderItem.quantity %}
+                                    Qty: {{ purchaseOrderItem.quantity }}
+                                {% else %}
+                                    Qty: {{ purchaseOrderItem.quantity }} of {{ purchaseOrderItem.customerOrderItem.quantity }}
+                                {% endif %}
+                            </span>
+                            <span class="hidden text-gray-400 md:inline dark:text-gray-500">#{{ '%05d'|format(purchaseOrderItem.customerOrderItem.product.id) }}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            {% if purchaseOrderItem.status.value|lower == 'delivered' and purchaseOrderItem.deliveredAt is not null %}
+                                <span class="text-xs text-gray-400 dark:text-gray-500">{{ purchaseOrderItem.deliveredAt|date("jS M Y") }}</span>
                             {% endif %}
-                        </span>
-                        <span class="hidden text-sm ms-3 md:inline">Product #{{ '%05d'|format(purchaseOrderItem.customerOrderItem.product.id) }}</span>
-                    </p>
-                    <p class="text-gray-500">
-                        <a href="{{ path('app_purchase_order_item_status_log', {'id':purchaseOrderItem.publicId.value }) }}"
-                           class="text-grey-500 dark:hover:text-white"
-                           data-turbo-frame="modal"
-                        >
-                            {{ purchaseOrderItem.status.value|title }}
-                        </a>
-                        {% if purchaseOrderItem.status.value|lower == 'delivered' and purchaseOrderItem.deliveredAt is not null %}
-                            <span class="py-1">on {{ purchaseOrderItem.deliveredAt|date("jS M Y") }}</span>
-                        {% endif %}
-                    </p>
+                            <a href="{{ path('app_purchase_order_item_status_log', {'id':purchaseOrderItem.publicId.value }) }}"
+                               data-turbo-frame="modal"
+                            >
+                                <twig:StatusBadge status="{{ purchaseOrderItem.status.value }}" :interactive="true"/>
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

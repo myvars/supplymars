@@ -1,7 +1,12 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
-<html>
+<html lang="en">
     <head>
+        <script>
+            (function(){
+                if ((localStorage.getItem('theme') || 'dark') === 'dark')
+                    document.documentElement.classList.add('dark');
+            })();
+        </script>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta name="theme-color" content="#cccccc">
@@ -23,14 +28,14 @@
         {% endblock %}
     </head>
 
-    <body class="bg-black text-white">
+    <body class="antialiased bg-gray-100 text-gray-900 dark:bg-gray-950 dark:text-gray-100">
         <div class="container mx-auto flex min-h-screen flex-col md:px-3">
 
             <!-- Header -->
             {{ include('_header.html.twig') }}
 
             <!-- Main -->
-            <main class="grow bg-gray-50 dark:bg-gray-900">
+            <main class="{% block main_class %}grow bg-gray-50 dark:bg-gray-900{% endblock %}">
                 <turbo-frame id="body" data-turbo-action="advance" refresh="morph">
                     {% block body %}{% endblock %}
                 </turbo-frame>
@@ -45,7 +50,7 @@
         {{ include('shared/turbo/_modal.html.twig') }}
 
         <!-- Flash Container -->
-        <div id="flash-container" class="fixed z-10 top-5 right-5 flex flex-col gap-3">
+        <div id="flash-container" class="fixed top-5 right-5 z-50 flex flex-col gap-3">
             {% if not app.request.headers.has('Turbo-Frame') %}
                 {{ include('_flashes.html.twig') }}
             {% endif %}

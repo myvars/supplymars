@@ -1,65 +1,80 @@
 <twig:Card editLink="{{ path('app_purchasing_supplier_product_edit', {id: supplierProduct.publicId.value}) }}" title="Supplier Product">
 
+    <div class="space-y-4">
+        <div>
+            <p class="mb-1 text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">{{ supplierProduct.name }}</p>
+            <p class="flex items-center text-sm text-gray-500 dark:text-gray-400">
+                <a href="#"
+                   data-turbo-frame="body"
+                   class="hover:text-primary-600 dark:hover:text-primary-300">
+                    {{ supplierProduct.supplierCategory.name|u.truncate(30, '...') }}
+                </a>
+                <twig:ux:icon name="ic:baseline-navigate-next" class="mx-0.5 h-4 w-4 text-gray-300 dark:text-gray-600"/>
+                <a href="#"
+                   data-turbo-frame="body"
+                   class="hover:text-primary-600 dark:hover:text-primary-300">
+                    {{ supplierProduct.supplierSubcategory.name|u.truncate(30, '...') }}
+                </a>
+            </p>
+        </div>
 
-    <p class="text-xl text-gray-900 line-clamp-1 dark:text-white">{{ supplierProduct.name }}</p>
-    <p class="mb-2 flex items-center">
-        <a href="#"
-           data-turbo-frame="body"
-           class="text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
-            {{ supplierProduct.supplierCategory.name|u.truncate(30, '...') }}
-        </a>
-        <twig:ux:icon name="ic:baseline-navigate-next" class="w-4"/>
-        <a href="#"
-           data-turbo-frame="body"
-           class="text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
-            {{ supplierProduct.supplierSubcategory.name|u.truncate(30, '...') }}
-        </a>
-    </p>
-    <a href="{{ path('app_purchasing_supplier_show', {'id': supplierProduct.supplier.publicId.value }) }}"
-       class="dark:hover:text-white"
-       data-turbo-frame="body"
-    >
-        {{ supplierProduct.supplier.name|u.truncate(30, '...', false) }}
-        {% if not supplierProduct.hasActiveSupplier %}
-            <span class="text-red-700 dark:text-red-500 dark:hover:text-white">(Inactive)</span>
-        {% endif %}
-        : {{ (supplierProduct.productCode) }}
-    </a>
-    <p>{{ supplierProduct.supplierManufacturer.name }} : {{ supplierProduct.mfrPartNumber }}</p>
-    <p class="text-right text-xl font-extralight text-gray-500 dark:text-white">{{ supplierProduct.cost|format_currency('GBP') }}</p>
-    <p class="text-right font-extralight">
-        {% if supplierProduct.hasStock %}
-            {{ supplierProduct.stock }} in stock
-        {% else %}
-            Out of stock ({{ supplierProduct.leadTimeDays }} day lead time)
-        {% endif %}
-    </p>
-    <p class="line-clamp-1">
-        {% if supplierProduct.isMapped %}
-            Mapped to:
-            <a href="{{ path('app_catalog_product_show', {'id': supplierProduct.product.publicId.value }) }}"
-               data-turbo-frame="body"
-               class="text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
-                {{ (supplierProduct.product.name) }}
-            </a>
-        {% else %}
-            <a href="{{ path('app_purchasing_supplier_product_map', {'id': supplierProduct.publicId.value }) }}"
-               data-turbo-prefetch="false"
-               data-turbo-frame="body"
-               class="block flex items-center py-1 text-sm text-yellow-700 hover:text-yellow-500 dark:text-yellow-500 dark:hover:text-yellow-300"
-            >
-                <twig:ux:icon name="f7:wand-stars" class="w-4 me-1.5"/>
-                Map Product
-            </a>
-        {% endif %}
-    </p>
-    <div class="mt-2 flex items-center justify-between">
-        <p class="text-xs text-gray-600 me-10 dark:text-gray-500">Updated {{ supplierProduct.updatedAt|ago }}</p>
-        {% if supplierProduct.isActive %}
-            <p class="text-green-500">Active</p>
-        {% else %}
-            <p class="text-red-500">InActive</p>
-        {% endif %}
+        <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+            <p class="flex items-center gap-2">
+                <twig:ux:icon name="bi:truck" class="h-4 w-4 text-gray-400 dark:text-gray-500"/>
+                <a href="{{ path('app_purchasing_supplier_show', {'id': supplierProduct.supplier.publicId.value }) }}"
+                   class="font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+                   data-turbo-frame="body"
+                >
+                    {{ supplierProduct.supplier.name|u.truncate(30, '...', false) }}
+                </a>
+                {% if not supplierProduct.hasActiveSupplier %}
+                    <twig:StatusBadge status="INACTIVE"/>
+                {% endif %}
+                <span class="text-gray-400 dark:text-gray-500">{{ supplierProduct.productCode }}</span>
+            </p>
+            <p class="flex items-center gap-2">
+                <twig:ux:icon name="bi:building" class="h-4 w-4 text-gray-400 dark:text-gray-500"/>
+                {{ supplierProduct.supplierManufacturer.name }}
+                <span class="text-gray-400 dark:text-gray-500">{{ supplierProduct.mfrPartNumber }}</span>
+            </p>
+        </div>
+
+        <div class="flex items-end justify-between border-t border-gray-200 pt-4 dark:border-gray-700">
+            <div>
+                <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ supplierProduct.cost|format_currency('GBP') }}</p>
+                <p class="mt-0.5 text-sm text-gray-500 dark:text-gray-400">
+                    {% if supplierProduct.hasStock %}
+                        <span class="font-medium text-green-600 dark:text-green-400">{{ supplierProduct.stock }}</span> in stock
+                    {% else %}
+                        <span class="font-medium text-red-500 dark:text-red-400">Out of stock</span>
+                        <span class="text-gray-400 dark:text-gray-500">({{ supplierProduct.leadTimeDays }} day lead time)</span>
+                    {% endif %}
+                </p>
+            </div>
+            <div class="text-right">
+                {% if supplierProduct.isMapped %}
+                    <p class="text-xs text-gray-400 dark:text-gray-500">Mapped to</p>
+                    <a href="{{ path('app_catalog_product_show', {'id': supplierProduct.product.publicId.value }) }}"
+                       data-turbo-frame="body"
+                       class="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300">
+                        {{ supplierProduct.product.name|u.truncate(30, '...') }}
+                    </a>
+                {% else %}
+                    <a href="{{ path('app_purchasing_supplier_product_map', {'id': supplierProduct.publicId.value }) }}"
+                       data-turbo-prefetch="false"
+                       data-turbo-frame="body"
+                       class="inline-flex items-center gap-1 text-sm text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+                    >
+                        <twig:ux:icon name="bi:lightning-fill" class="h-4 w-4"/>
+                        Map Product
+                    </a>
+                {% endif %}
+            </div>
+        </div>
     </div>
+
+    <twig:CardFooter :updatedAt="supplierProduct.updatedAt">
+        <twig:StatusBadge status="{{ supplierProduct.isActive ? 'ACTIVE' : 'INACTIVE' }}"/>
+    </twig:CardFooter>
 
 </twig:Card>

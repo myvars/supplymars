@@ -1,23 +1,22 @@
-<twig:Card title="Customer Addresses ({{ customer.addresses.count }})">
-    <ol class="text-sm text-gray-500 space-y-3 dark:text-gray-400 mb-1">
+<twig:Card title="Addresses ({{ customer.addresses.count }})">
+    <div class="-mx-3 -mb-1 divide-y divide-gray-100 dark:divide-gray-700/50">
         {% for address in customer.addresses %}
-            <li class="flex justify-between px-3">
-                <div>
+            <div class="flex items-start gap-3 px-3 py-3">
+                <twig:ux:icon name="bi:geo-alt" class="mt-0.5 h-4 w-4 shrink-0 text-gray-400 dark:text-gray-500"/>
+                <div class="text-sm">
                     {% if address.defaultBillingAddress %}
-                        <p class="mb-1 text-gray-300 dark:text-gray-200">Billing Address</p>
+                        <p class="mb-1 text-xs font-medium text-primary-600 dark:text-primary-400">Billing Address</p>
                     {% elseif address.defaultShippingAddress %}
-                        <p class="mb-1 text-gray-300 dark:text-gray-200">Default Shipping Address</p>
+                        <p class="mb-1 text-xs font-medium text-primary-600 dark:text-primary-400">Default Shipping Address</p>
                     {% endif %}
-                    <p>{{ address.street }}</p>
+                    <p class="text-gray-900 dark:text-white">{{ address.street }}</p>
                     {% if address.street2 is not null %}
-                        <p>{{ address.street2 }}</p>
+                        <p class="text-gray-900 dark:text-white">{{ address.street2 }}</p>
                     {% endif %}
-                    <p>{{ address.city }}, {{ address.postCode }}</p>
-                    <p>{{ address.country }}</p>
+                    <p class="text-gray-500 dark:text-gray-400">{{ address.city }}, {{ address.postCode }}</p>
+                    <p class="text-gray-500 dark:text-gray-400">{{ address.country }}</p>
                 </div>
-            </li>
-        {% else %}
-            <li>No addresses</li>
+            </div>
         {% endfor %}
-    </ol>
+    </div>
 </twig:Card>

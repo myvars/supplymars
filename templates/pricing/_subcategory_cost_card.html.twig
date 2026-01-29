@@ -1,27 +1,30 @@
 <twig:Card editLink="{{ path('app_pricing_subcategory_cost_edit', {'id': product.publicId.value }) }}" title="Subcategory">
-    <p class="mb-2 text-lg text-gray-900 line-clamp-1 dark:text-white">{{ product.subcategory.name }}</p>
-    <ul class="list-inside list-disc">
-        <li>
+    <p class="mb-3 text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">{{ product.subcategory.name }}</p>
+    <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+        <p class="flex items-center gap-2">
+            <twig:ux:icon name="mdi:percent-outline" class="h-4 w-4 text-gray-400 dark:text-gray-500"/>
             {% if product.subcategory.hasDefaultMarkup %}
                 {{ product.subcategory.defaultMarkup|number_format(3) }}% mark-up
+                {% if product.activeMarkupTarget == 'SUBCATEGORY' %}
+                    <twig:ux:icon name="bi:check-circle-fill" class="h-4 w-4 text-green-500 dark:text-green-400"/>
+                {% endif %}
             {% else %}
-                No subcategory mark-up
+                <span class="italic text-gray-400 dark:text-gray-500">No subcategory mark-up</span>
             {% endif %}
-        </li>
-        <li>
+        </p>
+        <p class="flex items-center gap-2">
+            <twig:ux:icon name="mdi:tag-outline" class="h-4 w-4 text-gray-400 dark:text-gray-500"/>
             {% if product.subcategory.hasPriceModel %}
                 {{ product.subcategory.priceModel.getName }} price model
+                {% if product.activePriceModelTarget == 'SUBCATEGORY' %}
+                    <twig:ux:icon name="bi:check-circle-fill" class="h-4 w-4 text-green-500 dark:text-green-400"/>
+                {% endif %}
             {% else %}
-                No subcategory price model
+                <span class="italic text-gray-400 dark:text-gray-500">No subcategory price model</span>
             {% endif %}
-        </li>
-    </ul>
-    <div class="mt-2 flex items-center justify-between">
-        <p class="text-xs text-gray-600 me-10 dark:text-gray-500">Updated {{ product.subcategory.updatedAt|ago }}</p>
-        {% if product.subcategory.isActive %}
-            <p class="text-green-500">Active</p>
-        {% else %}
-            <p class="text-red-500">InActive</p>
-        {% endif %}
+        </p>
     </div>
+    <twig:CardFooter :updatedAt="product.subcategory.updatedAt">
+        <twig:StatusBadge status="{{ product.subcategory.isActive ? 'ACTIVE' : 'INACTIVE' }}"/>
+    </twig:CardFooter>
 </twig:Card>

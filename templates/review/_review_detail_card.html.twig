@@ -1,31 +1,35 @@
 <twig:Card editLink="{{ review.status.allowEdit ? path('app_review_edit', {'id': review.publicId.value }) : null }}" title="Review">
-    <div class="space-y-3">
-        <div class="flex items-center justify-between">
-            <h3 class="text-xl text-gray-900 dark:text-white">{{ review.title ?? 'Untitled Review' }}</h3>
-            <span class="{{ review.status.color }} text-sm font-medium px-2 py-1 rounded">{{ review.status.value }}</span>
-        </div>
-
-        <div class="flex items-center space-x-1">
-            {% for i in 1..5 %}
-                {% if i <= review.rating %}
-                    <twig:ux:icon name="flowbite:star-solid" class="w-5 h-5 text-yellow-400"/>
-                {% else %}
-                    <twig:ux:icon name="flowbite:star-solid" class="w-5 h-5 text-gray-300"/>
-                {% endif %}
-            {% endfor %}
-            <span class="text-sm text-gray-500 ml-2">{{ review.rating }}/5</span>
+    <div class="space-y-4">
+        <div class="flex items-start justify-between gap-3">
+            <div class="space-y-1.5">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{{ review.title ?? 'Untitled Review' }}</h3>
+                <div class="flex items-center gap-0.5">
+                    {% for i in 1..5 %}
+                        {% if i <= review.rating %}
+                            <twig:ux:icon name="flowbite:star-solid" class="h-4 w-4 text-amber-400"/>
+                        {% else %}
+                            <twig:ux:icon name="flowbite:star-solid" class="h-4 w-4 text-gray-200 dark:text-gray-600"/>
+                        {% endif %}
+                    {% endfor %}
+                    <span class="ml-1.5 text-sm font-medium text-gray-500 dark:text-gray-400">{{ review.rating }}/5</span>
+                </div>
+            </div>
+            <twig:StatusBadge status="{{ review.status.value }}"/>
         </div>
 
         {% if review.body %}
-            <p class="text-gray-700 dark:text-gray-300">{{ review.body }}</p>
+            <div class="rounded-lg border-l-4 border-gray-200 bg-gray-50 py-3 pr-4 pl-4 dark:border-gray-600 dark:bg-gray-800/50">
+                <p class="text-sm leading-relaxed text-gray-700 dark:text-gray-300">{{ review.body }}</p>
+            </div>
         {% endif %}
 
-        <div class="border-t border-gray-200 pt-3 dark:border-gray-700">
-            <dl class="grid grid-cols-2 gap-2 text-sm">
+        <div class="border-t border-gray-200 pt-4 dark:border-gray-700">
+            <dl class="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2.5 text-sm">
                 <dt class="text-gray-500 dark:text-gray-400">Product</dt>
                 <dd>
                     <a href="{{ path('app_catalog_product_show', {'id': review.product.publicId.value }) }}"
-                       class="text-blue-600 hover:text-blue-800" data-turbo-frame="body">
+                       class="font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+                       data-turbo-frame="body">
                         {{ review.product.name }}
                     </a>
                 </dd>
@@ -34,7 +38,8 @@
                 <dt class="text-gray-500 dark:text-gray-400">Order</dt>
                 <dd>
                     <a href="{{ path('app_order_show', {'id': review.customerOrder.publicId.value }) }}"
-                       class="text-blue-600 hover:text-blue-800" data-turbo-frame="body">
+                       class="font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+                       data-turbo-frame="body">
                         #{{ review.customerOrder.id }}
                     </a>
                 </dd>
@@ -47,25 +52,37 @@
             </dl>
         </div>
 
-        <div class="flex items-center space-x-2 pt-3 border-t border-gray-200 dark:border-gray-700">
+        <div class="flex items-center gap-2 border-t border-gray-200 pt-4 dark:border-gray-700">
             {% if review.status.value == 'PENDING' %}
-                <a href="{{ path('app_review_approve', {'id': review.publicId.value }) }}"
-                   class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-green-600 rounded hover:bg-green-700"
-                   data-turbo-frame="body"
-                   data-turbo-prefetch="false">Approve</a>
-                <a href="{{ path('app_review_reject', {'id': review.publicId.value }) }}"
-                   class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-red-600 rounded hover:bg-red-700"
-                   data-turbo-frame="modal">Reject</a>
+                <twig:Button
+                    tag="a"
+                    variant="success"
+                    href="{{ path('app_review_approve', {'id': review.publicId.value }) }}"
+                    data-turbo-frame="body"
+                    data-turbo-prefetch="false"
+                >Approve</twig:Button>
+                <twig:Button
+                    tag="a"
+                    variant="danger"
+                    href="{{ path('app_review_reject', {'id': review.publicId.value }) }}"
+                    data-turbo-frame="modal"
+                >Reject</twig:Button>
             {% elseif review.status.value == 'PUBLISHED' %}
-                <a href="{{ path('app_review_hide', {'id': review.publicId.value }) }}"
-                   class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-gray-600 rounded hover:bg-gray-700"
-                   data-turbo-frame="body"
-                   data-turbo-prefetch="false">Hide</a>
+                <twig:Button
+                    tag="a"
+                    variant="secondary"
+                    href="{{ path('app_review_hide', {'id': review.publicId.value }) }}"
+                    data-turbo-frame="body"
+                    data-turbo-prefetch="false"
+                >Hide</twig:Button>
             {% elseif review.status.value == 'HIDDEN' %}
-                <a href="{{ path('app_review_republish', {'id': review.publicId.value }) }}"
-                   class="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-blue-600 rounded hover:bg-blue-700"
-                   data-turbo-frame="body"
-                   data-turbo-prefetch="false">Republish</a>
+                <twig:Button
+                    tag="a"
+                    variant="primary"
+                    href="{{ path('app_review_republish', {'id': review.publicId.value }) }}"
+                    data-turbo-frame="body"
+                    data-turbo-prefetch="false"
+                >Republish</twig:Button>
             {% endif %}
         </div>
     </div>

@@ -25,26 +25,23 @@
                 editLink="{{ path('app_catalog_subcategory_edit', {'id': result.publicId.value }) }}"
                 showLink="{{ path('app_catalog_subcategory_show', {'id': result.publicId.value }) }}"
             >
-                <p class="text-lg text-gray-900 line-clamp-1 dark:text-white">{{ result.name }}</p>
-                <p class="mb-1 line-clamp-1">Found in {{ result.category.name }}</p>
-                <p class="text-base font-extralight text-nowrap">
-                    {{ result.defaultMarkup|number_format(3) }}%
-                    <span class="text-sm"> mark-up</span>
-                </p>
-                <p class="mt-1 flex items-center justify-between">
-                    <span class="text-gray-600 me-1 dark:text-gray-500">
+                <div class="flex items-center justify-between pe-6">
+                    <div>
+                        <p class="text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">{{ result.name }}</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ result.category.name }}</p>
+                    </div>
+                    <twig:StatusBadge status="{{ result.isActive ? 'ACTIVE' : 'INACTIVE' }}"/>
+                </div>
+                <div class="mt-2 flex items-center justify-between">
+                    <p class="text-xs text-gray-500 dark:text-gray-500">
                         {% if result.hasOwner %}
                             Managed by {{ result.owner.fullName }}
                         {% else %}
                             No subcategory manager
                         {% endif %}
-                    </span>
-                    {% if result.isActive %}
-                        <span class="text-green-500">Active</span>
-                    {% else %}
-                        <span class="text-red-500">InActive</span>
-                    {% endif %}
-                </p>
+                    </p>
+                    <p class="text-sm text-gray-700 dark:text-gray-300">{{ result.defaultMarkup|number_format(3) }}% mark-up</p>
+                </div>
             </twig:Card>
         </twig:block>
 

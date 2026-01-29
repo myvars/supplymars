@@ -4,7 +4,7 @@
 
 {% block body %}
 
-    <div class="m-3 space-y-3">
+    <div class="m-3 space-y-4">
         {{ include('catalog/category/_category_card.html.twig', {category: result}) }}
         {% if result.products.count > 0 %}
             {{ include('catalog/category/_category_products_card.html.twig', {category: result}) }}

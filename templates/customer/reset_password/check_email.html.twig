@@ -1,34 +1,35 @@
-{% extends '../../base.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block title %}Password Reset Email Sent{% endblock %}
 
 {% block body %}
-    <section class="rounded-sm bg-gray-50 dark:bg-gray-900 md:h-screen" style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
-        <div class="mx-auto flex flex-col items-center px-6 py-8 lg:py-0">
-            <div
-                class="w-full rounded-sm bg-white shadow-sm dark:border dark:border-gray-700 dark:bg-gray-800 sm:max-w-md md:m-10 xl:p-0">
-                <div class="p-6 space-y-4 sm:p-8 md:space-y-6">
-                    <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white md:text-2xl">
-                        Password Reset Email Sent
-                    </h1>
-                    <p class="mb-4 text-gray-900 dark:text-gray-300">
-                        If an account matching your email exists, then an email was just sent containing a link to reset your password.
-                    </p>
-                    <p class="mb-4 text-gray-900 dark:text-gray-300">
-                        This link will expire in
-                        {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}
-                    </p>
-                    <p class="text-sm font-light text-gray-500 dark:text-gray-400">
-                        If you don't receive an email please check your spam folder or
-                        <a
-                            href="{{ path('app_forgot_password_request') }}"
-                            class="font-medium text-primary-600 hover:underline dark:text-primary-500"
-                        >
-                            try again.
-                        </a>
-                    </p>
-                 </div>
+    {% embed 'customer/_auth_layout.html.twig' %}
+        {% block auth_content %}
+            <div class="flex flex-col items-center text-center">
+                <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+                    <twig:ux:icon name="bi:envelope-check" class="h-7 w-7 text-green-600 dark:text-green-400"/>
+                </div>
+                <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white md:text-2xl">
+                    Check Your Email
+                </h1>
             </div>
-        </div>
-    </section>
+            <p class="text-center text-sm text-gray-600 dark:text-gray-300">
+                If an account matching your email exists, we've sent a link to reset your password.
+            </p>
+            <div class="rounded-lg border border-amber-200 bg-amber-50 p-3 dark:border-amber-800/50 dark:bg-amber-900/20">
+                <p class="flex items-center gap-2 text-sm text-amber-800 dark:text-amber-300">
+                    <twig:ux:icon name="bi:clock" class="h-4 w-4 shrink-0"/>
+                    This link will expire in
+                    {{ resetToken.expirationMessageKey|trans(resetToken.expirationMessageData, 'ResetPasswordBundle') }}.
+                </p>
+            </div>
+            <p class="text-center text-sm font-light text-gray-500 dark:text-gray-400">
+                Didn't receive an email? Check your spam folder or
+                <a
+                    href="{{ path('app_forgot_password_request') }}"
+                    class="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                ><span class="whitespace-nowrap">try again</span></a>.
+            </p>
+        {% endblock %}
+    {% endembed %}
 {% endblock %}

@@ -4,53 +4,111 @@
 
 {% block body %}
     <div data-controller="aos">
-        <section class="flex justify-center bg-white dark:bg-orange-400/10" style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
+        <section class="flex justify-center" style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
             <div class="mx-auto max-w-(--breakpoint-xl) px-4 py-8 sm:py-12 lg:px-6">
-                <div class="mb-10 max-w-(--breakpoint-md) dark:text-white sm:text-base" data-aos="fade-up" data-aos-duration="800">
-                    <h2 class="mb-4 text-3xl tracking-tight">About Us</h2>
-                    <p class="mb-4">
-                        At {{ domain|title }}, we’re not just imagining life on Mars—we’re building the tools to make it happen!
-                        This project is a fun, tech-driven showcase of what modern web technologies (and a little creativity) can achieve.
-                        While you won’t find any actual Martian supplies for sale, you will find a fully functional, streamlined e-commerce backend that demonstrates the true power of modern PHP.
+                <div class="max-w-(--breakpoint-md) rounded-2xl bg-white/90 p-8 backdrop-blur-sm dark:bg-gray-900/80 lg:p-10" data-aos="fade-up" data-aos-duration="800">
+                    <h2 class="mb-4 text-3xl tracking-tight text-gray-900 dark:text-white">About Us</h2>
+                    <p class="mb-4 text-gray-700 dark:text-gray-300">
+                        Most e-commerce demos stop at "add to cart." {{ domain|title }} focuses on what comes after: orders that need to be sourced from multiple suppliers, prices that cascade through category hierarchies, and fulfilment that progresses through independent purchase-order lifecycles.
                     </p>
-                    <p class="mb-4">
-                        PHP has evolved into a type-safe, efficient, and robust powerhouse.
-                        It simplifies development, reduces maintenance costs, and unlike constantly shifting JavaScript frameworks, keeps your codebase stable without endless refactoring.
-                     </p>
+                    <p class="mb-4 text-gray-700 dark:text-gray-300">
+                        While you won't find any actual Martian supplies for sale, you will find a fully functional backend that models real operational complexity: multi-source fulfilment, dynamic pricing, margin tracking, and simulation-driven data across thousands of SKUs. The entire catalog (products, descriptions, and imagery) is AI-generated.
                     </p>
-                    <p class="mb-4">
-                        With over 20 years of e-commerce experience, the creator of this project has been involved in every aspect of building and scaling online businesses.
-                        From working directly with customers to leading development teams and scaling startups into thriving enterprises, this project is a testament to a career dedicated to innovation and real-world problem-solving.
+                    <p class="text-gray-700 dark:text-gray-300">
+                        Built with over 20 years of hands-on e-commerce experience, from founding and scaling online retailers to leading engineering teams, this project demonstrates how Domain-Driven Design, event-driven architecture, and modern PHP come together to solve real supply-chain problems.
                     </p>
-                </div>
 
-                <div class="mb-10 max-w-(--breakpoint-md) dark:text-white" data-aos="fade-up" data-aos-duration="800" data-aos-delay="200">
-                    <h3 class="mb-4 text-2xl">Built on Modern, Reliable Technologies</h3>
-                    <ul class="list-inside list-disc space-y-1">
-                        <li>PHP 8 and Symfony for a robust, reliable back-end architecture</li>
-                        <li>Hotwire Turbo for seamless server-side rendering and fast navigation</li>
-                        <li>Tailwind CSS for fast, responsive design</li>
-                        <li>Amazon EC2/RDS/S3 for scalable hosting and storage</li>
-                        <li>AI-Generated Content: Unique products and images created by AI</li>
-                    </ul>
-                </div>
+                    <div class="my-8 border-t border-gray-200 dark:border-gray-700"></div>
 
-                <div class="mb-10 max-w-(--breakpoint-md) dark:text-white sm:text-base" data-aos="fade-up" data-aos-duration="800" data-aos-delay="400">
-                    <h3 class="mb-4 text-2xl">A Feature-Rich, Fun E-Commerce Demo</h3>
-                    <p>
-                        {{ domain|title }} provides a comprehensive suite of e-commerce back-end tools, with product management, supplier integration, dynamic pricing models, order processing, all powered by real-time simulations of customer orders and supplier interactions.
-                        With built-in sales reporting and data visualizations, this project explores the future of e-commerce - on Earth or Mars!
-                    </p>
-                </div>
-                <div class="mt-4 flex items-center justify-center" data-aos="fade-up" data-aos-delay="400" data-aos-duration="800">
-                    <twig:Button
-                        tag="a"
-                        href="mailto:adamashmore@me.com"
-                        class="flex items-center font-bold space-x-1"
-                        variant="secondary"
-                    >
-                        <span>Contact Us</span>
-                    </twig:Button>
+                    <div data-aos="fade-up" data-aos-duration="800" data-aos-delay="200">
+                        <h3 class="mb-4 text-2xl text-gray-900 dark:text-white">Built on Modern, Reliable Technologies</h3>
+                        <div class="flex flex-wrap gap-3">
+                            <span class="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                                <twig:ux:icon name="simple-icons:php" class="h-4 w-4" />
+                                PHP 8.5 & Symfony 8
+                            </span>
+                            <span class="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                                <twig:ux:icon name="bi:database-fill" class="h-4 w-4" />
+                                MySQL 8.4 & Doctrine ORM
+                            </span>
+                            <span class="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                                <twig:ux:icon name="bi:lightning-fill" class="h-4 w-4" />
+                                Hotwire (Turbo + Stimulus)
+                            </span>
+                            <span class="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                                <twig:ux:icon name="simple-icons:tailwindcss" class="h-4 w-4" />
+                                Tailwind CSS
+                            </span>
+                            <span class="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                                <twig:ux:icon name="simple-icons:rabbitmq" class="h-4 w-4" />
+                                RabbitMQ
+                            </span>
+                            <span class="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                                <twig:ux:icon name="simple-icons:redis" class="h-4 w-4" />
+                                Redis
+                            </span>
+                            <span class="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                                <twig:ux:icon name="simple-icons:amazonaws" class="h-4 w-4" />
+                                Amazon EC2/RDS/S3
+                            </span>
+                            <span class="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-sm font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+                                <twig:ux:icon name="bi:stars" class="h-4 w-4" />
+                                AI-Generated Content
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="my-8 border-t border-gray-200 dark:border-gray-700"></div>
+
+                    <div data-aos="fade-up" data-aos-duration="800" data-aos-delay="400">
+                        <h3 class="mb-4 text-2xl text-gray-900 dark:text-white">What Makes This Non-Trivial</h3>
+                        <p class="mb-4 text-gray-700 dark:text-gray-300">
+                            The system is organised as a modular monolith with multiple bounded contexts (Catalog, Order, Purchasing, Pricing, Reporting, Customer, Audit, Review) communicating through domain events. Beyond basic CRUD, the interesting engineering problems include:
+                        </p>
+                        <ul class="space-y-2 text-gray-700 dark:text-gray-300">
+                            <li class="flex items-start gap-2">
+                                <twig:ux:icon name="bi:arrow-right-circle-fill" class="mt-0.5 h-5 w-5 shrink-0 text-orange-500" />
+                                <span><strong>Multi-supplier sourcing</strong>: evaluating cost and availability across warehouse and dropship suppliers to select the optimal source</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <twig:ux:icon name="bi:arrow-right-circle-fill" class="mt-0.5 h-5 w-5 shrink-0 text-orange-500" />
+                                <span><strong>Order quantity splitting</strong>: allocating a single order item across multiple suppliers when no single source has enough stock</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <twig:ux:icon name="bi:arrow-right-circle-fill" class="mt-0.5 h-5 w-5 shrink-0 text-orange-500" />
+                                <span><strong>Event-driven pricing</strong>: three-level markup cascades (product, subcategory, category) with six pretty-price rounding models, recalculated automatically when supplier costs change</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <twig:ux:icon name="bi:arrow-right-circle-fill" class="mt-0.5 h-5 w-5 shrink-0 text-orange-500" />
+                                <span><strong>Status derivation</strong>: order and item statuses cascade from their child purchase-order items, updating automatically as fulfilment progresses</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <twig:ux:icon name="bi:arrow-right-circle-fill" class="mt-0.5 h-5 w-5 shrink-0 text-orange-500" />
+                                <span><strong>Two-layer reporting</strong>: daily granular records pre-aggregated into summaries for fast dashboard rendering</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+                        <twig:Button
+                            tag="a"
+                            href="https://github.com/myvars/supplymars"
+                            target="_blank"
+                            class="flex items-center font-bold space-x-1"
+                            variant="primary"
+                        >
+                            <twig:ux:icon name="bi:github" class="h-5 w-5" />
+                            <span>View on GitHub</span>
+                        </twig:Button>
+                        <twig:Button
+                            tag="a"
+                            href="mailto:adamashmore@me.com"
+                            class="flex items-center font-bold space-x-1"
+                            variant="secondary"
+                        >
+                            <span>Contact Us</span>
+                        </twig:Button>
+                    </div>
                 </div>
             </div>
         </section>

@@ -1,9 +1,13 @@
 <twig:Card title="Products">
     <a href="{{ path('app_catalog_product_index', {manufacturerId: result.id}) }}"
-       class="flex items-center justify-start dark:hover:text-white"
+       class="group flex items-center justify-between text-sm text-gray-600 dark:text-gray-400"
        data-turbo-frame="body"
     >
-        <span class="me-1">{{ result.products.count }}</span>
-        {{ result.products.count == 1 ? 'product': 'products' }} from this manufacturer
+        <span class="flex items-center gap-2">
+            <twig:ux:icon name="bi:box-seam" class="h-4 w-4 text-gray-400 dark:text-gray-500"/>
+            <span class="font-medium text-gray-900 dark:text-white">{{ result.products.count }}</span>
+            {{ result.products.count == 1 ? 'product': 'products' }} from this manufacturer
+        </span>
+        <twig:ux:icon name="bi:arrow-right" class="h-4 w-4 text-gray-400 transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-primary-500 dark:text-gray-500"/>
     </a>
 </twig:Card>

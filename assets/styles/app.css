@@ -129,10 +129,32 @@
 }
 
 .dropzone.dz-clickable {
-    border: 1px solid rgb(55 65 81);
+    border: 1px solid var(--color-gray-300);
     border-radius: 10px;
+}
+.dark .dropzone.dz-clickable {
+    border-color: var(--color-gray-700);
 }
 
 .hidden-submit-button {
     display: none;
+}
+
+/* Landing page */
+.landing-hero-bg {
+    animation: slowZoom 25s ease-out forwards;
+}
+
+@keyframes slowZoom {
+    from { transform: scale(1); }
+    to { transform: scale(1.1); }
+}
+
+@keyframes bounceSubtle {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(10px); }
+}
+
+.scroll-indicator {
+    animation: bounceSubtle 2s ease-in-out infinite;
 }

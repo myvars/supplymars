@@ -9,7 +9,7 @@
 
 {% macro formatValue(value, valueType, format, maxFractionDigits) %}
     {% if valueType == 'currency' %}
-        {{ '£' ~ value|default(0)|round(0, 'floor')|number_format(maxFractionDigits, '.', ',') }}
+        {{ value|price_rounded(maxFractionDigits) }}
     {% elseif valueType == 'percentage' %}
         {{ value|number_format(2) ~ '%' }}
     {% else %}
@@ -18,33 +18,41 @@
 {% endmacro %}
 
 
-<div class="flex flex-col items-center justify-center">
+<div class="flex flex-col items-center justify-center gap-1 overflow-hidden rounded-lg border border-gray-200 bg-white px-3 py-4 dark:border-gray-700/50 dark:bg-gray-800/50 sm:px-5">
 
-    <div class="flex items-center text-sm text-gray-500">
-        <span class="text-sm text-gray-500 dark:text-gray-400">{{ title }}</span>
-    </div>
+    <p class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ title }}</p>
 
-    <div class="flex items-center text-2xl font-bold text-gray-900 dark:text-gray-300">
-        {{ _self.formatValue(value, valueType, format, maxFractionDigits) }}
+    <div class="flex max-w-full items-baseline gap-1.5">
+        <span class="truncate text-xl font-semibold tabular-nums text-gray-900 dark:text-gray-100 sm:text-2xl">
+            {{ _self.formatValue(value, valueType, format, maxFractionDigits) }}
+        </span>
         {% if compare is not null %}
             {% set difference = value - compare %}
             {% if difference > 0 %}
-                <span class="text-green-500"><twig:ux:icon name="bxs:up-arrow" class="h-6 w-6 ms-1.5" /></span>
+                <twig:ux:icon name="bxs:up-arrow" class="h-4 w-4 self-center text-green-500" />
             {% elseif difference < 0 %}
-                <span class="text-red-500"><twig:ux:icon name="bxs:down-arrow" class="h-6 w-6 ms-1.5" /></span>
+                <twig:ux:icon name="bxs:down-arrow" class="h-4 w-4 self-center text-red-500" />
             {% endif %}
         {% endif %}
-
     </div>
 
     {% if compare is not null %}
         {% set difference = value - compare %}
         {% set percentage = (compare != 0) ? ((difference / compare) * 100)|round(2) : 0 %}
-        {% set color = difference > 0 ? 'text-green-500' : (difference < 0 ? 'text-red-500' : 'text-gray-500') %}
-
-        <div class="text-sm font-medium {{ color }}">
-            {{ difference > 0 ? '+' : '' }}{{ difference|number_format(valueType != 'percentage' ? 0 : 2) }}
-            ({{ percentage > 0 ? '+' : '' }}{{ percentage|number_format(2) }}%)
-        </div>
+        {% if difference != 0 %}
+            {% set positive = difference > 0 %}
+            <div class="flex items-center gap-3 text-xs">
+                <span class="text-gray-500 dark:text-gray-400">
+                    {{ positive ? '+' : '' }}{{ difference|number_format(valueType != 'percentage' ? 0 : 2) }}
+                </span>
+                <span class="font-medium {{ positive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
+                    {{ positive ? '+' : '' }}{{ percentage|number_format(2) }}%
+                </span>
+            </div>
+        {% else %}
+            <span class="inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500 dark:bg-gray-700 dark:text-gray-400">
+                0%
+            </span>
+        {% endif %}
     {% endif %}
 </div>

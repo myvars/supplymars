@@ -2,73 +2,364 @@
 
 {% block title %}Welcome{% endblock %}
 
+{% block main_class %}grow bg-gray-950{% endblock %}
+
 {% block body %}
     <div data-controller="aos">
-    <section class="mx-auto flex items-center justify-center h-screen" id="intro"
+
+    {# ── Hero ────────────────────────────────────────────────────────────── #}
+    <section class="relative flex items-center justify-center h-screen overflow-hidden">
+        <div class="absolute inset-0 landing-hero-bg"
              style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
-        <div class="text-center">
-            <div class="mt-4 flex items-center justify-center pb-3" data-aos="fade-down" data-aos-duration="800">{{ include('_logo.html.twig', { logoHeight: 60 }) }}</div>
-            <h1 class="mb-5 text-4xl text-gray-900 dark:text-white sm:text-4xl" data-aos="fade-down" data-aos-delay="0">Welcome to {{ domain }}</h1>
-            <div class="mb-5 text-2xl text-gray-900 dark:text-white" data-aos="fade-up" data-aos-delay="400" data-aos-duration="800">
-                <p class="mb-4">Your One-Stop Shop for Life on the Red Planet</p>
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/30 to-gray-900/50"></div>
+
+        <div class="relative text-center px-4">
+            <div class="flex items-center justify-center mb-8" data-aos="fade-down" data-aos-duration="800">
+                {{ include('_logo.html.twig', { logoHeight: 60 }) }}
+            </div>
+            <h1 class="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6"
+                data-aos="fade-down" data-aos-delay="100" data-aos-duration="800">
+                Welcome to {{ domain }}
+            </h1>
+            <p class="text-xl sm:text-2xl text-gray-300 max-w-2xl mx-auto"
+               data-aos="fade-up" data-aos-delay="300" data-aos-duration="800">
+                Your One-Stop Shop for Life on the Red Planet
+            </p>
+        </div>
+
+        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 scroll-indicator">
+            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
+        </div>
+    </section>
+
+    {# ── The Pitch ───────────────────────────────────────────────────────── #}
+    <section class="bg-gray-950 py-24 lg:py-32">
+        <div class="mx-auto max-w-3xl px-6 text-center">
+            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-8"
+                data-aos="fade-up" data-aos-duration="600">
+                Pioneering Commerce Beyond Earth
+            </h2>
+            <p class="text-lg sm:text-xl text-gray-400 leading-relaxed mb-6" data-aos="fade-up" data-aos-delay="100">
+                Whether you're managing a Martian colony or stocking up for your next extravehicular adventure,
+                {{ domain|title }} is your destination for everything from habitat maintenance to cutting-edge scientific equipment.
+            </p>
+            <p class="text-lg sm:text-xl text-gray-400 leading-relaxed" data-aos="fade-up" data-aos-delay="200">
+                It's also a fully functional demo designed to showcase e-commerce development with a modern PHP stack
+                &mdash; modelling real operational complexity, not just add-to-cart basics.
+            </p>
+        </div>
+    </section>
+
+    {# ── Core Platform ────────────────────────────────────────────────────── #}
+    <section class="bg-gray-900 py-24 lg:py-32">
+        <div class="mx-auto max-w-(--breakpoint-xl) px-6">
+            <div class="mb-16 lg:mb-20 text-center" data-aos="fade-up">
+                <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">The Platform</p>
+                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+                    Built for Modern E-commerce
+                </h2>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
+                <div class="text-center" data-aos="fade-up" data-aos-delay="0">
+                    <div class="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-gray-800">
+                        <twig:ux:icon name="bi:box-seam-fill" class="h-7 w-7 text-gray-300" />
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Product Management</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        Full product catalogue with categories, subcategories, images, and manufacturer associations.
+                    </p>
+                </div>
+
+                <div class="text-center" data-aos="fade-up" data-aos-delay="50">
+                    <div class="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-gray-800">
+                        <twig:ux:icon name="bi:truck" class="h-7 w-7 text-gray-300" />
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Supplier Management</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        Multiple suppliers per product with cost tracking, stock levels, and supplier product catalogues.
+                    </p>
+                </div>
+
+                <div class="text-center" data-aos="fade-up" data-aos-delay="100">
+                    <div class="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-gray-800">
+                        <twig:ux:icon name="bi:bag-check-fill" class="h-7 w-7 text-gray-300" />
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Order Processing</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        Customer orders with line items, status tracking, and automatic allocation to supplier purchase orders.
+                    </p>
+                </div>
+
+                <div class="text-center" data-aos="fade-up" data-aos-delay="150">
+                    <div class="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-gray-800">
+                        <twig:ux:icon name="bi:clipboard2-data-fill" class="h-7 w-7 text-gray-300" />
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Purchasing</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        Purchase orders generated from customer demand, tracked through acceptance, shipping, and delivery.
+                    </p>
+                </div>
+
+                <div class="text-center" data-aos="fade-up" data-aos-delay="200">
+                    <div class="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-gray-800">
+                        <twig:ux:icon name="bi:currency-pound" class="h-7 w-7 text-gray-300" />
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Pricing &amp; VAT</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        Configurable markup strategies at multiple levels, VAT rate management, and sell-price calculation.
+                    </p>
+                </div>
+
+                <div class="text-center" data-aos="fade-up" data-aos-delay="250">
+                    <div class="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-gray-800">
+                        <twig:ux:icon name="bi:bar-chart-line-fill" class="h-7 w-7 text-gray-300" />
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Reporting</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">
+                        Dashboards with revenue, margin, and order metrics. Daily granular records aggregated into fast summaries.
+                    </p>
+                </div>
             </div>
         </div>
     </section>
-    <!--  /- END INTRO SECTION-->
 
-    <section class="bg-white dark:bg-orange-400/10">
-        <div class="mx-auto max-w-(--breakpoint-xl) px-4 py-8 sm:py-8 lg:px-6" data-aos="fade-up" data-aos-duration="800">
-            <div class="mb-10 max-w-(--breakpoint-md)">
-                <h2 class="mb-6 text-2xl tracking-tight text-gray-900 dark:text-white">Pioneering Commerce Beyond Earth</h2>
-                <p class="mb-4 text-gray-500 dark:text-gray-400 sm:text-base">Whether you’re managing a Martian colony or just stocking up for your next extravehicular adventure, we’ve got you covered.
-                    {{ domain|title }} is not only your destination for everything from habitat maintenance to cutting-edge scientific equipment,
-                    it’s also a fun, fully functional demo designed to showcase e-commerce development with a modern PHP stack.
-                </p>
-                <p class="mb-4 text-gray-500 dark:text-gray-400 sm:text-base">Features include:
-                </p>
-                <ul class="max-w-md list-inside list-disc text-gray-500 space-y-1 dark:text-gray-400">
-                    <li>Product creation and editing tools</li>
-                    <li>Supplier stock mapping and dynamic pricing models</li>
-                    <li>Full order management system</li>
-                    <li>Simulated customer and supplier behavior</li>
-                    <li>Real-time sales reporting with beautiful visualizations</li>
-                </ul>
+    {# ── Operational Complexity ──────────────────────────────────────────── #}
+    <section class="bg-gray-950 py-24 lg:py-32">
+        <div class="mx-auto max-w-(--breakpoint-xl) px-6">
+            <div class="mb-16 lg:mb-20" data-aos="fade-up">
+                <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">What's Under the Hood</p>
+                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white max-w-xl">
+                    Real Operational Complexity
+                </h2>
             </div>
-            <div class="space-y-8 md:space-y-0 md:grid md:grid-cols-2 md:gap-12 lg:grid-cols-2">
-                <div data-aos="fade-up" data-aos-duration="400" data-aos-delay="200">
-                    <div class="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 dark:bg-orange-600 lg:h-12 lg:w-12">
-                        <twig:ux:icon name="simple-icons:php" class="h-8 w-8" />
+
+            <div class="space-y-16 lg:space-y-20">
+                <div class="flex flex-col sm:flex-row items-start gap-6 sm:gap-10" data-aos="fade-up" data-aos-delay="0">
+                    <span class="text-6xl sm:text-7xl font-bold text-gray-800 leading-none shrink-0 tabular-nums">01</span>
+                    <div>
+                        <h3 class="text-xl sm:text-2xl font-semibold text-white mb-3">Multi-supplier Sourcing</h3>
+                        <p class="text-gray-400 max-w-xl leading-relaxed">
+                            Products aggregate multiple supplier sources. A best-source algorithm picks the lowest cost,
+                            with automatic cost optimisation and stock-aware allocation across every product.
+                        </p>
                     </div>
-                    <h3 class="mb-2 text-2xl dark:text-white">Modern PHP</h3>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
-                        Harnessing the proven stability and performance of PHP 8 and Symfony, delivering a robust back-end architecture.
-                        LAST stack (Live Components, AssetMapper, Stimulus, and Turbo) brings simplicity and productivity to modern front-end experiences.
-                        Tailwind CSS ensures fast, responsive design with a utility-first approach for streamlined development.
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-start gap-6 sm:gap-10" data-aos="fade-up" data-aos-delay="100">
+                    <span class="text-6xl sm:text-7xl font-bold text-gray-800 leading-none shrink-0 tabular-nums">02</span>
+                    <div>
+                        <h3 class="text-xl sm:text-2xl font-semibold text-white mb-3">Dynamic Pricing Cascades</h3>
+                        <p class="text-gray-400 max-w-xl leading-relaxed">
+                            Three-level markup cascades across product, subcategory, and category with pretty-price models
+                            and event-driven recalculation.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-start gap-6 sm:gap-10" data-aos="fade-up" data-aos-delay="200">
+                    <span class="text-6xl sm:text-7xl font-bold text-gray-800 leading-none shrink-0 tabular-nums">03</span>
+                    <div>
+                        <h3 class="text-xl sm:text-2xl font-semibold text-white mb-3">Order Line Splitting</h3>
+                        <p class="text-gray-400 max-w-xl leading-relaxed">
+                            When no single supplier can fulfil the required quantity, order lines can split across multiple suppliers.
+                            Overall status is derived from the lifecycle of the resulting purchase order items.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-start gap-6 sm:gap-10" data-aos="fade-up" data-aos-delay="300">
+                    <span class="text-6xl sm:text-7xl font-bold text-gray-800 leading-none shrink-0 tabular-nums">04</span>
+                    <div>
+                        <h3 class="text-xl sm:text-2xl font-semibold text-white mb-3">Purchase Order Lifecycle</h3>
+                        <p class="text-gray-400 max-w-xl leading-relaxed">
+                            Full lifecycle management from allocation through acceptance, shipping, and delivery
+                            with state-machine transitions and domain event propagation.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row items-start gap-6 sm:gap-10" data-aos="fade-up" data-aos-delay="400">
+                    <span class="text-6xl sm:text-7xl font-bold text-gray-800 leading-none shrink-0 tabular-nums">05</span>
+                    <div>
+                        <h3 class="text-xl sm:text-2xl font-semibold text-white mb-3">Simulation-driven Design</h3>
+                        <p class="text-gray-400 max-w-xl leading-relaxed">
+                            Console commands drive the full order, purchasing, and fulfilment lifecycle with realistic timing,
+                            automated stock fluctuation, and two-layer reporting aggregation.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {# ── Tech Stack ──────────────────────────────────────────────────────── #}
+    <section class="bg-gray-900 py-24 lg:py-32">
+        <div class="mx-auto max-w-(--breakpoint-xl) px-6">
+            <div class="mb-16 lg:mb-20 text-center" data-aos="fade-up">
+                <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">Built With</p>
+                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+                    Modern Stack, Proven Patterns
+                </h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+                <div class="rounded-xl border-l-4 border-orange-500 bg-gray-800/50 p-8"
+                     data-aos="fade-up" data-aos-delay="0" data-aos-duration="400">
+                    <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-orange-500/10">
+                        <twig:ux:icon name="bi:diagram-3-fill" class="h-7 w-7 text-orange-500" />
+                    </div>
+                    <h3 class="mb-3 text-xl font-semibold text-white">DDD Architecture</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        Modular monolith with bounded contexts, CQRS command/query separation,
+                        and domain events driving cross-context communication.
                     </p>
                 </div>
-                <div data-aos="fade-up" data-aos-duration="400" data-aos-delay="400">
-                    <div class="mb-2 flex h-10 w-10 items-center justify-center rounded-full bg-primary-100 dark:bg-orange-600 lg:h-12 lg:w-12">
-                        <twig:ux:icon name="bi:lightning-fill" class="h-6 w-6" />
+
+                <div class="rounded-xl border-l-4 border-violet-500 bg-gray-800/50 p-8"
+                     data-aos="fade-up" data-aos-delay="100" data-aos-duration="400">
+                    <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-violet-500/10">
+                        <twig:ux:icon name="simple-icons:php" class="h-8 w-8 text-violet-500" />
                     </div>
-                    <h3 class="mb-2 text-2xl dark:text-white">Hotwire Turbo</h3>
-                    <p class="text-sm text-gray-500 dark:text-gray-400">
-                        Turbo Frames and Streams enable fast, efficient server-side rendering, while Turbo Drive ensures smooth navigation and form submission without page reloads.
-                        Stimulus controllers enhance HTML over-the-wire templates, adding just enough JavaScript to make interactions shine!
+                    <h3 class="mb-3 text-xl font-semibold text-white">PHP 8.5 + Symfony 8</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        Modern PHP with readonly properties, enums, and constructor promotion.
+                        Symfony provides HTTP, forms, console commands, and dependency injection.
+                    </p>
+                </div>
+
+                <div class="rounded-xl border-l-4 border-cyan-500 bg-gray-800/50 p-8"
+                     data-aos="fade-up" data-aos-delay="200" data-aos-duration="400">
+                    <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-cyan-500/10">
+                        <twig:ux:icon name="bi:lightning-fill" class="h-7 w-7 text-cyan-500" />
+                    </div>
+                    <h3 class="mb-3 text-xl font-semibold text-white">Hotwire + Tailwind</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        Turbo Frames and Streams deliver SPA-like navigation without page reloads.
+                        Stimulus adds targeted interactivity. Tailwind handles responsive styling.
+                    </p>
+                </div>
+
+                <div class="rounded-xl border-l-4 border-emerald-500 bg-gray-800/50 p-8"
+                     data-aos="fade-up" data-aos-delay="300" data-aos-duration="400">
+                    <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-emerald-500/10">
+                        <twig:ux:icon name="bi:server" class="h-7 w-7 text-emerald-500" />
+                    </div>
+                    <h3 class="mb-3 text-xl font-semibold text-white">Infrastructure</h3>
+                    <p class="text-gray-400 leading-relaxed">
+                        MySQL 8.4 with Doctrine ORM, RabbitMQ for async event processing,
+                        Redis for caching and sessions, and S3 for file storage. Deployed on AWS EC2.
                     </p>
                 </div>
             </div>
-            <div class="mt-8 flex items-center justify-center">
-                <p class="me-2">Want to know more?</p>
+        </div>
+    </section>
+
+    {# ── Demo Showcase ───────────────────────────────────────────────────── #}
+    <section class="bg-gray-900 py-24 lg:py-32">
+        <div class="mx-auto max-w-(--breakpoint-xl) px-6">
+            <div class="mb-16 lg:mb-20 text-center" data-aos="fade-up">
+                <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">The Demo</p>
+                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+                    See It in Action
+                </h2>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                {# Browser frame 1 #}
+                <div class="rounded-xl overflow-hidden shadow-2xl border border-gray-700/50" data-aos="fade-up" data-aos-delay="0">
+                    <div class="bg-gray-800 px-4 py-3 flex items-center gap-3">
+                        <div class="flex gap-1.5">
+                            <div class="w-2.5 h-2.5 rounded-full bg-gray-600"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-gray-600"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-gray-600"></div>
+                        </div>
+                        <div class="flex-1 text-center text-xs text-gray-500">{{ domain }}/products</div>
+                    </div>
+                    <div class="bg-gray-800/50 aspect-[4/3] flex flex-col items-center justify-center p-8 text-center">
+                        <twig:ux:icon name="bi:grid-3x3-gap-fill" class="h-12 w-12 text-gray-700 mb-4" />
+                        <p class="text-sm font-medium text-gray-500">Product Catalog</p>
+                        <p class="text-xs text-gray-600 mt-1">Screenshot placeholder</p>
+                    </div>
+                </div>
+
+                {# Browser frame 2 #}
+                <div class="rounded-xl overflow-hidden shadow-2xl border border-gray-700/50" data-aos="fade-up" data-aos-delay="100">
+                    <div class="bg-gray-800 px-4 py-3 flex items-center gap-3">
+                        <div class="flex gap-1.5">
+                            <div class="w-2.5 h-2.5 rounded-full bg-gray-600"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-gray-600"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-gray-600"></div>
+                        </div>
+                        <div class="flex-1 text-center text-xs text-gray-500">{{ domain }}/orders</div>
+                    </div>
+                    <div class="bg-gray-800/50 aspect-[4/3] flex flex-col items-center justify-center p-8 text-center">
+                        <twig:ux:icon name="bi:cart-fill" class="h-12 w-12 text-gray-700 mb-4" />
+                        <p class="text-sm font-medium text-gray-500">Order Management</p>
+                        <p class="text-xs text-gray-600 mt-1">Screenshot placeholder</p>
+                    </div>
+                </div>
+
+                {# Browser frame 3 #}
+                <div class="rounded-xl overflow-hidden shadow-2xl border border-gray-700/50" data-aos="fade-up" data-aos-delay="200">
+                    <div class="bg-gray-800 px-4 py-3 flex items-center gap-3">
+                        <div class="flex gap-1.5">
+                            <div class="w-2.5 h-2.5 rounded-full bg-gray-600"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-gray-600"></div>
+                            <div class="w-2.5 h-2.5 rounded-full bg-gray-600"></div>
+                        </div>
+                        <div class="flex-1 text-center text-xs text-gray-500">{{ domain }}/reporting</div>
+                    </div>
+                    <div class="bg-gray-800/50 aspect-[4/3] flex flex-col items-center justify-center p-8 text-center">
+                        <twig:ux:icon name="bi:bar-chart-line-fill" class="h-12 w-12 text-gray-700 mb-4" />
+                        <p class="text-sm font-medium text-gray-500">Reporting Dashboard</p>
+                        <p class="text-xs text-gray-600 mt-1">Screenshot placeholder</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {# ── CTA ─────────────────────────────────────────────────────────────── #}
+    <section class="relative py-24 lg:py-32 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-950 to-gray-900"></div>
+        <div class="absolute inset-0 opacity-[0.03]"
+             style="background-image: url({{ asset('images/martian_landscape.webp') }}); background-size: cover; background-position: center;">
+        </div>
+
+        <div class="relative mx-auto max-w-2xl px-6 text-center">
+            <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-6"
+                data-aos="fade-up" data-aos-duration="600">
+                Explore the Source Code
+            </h2>
+            <p class="text-lg text-gray-400 mb-10 leading-relaxed" data-aos="fade-up" data-aos-delay="100">
+                Dive into the codebase, explore the architecture, or get in touch to learn more about how it's built.
+            </p>
+            <div class="flex flex-wrap items-center justify-center gap-4" data-aos="fade-up" data-aos-delay="200">
+                <twig:Button
+                    tag="a"
+                    href="https://github.com/myvars/supplymars"
+                    target="_blank"
+                    class="flex items-center space-x-2 text-lg px-8 py-3 font-bold"
+                    variant="primary"
+                >
+                    <twig:ux:icon name="bi:github" class="h-5 w-5" />
+                    <span>View on GitHub</span>
+                </twig:Button>
                 <twig:Button
                     tag="a"
                     href="mailto:adamashmore@me.com"
-                    class="flex items-center font-bold space-x-1"
+                    class="flex items-center space-x-2 text-lg px-8 py-3 font-bold"
                     variant="secondary"
                 >
-                    <span>Contact Us</span>
+                    <span>Get in Touch</span>
                 </twig:Button>
             </div>
         </div>
     </section>
+
     </div>
 {% endblock %}

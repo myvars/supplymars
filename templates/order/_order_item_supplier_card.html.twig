@@ -1,6 +1,6 @@
 <ul
     data-toggle-target="toggleable"
-    class="hidden w-full space-y-3 last:rounded-b-lg dark:bg-gray-900/80"
+    class="hidden w-full divide-y divide-gray-100 border-t border-gray-100 bg-gray-50/50 dark:divide-gray-800 dark:border-gray-700 dark:bg-gray-900/80"
 >
     {% if orderItem.outstandingQty > 0 %}
         {% for supplierProduct in orderItem.product.activeSupplierProducts %}
@@ -11,25 +11,25 @@
                data-turbo-prefetch="false"
                data-turbo-frame="body"
             >
-                <li class="flex items-center justify-between rounded-sm p-3 text-sm dark:hover:bg-gray-700">
+                <li class="flex items-center justify-between px-3 py-2.5 text-sm transition-colors hover:bg-gray-100 dark:hover:bg-gray-700">
                     <div>
-                        <p class="mb-1 text-gray-500 line-clamp-1 dark:text-gray-500">{{ supplierProduct.supplier.name }}</p>
-                        <p class="text-xs">{{ (supplierProduct.productCode) }}</p>
+                        <p class="font-medium text-gray-700 line-clamp-1 dark:text-gray-300">{{ supplierProduct.supplier.name }}</p>
+                        <p class="mt-0.5 text-xs text-gray-400 dark:text-gray-500">{{ supplierProduct.productCode }}</p>
                     </div>
-                    <div>
-                        <p class="mb-1 text-right font-extralight text-gray-500 dark:text-white">{{ supplierProduct.cost|format_currency('GBP') }}</p>
-                        <p class="text-right text-xs">
+                    <div class="text-right">
+                        <p class="font-medium tabular-nums text-gray-900 dark:text-white">{{ supplierProduct.cost|format_currency('GBP') }}</p>
+                        <p class="mt-0.5 text-xs">
                             {% if supplierProduct.hasStock %}
-                                {{ supplierProduct.stock }} in stock
+                                <span class="text-green-600 dark:text-green-400">{{ supplierProduct.stock }} in stock</span>
                             {% else %}
-                                Out of stock ({{ supplierProduct.leadTimeDays }} day lead time)
+                                <span class="text-amber-600 dark:text-amber-400">{{ supplierProduct.leadTimeDays }}d lead time</span>
                             {% endif %}
                         </p>
                     </div>
                 </li>
             </a>
         {% else %}
-            <p class="p-3 pt-2 text-center text-sm text-gray-500 dark:text-gray-500">No suppliers found</p>
+            <li class="px-3 py-3 text-center text-sm text-gray-400 dark:text-gray-500">No suppliers found</li>
         {% endfor %}
     {% endif %}
 </ul>

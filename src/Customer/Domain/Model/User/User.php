@@ -120,6 +120,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
         $this->setVerified($isVerified);
     }
 
+    // Backward compatibility for fluent setters
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    // Backward compatibility for fluent setters
+    public function setFullName(string $fullName): self
+    {
+        $this->fullName = $fullName;
+
+        return $this;
+    }
+
     public function setPassword(string $password): void
     {
         $this->password = $password;

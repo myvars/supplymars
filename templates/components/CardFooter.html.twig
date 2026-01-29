@@ -1,0 +1,6 @@
+{% props updatedAt %}
+
+<div {{ attributes.defaults({'class': 'mt-2 flex items-center justify-between'}) }}>
+    <p class="text-xs text-gray-600 me-10 dark:text-gray-500">Updated {{ updatedAt|ago }}</p>
+    {% block content %}{% endblock %}
+</div>

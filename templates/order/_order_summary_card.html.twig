@@ -1,40 +1,46 @@
 <twig:Card>
-    <div class="flex justify-between text-sm text-gray-500 dark:text-gray-400">
+    <div class="grid gap-6 sm:grid-cols-[1fr_auto]">
         <div>
-            <p class="mb-1 text-gray-300 dark:text-gray-200">Delivery Address</p>
-            <p>{{ order.customer.fullName }}</p>
-            <p>{{ order.shippingAddress.street }}</p>
-            {% if order.shippingAddress.street2 is not null %}
-                <p>{{ order.shippingAddress.street2 }}</p>
-            {% endif %}
-            <p>{{ order.shippingAddress.city }}, {{ order.shippingAddress.postCode }}</p>
-            <p>{{ order.shippingAddress.country }}</p>
+            <p class="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">Delivery Address</p>
+            <div class="space-y-0.5 text-sm text-gray-600 dark:text-gray-400">
+                <p class="font-medium text-gray-900 dark:text-white">{{ order.customer.fullName }}</p>
+                <p>{{ order.shippingAddress.street }}</p>
+                {% if order.shippingAddress.street2 is not null %}
+                    <p>{{ order.shippingAddress.street2 }}</p>
+                {% endif %}
+                <p>{{ order.shippingAddress.city }}, {{ order.shippingAddress.postCode }}</p>
+                <p>{{ order.shippingAddress.country }}</p>
+            </div>
         </div>
         <div>
-            <p class="mb-1 text-gray-300 dark:text-gray-200">Order Summary</p>
-            <div class="flex justify-between">
-                <p class="me-10">Item(s)<span class="inline-flex max-md:hidden ms-1">subtotal</span>:</p>
-                {% if order.isCancelled %}
-                    <p>{{ 0.00|format_currency('GBP') }}</p>
-                {% else %}
-                    <p>{{ (order.totalPrice - order.shippingPrice)|format_currency('GBP') }}</p>
-                {% endif %}
-            </div>
-            <div class="flex justify-between">
-                <p class="me-10">Shipping:</p>
-                {% if order.isCancelled %}
-                    <p>{{ 0.00|format_currency('GBP') }}</p>
-                {% else %}
-                    <p>{{ order.shippingPrice|format_currency('GBP') }}</p>
-                {% endif %}
-            </div>
-            <div class="flex justify-between">
-                <p class="me-10">VAT:</p>
-                <p>{{ (order.totalPriceIncVat - order.totalPrice)|format_currency('GBP') }}</p>
-            </div>
-            <div class="mt-1 flex justify-between text-gray-300 dark:text-gray-200">
-                <p class="me-10">Total:</p>
-                <p>{{ order.totalPriceIncVat|format_currency('GBP') }}</p>
+            <p class="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">Order Summary</p>
+            <div class="space-y-1 text-sm">
+                <div class="flex justify-between gap-6 text-gray-600 dark:text-gray-400">
+                    <p>Item(s) subtotal</p>
+                    {% if order.isCancelled %}
+                        <p>{{ 0.00|format_currency('GBP') }}</p>
+                    {% else %}
+                        <p>{{ (order.totalPrice - order.shippingPrice)|format_currency('GBP') }}</p>
+                    {% endif %}
+                </div>
+                <div class="flex justify-between gap-6 text-gray-600 dark:text-gray-400">
+                    <p>Shipping</p>
+                    {% if order.isCancelled %}
+                        <p>{{ 0.00|format_currency('GBP') }}</p>
+                    {% else %}
+                        <p>{{ order.shippingPrice|format_currency('GBP') }}</p>
+                    {% endif %}
+                </div>
+                <div class="flex justify-between gap-6 text-gray-600 dark:text-gray-400">
+                    <p>VAT</p>
+                    <p>{{ (order.totalPriceIncVat - order.totalPrice)|format_currency('GBP') }}</p>
+                </div>
+                <div class="border-t border-gray-200 pt-2 dark:border-gray-700">
+                    <div class="flex justify-between gap-6 font-medium text-gray-900 dark:text-white">
+                        <p>Total</p>
+                        <p>{{ order.totalPriceIncVat|format_currency('GBP') }}</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

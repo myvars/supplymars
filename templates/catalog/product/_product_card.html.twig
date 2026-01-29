@@ -4,43 +4,57 @@
             imageName="{{ product.hasProductImage ? product.getFirstImage.imageName : null }}"
             filter="medium_image"
             alt="{{ product.name }}"
-            style="rounded-t-lg"
+            style="rounded-t-xl"
             showLink="{{ path('app_catalog_product_image_show', {id: product.publicId.value}) }}"
         ></twig:ProductImage>
     </twig:block>
-    <p class="text-xl text-gray-900 line-clamp-1 dark:text-white">{{ product.name }}</p>
-    <p class="mb-2 flex items-center">
+    <p class="text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">{{ product.name }}</p>
+    <p class="mb-3 flex items-center text-sm">
         <a href="{{ path('app_catalog_category_show', {id: product.category.publicId}) }}"
            data-turbo-frame="body"
-           class="text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
+           class="text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
             {{ product.category.name|u.truncate(20, '...') }}
         </a>
-        <twig:ux:icon name="ic:baseline-navigate-next" class="w-4"/>
+        <twig:ux:icon name="ic:baseline-navigate-next" class="w-4 text-gray-400 dark:text-gray-500"/>
         <a href="{{ path('app_catalog_subcategory_show', {id: product.subcategory.publicId.value}) }}"
            data-turbo-frame="body"
-           class="text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
+           class="text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
             {{ product.subcategory.name|u.truncate(20, '...') }}
         </a>
     </p>
-    <p class="mb-1 line-clamp-4">{{ product.description }}</p>
-    <p class="text-right text-xl font-extralight text-gray-500 dark:text-white">
-        {{ product.sellPriceIncVat|format_currency('GBP') }} <span class="text-base">inc VAT</span></p>
-    <p class="text-right font-extralight">{{ product.stock }} in stock</p>
-    <p>Product #{{ '%06d'|format(product.id) }}</p>
-    <p>{{ product.manufacturer.name }} : {{ product.mfrPartNumber }}</p>
-    <p>
-        {% if product.hasOwner %}
-            Managed by {{ product.owner.fullName }}
-        {% else %}
-            No product manager
-        {% endif %}
-    </p>
-    <div class="mt-2 flex items-center justify-between">
-        <p class="text-xs text-gray-600 me-10 dark:text-gray-500">Updated {{ product.updatedAt|ago }}</p>
-        {% if product.isActive %}
-            <p class="text-green-500">Active</p>
-        {% else %}
-            <p class="text-red-500">InActive</p>
-        {% endif %}
+    <p class="mb-3 text-sm leading-relaxed text-gray-600 line-clamp-3 dark:text-gray-400">{{ product.description }}</p>
+    <div class="mb-3 flex items-baseline justify-between border-t border-gray-100 pt-3 dark:border-gray-700">
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+            {% if product.stock > 0 %}
+                <span class="inline-block rounded-full bg-green-50 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-900/30 dark:text-green-400">{{ product.stock }} in stock</span>
+            {% else %}
+                <span class="inline-block rounded-full bg-red-50 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900/30 dark:text-red-400">Out of stock</span>
+            {% endif %}
+        </p>
+        <p class="text-xl font-semibold text-gray-900 dark:text-white">
+            {{ product.sellPriceIncVat|format_currency('GBP') }}
+            <span class="text-xs font-normal text-gray-500 dark:text-gray-400">inc VAT</span>
+        </p>
     </div>
+    <div class="space-y-1.5 text-xs text-gray-500 dark:text-gray-400">
+        <p class="flex items-center gap-1.5">
+            <twig:ux:icon name="mdi:pound" class="h-3.5 w-3.5 text-gray-400 dark:text-gray-500"/>
+            {{ '%06d'|format(product.id) }}
+        </p>
+        <p class="flex items-center gap-1.5">
+            <twig:ux:icon name="mdi:factory" class="h-3.5 w-3.5 text-gray-400 dark:text-gray-500"/>
+            {{ product.manufacturer.name }} <span class="mx-1 text-gray-300 dark:text-gray-600">&middot;</span> {{ product.mfrPartNumber }}
+        </p>
+        <p class="flex items-center gap-1.5">
+            <twig:ux:icon name="mdi:account-outline" class="h-3.5 w-3.5 text-gray-400 dark:text-gray-500"/>
+            {% if product.hasOwner %}
+                {{ product.owner.fullName }}
+            {% else %}
+                <span class="italic">Unassigned</span>
+            {% endif %}
+        </p>
+    </div>
+    <twig:CardFooter :updatedAt="product.updatedAt">
+        <twig:StatusBadge status="{{ product.isActive ? 'ACTIVE' : 'INACTIVE' }}"/>
+    </twig:CardFooter>
 </twig:Card>

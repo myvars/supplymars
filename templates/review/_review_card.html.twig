@@ -10,16 +10,16 @@
         ></twig:ProductImage>
         <div class="m-3 w-full">
             <div class="flex items-center justify-between mb-1">
-                <p class="text-lg text-gray-900 line-clamp-1 dark:text-white">
+                <p class="text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">
                     {{ review.title ?? 'Review #' ~ review.id }}
                 </p>
-                <span class="{{ review.status.color }} text-sm font-medium">{{ review.status.value }}</span>
+                <twig:StatusBadge status="{{ review.status.value }}"/>
             </div>
             <p class="text-sm text-gray-500 line-clamp-1 dark:text-gray-400">
-                {{ review.product.name }} (Product #{{ '%06d'|format(review.product.id) }})
+                {{ review.product.name }} <span class="mx-1 text-gray-300 dark:text-gray-600">&middot;</span> Product #{{ '%06d'|format(review.product.id) }}
             </p>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                {{ review.customer.fullName }} &middot; {{ review.createdAt|date('d M Y') }}
+            <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                {{ review.customer.fullName }} <span class="mx-1 text-gray-300 dark:text-gray-600">&middot;</span> {{ review.createdAt|date('d M Y') }}
             </p>
         </div>
     </div>

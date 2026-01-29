@@ -3,8 +3,8 @@
         editLink="{{ orderItem.allowEdit ? path('app_order_item_edit', {'id': orderItem.publicId.value }) : null }}"
         padding="p-0"
     >
-        <div data-controller="toggle" data-action="click->toggle#toggle">
-            <div class="flex items-center justify-between rounded-sm dark:bg-gray-800 dark:hover:bg-gray-700">
+        <div data-controller="toggle" data-action="click->toggle#toggle" class="overflow-hidden rounded-xl">
+            <div class="flex items-center hover:bg-gray-50 dark:bg-gray-800 dark:hover:bg-gray-700">
                 <a href="{{ path('app_catalog_product_show', {'id': orderItem.product.publicId.value }) }}"
                    data-turbo-frame="body"
                    data-action="click->toggle#toggle"
@@ -15,27 +15,26 @@
                         alt="{{ orderItem.product.name }}"
                     ></twig:ProductImage>
                 </a>
-                <div class="m-3 w-full">
-                    <p class="mb-2 text-sm text-gray-300 line-clamp-1 dark:text-gray-200">{{ orderItem.product.name }}</p>
+                <div class="w-full p-3">
+                    <p class="mb-1.5 text-sm font-medium text-gray-700 line-clamp-1 dark:text-gray-200">{{ orderItem.product.name }}</p>
                     <div class="flex items-center justify-between">
-                        <p class="text-base font-extralight me-3">
-                            {{ orderItem.priceIncVat|format_currency('GBP') }}
-                            <span class="text-sm ms-3">
+                        <div class="flex items-center gap-3 text-sm">
+                            <span class="font-medium tabular-nums text-gray-900 dark:text-white">{{ orderItem.priceIncVat|format_currency('GBP') }}</span>
+                            <span class="text-gray-500 dark:text-gray-400">
                                 {% if orderItem.outstandingQty is same as orderItem.quantity %}
                                     Qty: {{ orderItem.quantity }}
                                 {% else %}
                                     Qty: {{ orderItem.outstandingQty }} of {{ orderItem.quantity }}
                                 {% endif %}
                             </span>
-                            <span class="hidden text-sm ms-3 md:inline">Product #{{ '%05d'|format(orderItem.product.id) }}</span>
-                        </p>
-                        <p class="text-gray-600 dark:text-gray-500">
-                            <a href="{{ path('app_order_item_status_log', {'id':orderItem.publicId.value }) }}"
-                               class="hover:text-grey-500 dark:hover:text-white"
-                               data-turbo-frame="modal"
-                               data-action="click->toggle#toggle"
-                            >{{ orderItem.status.value|title }}</a>
-                        </p>
+                            <span class="hidden text-gray-400 md:inline dark:text-gray-500">#{{ '%05d'|format(orderItem.product.id) }}</span>
+                        </div>
+                        <a href="{{ path('app_order_item_status_log', {'id':orderItem.publicId.value }) }}"
+                           data-turbo-frame="modal"
+                           data-action="click->toggle#toggle"
+                        >
+                            <twig:StatusBadge status="{{ orderItem.status.value }}" :interactive="true"/>
+                        </a>
                     </div>
                 </div>
             </div>

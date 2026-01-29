@@ -4,13 +4,16 @@
 
 {% block body %}
 
-    <div class="m-3 space-y-3">
+    <div class="m-3 space-y-4">
         {{ include('order/_order_card.html.twig', {order: result}) }}
         {{ include('order/_order_summary_card.html.twig', {order: result}) }}
         {{ include('order/_order_items_card.html.twig', {order: result}) }}
-        {% for purchaseOrder in result.purchaseOrders %}
-            {{ include('purchasing/purchase_order/_order_po_card.html.twig', {purchaseOrder: purchaseOrder}) }}
-        {% endfor %}
+        {% if result.purchaseOrders|length > 0 %}
+            <p class="px-1 text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">Purchase Orders</p>
+            {% for purchaseOrder in result.purchaseOrders %}
+                {{ include('purchasing/purchase_order/_order_po_card.html.twig', {purchaseOrder: purchaseOrder}) }}
+            {% endfor %}
+        {% endif %}
     </div>
 
 {% endblock %}

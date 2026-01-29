@@ -6,40 +6,47 @@
 
     {{ include('catalog/product/_navigation.html.twig', {product: result}) }}
 
-    <div class="m-3 text-sm text-gray-500 space-y-3 dark:text-gray-400">
-        <div class="mb-4">
-            <twig:Card padding="p-0">
-                <div class="m-1 rounded-sm bg-white dark:bg-gray-900">
-                    <form action="{{ path('app_catalog_product_image_create', {id: result.publicId.value}) }}"
-                          method="post"
-                          enctype="multipart/form-data"
-                          class="border-0 text-base dropzone dark:border-0"
-                          data-controller="dropzone"
-                          data-dropzone-url-value="{{ path('app_catalog_product_image_create', {id: result.publicId.value}) }}"
-                          data-dropzone-param-name-value="imageFile"
-                    >
-                        <div class="fallback">
-                            <input type="file" name="imageFile[]" multiple>
-                            <button type="submit" class="btn btn-primary">Upload</button>
-                        </div>
-                    </form>
-                </div>
-            </twig:Card>
+    <div class="mx-3 mb-6 mt-3 space-y-5 text-sm text-gray-500 dark:text-gray-400">
+        <twig:Card padding="p-0">
+            <div class="m-1 rounded-lg bg-white dark:bg-gray-800/50">
+                <form action="{{ path('app_catalog_product_image_create', {id: result.publicId.value}) }}"
+                      method="post"
+                      enctype="multipart/form-data"
+                      class="border-0 text-base dropzone dark:border-0"
+                      data-controller="dropzone"
+                      data-dropzone-url-value="{{ path('app_catalog_product_image_create', {id: result.publicId.value}) }}"
+                      data-dropzone-param-name-value="imageFile"
+                >
+                    <div class="fallback">
+                        <input type="file" name="imageFile[]" multiple>
+                        <twig:Button type="submit">Upload</twig:Button>
+                    </div>
+                </form>
+            </div>
+        </twig:Card>
+
+        <div class="flex items-center justify-between">
+            <p class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {{ result.productImages|length }}
+                Product {% if result.productImages|length == 1 %}Image{% else %}Images{% endif %}
+            </p>
+            {% if result.productImages|length > 1 %}
+                <p class="text-xs text-gray-400 dark:text-gray-500">Drag to reorder</p>
+            {% endif %}
         </div>
-        <p class="font-light">
-            {{ result.productImages|length }}
-            Product {% if result.productImages|length == 1 %}Image{% else %}Images{% endif %}
-        </p>
-        <div class="flex flex-wrap justify-center gap-4"
-             data-controller="sortable"
-             data-sortable-reorder-url-value="{{ path('app_catalog_product_image_reorder', {id: result.publicId.value}) }}"
-        >
-            {% for productImage in result.productImages %}
-                {{ include('catalog/product_image/_product_image_card.html.twig', {productImage: productImage}) }}
-            {% else %}
-                <p>No product images found</p>
-            {% endfor %}
-        </div>
+
+        {% if result.productImages|length > 0 %}
+            <div class="grid grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+                 data-controller="sortable"
+                 data-sortable-reorder-url-value="{{ path('app_catalog_product_image_reorder', {id: result.publicId.value}) }}"
+            >
+                {% for productImage in result.productImages %}
+                    {{ include('catalog/product_image/_product_image_card.html.twig', {productImage: productImage, loop: loop}) }}
+                {% endfor %}
+            </div>
+        {% else %}
+            <twig:EmptyState icon="bi:images" message="No product images yet" subtitle="Drop images above or click to upload"/>
+        {% endif %}
     </div>
 
 {% endblock %}

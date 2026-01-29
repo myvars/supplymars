@@ -3,27 +3,47 @@
 {% block title %}Verify Email{% endblock %}
 
 {% block body %}
-    <div class="container my-3 px-3">
-        <div class="row">
-            <div class="p-4 alert alert-success mt-v">
-                <h1 class="mb-3 h3 font-weight-normal">Verify your Email</h1>
-                <p>A verification email was sent to you.</p>
-                <p>Please click the link in your email to enable your account before logging in.</p>
+    {% embed 'customer/_auth_layout.html.twig' %}
+        {% block auth_content %}
+            <div class="flex flex-col items-center text-center">
+                <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900/30">
+                    <twig:ux:icon name="bi:envelope-check" class="h-7 w-7 text-primary-600 dark:text-primary-400"/>
+                </div>
+                <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white md:text-2xl">
+                    Verify Your Email
+                </h1>
             </div>
-        </div>
-        <div class="row">
-            <h1 class="mb-0 p-4 text-white h3 font-weight-normal rounded-top bg-dark">Resend Verification Email</h1>
-            <div class="p-4 bg-light rounded-bottom">
-                <form method="post" action="{{ path('app_verify_send_email') }}">
-                    <div class="mb-3">
-                        <label for="inputEmail" class="form-label">Email</label>
+            <div class="rounded-lg border border-green-200 bg-green-50 p-3 dark:border-green-800/50 dark:bg-green-900/20">
+                <p class="flex items-center gap-2 text-sm text-green-800 dark:text-green-300">
+                    <twig:ux:icon name="bi:check-circle" class="h-4 w-4 shrink-0"/>
+                    A verification email was sent to you.
+                </p>
+            </div>
+            <p class="text-center text-sm text-gray-600 dark:text-gray-300">
+                Please click the link in your email to enable your account before logging in.
+            </p>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <div>
+                <h2 class="mb-3 text-base font-semibold text-gray-900 dark:text-white">
+                    Resend Verification Email
+                </h2>
+                <form method="post" action="{{ path('app_verify_send_email') }}" class="space-y-4">
+                    <div>
+                        <label for="inputEmail" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Email</label>
                         <input type="email" name="email" id="inputEmail"
-                               class="form-control"
-                               autocomplete="email" value="{{ last_username }}" required autofocus>
+                               autocomplete="email" value="{{ last_username }}" required autofocus
+                               class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm">
                     </div>
-                    <twig:Button type="submit" class="w-full" data-turbo-frame="_top">Send Again</twig:Button>
+                    <twig:Button type="submit" class="w-full" data-turbo-frame="_top">Resend Email</twig:Button>
                 </form>
             </div>
-        </div>
-    </div>
+            <p class="text-center text-sm font-light text-gray-500 dark:text-gray-400">
+                Already verified?
+                <a
+                    href="{{ path('app_login') }}"
+                    class="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                >Login here</a>
+            </p>
+        {% endblock %}
+    {% endembed %}
 {% endblock %}

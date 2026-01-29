@@ -1,33 +1,35 @@
-<footer class="rounded-b-lg bg-white shadow-sm dark:bg-gray-900">
-    <div class="mx-auto mt-4 w-full max-w-(--breakpoint-xl) p-3">
+<footer class="rounded-b-lg border-t border-gray-200 bg-white dark:border-gray-700/50 dark:bg-gray-900">
+    <div class="mx-auto w-full max-w-(--breakpoint-xl) px-4 py-6 lg:py-8">
         <div class="sm:flex sm:items-center sm:justify-between">
             <a href="{{ path('app_homepage') }}"
-               class="mb-4 flex items-center space-x-3 rtl:space-x-reverse sm:mb-0">
-                {{ include('_logo.html.twig', { 'logoHeight': 35 }) }}
+               class="mb-4 flex items-center sm:mb-0"
+               data-turbo-frame="body">
+                {{ include('_logo.html.twig', { 'logoHeight': 28 }) }}
             </a>
-            <ul class="mb-6 flex flex-wrap items-center text-sm font-medium text-gray-500 dark:text-gray-400 sm:mb-0">
+            <ul class="mb-6 flex flex-wrap items-center gap-6 text-sm text-gray-500 dark:text-gray-400 sm:mb-0 md:gap-8">
                 <li>
                     <a href="{{ path('app_about_page') }}" data-turbo-frame="body"
-                       class="me-4 hover:underline md:me-6">About</a>
+                       class="transition-colors hover:text-gray-900 dark:hover:text-white">About</a>
                 </li>
                 <li>
                     <a href="{{ path('app_terms_page') }}" data-turbo-frame="body"
-                       class="me-4 hover:underline md:me-6">T&Cs</a>
+                       class="transition-colors hover:text-gray-900 dark:hover:text-white">T&Cs</a>
                 </li>
                 <li>
                     <a href="{{ path('app_privacy_page') }}" data-turbo-frame="body"
-                       class="me-4 hover:underline md:me-6">Privacy Policy</a>
+                       class="transition-colors hover:text-gray-900 dark:hover:text-white">Privacy Policy</a>
                 </li>
                 <li>
                     <a href="{{ path('app_contact_page') }}" data-turbo-frame="body"
-                       class="hover:underline">Contact</a>
+                       class="transition-colors hover:text-gray-900 dark:hover:text-white">Contact</a>
                 </li>
             </ul>
         </div>
-        <hr class="my-6 border-gray-200 dark:border-gray-700 sm:mx-auto lg:my-8"/>
-        <span class="block text-sm text-gray-500 dark:text-gray-400 sm:text-center">© 2024
-                <a href="{{ path('app_homepage') }}" class="hover:underline">{{ domain }}</a>
-                . All Rights Reserved.
-            </span>
+        <hr class="my-6 border-gray-200 dark:border-gray-700/50 lg:my-8"/>
+        <p class="text-center text-sm text-gray-400 dark:text-gray-500">
+            &copy; {{ "now"|date("Y") }}
+            <a href="{{ path('app_homepage') }}" class="transition-colors hover:text-gray-900 dark:hover:text-white" data-turbo-frame="body">{{ domain }}</a>.
+            All rights reserved.
+        </p>
     </div>
 </footer>

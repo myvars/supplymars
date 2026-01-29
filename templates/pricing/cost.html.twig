@@ -6,8 +6,9 @@
 
     {{ include('catalog/product/_navigation.html.twig', {product: result}) }}
 
-    <div class="m-3 text-sm text-gray-500 space-y-3 dark:text-gray-400">
+    <div class="m-3 space-y-4 text-sm text-gray-500 dark:text-gray-400">
         {{ include('pricing/_inventory_card.html.twig', {result: result, type: 'cost'}) }}
+        <p class="text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">Pricing Cascade</p>
         <div class="flex flex-wrap justify-center gap-3">
             {{ include('pricing/_category_cost_card.html.twig', {product: result}) }}
             {{ include('pricing/_subcategory_cost_card.html.twig', {product: result}) }}

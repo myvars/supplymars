@@ -3,7 +3,6 @@ import AOS from 'aos';
 
 export default class extends Controller {
     connect() {
-        AOS.init();
-        // console.log('AOS controller running');
+        AOS.init({ once: true });
     }
 }

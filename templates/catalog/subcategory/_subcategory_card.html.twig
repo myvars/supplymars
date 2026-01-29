@@ -1,42 +1,40 @@
 <twig:Card editLink="{{ path('app_catalog_subcategory_edit', { id: subcategory.publicId.value }) }}" title="Subcategory">
-    <p class="text-xl text-gray-900 line-clamp-1 dark:text-white">{{ subcategory.name }}</p>
-    <p class="mb-2 line-clamp-1">
-        Found in
+    <p class="mb-1 text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">{{ subcategory.name }}</p>
+    <p class="mb-3 text-sm text-gray-500 line-clamp-1 dark:text-gray-400">
+        in
         <a href="{{ path('app_catalog_category_show', {id: subcategory.category.publicId}) }}"
            data-turbo-frame="body"
-           class="text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
+           class="font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300">
             {{ subcategory.category.name }}
         </a>
     </p>
-    <ul class="list-inside list-disc">
-        <li>
+    <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+        <p class="flex items-center gap-2">
+            <twig:ux:icon name="mdi:percent-outline" class="h-4 w-4 text-gray-400 dark:text-gray-500"/>
             {% if subcategory.hasDefaultMarkup %}
                 {{ subcategory.defaultMarkup|number_format(3) }}% mark-up
             {% else %}
-                No subcategory mark-up
+                <span class="italic text-gray-400 dark:text-gray-500">No subcategory mark-up</span>
             {% endif %}
-        </li>
-        <li>
+        </p>
+        <p class="flex items-center gap-2">
+            <twig:ux:icon name="mdi:tag-outline" class="h-4 w-4 text-gray-400 dark:text-gray-500"/>
             {% if subcategory.hasPriceModel %}
                 {{ subcategory.priceModel.getName }} price model
             {% else %}
-                No subcategory price model
+                <span class="italic text-gray-400 dark:text-gray-500">No subcategory price model</span>
             {% endif %}
-        </li>
-        <li>
+        </p>
+        <p class="flex items-center gap-2">
+            <twig:ux:icon name="bi:person" class="h-4 w-4 text-gray-400 dark:text-gray-500"/>
             {% if subcategory.hasOwner %}
-                Managed by {{ subcategory.owner.fullName }}
+                {{ subcategory.owner.fullName }}
             {% else %}
-                No subcategory manager
+                <span class="italic text-gray-400 dark:text-gray-500">No subcategory manager</span>
             {% endif %}
-        </li>
-    </ul>
-    <div class="mt-2 flex items-center justify-between">
-        <p class="text-xs text-gray-600 me-10 dark:text-gray-500">Updated {{ subcategory.updatedAt|ago }}</p>
-        {% if subcategory.isActive %}
-            <p class="text-green-500">Active</p>
-        {% else %}
-            <p class="text-red-500">InActive</p>
-        {% endif %}
+        </p>
     </div>
+    <twig:CardFooter :updatedAt="subcategory.updatedAt">
+        <twig:StatusBadge status="{{ subcategory.isActive ? 'ACTIVE' : 'INACTIVE' }}"/>
+    </twig:CardFooter>
 </twig:Card>

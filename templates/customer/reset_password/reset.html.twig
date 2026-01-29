@@ -1,28 +1,22 @@
-{% extends '../../base.html.twig' %}
+{% extends 'base.html.twig' %}
 
 {% block title %}Reset password{% endblock %}
 
 {% block body %}
-
-    <section class="rounded-sm bg-gray-50 dark:bg-gray-900 md:h-screen" style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
-        <div class="mx-auto flex flex-col items-center px-6 py-8 lg:py-0">
-            <div
-                class="w-full rounded-sm bg-white shadow-sm dark:border dark:border-gray-700 dark:bg-gray-800 sm:max-w-md md:m-10 xl:p-0">
-                <div class="p-6 space-y-4 sm:p-8 md:space-y-6">
-                    <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white md:text-2xl">
-                        Change Password
-                    </h1>
-                    {{ form_start(resetForm, {
-                        'attr': {
-                            'class': 'space-y-4 md:space-y-6',
-                            'novalidate': 'novalidate',
-                        }
-                    }) }}
-                    {{ form_row(resetForm.plainPassword) }}
-                    <twig:Button type="submit" class="w-full" data-turbo-frame="_top">Reset password</twig:Button>
-                    {{ form_end(resetForm) }}
-                </div>
-            </div>
-        </div>
-    </section>
+    {% embed 'customer/_auth_layout.html.twig' %}
+        {% block auth_content %}
+            <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white md:text-2xl">
+                Change Password
+            </h1>
+            {{ form_start(resetForm, {
+                'attr': {
+                    'class': 'space-y-4 md:space-y-6',
+                    'novalidate': 'novalidate',
+                }
+            }) }}
+            {{ form_row(resetForm.plainPassword) }}
+            <twig:Button type="submit" class="w-full" data-turbo-frame="_top">Reset password</twig:Button>
+            {{ form_end(resetForm) }}
+        {% endblock %}
+    {% endembed %}
 {% endblock %}

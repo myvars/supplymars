@@ -1,9 +1,9 @@
-<twig:Card>
+<twig:Card title="Order Items">
     <div class="flex w-full items-center justify-between">
         <p class="text-gray-500 dark:text-gray-300">
             {{ order.lineCount }} {% if order.lineCount == 1 %}line{% else %}lines{% endif %}
-            <span class="ms-1 text-grey-600 dark:text-gray-400">
-                {{ order.itemCount }} {% if order.itemCount == 1 %}item{% else %}items{% endif %}
+            <span class="ms-1 text-gray-400 dark:text-gray-500">
+                ({{ order.itemCount }} {% if order.itemCount == 1 %}item{% else %}items{% endif %})
             </span>
         </p>
         {% if order.allowEdit %}

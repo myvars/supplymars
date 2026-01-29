@@ -1,11 +1,6 @@
 <twig:Card editLink="{{ path('app_catalog_manufacturer_edit', {'id': manufacturer.publicId.value }) }}" title="Manufacturer">
-    <p class="mb-2 text-xl text-gray-900 line-clamp-1 dark:text-white">{{ manufacturer.name }}</p>
-    <div class="mt-2 flex items-center justify-between">
-        <p class="text-xs text-gray-600 me-10 dark:text-gray-500">Updated {{ manufacturer.updatedAt|ago }}</p>
-        {% if manufacturer.isActive %}
-            <p class="text-green-500">Active</p>
-        {% else %}
-            <p class="text-red-500">InActive</p>
-        {% endif %}
-    </div>
+    <p class="mb-3 text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">{{ manufacturer.name }}</p>
+    <twig:CardFooter :updatedAt="manufacturer.updatedAt">
+        <twig:StatusBadge status="{{ manufacturer.isActive ? 'ACTIVE' : 'INACTIVE' }}"/>
+    </twig:CardFooter>
 </twig:Card>

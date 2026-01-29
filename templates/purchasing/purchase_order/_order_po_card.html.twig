@@ -1,26 +1,27 @@
 {% set colourScheme = purchaseOrder.supplier.colourScheme %}
 <twig:Card colour="{{ colourScheme }}">
-    <div class="flex w-full justify-between">
-        <h1 class="text-base text-gray-500 dark:text-gray-400">
-            <a href="{{ path('app_purchasing_purchase_order_show', {id: purchaseOrder.publicId.value}) }}"
-               data-turbo-frame="_top"
-               class="hover:text-gray-700 dark:hover:text-white"
-            >PO #{{ '%06d'|format(purchaseOrder.id) }}</a>
-            <span class="text-sm text-gray-500 ms-2 dark:text-gray-400">{{ purchaseOrder.supplier.name }}</span>
-        </h1>
+    <div class="flex w-full items-center justify-between">
+        <div class="flex items-center gap-2">
+            <h1 class="text-base font-medium text-gray-700 dark:text-gray-300">
+                <a href="{{ path('app_purchasing_purchase_order_show', {id: purchaseOrder.publicId.value}) }}"
+                   data-turbo-frame="_top"
+                   class="hover:text-gray-900 dark:hover:text-white"
+                >PO #{{ '%06d'|format(purchaseOrder.id) }}</a>
+            </h1>
+            <span class="mx-1 text-gray-300 dark:text-gray-600">&middot;</span>
+            <span class="text-sm text-gray-500 dark:text-gray-400">{{ purchaseOrder.supplier.name }}</span>
+        </div>
         <a href="{{ path('app_purchase_order_status_log', {'id':purchaseOrder.publicId.value }) }}"
-           class="flex items-center justify-between text-grey-500 dark:hover:text-gray-800"
            data-turbo-frame="modal"
         >
-            <twig:StatusIcon type="{{ purchaseOrder.status.value|lower }}" class="me-1"/>
-            {{ purchaseOrder.status.value|title }}
+            <twig:StatusBadge status="{{ purchaseOrder.status.value }}" :showIcon="true" :interactive="true"/>
         </a>
     </div>
     <ul class="w-full space-y-3">
         {% for purchaseOrderItem in purchaseOrder.purchaseOrderItems %}
             {{ include('purchasing/purchase_order_item/_order_po_item_card.html.twig', {purchaseOrderItem: purchaseOrderItem}) }}
         {% else %}
-            <li class="flex justify-between">No items found</li>
+            <li class="flex justify-between text-gray-400 dark:text-gray-500">No items found</li>
         {% endfor %}
     </ul>
 </twig:Card>

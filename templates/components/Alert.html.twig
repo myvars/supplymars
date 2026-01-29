@@ -1,0 +1,7 @@
+<div {{ attributes.defaults({
+    'class': 'flex items-center gap-3 rounded-lg border p-3 text-sm ' ~ this.colorClasses,
+    'role': 'alert',
+}) }}>
+    <twig:ux:icon name="{{ this.iconName }}" class="h-4 w-4 shrink-0"/>
+    <span class="font-medium">{% block content %}{% endblock %}</span>
+</div>

@@ -4,7 +4,7 @@
 
 {% block body %}
 
-    <div class="m-3 space-y-3">
+    <div class="m-3 space-y-4">
         {{ include('review/_review_detail_card.html.twig', {review: result}) }}
 
         {% if result.status.value == 'PUBLISHED' or result.status.value == 'REJECTED' %}

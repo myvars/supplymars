@@ -1,44 +1,19 @@
-<div
-    class="flex flex-wrap justify-around rounded-sm bg-white text-center font-light dark:border-gray-700 dark:bg-gray-900">
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
 
-    <div class="w-full px-6 py-4 md:w-auto">
-        <a href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'salesQty'})) }}"
-           class="hover:text-gray-400 dark:hover:text-gray-300"
-        >
-            <p class="mb-1">Sales Qty</p>
-            <p class="text-xl font-bold text-gray-900 dark:text-gray-300">
-                {{ summary.salesQty|default(0) }}
-            </p>
-        </a>
-    </div>
-    <div class="w-full px-6 pb-4 md:w-auto md:py-4">
-        <a href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'salesCost'})) }}"
-           class="hover:text-gray-400 dark:hover:text-gray-300"
-        >
-            <p class="mb-1">Sales Cost</p>
-            <p class="text-xl font-bold text-gray-900 dark:text-gray-300">
-                {{ '£' ~ summary.salesCost|default(0)|round(0, 'floor')|number_format(0, '.', ',') }}
-            </p>
-        </a>
-    </div>
-    <div class="w-full px-6 md:w-auto md:py-4">
-        <a href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'salesProfit'})) }}"
-           class="hover:text-gray-400 dark:hover:text-gray-300"
-        >
-            <p class="mb-1">Sales profit</p>
-            <p class="text-xl font-bold text-gray-900 dark:text-gray-300">
-                {{ '£' ~ summary.salesProfit|default(0)|round(0, 'floor')|number_format(0, '.', ',') }}
-            </p>
-        </a>
-    </div>
-    <div class="w-full px-6 py-4 md:w-auto">
-        <a href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'salesMargin'})) }}"
-           class="hover:text-gray-400 dark:hover:text-gray-300"
-        >
-            <p class="mb-1">Gross Margin</p>
-            <p class="text-xl font-bold text-gray-900 dark:text-gray-300">
-                {{ '%0.2f%%'|format(summary.salesMargin|default(0)) }}
-            </p>
-        </a>
-    </div>
+    <a href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'salesQty'})) }}"
+       class="hover:opacity-75 transition-opacity">
+        <twig:KpiCard title="Sales Qty" value="{{ summary.salesQty|default(0) }}"/>
+    </a>
+    <a href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'salesCost'})) }}"
+       class="hover:opacity-75 transition-opacity">
+        <twig:KpiCard title="Sales Cost" value="{{ summary.salesCost|default(0) }}" valueType="currency"/>
+    </a>
+    <a href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'salesProfit'})) }}"
+       class="hover:opacity-75 transition-opacity">
+        <twig:KpiCard title="Sales Profit" value="{{ summary.salesProfit|default(0) }}" valueType="currency"/>
+    </a>
+    <a href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'salesMargin'})) }}"
+       class="hover:opacity-75 transition-opacity">
+        <twig:KpiCard title="Gross Margin" value="{{ summary.salesMargin|default(0) }}" valueType="percentage" maxFractionDigits="2"/>
+    </a>
 </div>

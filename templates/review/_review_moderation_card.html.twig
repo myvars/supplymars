@@ -1,20 +1,30 @@
 <twig:Card title="Moderation">
-    <dl class="grid grid-cols-2 gap-2 text-sm">
-        {% if review.moderatedBy %}
-            <dt class="text-gray-500 dark:text-gray-400">Moderated By</dt>
-            <dd class="text-gray-900 dark:text-white">{{ review.moderatedBy.fullName }}</dd>
-        {% endif %}
-        {% if review.moderatedAt %}
-            <dt class="text-gray-500 dark:text-gray-400">Moderated At</dt>
-            <dd class="text-gray-900 dark:text-white">{{ review.moderatedAt|ago }}</dd>
-        {% endif %}
-        {% if review.rejectionReason %}
-            <dt class="text-gray-500 dark:text-gray-400">Rejection Reason</dt>
-            <dd class="text-red-500">{{ review.rejectionReason.label }}</dd>
-        {% endif %}
+    <div class="space-y-4">
+        <dl class="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2.5 text-sm">
+            {% if review.moderatedBy %}
+                <dt class="text-gray-500 dark:text-gray-400">Moderated By</dt>
+                <dd class="text-gray-900 dark:text-white">{{ review.moderatedBy.fullName }}</dd>
+            {% endif %}
+            {% if review.moderatedAt %}
+                <dt class="text-gray-500 dark:text-gray-400">Moderated At</dt>
+                <dd class="text-gray-900 dark:text-white">{{ review.moderatedAt|ago }}</dd>
+            {% endif %}
+            {% if review.rejectionReason %}
+                <dt class="text-gray-500 dark:text-gray-400">Rejection Reason</dt>
+                <dd>
+                    <span class="inline-flex items-center rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                        {{ review.rejectionReason.label }}
+                    </span>
+                </dd>
+            {% endif %}
+        </dl>
         {% if review.moderationNotes %}
-            <dt class="text-gray-500 dark:text-gray-400">Notes</dt>
-            <dd class="text-gray-900 dark:text-white">{{ review.moderationNotes }}</dd>
+            <div class="border-t border-gray-200 pt-4 dark:border-gray-700">
+                <p class="mb-1.5 text-xs font-medium text-gray-500 dark:text-gray-400">Moderation Notes</p>
+                <div class="rounded-lg border-l-4 border-gray-200 bg-gray-50 py-3 pr-4 pl-4 dark:border-gray-600 dark:bg-gray-800/50">
+                    <p class="text-sm leading-relaxed text-gray-700 dark:text-gray-300">{{ review.moderationNotes }}</p>
+                </div>
+            </div>
         {% endif %}
-    </dl>
+    </div>
 </twig:Card>

@@ -13,10 +13,10 @@ final class StatusIcon
     {
         return match ($this->type) {
             'created' => 'lets-icons:order',
-            'pending' => 'bi:arrow-clockwise',
+            'pending' => 'bi:hourglass-split',
             'processing' => 'clarity:cog-solid',
-            'accepted' => 'hugeicons:tick-01',
-            'rejected' => 'bi:x-lg',
+            'accepted', 'active', 'verified' => 'hugeicons:tick-01',
+            'rejected', 'inactive', 'unverified' => 'bi:x-lg',
             'refunded' => 'lets-icons:refund-back',
             'shipped' => 'hugeicons:delivery-truck-01',
             'delivered' => 'ri:box-3-fill',

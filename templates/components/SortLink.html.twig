@@ -1,14 +1,21 @@
 {% props sortValue='' %}
 
+{% set isActive = sortValue == app.request.query.get('sort') %}
+{% set isAsc = isActive and app.request.query.get('sortDirection') == 'ASC' %}
+
 <a {{ attributes.defaults({
-    class: 'flex items-center hover:text-gray-400 dark:hover:text-gray-300',
+    class: 'group inline-flex items-center gap-1 text-sm transition-colors ' ~ (isActive ? 'font-medium text-gray-900 dark:text-white' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'),
 }) }}
     href="{{ path(app.current_route, {
         ...app.request.query.all(),
         sort: sortValue,
-        sortDirection: sortValue == app.request.query.get('sort') and app.request.query.get('sortDirection') == 'ASC' ? 'DESC' : 'ASC',
+        sortDirection: isAsc ? 'DESC' : 'ASC',
     }) }}"
 >
     {% block content %}{% endblock %}
-    <twig:ux:icon name="radix-icons:caret-sort" class="h-4 w-4" />
+    {% if isActive %}
+        <twig:ux:icon name="{{ isAsc ? 'flowbite:caret-up-solid' : 'flowbite:caret-down-solid' }}" class="h-3.5 w-3.5" />
+    {% else %}
+        <twig:ux:icon name="radix-icons:caret-sort" class="h-3.5 w-3.5 opacity-0 group-hover:opacity-50" />
+    {% endif %}
 </a>

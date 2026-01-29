@@ -26,7 +26,7 @@ else
 fi
 
 # Clear cache
-php bin/console cache:clear --env="${APP_ENV:-dev}" || echo "Cache clear failed"
+php -d memory_limit=256M bin/console cache:clear --env="${APP_ENV:-dev}" || echo "Cache clear failed"
 
 # Early exit for test env
 if [ "$APP_ENV" = "test" ]; then

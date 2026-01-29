@@ -1,12 +1,14 @@
 {% set colourScheme = result.supplier.colourScheme %}
 <twig:Card colour="{{ colourScheme }}">
-    <p class="mb-2 text-xl text-gray-900 dark:text-white">
+    <h5 class="flex items-center text-xl font-semibold text-gray-900 dark:text-white">
         PO #{{ '%06d'|format(result.id) }}
-        <span class="text-gray-500 ms-2 dark:text-gray-400">{{ result.supplier.name }}</span>
-    </p>
-    <div class="flex items-center justify-between">
-        <p class="text-sm me-10">
-            {{ purchaseOrder.createdAt|date('jS M Y H:i') }} -
+        <span class="mx-1 text-gray-300 dark:text-gray-600">&middot;</span>
+        <span class="text-base font-normal text-gray-500 dark:text-gray-400">{{ result.supplier.name }}</span>
+    </h5>
+    <div class="mt-1.5 flex items-center justify-between">
+        <p class="text-sm text-gray-500 dark:text-gray-400">
+            {{ purchaseOrder.createdAt|date('jS M Y H:i') }}
+            <span class="mx-1 text-gray-300 dark:text-gray-600">&middot;</span>
             <a href="{{ path('app_order_show', {id: purchaseOrder.customerOrder.publicId.value}) }}"
                data-turbo-frame="body"
                class="text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
@@ -14,12 +16,9 @@
             </a>
         </p>
         <a href="{{ path('app_purchase_order_status_log', {'id': purchaseOrder.publicId.value }) }}"
-           class="flex items-center justify-between text-grey-500 dark:hover:text-gray-800"
            data-turbo-frame="modal"
         >
-            <twig:StatusIcon type="{{ purchaseOrder.status.value|lower }}" class="me-1"/>
-            {{ purchaseOrder.status.value|title }}
+            <twig:StatusBadge status="{{ purchaseOrder.status.value }}" :showIcon="true" :interactive="true"/>
         </a>
-
     </div>
 </twig:Card>

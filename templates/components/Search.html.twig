@@ -3,15 +3,15 @@
 <div class="mx-auto max-w-(--breakpoint-xl) p-3">
     {% block result_count %}
         <div id="{{ flowModel|slug }}-result-count">
-            <h1 class="text-xl text-gray-900 dark:text-white">
+            <h1 class="text-xl font-semibold text-gray-900 dark:text-white">
                 {{ flowModel }} Search
-                <span class="text-base font-light text-gray-500 ms-2 dark:text-gray-400">
-                        {{ results|length }} {% if results|length == 1 %}result{% else %}results{% endif %}
-                    </span>
+                <span class="ms-2 text-sm font-normal text-gray-400 dark:text-gray-500">
+                    {{ results|length }} {% if results|length == 1 %}result{% else %}results{% endif %}
+                </span>
             </h1>
         </div>
     {% endblock %}
-    <div class="flex flex-col items-center justify-between py-3 space-y-3 md:space-y-0 md:space-x-3 md:flex-row">
+    <div class="flex flex-col items-center justify-between py-4 space-y-3 md:space-y-0 md:space-x-3 md:flex-row">
         <div class="w-full md:w-1/2">
             <form data-controller="searchbox"
                   data-turbo-frame="{{ flowModel|slug }}-table"
@@ -19,18 +19,18 @@
                   data-searchbox-base-path-value="{{ path('app_'~flowRoute~'_index') }}"
             >
                 <div class="relative w-full">
-                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                        <svg aria-hidden="true" class="h-5 w-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/></svg>
+                    <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
+                        <twig:ux:icon name="flowbite:search-outline" class="h-4.5 w-4.5 text-gray-400 dark:text-gray-500"/>
                     </div>
                     {% block filter %}
                         <a href="{{ path('app_'~flowRoute~'_search_filter', app.request.query.all) }}"
-                           class="absolute inset-y-0 right-0 flex items-center pr-3"
+                           class="absolute inset-y-0 right-0 flex items-center pr-3 transition-colors"
                            data-turbo-frame="modal"
                            id="{{ flowModel|slug }}-search-filter">
                             {% if app.request.query.get('filter') %}
-                                <twig:ux:icon name="mynaui:filter" class="h-6 w-6 text-yellow-400 hover:text-yellow-200"/>
+                                <twig:ux:icon name="mynaui:filter" class="h-5 w-5 text-yellow-500 hover:text-yellow-600 dark:text-yellow-400 dark:hover:text-yellow-200"/>
                             {% else %}
-                                <twig:ux:icon name="mynaui:filter" class="h-6 w-6 text-gray-400 hover:text-gray-200"/>
+                                <twig:ux:icon name="mynaui:filter" class="h-5 w-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"/>
                             {% endif %}
                         </a>
                     {% endblock %}
@@ -41,8 +41,8 @@
                         data-searchbox-target="queryInput"
                         data-action="input->searchbox#debouncedQueryInputChanged"
                         aria-label="Search"
-                        class="block w-full rounded-sm border border-gray-300 bg-gray-50 p-2 pl-10 text-sm text-gray-900 focus:ring-primary-500 focus:border-primary-500 dark:placeholder-gray-400 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                        placeholder="Search"
+                        class="block w-full rounded-xl border border-gray-200 bg-white py-2.5 pr-10 pl-11 text-sm text-gray-900 shadow-sm transition-all duration-200 placeholder:text-gray-400 focus:border-primary-500 focus:shadow-md focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:shadow-none dark:focus:border-primary-500 dark:focus:shadow-none dark:focus:ring-primary-500"
+                        placeholder="Search {{ flowModel|lower }}s..."
                     >
                 </div>
             </form>
@@ -59,7 +59,7 @@
             {% for result in results %}
                 <li class="first:mt-3">{% block list_item %}{% endblock %}</li>
             {% else %}
-                <li class="flex justify-between">No records found</li>
+                <li class="py-8 text-center text-sm text-gray-400 dark:text-gray-500">No records found</li>
             {% endfor %}
         </ul>
         <twig:Pagination pager="{{ results }}"></twig:Pagination>

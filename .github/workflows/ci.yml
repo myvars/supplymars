@@ -26,11 +26,11 @@ jobs:
 
             - name: Check code style
               run: |
-                  docker compose -f compose.yaml -f compose.override.yaml run --rm php vendor/bin/php-cs-fixer fix --dry-run --diff
+                  docker compose -f compose.yaml -f compose.override.yaml run --rm -e APP_ENV=test php vendor/bin/php-cs-fixer fix --dry-run --diff
 
             - name: Run static analysis
               run: |
-                  docker compose -f compose.yaml -f compose.override.yaml run --rm php vendor/bin/phpstan analyse --no-progress --memory-limit=512M
+                  docker compose -f compose.yaml -f compose.override.yaml run --rm -e RUN_MIGRATIONS=false php vendor/bin/phpstan analyse --no-progress --memory-limit=512M
 
             - name: Validate Doctrine schema
               run: |

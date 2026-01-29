@@ -1,11 +1,12 @@
 <div {{ attributes.defaults({
-    'class': width~' relative h-full rounded-sm '~this.getBackgroundClasses~' '~this.getBorderClasses,
+    'class': width~' relative h-full rounded-xl shadow-sm dark:shadow-none '~this.getBackgroundClasses~' '~this.getBorderClasses,
 }) }}
 >
     {% if editLink %}
         <a href="{{ editLink }}"
-           class="absolute z-10 -top-1.5 -right-1.5 p-1.5 text-yellow-500 rounded-full shadow-lg {{ this.getEditLinkClasses }}"
+           class="absolute z-10 -top-2 -right-2 p-1.5 text-yellow-500 rounded-full shadow-md transition-all duration-200 hover:scale-110 hover:shadow-lg {{ this.getEditLinkClasses }}"
            data-turbo-frame="modal"
+           data-turbo-prefetch="false"
         >
             <twig:ux:icon name="{{ editIcon }}" class="h-6 w-6 p-0.5"/>
         </a>
@@ -14,11 +15,11 @@
 
     {% if showLink %}
     <a href="{{ showLink }}" data-turbo-frame="body" >
-        <div class="relative rounded-sm transition-colors {{ this.getBackgroundClasses }} dark:hover:bg-gray-600">
+        <div class="relative rounded-xl transition-all duration-200 {{ this.getBackgroundClasses }} hover:bg-gray-100 hover:shadow-md dark:hover:bg-gray-600 dark:hover:shadow-none">
     {% endif %}
-            <div class="{{ padding }} text-sm text-gray-500 dark:text-gray-400">
+            <div class="{{ padding }} text-sm text-gray-600 dark:text-gray-400">
                 {% if title %}
-                    <p class="mb-1 text-gray-600 dark:text-gray-500">{{ title }}</p>
+                    <p class="mb-1 text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">{{ title }}</p>
                 {% endif %}
                 {% block content %}{% endblock %}
             </div>

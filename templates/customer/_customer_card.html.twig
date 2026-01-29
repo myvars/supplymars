@@ -1,17 +1,15 @@
 <twig:Card editLink="{{ path('app_customer_edit', {id: customer.publicId.value})}}" title="Customer">
-    <p class="mb-2 text-xl text-gray-900 line-clamp-1 dark:text-white">
-        {{ customer.fullName }}
+    <div class="mb-3 flex items-center gap-2">
+        <p class="text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">{{ customer.fullName }}</p>
         {% if result.isAdmin %}
-            <span class="text-base font-extralight text-red-500 ms-1 dark:text-red-400">(Administrator)</span>
-        {% endif %}
-    </p>
-    <p>{{ customer.email }}</p>
-    <div class="mt-2 flex items-center justify-between">
-        <p class="text-xs text-gray-600 me-10 dark:text-gray-500">Updated {{ customer.updatedAt|ago }}</p>
-        {% if customer.isVerified %}
-            <p class="text-green-500">Verified</p>
-        {% else %}
-            <p class="text-green-500">Unverified</p>
+            <twig:StatusBadge status="ADMIN"/>
         {% endif %}
     </div>
+    <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+        <twig:ux:icon name="bi:envelope" class="h-4 w-4 text-gray-400 dark:text-gray-500"/>
+        {{ customer.email }}
+    </div>
+    <twig:CardFooter :updatedAt="customer.updatedAt">
+        <twig:StatusBadge status="{{ customer.isVerified ? 'VERIFIED' : 'UNVERIFIED' }}"/>
+    </twig:CardFooter>
 </twig:Card>

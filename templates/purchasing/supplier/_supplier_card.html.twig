@@ -3,13 +3,8 @@
     title="Supplier"
     colour="{{ supplier.colourScheme }}"
 >
-    <p class="mb-2 text-xl text-gray-900 line-clamp-1 dark:text-white">{{ supplier.name }}</p>
-    <div class="mt-2 flex items-center justify-between">
-        <p class="text-xs text-gray-600 me-10 dark:text-gray-500">Updated {{ supplier.updatedAt|ago }}</p>
-        {% if supplier.isActive %}
-            <p class="text-green-500">Active</p>
-        {% else %}
-            <p class="text-red-500">InActive</p>
-        {% endif %}
-    </div>
+    <p class="mb-3 text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">{{ supplier.name }}</p>
+    <twig:CardFooter :updatedAt="supplier.updatedAt">
+        <twig:StatusBadge status="{{ supplier.isActive ? 'ACTIVE' : 'INACTIVE' }}"/>
+    </twig:CardFooter>
 </twig:Card>

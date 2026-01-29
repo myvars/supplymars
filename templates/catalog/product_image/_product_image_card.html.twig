@@ -1,24 +1,29 @@
-<div data-id="{{ productImage.id }}">
+<div data-id="{{ productImage.id }}" class="group cursor-grab active:cursor-grabbing">
     <twig:Card padding="p-0">
         <twig:block name="cardImage">
             <twig:ProductImage
                 imageName="{{ productImage.imageName }}"
                 filter="large_thumbnail"
                 alt="{{ productImage.imageName }}"
-                style="rounded-t-lg"
+                style="rounded-t-xl"
             ></twig:ProductImage>
         </twig:block>
         <a href="{{ path('app_catalog_product_image_remove', {id: productImage.publicId.value}) }}"
-           class="absolute -right-1.5 rounded-full border border-gray-600 bg-white text-gray-300 shadow-lg -top-1.5 p-1.5 dark:bg-gray-700 dark:hover:bg-gray-600"
+           class="absolute -right-2 -top-2 rounded-full border border-gray-200 bg-white p-1.5 text-gray-400 opacity-0 shadow-md transition-all duration-200 hover:scale-110 hover:border-red-300 hover:bg-red-50 hover:text-red-500 hover:shadow-lg group-hover:opacity-100 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-400 dark:hover:border-red-500/50 dark:hover:bg-red-900/30 dark:hover:text-red-400"
            data-turbo-prefetch="false"
         >
-            <twig:ux:icon name="bi:x-lg" class="h-6 w-6 p-0.5"/>
+            <twig:ux:icon name="bi:x-lg" class="h-5 w-5 p-0.5"/>
         </a>
+        {% if loop is defined and loop.first %}
+            <span class="absolute left-2 top-2 inline-flex items-center rounded-full bg-primary-500/90 px-2 py-0.5 text-xs font-medium text-white shadow-sm">
+                Primary
+            </span>
+        {% endif %}
         <div class="p-3">
-            <h5 class="mb-2 font-bold text-gray-300 dark:text-white">{{ productImage.imageName|u.truncate(25, '...') }}</h5>
-            <div class="flex items-center justify-between text-xs text-gray-600 dark:text-gray-500">
-                <p>Uploaded {{ productImage.createdAt|ago }}</p>
-                <p>{{ (productImage.imageSize/1000)|number_format(1) }}Kb</p>
+            <h5 class="mb-1.5 text-sm font-semibold text-gray-700 dark:text-gray-200">{{ productImage.imageName|u.truncate(25, '...') }}</h5>
+            <div class="flex items-center justify-between text-xs text-gray-400 dark:text-gray-500">
+                <p>{{ productImage.createdAt|ago }}</p>
+                <p>{{ (productImage.imageSize/1000)|number_format(1) }} KB</p>
             </div>
         </div>
     </twig:Card>

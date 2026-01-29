@@ -23,8 +23,10 @@
                 editLink="{{ path('app_pricing_vat_rate_edit', {'id': result.publicId.value }) }}"
                 showLink="{{ path('app_pricing_vat_rate_show', {'id': result.publicId.value }) }}"
             >
-                <p class="text-lg text-gray-900 line-clamp-1 dark:text-white">{{ result.name }}</p>
-                <p class="text-lg font-extralight me-1">{{ result.rate|number_format(2) }}%</p>
+                <div class="flex items-center justify-between pe-6">
+                    <p class="text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">{{ result.name }}</p>
+                    <p class="text-lg font-light text-gray-700 dark:text-gray-300">{{ result.rate|number_format(2) }}%</p>
+                </div>
             </twig:Card>
         </twig:block>
 
