@@ -2,7 +2,7 @@ import { Controller } from '@hotwired/stimulus';
 import Dropzone from "dropzone";
 import 'dropzone/dist/dropzone.css'
 
-
+/* stimulusFetch: 'lazy' */
 export default class extends Controller {
     static values = {
         url: String,

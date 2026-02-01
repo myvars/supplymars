@@ -4,39 +4,44 @@
 
 {% block main_class %}grow bg-gray-950{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="preload" as="image" href="{{ asset('images/martian_landscape.webp') }}" fetchpriority="high">
+{% endblock %}
+
 {% block body %}
     <div data-controller="aos">
 
     {# ── Hero ────────────────────────────────────────────────────────────── #}
     <section class="relative flex items-center justify-center h-screen overflow-hidden">
-        <div class="absolute inset-0 landing-hero-bg"
+        <div class="absolute inset-0"
              style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
         </div>
         <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/30 to-gray-900/50"></div>
 
         <div class="relative text-center px-4">
-            <div class="flex items-center justify-center mb-8" data-aos="fade-down" data-aos-duration="800">
+            <div class="flex items-center justify-center mb-8" data-aos="zoom-in" data-aos-duration="600">
                 {{ include('_logo.html.twig', { logoHeight: 60 }) }}
             </div>
             <h1 class="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6"
-                data-aos="fade-down" data-aos-delay="100" data-aos-duration="800">
+                data-aos="fade-up" data-aos-delay="250" data-aos-duration="800">
                 Welcome to {{ domain }}
             </h1>
             <p class="text-xl sm:text-2xl text-gray-300 max-w-2xl mx-auto"
-               data-aos="fade-up" data-aos-delay="300" data-aos-duration="800">
+               data-aos="fade-up" data-aos-delay="550" data-aos-duration="600">
                 Your One-Stop Shop for Life on the Red Planet
             </p>
         </div>
 
-        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 scroll-indicator">
+        <a href="#the-pitch" class="absolute bottom-10 left-1/2 -translate-x-1/2 scroll-indicator">
             <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
             </svg>
-        </div>
+        </a>
     </section>
 
     {# ── The Pitch ───────────────────────────────────────────────────────── #}
-    <section class="bg-gray-950 py-24 lg:py-32">
+    <section id="the-pitch" class="bg-gray-950 py-24 lg:py-32 scroll-mt-6">
         <div class="mx-auto max-w-3xl px-6 text-center">
             <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-8"
                 data-aos="fade-up" data-aos-duration="600">

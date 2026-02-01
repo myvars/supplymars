@@ -1,9 +1,6 @@
 import './stimulus_bootstrap.js';
 import './styles/app.css';
-import 'aos/dist/aos.css'
-import 'flowbite-datepicker/dist/css/datepicker.min.css'
 import { shouldPerformTransition, performTransition } from 'turbo-view-transitions';
-import { initFlowbite } from 'flowbite';
 
 let skipNextRenderTransition = false;
 
@@ -31,15 +28,23 @@ document.addEventListener('turbo:before-frame-render', (event) => {
     }
 });
 
+let flowbitePromise;
+function initFlowbiteLazy() {
+    if (!flowbitePromise) {
+        flowbitePromise = import('flowbite').then(m => m.initFlowbite);
+    }
+    flowbitePromise.then(init => init());
+}
+
 document.addEventListener('turbo:load', () => {
-    initFlowbite();
+    initFlowbiteLazy();
 });
 
 document.addEventListener('turbo:render', () => {
-    initFlowbite();
+    initFlowbiteLazy();
 });
 
 document.addEventListener('turbo:frame-render', () => {
-    initFlowbite();
+    initFlowbiteLazy();
 });
 

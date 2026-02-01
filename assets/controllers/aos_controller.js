@@ -1,8 +1,12 @@
 import { Controller } from '@hotwired/stimulus';
-import AOS from 'aos';
 
+/* stimulusFetch: 'lazy' */
 export default class extends Controller {
-    connect() {
-        AOS.init({ once: true });
+    async connect() {
+        const [AOS, _] = await Promise.all([
+            import('aos'),
+            import('aos/dist/aos.css'),
+        ]);
+        AOS.default.init({ once: true });
     }
 }
