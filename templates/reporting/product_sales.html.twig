@@ -7,25 +7,17 @@
     <turbo-frame id="reports">
         <twig:Card>
             {% if report.summary is not null %}
-                <div class="mb-3 flex items-center justify-between">
-                    <div class="flex items-center justify-start">
-                        {% if report.type == 'all' %}
-                        <a href="{{ path('app_reporting_dashboard') }}"
-                           class="flex items-center text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
-                           data-turbo-frame="body"
-                        >
-                            <twig:ux:icon name="ic:sharp-bar-chart" class="h-5 w-5 me-1"/>
-                            Product Sales
-                        </a>
-                        {% else %}
-                            <p class="text-gray-600 dark:text-gray-500">
-                                <span class="hidden md:inline">{{ report.type|title }} Sales</span>
-                                <span class="md:hidden">Sales</span>
-                            </p>
-                        {% endif %}
+                {% if report.type == 'all' %}
+                    {{ include('reporting/_reports_header.html.twig', {title: 'Product Sales'}) }}
+                {% else %}
+                    <div class="mb-3 flex items-center justify-between">
+                        <p class="text-gray-600 dark:text-gray-500">
+                            <span class="hidden md:inline">{{ report.type|title }} Sales</span>
+                            <span class="md:hidden">Sales</span>
+                        </p>
+                        {{ include('reporting/_sales_durations.html.twig') }}
                     </div>
-                    {{ include('reporting/_sales_durations.html.twig') }}
-                </div>
+                {% endif %}
 
                 {{ include('reporting/_product_sales_summary.html.twig', {summary: report.summary}) }}
 

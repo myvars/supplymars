@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Customer Insights{% endblock %}
+
+{% block body %}
+
+    <turbo-frame id="reports">
+        <twig:Card>
+            {{ include('reporting/_customer_insights_nav.html.twig') }}
+
+            {% if report.summary is not null %}
+                {{ include('reporting/_customer_insights_summary.html.twig', {summary: report.summary}) }}
+
+                {% if report.customerChart %}
+                    <div
+                        class="mt-3 flex h-80 md:h-96 flex-wrap justify-around rounded-lg border border-gray-200/80 bg-white text-center font-light dark:border-gray-700 dark:bg-gray-800">
+                        {{ render_chart(report.customerChart, {'data-controller': 'bar_chart', 'class': 'w-full h-full'}) }}
+                    </div>
+                {% endif %}
+            {% endif %}
+
+            {% if report.topCustomers is not empty %}
+                <div class="mt-3 flex items-center justify-start">
+                    <p class="font-medium text-gray-600 dark:text-gray-500">Top Customers by Revenue</p>
+                </div>
+
+                <div class="relative mt-3 overflow-x-auto rounded-lg border border-gray-200/80 dark:border-gray-700">
+                    <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
+                        <thead class="bg-gray-50 text-xs font-semibold uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">Customer</th>
+                            <th scope="col" class="px-6 py-3">
+                                <div class="flex justify-center">Orders</div>
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                <div class="flex justify-end">Revenue</div>
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                <div class="flex justify-end">AOV</div>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for customer in report.topCustomers %}
+                            <tr class="border-b odd:bg-white even:bg-gray-50 transition-colors hover:bg-gray-100 dark:border-gray-700 dark:odd:bg-gray-900 dark:even:bg-gray-800 dark:hover:bg-gray-700/50">
+                                <th scope="row"
+                                    class="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-gray-300">
+                                    <a href="{{ path('app_customer_show', {'id': customer.publicId}) }}"
+                                       class="dark:hover:text-white"
+                                       data-turbo-frame="body"
+                                    >
+                                        {{ customer.fullName }}
+                                    </a>
+                                </th>
+                                <td class="px-6 py-4 text-center">
+                                    {{ customer.orderCount }}
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    {{ customer.totalRevenue|default(0)|price_rounded }}
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    {{ customer.averageOrderValue|default(0)|price_rounded }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </twig:Card>
+    </turbo-frame>
+
+{% endblock %}

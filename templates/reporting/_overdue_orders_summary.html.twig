@@ -1,11 +1,4 @@
 <div class="grid grid-cols-2 gap-3">
-
-    <a href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'dueDate', 'sortDirection': 'asc'})) }}"
-       class="hover:opacity-75 transition-opacity">
-        <twig:KpiCard title="Overdue Order Count" value="{{ summary.orderCount|default(0) }}"/>
-    </a>
-    <a href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'totalPrice', 'sortDirection': 'desc'})) }}"
-       class="hover:opacity-75 transition-opacity">
-        <twig:KpiCard title="Overdue Order Value" value="{{ summary.orderValue|default(0) }}" valueType="currency"/>
-    </a>
+    <twig:KpiCard title="Overdue Order Count" value="{{ summary.orderCount|default(0) }}" href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'dueDate', 'sortDirection': 'asc'})) }}"/>
+    <twig:KpiCard title="Overdue Order Value" value="{{ summary.orderValue|default(0) }}" valueType="currency" href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'totalPrice', 'sortDirection': 'desc'})) }}"/>
 </div>

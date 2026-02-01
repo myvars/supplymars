@@ -9,13 +9,16 @@ use App\Order\Domain\Model\Order\OrderPublicId;
 use App\Order\Domain\Model\Order\OrderStatus;
 use App\Order\Domain\Repository\OrderRepository;
 use App\Reporting\Application\Report\OverdueOrderReportCriteria;
+use App\Review\Domain\Model\Review\ReviewStatus;
 use App\Shared\Application\Search\SearchCriteriaInterface;
 use App\Shared\Infrastructure\Persistence\Search\FindByCriteriaInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Pagerfanta\Adapter\AdapterInterface;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
+use Symfony\Component\Uid\Ulid;
 
 /**
  * @extends ServiceEntityRepository<CustomerOrder>
@@ -232,5 +235,314 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function findCustomerSalesByDate(\DateTime $startDate, \DateTime $endDate): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT
+                co.customer_id AS customerId,
+                COUNT(co.id) AS orderCount,
+                SUM(co.total_price_inc_vat) AS orderValue,
+                COALESCE((
+                    SELECT SUM(coi.quantity)
+                    FROM customer_order_item coi
+                    INNER JOIN customer_order co2 ON co2.id = coi.customer_order_id
+                    WHERE co2.customer_id = co.customer_id
+                    AND co2.status != :status
+                    AND co2.created_at BETWEEN :startDate AND :endDate
+                ), 0) AS itemCount
+            FROM customer_order co
+            WHERE co.status != :status
+            AND co.created_at BETWEEN :startDate AND :endDate
+            GROUP BY co.customer_id
+        ';
+
+        return $conn->fetchAllAssociative($sql, [
+            'status' => OrderStatus::CANCELLED->value,
+            'startDate' => $startDate->format('Y-m-d'),
+            'endDate' => $endDate->format('Y-m-d H:i:s'),
+        ]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function findCustomerActivityByDate(\DateTime $startDate, \DateTime $endDate): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT
+                COUNT(DISTINCT co.customer_id) AS activeCustomers,
+                COUNT(DISTINCT CASE WHEN first_orders.first_order_date BETWEEN :startDate AND :endDate THEN co.customer_id END) AS newCustomers,
+                COUNT(DISTINCT CASE WHEN lifetime.order_count > 1 AND first_orders.first_order_date < :startDate THEN co.customer_id END) AS returningCustomers
+            FROM customer_order co
+            INNER JOIN (
+                SELECT customer_id, MIN(created_at) AS first_order_date
+                FROM customer_order
+                WHERE status != :cancelledStatus
+                GROUP BY customer_id
+            ) first_orders ON co.customer_id = first_orders.customer_id
+            INNER JOIN (
+                SELECT customer_id, COUNT(id) AS order_count
+                FROM customer_order
+                WHERE status != :cancelledStatus
+                GROUP BY customer_id
+            ) lifetime ON co.customer_id = lifetime.customer_id
+            WHERE co.status != :cancelledStatus
+            AND co.created_at BETWEEN :startDate AND :endDate
+        ';
+
+        $result = $conn->fetchAssociative($sql, [
+            'startDate' => $startDate->format('Y-m-d'),
+            'endDate' => $endDate->format('Y-m-d H:i:s'),
+            'cancelledStatus' => OrderStatus::CANCELLED->value,
+        ]);
+
+        return $result ?: ['activeCustomers' => 0, 'newCustomers' => 0, 'returningCustomers' => 0];
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function findTopCustomersByRevenue(\DateTime $startDate, \DateTime $endDate, int $limit = 10): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT
+                co.customer_id AS customerId,
+                u.full_name AS fullName,
+                u.public_id AS publicId,
+                COUNT(co.id) AS orderCount,
+                SUM(co.total_price_inc_vat) AS totalRevenue,
+                SUM(co.total_price_inc_vat) / COUNT(co.id) AS averageOrderValue
+            FROM customer_order co
+            INNER JOIN user u ON u.id = co.customer_id
+            WHERE co.status != :status
+            AND co.created_at BETWEEN :startDate AND :endDate
+            GROUP BY co.customer_id, u.full_name, u.public_id
+            ORDER BY totalRevenue DESC
+            LIMIT :resultLimit
+        ';
+
+        $results = $conn->fetchAllAssociative($sql, [
+            'status' => OrderStatus::CANCELLED->value,
+            'startDate' => $startDate->format('Y-m-d'),
+            'endDate' => $endDate->format('Y-m-d H:i:s'),
+            'resultLimit' => $limit,
+        ], [
+            'resultLimit' => ParameterType::INTEGER,
+        ]);
+
+        return array_map(function (array $row): array {
+            if (isset($row['publicId']) && is_string($row['publicId'])) {
+                $row['publicId'] = Ulid::fromBinary($row['publicId'])->toBase32();
+            }
+
+            return $row;
+        }, $results);
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function findCustomerGeographicSales(\DateTime $startDate, \DateTime $endDate): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT
+                a.city,
+                COUNT(DISTINCT co.customer_id) AS customerCount,
+                COUNT(co.id) AS orderCount,
+                SUM(co.total_price_inc_vat) AS orderValue,
+                CASE WHEN COUNT(co.id) > 0 THEN SUM(co.total_price_inc_vat) / COUNT(co.id) ELSE 0 END AS averageOrderValue
+            FROM customer_order co
+            INNER JOIN address a ON a.id = co.shipping_address_id
+            WHERE co.status != :status
+            AND co.created_at BETWEEN :startDate AND :endDate
+            GROUP BY a.city
+            ORDER BY orderValue DESC
+        ';
+
+        return $conn->fetchAllAssociative($sql, [
+            'status' => OrderStatus::CANCELLED->value,
+            'startDate' => $startDate->format('Y-m-d'),
+            'endDate' => $endDate->format('Y-m-d H:i:s'),
+        ]);
+    }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function findCustomerSegmentSales(\DateTime $startDate, \DateTime $endDate): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT
+                segment,
+                COUNT(DISTINCT customer_id) AS customerCount,
+                SUM(order_count) AS orderCount,
+                SUM(order_value) AS orderValue,
+                CASE WHEN SUM(order_count) > 0 THEN SUM(order_value) / SUM(order_count) ELSE 0 END AS averageOrderValue,
+                CASE WHEN SUM(order_count) > 0 THEN SUM(item_count) / SUM(order_count) ELSE 0 END AS averageItemsPerOrder
+            FROM (
+                SELECT
+                    co.customer_id,
+                    COUNT(co.id) AS order_count,
+                    SUM(co.total_price_inc_vat) AS order_value,
+                    (SELECT COALESCE(SUM(coi.quantity), 0) FROM customer_order_item coi WHERE coi.customer_order_id IN (
+                        SELECT co2.id FROM customer_order co2
+                        WHERE co2.customer_id = co.customer_id
+                        AND co2.status != :cancelledStatus
+                        AND co2.created_at BETWEEN :startDate AND :endDate
+                    )) AS item_count,
+                    CASE
+                        WHEN lifetime.order_count = 1 THEN :segNew
+                        WHEN lifetime.order_count BETWEEN 2 AND 3 THEN :segReturning
+                        WHEN lifetime.order_count >= 4 THEN :segLoyal
+                        ELSE :segNew
+                    END AS segment
+                FROM customer_order co
+                INNER JOIN (
+                    SELECT customer_id, COUNT(id) AS order_count
+                    FROM customer_order
+                    WHERE status != :cancelledStatus
+                    GROUP BY customer_id
+                ) lifetime ON co.customer_id = lifetime.customer_id
+                WHERE co.status != :cancelledStatus
+                AND co.created_at BETWEEN :startDate AND :endDate
+                GROUP BY co.customer_id, segment
+            ) segmented
+            GROUP BY segment
+
+            UNION ALL
+
+            SELECT
+                :segLapsed AS segment,
+                COUNT(DISTINCT lapsed.customer_id) AS customerCount,
+                0 AS orderCount,
+                0 AS orderValue,
+                0 AS averageOrderValue,
+                0 AS averageItemsPerOrder
+            FROM (
+                SELECT customer_id, MAX(created_at) AS last_order
+                FROM customer_order
+                WHERE status != :cancelledStatus
+                AND created_at >= DATE_SUB(:startDate, INTERVAL 1 YEAR)
+                GROUP BY customer_id
+                HAVING MAX(created_at) < DATE_SUB(:startDate, INTERVAL 60 DAY)
+            ) lapsed
+        ';
+
+        return $conn->fetchAllAssociative($sql, [
+            'startDate' => $startDate->format('Y-m-d'),
+            'endDate' => $endDate->format('Y-m-d H:i:s'),
+            'cancelledStatus' => OrderStatus::CANCELLED->value,
+            'segNew' => 'new',
+            'segReturning' => 'returning',
+            'segLoyal' => 'loyal',
+            'segLapsed' => 'lapsed',
+        ]);
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function findRevenueMetrics(\DateTime $startDate, \DateTime $endDate): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT
+                COALESCE(SUM(co.total_price_inc_vat), 0) AS totalRevenue,
+                COUNT(co.id) AS orderCount,
+                CASE WHEN COUNT(co.id) > 0 THEN SUM(co.total_price_inc_vat) / COUNT(co.id) ELSE 0 END AS averageAov
+            FROM customer_order co
+            WHERE co.status != :cancelledStatus
+            AND co.created_at BETWEEN :startDate AND :endDate
+        ';
+
+        $result = $conn->fetchAssociative($sql, [
+            'startDate' => $startDate->format('Y-m-d'),
+            'endDate' => $endDate->format('Y-m-d H:i:s'),
+            'cancelledStatus' => OrderStatus::CANCELLED->value,
+        ]);
+
+        return $result ?: ['totalRevenue' => '0.00', 'orderCount' => 0, 'averageAov' => '0.00'];
+    }
+
+    public function findLifetimeRevenue(): string
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT COALESCE(SUM(co.total_price_inc_vat), 0) AS lifetimeRevenue
+            FROM customer_order co
+            WHERE co.status != :cancelledStatus
+        ';
+
+        return (string) ($conn->fetchOne($sql, ['cancelledStatus' => OrderStatus::CANCELLED->value]) ?: '0.00');
+    }
+
+    public function findRepeatRate(): string
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT
+                CASE WHEN COUNT(DISTINCT customer_id) > 0
+                    THEN (COUNT(DISTINCT CASE WHEN cnt > 1 THEN customer_id END) / COUNT(DISTINCT customer_id)) * 100
+                    ELSE 0
+                END AS repeatRate
+            FROM (
+                SELECT customer_id, COUNT(id) AS cnt
+                FROM customer_order
+                WHERE status != :cancelledStatus
+                GROUP BY customer_id
+            ) customer_counts
+        ';
+
+        $result = $conn->fetchOne($sql, ['cancelledStatus' => OrderStatus::CANCELLED->value]);
+
+        return number_format((float) ($result ?: 0), 2, '.', '');
+    }
+
+    public function findReviewRate(\DateTime $startDate, \DateTime $endDate, int $activeCustomers): string
+    {
+        if ($activeCustomers === 0) {
+            return '0.00';
+        }
+
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT COUNT(DISTINCT pr.customer_id)
+            FROM product_review pr
+            WHERE pr.status = :publishedStatus
+            AND pr.customer_id IN (
+                SELECT DISTINCT co.customer_id
+                FROM customer_order co
+                WHERE co.status != :cancelledStatus
+                AND co.created_at BETWEEN :startDate AND :endDate
+            )
+        ';
+
+        $reviewingCustomers = (int) $conn->fetchOne($sql, [
+            'publishedStatus' => ReviewStatus::PUBLISHED->value,
+            'cancelledStatus' => OrderStatus::CANCELLED->value,
+            'startDate' => $startDate->format('Y-m-d'),
+            'endDate' => $endDate->format('Y-m-d H:i:s'),
+        ]);
+
+        return number_format(($reviewingCustomers / $activeCustomers) * 100, 2, '.', '');
     }
 }

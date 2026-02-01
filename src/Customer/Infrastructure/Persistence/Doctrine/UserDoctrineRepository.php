@@ -7,6 +7,8 @@ use App\Customer\Domain\Model\User\User;
 use App\Customer\Domain\Model\User\UserId;
 use App\Customer\Domain\Model\User\UserPublicId;
 use App\Customer\Domain\Repository\UserRepository;
+use App\Order\Domain\Model\Order\OrderStatus;
+use App\Review\Domain\Model\Review\ReviewStatus;
 use App\Shared\Application\Search\SearchCriteriaInterface;
 use App\Shared\Infrastructure\Persistence\Search\FindByCriteriaInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -121,5 +123,89 @@ class UserDoctrineRepository extends ServiceEntityRepository implements Password
 
         // Fetch the user entity by its ID
         return $this->find($userId);
+    }
+
+    public function countNonStaffCustomers(): int
+    {
+        return (int) $this->createQueryBuilder('u')
+            ->select('COUNT(u.id)')
+            ->where('u.isStaff = :isStaff')
+            ->setParameter('isStaff', false)
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function findCustomerInsights(User $user): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = '
+            SELECT
+                COALESCE(SUM(co.total_price_inc_vat), 0) AS totalRevenue,
+                COUNT(co.id) AS orderCount,
+                CASE WHEN COUNT(co.id) > 0 THEN SUM(co.total_price_inc_vat) / COUNT(co.id) ELSE 0 END AS averageOrderValue,
+                MIN(co.created_at) AS firstOrderDate,
+                MAX(co.created_at) AS lastOrderDate,
+                DATEDIFF(NOW(), MAX(co.created_at)) AS daysSinceLastOrder,
+                (SELECT COUNT(DISTINCT pr.id)
+                 FROM product_review pr
+                 WHERE pr.customer_id = :customerId
+                 AND pr.status = :publishedStatus) AS reviewCount,
+                (SELECT COUNT(*) + 1
+                 FROM (
+                     SELECT customer_id
+                     FROM customer_order
+                     WHERE status != :cancelledStatus
+                     GROUP BY customer_id
+                     HAVING SUM(total_price_inc_vat) > (
+                         SELECT COALESCE(SUM(total_price_inc_vat), 0)
+                         FROM customer_order
+                         WHERE customer_id = :customerId AND status != :cancelledStatus
+                     )
+                 ) ranked) AS revenueRank,
+                CASE
+                    WHEN COUNT(co.id) = 0 THEN :segNew
+                    WHEN COUNT(co.id) = 1 THEN :segNew
+                    WHEN COUNT(co.id) BETWEEN 2 AND 3 THEN :segReturning
+                    WHEN COUNT(co.id) >= 4 THEN :segLoyal
+                    ELSE :segNew
+                END AS segment
+            FROM customer_order co
+            WHERE co.customer_id = :customerId
+            AND co.status != :cancelledStatus
+        ';
+
+        $result = $conn->fetchAssociative($sql, [
+            'customerId' => $user->getId(),
+            'cancelledStatus' => OrderStatus::CANCELLED->value,
+            'publishedStatus' => ReviewStatus::PUBLISHED->value,
+            'segNew' => 'new',
+            'segReturning' => 'returning',
+            'segLoyal' => 'loyal',
+        ]);
+
+        if (!$result) {
+            return [
+                'totalRevenue' => '0.00',
+                'orderCount' => 0,
+                'averageOrderValue' => '0.00',
+                'firstOrderDate' => null,
+                'lastOrderDate' => null,
+                'daysSinceLastOrder' => null,
+                'reviewCount' => 0,
+                'revenueRank' => null,
+                'segment' => 'new',
+            ];
+        }
+
+        // Check for lapsed status
+        if ((int) $result['daysSinceLastOrder'] > 60 && (int) $result['orderCount'] > 0) {
+            $result['segment'] = 'lapsed';
+        }
+
+        return $result;
     }
 }

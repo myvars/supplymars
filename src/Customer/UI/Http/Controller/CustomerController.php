@@ -11,6 +11,7 @@ use App\Customer\Domain\Repository\UserRepository;
 use App\Customer\UI\Http\Form\Mapper\UpdateCustomerMapper;
 use App\Customer\UI\Http\Form\Model\CustomerForm;
 use App\Customer\UI\Http\Form\Type\CustomerType;
+use App\Reporting\Application\Handler\Report\CustomerProfileInsightsHandler;
 use App\Shared\UI\Http\FormFlow\DeleteFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
@@ -88,8 +89,15 @@ class CustomerController extends AbstractController
     }
 
     #[Route(path: '/customer/{id}', name: 'app_customer_show', methods: ['GET'])]
-    public function show(#[ValueResolver('public_id')] User $customer): Response
-    {
-        return $this->render('/customer/show.html.twig', ['result' => $customer]);
+    public function show(
+        #[ValueResolver('public_id')] User $customer,
+        CustomerProfileInsightsHandler $insightsHandler,
+    ): Response {
+        $insights = $insightsHandler($customer);
+
+        return $this->render('/customer/show.html.twig', [
+            'result' => $customer,
+            'insights' => $insights->payload,
+        ]);
     }
 }

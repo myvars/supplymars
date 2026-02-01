@@ -66,6 +66,10 @@ readonly class refundPOsCommand
             }
 
             foreach ($purchaseOrder->getPurchaseOrderItems() as $purchaseOrderItem) {
+                if ($purchaseOrderItem->getStatus() !== PurchaseOrderStatus::REJECTED) {
+                    continue;
+                }
+
                 $purchaseOrderItem->updateItemStatus(newStatus: PurchaseOrderStatus::REFUNDED);
             }
 

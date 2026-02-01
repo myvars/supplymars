@@ -2,10 +2,16 @@
 
 namespace App\Reporting\UI\Http\Controller;
 
+use App\Reporting\Application\Handler\Report\CustomerGeographicReportHandler;
+use App\Reporting\Application\Handler\Report\CustomerInsightsReportHandler;
+use App\Reporting\Application\Handler\Report\CustomerSegmentReportHandler;
 use App\Reporting\Application\Handler\Report\DashboardReportHandler;
 use App\Reporting\Application\Handler\Report\OrderSummaryReportHandler;
 use App\Reporting\Application\Handler\Report\OverdueOrdersReportHandler;
 use App\Reporting\Application\Handler\Report\ProductSalesReportHandler;
+use App\Reporting\Application\Report\CustomerGeographicReportCriteria;
+use App\Reporting\Application\Report\CustomerInsightsReportCriteria;
+use App\Reporting\Application\Report\CustomerSegmentReportCriteria;
 use App\Reporting\Application\Report\OrderSummaryReportCriteria;
 use App\Reporting\Application\Report\OverdueOrderReportCriteria;
 use App\Reporting\Application\Report\ProductSalesReportCriteria;
@@ -60,6 +66,42 @@ class DashboardController extends AbstractController
         $result = $handler($criteria);
 
         return $this->render('reporting/overdue_orders.html.twig', [
+            'report' => $result->payload,
+        ]);
+    }
+
+    #[Route(path: '/dashboard/report/customer/insights', name: 'app_reporting_dashboard_customer_insights', methods: ['GET'])]
+    public function customerInsights(
+        CustomerInsightsReportHandler $handler,
+        #[MapQueryString] CustomerInsightsReportCriteria $criteria = new CustomerInsightsReportCriteria(),
+    ): Response {
+        $result = $handler($criteria);
+
+        return $this->render('reporting/customer_insights.html.twig', [
+            'report' => $result->payload,
+        ]);
+    }
+
+    #[Route(path: '/dashboard/report/customer/geographic', name: 'app_reporting_dashboard_customer_geographic', methods: ['GET'])]
+    public function customerGeographic(
+        CustomerGeographicReportHandler $handler,
+        #[MapQueryString] CustomerGeographicReportCriteria $criteria = new CustomerGeographicReportCriteria(),
+    ): Response {
+        $result = $handler($criteria);
+
+        return $this->render('reporting/customer_geographic.html.twig', [
+            'report' => $result->payload,
+        ]);
+    }
+
+    #[Route(path: '/dashboard/report/customer/segments', name: 'app_reporting_dashboard_customer_segments', methods: ['GET'])]
+    public function customerSegments(
+        CustomerSegmentReportHandler $handler,
+        #[MapQueryString] CustomerSegmentReportCriteria $criteria = new CustomerSegmentReportCriteria(),
+    ): Response {
+        $result = $handler($criteria);
+
+        return $this->render('reporting/customer_segments.html.twig', [
             'report' => $result->payload,
         ]);
     }

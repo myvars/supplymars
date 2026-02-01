@@ -6,7 +6,9 @@
 
     <div class="m-3 space-y-4">
         {{ include('customer/_customer_card.html.twig', {customer: result}) }}
-        {{ include('customer/_customer_orders_card.html.twig', {customer: result}) }}
+        {% if insights is defined and insights is not null %}
+            {{ include('customer/_customer_insights_card.html.twig', {insights: insights, customer: result}) }}
+        {% endif %}
         {% if result.addresses.count > 0 %}
             {{ include('customer/_customer_addresses_card.html.twig', {customer: result}) }}
         {% endif %}

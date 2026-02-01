@@ -1,0 +1,17 @@
+{{ include('reporting/_reports_header.html.twig', {title: 'Customer Insights'}) }}
+
+<div class="mb-3 flex gap-1 border-b border-gray-200 dark:border-gray-700">
+    {% set tabs = {
+        'app_reporting_dashboard_customer_insights': 'Overview',
+        'app_reporting_dashboard_customer_geographic': 'Geographic',
+        'app_reporting_dashboard_customer_segments': 'Segments',
+    } %}
+    {% for route, label in tabs %}
+        {% set isActive = app.current_route == route %}
+        <a href="{{ path(route, {'duration': app.request.query.get('duration')}) }}"
+           class="inline-block rounded-t-lg px-4 py-2 text-sm font-medium transition-colors {{ isActive ? 'border-b-2 border-primary-600 text-primary-600 dark:border-primary-500 dark:text-primary-500' : 'text-gray-500 hover:border-b-2 hover:border-gray-300 hover:text-gray-600 dark:text-gray-400 dark:hover:border-gray-600 dark:hover:text-gray-300' }}"
+        >
+            {{ label }}
+        </a>
+    {% endfor %}
+</div>

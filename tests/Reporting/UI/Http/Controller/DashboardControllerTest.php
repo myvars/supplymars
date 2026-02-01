@@ -97,4 +97,76 @@ class DashboardControllerTest extends WebTestCase
             ->get('/dashboard/report/overdue/orders')
             ->assertSuccessful();
     }
+
+    public function testCustomerInsightsRequiresAuthentication(): void
+    {
+        $this->browser()
+            ->interceptRedirects()
+            ->get('/dashboard/report/customer/insights')
+            ->assertRedirectedTo('/login');
+    }
+
+    public function testCustomerInsightsRendersWithDefaultCriteria(): void
+    {
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/dashboard/report/customer/insights')
+            ->assertSuccessful();
+    }
+
+    public function testCustomerInsightsRendersWithDurationFilter(): void
+    {
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/dashboard/report/customer/insights?duration=last_30')
+            ->assertSuccessful();
+    }
+
+    public function testCustomerGeographicRequiresAuthentication(): void
+    {
+        $this->browser()
+            ->interceptRedirects()
+            ->get('/dashboard/report/customer/geographic')
+            ->assertRedirectedTo('/login');
+    }
+
+    public function testCustomerGeographicRendersWithDefaultCriteria(): void
+    {
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/dashboard/report/customer/geographic')
+            ->assertSuccessful();
+    }
+
+    public function testCustomerGeographicRendersWithDurationFilter(): void
+    {
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/dashboard/report/customer/geographic?duration=last_30')
+            ->assertSuccessful();
+    }
+
+    public function testCustomerSegmentsRequiresAuthentication(): void
+    {
+        $this->browser()
+            ->interceptRedirects()
+            ->get('/dashboard/report/customer/segments')
+            ->assertRedirectedTo('/login');
+    }
+
+    public function testCustomerSegmentsRendersWithDefaultCriteria(): void
+    {
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/dashboard/report/customer/segments')
+            ->assertSuccessful();
+    }
+
+    public function testCustomerSegmentsRendersWithDurationFilter(): void
+    {
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/dashboard/report/customer/segments?duration=last_30')
+            ->assertSuccessful();
+    }
 }

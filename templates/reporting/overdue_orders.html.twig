@@ -7,18 +7,7 @@
     <turbo-frame id="reports">
         <twig:Card>
             {% if report.summary is not null %}
-                <div class="mb-3 flex items-center justify-between">
-                    <div class="flex items-center justify-start">
-                        <a href="{{ path('app_reporting_dashboard') }}"
-                           class="flex items-center text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
-                           data-turbo-frame="body"
-                        >
-                            <twig:ux:icon name="ic:sharp-bar-chart" class="h-5 w-5 me-1"/>
-                            Overdue Orders
-                        </a>
-                    </div>
-                    {{ include('reporting/_sales_durations.html.twig') }}
-                </div>
+                {{ include('reporting/_reports_header.html.twig', {title: 'Overdue Orders'}) }}
 
                 {{ include('reporting/_overdue_orders_summary.html.twig', {summary: report.summary}) }}
             {% endif %}

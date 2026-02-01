@@ -75,8 +75,9 @@ readonly class acceptPOsCommand
                 continue;
             }
 
+            $status = $this->simulateStatus();
             foreach ($purchaseOrder->getPurchaseOrderItems() as $purchaseOrderItem) {
-                $purchaseOrderItem->updateItemStatus(newStatus: $this->simulateStatus());
+                $purchaseOrderItem->updateItemStatus(newStatus: $status);
             }
 
             $processedIds[] = $purchaseOrder->getId() . ' : ' . $purchaseOrder->getStatus()->value;

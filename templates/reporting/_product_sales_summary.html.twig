@@ -1,19 +1,6 @@
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
-
-    <a href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'salesQty'})) }}"
-       class="hover:opacity-75 transition-opacity">
-        <twig:KpiCard title="Sales Qty" value="{{ summary.salesQty|default(0) }}"/>
-    </a>
-    <a href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'salesCost'})) }}"
-       class="hover:opacity-75 transition-opacity">
-        <twig:KpiCard title="Sales Cost" value="{{ summary.salesCost|default(0) }}" valueType="currency"/>
-    </a>
-    <a href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'salesProfit'})) }}"
-       class="hover:opacity-75 transition-opacity">
-        <twig:KpiCard title="Sales Profit" value="{{ summary.salesProfit|default(0) }}" valueType="currency"/>
-    </a>
-    <a href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'salesMargin'})) }}"
-       class="hover:opacity-75 transition-opacity">
-        <twig:KpiCard title="Gross Margin" value="{{ summary.salesMargin|default(0) }}" valueType="percentage" maxFractionDigits="2"/>
-    </a>
+    <twig:KpiCard title="Sales Qty" value="{{ summary.salesQty|default(0) }}" href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'salesQty'})) }}"/>
+    <twig:KpiCard title="Sales Cost" value="{{ summary.salesCost|default(0) }}" valueType="currency" href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'salesCost'})) }}"/>
+    <twig:KpiCard title="Sales Profit" value="{{ summary.salesProfit|default(0) }}" valueType="currency" href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'salesProfit'})) }}"/>
+    <twig:KpiCard title="Gross Margin" value="{{ summary.salesMargin|default(0) }}" valueType="percentage" maxFractionDigits="2" href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'salesMargin'})) }}"/>
 </div>
