@@ -77,7 +77,7 @@ COPY --link . /app
 
 # Clean up dev/test files, set prod php.ini, install PHP dependencies, prepare directories for cache and logs.
 RUN set -eux; \
-    rm -Rf docker/ tests/ tests_old/ && \
+    rm -Rf docker/ tests/ Docs/ && \
     mkdir -p var/cache/prod var/log public/assets assets/vendor && \
     chown -R www-data:www-data var public/assets assets /usr/local/etc/php/conf.d && \
     chmod -R 775 var public/assets assets && \
