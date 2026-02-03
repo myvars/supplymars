@@ -21,17 +21,24 @@ final readonly class CalculateCustomerSalesSummaryHandler
     ) {
     }
 
-    public function process(bool $rebuild = false): void
+    /**
+     * @return array<string, int>
+     */
+    public function process(bool $rebuild = false, bool $dryRun = false): array
     {
+        $results = [];
         foreach (SalesDuration::cases() as $salesDuration) {
             $customerSalesType = CustomerSalesType::create($salesDuration, $rebuild);
-            $this->processCustomerSalesSummary($customerSalesType);
-            $this->processGeographicSummary($customerSalesType);
-            $this->processSegmentSummary($customerSalesType);
+            $count = $this->processCustomerSalesSummary($customerSalesType, $dryRun);
+            $count += $this->processGeographicSummary($customerSalesType, $dryRun);
+            $count += $this->processSegmentSummary($customerSalesType, $dryRun);
+            $results[$salesDuration->value] = $count;
         }
+
+        return $results;
     }
 
-    private function processCustomerSalesSummary(CustomerSalesType $customerSalesType): void
+    private function processCustomerSalesSummary(CustomerSalesType $customerSalesType, bool $dryRun = false): int
     {
         $startDate = new \DateTime($customerSalesType->getStartDate());
         $endDate = new \DateTime($customerSalesType->getEndDate());
@@ -66,8 +73,6 @@ final readonly class CalculateCustomerSalesSummaryHandler
             ? bcdiv((string) ($revenueData['orderCount'] ?? 0), (string) $activeCustomers, 2)
             : '0.00';
 
-        $this->em->getRepository(CustomerSalesSummary::class)->deleteByCustomerSalesType($customerSalesType);
-
         $dateString = $customerSalesType->getStartDate();
         $summary = CustomerSalesSummary::create(
             $customerSalesType,
@@ -89,11 +94,16 @@ final readonly class CalculateCustomerSalesSummaryHandler
             throw new \InvalidArgumentException((string) $errors);
         }
 
-        $this->em->persist($summary);
-        $this->em->flush();
+        if (!$dryRun) {
+            $this->em->getRepository(CustomerSalesSummary::class)->deleteByCustomerSalesType($customerSalesType);
+            $this->em->persist($summary);
+            $this->em->flush();
+        }
+
+        return 1;
     }
 
-    private function processGeographicSummary(CustomerSalesType $customerSalesType): void
+    private function processGeographicSummary(CustomerSalesType $customerSalesType, bool $dryRun = false): int
     {
         $startDate = new \DateTime($customerSalesType->getStartDate());
         $endDate = new \DateTime($customerSalesType->getEndDate());
@@ -101,9 +111,12 @@ final readonly class CalculateCustomerSalesSummaryHandler
         $geoData = $this->em->getRepository(CustomerOrder::class)
             ->findCustomerGeographicSales($startDate, $endDate);
 
-        $this->em->getRepository(CustomerGeographicSummary::class)->deleteByCustomerSalesType($customerSalesType);
+        if (!$dryRun) {
+            $this->em->getRepository(CustomerGeographicSummary::class)->deleteByCustomerSalesType($customerSalesType);
+        }
 
         $dateString = $customerSalesType->getStartDate();
+        $processed = 0;
 
         foreach ($geoData as $geo) {
             $summary = CustomerGeographicSummary::create(
@@ -121,13 +134,21 @@ final readonly class CalculateCustomerSalesSummaryHandler
                 throw new \InvalidArgumentException((string) $errors);
             }
 
-            $this->em->persist($summary);
+            if (!$dryRun) {
+                $this->em->persist($summary);
+            }
+
+            ++$processed;
         }
 
-        $this->em->flush();
+        if (!$dryRun) {
+            $this->em->flush();
+        }
+
+        return $processed;
     }
 
-    private function processSegmentSummary(CustomerSalesType $customerSalesType): void
+    private function processSegmentSummary(CustomerSalesType $customerSalesType, bool $dryRun = false): int
     {
         $startDate = new \DateTime($customerSalesType->getStartDate());
         $endDate = new \DateTime($customerSalesType->getEndDate());
@@ -135,9 +156,12 @@ final readonly class CalculateCustomerSalesSummaryHandler
         $segmentData = $this->em->getRepository(CustomerOrder::class)
             ->findCustomerSegmentSales($startDate, $endDate);
 
-        $this->em->getRepository(CustomerSegmentSummary::class)->deleteByCustomerSalesType($customerSalesType);
+        if (!$dryRun) {
+            $this->em->getRepository(CustomerSegmentSummary::class)->deleteByCustomerSalesType($customerSalesType);
+        }
 
         $dateString = $customerSalesType->getStartDate();
+        $processed = 0;
 
         foreach ($segmentData as $seg) {
             $segment = CustomerSegment::tryFrom($seg['segment']);
@@ -161,9 +185,17 @@ final readonly class CalculateCustomerSalesSummaryHandler
                 throw new \InvalidArgumentException((string) $errors);
             }
 
-            $this->em->persist($summary);
+            if (!$dryRun) {
+                $this->em->persist($summary);
+            }
+
+            ++$processed;
         }
 
-        $this->em->flush();
+        if (!$dryRun) {
+            $this->em->flush();
+        }
+
+        return $processed;
     }
 }

@@ -9,6 +9,7 @@ use App\Shared\Application\FlusherInterface;
 use App\Shared\Infrastructure\Security\DefaultUserAuthenticator;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Attribute\Option;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,7 +19,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:build-purchase-orders',
     description: 'Build POs for customer orders',
 )]
-readonly class buildPOsCommand
+readonly class BuildPOsCommand
 {
     public function __construct(
         private OrderRepository $orders,
@@ -33,6 +34,8 @@ readonly class buildPOsCommand
         OutputInterface $output,
         #[Argument(description: 'Order count to process')]
         int $orderCount = 50,
+        #[Option(description: 'Run without persisting changes')]
+        bool $dryRun = false,
     ): int {
         $io = new SymfonyStyle($input, $output);
 
@@ -42,7 +45,11 @@ readonly class buildPOsCommand
             return Command::INVALID;
         }
 
-        $io->section(sprintf('Building POs for up to %d customer orders', $orderCount));
+        $io->section(sprintf(
+            '%sBuilding POs for up to %d customer orders',
+            $dryRun ? '[DRY RUN] ' : '',
+            $orderCount
+        ));
 
         $customerOrders = $this->getNextCustomerOrders($orderCount);
         if (!$customerOrders) {
@@ -57,6 +64,8 @@ readonly class buildPOsCommand
         $progress->start();
 
         $processed = 0;
+        $posCreated = 0;
+        $itemsAllocated = 0;
         $processedIds = [];
 
         foreach ($customerOrders as $customerOrder) {
@@ -64,18 +73,45 @@ readonly class buildPOsCommand
                 continue;
             }
 
-            $this->orderAllocator->process($customerOrder);
+            $poCountBefore = $customerOrder->getPurchaseOrders()->count();
 
-            $processedIds[] = (string) $customerOrder->getId();
+            if (!$dryRun) {
+                $this->orderAllocator->process($customerOrder);
+            }
+
+            $poCountAfter = $customerOrder->getPurchaseOrders()->count();
+            $newPosCount = $poCountAfter - $poCountBefore;
+            $posCreated += $newPosCount;
+
+            // Count allocated items across all new POs
+            foreach ($customerOrder->getPurchaseOrders() as $po) {
+                $itemsAllocated += $po->getPurchaseOrderItems()->count();
+            }
+
+            $processedIds[] = sprintf(
+                'Order #%d: %d PO(s)',
+                $customerOrder->getId(),
+                $newPosCount
+            );
+
             ++$processed;
             $progress->advance();
         }
 
-        $this->flusher->flush();
+        if (!$dryRun) {
+            $this->flusher->flush();
+        }
 
         $progress->finish();
         $io->newLine(2);
-        $io->success(sprintf('Processed %d customer orders.', $processed));
+
+        $io->success(sprintf(
+            '%sProcessed %d customer orders. Created %d PO(s), allocated %d item(s).',
+            $dryRun ? '[DRY RUN] ' : '',
+            $processed,
+            $posCreated,
+            $itemsAllocated
+        ));
 
         if ($output->isVerbose()) {
             $io->section('Processed Order IDs');

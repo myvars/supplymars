@@ -19,7 +19,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:create-warehouse-products',
     description: 'Create new products from the default supplier products table',
 )]
-readonly class createWarehouseProductsCommand
+readonly class CreateWarehouseProductsCommand
 {
     public function __construct(
         private SupplierRepository $suppliers,

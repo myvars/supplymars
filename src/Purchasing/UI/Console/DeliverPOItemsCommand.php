@@ -2,17 +2,18 @@
 
 namespace App\Purchasing\UI\Console;
 
-use App\Audit\Domain\Model\StatusChange\StatusChangeLog;
-use App\Audit\Domain\Repository\StatusChangeLogRepository;
+use App\Purchasing\Application\Service\ProcessingSimulator;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItem;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use App\Purchasing\Domain\Model\Supplier\Supplier;
+use App\Purchasing\Domain\Model\Supplier\SupplierId;
 use App\Purchasing\Domain\Repository\PurchaseOrderItemRepository;
 use App\Purchasing\Domain\Repository\SupplierRepository;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Infrastructure\Security\DefaultUserAuthenticator;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Attribute\Option;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -22,12 +23,12 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:deliver-purchase-order-items',
     description: 'Deliver PO items',
 )]
-readonly class deliverPOItemsCommand
+readonly class DeliverPOItemsCommand
 {
     public function __construct(
         private SupplierRepository $suppliers,
         private PurchaseOrderItemRepository $purchaseOrderItems,
-        private StatusChangeLogRepository $statusChangeLogs,
+        private ProcessingSimulator $processingSimulator,
         private DefaultUserAuthenticator $defaultUserAuthenticator,
         private FlusherInterface $flusher,
     ) {
@@ -38,6 +39,12 @@ readonly class deliverPOItemsCommand
         OutputInterface $output,
         #[Argument(description: 'PO item count to process')]
         int $poItemCount = 50,
+        #[Option(description: 'Run without persisting changes')]
+        bool $dryRun = false,
+        #[Option(description: 'Target a specific supplier by ID')]
+        ?int $supplier = null,
+        #[Option(description: 'Skip timing/business hours checks')]
+        bool $skipTiming = false,
     ): int {
         $io = new SymfonyStyle($input, $output);
 
@@ -47,19 +54,22 @@ readonly class deliverPOItemsCommand
             return Command::INVALID;
         }
 
-        $supplier = $this->suppliers->getRandomSupplier();
-        if (!$supplier instanceof Supplier) {
-            $io->error('No supplier found');
+        $supplierEntity = $this->resolveSupplier($supplier);
+        if (!$supplierEntity instanceof Supplier) {
+            $io->error($supplier !== null ? 'Supplier not found: ' . $supplier : 'No supplier found');
 
             return Command::FAILURE;
         }
 
-        $io->section(sprintf('Delivering up to %d PO items for supplier %s',
+        $io->section(sprintf(
+            '%sDelivering up to %d PO items for supplier %s%s',
+            $dryRun ? '[DRY RUN] ' : '',
             $poItemCount,
-            $supplier->getName()
+            $supplierEntity->getName(),
+            $skipTiming ? ' (timing checks skipped)' : ''
         ));
 
-        $purchaseOrderItems = $this->getShippedPurchaseOrderItems($supplier, $poItemCount);
+        $purchaseOrderItems = $this->getShippedPurchaseOrderItems($supplierEntity, $poItemCount);
         if ($purchaseOrderItems === []) {
             $io->note('No shipped PO items to deliver.');
 
@@ -71,7 +81,8 @@ readonly class deliverPOItemsCommand
         $progress = $io->createProgressBar(count($purchaseOrderItems));
         $progress->start();
 
-        $processed = 0;
+        $delivered = 0;
+        $skipped = 0;
         $processedIds = [];
 
         foreach ($purchaseOrderItems as $purchaseOrderItem) {
@@ -79,28 +90,52 @@ readonly class deliverPOItemsCommand
                 continue;
             }
 
-            if ($this->realWorldPoDeliverySimulator($purchaseOrderItem)) {
-                $purchaseOrderItem->updateItemStatus(newStatus: PurchaseOrderStatus::DELIVERED);
+            $canDeliver = $skipTiming || $this->processingSimulator->canDeliver($purchaseOrderItem);
 
-                $processedIds[] = $purchaseOrderItem->getId() . ' : ' . $purchaseOrderItem->getStatus()->value;
-                ++$processed;
+            if ($canDeliver) {
+                if (!$dryRun) {
+                    $purchaseOrderItem->updateItemStatus(newStatus: PurchaseOrderStatus::DELIVERED);
+                }
+
+                $processedIds[] = $purchaseOrderItem->getId() . ' : DELIVERED';
+                ++$delivered;
+            } else {
+                ++$skipped;
             }
 
             $progress->advance();
         }
 
-        $this->flusher->flush();
+        if (!$dryRun) {
+            $this->flusher->flush();
+        }
 
         $progress->finish();
         $io->newLine(2);
-        $io->success(sprintf('Processed %d PO Items.', $processed));
 
-        if ($processed > 0 && $output->isVerbose()) {
-            $io->section('Processed PO Item IDs');
+        $io->success(sprintf(
+            '%sProcessed %d PO items: %d delivered, %d skipped.',
+            $dryRun ? '[DRY RUN] ' : '',
+            $delivered + $skipped,
+            $delivered,
+            $skipped
+        ));
+
+        if ($delivered > 0 && $output->isVerbose()) {
+            $io->section('Delivered PO Item IDs');
             $io->listing($processedIds);
         }
 
         return Command::SUCCESS;
+    }
+
+    private function resolveSupplier(?int $supplierId): ?Supplier
+    {
+        if ($supplierId !== null) {
+            return $this->suppliers->get(SupplierId::fromInt($supplierId));
+        }
+
+        return $this->suppliers->getRandomSupplier();
     }
 
     /**
@@ -113,32 +148,5 @@ readonly class deliverPOItemsCommand
             PurchaseOrderStatus::SHIPPED,
             $count
         );
-    }
-
-    public function getShippedPoStatusChange(PurchaseOrderItem $purchaseOrderItem): ?StatusChangeLog
-    {
-        return $this->statusChangeLogs->findPoStatusChangeByStatus(
-            $purchaseOrderItem->getId(),
-            PurchaseOrderStatus::SHIPPED
-        );
-    }
-
-    private function realWorldPoDeliverySimulator(PurchaseOrderItem $purchaseOrderItem): bool
-    {
-        $statusChangeLog = $this->getShippedPoStatusChange($purchaseOrderItem);
-        if (!$statusChangeLog instanceof StatusChangeLog) {
-            return false;
-        }
-
-        $now = new \DateTimeImmutable();
-        $intervalTime = $now->sub(\DateInterval::createFromDateString('12 hours'));
-        $startTime = new \DateTimeImmutable()->setTime(7, 0);
-        $endTime = new \DateTimeImmutable()->setTime(21, 0);
-
-        if ($now < $startTime || $now > $endTime || $statusChangeLog->getEventTimestamp() > $intervalTime) {
-            return false;
-        }
-
-        return 0 !== random_int(0, 20);
     }
 }

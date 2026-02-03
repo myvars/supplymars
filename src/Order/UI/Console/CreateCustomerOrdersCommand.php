@@ -32,23 +32,23 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:create-customer-orders',
     description: 'Create new customer orders',
 )]
-class createCustomerOrdersCommand
+readonly class CreateCustomerOrdersCommand
 {
     public const int MAX_ORDER_LINES = 5;
 
     public const int MAX_LINE_QTY = 5;
 
     public function __construct(
-        private readonly ProductRepository $products,
-        private readonly OrderRepository $orders,
-        private readonly UserRepository $customers,
-        private readonly AddressRepository $addresses,
-        private readonly RandomUserFactory $randomUserFactory,
-        private readonly RandomAddressFactory $randomAddressFactory,
-        private readonly CreateOrderHandler $createOrderHandler,
-        private readonly CreateOrderItemHandler $createOrderItemHandler,
-        private readonly DefaultUserAuthenticator $defaultUserAuthenticator,
-        private readonly FlusherInterface $flusher,
+        private ProductRepository $products,
+        private OrderRepository $orders,
+        private UserRepository $customers,
+        private AddressRepository $addresses,
+        private RandomUserFactory $randomUserFactory,
+        private RandomAddressFactory $randomAddressFactory,
+        private CreateOrderHandler $createOrderHandler,
+        private CreateOrderItemHandler $createOrderItemHandler,
+        private DefaultUserAuthenticator $defaultUserAuthenticator,
+        private FlusherInterface $flusher,
     ) {
     }
 
@@ -59,18 +59,22 @@ class createCustomerOrdersCommand
         int $orderCount = 0,
         #[Option(description: 'Randomise')]
         bool $random = false,
+        #[Option(description: 'Run without persisting changes')]
+        bool $dryRun = false,
+        #[Option(description: 'Skip timing delays (for testing)')]
+        bool $skipTiming = false,
     ): int {
         $io = new SymfonyStyle($input, $output);
         if ($orderCount < 1) {
             $io->error('Order count must be > 0');
 
-            return Command::FAILURE;
+            return Command::INVALID;
         }
 
         if ($random) {
             $orderCount = random_int(0, $orderCount);
             if ($orderCount === 0) {
-                $io->error('No orders to create');
+                $io->note('No orders to create (randomised to 0)');
 
                 return Command::SUCCESS;
             }
@@ -78,7 +82,11 @@ class createCustomerOrdersCommand
 
         $this->defaultUserAuthenticator->ensureAuthenticated();
 
-        $io->section(sprintf('Creating %d new orders', $orderCount));
+        $io->section(sprintf(
+            '%sCreating %d new orders',
+            $dryRun ? '[DRY RUN] ' : '',
+            $orderCount
+        ));
         $progress = $io->createProgressBar($orderCount);
         $progress->start();
 
@@ -86,8 +94,16 @@ class createCustomerOrdersCommand
         $processedIds = [];
 
         for ($i = 0; $i < $orderCount; ++$i) {
-            // sleep to simulate real world
-            sleep(random_int(1, intdiv(300, $orderCount)));
+            if (!$skipTiming) {
+                sleep(random_int(1, intdiv(300, $orderCount)));
+            }
+
+            if ($dryRun) {
+                $processedIds[] = 'DRY-RUN-' . ($i + 1);
+                ++$processed;
+                $progress->advance();
+                continue;
+            }
 
             $user = $this->getOrCreateUser();
             $this->createBillingAddress($user);
@@ -102,7 +118,11 @@ class createCustomerOrdersCommand
 
         $progress->finish();
         $io->newLine(2);
-        $io->success(sprintf('Created %d customer orders.', $processed));
+        $io->success(sprintf(
+            '%sCreated %d customer orders.',
+            $dryRun ? '[DRY RUN] ' : '',
+            $processed
+        ));
 
         if ($output->isVerbose()) {
             $io->section('Created Order IDs');

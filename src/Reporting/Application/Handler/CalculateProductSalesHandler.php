@@ -17,17 +17,20 @@ final readonly class CalculateProductSalesHandler
     ) {
     }
 
-    public function process(string $date): void
+    public function process(string $date, bool $dryRun = false): int
     {
         $sales = $this->getPurchaseOrderItemSales($date);
 
-        $this->removeExistingProductSales($date);
+        if (!$dryRun) {
+            $this->removeExistingProductSales($date);
+        }
 
+        $processed = 0;
         foreach ($sales as $sale) {
             $product = $this->em->getRepository(Product::class)->find($sale['productId']);
             $supplier = $this->em->getRepository(Supplier::class)->find($sale['supplierId']);
 
-            if (null !== $product) {
+            if ($product !== null) {
                 $productSales = ProductSales::create(
                     $product,
                     $supplier,
@@ -42,11 +45,19 @@ final readonly class CalculateProductSalesHandler
                     throw new \InvalidArgumentException((string) $errors);
                 }
 
-                $this->em->persist($productSales);
+                if (!$dryRun) {
+                    $this->em->persist($productSales);
+                }
+
+                ++$processed;
             }
         }
 
-        $this->em->flush();
+        if (!$dryRun) {
+            $this->em->flush();
+        }
+
+        return $processed;
     }
 
     /**

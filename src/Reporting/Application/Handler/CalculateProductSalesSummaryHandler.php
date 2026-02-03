@@ -18,31 +18,44 @@ final readonly class CalculateProductSalesSummaryHandler
     ) {
     }
 
-    public function process(bool $rebuild = false): void
+    /**
+     * @return array<string, int>
+     */
+    public function process(bool $rebuild = false, bool $dryRun = false): array
     {
+        $results = [];
         foreach (SalesDuration::cases() as $salesDuration) {
             foreach (SalesType::cases() as $salesType) {
                 // Skip day duration for product sales since it is already processed
-                if (SalesDuration::DAY === $salesDuration && SalesType::PRODUCT === $salesType) {
+                if ($salesDuration === SalesDuration::DAY && $salesType === SalesType::PRODUCT) {
                     continue;
                 }
 
                 // Skip week ago duration for product sales
-                if (SalesDuration::WEEK_AGO === $salesDuration && SalesType::PRODUCT === $salesType) {
+                if ($salesDuration === SalesDuration::WEEK_AGO && $salesType === SalesType::PRODUCT) {
                     continue;
                 }
 
-                $this->processProductSalesType(ProductSalesType::create($salesType, $salesDuration, $rebuild));
+                $key = $salesDuration->value . '-' . $salesType->value;
+                $results[$key] = $this->processProductSalesType(
+                    ProductSalesType::create($salesType, $salesDuration, $rebuild),
+                    $dryRun
+                );
             }
         }
+
+        return $results;
     }
 
-    private function processProductSalesType(ProductSalesType $productSalesType): void
+    private function processProductSalesType(ProductSalesType $productSalesType, bool $dryRun = false): int
     {
         $sales = $this->getSales($productSalesType);
 
-        $this->removeExistingSummary($productSalesType);
+        if (!$dryRun) {
+            $this->removeExistingSummary($productSalesType);
+        }
 
+        $processed = 0;
         foreach ($sales as $sale) {
             $productSalesSummary = ProductSalesSummary::create(
                 $productSalesType,
@@ -58,10 +71,18 @@ final readonly class CalculateProductSalesSummaryHandler
                 throw new \InvalidArgumentException((string) $errors);
             }
 
-            $this->em->persist($productSalesSummary);
+            if (!$dryRun) {
+                $this->em->persist($productSalesSummary);
+            }
+
+            ++$processed;
         }
 
-        $this->em->flush();
+        if (!$dryRun) {
+            $this->em->flush();
+        }
+
+        return $processed;
     }
 
     /**

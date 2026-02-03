@@ -3,6 +3,7 @@
 namespace App\Purchasing\UI\Console;
 
 use App\Purchasing\Domain\Model\Supplier\Supplier;
+use App\Purchasing\Domain\Model\Supplier\SupplierId;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
 use App\Purchasing\Domain\Repository\SupplierProductRepository;
 use App\Purchasing\Domain\Repository\SupplierRepository;
@@ -10,6 +11,7 @@ use App\Shared\Application\FlusherInterface;
 use App\Shared\Infrastructure\Security\DefaultUserAuthenticator;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Attribute\Option;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -19,7 +21,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:update-supplier-stock',
     description: 'Update supplier stock levels',
 )]
-readonly class updateSupplierStockCommand
+readonly class UpdateSupplierStockCommand
 {
     public const int COST_VARIANCE_PERCENT = 10;
 
@@ -40,6 +42,10 @@ readonly class updateSupplierStockCommand
         OutputInterface $output,
         #[Argument(description: 'Number of supplier products to process')]
         int $productCount = 50,
+        #[Option(description: 'Run without persisting changes')]
+        bool $dryRun = false,
+        #[Option(description: 'Target a specific supplier by ID')]
+        ?int $supplier = null,
     ): int {
         $io = new SymfonyStyle($input, $output);
 
@@ -49,21 +55,23 @@ readonly class updateSupplierStockCommand
             return Command::INVALID;
         }
 
-        $supplier = $this->suppliers->getRandomSupplier();
-        if (!$supplier instanceof Supplier) {
-            $io->error('No supplier found');
+        $supplierEntity = $this->resolveSupplier($supplier);
+        if (!$supplierEntity instanceof Supplier) {
+            $io->error($supplier !== null ? 'Supplier not found: ' . $supplier : 'No supplier found');
 
             return Command::FAILURE;
         }
 
         $this->defaultUserAuthenticator->ensureAuthenticated();
 
-        $io->section(sprintf('Processing stock for up to %d items from supplier %s',
+        $io->section(sprintf(
+            '%sProcessing stock for up to %d items from supplier %s',
+            $dryRun ? '[DRY RUN] ' : '',
             $productCount,
-            $supplier->getName()
+            $supplierEntity->getName()
         ));
 
-        $supplierProducts = $this->getRandomSupplierProducts($supplier, $productCount);
+        $supplierProducts = $this->getRandomSupplierProducts($supplierEntity, $productCount);
         if ($supplierProducts === []) {
             $io->note('No supplier products found.');
 
@@ -74,6 +82,8 @@ readonly class updateSupplierStockCommand
         $progress->start();
 
         $processed = 0;
+        $stockIncreased = 0;
+        $stockDecreased = 0;
         $processedItems = [];
 
         foreach ($supplierProducts as $supplierProduct) {
@@ -84,25 +94,53 @@ readonly class updateSupplierStockCommand
             $previousStock = $supplierProduct->getStock();
             $previousCost = $supplierProduct->getCost();
 
-            $this->realWorldStockLevelSimulator($supplierProduct);
+            if (!$dryRun) {
+                $this->realWorldStockLevelSimulator($supplierProduct);
+            } else {
+                // Simulate what would happen for dry-run reporting
+                $wouldReplenish = $supplierProduct->getStock() <= self::STOCK_REPLENISH_LEVEL;
+                if ($wouldReplenish) {
+                    ++$stockIncreased;
+                } else {
+                    ++$stockDecreased;
+                }
+            }
 
-            $processedItems[] = sprintf('%s : stock %d (%d) : cost £%s (£%s)',
+            if (!$dryRun) {
+                if ($supplierProduct->getStock() > $previousStock) {
+                    ++$stockIncreased;
+                } elseif ($supplierProduct->getStock() < $previousStock) {
+                    ++$stockDecreased;
+                }
+            }
+
+            $processedItems[] = sprintf(
+                '%s : stock %d (%d) : cost %s (%s)',
                 $supplierProduct->getProductCode(),
-                $supplierProduct->getStock(),
+                $dryRun ? $previousStock : $supplierProduct->getStock(),
                 $previousStock,
-                $supplierProduct->getCost(),
-                $previousCost,
+                $dryRun ? $previousCost : $supplierProduct->getCost(),
+                $previousCost
             );
             ++$processed;
 
             $progress->advance();
         }
 
-        $this->flusher->flush();
+        if (!$dryRun) {
+            $this->flusher->flush();
+        }
 
         $progress->finish();
         $io->newLine(2);
-        $io->success(sprintf('Processed %d supplier products.', $processed));
+
+        $io->success(sprintf(
+            '%sProcessed %d supplier products: %d stock increased, %d stock decreased.',
+            $dryRun ? '[DRY RUN] ' : '',
+            $processed,
+            $stockIncreased,
+            $stockDecreased
+        ));
 
         if ($output->isVerbose()) {
             $io->section('Processed Supplier products:');
@@ -110,6 +148,15 @@ readonly class updateSupplierStockCommand
         }
 
         return Command::SUCCESS;
+    }
+
+    private function resolveSupplier(?int $supplierId): ?Supplier
+    {
+        if ($supplierId !== null) {
+            return $this->suppliers->get(SupplierId::fromInt($supplierId));
+        }
+
+        return $this->suppliers->getRandomSupplier();
     }
 
     /**
@@ -123,7 +170,6 @@ readonly class updateSupplierStockCommand
     private function realWorldStockLevelSimulator(SupplierProduct $supplierProduct): void
     {
         // Simulate real world stock level changes
-        // TODO: Add run rate logic to replenish stock
         if ($supplierProduct->getStock() <= self::STOCK_REPLENISH_LEVEL) {
             $this->replenishStock($supplierProduct);
 

@@ -61,12 +61,16 @@ class ReviewGenerator
     ) {
     }
 
-    public function generate(int $maxCount, ?int $productId = null): int
+    /**
+     * @return array{count: int, ids: array<int, string>}
+     */
+    public function generate(int $maxCount, ?int $productId = null, bool $dryRun = false): array
     {
         assert($this->reviews instanceof ReviewDoctrineRepository);
         $eligibleItems = $this->reviews->findEligibleOrderIds($maxCount, $productId);
 
         $created = 0;
+        $createdIds = [];
         foreach ($eligibleItems as $item) {
             $customer = $this->users->get(UserId::fromInt((int) $item['customer_id']));
             $product = $this->products->get(ProductId::fromInt((int) $item['product_id']));
@@ -83,6 +87,11 @@ class ReviewGenerator
                 continue;
             }
 
+            if ($dryRun) {
+                ++$created;
+                continue;
+            }
+
             $rating = $this->generateRating();
 
             $review = ProductReview::create(
@@ -96,9 +105,10 @@ class ReviewGenerator
 
             $this->reviews->add($review);
             ++$created;
+            $createdIds[] = (string) $review->getPublicId();
         }
 
-        return $created;
+        return ['count' => $created, 'ids' => $createdIds];
     }
 
     private function generateRating(): int

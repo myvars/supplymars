@@ -10,6 +10,7 @@ use App\Shared\Application\FlusherInterface;
 use App\Shared\Infrastructure\Security\DefaultUserAuthenticator;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Attribute\Option;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -19,7 +20,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:refund-purchase-orders',
     description: 'Refund/Rebuild purchase orders',
 )]
-readonly class refundPOsCommand
+readonly class RefundPOsCommand
 {
     public function __construct(
         private PurchaseOrderRepository $purchaseOrders,
@@ -34,6 +35,8 @@ readonly class refundPOsCommand
         OutputInterface $output,
         #[Argument(description: 'PO count to process')]
         int $poCount = 50,
+        #[Option(description: 'Run without persisting changes')]
+        bool $dryRun = false,
     ): int {
         $io = new SymfonyStyle($input, $output);
 
@@ -52,12 +55,17 @@ readonly class refundPOsCommand
 
         $this->defaultUserAuthenticator->ensureAuthenticated();
 
-        $io->section(sprintf('Refunding up to %d rejected purchase orders', $poCount));
+        $io->section(sprintf(
+            '%sRefunding up to %d rejected purchase orders',
+            $dryRun ? '[DRY RUN] ' : '',
+            $poCount
+        ));
 
         $progress = $io->createProgressBar(count($purchaseOrders));
         $progress->start();
 
-        $processed = 0;
+        $refunded = 0;
+        $reallocated = 0;
         $processedIds = [];
 
         foreach ($purchaseOrders as $purchaseOrder) {
@@ -65,26 +73,50 @@ readonly class refundPOsCommand
                 continue;
             }
 
+            $itemsRefunded = 0;
             foreach ($purchaseOrder->getPurchaseOrderItems() as $purchaseOrderItem) {
                 if ($purchaseOrderItem->getStatus() !== PurchaseOrderStatus::REJECTED) {
                     continue;
                 }
 
-                $purchaseOrderItem->updateItemStatus(newStatus: PurchaseOrderStatus::REFUNDED);
+                if (!$dryRun) {
+                    $purchaseOrderItem->updateItemStatus(newStatus: PurchaseOrderStatus::REFUNDED);
+                }
+
+                ++$itemsRefunded;
             }
 
-            $this->orderAllocator->process($purchaseOrder->getCustomerOrder());
+            $refunded += $itemsRefunded;
 
-            $processedIds[] = $purchaseOrder->getId() . ' : ' . $purchaseOrder->getStatus()->value;
-            ++$processed;
+            if (!$dryRun) {
+                $this->orderAllocator->process($purchaseOrder->getCustomerOrder());
+                ++$reallocated;
+            }
+
+            $processedIds[] = sprintf(
+                'PO #%d: %d item(s) refunded, status: %s',
+                $purchaseOrder->getId(),
+                $itemsRefunded,
+                $purchaseOrder->getStatus()->value
+            );
+
             $progress->advance();
         }
 
-        $this->flusher->flush();
+        if (!$dryRun) {
+            $this->flusher->flush();
+        }
 
         $progress->finish();
         $io->newLine(2);
-        $io->success(sprintf('Processed %d purchase orders.', $processed));
+
+        $io->success(sprintf(
+            '%sProcessed %d purchase orders. Refunded %d item(s), triggered %d reallocation(s).',
+            $dryRun ? '[DRY RUN] ' : '',
+            count($purchaseOrders),
+            $refunded,
+            $reallocated
+        ));
 
         if ($output->isVerbose()) {
             $io->section('Processed PO IDs');

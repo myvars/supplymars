@@ -17,19 +17,31 @@ final readonly class CalculateOrderSalesSummaryHandler
     ) {
     }
 
-    public function process(bool $rebuild = false): void
+    /**
+     * @return array<string, int>
+     */
+    public function process(bool $rebuild = false, bool $dryRun = false): array
     {
+        $results = [];
         foreach (SalesDuration::cases() as $salesDuration) {
-            $this->processOrderSalesType(OrderSalesType::create($salesDuration, $rebuild));
+            $results[$salesDuration->value] = $this->processOrderSalesType(
+                OrderSalesType::create($salesDuration, $rebuild),
+                $dryRun
+            );
         }
+
+        return $results;
     }
 
-    private function processOrderSalesType(OrderSalesType $orderSalesType): void
+    private function processOrderSalesType(OrderSalesType $orderSalesType, bool $dryRun = false): int
     {
         $sales = $this->getOrderSalesSummary($orderSalesType);
 
-        $this->removeExistingSummary($orderSalesType);
+        if (!$dryRun) {
+            $this->removeExistingSummary($orderSalesType);
+        }
 
+        $processed = 0;
         foreach ($sales as $sale) {
             $orderSalesSummary = OrderSalesSummary::create(
                 $orderSalesType,
@@ -44,10 +56,18 @@ final readonly class CalculateOrderSalesSummaryHandler
                 throw new \InvalidArgumentException((string) $errors);
             }
 
-            $this->em->persist($orderSalesSummary);
+            if (!$dryRun) {
+                $this->em->persist($orderSalesSummary);
+            }
+
+            ++$processed;
         }
 
-        $this->em->flush();
+        if (!$dryRun) {
+            $this->em->flush();
+        }
+
+        return $processed;
     }
 
     /**

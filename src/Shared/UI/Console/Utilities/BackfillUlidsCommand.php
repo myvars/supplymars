@@ -16,7 +16,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:backfill-ulids',
     description: 'Backfill missing ULIDs for all entities using the HasPublicUlid trait.'
 )]
-final readonly class backfillUlidsCommand
+final readonly class BackfillUlidsCommand
 {
     public function __construct(private EntityManagerInterface $em)
     {

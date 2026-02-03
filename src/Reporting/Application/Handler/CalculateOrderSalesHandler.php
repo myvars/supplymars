@@ -15,12 +15,15 @@ final readonly class CalculateOrderSalesHandler
     ) {
     }
 
-    public function process(string $date): void
+    public function process(string $date, bool $dryRun = false): int
     {
         $sales = $this->getOrderSales($date);
 
-        $this->removeExistingOrderSales($date);
+        if (!$dryRun) {
+            $this->removeExistingOrderSales($date);
+        }
 
+        $processed = 0;
         foreach ($sales as $sale) {
             $orderSales = OrderSales::create(
                 $date,
@@ -34,10 +37,18 @@ final readonly class CalculateOrderSalesHandler
                 throw new \InvalidArgumentException((string) $errors);
             }
 
-            $this->em->persist($orderSales);
+            if (!$dryRun) {
+                $this->em->persist($orderSales);
+            }
+
+            ++$processed;
         }
 
-        $this->em->flush();
+        if (!$dryRun) {
+            $this->em->flush();
+        }
+
+        return $processed;
     }
 
     /**

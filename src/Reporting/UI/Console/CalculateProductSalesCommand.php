@@ -5,6 +5,7 @@ namespace App\Reporting\UI\Console;
 use App\Reporting\Application\Handler\CalculateProductSalesHandler;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Attribute\Option;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -15,13 +16,13 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:calculate-product-sales',
     description: 'Calculate product sales',
 )]
-final readonly class calculateProductSalesCommand
+final readonly class CalculateProductSalesCommand
 {
     private const string DATE_FORMAT = 'Y-m-d';
 
     public function __construct(
         private CalculateProductSalesHandler $productSalesCalculator,
-        private calculateProductSalesSummaryCommand $productSalesSummaryCommand,
+        private CalculateProductSalesSummaryCommand $productSalesSummaryCommand,
     ) {
     }
 
@@ -30,25 +31,55 @@ final readonly class calculateProductSalesCommand
         OutputInterface $output,
         #[Argument(description: 'Days to process')]
         int $dayCount,
-        #[Argument(description: 'Day offset to start processing')] int $dayOffset = 0,
+        #[Argument(description: 'Day offset to start processing')]
+        int $dayOffset = 0,
+        #[Option(description: 'Run without persisting changes')]
+        bool $dryRun = false,
+        #[Option(description: 'Skip running the summary command')]
+        bool $skipSummary = false,
     ): int {
         $io = new SymfonyStyle($input, $output);
 
-        $io->section(sprintf('Calculating sales data for %d days, starting %d days ago',
+        if ($dayCount < 1) {
+            $io->error('dayCount must be > 0');
+
+            return Command::INVALID;
+        }
+
+        $io->section(sprintf(
+            '%sCalculating product sales data for %d days, starting %d days ago',
+            $dryRun ? '[DRY RUN] ' : '',
             $dayCount,
             $dayOffset
         ));
 
+        $progress = $io->createProgressBar($dayCount);
+        $progress->start();
+
+        $processedDates = [];
         for ($day = 0; $day < $dayCount; ++$day) {
             $startDate = new \DateTime('-' . ($day + $dayOffset) . ' day')->format(self::DATE_FORMAT);
-            $io->note(sprintf('Processing sales for %s', $startDate));
 
-            $this->productSalesCalculator->process($startDate);
+            $this->productSalesCalculator->process($startDate, $dryRun);
+            $processedDates[] = $startDate;
+            $progress->advance();
         }
 
-        $io->success(sprintf('Processed sales data for %d days', $dayCount));
+        $progress->finish();
+        $io->newLine(2);
 
-        if (0 === $dayOffset) {
+        $io->success(sprintf(
+            '%sProcessed product sales data for %d days',
+            $dryRun ? '[DRY RUN] ' : '',
+            $dayCount
+        ));
+
+        if ($output->isVerbose()) {
+            $io->section('Processed Dates');
+            $io->listing($processedDates);
+        }
+
+        if ($dayOffset === 0 && !$skipSummary && !$dryRun) {
             $this->runTheProductSalesSummaryCommand($output);
         }
 

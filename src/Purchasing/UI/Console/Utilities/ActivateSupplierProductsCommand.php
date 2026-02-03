@@ -19,7 +19,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:activate-supplier-products',
     description: 'Activate supplier products',
 )]
-readonly class activateSupplierProductsCommand
+readonly class ActivateSupplierProductsCommand
 {
     public function __construct(
         private SupplierProductRepository $supplierProducts,

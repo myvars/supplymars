@@ -20,7 +20,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:reset-supplier-stock',
     description: 'Reset supplier stock levels',
 )]
-readonly class resetSupplierStockCommand
+readonly class ResetSupplierStockCommand
 {
     public const int MAX_STOCK_LEVEL = 300;
 

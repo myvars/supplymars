@@ -17,19 +17,24 @@ final readonly class CalculateCustomerSalesHandler
     ) {
     }
 
-    public function process(string $date): void
+    public function process(string $date, bool $dryRun = false): int
     {
-        $this->processCustomerSales($date);
-        $this->processCustomerActivity($date);
+        $salesCount = $this->processCustomerSales($date, $dryRun);
+        $activityCount = $this->processCustomerActivity($date, $dryRun);
+
+        return $salesCount + $activityCount;
     }
 
-    private function processCustomerSales(string $date): void
+    private function processCustomerSales(string $date, bool $dryRun = false): int
     {
         $sales = $this->em->getRepository(CustomerOrder::class)
             ->findCustomerSalesByDate(new \DateTime($date), new \DateTime($date)->modify('+ 1 day'));
 
-        $this->em->getRepository(CustomerSales::class)->deleteByDate($date);
+        if (!$dryRun) {
+            $this->em->getRepository(CustomerSales::class)->deleteByDate($date);
+        }
 
+        $processed = 0;
         foreach ($sales as $sale) {
             $customerSales = CustomerSales::create(
                 (int) $sale['customerId'],
@@ -44,13 +49,21 @@ final readonly class CalculateCustomerSalesHandler
                 throw new \InvalidArgumentException((string) $errors);
             }
 
-            $this->em->persist($customerSales);
+            if (!$dryRun) {
+                $this->em->persist($customerSales);
+            }
+
+            ++$processed;
         }
 
-        $this->em->flush();
+        if (!$dryRun) {
+            $this->em->flush();
+        }
+
+        return $processed;
     }
 
-    private function processCustomerActivity(string $date): void
+    private function processCustomerActivity(string $date, bool $dryRun = false): int
     {
         $startDate = new \DateTime($date);
         $endDate = new \DateTime($date)->modify('+ 1 day');
@@ -58,7 +71,9 @@ final readonly class CalculateCustomerSalesHandler
         $activity = $this->em->getRepository(CustomerOrder::class)
             ->findCustomerActivityByDate($startDate, $endDate);
 
-        $this->em->getRepository(CustomerActivitySales::class)->deleteByDate($date);
+        if (!$dryRun) {
+            $this->em->getRepository(CustomerActivitySales::class)->deleteByDate($date);
+        }
 
         $totalCustomers = $this->em->getRepository(User::class)->countNonStaffCustomers();
 
@@ -75,7 +90,11 @@ final readonly class CalculateCustomerSalesHandler
             throw new \InvalidArgumentException((string) $errors);
         }
 
-        $this->em->persist($customerActivity);
-        $this->em->flush();
+        if (!$dryRun) {
+            $this->em->persist($customerActivity);
+            $this->em->flush();
+        }
+
+        return 1;
     }
 }

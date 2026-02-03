@@ -23,7 +23,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
     name: 'app:create-supplier-products',
     description: 'Create new products and product maps from a supplier',
 )]
-readonly class createSupplierProductsCommand
+readonly class CreateSupplierProductsCommand
 {
     public function __construct(
         private SupplierRepository $suppliers,
