@@ -162,4 +162,36 @@ class PurchaseOrderDoctrineRepository extends ServiceEntityRepository implements
     {
         return $this->findBy(['status' => $status], null, $limit);
     }
+
+    public function findWithMixedItemStatusesIncludingRejected(int $daysBack = 30, int $limit = 100): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+
+        $sql = <<<SQL
+            SELECT po.id
+            FROM purchase_order po
+            JOIN purchase_order_item poi ON poi.purchase_order_id = po.id
+            WHERE po.created_at >= DATE_SUB(NOW(), INTERVAL {$daysBack} DAY)
+            GROUP BY po.id
+            HAVING COUNT(DISTINCT poi.status) > 1
+               AND SUM(poi.status = 'REJECTED') > 0
+            ORDER BY po.created_at DESC
+            LIMIT {$limit}
+            SQL;
+
+        $result = $conn->executeQuery($sql)->fetchAllAssociative();
+
+        if ($result === []) {
+            return [];
+        }
+
+        $ids = array_column($result, 'id');
+
+        return $this->createQueryBuilder('po')
+            ->where('po.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->orderBy('po.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
 }

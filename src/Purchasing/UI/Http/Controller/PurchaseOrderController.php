@@ -2,12 +2,15 @@
 
 namespace App\Purchasing\UI\Http\Controller;
 
+use App\Purchasing\Application\Command\PurchaseOrder\RewindPurchaseOrder;
 use App\Purchasing\Application\Handler\PurchaseOrder\PurchaseOrderFilterHandler;
+use App\Purchasing\Application\Handler\PurchaseOrder\RewindPurchaseOrderHandler;
 use App\Purchasing\Application\Search\PurchaseOrderSearchCriteria;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrder;
 use App\Purchasing\Domain\Repository\PurchaseOrderRepository;
 use App\Purchasing\UI\Http\Form\Mapper\PurchaseOrderFilterMapper;
 use App\Purchasing\UI\Http\Form\Type\PurchaseOrderFilterType;
+use App\Shared\UI\Http\FormFlow\DeleteFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
@@ -61,5 +64,33 @@ class PurchaseOrderController extends AbstractController
     public function show(#[ValueResolver('public_id')] PurchaseOrder $purchaseOrder): Response
     {
         return $this->render('/purchasing/purchase_order/show.html.twig', ['result' => $purchaseOrder]);
+    }
+
+    #[Route(path: '/purchase/order/{id}/rewind/confirm', name: 'app_purchasing_purchase_order_rewind_confirm', methods: ['GET'])]
+    public function rewindConfirm(
+        #[ValueResolver('public_id')] PurchaseOrder $purchaseOrder,
+        DeleteFlow $flow,
+    ): Response {
+        return $flow->deleteConfirm(
+            entity: $purchaseOrder,
+            context: FlowContext::forDelete(self::MODEL)
+                ->template('purchasing/purchase_order/rewind.html.twig'),
+        );
+    }
+
+    #[Route(path: '/purchase/order/{id}/rewind', name: 'app_purchasing_purchase_order_rewind', methods: ['POST'])]
+    public function rewind(
+        Request $request,
+        #[ValueResolver('public_id')] PurchaseOrder $purchaseOrder,
+        RewindPurchaseOrderHandler $handler,
+        DeleteFlow $flow,
+    ): Response {
+        return $flow->delete(
+            request: $request,
+            command: new RewindPurchaseOrder($purchaseOrder->getPublicId()),
+            handler: $handler,
+            context: FlowContext::forDelete(self::MODEL)
+                ->successRoute('app_purchasing_purchase_order_show', ['id' => $purchaseOrder->getPublicId()->value()]),
+        );
     }
 }

@@ -27,4 +27,7 @@ interface PurchaseOrderRepository extends FindByCriteriaInterface
 
     /** @return PurchaseOrder[] */
     public function findByStatus(PurchaseOrderStatus $status, int $limit): array;
+
+    /** @return PurchaseOrder[] */
+    public function findWithMixedItemStatusesIncludingRejected(int $daysBack = 30, int $limit = 100): array;
 }

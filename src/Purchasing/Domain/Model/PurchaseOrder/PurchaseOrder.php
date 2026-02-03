@@ -127,6 +127,15 @@ class PurchaseOrder implements DomainEventProviderInterface
         return $this->status->allowEdit();
     }
 
+    public function forceRewindToPending(): void
+    {
+        foreach ($this->purchaseOrderItems as $item) {
+            $item->forceRewindToPending();
+        }
+
+        $this->status = PurchaseOrderStatus::PENDING;
+    }
+
     public function recalculateTotal(): void
     {
         $totalPrice = 0;

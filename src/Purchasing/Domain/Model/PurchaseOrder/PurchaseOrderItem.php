@@ -245,6 +245,13 @@ class PurchaseOrderItem implements DomainEventProviderInterface
         return $this->status->isCancelled();
     }
 
+    public function forceRewindToPending(): void
+    {
+        $this->status = PurchaseOrderStatus::PENDING;
+        $this->deliveredAt = null;
+        $this->getCustomerOrderItem()?->generateStatus();
+    }
+
     private function changeQuantity(int $quantity): void
     {
         if ($quantity < 1) {
