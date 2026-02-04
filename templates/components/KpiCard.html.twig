@@ -25,7 +25,7 @@
 {% set hoverClasses = href ? ' transition-colors hover:border-primary-300 hover:bg-primary-50/50 dark:hover:border-primary-700 dark:hover:bg-primary-900/20' : '' %}
 
 {% if href %}
-<a href="{{ href }}" class="{{ baseClasses }}{{ hoverClasses }}"{{ turboFrame ? ' data-turbo-frame="' ~ turboFrame ~ '"' : '' }}>
+<a href="{{ href }}" class="{{ baseClasses }}{{ hoverClasses }}"{% if turboFrame %} data-turbo-frame="{{ turboFrame }}"{% endif %}>
 {% else %}
 <div class="{{ baseClasses }}">
 {% endif %}

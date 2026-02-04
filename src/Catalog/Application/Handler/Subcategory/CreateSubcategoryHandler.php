@@ -11,11 +11,14 @@ use App\Customer\Domain\Model\User\User;
 use App\Customer\Domain\Model\User\UserId;
 use App\Customer\Domain\Repository\UserRepository;
 use App\Shared\Application\FlusherInterface;
+use App\Shared\Application\RedirectTarget;
 use App\Shared\Application\Result;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final readonly class CreateSubcategoryHandler
 {
+    private const string ROUTE = 'app_catalog_subcategory_show';
+
     public function __construct(
         private SubcategoryRepository $subcategories,
         private CategoryRepository $categories,
@@ -57,6 +60,13 @@ final readonly class CreateSubcategoryHandler
         $this->subcategories->add($subcategory);
         $this->flusher->flush();
 
-        return Result::ok('Subcategory created', $subcategory->getPublicId());
+        return Result::ok(
+            message: 'Subcategory created',
+            payload: $subcategory->getPublicId(),
+            redirect: new RedirectTarget(
+                route: self::ROUTE,
+                params: ['id' => $subcategory->getPublicId()->value()],
+            ),
+        );
     }
 }

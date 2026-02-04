@@ -32,7 +32,7 @@ class UpdateSubcategoryFlowTest extends WebTestCase
             ->fillField('subcategory[owner]', (string) $newOwner->getId())
             ->uncheckField('subcategory[isActive]')
             ->click('Update Subcategory')
-            ->assertOn('/subcategory/')
+            ->assertOn('/subcategory/' . $publicId)
             ->assertSee('Flow Updated Subcategory');
     }
 

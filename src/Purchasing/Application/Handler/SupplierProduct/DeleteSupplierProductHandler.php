@@ -26,6 +26,6 @@ final readonly class DeleteSupplierProductHandler
         $this->supplierProducts->remove($supplierProduct);
         $this->flusher->flush();
 
-        return Result::ok('Supplier product deleted');
+        return Result::ok(message: 'Supplier product deleted');
     }
 }

@@ -20,8 +20,9 @@ class CreateSupplierFlowTest extends WebTestCase
             ->fillField('supplier[name]', 'Flow Supplier')
             ->fillField('supplier[isActive]', '1')
             ->click('Create Supplier')
-            ->assertOn('/supplier/')
-            ->assertSee('Flow Supplier');
+            ->assertSuccessful()
+            ->assertSee('Flow Supplier')
+            ->assertNotOn('/supplier/');
     }
 
     public function testValidationErrorsOnEmptySubmission(): void

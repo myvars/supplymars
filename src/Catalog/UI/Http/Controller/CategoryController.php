@@ -97,7 +97,9 @@ class CategoryController extends AbstractController
             data: CategoryForm::fromEntity($category),
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forUpdate(self::MODEL)->allowDelete(true),
+            context: FlowContext::forUpdate(self::MODEL)
+                ->allowDelete(true)
+                ->successRoute('app_catalog_category_show', ['id' => $category->getPublicId()->value()]),
         );
     }
 

@@ -11,11 +11,14 @@ use App\Order\Domain\Repository\OrderRepository;
 use App\Pricing\Domain\Model\VatRate\VatRate;
 use App\Pricing\Domain\Repository\VatRateRepository;
 use App\Shared\Application\FlusherInterface;
+use App\Shared\Application\RedirectTarget;
 use App\Shared\Application\Result;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final readonly class CreateOrderHandler
 {
+    private const string ROUTE = 'app_order_show';
+
     public function __construct(
         private OrderRepository $orders,
         private UserRepository $users,
@@ -53,6 +56,13 @@ final readonly class CreateOrderHandler
 
         $this->flusher->flush();
 
-        return Result::ok('Order created', $order->getPublicId());
+        return Result::ok(
+            message: 'Order created',
+            payload: $order->getPublicId(),
+            redirect: new RedirectTarget(
+                route: self::ROUTE,
+                params: ['id' => $order->getPublicId()->value()],
+            ),
+        );
     }
 }

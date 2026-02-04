@@ -19,15 +19,17 @@ final class TurboAwareRedirectorIntegrationTest extends KernelTestCase
     public function testTurboRequestReturnsStreamWithRealTemplate(): void
     {
         $request = new Request();
-        $request->headers->set('Accept', 'text/vnd.turbo-stream.html');
+        $request->headers->set('Turbo-Frame', 'body');
 
-        $response = $this->redirector->to($request, '/target-url', refresh: true);
+        $response = $this->redirector->to($request, '/target-url', refresh: false, forceNavigate: true);
 
         self::assertSame(200, $response->getStatusCode());
         $content = $response->getContent();
         self::assertIsString($content);
         self::assertStringContainsString('turbo-stream', $content);
-        self::assertStringContainsString('/target-url', $content);
+        // URL is JS-escaped in the template (e.g., /target-url becomes \/target\u002Durl)
+        self::assertStringContainsString('Turbo.visit', $content);
+        self::assertStringContainsString('target', $content);
     }
 
     public function testTurboRequestWithoutRefreshOmitsUrl(): void

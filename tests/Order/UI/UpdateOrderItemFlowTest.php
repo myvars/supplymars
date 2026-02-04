@@ -25,6 +25,7 @@ class UpdateOrderItemFlowTest extends WebTestCase
             'product' => $product,
             'quantity' => 5,
         ]);
+        $orderId = $orderItem->getCustomerOrder()->getPublicId()->value();
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
@@ -33,7 +34,7 @@ class UpdateOrderItemFlowTest extends WebTestCase
             ->fillField('update_order_item[quantity]', '10')
             ->fillField('update_order_item[priceIncVat]', '30.00')
             ->click('Update Order Item')
-            ->assertOn('/order/');
+            ->assertOn('/order/' . $orderId);
     }
 
     public function testValidationErrorOnEmptyQuantity(): void
@@ -102,14 +103,14 @@ class UpdateOrderItemFlowTest extends WebTestCase
             'quantity' => 5,
         ]);
         $publicId = $orderItem->getPublicId();
-        $orderItem->getCustomerOrder()->getPublicId();
+        $orderId = $orderItem->getCustomerOrder()->getPublicId()->value();
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
             ->get('/order/item/' . $publicId->value() . '/edit')
             ->fillField('update_order_item[quantity]', '0')
             ->click('Update Order Item')
-            ->assertOn('/order/');
+            ->assertOn('/order/' . $orderId);
 
         $orderItems = self::getContainer()->get(OrderItemRepository::class);
         $removed = $orderItems->getByPublicId($publicId);

@@ -52,7 +52,8 @@ class OrderItemController extends AbstractController
             data: OrderItemForm::fromEntity($order),
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forCreate(self::MODEL),
+            context: FlowContext::forCreate(self::MODEL)
+                ->successRoute('app_order_show', ['id' => $order->getPublicId()->value()]),
         );
     }
 
@@ -71,7 +72,10 @@ class OrderItemController extends AbstractController
             mapper: $mapper,
             handler: $handler,
             context: FlowContext::forUpdate(self::MODEL)
-                ->template('/order/update_item.html.twig'),
+                ->template('/order/update_item.html.twig')
+                ->successRoute('app_order_show', [
+                    'id' => $orderItem->getCustomerOrder()->getPublicId()->value(),
+                ]),
         );
     }
 

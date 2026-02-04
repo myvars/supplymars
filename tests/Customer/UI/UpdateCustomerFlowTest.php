@@ -27,7 +27,7 @@ final class UpdateCustomerFlowTest extends WebTestCase
             ->uncheckField('customer[isVerified]')
             ->uncheckField('customer[isStaff]')
             ->click('Update Customer')
-            ->assertOn('/customer/')
+            ->assertOn('/customer/' . $publicId)
             ->assertSee('After Edit');
     }
 

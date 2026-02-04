@@ -58,7 +58,9 @@ class CustomerController extends AbstractController
             data: CustomerForm::fromEntity($customer),
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forUpdate(self::MODEL)->allowDelete(true),
+            context: FlowContext::forUpdate(self::MODEL)
+                ->allowDelete(true)
+                ->successRoute('app_customer_show', ['id' => $customer->getPublicId()->value()])
         );
     }
 

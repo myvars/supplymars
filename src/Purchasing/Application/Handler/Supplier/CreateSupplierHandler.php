@@ -6,11 +6,14 @@ use App\Purchasing\Application\Command\Supplier\CreateSupplier;
 use App\Purchasing\Domain\Model\Supplier\Supplier;
 use App\Purchasing\Domain\Repository\SupplierRepository;
 use App\Shared\Application\FlusherInterface;
+use App\Shared\Application\RedirectTarget;
 use App\Shared\Application\Result;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final readonly class CreateSupplierHandler
 {
+    private const string ROUTE = 'app_purchasing_supplier_show';
+
     public function __construct(
         private SupplierRepository $suppliers,
         private FlusherInterface $flusher,
@@ -33,6 +36,13 @@ final readonly class CreateSupplierHandler
         $this->suppliers->add($supplier);
         $this->flusher->flush();
 
-        return Result::ok('Supplier created', $supplier->getPublicId());
+        return Result::ok(
+            message: 'Supplier created',
+            payload: $supplier->getPublicId(),
+            redirect: new RedirectTarget(
+                route: self::ROUTE,
+                params: ['id' => $supplier->getPublicId()->value()],
+            ),
+        );
     }
 }

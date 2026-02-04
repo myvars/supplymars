@@ -107,7 +107,11 @@ class SupplierProductController extends AbstractController
             data: SupplierProductForm::fromEntity($supplierProduct),
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forUpdate(self::MODEL)->allowDelete(true),
+            context: FlowContext::forUpdate(self::MODEL)
+                ->allowDelete(true)
+                ->successRoute('app_purchasing_supplier_product_show', [
+                    'id' => $supplierProduct->getPublicId()->value(),
+                ])
         );
     }
 

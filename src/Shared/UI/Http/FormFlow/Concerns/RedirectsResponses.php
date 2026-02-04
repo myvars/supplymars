@@ -37,14 +37,16 @@ trait RedirectsResponses
 
     /**
      * Redirect to a target URL, using Turbo stream when applicable.
+     * Always navigates to the specified URL (handler explicitly wants this destination).
      */
     public function redirectToTarget(Request $request, RedirectTarget $redirect): Response
     {
         return $this->getRedirector()->to(
             $request,
             $this->getUrlGenerator()->generate($redirect->route, $redirect->params),
-            $redirect->redirectRefresh,
-            $redirect->redirectStatus,
+            refresh: false,
+            status: $redirect->redirectStatus,
+            forceNavigate: true,
         );
     }
 }

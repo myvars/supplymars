@@ -76,7 +76,9 @@ class VatRateController extends AbstractController
             data: VatRateForm::fromEntity($vatRate),
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forUpdate(self::MODEL)->allowDelete(true),
+            context: FlowContext::forUpdate(self::MODEL)
+                ->allowDelete(true)
+                ->successRoute('app_pricing_vat_rate_show', ['id' => $vatRate->getPublicId()->value()])
         );
     }
 

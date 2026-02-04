@@ -12,11 +12,14 @@ use App\Pricing\Domain\Model\VatRate\VatRate;
 use App\Pricing\Domain\Model\VatRate\VatRateId;
 use App\Pricing\Domain\Repository\VatRateRepository;
 use App\Shared\Application\FlusherInterface;
+use App\Shared\Application\RedirectTarget;
 use App\Shared\Application\Result;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final readonly class CreateCategoryHandler
 {
+    private const string ROUTE = 'app_catalog_category_show';
+
     public function __construct(
         private CategoryRepository $categories,
         private VatRateRepository $vatRates,
@@ -55,6 +58,13 @@ final readonly class CreateCategoryHandler
         $this->categories->add($category);
         $this->flusher->flush();
 
-        return Result::ok('Category created', $category->getPublicId());
+        return Result::ok(
+            message: 'Category created',
+            payload: $category->getPublicId(),
+            redirect: new RedirectTarget(
+                route: self::ROUTE,
+                params: ['id' => $category->getPublicId()->value()]
+            ),
+        );
     }
 }

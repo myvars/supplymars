@@ -143,7 +143,7 @@ final class FormFlowTest extends TestCase
         $forms = $this->createStub(FormFactoryInterface::class);
         $forms->method('create')->willReturn($form);
 
-        $rt = new RedirectTarget('app_orderitem_show', ['id' => 5], true, 307);
+        $rt = new RedirectTarget('app_orderitem_show', ['id' => 5], 307);
 
         $urls = $this->createMock(UrlGeneratorInterface::class);
         $urls->expects($this->once())->method('generate')
@@ -152,7 +152,7 @@ final class FormFlowTest extends TestCase
 
         $redirector = $this->createMock(RedirectorInterface::class);
         $redirector->expects($this->once())->method('to')
-            ->with($request, '/gen/app_orderitem_show?id=5', true, 307)
+            ->with($request, '/gen/app_orderitem_show?id=5', false, 307, true)
             ->willReturn(new Response('', 307));
 
         // @phpstan-ignore method.unresolvableReturnType

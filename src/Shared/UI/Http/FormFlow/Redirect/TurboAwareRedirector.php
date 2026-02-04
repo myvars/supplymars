@@ -12,6 +12,7 @@ use Twig\Environment;
  * Turbo‑aware redirector that:
  *  - Detects Turbo requests via headers/format/accept.
  *  - Emits a Turbo stream refresh response when appropriate.
+ *  - Navigates away when the target URL differs from the referer (e.g., delete from show page).
  *  - Falls back to a normal RedirectResponse otherwise.
  */
 final readonly class TurboAwareRedirector implements RedirectorInterface
@@ -28,31 +29,64 @@ final readonly class TurboAwareRedirector implements RedirectorInterface
      * Redirect or produce a Turbo stream depending on the incoming request.
      * Keeps the `Content-Type` correct for Turbo so it processes the stream.
      */
-    public function to(Request $request, string $url, bool $refresh = false, int $status = 303): Response
+    public function to(Request $request, string $url, bool $refresh = false, int $status = 303, bool $forceNavigate = false): Response
     {
-        // Detect Turbo frame or stream request via headers or request format.
+        // Detect Turbo frame request via header.
+        // Only use Turbo stream behavior when there's an actual frame context.
+        // Without a frame, action="refresh" would refresh the current page (e.g., edit page)
+        // instead of the parent page, so we fall back to a regular redirect.
         $hasTurboFrameHeader = $request->headers->has('turbo-frame') || $request->headers->has('Turbo-Frame');
 
-        $acceptHeader = (string) $request->headers->get('accept', '');
-        $isTurboFormat = $request->getRequestFormat() === TurboBundle::STREAM_FORMAT
-            || str_contains($acceptHeader, self::TURBO_STREAM_MIME);
-
-        if ($hasTurboFrameHeader || $isTurboFormat) {
+        if ($hasTurboFrameHeader) {
             // Tell Symfony to emit Turbo Stream.
             $request->setRequestFormat(TurboBundle::STREAM_FORMAT);
 
+            // Determine if we need to navigate away vs refresh in place.
+            // - $forceNavigate = true: Always navigate (handler explicitly wants to redirect)
+            // - $refresh = true: Smart navigation (compare paths, used by FlowContext::forDelete)
+            // - Otherwise: Refresh in place
+            $shouldNavigate = $forceNavigate || ($refresh && $this->shouldNavigateAway($request, $url));
+
             try {
                 $content = $this->twig->render(self::TURBO_STREAM_REFRESH_TEMPLATE, [
-                    'newUrl' => $refresh ? $url : null,
+                    'navigateUrl' => $shouldNavigate ? $url : null,
                 ]);
             } catch (\Throwable) {
                 $content = '';
             }
 
-            return new Response($content, Response::HTTP_OK);
+            return new Response($content, Response::HTTP_OK, [
+                'Content-Type' => self::TURBO_STREAM_MIME,
+            ]);
         }
 
         // Regular (non-Turbo) fallback - emit a proper redirect so browser follows it.
         return new RedirectResponse($url, $status);
+    }
+
+    /**
+     * Determine if we need to navigate away from the current page.
+     *
+     * Compares the target URL path with the referer path. If they differ,
+     * we should navigate to the new URL instead of refreshing in place.
+     * This handles cases like deleting an entity from its show page.
+     */
+    private function shouldNavigateAway(Request $request, string $targetUrl): bool
+    {
+        $referer = $request->headers->get('referer');
+        if ($referer === null || $referer === '') {
+            return false;
+        }
+
+        $refererPath = parse_url($referer, PHP_URL_PATH);
+        $targetPath = parse_url($targetUrl, PHP_URL_PATH);
+
+        // If we can't parse the paths, default to refresh behavior
+        if ($refererPath === false || $refererPath === null || $targetPath === false || $targetPath === null) {
+            return false;
+        }
+
+        // Navigate away if the paths are different
+        return $refererPath !== $targetPath;
     }
 }

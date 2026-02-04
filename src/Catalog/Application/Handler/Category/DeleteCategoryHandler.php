@@ -26,6 +26,6 @@ final readonly class DeleteCategoryHandler
         $this->categories->remove($category);
         $this->flusher->flush();
 
-        return Result::ok('Category deleted');
+        return Result::ok(message: 'Category deleted');
     }
 }

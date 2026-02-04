@@ -18,8 +18,9 @@ final class CreateManufacturerFlowTest extends WebTestCase
             ->fillField('manufacturer[name]', 'Flow Manufacturer')
             ->checkField('manufacturer[isActive]')
             ->click('Create Manufacturer')
-            ->assertOn('/manufacturer/')
-            ->assertSee('Flow Manufacturer');
+            ->assertSuccessful()
+            ->assertSee('Flow Manufacturer')
+            ->assertNotOn('/manufacturer/');
     }
 
     public function testValidationErrorsOnEmptySubmission(): void

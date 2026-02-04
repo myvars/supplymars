@@ -24,7 +24,7 @@ final class UpdateSupplierFlowTest extends WebTestCase
             ->fillField('supplier[name]', 'After Edit')
             ->uncheckField('supplier[isActive]')
             ->click('Update Supplier')
-            ->assertOn('/supplier/')
+            ->assertOn('/supplier/' . $publicId)
             ->assertSee('After Edit');
     }
 

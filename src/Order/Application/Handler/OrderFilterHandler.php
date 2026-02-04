@@ -31,7 +31,6 @@ final readonly class OrderFilterHandler
             redirect: new RedirectTarget(
                 route: self::ROUTE,
                 params: $this->params->build($command, $extras),
-                redirectRefresh: true,
             )
         );
     }

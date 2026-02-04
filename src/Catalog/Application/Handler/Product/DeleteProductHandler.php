@@ -26,6 +26,6 @@ final readonly class DeleteProductHandler
         $this->products->remove($product);
         $this->flusher->flush();
 
-        return Result::ok('Product deleted');
+        return Result::ok(message: 'Product deleted');
     }
 }

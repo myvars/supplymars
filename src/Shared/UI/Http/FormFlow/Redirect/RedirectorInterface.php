@@ -12,8 +12,10 @@ use Symfony\Component\HttpFoundation\Response;
 interface RedirectorInterface
 {
     /**
-     * Redirect to $url. When $refresh is true and the request is Turbo,
-     * emit a Turbo stream response that refreshes the current frame.
+     * Redirect to $url.
+     *
+     * @param bool $refresh       When true with Turbo, enables smart navigation (compare paths)
+     * @param bool $forceNavigate When true with Turbo, always navigate to URL (skip path comparison)
      */
-    public function to(Request $request, string $url, bool $refresh = false, int $status = 303): Response;
+    public function to(Request $request, string $url, bool $refresh = false, int $status = 303, bool $forceNavigate = false): Response;
 }

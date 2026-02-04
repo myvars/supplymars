@@ -91,7 +91,7 @@ final class DeleteFlowTest extends TestCase
 
         $redirector = $this->createMock(RedirectorInterface::class);
         $redirector->expects($this->once())->method('to')
-            ->with($request, '/gen/app_orderitem_index', false, 303)
+            ->with($request, '/gen/app_orderitem_index', true, 303)
             ->willReturn(new Response('', 303));
 
         $commandFlow = new CommandFlow($flashes, $redirector, $urls);
@@ -127,7 +127,7 @@ final class DeleteFlowTest extends TestCase
 
         $redirector = $this->createMock(RedirectorInterface::class);
         $redirector->expects($this->once())->method('to')
-            ->with($request, '/gen/app_orderitem_index', false, 303)
+            ->with($request, '/gen/app_orderitem_index', true, 303)
             ->willReturn(new Response('', 303));
 
         $handler = fn (object $cmd): Result => Result::ok('Deleted');

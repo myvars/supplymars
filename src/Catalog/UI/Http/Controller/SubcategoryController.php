@@ -97,7 +97,9 @@ class SubcategoryController extends AbstractController
             data: SubcategoryForm::fromEntity($subcategory),
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forUpdate(self::MODEL)->allowDelete(true),
+            context: FlowContext::forUpdate(self::MODEL)
+                ->allowDelete(true)
+                ->successRoute('app_catalog_subcategory_show', ['id' => $subcategory->getPublicId()->value()])
         );
     }
 

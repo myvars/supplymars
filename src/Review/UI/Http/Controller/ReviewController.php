@@ -109,7 +109,9 @@ class ReviewController extends AbstractController
             data: ReviewForm::fromEntity($review),
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forUpdate(self::MODEL)->allowDelete(true),
+            context: FlowContext::forUpdate(self::MODEL)
+                ->allowDelete(true)
+                ->successRoute('app_review_show', ['id' => $review->getPublicId()->value()])
         );
     }
 

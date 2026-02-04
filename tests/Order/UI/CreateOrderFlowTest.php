@@ -32,7 +32,8 @@ class CreateOrderFlowTest extends WebTestCase
             ->fillField('order[shippingMethod]', ShippingMethod::THREE_DAY->value)
             ->fillField('order[customerOrderRef]', 'FLOW-REF-001')
             ->click('Create Order')
-            ->assertOn('/order/');
+            ->assertSuccessful()
+            ->assertNotOn('/order/');
     }
 
     public function testValidationErrorsOnEmptySubmission(): void

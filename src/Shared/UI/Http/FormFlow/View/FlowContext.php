@@ -73,7 +73,10 @@ final class FlowContext
     /** Factory for delete operation defaults. */
     public static function forDelete(string $model): self
     {
-        return self::fromOperation($model, FormOperation::Delete);
+        $self = self::fromOperation($model, FormOperation::Delete);
+        $self->redirectRefresh = true; // Enable smart navigation for deletes
+
+        return $self;
     }
 
     /** Factory for filter operation defaults. */

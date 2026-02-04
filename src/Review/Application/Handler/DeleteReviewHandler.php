@@ -26,6 +26,6 @@ final readonly class DeleteReviewHandler
         $this->reviews->remove($review);
         $this->flusher->flush();
 
-        return Result::ok('Review deleted.');
+        return Result::ok(message: 'Review deleted');
     }
 }

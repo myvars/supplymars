@@ -15,11 +15,14 @@ use App\Customer\Domain\Model\User\User;
 use App\Customer\Domain\Model\User\UserId;
 use App\Customer\Domain\Repository\UserRepository;
 use App\Shared\Application\FlusherInterface;
+use App\Shared\Application\RedirectTarget;
 use App\Shared\Application\Result;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final readonly class CreateProductHandler
 {
+    private const string ROUTE = 'app_catalog_product_show';
+
     public function __construct(
         private ProductRepository $products,
         private CategoryRepository $categories,
@@ -75,6 +78,13 @@ final readonly class CreateProductHandler
         $this->products->add($product);
         $this->flusher->flush();
 
-        return Result::ok('Product created', $product->getPublicId());
+        return Result::ok(
+            message: 'Product created',
+            payload: $product->getPublicId(),
+            redirect: new RedirectTarget(
+                route: self::ROUTE,
+                params: ['id' => $product->getPublicId()->value()],
+            ),
+        );
     }
 }

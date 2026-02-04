@@ -99,7 +99,9 @@ class ProductController extends AbstractController
             data: ProductForm::fromEntity($product),
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forUpdate(self::MODEL)->allowDelete(true),
+            context: FlowContext::forUpdate(self::MODEL)
+                ->allowDelete(true)
+                ->successRoute('app_catalog_product_show', ['id' => $product->getPublicId()->value()]),
         );
     }
 

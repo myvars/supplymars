@@ -29,8 +29,9 @@ final class CreateSubcategoryFlowTest extends WebTestCase
             ->fillField('subcategory[owner]', (string) $owner->getId())
             ->fillField('subcategory[isActive]', '1')
             ->click('Create Subcategory')
-            ->assertOn('/subcategory/')
-            ->assertSee('Flow Subcategory');
+            ->assertSuccessful()
+            ->assertSee('Flow Subcategory')
+            ->assertNotOn('/subcategory/');
     }
 
     public function testValidationErrorsOnEmptySubmission(): void

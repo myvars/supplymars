@@ -8,11 +8,14 @@ use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItem;
 use App\Purchasing\Domain\Repository\PurchaseOrderItemRepository;
 use App\Purchasing\Domain\Repository\PurchaseOrderRepository;
 use App\Shared\Application\FlusherInterface;
+use App\Shared\Application\RedirectTarget;
 use App\Shared\Application\Result;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final readonly class UpdatePurchaseOrderItemQuantityHandler
 {
+    private const string ROUTE = 'app_order_show';
+
     public function __construct(
         private PurchaseOrderItemRepository $purchaseOrderItems,
         private PurchaseOrderRepository $purchaseOrders,
@@ -47,13 +50,21 @@ final readonly class UpdatePurchaseOrderItemQuantityHandler
         $purchaseOrder->removePurchaseOrderItem($purchaseOrderItem);
         $this->purchaseOrderItems->remove($purchaseOrderItem);
 
+        $redirect = null;
         if ($purchaseOrder->getPurchaseOrderItems()->isEmpty()) {
             $this->purchaseOrders->remove($purchaseOrder);
+            $redirect = new RedirectTarget(
+                route: self::ROUTE,
+                params: ['id' => $customerOrderItem->getCustomerOrder()->getPublicId()],
+            );
         }
 
         $this->flusher->flush();
 
-        return Result::ok('Purchase order item removed');
+        return Result::ok(
+            message: 'Purchase order item removed',
+            redirect: $redirect,
+        );
     }
 
     private function handleUpdate(

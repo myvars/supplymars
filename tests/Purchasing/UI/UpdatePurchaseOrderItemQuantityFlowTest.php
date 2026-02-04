@@ -48,7 +48,7 @@ final class UpdatePurchaseOrderItemQuantityFlowTest extends WebTestCase
             'quantity' => 3,
         ]);
 
-        $poPublicId = $purchaseOrderItem->getPurchaseOrder()->getPublicId()->value();
+        $customerOrderPublicId = $customerOrder->getPublicId()->value();
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
@@ -56,7 +56,7 @@ final class UpdatePurchaseOrderItemQuantityFlowTest extends WebTestCase
             ->assertSuccessful()
             ->fillField('purchase_order_item_quantity[quantity]', '5')
             ->click('Update')
-            ->assertOn('/purchase/order/' . $poPublicId);
+            ->assertOn('/order/' . $customerOrderPublicId);
     }
 
     public function testValidationErrorOnEmptyQuantity(): void
@@ -161,7 +161,7 @@ final class UpdatePurchaseOrderItemQuantityFlowTest extends WebTestCase
         ]);
 
         $purchaseOrder = $purchaseOrderItem1->getPurchaseOrder();
-        $poPublicId = $purchaseOrder->getPublicId()->value();
+        $customerOrderPublicId = $customerOrder->getPublicId()->value();
 
         $customerOrderItem2 = CustomerOrderItemFactory::createOne([
             'customerOrder' => $customerOrder,
@@ -186,7 +186,7 @@ final class UpdatePurchaseOrderItemQuantityFlowTest extends WebTestCase
             ->get('/purchase/order/item/' . $publicId->value() . '/edit')
             ->fillField('purchase_order_item_quantity[quantity]', '0')
             ->click('Update')
-            ->assertOn('/purchase/order/' . $poPublicId);
+            ->assertOn('/order/' . $customerOrderPublicId);
 
         $purchaseOrderItems = self::getContainer()->get(PurchaseOrderItemRepository::class);
         $removed = $purchaseOrderItems->getByPublicId($publicId);

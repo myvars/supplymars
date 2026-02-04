@@ -26,7 +26,7 @@ class UpdateProductFlowTest extends WebTestCase
             ->fillField('product[mfrPartNumber]', 'FLOW-9876')
             ->fillField('product[isActive]', '1')
             ->click('Update Product')
-            ->assertOn('/product/')
+            ->assertOn('/product/' . $publicId)
             ->assertSee('Flow Updated Product');
     }
 

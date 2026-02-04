@@ -36,8 +36,9 @@ class CreateProductFlowTest extends WebTestCase
             ->fillField('product[owner]', (string) $owner->getId())
             ->fillField('product[isActive]', '1')
             ->click('Create Product')
-            ->assertOn('/product/')
-            ->assertSee('Flow Product');
+            ->assertSuccessful()
+            ->assertSee('Flow Product')
+            ->assertNotOn('/product/');
     }
 
     public function testValidationErrorsOnEmptySubmission(): void

@@ -44,7 +44,7 @@ final class UpdateCategoryFlowTest extends WebTestCase
             ->fillField('category[owner]', (string) $owner2->getId())
             ->uncheckField('category[isActive]')
             ->click('Update Category')
-            ->assertOn('/category/')
+            ->assertOn('/category/' . $publicId)
             ->assertSee('After Edit');
     }
 

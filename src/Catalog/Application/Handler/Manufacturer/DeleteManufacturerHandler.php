@@ -26,6 +26,6 @@ final readonly class DeleteManufacturerHandler
         $this->manufacturers->remove($manufacturer);
         $this->flusher->flush();
 
-        return Result::ok('Manufacturer deleted');
+        return Result::ok(message: 'Manufacturer deleted');
     }
 }

@@ -10,7 +10,7 @@ final class ResultTest extends TestCase
 {
     public function testOkFactorySetsFieldsAndAllowsRedirect(): void
     {
-        $redirect = new RedirectTarget('route_name', ['id' => 10], redirectRefresh: true, redirectStatus: 302);
+        $redirect = new RedirectTarget('route_name', ['id' => 10], redirectStatus: 302);
 
         $result = Result::ok('done', ['payload' => 1], $redirect);
 

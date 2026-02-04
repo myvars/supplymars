@@ -26,6 +26,6 @@ final readonly class DeleteVatRateHandler
         $this->vatRates->remove($vatRate);
         $this->flusher->flush();
 
-        return Result::ok('VAT rate deleted');
+        return Result::ok(message: 'VAT rate deleted');
     }
 }

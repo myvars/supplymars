@@ -30,6 +30,6 @@ final readonly class DeleteCustomerHandler
         $this->customers->remove($customer);
         $this->flusher->flush();
 
-        return Result::ok('Customer deleted.');
+        return Result::ok(message: 'Customer deleted');
     }
 }

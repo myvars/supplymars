@@ -6,11 +6,14 @@ use App\Catalog\Application\Command\Manufacturer\CreateManufacturer;
 use App\Catalog\Domain\Model\Manufacturer\Manufacturer;
 use App\Catalog\Domain\Repository\ManufacturerRepository;
 use App\Shared\Application\FlusherInterface;
+use App\Shared\Application\RedirectTarget;
 use App\Shared\Application\Result;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final readonly class CreateManufacturerHandler
 {
+    private const string ROUTE = 'app_catalog_manufacturer_show';
+
     public function __construct(
         private ManufacturerRepository $manufacturers,
         private FlusherInterface $flusher,
@@ -33,6 +36,13 @@ final readonly class CreateManufacturerHandler
         $this->manufacturers->add($manufacturer);
         $this->flusher->flush();
 
-        return Result::ok('Manufacturer created', $manufacturer->getPublicId());
+        return Result::ok(
+            message: 'Manufacturer created',
+            payload: $manufacturer->getPublicId(),
+            redirect: new RedirectTarget(
+                route: self::ROUTE,
+                params: ['id' => $manufacturer->getPublicId()->value()],
+            ),
+        );
     }
 }

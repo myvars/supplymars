@@ -76,7 +76,9 @@ class ManufacturerController extends AbstractController
             data: ManufacturerForm::fromEntity($manufacturer),
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forUpdate(self::MODEL)->allowDelete(true),
+            context: FlowContext::forUpdate(self::MODEL)
+                ->allowDelete(true)
+                ->successRoute('app_catalog_manufacturer_show', ['id' => $manufacturer->getPublicId()->value()]),
         );
     }
 

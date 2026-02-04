@@ -29,8 +29,9 @@ class CreateCategoryFlowTest extends WebTestCase
             ->fillField('category[owner]', (string) $owner->getId())
             ->fillField('category[isActive]', '1')
             ->click('Create Category')
-            ->assertOn('/category/')
-            ->assertSee('Flow Category');
+            ->assertSuccessful()
+            ->assertSee('Flow Category')
+            ->assertNotOn('/category/');
     }
 
     public function testValidationErrorsOnEmptySubmission(): void

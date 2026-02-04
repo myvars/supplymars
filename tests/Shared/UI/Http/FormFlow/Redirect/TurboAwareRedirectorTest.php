@@ -36,17 +36,6 @@ final class TurboAwareRedirectorTest extends TestCase
         self::assertSame(200, $response->getStatusCode());
     }
 
-    public function testTurboDetectedByAcceptHeader(): void
-    {
-        $request = new Request();
-        $request->headers->set('Accept', 'text/vnd.turbo-stream.html');
-
-        $redirector = new TurboAwareRedirector($this->twigMock('<stream/>'));
-
-        $response = $redirector->to($request, '/x');
-        self::assertSame(200, $response->getStatusCode());
-    }
-
     public function testRefreshUrlPassedWhenRefreshTrue(): void
     {
         $request = new Request();

@@ -57,8 +57,8 @@ class PurchaseOrderItemController extends AbstractController
             mapper: $mapper,
             handler: $handler,
             context: FlowContext::forUpdate(self::MODEL)
-                ->successRoute('app_purchasing_purchase_order_show', [
-                    'id' => $purchaseOrderItem->getPurchaseOrder()->getPublicId()->value(),
+                ->successRoute('app_order_show', [
+                    'id' => $purchaseOrderItem->getPurchaseOrder()->getCustomerOrder()->getPublicId()->value(),
                 ]),
         );
     }

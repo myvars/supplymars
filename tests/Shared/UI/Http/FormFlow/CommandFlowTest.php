@@ -102,7 +102,7 @@ final class CommandFlowTest extends TestCase
         $request = $this->newRequest();
         $context = FlowContext::forCreate('OrderItem'); // should be ignored due to redirect target
 
-        $target = new RedirectTarget('app_order_item_show', ['id' => 5], true, 302);
+        $target = new RedirectTarget('app_order_item_show', ['id' => 5], 302);
 
         $urls = $this->createMock(UrlGeneratorInterface::class);
         $urls->expects($this->once())
@@ -113,7 +113,7 @@ final class CommandFlowTest extends TestCase
         $redirector = $this->createMock(RedirectorInterface::class);
         $redirector->expects($this->once())
             ->method('to')
-            ->with($request, '/gen/app_order_item_show?id=5', true, 302)
+            ->with($request, '/gen/app_order_item_show?id=5', false, 302, true)
             ->willReturn(new Response('', 302));
 
         $flow = new CommandFlow(new FlashMessenger(), $redirector, $urls);

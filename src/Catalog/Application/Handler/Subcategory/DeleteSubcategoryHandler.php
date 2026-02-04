@@ -26,6 +26,6 @@ final readonly class DeleteSubcategoryHandler
         $this->subcategories->remove($subcategory);
         $this->flusher->flush();
 
-        return Result::ok('Subcategory deleted');
+        return Result::ok(message: 'Subcategory deleted');
     }
 }

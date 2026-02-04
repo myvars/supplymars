@@ -25,7 +25,8 @@ class CreateOrderItemFlowTest extends WebTestCase
             ->fillField('order_item[productId]', (string) $product->getId())
             ->fillField('order_item[quantity]', '5')
             ->click('Create Order Item')
-            ->assertOn('/order/');
+            ->assertSuccessful()
+            ->assertNotOn('/order/');
     }
 
     public function testValidationErrorsOnEmptySubmission(): void

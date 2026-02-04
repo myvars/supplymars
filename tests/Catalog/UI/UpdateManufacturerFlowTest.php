@@ -24,7 +24,7 @@ final class UpdateManufacturerFlowTest extends WebTestCase
             ->fillField('manufacturer[name]', 'After')
             ->checkField('manufacturer[isActive]')
             ->click('Update Manufacturer')
-            ->assertOn('/manufacturer/')
+            ->assertOn('/manufacturer/' . $publicId)
             ->assertSee('Manufacturer updated');
     }
 

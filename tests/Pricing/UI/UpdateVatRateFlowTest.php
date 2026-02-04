@@ -24,7 +24,7 @@ final class UpdateVatRateFlowTest extends WebTestCase
             ->fillField('vat_rate[name]', 'After Edit VAT')
             ->fillField('vat_rate[rate]', '7.25')
             ->click('Update VAT Rate')
-            ->assertOn('/vat-rate/')
+            ->assertOn('/vat-rate/' . $publicId)
             ->assertSee('After Edit VAT');
     }
 
