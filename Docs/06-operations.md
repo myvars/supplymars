@@ -139,6 +139,12 @@ Located at `docker/php/cron/prod-crontab`:
 10 * * * * app:calculate-order-sales 1 0
 40 * * * * app:calculate-order-sales 1 0
 
+# Customer insights aggregation
+15 0 * * * app:calculate-customer-sales 1
+17 0 * * * app:calculate-customer-sales-summary
+20 * * * * app:calculate-customer-sales 1 0
+50 * * * * app:calculate-customer-sales 1 0
+
 # Log cleanup
 0 0 * * 0 truncate -s 0 /var/log/cron.log
 ```
@@ -156,6 +162,9 @@ Located at `docker/php/cron/prod-crontab`:
 | Daily 00:03 | `app:calculate-product-sales 1` | Daily product sales ETL |
 | Daily 00:07 | `app:calculate-order-sales 1` | Daily order sales ETL |
 | */10,40 | `app:calculate-*-sales 1 0` | Hourly incremental updates |
+| Daily 00:15 | `app:calculate-customer-sales 1` | Daily customer sales ETL |
+| Daily 00:17 | `app:calculate-customer-sales-summary` | Customer summaries |
+| */20,50 | `app:calculate-customer-sales 1 0` | Hourly customer updates |
 | On demand | `app:generate-reviews {count}` | Generate fake reviews for testing |
 
 ## Workers / Consumers
@@ -200,6 +209,42 @@ Access management UI at `http://localhost:15672`:
 - View queue depths
 - Monitor message rates
 - Purge queues if needed
+
+## Processing Simulator
+
+The `ProcessingSimulator` service encapsulates business timing constraints for order fulfillment simulation. This service centralises the logic previously spread across individual console commands.
+
+### Timing Constraints
+
+| Operation | Business Hours | Minimum Wait | Success Rate |
+|-----------|----------------|--------------|--------------|
+| Shipping | 09:00-18:00 | 2 hours after acceptance | 95% |
+| Delivery | 07:00-21:00 | 12 hours after shipping | 95% |
+
+### Service Methods
+
+**Probabilistic checks (for simulation):**
+- `canShip()` - Returns true if item can ship (timing + 95% probability)
+- `canDeliver()` - Returns true if item can deliver (timing + 95% probability)
+
+**Timing-only checks (for testing):**
+- `canShipTimingOnly()` - Returns true if timing constraints met (no probability)
+- `canDeliverTimingOnly()` - Returns true if timing constraints met (no probability)
+
+**Key file:** `src/Purchasing/Domain/Service/ProcessingSimulator.php`
+
+### Usage in Commands
+
+The shipping and delivery console commands use `ProcessingSimulator` to determine which items are eligible for status progression:
+
+```php
+// In ShipPOItemsCommand
+foreach ($items as $item) {
+    if ($this->simulator->canShip($item)) {
+        // Progress item to SHIPPED
+    }
+}
+```
 
 ## Data Reset / Simulation Behaviour
 

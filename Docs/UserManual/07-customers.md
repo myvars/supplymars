@@ -38,9 +38,36 @@ The customer list shows all customers with:
 
 The detail page shows:
 - Customer information card (name, email, verification status)
+- Customer insights card (revenue, orders, segment)
 - All associated addresses with billing/shipping designation
 - Order history summary with link to filtered orders
 - Order count
+
+### Customer Insights Card
+
+The customer detail page includes an insights card showing key metrics:
+
+| Metric | Description |
+|--------|-------------|
+| **Lifetime Revenue** | Total amount spent by this customer |
+| **Order Count** | Number of orders placed |
+| **Average Order Value** | Revenue divided by order count |
+| **First Order** | Date of first purchase |
+| **Last Order** | Date of most recent purchase |
+| **Days Since Last Order** | Recency indicator |
+| **Revenue Rank** | Position compared to other customers (e.g., "Top 5%") |
+| **Segment** | Customer classification (New, Returning, Loyal, or Lapsed) |
+| **Reviews** | Number of product reviews submitted |
+
+**Customer Segments:**
+| Segment | Meaning |
+|---------|---------|
+| **New** | 0-1 lifetime orders |
+| **Returning** | 2-3 lifetime orders |
+| **Loyal** | 4+ lifetime orders |
+| **Lapsed** | No activity in 60+ days |
+
+This information helps you understand customer value and engagement at a glance.
 
 ### Edit a Customer
 

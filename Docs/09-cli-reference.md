@@ -8,7 +8,7 @@ This document lists all custom console commands in SupplyMars. Most of these run
 
 **Purpose:** Create simulated customer orders with random products and customers.
 
-**File:** `src/Order/UI/Console/createCustomerOrdersCommand.php`
+**File:** `src/Order/UI/Console/CreateCustomerOrdersCommand.php`
 
 **Arguments:**
 | Name | Type | Required | Default | Description |
@@ -19,6 +19,8 @@ This document lists all custom console commands in SupplyMars. Most of these run
 | Name | Description |
 |------|-------------|
 | `--random` | Randomize the order count (0 to orderCount) |
+| `--dry-run` | Preview what would be created without persisting |
+| `--skip-timing` | Skip timing delays (useful for testing) |
 
 **Example:**
 ```bash
@@ -50,12 +52,17 @@ symfony console app:create-customer-orders 5 -v
 
 **Purpose:** Allocate pending customer orders to supplier purchase orders.
 
-**File:** `src/Purchasing/UI/Console/buildPOsCommand.php`
+**File:** `src/Purchasing/UI/Console/BuildPOsCommand.php`
 
 **Arguments:**
 | Name | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
 | `orderCount` | int | No | 50 | Number of orders to process |
+
+**Options:**
+| Name | Description |
+|------|-------------|
+| `--dry-run` | Preview allocations without persisting |
 
 **Example:**
 ```bash
@@ -65,8 +72,8 @@ symfony console app:build-purchase-orders
 # Process up to 100 orders
 symfony console app:build-purchase-orders 100
 
-# Verbose output
-symfony console app:build-purchase-orders 20 -v
+# Preview what would be created
+symfony console app:build-purchase-orders 20 --dry-run -v
 ```
 
 **Side Effects:**
@@ -81,12 +88,18 @@ symfony console app:build-purchase-orders 20 -v
 
 **Purpose:** Simulate supplier acceptance/rejection of purchase orders.
 
-**File:** `src/Purchasing/UI/Console/acceptPOsCommand.php`
+**File:** `src/Purchasing/UI/Console/AcceptPOsCommand.php`
 
 **Arguments:**
 | Name | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
 | `poCount` | int | No | 50 | Number of POs to process |
+
+**Options:**
+| Name | Description |
+|------|-------------|
+| `--dry-run` | Preview without persisting changes |
+| `--supplier=ID` | Target a specific supplier by internal ID |
 
 **Example:**
 ```bash
@@ -95,6 +108,9 @@ symfony console app:accept-purchase-orders
 
 # Process more POs
 symfony console app:accept-purchase-orders 100
+
+# Target a specific supplier
+symfony console app:accept-purchase-orders 50 --supplier=3
 ```
 
 **Side Effects:**
@@ -111,16 +127,29 @@ symfony console app:accept-purchase-orders 100
 
 **Purpose:** Simulate shipping of accepted purchase order items.
 
-**File:** `src/Purchasing/UI/Console/shipPOItemsCommand.php`
+**File:** `src/Purchasing/UI/Console/ShipPOItemsCommand.php`
 
 **Arguments:**
 | Name | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
 | `poItemCount` | int | No | 50 | Number of items to process |
 
+**Options:**
+| Name | Description |
+|------|-------------|
+| `--dry-run` | Preview without persisting changes |
+| `--supplier=ID` | Target a specific supplier by internal ID |
+| `--skip-timing` | Bypass business hours and wait time checks |
+
 **Example:**
 ```bash
 symfony console app:ship-purchase-order-items 100
+
+# Skip timing constraints (for testing)
+symfony console app:ship-purchase-order-items 100 --skip-timing
+
+# Target specific supplier
+symfony console app:ship-purchase-order-items 50 --supplier=3
 ```
 
 **Side Effects:**
@@ -132,6 +161,7 @@ symfony console app:ship-purchase-order-items 100
 - Status change timestamp must be 2+ hours old
 - Current time must be between 09:00-18:00
 - 95% probability of shipping when conditions met
+- Use `--skip-timing` to bypass timing/probability checks
 
 ---
 
@@ -139,16 +169,29 @@ symfony console app:ship-purchase-order-items 100
 
 **Purpose:** Simulate delivery of shipped purchase order items.
 
-**File:** `src/Purchasing/UI/Console/deliverPOItemsCommand.php`
+**File:** `src/Purchasing/UI/Console/DeliverPOItemsCommand.php`
 
 **Arguments:**
 | Name | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
 | `poItemCount` | int | No | 50 | Number of items to process |
 
+**Options:**
+| Name | Description |
+|------|-------------|
+| `--dry-run` | Preview without persisting changes |
+| `--supplier=ID` | Target a specific supplier by internal ID |
+| `--skip-timing` | Bypass business hours and wait time checks |
+
 **Example:**
 ```bash
 symfony console app:deliver-purchase-order-items 100
+
+# Skip timing constraints (for testing)
+symfony console app:deliver-purchase-order-items 100 --skip-timing
+
+# Target specific supplier
+symfony console app:deliver-purchase-order-items 50 --supplier=3
 ```
 
 **Side Effects:**
@@ -161,6 +204,7 @@ symfony console app:deliver-purchase-order-items 100
 - Status change timestamp must be 12+ hours old
 - Current time must be between 07:00-21:00
 - 95% probability of delivery when conditions met
+- Use `--skip-timing` to bypass timing/probability checks
 
 ---
 
@@ -168,7 +212,7 @@ symfony console app:deliver-purchase-order-items 100
 
 **Purpose:** Process refunds for rejected purchase orders and re-allocate.
 
-**File:** `src/Purchasing/UI/Console/refundPOsCommand.php`
+**File:** `src/Purchasing/UI/Console/RefundPOsCommand.php`
 
 **Arguments:**
 | Name | Type | Required | Default | Description |
@@ -191,7 +235,7 @@ symfony console app:refund-purchase-orders 20
 
 **Purpose:** Simulate real-world supplier stock level and cost fluctuations.
 
-**File:** `src/Purchasing/UI/Console/updateSupplierStockCommand.php`
+**File:** `src/Purchasing/UI/Console/UpdateSupplierStockCommand.php`
 
 **Arguments:**
 | Name | Type | Required | Default | Description |
@@ -231,7 +275,7 @@ symfony console app:update-supplier-stock 100 -v
 
 **Purpose:** Map supplier products to catalog products (initial setup).
 
-**File:** `src/Purchasing/UI/Console/Setup/createSupplierProductsCommand.php`
+**File:** `src/Purchasing/UI/Console/Setup/CreateSupplierProductsCommand.php`
 
 **Arguments:** None
 
@@ -252,7 +296,7 @@ symfony console app:create-supplier-products
 
 **Purpose:** Create catalog products from warehouse supplier products.
 
-**File:** `src/Purchasing/UI/Console/Setup/createWarehouseProductsCommand.php`
+**File:** `src/Purchasing/UI/Console/Setup/CreateWarehouseProductsCommand.php`
 
 **Arguments:** None
 
@@ -274,7 +318,7 @@ symfony console app:create-warehouse-products
 
 **Purpose:** Activate inactive supplier products.
 
-**File:** `src/Purchasing/UI/Console/Utilities/activateSupplierProductsCommand.php`
+**File:** `src/Purchasing/UI/Console/Utilities/ActivateSupplierProductsCommand.php`
 
 **Arguments:**
 | Name | Type | Required | Default | Description |
@@ -296,7 +340,7 @@ symfony console app:activate-supplier-products 100
 
 **Purpose:** Reset all supplier product stock levels to random values.
 
-**File:** `src/Purchasing/UI/Console/Utilities/resetSupplierStockCommand.php`
+**File:** `src/Purchasing/UI/Console/Utilities/ResetSupplierStockCommand.php`
 
 **Arguments:**
 | Name | Type | Required | Default | Description |
@@ -318,13 +362,129 @@ symfony console app:reset-supplier-stock 1
 
 ---
 
+### app:rewind-mixed-status-purchase-orders
+
+**Purpose:** Find and rewind purchase orders with inconsistent item statuses back to pending.
+
+**File:** `src/Purchasing/UI/Console/Utilities/RewindMixedStatusPurchaseOrdersCommand.php`
+
+**Arguments:** None
+
+**Options:**
+| Name | Description |
+|------|-------------|
+| `--limit=N` | Maximum POs to process (default: 100) |
+| `--days-back=N` | Number of days back to search (default: 30) |
+| `--dry-run` | Preview without persisting changes |
+
+**Example:**
+```bash
+# Find and rewind POs with mixed item statuses
+symfony console app:rewind-mixed-status-purchase-orders
+
+# Preview what would be rewound
+symfony console app:rewind-mixed-status-purchase-orders --dry-run -v
+
+# Search last 60 days, limit to 50 POs
+symfony console app:rewind-mixed-status-purchase-orders --days-back=60 --limit=50
+```
+
+**Side Effects:**
+- Finds POs where items have inconsistent statuses (e.g., some accepted, some rejected)
+- Resets PO and all items to PENDING status
+- Clears status change audit logs for the PO
+- Regenerates parent customer order status
+
+**Use Cases:**
+- Error recovery when POs have mixed accepted/rejected items
+- Testing scenarios requiring PO reset
+- Recovering from system issues
+
+---
+
 ## Reporting Context
+
+### app:calculate-customer-sales
+
+**Purpose:** Calculate daily customer sales and activity metrics for reporting.
+
+**File:** `src/Reporting/UI/Console/CalculateCustomerSalesCommand.php`
+
+**Arguments:**
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `dayCount` | int | Yes | - | Number of days to process |
+| `dayOffset` | int | No | 0 | Day offset from today |
+
+**Options:**
+| Name | Description |
+|------|-------------|
+| `--dry-run` | Preview without persisting changes |
+| `--skip-summary` | Skip auto-running the summary command |
+
+**Example:**
+```bash
+# Calculate last 7 days
+symfony console app:calculate-customer-sales 7
+
+# Calculate yesterday only
+symfony console app:calculate-customer-sales 1 1
+
+# Preview what would be calculated
+symfony console app:calculate-customer-sales 7 --dry-run
+
+# Calculate without running summaries
+symfony console app:calculate-customer-sales 7 --skip-summary
+```
+
+**Side Effects:**
+- Creates/updates CustomerSales entities (per-customer daily records)
+- Creates/updates CustomerActivitySales entities (active, new, returning counts)
+- Deletes existing data for processed dates
+- Automatically runs `app:calculate-customer-sales-summary` if offset is 0 (unless `--skip-summary`)
+
+---
+
+### app:calculate-customer-sales-summary
+
+**Purpose:** Calculate pre-aggregated customer sales summaries for dashboard performance.
+
+**File:** `src/Reporting/UI/Console/CalculateCustomerSalesSummaryCommand.php`
+
+**Arguments:**
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| `rebuild` | int | No | 0 | Full rebuild flag |
+
+**Options:**
+| Name | Description |
+|------|-------------|
+| `--duration` | Duration to aggregate (7d, 30d, 90d, 365d) |
+
+**Example:**
+```bash
+# Incremental update for all durations
+symfony console app:calculate-customer-sales-summary
+
+# Full rebuild
+symfony console app:calculate-customer-sales-summary 1
+
+# Specific duration
+symfony console app:calculate-customer-sales-summary --duration=30d
+```
+
+**Side Effects:**
+- Creates/updates CustomerSalesSummary entities (top customers by revenue)
+- Creates/updates CustomerGeographicSummary entities (sales by city)
+- Creates/updates CustomerSegmentSummary entities (sales by customer segment)
+
+---
 
 ### app:calculate-product-sales
 
 **Purpose:** Calculate and store product sales data for reporting.
 
-**File:** `src/Reporting/UI/Console/calculateProductSalesCommand.php`
+**File:** `src/Reporting/UI/Console/CalculateProductSalesCommand.php`
 
 **Arguments:**
 | Name | Type | Required | Default | Description |
@@ -355,7 +515,7 @@ symfony console app:calculate-product-sales 30 7
 
 **Purpose:** Calculate pre-aggregated product sales summaries.
 
-**File:** `src/Reporting/UI/Console/calculateProductSalesSummaryCommand.php`
+**File:** `src/Reporting/UI/Console/CalculateProductSalesSummaryCommand.php`
 
 **Arguments:**
 | Name | Type | Required | Default | Description |
@@ -381,7 +541,7 @@ symfony console app:calculate-product-sales-summary 1
 
 **Purpose:** Calculate and store order sales data for reporting.
 
-**File:** `src/Reporting/UI/Console/calculateOrderSalesCommand.php`
+**File:** `src/Reporting/UI/Console/CalculateOrderSalesCommand.php`
 
 **Arguments:**
 | Name | Type | Required | Default | Description |
@@ -409,7 +569,7 @@ symfony console app:calculate-order-sales 1 1
 
 **Purpose:** Calculate pre-aggregated order sales summaries.
 
-**File:** `src/Reporting/UI/Console/calculateOrderSalesSummaryCommand.php`
+**File:** `src/Reporting/UI/Console/CalculateOrderSalesSummaryCommand.php`
 
 **Arguments:**
 | Name | Type | Required | Default | Description |
@@ -480,7 +640,7 @@ symfony console app:generate-reviews 50 42
 
 **Purpose:** Backfill missing ULID public IDs for entities.
 
-**File:** `src/Shared/UI/Console/Utilities/backfillUlidsCommand.php`
+**File:** `src/Shared/UI/Console/Utilities/BackfillUlidsCommand.php`
 
 **Arguments:**
 | Name | Type | Required | Default | Description |
@@ -605,6 +765,7 @@ symfony console app:deliver-purchase-order-items 200
 # 4. Generate reporting data
 symfony console app:calculate-product-sales 30
 symfony console app:calculate-order-sales 30
+symfony console app:calculate-customer-sales 30
 ```
 
 ### Daily Operations
@@ -623,4 +784,5 @@ symfony console app:deliver-purchase-order-items 50
 # Reporting refresh
 symfony console app:calculate-product-sales 1
 symfony console app:calculate-order-sales 1
+symfony console app:calculate-customer-sales 1
 ```

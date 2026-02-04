@@ -15,6 +15,7 @@ Purchase Orders (POs) are orders placed with suppliers to fulfil customer orders
 - View purchase order details
 - Edit item quantities (when pending)
 - Change item statuses (accept, reject, ship, deliver)
+- Rewind POs back to pending status (for error recovery)
 - Track fulfilment progress
 
 ## Screens and Actions
@@ -240,6 +241,31 @@ Order Item → DELIVERED (if all PO items delivered)
 Customer Order → DELIVERED (if all items delivered)
 ```
 
+## Rewinding a Purchase Order
+
+In some cases, you may need to reset a purchase order back to pending status. This is useful for:
+- Correcting data entry errors
+- Testing fulfillment workflows
+- Recovering from system issues
+
+### How to Rewind
+
+1. Navigate to the Purchase Order detail page
+2. Click the **Rewind** button in the actions area
+3. Review the confirmation message
+4. Click **Confirm** to proceed
+
+### What Happens When You Rewind
+
+- The PO and all its items are reset to **Pending** status
+- Status change history for this PO is cleared from audit logs
+- The parent customer order status is recalculated based on remaining PO items
+- Stock levels are **not** affected (manual adjustment may be needed)
+
+### When Rewind is Available
+
+The Rewind button appears on POs that have progressed past the pending state (e.g., accepted, shipped, etc.).
+
 ## Warnings
 
 - Quantity can only be edited when PO is PENDING
@@ -248,3 +274,5 @@ Customer Order → DELIVERED (if all items delivered)
 - DELIVERED and CANCELLED are final - no further changes allowed
 - Rejections require manual refund processing
 - Time constraints apply in automated workflows (shipping hours, etc.)
+- **Rewind cannot be undone** - it permanently clears status history
+- Consider the impact on customer order status before rewinding

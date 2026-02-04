@@ -233,7 +233,7 @@ symfony console app:update-supplier-stock 50
 | Activate products | Console | `app:activate-supplier-products {count}` |
 
 **Key files:**
-- `src/Purchasing/UI/Console/updateSupplierStockCommand.php`
+- `src/Purchasing/UI/Console/UpdateSupplierStockCommand.php`
 - `src/Purchasing/Domain/Model/SupplierProduct/SupplierProduct.php`
 
 ### Business Rules
@@ -289,6 +289,115 @@ The Pricing context manages VAT rates and orchestrates price cascades when under
 3. **VAT from category:** All products in category share VAT rate
 4. **Selective cascade:** Only affected products recalculated
 5. **Precision:** bcmath used for decimal calculations
+
+---
+
+## Customer Insights
+
+### Purpose
+
+The Customer Insights feature provides analytics on customer behavior, geographic distribution, and segmentation to support business intelligence and marketing decisions.
+
+### Main Workflows
+
+**Daily ETL Pipeline:**
+1. `app:calculate-customer-sales` runs daily via cron
+2. Aggregates order data into CustomerSales and CustomerActivitySales records
+3. `app:calculate-customer-sales-summary` pre-computes summaries for fast dashboard loads
+
+**Insights Dashboard:**
+1. Navigate to `/dashboard/report/customer/insights`
+2. View top customers by revenue, activity trends
+3. Filter by duration (7d, 30d, 90d, 365d)
+
+**Geographic Analysis:**
+1. Navigate to `/dashboard/report/customer/geographic`
+2. View pie chart of sales distribution by city
+3. Useful for regional marketing decisions
+
+**Segment Analysis:**
+1. Navigate to `/dashboard/report/customer/segments`
+2. View customer categorisation: NEW, RETURNING, LOYAL, LAPSED
+3. See revenue contribution by segment
+
+**Customer Profile Insights:**
+1. View any customer detail page
+2. Insights card shows:
+   - Lifetime revenue and order count
+   - Revenue rank vs other customers
+   - Customer segment classification
+   - Review activity
+
+### Entry Points
+
+| Route | Controller | Purpose |
+|-------|------------|---------|
+| `/dashboard/report/customer/insights` | `DashboardController::customerInsights` | Main insights dashboard |
+| `/dashboard/report/customer/geographic` | `DashboardController::customerGeographic` | Geographic breakdown |
+| `/dashboard/report/customer/segments` | `DashboardController::customerSegments` | Segment analysis |
+
+**Key files:**
+- `src/Reporting/UI/Http/Controller/DashboardController.php`
+- `src/Reporting/Application/Handler/CustomerInsightsReportHandler.php`
+- `src/Reporting/Application/Handler/CustomerGeographicReportHandler.php`
+- `src/Reporting/Application/Handler/CustomerSegmentReportHandler.php`
+- `src/Customer/Application/Handler/CustomerProfileInsightsHandler.php`
+
+### Business Rules
+
+**Customer Segmentation Logic:**
+- **NEW:** 0-1 lifetime orders
+- **RETURNING:** 2-3 lifetime orders
+- **LOYAL:** 4+ lifetime orders
+- **LAPSED:** Any segment with no activity in 60+ days
+
+**Two-Layer Reporting Architecture:**
+- Daily granular records (CustomerSales, CustomerActivitySales)
+- Pre-aggregated summaries for dashboard performance (CustomerSalesSummary, CustomerGeographicSummary, CustomerSegmentSummary)
+
+---
+
+## Purchase Order Rewind
+
+### Purpose
+
+Allows administrators to reset a purchase order back to pending status, useful for error recovery or testing scenarios.
+
+### Main Workflows
+
+**Manual Rewind via UI:**
+1. Navigate to PO detail page
+2. Click "Rewind" button in actions area
+3. Confirm action in modal
+4. PO and all items reset to PENDING
+5. Audit logs for the PO are cleared
+6. Parent customer order status regenerated
+
+**Bulk Rewind via Console:**
+```bash
+# Find and rewind POs with inconsistent item statuses
+symfony console app:rewind-mixed-status-purchase-orders
+```
+
+### Entry Points
+
+| Action | Controller | Route |
+|--------|------------|-------|
+| Rewind confirm | `PurchaseOrderController::rewindConfirm` | `app_purchasing_purchase_order_rewind_confirm` |
+| Rewind execute | `PurchaseOrderController::rewind` | `app_purchasing_purchase_order_rewind` |
+
+**Key files:**
+- `src/Purchasing/UI/Http/Controller/PurchaseOrderController.php`
+- `src/Purchasing/Application/Handler/RewindPurchaseOrderHandler.php`
+- `src/Purchasing/Domain/Service/PurchaseOrderRewindService.php`
+
+### Business Rules
+
+1. **Status reset:** PO and all items return to PENDING status
+2. **Audit cleanup:** Status change logs for the PO are removed
+3. **Cascade effect:** Parent customer order status is regenerated
+4. **Stock unchanged:** Inventory levels are not affected (manual adjustment may be needed)
+5. **Irreversible context:** Use carefully as it erases status history
 
 ---
 

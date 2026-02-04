@@ -105,6 +105,79 @@ Click metric headers to change the chart and table sorting.
 
 Click column headers to sort.
 
+## Customer Insights
+
+The Customer Insights reports help you understand your customer base, identify top performers, and track customer activity trends.
+
+### Accessing Customer Insights
+
+1. From the Dashboard, click **Reports** in the sidebar
+2. Select **Customer Insights** from the report navigation
+
+### Available Reports
+
+#### Top Customers
+
+**Navigate to:** Dashboard > Reports > Customer Insights
+
+Shows customers ranked by total revenue with:
+- Customer name and email
+- Total lifetime revenue
+- Order count
+- Average order value
+
+Filter by time period: 7 Days, 30 Days, 90 Days, 1 Year
+
+#### Activity Trends
+
+**Navigate to:** Dashboard > Reports > Customer Insights
+
+Line chart showing over time:
+- **Active Customers** - Customers who placed orders
+- **New Customers** - First-time buyers
+- **Returning Customers** - Repeat purchasers
+
+Helps identify growth patterns and seasonality.
+
+#### Geographic Distribution
+
+**Navigate to:** Dashboard > Reports > Customer Geographic
+
+Pie chart breaking down sales by customer city:
+- Shows top cities by order value
+- Percentage of total sales per location
+- Useful for regional marketing decisions
+
+#### Customer Segments
+
+**Navigate to:** Dashboard > Reports > Customer Segments
+
+Categorises your customer base into segments:
+
+| Segment | Definition |
+|---------|------------|
+| **New** | First-time or single-order customers (0-1 orders) |
+| **Returning** | Customers with 2-3 orders placed |
+| **Loyal** | Customers with 4+ orders placed |
+| **Lapsed** | Any segment with no activity in 60+ days |
+
+Shows:
+- Customer count per segment
+- Revenue contribution by segment
+- Trends over time
+
+### Customer Insights Metrics
+
+| Metric | Calculation |
+|--------|-------------|
+| Active Customers | Unique customers with orders in period |
+| New Customers | First-time buyers in period |
+| Returning Customers | Repeat buyers in period |
+| Repeat Rate | Returning ÷ Active × 100 |
+| Average Customer Value | Total Revenue ÷ Active Customers |
+
+---
+
 ## Date Range Options
 
 | Duration | Description |
