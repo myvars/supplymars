@@ -13,7 +13,7 @@
             {{ include('catalog/category/_subcategories_card.html.twig', {subcategories: result.subcategories}) }}
         {% endif %}
         {{ include('reporting/_dashboard_card.html.twig', {
-            dashboardSrc: path('app_reporting_dashboard_product_sales', {category_id: result.id})
+            dashboardSrc: path('app_reporting_dashboard_product_sales', {categoryId: result.id})
         }) }}
     </div>
 

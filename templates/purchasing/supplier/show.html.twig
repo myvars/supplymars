@@ -10,7 +10,7 @@
             {{ include('purchasing/supplier/_supplier_products_card.html.twig', {supplier: result}) }}
         {% endif %}
         {{ include('reporting/_dashboard_card.html.twig', {
-            dashboardSrc: path('app_reporting_dashboard_product_sales', {supplier_id: result.id})
+            dashboardSrc: path('app_reporting_dashboard_product_sales', {supplierId: result.id})
         }) }}
     </div>
 
