@@ -22,7 +22,7 @@ The reporting system provides business intelligence through:
 
 ### Dashboard
 
-**Navigate to:** Dashboard
+**Navigate to:** Reporting > Dashboard
 
 The main dashboard displays three sections:
 
@@ -47,8 +47,8 @@ Click any KPI to see the detailed report.
 
 ### Order Summary Report
 
-**Navigate to:** Dashboard > Click any Order KPI
-Or: Dashboard > Reports > Order Summary
+**Navigate to:** Reporting > Dashboard > Click any Order KPI
+Or: Reporting > Dashboard > Click **Reports** > Order Summary
 
 **Filter Options:**
 - **Duration:** Today, Last 7 Days, Last 30 Days, Month to Date
@@ -66,8 +66,8 @@ Click metric headers to change the chart display.
 
 ### Product Sales Report
 
-**Navigate to:** Dashboard > Click any Sales KPI
-Or: Dashboard > Reports > Product Sales
+**Navigate to:** Reporting > Dashboard > Click any Sales KPI
+Or: Reporting > Dashboard > Click **Reports** > Product Sales
 
 **Filter Options:**
 - **Duration:** Today, Last 7 Days, Last 30 Days, Month to Date
@@ -87,7 +87,7 @@ Click metric headers to change the chart and table sorting.
 
 ### Overdue Orders Report
 
-**Navigate to:** Dashboard > Action Required > Overdue Orders
+**Navigate to:** Reporting > Dashboard > Action Required > Overdue Orders
 
 **Filter Options:**
 - **Duration:** Today, Last 7 Days, Last 30 Days, Month to Date
@@ -111,14 +111,14 @@ The Customer Insights reports help you understand your customer base, identify t
 
 ### Accessing Customer Insights
 
-1. From the Dashboard, click **Reports** in the sidebar
-2. Select **Customer Insights** from the report navigation
+1. From the menu, click **Reporting** > **Customer Insights**
+2. Or from the Dashboard, click **Reports** in the sidebar and select **Customer Insights**
 
 ### Available Reports
 
 #### Top Customers
 
-**Navigate to:** Dashboard > Reports > Customer Insights
+**Navigate to:** Reporting > Customer Insights
 
 Shows customers ranked by total revenue with:
 - Customer name and email
@@ -130,7 +130,7 @@ Filter by time period: 7 Days, 30 Days, 90 Days, 1 Year
 
 #### Activity Trends
 
-**Navigate to:** Dashboard > Reports > Customer Insights
+**Navigate to:** Reporting > Customer Insights
 
 Line chart showing over time:
 - **Active Customers** - Customers who placed orders
@@ -141,7 +141,7 @@ Helps identify growth patterns and seasonality.
 
 #### Geographic Distribution
 
-**Navigate to:** Dashboard > Reports > Customer Geographic
+**Navigate to:** Reporting > Customer Insights > Geographic tab
 
 Pie chart breaking down sales by customer city:
 - Shows top cities by order value
@@ -150,7 +150,7 @@ Pie chart breaking down sales by customer city:
 
 #### Customer Segments
 
-**Navigate to:** Dashboard > Reports > Customer Segments
+**Navigate to:** Reporting > Customer Insights > Segments tab
 
 Categorises your customer base into segments:
 

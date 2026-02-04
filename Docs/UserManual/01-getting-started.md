@@ -68,7 +68,7 @@ After logging in for the first time, here's a suggested path to familiarise your
 
 ### 1. Explore the Dashboard
 
-Click **Dashboard** in the menu to see an overview of:
+Click **Reporting** > **Dashboard** in the menu to see an overview of:
 - Today's order count and value
 - Sales metrics (cost, profit, margin)
 - Recent orders
@@ -77,7 +77,7 @@ Click **Dashboard** in the menu to see an overview of:
 
 ### 2. Browse the Product Catalog
 
-Click **Products** > **Search** to see all products in the system:
+Click **Catalog** > **Products** to see all products in the system:
 - Use the search box to find specific products
 - Click on a product to view its details
 - Notice how products show stock levels and prices
@@ -86,8 +86,8 @@ Click **Products** > **Search** to see all products in the system:
 
 Explore how products connect to suppliers:
 
-1. Click **Suppliers** > **Search** to see your suppliers
-2. Click **Suppliers** > **Supplier Products** to see what each supplier offers
+1. Click **Purchasing** > **Suppliers** to see your suppliers
+2. Click **Purchasing** > **Supplier Products** to see what each supplier offers
 3. Notice how multiple suppliers can offer the same product at different prices
 
 ### 4. Review an Existing Order
@@ -111,12 +111,12 @@ The SupplyMars interface consists of:
 
 A slide-out menu on the left containing all main sections:
 - Home
-- Products (expandable)
+- Catalog (expandable)
 - Orders
-- Purchase Orders
+- Purchasing (expandable)
 - Customers
-- Suppliers (expandable)
-- Dashboard
+- Reviews (expandable)
+- Reporting (expandable)
 - Admin (expandable)
 
 ### Main Content Area

@@ -22,18 +22,18 @@
                     </a>
                 </li>
                 <li>
-                    <button type="button" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-products" data-collapse-toggle="dropdown-products">
+                    <button type="button" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-catalog" data-collapse-toggle="dropdown-catalog">
                         <twig:ux:icon name="ri:box-3-fill" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
-                        <span class="ml-3 flex-1 whitespace-nowrap text-left">Products</span>
+                        <span class="ml-3 flex-1 whitespace-nowrap text-left">Catalog</span>
                         <twig:ux:icon name="mingcute:down-line" class="h-4 w-4 text-gray-400"/>
                     </button>
-                    <ul id="dropdown-products" class="mt-1 hidden space-y-0.5 pl-4">
+                    <ul id="dropdown-catalog" class="mt-1 hidden space-y-0.5 pl-4">
                         <li>
                             <a href="{{ path('app_catalog_product_index') }}"
                                class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
                                data-action="basic-drawer#close"
-                            >Search</a>
+                            >Products</a>
                         </li>
                         <li>
                             <a href="{{ path('app_catalog_category_index') }}"
@@ -68,15 +68,36 @@
                         <span class="ml-3">Orders</span>
                     </a>
                 </li>
+
                 <li>
-                    <a href="{{ path('app_purchasing_purchase_order_index') }}"
-                       class="flex items-center rounded-lg px-3 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
-                       data-turbo-frame="body"
-                       data-action="basic-drawer#close"
-                    >
-                        <twig:ux:icon name="material-symbols-light:order-play-rounded" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
-                        <span class="ml-3 flex-1 whitespace-nowrap text-left">Purchase Orders</span>
-                    </a>
+                    <button type="button" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-purchasing" data-collapse-toggle="dropdown-purchasing">
+                        <twig:ux:icon name="bxs:factory" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
+                        <span class="ml-3 flex-1 whitespace-nowrap text-left">Purchasing</span>
+                        <twig:ux:icon name="mingcute:down-line" class="h-4 w-4 text-gray-400"/>
+                    </button>
+                    <ul id="dropdown-purchasing" class="mt-1 hidden space-y-0.5 pl-4">
+                        <li>
+                            <a href="{{ path('app_purchasing_purchase_order_index') }}"
+                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-turbo-frame="body"
+                               data-action="basic-drawer#close"
+                            >Purchase Orders</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('app_purchasing_supplier_index') }}"
+                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-turbo-frame="body"
+                               data-action="basic-drawer#close"
+                            >Suppliers</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('app_purchasing_supplier_product_index') }}"
+                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-turbo-frame="body"
+                               data-action="basic-drawer#close"
+                            >Supplier Products</a>
+                        </li>
+                    </ul>
                 </li>
                 <li>
                     <a href="{{ path('app_customer_index') }}"
@@ -100,7 +121,7 @@
                                class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
                                data-action="basic-drawer#close"
-                            >Search</a>
+                            >Review Search</a>
                         </li>
                         <li>
                             <a href="{{ path('app_review_index', {reviewStatus: 'PENDING'}) }}"
@@ -112,41 +133,18 @@
                     </ul>
                 </li>
                 <li>
-                    <button type="button" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-suppliers" data-collapse-toggle="dropdown-suppliers">
-                        <twig:ux:icon name="bxs:factory" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
-                        <span class="ml-3 flex-1 whitespace-nowrap text-left">Suppliers</span>
-                        <twig:ux:icon name="mingcute:down-line" class="h-4 w-4 text-gray-400"/>
-                    </button>
-                    <ul id="dropdown-suppliers" class="mt-1 hidden space-y-0.5 pl-4">
-                        <li>
-                            <a href="{{ path('app_purchasing_supplier_index') }}"
-                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
-                               data-turbo-frame="body"
-                               data-action="basic-drawer#close"
-                            >Search</a>
-                        </li>
-                        <li>
-                            <a href="{{ path('app_purchasing_supplier_product_index') }}"
-                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
-                               data-turbo-frame="body"
-                               data-action="basic-drawer#close"
-                            >Supplier Products</a>
-                        </li>
-                    </ul>
-                </li>
-                <li>
-                    <button type="button" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-dashboard" data-collapse-toggle="dropdown-dashboard">
+                    <button type="button" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-reporting" data-collapse-toggle="dropdown-reporting">
                         <twig:ux:icon name="ic:sharp-bar-chart" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
-                        <span class="ml-3 flex-1 whitespace-nowrap text-left">Dashboard</span>
+                        <span class="ml-3 flex-1 whitespace-nowrap text-left">Reporting</span>
                         <twig:ux:icon name="mingcute:down-line" class="h-4 w-4 text-gray-400"/>
                     </button>
-                    <ul id="dropdown-dashboard" class="mt-1 hidden space-y-0.5 pl-4">
+                    <ul id="dropdown-reporting" class="mt-1 hidden space-y-0.5 pl-4">
                         <li>
                             <a href="{{ path('app_reporting_dashboard') }}"
                                class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
                                data-action="basic-drawer#close"
-                            >Overview</a>
+                            >Dashboard</a>
                         </li>
                         <li>
                             <a href="{{ path('app_reporting_dashboard_customer_insights') }}"

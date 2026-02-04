@@ -46,7 +46,7 @@ For each supplier offering this product:
 
 ### Update Stock Levels
 
-**Navigate to:** Suppliers > Supplier Products > Find product > Click **Edit**
+**Navigate to:** Purchasing > Supplier Products > Find product > Click **Edit**
 
 1. Update the **Stock Level** field (0-10,000)
 2. Click **Save**
@@ -74,7 +74,7 @@ Quickly switch a supplier product between Active and Inactive:
 
 ### View in Supplier Product List
 
-**Navigate to:** Suppliers > Supplier Products
+**Navigate to:** Purchasing > Supplier Products
 
 The list shows stock levels for all supplier products:
 - Stock column shows current levels

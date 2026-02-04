@@ -72,7 +72,7 @@ View the pricing breakdown:
 
 **Navigate to:** Product detail > **Cost** tab > Click **Edit Category Cost**
 
-Or: Products > Categories > Select category > Edit
+Or: Catalog > Categories > Select category > Edit
 
 Update:
 - **Category Markup %** - Base markup for all products
@@ -83,7 +83,7 @@ Update:
 
 **Navigate to:** Product detail > **Cost** tab > Click **Edit Subcategory Cost**
 
-Or: Products > Subcategories > Select subcategory > Edit
+Or: Catalog > Subcategories > Select subcategory > Edit
 
 Update:
 - **Subcategory Markup %** - Additional markup on top of category

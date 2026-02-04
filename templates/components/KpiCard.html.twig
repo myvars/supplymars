@@ -17,7 +17,7 @@
     {% elseif valueType == 'text' %}
         {{ value }}
     {% else %}
-        {{ value|number_format(0) }}
+        {{ value|number_format(maxFractionDigits) }}
     {% endif %}
 {% endmacro %}
 

@@ -18,7 +18,7 @@ Products are the items in your catalog that customers can order. Each product re
 
 ### Product List
 
-**Navigate to:** Products > Search
+**Navigate to:** Catalog > Products
 
 The product list displays all products in card format with:
 
@@ -46,7 +46,7 @@ The product list displays all products in card format with:
 
 ### Create a Product
 
-**Navigate to:** Products > Search > Click **Create Product**
+**Navigate to:** Catalog > Products > Click **Create Product**
 
 1. Fill in the form:
    - **Product Name** (required) - The display name

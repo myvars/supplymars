@@ -18,37 +18,51 @@ The menu is organised into sections:
 
 ```
 Home
-├── Products
-│   ├── Search (all products)
+├── Catalog
+│   ├── Products
 │   ├── Categories
 │   ├── Subcategories
 │   └── Manufacturers
 ├── Orders
-├── Purchase Orders
-├── Customers
-├── Suppliers
-│   ├── Search (all suppliers)
+├── Purchasing
+│   ├── Purchase Orders
+│   ├── Suppliers
 │   └── Supplier Products
-├── Dashboard
+├── Customers
+├── Reviews
+│   ├── Review Search
+│   └── Moderation Queue
+├── Reporting
+│   ├── Dashboard
+│   └── Customer Insights
 └── Admin
     └── VAT Rates
 ```
 
 ### Expandable Sections
 
-Some menu items have a **▶** arrow indicating they expand to show sub-items:
+Some menu items have a **▼** arrow indicating they expand to show sub-items:
 
-1. Click on **Products** to expand and see:
-   - Search
+1. Click on **Catalog** to expand and see:
+   - Products
    - Categories
    - Subcategories
    - Manufacturers
 
-2. Click on **Suppliers** to expand and see:
-   - Search
+2. Click on **Purchasing** to expand and see:
+   - Purchase Orders
+   - Suppliers
    - Supplier Products
 
-3. Click on **Admin** to expand and see:
+3. Click on **Reviews** to expand and see:
+   - Review Search
+   - Moderation Queue
+
+4. Click on **Reporting** to expand and see:
+   - Dashboard
+   - Customer Insights
+
+5. Click on **Admin** to expand and see:
    - VAT Rates
 
 Click the section again to collapse it.

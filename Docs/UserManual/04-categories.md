@@ -29,7 +29,7 @@ Categories and subcategories organise your product catalog into a two-level hier
 
 ### Category List
 
-**Navigate to:** Products > Categories
+**Navigate to:** Catalog > Categories
 
 The category list shows all categories with:
 - Category name
@@ -44,7 +44,7 @@ The category list shows all categories with:
 
 ### Create a Category
 
-**Navigate to:** Products > Categories > Click **Create Category**
+**Navigate to:** Catalog > Categories > Click **Create Category**
 
 1. Fill in the form:
    - **Category Name** (required)
@@ -80,7 +80,7 @@ The detail page shows:
 
 ### Subcategory List
 
-**Navigate to:** Products > Subcategories
+**Navigate to:** Catalog > Subcategories
 
 The subcategory list shows all subcategories with:
 - Subcategory name
@@ -96,7 +96,7 @@ The subcategory list shows all subcategories with:
 
 ### Create a Subcategory
 
-**Navigate to:** Products > Subcategories > Click **Create Subcategory**
+**Navigate to:** Catalog > Subcategories > Click **Create Subcategory**
 
 1. Fill in the form:
    - **Category** (required) - Parent category

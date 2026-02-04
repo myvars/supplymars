@@ -22,7 +22,7 @@ When a customer places an order, the system can source items from multiple suppl
 
 ### Supplier List
 
-**Navigate to:** Suppliers > Search
+**Navigate to:** Purchasing > Suppliers
 
 The supplier list shows all suppliers with:
 - Supplier name
@@ -33,7 +33,7 @@ The supplier list shows all suppliers with:
 
 ### Create a Supplier
 
-**Navigate to:** Suppliers > Search > Click **Create Supplier**
+**Navigate to:** Purchasing > Suppliers > Click **Create Supplier**
 
 1. Fill in the form:
    - **Name** (required) - Supplier company name

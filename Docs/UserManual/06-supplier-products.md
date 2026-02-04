@@ -25,7 +25,7 @@ A single catalog product can have multiple supplier products, allowing you to so
 
 ### Supplier Product List
 
-**Navigate to:** Suppliers > Supplier Products
+**Navigate to:** Purchasing > Supplier Products
 
 The list shows all supplier products with:
 - Product name
@@ -47,7 +47,7 @@ The list shows all supplier products with:
 
 ### Create a Supplier Product
 
-**Navigate to:** Suppliers > Supplier Products > Click **Add Supplier Product**
+**Navigate to:** Purchasing > Supplier Products > Click **Add Supplier Product**
 
 1. Fill in the form:
    - **Product Name** (required)
