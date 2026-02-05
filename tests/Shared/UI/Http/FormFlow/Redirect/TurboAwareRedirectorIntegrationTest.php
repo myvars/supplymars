@@ -27,9 +27,8 @@ final class TurboAwareRedirectorIntegrationTest extends KernelTestCase
         $content = $response->getContent();
         self::assertIsString($content);
         self::assertStringContainsString('turbo-stream', $content);
-        // URL is JS-escaped in the template (e.g., /target-url becomes \/target\u002Durl)
-        self::assertStringContainsString('Turbo.visit', $content);
-        self::assertStringContainsString('target', $content);
+        self::assertStringContainsString('action="redirect"', $content);
+        self::assertStringContainsString('/target-url', $content);
     }
 
     public function testTurboRequestWithoutRefreshOmitsUrl(): void

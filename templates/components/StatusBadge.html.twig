@@ -1,5 +1,5 @@
 <span {{ attributes.defaults({
-    'class': 'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium '~this.getColorClasses~(interactive ? ' transition-opacity hover:opacity-75' : ''),
+    'class': 'inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium '~this.getColorClasses~(interactive ? ' transition-opacity hover:opacity-75' : ''),
 }) }}>
     {% if showIcon %}
         <twig:StatusIcon type="{{ status|lower }}" class="me-1"/>

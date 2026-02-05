@@ -12,6 +12,14 @@
         {% if result.addresses.count > 0 %}
             {{ include('customer/_customer_addresses_card.html.twig', {customer: result}) }}
         {% endif %}
+        <div class="flex">
+            <a href="{{ path('app_customer_index') }}"
+               class="inline-flex items-center gap-1 text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+               data-turbo-frame="body">
+                <twig:ux:icon name="bi:arrow-left" class="h-3.5 w-3.5"/>
+                View all customers
+            </a>
+        </div>
     </div>
 
 {% endblock %}

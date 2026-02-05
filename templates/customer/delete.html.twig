@@ -3,41 +3,47 @@
 {% block title %}Delete {{ flowModel }}{% endblock %}
 
 {% block body %}
-    <div class="relative rounded-sm bg-white p-3 shadow-sm dark:bg-gray-800">
-        <div class="mb-3 flex items-center justify-between rounded-t border-b pb-3 dark:border-gray-600">
-            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
-                Delete Customer
-            </h3>
-        </div>
-        <div class="space-y-3 md:space-y-3">
-            <p class="text-base text-gray-500 dark:text-white">
-                {{ result.fullName }}
-                {% if result.isAdmin %}
-                    <span class="text-base font-extralight text-red-500 ms-1 dark:text-red-400">(Administrator)</span>
-                {% endif %}
-                {% if result.customerOrders.count > 0 %}
-                    <span class="text-sm font-extralight text-gray-500 ms-1 dark:text-gray-400">
-                        ({{ result.customerOrders.count }} {{ result.customerOrders.count == 1 ? 'order': 'orders' }})
-                    </span>
-                {% endif %}
-            </p>
+
+    <twig:Dialog title="Delete Customer">
+        <p class="mb-2 text-base text-gray-500 dark:text-white">
+            {{ result.fullName }}
             {% if result.isAdmin %}
-                <p class="text-sm font-light text-red-500 dark:text-red-400">
-                    You cannot delete an admin user.
-                </p>
-            {% elseif result.customerOrders.count > 0 %}
-                <p class="text-sm font-light text-red-500 dark:text-red-400">
-                    You cannot delete a customer with order history.
-                </p>
-            {% else %}
-                <p class="text-sm font-light text-gray-500 dark:text-gray-400">
-                    Are you sure you want to delete this {{ flowModel }}?
-                </p>
-                <form method="post" action="{{ path('app_customer_delete', {'id': result.publicId.value}) }}">
-                    <input type="hidden" name="_token" value="{{ csrf_token('delete'~result.publicId.value) }}">
-                    <twig:Button type="submit" variant="danger" class="w-full">Delete Customer</twig:Button>
-                </form>
+                <span class="text-base font-extralight text-red-500 ms-1 dark:text-red-400">(Administrator)</span>
             {% endif %}
-        </div>
-    </div>
+            {% if result.customerOrders.count > 0 %}
+                <span class="text-sm font-extralight text-gray-500 ms-1 dark:text-gray-400">
+                    ({{ result.customerOrders.count }} {{ result.customerOrders.count == 1 ? 'order': 'orders' }})
+                </span>
+            {% endif %}
+        </p>
+        {% if result.isAdmin %}
+            <p class="mb-4 text-sm font-light text-red-500 dark:text-red-400">
+                You cannot delete an admin user.
+            </p>
+            <twig:Button type="button" variant="alternative" class="w-full" data-action="basic-modal#close">
+                Close
+            </twig:Button>
+        {% elseif result.customerOrders.count > 0 %}
+            <p class="mb-4 text-sm font-light text-red-500 dark:text-red-400">
+                You cannot delete a customer with order history.
+            </p>
+            <twig:Button type="button" variant="alternative" class="w-full" data-action="basic-modal#close">
+                Close
+            </twig:Button>
+        {% else %}
+            <p class="mb-4 text-sm font-light text-gray-500 dark:text-gray-400">
+                Are you sure you want to delete this {{ flowModel }}?
+            </p>
+            <form method="post" action="{{ path('app_customer_delete', {'id': result.publicId.value}) }}">
+                <input type="hidden" name="_token" value="{{ csrf_token('delete'~result.publicId.value) }}">
+                <div class="flex gap-3">
+                    <twig:Button type="button" variant="alternative" class="w-full" data-action="basic-modal#close">
+                        Cancel
+                    </twig:Button>
+                    <twig:Button type="submit" variant="danger" class="w-full">Delete Customer</twig:Button>
+                </div>
+            </form>
+        {% endif %}
+    </twig:Dialog>
+
 {% endblock %}

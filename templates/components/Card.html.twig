@@ -11,20 +11,22 @@
             <twig:ux:icon name="{{ editIcon }}" class="h-6 w-6 p-0.5"/>
         </a>
     {% endif %}
-    {% block cardImage %}{% endblock %}
+    <div class="{{ layout == 'horizontal' ? 'flex flex-col md:flex-row' : '' }}">
+        {% block cardImage %}{% endblock %}
 
-    {% if showLink %}
-    <a href="{{ showLink }}" data-turbo-frame="body" >
-        <div class="relative rounded-xl transition-all duration-200 {{ this.getBackgroundClasses }} hover:bg-gray-100 hover:shadow-md dark:hover:bg-gray-600 dark:hover:shadow-none">
-    {% endif %}
-            <div class="{{ padding }} text-sm text-gray-600 dark:text-gray-400">
-                {% if title %}
-                    <p class="mb-1 text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">{{ title }}</p>
-                {% endif %}
-                {% block content %}{% endblock %}
+        {% if showLink %}
+        <a href="{{ showLink }}" data-turbo-frame="body" class="{{ layout == 'horizontal' ? 'flex-1 min-w-0' : '' }}">
+            <div class="relative rounded-xl transition-all duration-200 {{ this.getBackgroundClasses }} hover:bg-gray-100 hover:shadow-md dark:hover:bg-gray-600 dark:hover:shadow-none">
+        {% endif %}
+                <div class="{{ padding }} text-sm text-gray-600 dark:text-gray-400 {{ layout == 'horizontal' and not showLink ? 'flex-1 min-w-0' : '' }}">
+                    {% if title %}
+                        <p class="mb-1 text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">{{ title }}</p>
+                    {% endif %}
+                    {% block content %}{% endblock %}
+                </div>
+        {% if showLink %}
             </div>
-    {% if showLink %}
-        </div>
-    </a>
-    {% endif %}
+        </a>
+        {% endif %}
+    </div>
 </div>

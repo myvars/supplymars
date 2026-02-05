@@ -11,7 +11,12 @@
         </p>
         <form method="post" action="{{ path('app_purchasing_purchase_order_rewind', {'id': result.publicId.value}) }}">
             <input type="hidden" name="_token" value="{{ csrf_token('delete'~result.publicId.value) }}">
-            <twig:Button type="submit" variant="warning" class="w-full">Rewind to Pending</twig:Button>
+            <div class="flex gap-3">
+                <twig:Button type="button" variant="alternative" class="w-full" data-action="basic-modal#close">
+                    Cancel
+                </twig:Button>
+                <twig:Button type="submit" variant="warning" class="w-full">Rewind to Pending</twig:Button>
+            </div>
         </form>
     </twig:Dialog>
 

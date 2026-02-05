@@ -79,9 +79,6 @@ return [
     '@kurkle/color' => [
         'version' => '0.4.0',
     ],
-    'turbo-view-transitions' => [
-        'version' => '0.3.0',
-    ],
     'flowbite-datepicker/dist/css/datepicker.min.css' => [
         'version' => '2.0.0',
         'type' => 'css',

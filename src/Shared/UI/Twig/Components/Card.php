@@ -17,6 +17,8 @@ final class Card
 
     public string $width = 'w-full';
 
+    public string $layout = 'vertical';
+
     public ?string $editLink = null;
 
     public ?string $showLink = null;

@@ -7,6 +7,14 @@
     <div class="m-3 space-y-4">
         {{ include('pricing/vat_rate/_vat_rate_card.html.twig', {vatRate: result}) }}
         {{ include('pricing/vat_rate/_categories_card.html.twig', {vatRate: result}) }}
+        <div class="flex">
+            <a href="{{ path('app_pricing_vat_rate_index') }}"
+               class="inline-flex items-center gap-1 text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+               data-turbo-frame="body">
+                <twig:ux:icon name="bi:arrow-left" class="h-3.5 w-3.5"/>
+                View all VAT rates
+            </a>
+        </div>
     </div>
 
 {% endblock %}

@@ -31,7 +31,6 @@ const assetNames = [
     'vendor/lodash.throttle/lodash.throttle.index.js',
     'vendor/lodash.debounce/lodash.debounce.index.js',
     'vendor/@kurkle/color/color.index.js',
-    'vendor/turbo-view-transitions/turbo-view-transitions.index.js',
     'images/martian_landscape.webp'
 ];
 

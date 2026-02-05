@@ -10,7 +10,12 @@
         </p>
         <form method="post" action="{{ path('app_order_cancel', {'id': result.publicId.value}) }}">
             <input type="hidden" name="_token" value="{{ csrf_token('delete'~result.publicId.value) }}">
-            <twig:Button type="submit" variant="warning" class="w-full">Cancel</twig:Button>
+            <div class="flex gap-3">
+                <twig:Button type="button" variant="alternative" class="w-full" data-action="basic-modal#close">
+                    Go Back
+                </twig:Button>
+                <twig:Button type="submit" variant="warning" class="w-full">Cancel Order</twig:Button>
+            </div>
         </form>
     </twig:Dialog>
 

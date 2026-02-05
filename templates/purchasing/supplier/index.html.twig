@@ -34,11 +34,11 @@
         <twig:block name="add">
             <twig:Button
                 tag="a"
+                variant="alternative"
                 href="{{ path('app_purchasing_supplier_new') }}"
-                class="flex items-center font-bold space-x-1"
                 data-turbo-frame="modal"
             >
-                <twig:ux:icon name="flowbite:circle-plus-outline" class="w-5"/>
+                <twig:ux:icon name="bi:plus-lg" class="h-4 w-4"/>
                 <span>Create Supplier</span>
             </twig:Button>
         </twig:block>

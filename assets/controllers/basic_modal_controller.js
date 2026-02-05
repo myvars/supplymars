@@ -1,35 +1,12 @@
 import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
-    static targets = ['dialog', 'dynamicContent', 'loadingTemplate'];
+    static targets = ['dialog', 'frame', 'loadingTemplate'];
 
-    observer = null;
     mouseDownTarget = null;
 
-    connect() {
-        if (this.hasDynamicContentTarget) {
-            // when the content changes, call this.open()
-            this.observer = new MutationObserver(() => {
-                const shouldOpen = this.dynamicContentTarget.innerHTML.trim().length > 0;
-                if (shouldOpen && !this.dialogTarget.open) {
-                    this.open();
-                } else if (!shouldOpen && this.dialogTarget.open) {
-                    this.close();
-                }
-            });
-            this.observer.observe(this.dynamicContentTarget, {
-                childList: true,
-                characterData: true,
-                subtree: true
-            });
-        }
-    }
-
     disconnect() {
-        if (this.observer) {
-            this.observer.disconnect();
-        }
-        if (this.dialogTarget.open) {
+        if (this.hasDialogTarget && this.dialogTarget.open) {
             this.close();
         }
     }
@@ -40,10 +17,26 @@ export default class extends Controller {
     }
 
     close() {
-        if(this.hasDialogTarget) {
+        if (this.hasDialogTarget) {
             this.dialogTarget.close();
         }
+        if (this.hasFrameTarget) {
+            this.frameTarget.removeAttribute('src');
+            this.frameTarget.innerHTML = '';
+        }
         document.body.classList.remove('overflow-hidden');
+    }
+
+    frameLoaded(event) {
+        if (event.target === this.frameTarget && !this.dialogTarget.open) {
+            this.open();
+        }
+    }
+
+    submitEnd(event) {
+        if (event.detail.success) {
+            this.close();
+        }
     }
 
     onMouseDown(event) {
@@ -67,7 +60,7 @@ export default class extends Controller {
             return;
         }
 
-        this.dynamicContentTarget.innerHTML = this.loadingTemplateTarget.innerHTML;
+        this.frameTarget.innerHTML = this.loadingTemplateTarget.innerHTML;
     }
 
     #isClickInElement(event, element) {

@@ -17,7 +17,7 @@
         <meta name="apple-mobile-web-app-title" content="{{ domain|split('.')|first }}"/>
         <link rel="manifest" href="{{ asset('images/icons/site.webmanifest') }}"/>
         {% if app.environment != 'test' %}
-            <meta name="view-transition">
+            <meta name="turbo-view-transition" content="true">
             <meta name="turbo-refresh-method" content="replace">
             <meta name="turbo-refresh-scroll" content="preserve">
         {% endif %}
@@ -56,9 +56,8 @@
             {% endif %}
         </div>
 
-        <!-- Turbo Refresh/Navigate -->
+        <!-- Turbo Refresh -->
         <turbo-frame id="url-refresh"></turbo-frame>
-        <div id="turbo-navigate"></div>
 
     </body>
 </html>

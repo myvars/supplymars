@@ -23,7 +23,7 @@ class CancelOrderFlowTest extends WebTestCase
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
             ->get('/order/' . $publicId . '/cancel/confirm')
-            ->click('Cancel')
+            ->click('Cancel Order')
             ->assertOn('/order/')
             ->assertSee('Order cancelled');
     }

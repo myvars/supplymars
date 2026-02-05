@@ -123,9 +123,54 @@
     -webkit-text-fill-color: transparent;
 }
 
+/* View transitions — default cross-fade */
 ::view-transition-old(root),
 ::view-transition-new(root) {
-    animation-duration: 0.5s;
+    animation-duration: 200ms;
+    animation-timing-function: ease-in-out;
+}
+
+/* Direction-aware slide + fade for forward/back navigation */
+html[data-turbo-visit-direction="forward"] ::view-transition-old(root) {
+    animation: vt-slide-out-left 250ms ease-in-out both;
+}
+html[data-turbo-visit-direction="forward"] ::view-transition-new(root) {
+    animation: vt-slide-in-right 250ms ease-in-out both;
+}
+
+html[data-turbo-visit-direction="back"] ::view-transition-old(root) {
+    animation: vt-slide-out-right 250ms ease-in-out both;
+}
+html[data-turbo-visit-direction="back"] ::view-transition-new(root) {
+    animation: vt-slide-in-left 250ms ease-in-out both;
+}
+
+@keyframes vt-slide-out-left {
+    to { opacity: 0; transform: translateX(-3%); }
+}
+@keyframes vt-slide-in-right {
+    from { opacity: 0; transform: translateX(3%); }
+}
+@keyframes vt-slide-out-right {
+    to { opacity: 0; transform: translateX(3%); }
+}
+@keyframes vt-slide-in-left {
+    from { opacity: 0; transform: translateX(-3%); }
+}
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+        animation-duration: 50ms;
+    }
+    html[data-turbo-visit-direction="forward"] ::view-transition-old(root),
+    html[data-turbo-visit-direction="forward"] ::view-transition-new(root),
+    html[data-turbo-visit-direction="back"] ::view-transition-old(root),
+    html[data-turbo-visit-direction="back"] ::view-transition-new(root) {
+        animation: none;
+        animation-duration: 50ms;
+    }
 }
 
 .dropzone.dz-clickable {

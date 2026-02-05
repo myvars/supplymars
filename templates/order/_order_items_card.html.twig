@@ -9,11 +9,11 @@
         {% if order.allowEdit %}
             <twig:Button
                 tag="a"
+                variant="alternative"
                 href="{{ path('app_order_item_new', {id: order.publicId.value}) }}"
-                class="flex items-center font-bold space-x-1"
                 data-turbo-frame="modal"
             >
-                <twig:ux:icon name="flowbite:circle-plus-outline" class="w-4"/>
+                <twig:ux:icon name="bi:plus-lg" class="h-4 w-4"/>
                 <span>Add Item</span>
             </twig:Button>
         {% endif %}

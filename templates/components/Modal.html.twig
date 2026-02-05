@@ -7,7 +7,7 @@
 
 <div {{ attributes.defaults({
     'data-controller': 'basic-modal',
-    'data-action': 'turbo:before-cache@window->basic-modal#close',
+    'data-action': 'turbo:before-cache@window->basic-modal#close turbo:submit-end->basic-modal#submitEnd turbo:frame-load->basic-modal#frameLoaded',
 }) }}
 >
     {% block trigger %}{% endblock %}

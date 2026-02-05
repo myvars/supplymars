@@ -11,7 +11,12 @@
         </p>
         <form method="post" action="{{ path('app_'~flowRoute~'_delete', {'id': result.publicId.value}) }}">
             <input type="hidden" name="_token" value="{{ csrf_token('delete'~result.publicId.value) }}">
-            <twig:Button type="submit" variant="danger" class="w-full">Delete {{ flowModel }}</twig:Button>
+            <div class="flex gap-3">
+                <twig:Button type="button" variant="alternative" class="w-full" data-action="basic-modal#close">
+                    Cancel
+                </twig:Button>
+                <twig:Button type="submit" variant="danger" class="w-full">Delete {{ flowModel }}</twig:Button>
+            </div>
         </form>
     </twig:Dialog>
 

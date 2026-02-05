@@ -6,8 +6,16 @@
 
     {{ include('catalog/product/_navigation.html.twig', {product: result}) }}
     <div class="m-3 space-y-4">
-        <div class="flex flex-wrap justify-center gap-8">
+        <div class="mx-auto max-w-3xl">
             {{ include('catalog/product/_product_card.html.twig', {product: result}) }}
+        </div>
+        <div class="flex">
+            <a href="{{ path('app_catalog_product_index') }}"
+               class="inline-flex items-center gap-1 text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
+               data-turbo-frame="body">
+                <twig:ux:icon name="bi:arrow-left" class="h-3.5 w-3.5"/>
+                View all products
+            </a>
         </div>
     </div>
 
