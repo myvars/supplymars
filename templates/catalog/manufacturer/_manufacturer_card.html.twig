@@ -1,4 +1,4 @@
-<twig:Card editLink="{{ path('app_catalog_manufacturer_edit', {'id': manufacturer.publicId.value }) }}" title="Manufacturer">
+<twig:Card editLink="{{ path('app_catalog_manufacturer_edit', {'id': manufacturer.publicId.value }) }}" title="Manufacturer" statusHighlight="{{ manufacturer.isActive ? 'ACTIVE' : 'INACTIVE' }}">
     <p class="mb-3 text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">{{ manufacturer.name }}</p>
     <twig:CardFooter :updatedAt="manufacturer.updatedAt">
         <twig:StatusBadge status="{{ manufacturer.isActive ? 'ACTIVE' : 'INACTIVE' }}"/>

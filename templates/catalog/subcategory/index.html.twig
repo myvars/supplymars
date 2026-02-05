@@ -24,6 +24,7 @@
             <twig:Card
                 editLink="{{ path('app_catalog_subcategory_edit', {'id': result.publicId.value }) }}"
                 showLink="{{ path('app_catalog_subcategory_show', {'id': result.publicId.value }) }}"
+                statusHighlight="{{ result.isActive ? 'ACTIVE' : 'INACTIVE' }}"
             >
                 <div class="flex items-center justify-between pe-6">
                     <div>

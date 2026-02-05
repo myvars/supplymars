@@ -31,7 +31,6 @@ This achieves:
 | `CommandFlow` | Direct command execution (state changes) | GET or POST |
 | `DeleteFlow` | Delete confirmation + CSRF-validated delete | GET, POST |
 | `SearchFlow` | Paginated index/list pages | GET |
-| `ShowFlow` | Read-only detail pages | GET |
 
 All flows are located in `src/Shared/UI/Http/FormFlow/`.
 
@@ -171,7 +170,6 @@ src/Shared/UI/Http/FormFlow/
 ├── CommandFlow.php           # Direct command execution
 ├── DeleteFlow.php            # Delete confirmation
 ├── SearchFlow.php            # Paginated lists
-├── ShowFlow.php              # Detail pages
 ├── Guard/
 │   └── AutoUpdateGuard.php   # Auto-update submit detection
 ├── Redirect/

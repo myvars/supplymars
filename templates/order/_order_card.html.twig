@@ -1,5 +1,6 @@
 <twig:Card editLink="{{ order.allowEdit ? path('app_order_cancel_confirm', {id: result.publicId.value}) : null }}"
-           editIcon="bi:x-lg">
+           editIcon="bi:x-lg"
+           statusHighlight="{{ order.status.value }}">
     <h5 class="flex items-center text-xl font-semibold text-gray-900 dark:text-white">
         Order #{{ '%06d'|format(result.id) }}
         <a href="{{ path('app_order_lock_toggle_status', {id: result.publicId.value}) }}"

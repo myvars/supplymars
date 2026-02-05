@@ -1,6 +1,7 @@
 <twig:Card
     showLink="{{ path('app_review_show', {'id': review.publicId.value }) }}"
     padding="p-0"
+    statusHighlight="{{ review.status.value }}"
 >
     <div class="flex items-center justify-between">
         <twig:ProductImage

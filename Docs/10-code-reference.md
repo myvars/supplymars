@@ -370,7 +370,6 @@ hasPositiveCost()             // cost > 0
 | CommandFlow | `src/Shared/UI/Http/FormFlow/CommandFlow.php` | Command execution flow |
 | DeleteFlow | `src/Shared/UI/Http/FormFlow/DeleteFlow.php` | Delete with confirmation |
 | SearchFlow | `src/Shared/UI/Http/FormFlow/SearchFlow.php` | Paginated index flow |
-| ShowFlow | `src/Shared/UI/Http/FormFlow/ShowFlow.php` | Detail view flow |
 | FlowContext | `src/Shared/UI/Http/FormFlow/View/FlowContext.php` | Flow configuration |
 | TurboAwareRedirector | `src/Shared/UI/Http/FormFlow/Redirect/TurboAwareRedirector.php` | Turbo-compatible redirects |
 

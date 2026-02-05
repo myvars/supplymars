@@ -23,6 +23,7 @@
             <twig:Card
                 editLink="{{ path('app_customer_edit', {'id': result.publicId.value }) }}"
                 showLink="{{ path('app_customer_show', {'id': result.publicId.value }) }}"
+                statusHighlight="{{ result.isVerified ? 'VERIFIED' : 'UNVERIFIED' }}"
             >
                 <div class="flex items-center justify-between">
                     <div>

@@ -602,7 +602,6 @@ FormFlow is a thin orchestration layer that standardizes controller behavior acr
 | `CommandFlow` | Direct command execution | `execute()` |
 | `DeleteFlow` | Delete with confirmation | `deleteConfirm()`, `delete()` |
 | `SearchFlow` | Paginated index pages | `search()` |
-| `ShowFlow` | Simple detail pages | `show()` |
 
 ### Usage Example
 

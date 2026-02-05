@@ -1,12 +1,14 @@
 <twig:Card editLink="{{ path('app_catalog_product_edit', {id: product.publicId.value}) }}" title="Product" width="w-full" layout="horizontal">
     <twig:block name="cardImage">
-        <twig:ProductImage
-            imageName="{{ product.hasProductImage ? product.getFirstImage.imageName : null }}"
-            filter="large_thumbnail"
-            alt="{{ product.name }}"
-            style="rounded-t-xl md:rounded-t-none md:rounded-s-xl"
-            showLink="{{ path('app_catalog_product_image_show', {id: product.publicId.value}) }}"
-        ></twig:ProductImage>
+        <div class="p-3 flex items-center">
+            <twig:ProductImage
+                imageName="{{ product.hasProductImage ? product.getFirstImage.imageName : null }}"
+                filter="large_thumbnail"
+                alt="{{ product.name }}"
+                style="rounded-lg"
+                showLink="{{ path('app_catalog_product_image_show', {id: product.publicId.value}) }}"
+            ></twig:ProductImage>
+        </div>
     </twig:block>
     <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ product.name }}</p>
     <p class="mb-3 flex items-center text-sm">

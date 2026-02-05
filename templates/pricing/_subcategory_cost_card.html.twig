@@ -1,4 +1,4 @@
-<twig:Card editLink="{{ path('app_pricing_subcategory_cost_edit', {'id': product.publicId.value }) }}" title="Subcategory">
+<twig:Card editLink="{{ path('app_pricing_subcategory_cost_edit', {'id': product.publicId.value }) }}" title="Subcategory" statusHighlight="{{ product.subcategory.isActive ? 'ACTIVE' : 'INACTIVE' }}">
     <p class="mb-3 text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">{{ product.subcategory.name }}</p>
     <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
         <p class="flex items-center gap-2">

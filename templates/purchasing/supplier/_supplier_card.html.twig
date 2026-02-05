@@ -2,6 +2,7 @@
     editLink="{{ path('app_purchasing_supplier_edit', { id: supplier.publicId.value }) }}"
     title="Supplier"
     colour="{{ supplier.colourScheme }}"
+    statusHighlight="{{ supplier.isActive ? 'ACTIVE' : 'INACTIVE' }}"
 >
     <p class="mb-3 text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">{{ supplier.name }}</p>
     <twig:CardFooter :updatedAt="supplier.updatedAt">

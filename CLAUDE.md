@@ -94,7 +94,7 @@ These areas have non-obvious design. Read the corresponding ADR in `Docs/adr/` b
 
 ### FormFlow (Controller Pattern)
 
-Controllers are thin orchestrators. 5 flow types:
+Controllers are thin orchestrators. 4 flow types:
 
 | Flow | Purpose |
 |------|---------|
@@ -102,7 +102,6 @@ Controllers are thin orchestrators. 5 flow types:
 | `CommandFlow` | State transitions (approve, reject, etc.) |
 | `DeleteFlow` | Delete with confirmation |
 | `SearchFlow` | Paginated index pages |
-| `ShowFlow` | Detail pages |
 
 - **Mappers** are `__invoke` callables: form DTO → command. Located in `{Context}/UI/Http/Form/Mapper/`, named `{Action}{Entity}Mapper`.
 - **Filter mappers**: `SearchCriteria` → `FilterCommand` (readonly DTO implementing `SearchCriteriaInterface`). Handler builds redirect via `FilterParamBuilder`.

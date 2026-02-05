@@ -22,6 +22,7 @@
             <twig:Card
                 editLink="{{ path('app_catalog_manufacturer_edit', {'id': result.publicId.value }) }}"
                 showLink="{{ path('app_catalog_manufacturer_show', {'id': result.publicId.value }) }}"
+                statusHighlight="{{ result.isActive ? 'ACTIVE' : 'INACTIVE' }}"
             >
                 <div class="flex items-center justify-between pe-6">
                     <p class="text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">{{ result.name }}</p>

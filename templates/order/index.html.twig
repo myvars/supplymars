@@ -21,7 +21,7 @@
         </twig:block>
 
         <twig:block name="list_item">
-            <twig:Card showLink="{{ path('app_order_show', {'id': result.publicId.value }) }}">
+            <twig:Card showLink="{{ path('app_order_show', {'id': result.publicId.value }) }}" statusHighlight="{{ result.status.value }}">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-lg font-semibold text-gray-900 dark:text-white">

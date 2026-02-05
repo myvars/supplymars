@@ -2,6 +2,7 @@
 
 namespace App\Shared\UI\Twig\Components;
 
+use App\Shared\UI\Twig\StatusColor;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 
 #[AsTwigComponent]
@@ -24,6 +25,8 @@ final class Card
     public ?string $showLink = null;
 
     public string $editIcon = 'mynaui:edit-one';
+
+    public ?string $statusHighlight = null;
 
     public function getBackgroundClasses(): string
     {
@@ -62,6 +65,26 @@ final class Card
             'supplier3' => 'border bg-white border-supplier3-300 hover:bg-supplier3-100 dark:border-supplier3-700 dark:bg-supplier3-700 dark:hover:bg-supplier3-600',
             'supplier4' => 'border bg-white border-supplier4-300 hover:bg-supplier4-100 dark:border-supplier4-700 dark:bg-supplier4-700 dark:hover:bg-supplier4-600',
             default => throw new \LogicException(sprintf('Unknown colourScheme "%s"', $this->colour)),
+        };
+    }
+
+    public function getHighlightClasses(): string
+    {
+        if ($this->statusHighlight === null) {
+            return '';
+        }
+
+        $color = StatusColor::resolve($this->statusHighlight);
+
+        return match ($color) {
+            'green' => 'border-l-4 border-l-green-500 dark:border-l-green-400',
+            'blue' => 'border-l-4 border-l-blue-500 dark:border-l-blue-400',
+            'emerald' => 'border-l-4 border-l-emerald-500 dark:border-l-emerald-400',
+            'yellow' => 'border-l-4 border-l-yellow-500 dark:border-l-yellow-400',
+            'orange' => 'border-l-4 border-l-orange-500 dark:border-l-orange-400',
+            'purple' => 'border-l-4 border-l-purple-500 dark:border-l-purple-400',
+            'red' => 'border-l-4 border-l-red-500 dark:border-l-red-400',
+            default => 'border-l-4 border-l-gray-400 dark:border-l-gray-500',
         };
     }
 }

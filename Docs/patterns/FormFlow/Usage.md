@@ -178,25 +178,6 @@ Key points:
 - Filter forms bind existing criteria as initial data
 - Handler typically returns `Result::ok()` with redirect to index
 
-### Pattern 8: Detail Page
-
-```php
-#[Route(path: '/product/{id}', name: 'app_catalog_product_show', methods: ['GET'])]
-public function show(
-    #[ValueResolver('public_id')] Product $product,
-    ShowFlow $flow,
-): Response {
-    return $flow->show(
-        model: self::MODEL,
-        extraVars: ['product' => $product],
-    );
-}
-```
-
-Key points:
-- Minimal flow for read-only pages
-- Pass entity via `extraVars` for template access
-
 ## Turbo Integration
 
 ### How It Works

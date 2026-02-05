@@ -3,6 +3,7 @@
     editIcon="bi:x-lg"
     colour="{{ activeProductSource is same as supplierProduct ? 'green' : 'gray' }}"
     borderColour="{{ activeProductSource is same as supplierProduct ? 'green' : null }}"
+    statusHighlight="{{ supplierProduct.isActive ? 'ACTIVE' : 'INACTIVE' }}"
 >
     <p class="text-xs font-medium text-gray-500 dark:text-gray-500">
         {{ supplierProduct.supplier.name }}

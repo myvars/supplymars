@@ -1,4 +1,4 @@
-<twig:Card editLink="{{ path('app_customer_edit', {id: customer.publicId.value})}}" title="Customer">
+<twig:Card editLink="{{ path('app_customer_edit', {id: customer.publicId.value})}}" title="Customer" statusHighlight="{{ customer.isVerified ? 'VERIFIED' : 'UNVERIFIED' }}">
     <div class="mb-3 flex items-center gap-2">
         <p class="text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">{{ customer.fullName }}</p>
         {% if result.isAdmin %}

@@ -31,7 +31,6 @@ We implemented a **FormFlow abstraction layer** that standardizes controller beh
 | `CommandFlow` | Direct command execution (no form) | `execute()` |
 | `DeleteFlow` | Delete with CSRF confirmation | `deleteConfirm()`, `delete()` |
 | `SearchFlow` | Paginated index pages | `search()` |
-| `ShowFlow` | Simple detail views | `show()` |
 
 ### Controller Usage
 

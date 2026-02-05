@@ -1,7 +1,8 @@
 {% set colourScheme = result.supplier.colourScheme %}
 <twig:Card colour="{{ colourScheme }}"
            editLink="{{ path('app_purchasing_purchase_order_rewind_confirm', {id: result.publicId.value}) }}"
-           editIcon="mingcute:back-line">
+           editIcon="mingcute:back-line"
+           statusHighlight="{{ purchaseOrder.status.value }}">
     <h5 class="flex items-center text-xl font-semibold text-gray-900 dark:text-white">
         PO #{{ '%06d'|format(result.id) }}
         <span class="mx-1 text-gray-300 dark:text-gray-600">&middot;</span>
