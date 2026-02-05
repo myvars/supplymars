@@ -251,7 +251,7 @@ final class FormFlowTest extends TestCase
         // @phpstan-ignore argument.type (test uses mock form type string)
         $response = $flow->form($request, 'FormType', [], $this->mapper(), $this->handlerFail('Ignored'), $ctx);
 
-        self::assertSame(Response::HTTP_OK, $response->getStatusCode());
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
         self::assertSame('<html>AUTO</html>', $response->getContent());
         self::assertEmpty($this->getFlashBag($request)->get('danger'));
         self::assertEmpty($this->getFlashBag($request)->get('success'));

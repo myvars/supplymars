@@ -1,15 +1,15 @@
 <twig:Modal closeButton="true">
-    <turbo-frame
-        id="modal"
-        data-basic-modal-target="frame"
-{#        data-action="turbo:before-fetch-request->basic-modal#showLoading"#}
-        class="aria-busy:opacity-10 transition-opacity aria-busy:delay-700"
-    >
-        {{ include ('shared/turbo/_frame_success_stream.html.twig', { frame: 'modal' }) }}
-    </turbo-frame>
-    <twig:block name="loading_template">
-{#        <div class="flex items-center justify-center rounded-sm bg-cover p-20 bg-space-pattern">#}
-{#            <twig:ux:icon name="icomoon-free:spinner9" class="h-10 w-10 text-gray-400/40"/>#}
-{#        </div>#}
-    </twig:block>
+    <div class="relative">
+        <turbo-frame
+            id="modal"
+            data-basic-modal-target="frame"
+            data-action="turbo:before-fetch-request->basic-modal#frameBusy turbo:frame-render->basic-modal#frameIdle"
+            class="peer block data-[loading]:opacity-30"
+        >
+            {{ include ('shared/turbo/_frame_success_stream.html.twig', { frame: 'modal' }) }}
+        </turbo-frame>
+        <div class="pointer-events-none hidden peer-data-[loading]:flex absolute inset-0 items-center justify-center">
+            <twig:ux:icon name="icomoon-free:spinner9" class="h-8 w-8 animate-spin text-gray-400"/>
+        </div>
+    </div>
 </twig:Modal>

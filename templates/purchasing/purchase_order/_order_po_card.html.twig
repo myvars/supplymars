@@ -1,5 +1,5 @@
 {% set colourScheme = purchaseOrder.supplier.colourScheme %}
-<twig:Card colour="{{ colourScheme }}">
+<twig:Card colour="{{ colourScheme }}" statusHighlight="{{ purchaseOrder.status.value }}">
     <div class="flex w-full items-center justify-between">
         <div class="flex items-center gap-2">
             <h1 class="text-base font-medium text-gray-700 dark:text-gray-300">

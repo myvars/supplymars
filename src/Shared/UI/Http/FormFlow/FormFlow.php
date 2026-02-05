@@ -112,7 +112,7 @@ final readonly class FormFlow
      */
     private function getResponseStatus(FormInterface $form): int
     {
-        if ($form->isSubmitted() && !$form->isValid() && !$this->autoUpdateForm->is($form)) {
+        if ($form->isSubmitted() && (!$form->isValid() || $this->autoUpdateForm->is($form))) {
             return Response::HTTP_UNPROCESSABLE_ENTITY;
         }
 

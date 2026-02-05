@@ -4,7 +4,7 @@
 
 {% block body %}
 
-    <turbo-frame id="reports">
+    <turbo-frame id="reports" refresh="morph">
         <twig:Card>
             {% if report.summary is not null %}
                 {{ include('reporting/_reports_header.html.twig', {title: 'Overdue Orders'}) }}

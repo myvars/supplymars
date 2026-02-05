@@ -1,4 +1,3 @@
-// assets/controllers/searchbox-controller.js
 import {Controller} from "@hotwired/stimulus"
 import debounce from 'debounce'
 
@@ -10,26 +9,34 @@ export default class extends Controller {
     static targets = ["queryInput"];
 
     initialize() {
-        // Create a debounced version of the queryInputChanged method
-        this.debouncedQueryInputChanged = debounce(this.queryInputChanged.bind(this), 200);
+        this.debouncedQueryInputChanged = debounce(this.queryInputChanged.bind(this), 250);
     }
 
     connect() {
         this.handleFocus();
     }
 
-    debouncedQueryInputChanged(event) {
-        this.queryInputChanged();
-    }
-    queryInputChanged() {
+    disconnect() {
+        this.debouncedQueryInputChanged.clear();
 
-        if (window.Turbo) {
-            Turbo.visit(this.buildActionURL(), { action: "replace" });
+        if (this._focusRaf) {
+            cancelAnimationFrame(this._focusRaf);
+        }
+    }
+
+    queryInputChanged() {
+        const url = this.buildActionURL();
+        const frameId = this.element.dataset.turboFrame;
+        const frame = document.getElementById(frameId);
+
+        if (frame) {
+            frame.src = url;
+            history.replaceState(history.state, '', url);
 
             return;
         }
 
-        this.element.action = this.buildActionURL();
+        this.element.action = url;
         this.element.requestSubmit();
     }
 
@@ -41,11 +48,14 @@ export default class extends Controller {
     }
 
     handleFocus() {
-        // Focus on the query input when the page loads
-        setTimeout(() => {
+        this._focusRaf = requestAnimationFrame(() => {
+            if (document.activeElement === this.queryInputTarget) {
+                return;
+            }
+
             const value = this.queryInputTarget.value;
             this.queryInputTarget.focus();
             this.queryInputTarget.setSelectionRange(value.length, value.length);
-        }, 100);
+        });
     }
 }

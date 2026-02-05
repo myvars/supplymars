@@ -63,6 +63,14 @@ export default class extends Controller {
         this.frameTarget.innerHTML = this.loadingTemplateTarget.innerHTML;
     }
 
+    frameBusy() {
+        this.frameTarget.dataset.loading = '';
+    }
+
+    frameIdle() {
+        delete this.frameTarget.dataset.loading;
+    }
+
     #isClickInElement(event, element) {
         const rect = element.getBoundingClientRect();
         return (
