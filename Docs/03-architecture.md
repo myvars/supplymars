@@ -480,3 +480,54 @@ Production cron schedule (inferred from `docker/php/cron/prod-crontab`):
 | */15 min | `app:update-supplier-stock 20` | Stock fluctuation |
 | Daily 00:03 | `app:calculate-product-sales 1` | Reporting ETL |
 | Daily 00:07 | `app:calculate-order-sales 1` | Reporting ETL |
+
+## Frontend Navigation
+
+### Turbo (Hotwire)
+
+SupplyMars uses Hotwire Turbo for SPA-like navigation without a JavaScript framework. See [ADR 007](adr/007-turbo-frame-modal-architecture.md) for the architectural decision.
+
+### Frame Hierarchy
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│  <turbo-frame id="body">        Main content, updates URL       │
+├─────────────────────────────────────────────────────────────────┤
+│  <turbo-frame id="modal">       Dialogs inside <dialog>         │
+├─────────────────────────────────────────────────────────────────┤
+│  <turbo-frame id="{model}-table">  Search results, updates URL  │
+├─────────────────────────────────────────────────────────────────┤
+│  <turbo-frame id="reports">     Dashboard widgets               │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Modal System
+
+Forms and confirmations render in a native `<dialog>` element managed by Stimulus:
+
+1. Link with `data-turbo-frame="modal"` triggers fetch
+2. Server detects `turbo-frame: modal` header, returns minimal layout
+3. Stimulus controller opens dialog on frame load
+4. Form submits to same frame, receives Turbo Stream response
+5. Controller auto-closes on successful submission
+
+### Turbo Streams
+
+After form submission, the server returns Turbo Streams instead of HTTP redirects:
+
+```html
+<turbo-stream action="refresh"></turbo-stream>
+<turbo-stream action="append" target="flash-container">...</turbo-stream>
+```
+
+The `TurboAwareRedirector` in FormFlow handles this automatically.
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `assets/controllers/basic_modal_controller.js` | Modal lifecycle |
+| `templates/shared/turbo/modal_base.html.twig` | Layout decision |
+| `src/Shared/UI/Http/FormFlow/Redirect/TurboAwareRedirector.php` | Stream generation |
+
+See [Turbo Patterns](patterns/Turbo/README.md) and [UI Patterns](patterns/UI/README.md) for detailed documentation

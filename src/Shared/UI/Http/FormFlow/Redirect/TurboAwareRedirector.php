@@ -6,7 +6,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\UX\Turbo\TurboBundle;
-use Twig\Environment;
 
 /**
  * Turbo‑aware redirector that:
@@ -17,13 +16,7 @@ use Twig\Environment;
  */
 final readonly class TurboAwareRedirector implements RedirectorInterface
 {
-    public const string TURBO_STREAM_REFRESH_TEMPLATE = 'shared/turbo/turbo_stream_refresh.html.twig';
-
     private const string TURBO_STREAM_MIME = 'text/vnd.turbo-stream.html';
-
-    public function __construct(private Environment $twig)
-    {
-    }
 
     /**
      * Redirect or produce a Turbo stream depending on the incoming request.
@@ -47,21 +40,27 @@ final readonly class TurboAwareRedirector implements RedirectorInterface
             // - Otherwise: Refresh in place
             $shouldNavigate = $forceNavigate || ($refresh && $this->shouldNavigateAway($request, $url));
 
-            try {
-                $content = $this->twig->render(self::TURBO_STREAM_REFRESH_TEMPLATE, [
-                    'navigateUrl' => $shouldNavigate ? $url : null,
-                ]);
-            } catch (\Throwable) {
-                $content = '';
-            }
-
-            return new Response($content, Response::HTTP_OK, [
-                'Content-Type' => self::TURBO_STREAM_MIME,
-            ]);
+            return new Response(
+                $this->buildStream($shouldNavigate ? $url : null),
+                Response::HTTP_OK,
+                ['Content-Type' => self::TURBO_STREAM_MIME]
+            );
         }
 
         // Regular (non-Turbo) fallback - emit a proper redirect so browser follows it.
         return new RedirectResponse($url, $status);
+    }
+
+    private function buildStream(?string $navigateUrl): string
+    {
+        if ($navigateUrl !== null) {
+            return sprintf(
+                '<turbo-stream action="redirect" url="%s"></turbo-stream>',
+                htmlspecialchars($navigateUrl, ENT_QUOTES)
+            );
+        }
+
+        return '<turbo-stream action="refresh"></turbo-stream>';
     }
 
     /**

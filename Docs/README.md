@@ -81,12 +81,20 @@ SupplyMars is a **modular monolith** - bounded contexts are self-contained modul
 - **[09-cli-reference.md](09-cli-reference.md)** - All console commands with examples
 - **[10-code-reference.md](10-code-reference.md)** - Navigational map of the codebase
 
+### Patterns
+- **[patterns/FormFlow/](patterns/FormFlow/README.md)** - Thin controller orchestration for CRUD operations
+- **[patterns/Turbo/](patterns/Turbo/README.md)** - Turbo Frames, Streams, and modal system
+- **[patterns/UI/](patterns/UI/README.md)** - Server-driven UI with Twig Components, Stimulus, and Forms
+
 ### Architecture Decision Records
 - **[adr/001-multi-supplier-sourcing.md](adr/001-multi-supplier-sourcing.md)** - Why orders split across suppliers
 - **[adr/002-order-line-splitting.md](adr/002-order-line-splitting.md)** - Why order items can have multiple prices
 - **[adr/003-simulation-first-design.md](adr/003-simulation-first-design.md)** - Why simulation drives the system
 - **[adr/004-pricing-abstraction.md](adr/004-pricing-abstraction.md)** - Hierarchical pricing with pretty-price rounding
 - **[adr/005-reporting-strategy.md](adr/005-reporting-strategy.md)** - Two-layer aggregation for performance
+- **[adr/006-formflow-controller-pattern.md](adr/006-formflow-controller-pattern.md)** - FormFlow abstraction for thin controllers
+- **[adr/007-turbo-frame-modal-architecture.md](adr/007-turbo-frame-modal-architecture.md)** - Turbo Frames with native dialog modals
+- **[adr/008-server-driven-ui-architecture.md](adr/008-server-driven-ui-architecture.md)** - Server-driven UI instead of JavaScript SPA
 
 ---
 

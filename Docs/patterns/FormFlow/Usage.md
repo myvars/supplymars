@@ -191,7 +191,7 @@ Detection criteria:
 
 When Turbo is detected:
 - Instead of HTTP redirect, returns 200 with Turbo stream content
-- Renders `shared/turbo/turbo_stream_refresh.html.twig`
+- Generates stream inline (`<turbo-stream action="refresh">` or `<turbo-stream action="redirect">`)
 - Sets content-type to `text/vnd.turbo-stream.html`
 
 When Turbo is not detected:

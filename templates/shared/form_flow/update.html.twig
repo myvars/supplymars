@@ -13,7 +13,8 @@
                 href="{{ path('app_'~flowRoute~'_delete_confirm', {'id': result.id}) }}"
                 type="submit"
                 variant="danger"
-                class="w-full">
+                class="w-full"
+                data-turbo-prefetch="false">
                 Delete
             </twig:Button>
         {% endif %}
