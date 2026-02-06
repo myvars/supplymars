@@ -1,0 +1,92 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}PO Item Performance{% endblock %}
+
+{% block body %}
+
+    <turbo-frame id="reports" refresh="morph">
+        <twig:Card>
+            {% if report.summary is not null %}
+                {{ include('reporting/_reports_header.html.twig', {title: 'PO Item Performance'}) }}
+
+                {{ include('reporting/_po_item_performance_summary.html.twig', {summary: report.summary}) }}
+            {% endif %}
+
+            {% if report.items.count > 0 %}
+                <div class="relative mt-3 overflow-x-auto rounded-lg border border-gray-200/80 dark:border-gray-700">
+                    <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
+                        <thead class="bg-gray-50 text-xs font-semibold uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+                        <tr>
+                            <th scope="col" class="px-6 py-3">
+                                <div class="flex justify-start">
+                                    <twig:SortLink sortValue="product.name">Product</twig:SortLink>
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                <div class="flex justify-center">
+                                    <twig:SortLink sortValue="supplier.name">Supplier</twig:SortLink>
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                <div class="flex justify-center">
+                                    PO
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-3 max-md:hidden">
+                                <div class="flex justify-center">
+                                    <twig:SortLink sortValue="status">Status</twig:SortLink>
+                                </div>
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                <div class="flex justify-end">
+                                    <twig:SortLink sortValue="profit">Profit</twig:SortLink>
+                                </div>
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in report.items %}
+                            {% set profit = (item.quantity * item.customerOrderItem.price) - item.totalPrice %}
+                            <tr class="border-b border-l-4 {{ item.status.value|status_highlight }} odd:bg-white even:bg-gray-50 transition-colors hover:bg-gray-100 dark:border-gray-700 dark:odd:bg-gray-900 dark:even:bg-gray-800 dark:hover:bg-gray-700/50">
+                                <th scope="row"
+                                    class="whitespace-nowrap px-6 py-2 font-medium text-gray-900 dark:text-gray-300">
+                                    <div class="flex items-center gap-3">
+                                        <twig:ProductImage
+                                            imageName="{{ item.customerOrderItem.product.hasProductImage ? item.customerOrderItem.product.getFirstImage.imageName : null }}"
+                                            filter="small_thumbnail"
+                                            alt="{{ item.customerOrderItem.product.name }}"
+                                            showLink="{{ path('app_catalog_product_show', {'id': item.customerOrderItem.product.publicId.value }) }}"
+                                            style="rounded-lg"
+                                            class="h-10 w-10 shrink-0"
+                                        ></twig:ProductImage>
+                                        <span class="line-clamp-1 inline-flex max-md:hidden">{{ item.customerOrderItem.product.name }}</span>
+                                    </div>
+                                </th>
+                                <td class="px-6 py-2 text-center">
+                                    {{ item.purchaseOrder.supplier.name }}
+                                </td>
+                                <td class="px-6 py-2 text-center">
+                                    <a href="{{ path('app_purchasing_purchase_order_show', {'id': item.purchaseOrder.publicId.value }) }}"
+                                       class="text-primary-600 hover:underline dark:text-primary-400"
+                                       data-turbo-frame="body"
+                                    >
+                                        #{{ '%06d'|format(item.purchaseOrder.id) }}
+                                    </a>
+                                </td>
+                                <td class="px-6 py-2 text-center max-md:hidden">
+                                    <twig:StatusBadge :status="item.status.value"/>
+                                </td>
+                                <td class="whitespace-nowrap px-6 py-2 text-right tabular-nums {{ profit >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
+                                    {{ profit|format_currency('GBP') }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <twig:Pagination pager="{{ report.items }}"></twig:Pagination>
+            {% endif %}
+        </twig:Card>
+    </turbo-frame>
+
+{% endblock %}

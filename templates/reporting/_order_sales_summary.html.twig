@@ -1,4 +1,4 @@
-<div class="grid grid-cols-3 gap-3">
+<div class="grid grid-cols-1 gap-3 md:grid-cols-3">
     <twig:KpiCard title="Order Count" value="{{ summary.orderCount|default(0) }}" href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'orderCount'})) }}"/>
     <twig:KpiCard title="Order Value" value="{{ summary.orderValue|default(0) }}" valueType="currency" href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'orderValue'})) }}"/>
     <twig:KpiCard title="AOV" value="{{ summary.averageOrderValue|default(0) }}" valueType="currency" href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'averageOrderValue'})) }}"/>

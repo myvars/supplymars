@@ -205,6 +205,7 @@ hasPositiveCost()             // cost > 0
 | ProductSalesReport | `src/Reporting/UI/Http/Dashboard/Report/ProductSalesReport.php` | `/dashboard/report/product/sales` |
 | OrderSummaryReport | `src/Reporting/UI/Http/Dashboard/Report/OrderSummaryReport.php` | `/dashboard/report/order/summary` |
 | OverdueOrdersReport | `src/Reporting/UI/Http/Dashboard/Report/OverdueOrdersReport.php` | `/dashboard/report/overdue/orders` |
+| PoItemPerformanceReport | `src/Reporting/Application/Handler/Report/PoItemPerformanceReportHandler.php` | `/dashboard/report/po-item/performance` |
 
 ### Chart Builders
 

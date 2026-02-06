@@ -450,6 +450,40 @@ symfony console app:calculate-order-sales 7
 
 ---
 
+## PO Item Performance Report
+
+### Purpose
+
+The PO Item Performance Report tracks purchase order item profitability and fulfillment metrics across suppliers and products. It helps identify which supplier-product combinations yield the best margins and which have fulfillment issues.
+
+### Main Workflows
+
+**Viewing PO Item Performance:**
+1. Navigate to Dashboard → Reports
+2. Select PO Item Performance report
+3. Filter by date range (7d, 30d, 90d, 365d)
+4. Sort by profit, status, product, or supplier
+5. View summary totals and paginated item details
+
+### Entry Points
+
+| Route | Handler | Purpose |
+|-------|---------|---------|
+| `/dashboard/report/po-item/performance` | `PoItemPerformanceReportHandler` | PO item profitability analysis |
+
+**Key files:**
+- `src/Reporting/Application/Handler/Report/PoItemPerformanceReportHandler.php`
+- `src/Reporting/Application/Report/PoItemPerformanceReportCriteria.php`
+
+### Business Rules
+
+1. **Date filtering:** Uses SalesDuration trait for consistent date range options
+2. **Sort options:** profit, status, product.name, supplier.name
+3. **Default sort:** By profit ascending (lowest first to identify problem items)
+4. **Summary aggregation:** Provides totals alongside paginated details
+
+---
+
 ## Image/Media Handling
 
 ### Purpose

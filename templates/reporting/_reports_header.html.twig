@@ -7,23 +7,11 @@
     - showDurations: If true, shows duration filter buttons (default: true, ignored if isDashboard)
 #}
 <div class="mb-3 flex items-center justify-between">
-    <div class="flex items-center justify-start">
-        {% if not isDashboard|default(false) %}
-            <a href="{{ path('app_reporting_dashboard') }}"
-               class="flex items-center text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
-               data-turbo-frame="body"
-            >
-                <twig:ux:icon name="ic:sharp-bar-chart" class="h-5 w-5 me-1"/>
-                {{ title }}
-            </a>
-        {% else %}
-            <div class="flex items-center">
-                <twig:ux:icon name="ic:sharp-bar-chart" class="h-5 w-5 me-1 text-gray-600 dark:text-gray-500"/>
-                <span class="font-medium text-gray-900 dark:text-gray-300">{{ title }}</span>
-            </div>
-        {% endif %}
+    <div class="flex items-center">
+        <twig:ux:icon name="ic:sharp-bar-chart" class="h-5 w-5 me-1 text-gray-600 dark:text-gray-500"/>
+        <span class="font-medium text-gray-900 dark:text-gray-300">{{ title }}</span>
     </div>
-    {% if not isDashboard|default(false) and showDurations|default(true) %}
+    {% if showDurations|default(true) %}
         {{ include('reporting/_sales_durations.html.twig') }}
     {% endif %}
 </div>

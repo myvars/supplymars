@@ -10,6 +10,7 @@
             </h1>
             <span class="mx-1 text-gray-300 dark:text-gray-600">&middot;</span>
             <span class="text-sm text-gray-500 dark:text-gray-400">{{ purchaseOrder.supplier.name }}</span>
+            <twig:ProfitBadge :value="purchaseOrder.calculateProfit" class="ml-1"/>
         </div>
         <a href="{{ path('app_purchase_order_status_log', {'id':purchaseOrder.publicId.value }) }}"
            data-turbo-frame="modal"

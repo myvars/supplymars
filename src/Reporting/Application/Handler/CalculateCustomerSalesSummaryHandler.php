@@ -62,8 +62,10 @@ final readonly class CalculateCustomerSalesSummaryHandler
             ? bcdiv($lifetimeRevenue, (string) $totalCustomers, 2)
             : '0.00';
 
-        // Repeat rate
-        $repeatRate = $orderRepo->findRepeatRate();
+        // Repeat rate (returning customers as percentage of active customers in period)
+        $repeatRate = $activeCustomers > 0
+            ? number_format(($returningCustomers / $activeCustomers) * 100, 2, '.', '')
+            : '0.00';
 
         // Review rate
         $reviewRate = $orderRepo->findReviewRate($startDate, $endDate, $activeCustomers);

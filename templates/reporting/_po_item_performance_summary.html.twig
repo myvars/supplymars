@@ -1,0 +1,4 @@
+<div class="grid grid-cols-2 gap-3">
+    <twig:KpiCard title="Total Items" value="{{ summary.itemCount|default(0) }}"/>
+    <twig:KpiCard title="Total Profit" value="{{ summary.totalProfit|default(0) }}" valueType="currency"/>
+</div>

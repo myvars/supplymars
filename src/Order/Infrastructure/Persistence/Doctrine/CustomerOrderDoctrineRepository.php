@@ -493,29 +493,6 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
         return (string) ($conn->fetchOne($sql, ['cancelledStatus' => OrderStatus::CANCELLED->value]) ?: '0.00');
     }
 
-    public function findRepeatRate(): string
-    {
-        $conn = $this->getEntityManager()->getConnection();
-
-        $sql = '
-            SELECT
-                CASE WHEN COUNT(DISTINCT customer_id) > 0
-                    THEN (COUNT(DISTINCT CASE WHEN cnt > 1 THEN customer_id END) / COUNT(DISTINCT customer_id)) * 100
-                    ELSE 0
-                END AS repeatRate
-            FROM (
-                SELECT customer_id, COUNT(id) AS cnt
-                FROM customer_order
-                WHERE status != :cancelledStatus
-                GROUP BY customer_id
-            ) customer_counts
-        ';
-
-        $result = $conn->fetchOne($sql, ['cancelledStatus' => OrderStatus::CANCELLED->value]);
-
-        return number_format((float) ($result ?: 0), 2, '.', '');
-    }
-
     public function findReviewRate(\DateTime $startDate, \DateTime $endDate, int $activeCustomers): string
     {
         if ($activeCustomers === 0) {

@@ -45,11 +45,11 @@ enum OrderStatus: string
     public function getChartColor(): string
     {
         return match ($this) {
-            self::PENDING => '#991b1b90', // Muted golden yellow
-            self::PROCESSING => '#eab30890', // Muted burnt orange
-            self::SHIPPED => '#05966990', // Muted forest green
-            self::DELIVERED => '#0284c790', // Muted teal blue
-            self::CANCELLED => '#b91c1c90', // Muted deep red
+            self::PENDING => '#6b728090',    // gray-500
+            self::PROCESSING => '#eab30890', // yellow-500
+            self::SHIPPED => '#3b82f690',    // blue-500
+            self::DELIVERED => '#22c55e90',  // green-500
+            self::CANCELLED => '#ef444490',  // red-500
         };
     }
 

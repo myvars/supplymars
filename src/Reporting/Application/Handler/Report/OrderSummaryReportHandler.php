@@ -59,6 +59,8 @@ final readonly class OrderSummaryReportHandler
             'summary' => $summary,
             'orderSalesChart' => $orderSalesChart,
             'orderProgressChart' => $orderProgressChart,
+            'startDate' => $duration->getStartDate(),
+            'endDate' => $duration->getEndDate(),
         ]);
     }
 }

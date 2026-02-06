@@ -8,12 +8,14 @@ use App\Reporting\Application\Handler\Report\CustomerSegmentReportHandler;
 use App\Reporting\Application\Handler\Report\DashboardReportHandler;
 use App\Reporting\Application\Handler\Report\OrderSummaryReportHandler;
 use App\Reporting\Application\Handler\Report\OverdueOrdersReportHandler;
+use App\Reporting\Application\Handler\Report\PoItemPerformanceReportHandler;
 use App\Reporting\Application\Handler\Report\ProductSalesReportHandler;
 use App\Reporting\Application\Report\CustomerGeographicReportCriteria;
 use App\Reporting\Application\Report\CustomerInsightsReportCriteria;
 use App\Reporting\Application\Report\CustomerSegmentReportCriteria;
 use App\Reporting\Application\Report\OrderSummaryReportCriteria;
 use App\Reporting\Application\Report\OverdueOrderReportCriteria;
+use App\Reporting\Application\Report\PoItemPerformanceReportCriteria;
 use App\Reporting\Application\Report\ProductSalesReportCriteria;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -102,6 +104,18 @@ class DashboardController extends AbstractController
         $result = $handler($criteria);
 
         return $this->render('reporting/customer_segments.html.twig', [
+            'report' => $result->payload,
+        ]);
+    }
+
+    #[Route(path: '/dashboard/report/po/performance', name: 'app_reporting_dashboard_po_performance', methods: ['GET'])]
+    public function poPerformance(
+        PoItemPerformanceReportHandler $handler,
+        #[MapQueryString] PoItemPerformanceReportCriteria $criteria = new PoItemPerformanceReportCriteria(),
+    ): Response {
+        $result = $handler($criteria);
+
+        return $this->render('reporting/po_item_performance.html.twig', [
             'report' => $result->payload,
         ]);
     }

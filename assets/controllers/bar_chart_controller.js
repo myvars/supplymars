@@ -2,33 +2,56 @@ import { Controller } from '@hotwired/stimulus';
 
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
-    static currencySymbol = '£'; // Static property to define the default currency symbol
+    static currencySymbol = '£';
+    static values = {
+        linkUrl: String, // URL with {label} placeholder
+    };
 
     connect() {
-        // Add event listeners for custom Chart.js events
         this.element.addEventListener('chartjs:pre-connect', this.onPreConnect);
         this.element.addEventListener('chartjs:connect', this.onConnect);
     }
 
     disconnect() {
-        // Remove the Chart.js event listeners to avoid memory leaks
         this.element.removeEventListener('chartjs:pre-connect', this.onPreConnect);
         this.element.removeEventListener('chartjs:connect', this.onConnect);
+        if (this.chart?.canvas) {
+            this.chart.canvas.removeEventListener('click', this.onClick);
+        }
     }
 
     onPreConnect = (event) => {
         const config = event.detail?.config;
 
         const yScaleOptions = config?.options?.scales?.y?.grid;
-        const yAxisType = yScaleOptions?.axisType || false; // Check Y axis data type
+        const yAxisType = yScaleOptions?.axisType || false;
 
-        // Configure the chart based on the formatting type
         this.configureYAxis(config, yAxisType);
         this.configureTooltip(config, yAxisType);
     };
 
     onConnect = (event) => {
-        // Placeholder for actions to take once the chart is fully connected
+        this.chart = event.detail.chart;
+        if (this.hasLinkUrlValue && this.chart?.canvas) {
+            this.chart.canvas.addEventListener('click', this.onClick);
+        }
+    };
+
+    onClick = (event) => {
+        if (!this.chart) return;
+
+        const elements = this.chart.getElementsAtEventForMode(
+            event,
+            'nearest',
+            { intersect: true },
+            false
+        );
+
+        if (elements.length > 0) {
+            const index = elements[0].index;
+            const params = this.chart.options.linkParams?.[index] ?? '';
+            Turbo.visit(this.linkUrlValue + (params ? '?' + params : ''));
+        }
     };
 
     // Configures the Y-axis ticks based on the specified type (currency or percent)

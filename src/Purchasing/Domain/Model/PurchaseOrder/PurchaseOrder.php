@@ -267,6 +267,23 @@ class PurchaseOrder implements DomainEventProviderInterface
         return $count;
     }
 
+    /**
+     * Calculate total profit for this PO (revenue - cost).
+     *
+     * @return numeric-string
+     */
+    public function calculateProfit(): string
+    {
+        $profit = '0';
+        foreach ($this->purchaseOrderItems as $item) {
+            $revenue = bcmul((string) $item->getQuantity(), $item->getCustomerOrderItem()->getPrice() ?? '0', 2);
+            $cost = $item->getTotalPrice();
+            $profit = bcadd($profit, bcsub($revenue, $cost, 2), 2);
+        }
+
+        return $profit;
+    }
+
     private function changeShippingPrice(string $shippingPrice): void
     {
         if ((float) $shippingPrice < 0) {

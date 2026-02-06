@@ -29,12 +29,18 @@ final readonly class ProductSalesChartBuilder
             throw new \InvalidArgumentException('SalesDuration is required for bar charts.');
         }
 
+        $startDate = new \DateTimeImmutable($this->dateRangeResolver->getRangeStartDate($salesDuration));
+        $endDate = $this->clock->now();
+        $granularity = $salesDuration->getChartGranularity();
+
         $dateRange = $this->dateRangeResolver->generateDateRange(
-            new \DateTimeImmutable($this->dateRangeResolver->getRangeStartDate($salesDuration)),
-            $this->clock->now(),
+            $startDate,
+            $endDate,
             $salesDuration->getChartLabelFormat(),
-            $salesDuration->getChartGranularity()
+            $granularity
         );
+
+        $linkParams = $this->generateLinkParams($startDate, $endDate, $granularity);
 
         $chartData = $this->mergeSalesData(
             $dateRange,
@@ -43,13 +49,32 @@ final readonly class ProductSalesChartBuilder
             $salesMetric->getValue()
         );
 
-        return $this->buildChart($chartData, $salesMetric);
+        return $this->buildChart($chartData, $salesMetric, $linkParams);
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    private function generateLinkParams(\DateTimeImmutable $startDate, \DateTimeImmutable $endDate, string $granularity): array
+    {
+        $params = [];
+        $interval = \DateInterval::createFromDateString($granularity);
+        \assert($interval instanceof \DateInterval);
+        $period = new \DatePeriod($startDate, $interval, $endDate);
+        foreach ($period as $date) {
+            $start = $date->format('Y-m-d');
+            $end = $date->modify($granularity)->format('Y-m-d');
+            $params[] = 'startDate=' . $start . '&endDate=' . $end;
+        }
+
+        return $params;
     }
 
     /**
      * @param array<string, int|float> $data
+     * @param array<int, string>       $linkParams
      */
-    private function buildChart(array $data, SalesMetricInterface $salesMetric): Chart
+    private function buildChart(array $data, SalesMetricInterface $salesMetric, array $linkParams = []): Chart
     {
         return $this->chartBuilder
             ->createChart(self::CHART_TYPE)
@@ -71,6 +96,7 @@ final readonly class ProductSalesChartBuilder
             ])
             ->setOptions([
                 'maintainAspectRatio' => false,
+                'linkParams' => $linkParams,
                 'scales' => [
                     'x' => [
                         'grid' => [

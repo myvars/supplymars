@@ -8,8 +8,12 @@ use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItemPublicId;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use App\Purchasing\Domain\Model\Supplier\Supplier;
 use App\Purchasing\Domain\Repository\PurchaseOrderItemRepository;
+use App\Reporting\Application\Report\PoItemPerformanceReportCriteria;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
+use Pagerfanta\Adapter\AdapterInterface;
+use Pagerfanta\Doctrine\ORM\QueryAdapter;
 
 /**
  * @extends ServiceEntityRepository<PurchaseOrderItem>
@@ -87,5 +91,63 @@ class PurchaseOrderItemDoctrineRepository extends ServiceEntityRepository implem
             ->groupBy('productId, supplierId')
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * @return AdapterInterface<PurchaseOrderItem>
+     */
+    public function findForPerformanceReport(PoItemPerformanceReportCriteria $criteria): AdapterInterface
+    {
+        $sort = $criteria->getSort();
+        $sortDirection = $criteria->getSortDirection();
+
+        $qb = $this->getPerformanceReportQueryBuilder(
+            new \DateTime($criteria->getDuration()->getStartDate()),
+            new \DateTime($criteria->getDuration()->getEndDate())
+        );
+
+        // Always select profit for secondary sorting
+        $qb->addSelect('(poi.quantity * coi.price) - poi.totalPrice AS HIDDEN profit');
+
+        if ($sort === 'profit') {
+            $qb->orderBy('profit', $sortDirection);
+        } elseif ($sort === 'product.name') {
+            $qb->join('coi.product', 'p')
+                ->orderBy('p.name', $sortDirection)
+                ->addOrderBy('profit', 'DESC');
+        } elseif ($sort === 'supplier.name') {
+            $qb->join('po.supplier', 's')
+                ->orderBy('s.name', $sortDirection)
+                ->addOrderBy('profit', 'DESC');
+        } else {
+            $qb->orderBy('poi.' . $sort, $sortDirection)
+                ->addOrderBy('profit', 'DESC');
+        }
+
+        return new QueryAdapter($qb);
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function findPerformanceReportSummary(\DateTime $startDate, \DateTime $endDate): ?array
+    {
+        return $this->getPerformanceReportQueryBuilder($startDate, $endDate)
+            ->select('COUNT(poi.id) AS itemCount')
+            ->addSelect('SUM((poi.quantity * coi.price) - poi.totalPrice) AS totalProfit')
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    private function getPerformanceReportQueryBuilder(\DateTime $startDate, \DateTime $endDate): QueryBuilder
+    {
+        return $this->createQueryBuilder('poi')
+            ->join('poi.customerOrderItem', 'coi')
+            ->join('poi.purchaseOrder', 'po')
+            ->andWhere('poi.createdAt BETWEEN :startDate AND :endDate')
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate)
+            ->andWhere('poi.status NOT IN (:excludedStatuses)')
+            ->setParameter('excludedStatuses', [PurchaseOrderStatus::CANCELLED, PurchaseOrderStatus::REFUNDED]);
     }
 }

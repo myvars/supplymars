@@ -147,11 +147,46 @@
                             >Dashboard</a>
                         </li>
                         <li>
+                            <a href="{{ path('app_reporting_dashboard_product_sales') }}"
+                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-turbo-frame="body"
+                               data-action="basic-drawer#close"
+                            >Product Sales</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('app_reporting_dashboard_order_summary') }}"
+                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-turbo-frame="body"
+                               data-action="basic-drawer#close"
+                            >Order Summary</a>
+                        </li>
+                        <li>
                             <a href="{{ path('app_reporting_dashboard_customer_insights') }}"
                                class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
                                data-action="basic-drawer#close"
                             >Customer Insights</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('app_reporting_dashboard_po_performance') }}"
+                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-turbo-frame="body"
+                               data-action="basic-drawer#close"
+                            >PO Performance</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('app_reporting_dashboard_overdue_orders', {'duration': 'last30'}) }}"
+                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-turbo-frame="body"
+                               data-action="basic-drawer#close"
+                            >Overdue Orders</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('app_purchasing_purchase_order_index', {'purchaseOrderStatus': 'REJECTED'}) }}"
+                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-turbo-frame="body"
+                               data-action="basic-drawer#close"
+                            >Rejected POs</a>
                         </li>
                     </ul>
                 </li>
