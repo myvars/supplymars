@@ -1,0 +1,16 @@
+{#
+    Inline editable manufacturer name.
+
+    Include this partial in place of a static manufacturer name display.
+    The InlineEdit component handles the edit/save flow via Turbo Frames.
+
+    Variables:
+    - manufacturer: The Manufacturer entity
+#}
+<twig:InlineEdit
+    editUrl="{{ path('app_catalog_manufacturer_inline_name', {id: manufacturer.publicId}) }}"
+    frameId="inline-edit-manufacturer-{{ manufacturer.publicId }}-name"
+    displayClass="text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white"
+>
+    {{ manufacturer.name }}
+</twig:InlineEdit>

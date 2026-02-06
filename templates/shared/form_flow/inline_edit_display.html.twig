@@ -1,0 +1,12 @@
+{#
+    Inline Edit Display Template (Turbo-native pattern)
+
+    Renders the display content inside the turbo-frame.
+    Used for initial display and cancel action.
+
+    Variables:
+    - context: InlineEditContext with frameId, displayTemplate, entity, etc.
+#}
+{{ include(context.displayTemplate, context.displayTemplateVars|merge({
+    (context.entityVarName): context.entity
+})) }}

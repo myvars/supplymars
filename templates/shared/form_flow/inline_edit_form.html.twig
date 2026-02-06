@@ -1,0 +1,60 @@
+{#
+    Inline Edit Form Template (Turbo-native pattern)
+
+    Replaces the entire turbo-frame content with a form.
+    Cancel link reloads the display. Submit returns a turbo-stream.
+
+    Variables:
+    - form: The Symfony form view
+    - context: InlineEditContext with frameId, entity, cancelUrl, etc.
+#}
+<turbo-frame id="{{ context.frameId }}" class="relative inline-flex items-center gap-2">
+    {{ form_start(form, {
+        'attr': {
+            'class': 'contents',
+        }
+    }) }}
+        {# Hidden sizer span for auto-grow - must match input font styling #}
+        <span data-inline-edit-target="sizer"
+              class="absolute invisible whitespace-pre [font-size:inherit] [font-weight:inherit]"
+              aria-hidden="true"></span>
+
+        {# Input styled to match the text it replaces #}
+        {% for field in form %}
+            {% if field.vars.name != '_token' %}
+                {{ form_widget(field, {
+                    'attr': {
+                        'class': 'min-w-0 px-1.5 py-1 -ml-1.5 [font-size:inherit] [font-weight:inherit] [color:inherit] bg-transparent border-none outline-none shadow-[inset_0_-1px_0_0_theme(colors.gray.300)] dark:shadow-[inset_0_-1px_0_0_theme(colors.gray.600)] ' ~ (field.vars.attr.class ?? ''),
+                    }
+                }) }}
+                {% if field.vars.errors|length > 0 %}
+                    <span class="text-xs text-red-600 dark:text-red-400">
+                        {{ form_errors(field) }}
+                    </span>
+                {% endif %}
+            {% endif %}
+        {% endfor %}
+
+        {# Compact action buttons #}
+        <button type="submit"
+                class="p-1.5 rounded-full text-green-500 hover:text-green-700 hover:bg-green-200 dark:text-green-400 dark:hover:text-green-300 dark:hover:bg-green-800/50 transition-colors shrink-0"
+                title="Save (Enter)">
+            <twig:ux:icon name="mdi:check" class="h-4 w-4"/>
+        </button>
+        <a href="{{ cancelUrl }}"
+           data-inline-edit-target="cancel"
+           class="p-1.5 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-500 dark:hover:text-gray-300 dark:hover:bg-gray-700 transition-colors shrink-0"
+           title="Cancel (Escape)">
+            <twig:ux:icon name="mdi:close" class="h-4 w-4"/>
+        </a>
+
+        {{ form_rest(form) }}
+    {{ form_end(form) }}
+
+    {# Form-level errors #}
+    {% if form.vars.errors|length > 0 %}
+        <span class="text-xs text-red-600 dark:text-red-400">
+            {{ form_errors(form) }}
+        </span>
+    {% endif %}
+</turbo-frame>

@@ -1,0 +1,26 @@
+{#
+    Inline Edit Success Stream Template
+
+    Returns Turbo Streams to:
+    1. Replace the InlineEdit component with updated display value
+    2. Append flash message to the flash container
+
+    Variables:
+    - context: InlineEditContext with frameId, displayTemplate, entity, entityVarName, etc.
+#}
+
+{# Stream 1: Replace the entire InlineEdit component with updated display #}
+<turbo-stream action="replace" target="{{ context.frameId }}">
+    <template>
+        {{ include(context.displayTemplate, context.displayTemplateVars|merge({
+            (context.entityVarName): context.entity
+        })) }}
+    </template>
+</turbo-stream>
+
+{# Stream 2: Append flash messages #}
+<turbo-stream action="append" target="flash-container">
+    <template>
+        {{ include('_flashes.html.twig') }}
+    </template>
+</turbo-stream>

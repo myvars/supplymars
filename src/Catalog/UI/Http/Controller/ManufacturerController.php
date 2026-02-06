@@ -15,6 +15,8 @@ use App\Catalog\UI\Http\Form\Model\ManufacturerForm;
 use App\Catalog\UI\Http\Form\Type\ManufacturerType;
 use App\Shared\UI\Http\FormFlow\DeleteFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
+use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditContext;
+use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditFlow;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -112,5 +114,23 @@ class ManufacturerController extends AbstractController
     public function show(#[ValueResolver('public_id')] Manufacturer $manufacturer): Response
     {
         return $this->render('/catalog/manufacturer/show.html.twig', ['result' => $manufacturer]);
+    }
+
+    #[Route(path: '/manufacturer/{id}/inline/name', name: 'app_catalog_manufacturer_inline_name', methods: ['GET', 'POST'])]
+    public function inlineName(
+        Request $request,
+        #[ValueResolver('public_id')] Manufacturer $manufacturer,
+        InlineEditFlow $flow,
+    ): Response {
+        return $flow->handleField(
+            request: $request,
+            value: $manufacturer->getName(),
+            onSave: fn($value) => $manufacturer->update((string) $value, $manufacturer->isActive()),
+            context: InlineEditContext::create(
+                frameId: 'inline-edit-manufacturer-' . $manufacturer->getPublicId() . '-name',
+                displayTemplate: 'catalog/manufacturer/_inline_name.html.twig',
+                entity: $manufacturer,
+            ),
+        );
     }
 }

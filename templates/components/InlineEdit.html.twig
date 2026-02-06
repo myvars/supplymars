@@ -1,0 +1,32 @@
+{#
+    Inline Edit Component (Turbo-native pattern)
+
+    The entire component is a turbo-frame. Clicking the content or icon
+    loads the edit form. Cancel reloads the display. Submit returns a turbo-stream.
+
+    Minimal JS for: Escape to cancel, auto-focus, auto-select text.
+
+    @param string editUrl       URL to load the edit form (append ?edit=1)
+    @param string frameId       Unique ID for this editable field
+    @param bool   showEditIcon  Whether to show edit icon on hover (default: true)
+    @param string displayClass  Additional CSS classes for display value
+    @param string editIcon      Icon name (default: mynaui:edit-one)
+    @param string editIconSize  Icon size classes (default: h-4 w-4)
+#}
+<turbo-frame id="{{ frameId }}" {{ attributes.defaults({
+    'class': 'inline-edit group inline-flex items-center gap-1.5 ' ~ displayClass,
+    'data-controller': 'inline-edit',
+    'data-action': 'keydown->inline-edit#keydown',
+}) }}>
+    <a href="{{ editUrl }}?edit=1"
+       data-turbo-preload="true"
+       class="inline-flex items-center gap-1.5 rounded px-1.5 py-1 -mx-1.5 -my-1 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors"
+       title="Click to edit">
+        {% block content %}{% endblock %}
+        {% if showEditIcon %}
+            <span class="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 dark:text-gray-500 shrink-0">
+                <twig:ux:icon name="{{ editIcon }}" class="{{ editIconSize }}"/>
+            </span>
+        {% endif %}
+    </a>
+</turbo-frame>
