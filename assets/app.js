@@ -33,3 +33,11 @@ document.addEventListener('turbo:frame-render', () => {
     initFlowbiteLazy();
 });
 
+// Handle iOS swipe back/forward gestures restoring from bfcache
+// This ensures Turbo properly re-renders the page instead of showing a stale snapshot
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+        visit(window.location.href, { action: 'replace' });
+    }
+});
+
