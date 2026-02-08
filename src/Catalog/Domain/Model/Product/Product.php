@@ -484,7 +484,7 @@ class Product
             && $this->getSubcategory()->isActive();
     }
 
-    private function rename(string $name): void
+    public function rename(string $name): void
     {
         $name = trim($name);
         if ($name === '') {

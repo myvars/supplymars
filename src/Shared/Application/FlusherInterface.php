@@ -4,5 +4,10 @@ namespace App\Shared\Application;
 
 interface FlusherInterface
 {
-    public function flush(): void;
+    /**
+     * Flush pending changes to the database.
+     *
+     * @return bool True if any changes were persisted, false if nothing changed
+     */
+    public function flush(): bool;
 }

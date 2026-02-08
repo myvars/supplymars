@@ -10,7 +10,7 @@
             ></twig:ProductImage>
         </div>
     </twig:block>
-    <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ product.name }}</p>
+    {{ include('catalog/product/_inline_name.html.twig', {product: product}) }}
     <p class="mb-3 flex items-center text-sm">
         <a href="{{ path('app_catalog_category_show', {id: product.category.publicId}) }}"
            data-turbo-frame="body"

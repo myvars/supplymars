@@ -18,6 +18,8 @@ use App\Catalog\UI\Http\Form\Type\CategoryFilterType;
 use App\Catalog\UI\Http\Form\Type\CategoryType;
 use App\Shared\UI\Http\FormFlow\DeleteFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
+use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditContext;
+use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditFlow;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -133,5 +135,23 @@ class CategoryController extends AbstractController
     public function show(#[ValueResolver('public_id')] Category $category): Response
     {
         return $this->render('/catalog/category/show.html.twig', ['result' => $category]);
+    }
+
+    #[Route(path: '/category/{id}/inline/name', name: 'app_catalog_category_inline_name', methods: ['GET', 'POST'])]
+    public function inlineName(
+        Request $request,
+        #[ValueResolver('public_id')] Category $category,
+        InlineEditFlow $flow,
+    ): Response {
+        return $flow->handleField(
+            request: $request,
+            value: $category->getName(),
+            onSave: fn ($value) => $category->rename((string) $value),
+            context: InlineEditContext::create(
+                frameId: 'inline-edit-category-' . $category->getPublicId() . '-name',
+                displayTemplate: 'catalog/category/_inline_name.html.twig',
+                entity: $category,
+            ),
+        );
     }
 }

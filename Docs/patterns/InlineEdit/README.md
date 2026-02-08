@@ -74,20 +74,20 @@ For additional form-level constraints, pass `formOptions: ['constraints' => [...
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│  Display Mode (turbo-frame)                                      │
+│  Display Mode (turbo-frame)                                     │
 │  ┌─────────────────────────────────────────────────────────────┐│
-│  │  "Acme Corp"  [✏️]  ← Click anywhere to edit                ││
+│  │  "Acme Corp"  []  ← Click anywhere to edit                  ││
 │  └─────────────────────────────────────────────────────────────┘│
-│                              │                                   │
-│                         click                                    │
-│                              ▼                                   │
+│                              │                                  │
+│                         click                                   │
+│                              ▼                                  │
 │  ┌─────────────────────────────────────────────────────────────┐│
 │  │  Acme Corp [✓] [✗]  ← Seamless input with underline         ││
 │  └─────────────────────────────────────────────────────────────┘│
-│                              │                                   │
+│                              │                                  │
 │     Enter / click outside    │    Escape / click ✗              │
-│              ▼               ▼                                   │
-│           Save            Cancel                                 │
+│              ▼               ▼                                  │
+│           Save            Cancel                                │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -99,6 +99,7 @@ For additional form-level constraints, pass `formOptions: ['constraints' => [...
 - **Escape** or **✗** to cancel
 - **Subtle underline** indicates edit mode
 - **Preloads on hover** for instant response
+- **Smart flash messages** — only shown when the value actually changes
 
 ## Keyboard Shortcuts
 
@@ -111,7 +112,7 @@ For additional form-level constraints, pass `formOptions: ['constraints' => [...
 
 ### `InlineEditFlow::handleField()`
 
-Simple handler for most use cases:
+The single method for inline editing:
 
 ```php
 $flow->handleField(
@@ -127,20 +128,10 @@ $flow->handleField(
 );
 ```
 
-### `InlineEditFlow::handle()`
-
-Full handler for complex cases with custom form types:
-
-```php
-$flow->handle(
-    request: $request,
-    formType: CustomFormType::class,
-    data: $formModel,
-    mapper: fn($form) => new Command(...),
-    handler: $commandHandler,
-    context: InlineEditContext::create(...),
-);
-```
+**Behavior:**
+- Flash message only appears when the value actually changes (uses Doctrine change detection)
+- Exceptions from `onSave` are caught and displayed as form errors
+- Entity-level validation (`#[Assert\...]` on properties) applies automatically
 
 ### `InlineEditContext::create()`
 
@@ -193,6 +184,27 @@ The `formOptions` parameter is optional. Entity-level validation is used automat
     'placeholder' => 'Enter value...',
 ]
 ```
+
+## Domain Design
+
+Prefer dedicated public methods over generic `update()` methods for inline edits:
+
+```php
+// Avoid - passing unrelated fields just to change one
+onSave: fn($value) => $product->update(
+    (string) $value,           // name (the one we're changing)
+    $product->getDescription(), // unchanged
+    $product->getPrice(),       // unchanged
+    $product->getCategory(),    // unchanged
+),
+
+// Prefer - dedicated method with clear intent
+onSave: fn($value) => $product->rename((string) $value),
+```
+
+**Rule of thumb:** If inline editing requires passing 3+ unrelated values to satisfy an `update()` method, add a dedicated public method (`rename()`, `updatePrice()`, `assignCategory()`, etc.).
+
+This keeps the `onSave` callback clean and makes the domain intent explicit.
 
 ## Files
 

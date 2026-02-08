@@ -1,0 +1,16 @@
+{#
+    Inline editable VAT rate name.
+
+    Include this partial in place of a static VAT rate name display.
+    The InlineEdit component handles the edit/save flow via Turbo Frames.
+
+    Variables:
+    - vatRate: The VatRate entity
+#}
+<twig:InlineEdit
+    editUrl="{{ path('app_pricing_vat_rate_inline_name', {id: vatRate.publicId}) }}"
+    frameId="inline-edit-vat-rate-{{ vatRate.publicId }}-name"
+    displayClass="text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white"
+>
+    {{ vatRate.name }}
+</twig:InlineEdit>

@@ -1,5 +1,5 @@
 <twig:Card editLink="{{ path('app_pricing_vat_rate_edit', { id: vatRate.publicId.value }) }}" title="VAT Rate">
-    <p class="mb-3 text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">{{ vatRate.name }}</p>
+    <p class="mb-3">{{ include('pricing/vat_rate/_inline_name.html.twig', {vatRate: vatRate}) }}</p>
     <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
         <twig:ux:icon name="bi:receipt" class="h-4 w-4 text-gray-400 dark:text-gray-500"/>
         <span class="text-2xl font-bold text-gray-900 dark:text-white">{{ vatRate.rate|number_format(2) }}%</span>

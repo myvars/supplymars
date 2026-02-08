@@ -148,6 +148,16 @@ class Subcategory implements DomainEventProviderInterface
         $this->category = $category;
     }
 
+    public function rename(string $name): void
+    {
+        $name = trim($name);
+        if ($name === '') {
+            throw new \InvalidArgumentException('Subcategory name cannot be empty');
+        }
+
+        $this->name = $name;
+    }
+
     public function hasDefaultMarkup(): bool
     {
         return $this->defaultMarkup > 0;
@@ -204,16 +214,6 @@ class Subcategory implements DomainEventProviderInterface
     public function isActive(): bool
     {
         return $this->isActive;
-    }
-
-    private function rename(string $name): void
-    {
-        $name = trim($name);
-        if ($name === '') {
-            throw new \InvalidArgumentException('Subcategory name cannot be empty');
-        }
-
-        $this->name = $name;
     }
 
     /**

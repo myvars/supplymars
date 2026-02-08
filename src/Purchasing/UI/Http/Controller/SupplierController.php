@@ -15,6 +15,8 @@ use App\Purchasing\UI\Http\Form\Model\SupplierForm;
 use App\Purchasing\UI\Http\Form\Type\SupplierType;
 use App\Shared\UI\Http\FormFlow\DeleteFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
+use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditContext;
+use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditFlow;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -112,5 +114,23 @@ class SupplierController extends AbstractController
     public function show(#[ValueResolver('public_id')] Supplier $supplier): Response
     {
         return $this->render('/purchasing/supplier/show.html.twig', ['result' => $supplier]);
+    }
+
+    #[Route(path: '/supplier/{id}/inline/name', name: 'app_purchasing_supplier_inline_name', methods: ['GET', 'POST'])]
+    public function inlineName(
+        Request $request,
+        #[ValueResolver('public_id')] Supplier $supplier,
+        InlineEditFlow $flow,
+    ): Response {
+        return $flow->handleField(
+            request: $request,
+            value: $supplier->getName(),
+            onSave: fn ($value) => $supplier->update((string) $value, $supplier->isActive()),
+            context: InlineEditContext::create(
+                frameId: 'inline-edit-supplier-' . $supplier->getPublicId() . '-name',
+                displayTemplate: 'purchasing/supplier/_inline_name.html.twig',
+                entity: $supplier,
+            ),
+        );
     }
 }

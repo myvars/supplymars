@@ -1,5 +1,5 @@
 <twig:Card editLink="{{ path('app_catalog_subcategory_edit', { id: subcategory.publicId.value }) }}" title="Subcategory" statusHighlight="{{ subcategory.isActive ? 'ACTIVE' : 'INACTIVE' }}">
-    <p class="mb-1 text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">{{ subcategory.name }}</p>
+    <p class="mb-1">{{ include('catalog/subcategory/_inline_name.html.twig', {subcategory: subcategory}) }}</p>
     <p class="mb-3 text-sm text-gray-500 line-clamp-1 dark:text-gray-400">
         in
         <a href="{{ path('app_catalog_category_show', {id: subcategory.category.publicId}) }}"

@@ -1,0 +1,16 @@
+{#
+    Inline editable supplier name.
+
+    Include this partial in place of a static supplier name display.
+    The InlineEdit component handles the edit/save flow via Turbo Frames.
+
+    Variables:
+    - supplier: The Supplier entity
+#}
+<twig:InlineEdit
+    editUrl="{{ path('app_purchasing_supplier_inline_name', {id: supplier.publicId}) }}"
+    frameId="inline-edit-supplier-{{ supplier.publicId }}-name"
+    displayClass="text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white"
+>
+    {{ supplier.name }}
+</twig:InlineEdit>

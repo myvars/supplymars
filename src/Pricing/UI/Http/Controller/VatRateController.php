@@ -15,6 +15,8 @@ use App\Pricing\UI\Http\Form\Model\VatRateForm;
 use App\Pricing\UI\Http\Form\Type\VatRateType;
 use App\Shared\UI\Http\FormFlow\DeleteFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
+use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditContext;
+use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditFlow;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -112,5 +114,24 @@ class VatRateController extends AbstractController
     public function show(#[ValueResolver('public_id')] VatRate $vatRate): Response
     {
         return $this->render('/pricing/vat_rate/show.html.twig', ['result' => $vatRate]);
+    }
+
+    #[Route(path: '/vat-rate/{id}/inline/name', name: 'app_pricing_vat_rate_inline_name', methods: ['GET', 'POST'])]
+    public function inlineName(
+        Request $request,
+        #[ValueResolver('public_id')] VatRate $vatRate,
+        InlineEditFlow $flow,
+    ): Response {
+        return $flow->handleField(
+            request: $request,
+            value: $vatRate->getName(),
+            onSave: fn ($value) => $vatRate->update((string) $value, $vatRate->getRate()),
+            context: InlineEditContext::create(
+                frameId: 'inline-edit-vat-rate-' . $vatRate->getPublicId() . '-name',
+                displayTemplate: 'pricing/vat_rate/_inline_name.html.twig',
+                entity: $vatRate,
+                entityVarName: 'vatRate',
+            ),
+        );
     }
 }

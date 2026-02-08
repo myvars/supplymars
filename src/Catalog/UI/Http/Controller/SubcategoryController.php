@@ -18,6 +18,8 @@ use App\Catalog\UI\Http\Form\Type\SubcategoryFilterType;
 use App\Catalog\UI\Http\Form\Type\SubcategoryType;
 use App\Shared\UI\Http\FormFlow\DeleteFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
+use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditContext;
+use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditFlow;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -133,5 +135,23 @@ class SubcategoryController extends AbstractController
     public function show(#[ValueResolver('public_id')] Subcategory $subcategory): Response
     {
         return $this->render('/catalog/subcategory/show.html.twig', ['result' => $subcategory]);
+    }
+
+    #[Route(path: '/subcategory/{id}/inline/name', name: 'app_catalog_subcategory_inline_name', methods: ['GET', 'POST'])]
+    public function inlineName(
+        Request $request,
+        #[ValueResolver('public_id')] Subcategory $subcategory,
+        InlineEditFlow $flow,
+    ): Response {
+        return $flow->handleField(
+            request: $request,
+            value: $subcategory->getName(),
+            onSave: fn ($value) => $subcategory->rename((string) $value),
+            context: InlineEditContext::create(
+                frameId: 'inline-edit-subcategory-' . $subcategory->getPublicId() . '-name',
+                displayTemplate: 'catalog/subcategory/_inline_name.html.twig',
+                entity: $subcategory,
+            ),
+        );
     }
 }

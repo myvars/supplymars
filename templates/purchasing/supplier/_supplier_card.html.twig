@@ -4,7 +4,7 @@
     colour="{{ supplier.colourScheme }}"
     statusHighlight="{{ supplier.isActive ? 'ACTIVE' : 'INACTIVE' }}"
 >
-    <p class="mb-3 text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">{{ supplier.name }}</p>
+    <p class="mb-3">{{ include('purchasing/supplier/_inline_name.html.twig', {supplier: supplier}) }}</p>
     <twig:CardFooter :updatedAt="supplier.updatedAt">
         <twig:StatusBadge status="{{ supplier.isActive ? 'ACTIVE' : 'INACTIVE' }}"/>
     </twig:CardFooter>

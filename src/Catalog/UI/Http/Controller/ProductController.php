@@ -20,6 +20,8 @@ use App\Review\Domain\Repository\ReviewRepository;
 use App\Review\Domain\Repository\ReviewSummaryRepository;
 use App\Shared\UI\Http\FormFlow\DeleteFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
+use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditContext;
+use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditFlow;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -154,5 +156,23 @@ class ProductController extends AbstractController
             'summary' => $summaryRepository->findByProduct($product),
             'reviews' => $reviewRepository->findLatestPublishedForProduct($product, 5),
         ]);
+    }
+
+    #[Route(path: '/product/{id}/inline/name', name: 'app_catalog_product_inline_name', methods: ['GET', 'POST'])]
+    public function inlineName(
+        Request $request,
+        #[ValueResolver('public_id')] Product $product,
+        InlineEditFlow $flow,
+    ): Response {
+        return $flow->handleField(
+            request: $request,
+            value: $product->getName(),
+            onSave: fn ($value) => $product->rename((string) $value),
+            context: InlineEditContext::create(
+                frameId: 'inline-edit-product-' . $product->getPublicId() . '-name',
+                displayTemplate: 'catalog/product/_inline_name.html.twig',
+                entity: $product,
+            ),
+        );
     }
 }

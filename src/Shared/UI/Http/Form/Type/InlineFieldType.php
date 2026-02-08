@@ -26,6 +26,7 @@ final class InlineFieldType extends AbstractType
     {
         $builder->add('value', $options['field_type'], [
             'label' => false,
+            'required' => false, // Disable HTML5 validation; server-side constraints handle it
             'constraints' => $options['value_constraints'],
             'empty_data' => '',
             'attr' => array_merge([

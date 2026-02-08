@@ -158,6 +158,16 @@ class Category implements DomainEventProviderInterface
         $this->vatRate = $vatRate;
     }
 
+    public function rename(string $name): void
+    {
+        $name = trim($name);
+        if ($name === '') {
+            throw new \InvalidArgumentException('Category name cannot be empty');
+        }
+
+        $this->name = $name;
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -199,16 +209,6 @@ class Category implements DomainEventProviderInterface
     public function isActive(): bool
     {
         return $this->isActive;
-    }
-
-    private function rename(string $name): void
-    {
-        $name = trim($name);
-        if ($name === '') {
-            throw new \InvalidArgumentException('Category name cannot be empty');
-        }
-
-        $this->name = $name;
     }
 
     /**
