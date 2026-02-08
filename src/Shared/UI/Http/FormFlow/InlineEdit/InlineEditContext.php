@@ -68,7 +68,7 @@ final readonly class InlineEditContext
      */
     private static function deriveEntityVarName(object $entity): string
     {
-        $className = (new \ReflectionClass($entity))->getShortName();
+        $className = new \ReflectionClass($entity)->getShortName();
 
         return lcfirst($className);
     }

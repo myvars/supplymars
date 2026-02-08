@@ -153,7 +153,7 @@ Controllers are thin orchestrators. 4 flow types:
 
 - Always produce a clear implementation plan **before writing code**.
 - If assumptions would materially affect design or complexity, **stop and ask first**.
-- Commit messages: clear, concise, written as a human contributor. Do not mention AI.
+- Commit messages: clear, concise, written as a human contributor. Do not mention AI a a contributor.
 
 ## Reference
 

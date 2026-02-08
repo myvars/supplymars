@@ -5,6 +5,7 @@ namespace App\Tests\Order\Domain;
 use App\Customer\Domain\Model\Address\Address;
 use App\Customer\Domain\Model\User\User;
 use App\Order\Domain\Model\Order\CustomerOrder;
+use App\Order\Domain\Model\Order\CustomerOrderItem;
 use App\Order\Domain\Model\Order\Event\OrderStatusWasChangedEvent;
 use App\Order\Domain\Model\Order\OrderStatus;
 use App\Pricing\Domain\Model\VatRate\VatRate;
@@ -181,5 +182,146 @@ class OrderDomainTest extends TestCase
         self::assertFalse(OrderStatus::SHIPPED->allowCancel());
         self::assertFalse(OrderStatus::DELIVERED->allowCancel());
         self::assertFalse(OrderStatus::CANCELLED->allowCancel());
+    }
+
+    private function stubOrderItem(OrderStatus $status): CustomerOrderItem
+    {
+        $item = $this->createStub(CustomerOrderItem::class);
+        $item->method('getStatus')->willReturn($status);
+        $item->method('getTotalPrice')->willReturn('10.00');
+        $item->method('getTotalPriceIncVat')->willReturn('12.00');
+        $item->method('getTotalWeight')->willReturn(100);
+
+        return $item;
+    }
+
+    public function testGenerateStatusUsesLowestLevelFromItems(): void
+    {
+        $order = CustomerOrder::createFromCustomer(
+            customer: $this->stubUser(),
+            shippingMethod: ShippingMethod::THREE_DAY,
+            vatRate: $this->stubVatRate(),
+            customerOrderRef: null,
+        );
+
+        // Add items with different statuses using reflection
+        $item1 = $this->stubOrderItem(OrderStatus::SHIPPED); // Level 3
+        $item2 = $this->stubOrderItem(OrderStatus::PROCESSING); // Level 2 - lowest
+
+        $reflection = new \ReflectionClass($order);
+        $itemsProperty = $reflection->getProperty('customerOrderItems');
+        $items = $itemsProperty->getValue($order);
+        $items->add($item1);
+        $items->add($item2);
+
+        $order->generateStatus();
+
+        // Should use the lowest level status (PROCESSING = 2)
+        self::assertSame(OrderStatus::PROCESSING, $order->getStatus());
+    }
+
+    public function testGenerateStatusWithAllShippedItemsReturnsShipped(): void
+    {
+        $order = CustomerOrder::createFromCustomer(
+            customer: $this->stubUser(),
+            shippingMethod: ShippingMethod::THREE_DAY,
+            vatRate: $this->stubVatRate(),
+            customerOrderRef: null,
+        );
+
+        $item1 = $this->stubOrderItem(OrderStatus::SHIPPED);
+        $item2 = $this->stubOrderItem(OrderStatus::SHIPPED);
+
+        $reflection = new \ReflectionClass($order);
+        $itemsProperty = $reflection->getProperty('customerOrderItems');
+        $items = $itemsProperty->getValue($order);
+        $items->add($item1);
+        $items->add($item2);
+
+        $order->generateStatus();
+
+        self::assertSame(OrderStatus::SHIPPED, $order->getStatus());
+    }
+
+    public function testGenerateStatusWithMixedDeliveredAndShippedReturnsShipped(): void
+    {
+        $order = CustomerOrder::createFromCustomer(
+            customer: $this->stubUser(),
+            shippingMethod: ShippingMethod::THREE_DAY,
+            vatRate: $this->stubVatRate(),
+            customerOrderRef: null,
+        );
+
+        $item1 = $this->stubOrderItem(OrderStatus::DELIVERED); // Level 4
+        $item2 = $this->stubOrderItem(OrderStatus::SHIPPED);   // Level 3 - lowest
+
+        $reflection = new \ReflectionClass($order);
+        $itemsProperty = $reflection->getProperty('customerOrderItems');
+        $items = $itemsProperty->getValue($order);
+        $items->add($item1);
+        $items->add($item2);
+
+        $order->generateStatus();
+
+        self::assertSame(OrderStatus::SHIPPED, $order->getStatus());
+    }
+
+    public function testGenerateStatusWithCancelledItemReturnsLowestNonCancelledLevel(): void
+    {
+        $order = CustomerOrder::createFromCustomer(
+            customer: $this->stubUser(),
+            shippingMethod: ShippingMethod::THREE_DAY,
+            vatRate: $this->stubVatRate(),
+            customerOrderRef: null,
+        );
+
+        // CANCELLED has level 5 (highest), so if another item is PROCESSING (2), order should be PROCESSING
+        $item1 = $this->stubOrderItem(OrderStatus::CANCELLED);   // Level 5
+        $item2 = $this->stubOrderItem(OrderStatus::PROCESSING);  // Level 2 - lowest
+
+        $reflection = new \ReflectionClass($order);
+        $itemsProperty = $reflection->getProperty('customerOrderItems');
+        $items = $itemsProperty->getValue($order);
+        $items->add($item1);
+        $items->add($item2);
+
+        $order->generateStatus();
+
+        self::assertSame(OrderStatus::PROCESSING, $order->getStatus());
+    }
+
+    public function testAllowEditReturnsFalseForShippedStatus(): void
+    {
+        $order = CustomerOrder::createFromCustomer(
+            customer: $this->stubUser(),
+            shippingMethod: ShippingMethod::THREE_DAY,
+            vatRate: $this->stubVatRate(),
+            customerOrderRef: null,
+        );
+
+        // Set status to SHIPPED via reflection
+        $reflection = new \ReflectionClass($order);
+        $statusProperty = $reflection->getProperty('status');
+        $statusProperty->setValue($order, OrderStatus::SHIPPED);
+
+        self::assertSame(OrderStatus::SHIPPED, $order->getStatus());
+        self::assertFalse($order->allowEdit());
+    }
+
+    public function testAllowEditReturnsTrueForProcessingStatus(): void
+    {
+        $order = CustomerOrder::createFromCustomer(
+            customer: $this->stubUser(),
+            shippingMethod: ShippingMethod::THREE_DAY,
+            vatRate: $this->stubVatRate(),
+            customerOrderRef: null,
+        );
+
+        $reflection = new \ReflectionClass($order);
+        $statusProperty = $reflection->getProperty('status');
+        $statusProperty->setValue($order, OrderStatus::PROCESSING);
+
+        self::assertSame(OrderStatus::PROCESSING, $order->getStatus());
+        self::assertTrue($order->allowEdit());
     }
 }

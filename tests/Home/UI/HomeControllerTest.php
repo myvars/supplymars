@@ -30,7 +30,7 @@ class HomeControllerTest extends WebTestCase
     public function testShowContact(): void
     {
         $this->browser()
-            ->get('/about')
+            ->get('/contact')
             ->assertSuccessful()
             ->assertSee('Contact');
     }
@@ -38,7 +38,7 @@ class HomeControllerTest extends WebTestCase
     public function testShowPrivacy(): void
     {
         $this->browser()
-            ->get('/about')
+            ->get('/privacy')
             ->assertSuccessful()
             ->assertSee('Privacy');
     }

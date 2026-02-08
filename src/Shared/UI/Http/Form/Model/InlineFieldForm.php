@@ -10,10 +10,7 @@ namespace App\Shared\UI\Http\Form\Model;
  */
 final class InlineFieldForm
 {
-    public ?string $value = null;
-
-    public function __construct(?string $value = null)
+    public function __construct(public ?string $value = null)
     {
-        $this->value = $value;
     }
 }

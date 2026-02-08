@@ -125,7 +125,7 @@ class ManufacturerController extends AbstractController
         return $flow->handleField(
             request: $request,
             value: $manufacturer->getName(),
-            onSave: fn($value) => $manufacturer->update((string) $value, $manufacturer->isActive()),
+            onSave: fn ($value) => $manufacturer->update((string) $value, $manufacturer->isActive()),
             context: InlineEditContext::create(
                 frameId: 'inline-edit-manufacturer-' . $manufacturer->getPublicId() . '-name',
                 displayTemplate: 'catalog/manufacturer/_inline_name.html.twig',

@@ -45,7 +45,9 @@ use Twig\Environment;
 final readonly class InlineEditFlow
 {
     private const string DISPLAY_TEMPLATE = 'shared/form_flow/inline_edit_display.html.twig';
+
     private const string FORM_TEMPLATE = 'shared/form_flow/inline_edit_form.html.twig';
+
     private const string SUCCESS_TEMPLATE = 'shared/form_flow/inline_edit_success.stream.html.twig';
 
     public function __construct(

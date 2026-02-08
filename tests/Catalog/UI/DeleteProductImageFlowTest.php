@@ -2,6 +2,7 @@
 
 namespace App\Tests\Catalog\UI;
 
+use App\Catalog\Domain\Model\ProductImage\ProductImagePublicId;
 use App\Tests\Shared\Factory\ProductImageFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -28,11 +29,13 @@ final class DeleteProductImageFlowTest extends WebTestCase
             ->assertSee('0 Product Images');
     }
 
-    public function testDeleteNonExistentImage(): void
+    public function testDeleteNonExistentImageReturns404(): void
     {
+        $nonExistentId = ProductImagePublicId::new()->value();
+
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/product/images/999999/remove')
-            ->assertStatus(500);
+            ->get('/product/images/' . $nonExistentId . '/remove')
+            ->assertStatus(404);
     }
 }
