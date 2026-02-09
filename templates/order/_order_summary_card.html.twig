@@ -1,9 +1,9 @@
-<twig:Card>
+<twig:Card data-customer-id="{{ order.customer.id }}">
     <div class="grid gap-6 sm:grid-cols-[1fr_auto]">
         <div>
             <p class="mb-2 text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">Delivery Address</p>
             <div class="space-y-0.5 text-sm text-gray-600 dark:text-gray-400">
-                <p class="font-medium text-gray-900 dark:text-white">{{ order.customer.fullName }}</p>
+                <a href="{{ path('app_customer_show', { id: order.customer.publicId }) }}" class="font-medium text-gray-900 hover:text-gray-600 dark:text-white dark:hover:text-gray-300">{{ order.customer.fullName }}</a>
                 <p>{{ order.shippingAddress.street }}</p>
                 {% if order.shippingAddress.street2 is not null %}
                     <p>{{ order.shippingAddress.street2 }}</p>
