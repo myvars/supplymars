@@ -8,12 +8,14 @@ final class StatusColor
     {
         return match (strtoupper($status)) {
             'DELIVERED', 'ACTIVE', 'VERIFIED', 'PUBLISHED' => 'green',
-            'SHIPPED' => 'blue',
+            'SHIPPED', 'OPEN' => 'blue',
+            'REPLIED' => 'yellow',
             'ACCEPTED' => 'emerald',
             'PROCESSING' => 'yellow',
             'REJECTED' => 'orange',
             'REFUNDED' => 'purple',
             'CANCELLED', 'INACTIVE', 'UNVERIFIED', 'ADMIN' => 'red',
+            'CLOSED' => 'gray',
             default => 'gray',
         };
     }

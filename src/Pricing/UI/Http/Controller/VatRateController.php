@@ -19,6 +19,7 @@ use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditContext;
 use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditFlow;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
+use App\Shared\UI\Http\FormFlow\View\FlowModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,7 +31,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 class VatRateController extends AbstractController
 {
-    public const string MODEL = 'pricing/VAT Rate';
+    private function model(): FlowModel
+    {
+        return FlowModel::create('pricing', 'vat_rate', displayName: 'VAT Rate');
+    }
 
     #[Route(path: '/vat-rate/', name: 'app_pricing_vat_rate_index', methods: ['GET'])]
     public function index(
@@ -43,7 +47,7 @@ class VatRateController extends AbstractController
             request: $request,
             repository: $repository,
             criteria: $criteria,
-            context: FlowContext::forSearch(self::MODEL),
+            context: FlowContext::forSearch($this->model()),
         );
     }
 
@@ -60,7 +64,7 @@ class VatRateController extends AbstractController
             data: new VatRateForm(),
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forCreate(self::MODEL),
+            context: FlowContext::forCreate($this->model()),
         );
     }
 
@@ -78,7 +82,7 @@ class VatRateController extends AbstractController
             data: VatRateForm::fromEntity($vatRate),
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forUpdate(self::MODEL)
+            context: FlowContext::forUpdate($this->model())
                 ->allowDelete(true)
                 ->successRoute('app_pricing_vat_rate_show', ['id' => $vatRate->getPublicId()->value()])
         );
@@ -91,7 +95,7 @@ class VatRateController extends AbstractController
     ): Response {
         return $flow->deleteConfirm(
             entity: $vatRate,
-            context: FlowContext::forDelete(self::MODEL),
+            context: FlowContext::forDelete($this->model()),
         );
     }
 
@@ -106,7 +110,7 @@ class VatRateController extends AbstractController
             request: $request,
             command: new DeleteVatRate($vatRate->getPublicId()),
             handler: $handler,
-            context: FlowContext::forDelete(self::MODEL),
+            context: FlowContext::forDelete($this->model()),
         );
     }
 

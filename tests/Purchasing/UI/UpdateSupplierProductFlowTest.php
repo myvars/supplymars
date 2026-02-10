@@ -57,7 +57,7 @@ final class UpdateSupplierProductFlowTest extends WebTestCase
             ->fillField('supplier_product[weight]', '250')
             ->fillField('supplier_product[product]', (string) $product->getId())
             ->uncheckField('supplier_product[isActive]')
-            ->click('Update Supplier product')
+            ->click('Update Supplier Product')
             ->assertOn('/supplier-product/' . $publicId)
             ->assertSee('After Edit');
     }
@@ -73,7 +73,7 @@ final class UpdateSupplierProductFlowTest extends WebTestCase
             ->actingAs($user)
             ->get('/supplier-product/' . $publicId . '/edit')
             ->fillField('supplier_product[name]', '')
-            ->click('Update Supplier product')
+            ->click('Update Supplier Product')
             ->assertOn('/supplier-product/' . $publicId . '/edit')
             ->assertSee('Please enter a supplier product name');
     }

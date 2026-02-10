@@ -1,0 +1,11 @@
+{% extends 'shared/turbo/modal_base.html.twig' %}
+
+{% block title %}Reassign Ticket{% endblock %}
+
+{% block body %}
+
+    <twig:Dialog title="Reassign Ticket">
+        {{ include('shared/form_flow/_form.html.twig', {'button_label': 'Reassign'}) }}
+    </twig:Dialog>
+
+{% endblock %}

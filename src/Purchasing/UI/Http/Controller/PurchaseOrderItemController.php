@@ -13,6 +13,7 @@ use App\Purchasing\UI\Http\Form\Type\PurchaseOrderItemQuantityType;
 use App\Purchasing\UI\Http\Form\Type\PurchaseOrderItemStatusType;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
+use App\Shared\UI\Http\FormFlow\View\FlowModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,7 +24,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 class PurchaseOrderItemController extends AbstractController
 {
-    public const string MODEL = 'purchasing/purchase order item';
+    private function model(): FlowModel
+    {
+        return FlowModel::create('purchasing', 'purchase_order_item');
+    }
 
     #[Route(path: '/purchase/order/item/', name: 'app_purchasing_purchase_order_item_index', methods: ['GET'])]
     public function index(): Response
@@ -56,7 +60,7 @@ class PurchaseOrderItemController extends AbstractController
             data: PurchaseOrderItemQuantityForm::fromEntity($purchaseOrderItem),
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forUpdate(self::MODEL)
+            context: FlowContext::forUpdate($this->model())
                 ->successRoute('app_order_show', [
                     'id' => $purchaseOrderItem->getPurchaseOrder()->getCustomerOrder()->getPublicId()->value(),
                 ]),
@@ -81,7 +85,7 @@ class PurchaseOrderItemController extends AbstractController
             data: PurchaseOrderItemStatusForm::fromEntity($purchaseOrderItem),
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forUpdate(self::MODEL)
+            context: FlowContext::forUpdate($this->model())
                 ->successRoute('app_purchasing_purchase_order_show', [
                     'id' => $purchaseOrderItem->getPurchaseOrder()->getPublicId()->value(),
                 ]),

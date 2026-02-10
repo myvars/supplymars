@@ -97,16 +97,36 @@ GET /product/?page=999 (out of range)
 
 ## API Reference
 
-### FlowContext
+### FlowModel
 
-Declarative configuration object for all flows. Created via factory methods:
+Typed value object that replaces the raw `MODEL` string constant in controllers. Derives display name, template directory, routes, and default success route from convention-based factories:
 
 ```php
-FlowContext::forCreate('catalog/product')
-FlowContext::forUpdate('catalog/product')
-FlowContext::forDelete('catalog/product')
-FlowContext::forFilter('catalog/product')
-FlowContext::forSearch('catalog/product')
+// Entity within a bounded context:
+FlowModel::create('catalog', 'product')
+FlowModel::create('purchasing', 'supplier_product')
+FlowModel::create('pricing', 'vat_rate', displayName: 'VAT Rate')
+
+// Entity without bounded context:
+FlowModel::simple('customer')
+FlowModel::simple('order_item')
+
+// Override display name for specific actions:
+$model->withDisplayName('Product Cost')
+```
+
+### FlowContext
+
+Declarative configuration object for all flows. Created via factory methods that accept a `FlowModel`:
+
+```php
+$model = FlowModel::create('catalog', 'product');
+
+FlowContext::forCreate($model)
+FlowContext::forUpdate($model)
+FlowContext::forDelete($model)
+FlowContext::forFilter($model)
+FlowContext::forSearch($model)
 FlowContext::forSuccess('app_order_show', ['id' => $id])
 ```
 
@@ -116,6 +136,7 @@ Fluent methods:
 - `template(string $template)` — Override template path
 - `allowDelete(bool $allow)` — Show delete button on update forms
 - `redirectOptions(bool $refresh, int $status)` — Configure redirect behavior
+- `routePrefix(string $prefix)` — Replace all derived route names from a new prefix
 
 ### Result
 
@@ -152,10 +173,26 @@ All templates receive these variables from `TemplateContext`:
 | Variable | Example | Description |
 |----------|---------|-------------|
 | `flowModel` | `'Product'` | Capitalized model name |
-| `flowRoute` | `'catalog_product'` | Snake-cased route segment |
-| `flowPath` | `'catalog/product/'` | Template path segment |
 | `flowOperation` | `'create'` | Operation name |
 | `template` | `'catalog/product/create.html.twig'` | Full template path |
+| `routes` | `FlowRoutes` object | Typed route names (see below) |
+
+The `routes` object (`FlowRoutes`) exposes named route properties instead of string concatenation:
+
+| Property | Example | Description |
+|----------|---------|-------------|
+| `routes.index` | `'app_catalog_product_index'` | Index/list page |
+| `routes.new` | `'app_catalog_product_new'` | Create form |
+| `routes.show` | `'app_catalog_product_show'` | Detail page |
+| `routes.delete` | `'app_catalog_product_delete'` | Delete action |
+| `routes.deleteConfirm` | `'app_catalog_product_delete_confirm'` | Delete confirmation |
+| `routes.filter` | `'app_catalog_product_search_filter'` | Search filter |
+
+Usage in Twig:
+```twig
+{{ path(routes.new) }}
+{{ path(routes.delete, {'id': result.publicId.value}) }}
+```
 
 Additional variables per flow:
 - `FormFlow`: `form`, `result`, `flowBackLink`, `flowAllowDelete`
@@ -176,8 +213,9 @@ src/Shared/UI/Http/FormFlow/
 │   └── TurboAwareRedirector.php  # Turbo stream redirects
 └── View/
     ├── FlowContext.php       # Flow configuration (forCreate, forUpdate, forDelete, forFilter, forSearch, forSuccess)
+    ├── FlowModel.php         # Typed model value object (create, simple, withDisplayName, template)
+    ├── FlowRoutes.php        # Typed route name bag (fromPrefix, with)
     ├── FormOperation.php     # Operation enum (Create, Update, Delete, Filter, Command, Index)
-    ├── ModelPath.php         # Path/route computation
     └── TemplateContext.php   # Template variable bag
 
 src/Shared/Application/

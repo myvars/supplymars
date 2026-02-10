@@ -13,6 +13,7 @@ src/
 ├── Order/                    # Customer orders
 ├── Pricing/                  # VAT and pricing logic
 ├── Purchasing/               # Suppliers and purchase orders
+├── Note/                     # Support pools, tickets, messaging
 ├── Reporting/                # Sales reporting
 ├── Review/                   # Product reviews
 └── Shared/                   # Cross-cutting concerns
@@ -314,6 +315,56 @@ hasPositiveCost()             // cost > 0
 
 ---
 
+## Note Context
+
+### Domain Models
+
+| Entity | File | Description |
+|--------|------|-------------|
+| Pool | `src/Note/Domain/Model/Pool/Pool.php` | Support pool for organizing tickets |
+| Ticket | `src/Note/Domain/Model/Ticket/Ticket.php` | Support ticket with status, snooze, message tracking |
+| Message | `src/Note/Domain/Model/Message/Message.php` | Ticket message with visibility and author type |
+| TicketStatus | `src/Note/Domain/Model/Ticket/TicketStatus.php` | Status enum (OPEN, REPLIED, CLOSED) |
+| AuthorType | `src/Note/Domain/Model/Message/AuthorType.php` | Author type enum (CUSTOMER, STAFF, SYSTEM) |
+| MessageVisibility | `src/Note/Domain/Model/Message/MessageVisibility.php` | Visibility enum (PUBLIC, INTERNAL) |
+
+### Value Objects
+
+| Class | File | Purpose |
+|-------|------|---------|
+| PoolPublicId | `src/Note/Domain/Model/Pool/PoolPublicId.php` | ULID identifier for pools |
+| PoolId | `src/Note/Domain/Model/Pool/PoolId.php` | Internal ID for pools |
+| TicketPublicId | `src/Note/Domain/Model/Ticket/TicketPublicId.php` | ULID identifier for tickets |
+| TicketId | `src/Note/Domain/Model/Ticket/TicketId.php` | Internal ID for tickets |
+| MessagePublicId | `src/Note/Domain/Model/Message/MessagePublicId.php` | ULID identifier for messages |
+
+### Handlers
+
+| Handler | File | Operation |
+|---------|------|-----------|
+| CreatePoolHandler | `src/Note/Application/Handler/Pool/CreatePoolHandler.php` | Create pool |
+| UpdatePoolHandler | `src/Note/Application/Handler/Pool/UpdatePoolHandler.php` | Update pool |
+| DeletePoolHandler | `src/Note/Application/Handler/Pool/DeletePoolHandler.php` | Delete pool |
+| TogglePoolSubscriptionHandler | `src/Note/Application/Handler/Pool/TogglePoolSubscriptionHandler.php` | Subscribe/unsubscribe |
+| CreateTicketHandler | `src/Note/Application/Handler/Ticket/CreateTicketHandler.php` | Create ticket |
+| ReplyToTicketHandler | `src/Note/Application/Handler/Ticket/ReplyToTicketHandler.php` | Reply to ticket |
+| CloseTicketHandler | `src/Note/Application/Handler/Ticket/CloseTicketHandler.php` | Close ticket |
+| ReopenTicketHandler | `src/Note/Application/Handler/Ticket/ReopenTicketHandler.php` | Reopen ticket |
+| ReassignTicketHandler | `src/Note/Application/Handler/Ticket/ReassignTicketHandler.php` | Reassign to pool |
+| ToggleSnoozeTicketHandler | `src/Note/Application/Handler/Ticket/ToggleSnoozeTicketHandler.php` | Snooze/unsnooze |
+| DeleteMessageHandler | `src/Note/Application/Handler/Ticket/DeleteMessageHandler.php` | Delete message |
+| TicketFilterHandler | `src/Note/Application/Handler/Ticket/TicketFilterHandler.php` | Filter tickets |
+
+### Repositories
+
+| Interface | Implementation |
+|-----------|----------------|
+| `Domain/Repository/PoolRepository.php` | `Infrastructure/Persistence/Doctrine/PoolDoctrineRepository.php` |
+| `Domain/Repository/TicketRepository.php` | `Infrastructure/Persistence/Doctrine/TicketDoctrineRepository.php` |
+| `Domain/Repository/MessageRepository.php` | `Infrastructure/Persistence/Doctrine/MessageDoctrineRepository.php` |
+
+---
+
 ## Shared Kernel
 
 ### Application Layer
@@ -440,6 +491,12 @@ hasPositiveCost()             // cost > 0
 2. `src/Review/Domain/Model/Review/ReviewStatus.php` (status enum, allowed transitions)
 3. `src/Review/Application/Listener/ReviewSummaryUpdater.php` (automatic summary recalculation)
 4. `src/Review/UI/Http/Validation/ValidReviewEligibilityValidator.php` (eligibility rules)
+
+### "I need to understand support tickets"
+1. `src/Note/Domain/Model/Ticket/Ticket.php` (entity, status transitions, snooze, messages)
+2. `src/Note/Domain/Model/Ticket/TicketStatus.php` (status enum, allowed transitions)
+3. `src/Note/Domain/Model/Message/Message.php` (message entity, visibility, author types)
+4. `src/Note/Domain/Model/Pool/Pool.php` (pool entity, subscriptions)
 
 ### "I need to add a new entity"
 1. Create entity in `src/{Context}/Domain/Model/{Entity}/`

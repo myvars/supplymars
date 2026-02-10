@@ -1,0 +1,55 @@
+{% set isCustomer = message.authorType.value == 'CUSTOMER' %}
+{% set isInternal = message.isInternal %}
+
+{% set dotClasses = isCustomer
+    ? 'bg-blue-100 text-blue-600 dark:bg-blue-900 dark:text-blue-400'
+    : 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900 dark:text-emerald-400'
+%}
+{% set iconName = isCustomer ? 'bi:person' : 'bi:headset' %}
+{% set badgeClasses = isCustomer
+    ? 'bg-blue-50 text-blue-700 dark:bg-blue-400/10 dark:text-blue-400'
+    : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-400/10 dark:text-emerald-400'
+%}
+{% set borderClasses = isInternal
+    ? 'border-amber-200 dark:border-amber-700/30'
+    : 'border-gray-200 dark:border-gray-600'
+%}
+{% set cardBgClasses = isInternal ? 'bg-amber-50/30 dark:bg-amber-900/5' : '' %}
+
+<li class="ms-7 pb-6 last:pb-0">
+    <span class="absolute z-10 -start-4 flex h-8 w-8 items-center justify-center rounded-full
+                 {{ dotClasses }}">
+        <twig:ux:icon name="{{ iconName }}" class="h-4 w-4"/>
+    </span>
+    <div class="rounded-lg border {{ borderClasses }} {{ cardBgClasses }}">
+        <div class="flex flex-wrap items-center gap-2 border-b {{ borderClasses }} px-4 py-2.5">
+            <span class="text-sm font-medium text-gray-900 dark:text-white">
+                {{ message.author ? message.author.fullName : 'Unknown' }}
+            </span>
+            <span class="inline-flex items-center rounded-md px-1.5 py-0.5 text-xs font-medium {{ badgeClasses }}">
+                {{ message.authorType.label }}
+            </span>
+            {% if isInternal %}
+                <span class="inline-flex items-center rounded-md bg-amber-50 px-1.5 py-0.5 text-xs font-medium text-amber-700 ring-1 ring-amber-600/20 ring-inset dark:bg-amber-400/10 dark:text-amber-400 dark:ring-amber-400/20">
+                    <twig:ux:icon name="bi:eye-slash" class="mr-0.5 h-3 w-3"/>
+                    Internal
+                </span>
+            {% endif %}
+            <div class="ms-auto flex items-center gap-1.5">
+                <span class="text-xs text-gray-400 dark:text-gray-500">{{ message.createdAt|ago }}</span>
+                {% if not is_original|default(false) %}
+                    <a href="{{ path('app_note_ticket_message_delete_confirm', {'ticketId': message.ticket.publicId.value, 'messageId': message.publicId.value}) }}"
+                       class="inline-flex items-center rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400"
+                       data-turbo-frame="modal"
+                       data-turbo-prefetch="false"
+                       title="Delete message">
+                        <twig:ux:icon name="bi:trash" class="h-3.5 w-3.5"/>
+                    </a>
+                {% else %}
+                    <span class="inline-block h-3.5 w-3.5 p-1"></span>
+                {% endif %}
+            </div>
+        </div>
+        <div class="px-4 py-3 text-sm leading-relaxed text-gray-700 dark:text-gray-300 whitespace-pre-line">{{ message.body }}</div>
+    </div>
+</li>

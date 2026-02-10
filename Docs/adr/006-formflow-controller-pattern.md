@@ -34,7 +34,14 @@ We implemented a **FormFlow abstraction layer** that standardizes controller beh
 
 ### Controller Usage
 
+Each controller defines a typed `FlowModel` via a static method:
+
 ```php
+private static function model(): FlowModel
+{
+    return FlowModel::create('catalog', 'manufacturer');
+}
+
 #[Route('/catalog/manufacturer/new', methods: ['GET', 'POST'])]
 public function new(
     Request $request,
@@ -48,7 +55,7 @@ public function new(
         data: new ManufacturerForm(),
         mapper: $mapper,
         handler: $handler,
-        context: FlowContext::forCreate(self::MODEL),
+        context: FlowContext::forCreate(self::model()),
     );
 }
 ```
@@ -72,9 +79,11 @@ POST Request:
 ### FlowContext Configuration
 
 ```php
-FlowContext::forCreate('catalog/manufacturer')
-    ->withSuccessRoute('app_catalog_manufacturer_index')
-    ->withTemplate('manufacturer/new.html.twig')
+$model = FlowModel::create('catalog', 'manufacturer');
+
+FlowContext::forCreate($model)
+    ->successRoute('app_catalog_manufacturer_index')
+    ->template('manufacturer/new.html.twig')
 ```
 
 ### Turbo Integration
@@ -121,8 +130,23 @@ This allows each component to be tested independently and reused across differen
 Routes follow: `app_{context}_{entity}_{action}`
 Templates follow: `{context}/{entity}/{action}.html.twig`
 
-The `ModelPath` helper derives these from the model string:
+Route names are exposed to templates via a typed `FlowRoutes` object (derived automatically from the `FlowModel`):
+
 ```php
-ModelPath::route('catalog/manufacturer') // 'catalog_manufacturer'
-ModelPath::template('catalog/manufacturer', 'new') // 'catalog/manufacturer/new.html.twig'
+// FlowModel derives routes, templates, and display name from convention:
+$model = FlowModel::create('catalog', 'manufacturer');
+$model->routes->index;   // 'app_catalog_manufacturer_index'
+$model->routes->new;     // 'app_catalog_manufacturer_new'
+$model->routes->delete;  // 'app_catalog_manufacturer_delete'
+$model->displayName;     // 'Manufacturer'
+$model->template('new'); // 'catalog/manufacturer/new.html.twig'
+
+// Override individual routes:
+$context->getRoutes()->with(index: 'app_custom_index');
+```
+
+```twig
+{# In Twig — use routes.* properties directly: #}
+{{ path(routes.new) }}
+{{ path(routes.delete, {'id': result.publicId.value}) }}
 ```

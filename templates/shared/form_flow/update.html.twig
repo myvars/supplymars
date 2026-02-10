@@ -10,7 +10,7 @@
             <hr class="my-6 h-px border-0 bg-gray-200 dark:bg-gray-700">
             <twig:Button
                 tag="a"
-                href="{{ path('app_'~flowRoute~'_delete_confirm', {'id': result.id}) }}"
+                href="{{ path(routes.deleteConfirm, {'id': result.id}) }}"
                 type="submit"
                 variant="danger"
                 class="w-full"

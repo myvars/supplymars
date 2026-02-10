@@ -4,7 +4,7 @@ namespace App\Shared\UI\Http\FormFlow;
 
 use App\Shared\UI\Http\FlashMessenger;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
-use App\Shared\UI\Http\FormFlow\View\ModelPath;
+use App\Shared\UI\Http\FormFlow\View\FlowModel;
 use App\Shared\UI\Http\FormFlow\View\TemplateContext;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -35,12 +35,13 @@ final readonly class DeleteFlow
 
         // Build a consistent set of Twig variables for template.
         $templateContext = TemplateContext::from(
-            $context->getModel(),
+            $context->getFlowModel(),
             $context->getOperation()->value,
             $context->getTemplate(),
+            $context->getRoutes(),
         );
 
-        $html = $this->twig->render(ModelPath::BASE_TEMPLATE, array_merge(
+        $html = $this->twig->render(FlowModel::BASE_TEMPLATE, array_merge(
             $templateContext->toArray(),
             ['result' => $entity],
         ));

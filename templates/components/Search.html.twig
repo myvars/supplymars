@@ -1,4 +1,4 @@
-{% props flowModel, flowRoute, results %}
+{% props flowModel, routes, results %}
 
 <div class="mx-auto max-w-(--breakpoint-xl) p-3">
     {% block result_count %}
@@ -16,14 +16,14 @@
             <form data-controller="searchbox"
                   data-turbo-frame="{{ flowModel|slug }}-table"
                   data-turbo-action="replace"
-                  data-searchbox-base-path-value="{{ path('app_'~flowRoute~'_index') }}"
+                  data-searchbox-base-path-value="{{ path(routes.index) }}"
             >
                 <div class="relative w-full">
                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
                         <twig:ux:icon name="flowbite:search-outline" class="h-4.5 w-4.5 text-gray-400 dark:text-gray-500"/>
                     </div>
                     {% block filter %}
-                        <a href="{{ path('app_'~flowRoute~'_search_filter', app.request.query.all) }}"
+                        <a href="{{ path(routes.filter, app.request.query.all) }}"
                            class="absolute inset-y-0 right-0 flex items-center pr-3 transition-colors"
                            data-turbo-frame="modal"
                            id="{{ flowModel|slug }}-search-filter">

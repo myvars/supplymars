@@ -8,7 +8,8 @@ use App\Shared\UI\Http\FormFlow\CommandFlow;
 use App\Shared\UI\Http\FormFlow\DeleteFlow;
 use App\Shared\UI\Http\FormFlow\Redirect\RedirectorInterface;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
-use App\Shared\UI\Http\FormFlow\View\ModelPath;
+use App\Shared\UI\Http\FormFlow\View\FlowModel;
+use App\Shared\UI\Http\FormFlow\View\FlowRoutes;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,15 +43,18 @@ final class DeleteFlowTest extends TestCase
     public function testDeleteConfirmRendersBaseTemplate(): void
     {
         $entity = (object) ['id' => 5, 'name' => 'Test'];
-        $context = FlowContext::forDelete('OrderItem');
+        $model = FlowModel::simple('order_item');
+        $context = FlowContext::forDelete($model);
 
         $twig = $this->createMock(Environment::class);
         $twig->expects($this->once())->method('render')
             ->with(
-                ModelPath::BASE_TEMPLATE,
+                FlowModel::BASE_TEMPLATE,
                 $this->callback(fn (array $vars): bool => $vars['result'] === $entity
                     && $vars['flowOperation'] === $context->getOperation()->value
-                    && $vars['flowModel'] === 'OrderItem')
+                    && $vars['flowModel'] === 'Order Item'
+                    && $vars['routes'] instanceof FlowRoutes
+                    && $vars['routes']->delete === 'app_order_item_delete')
             )
             ->willReturn('<html>confirm</html>');
 
@@ -74,7 +78,8 @@ final class DeleteFlowTest extends TestCase
         $request->request->set('_token', 'bad-token');
 
         $command = (object) ['id' => 5];
-        $context = FlowContext::forDelete('OrderItem');
+        $model = FlowModel::simple('order_item');
+        $context = FlowContext::forDelete($model);
 
         $twig = $this->createStub(Environment::class);
         $flashes = new FlashMessenger();
@@ -86,12 +91,12 @@ final class DeleteFlowTest extends TestCase
 
         $urls = $this->createMock(UrlGeneratorInterface::class);
         $urls->expects($this->once())->method('generate')
-            ->with('app_orderitem_index', [])
-            ->willReturn('/gen/app_orderitem_index');
+            ->with('app_order_item_index', [])
+            ->willReturn('/gen/app_order_item_index');
 
         $redirector = $this->createMock(RedirectorInterface::class);
         $redirector->expects($this->once())->method('to')
-            ->with($request, '/gen/app_orderitem_index', true, 303)
+            ->with($request, '/gen/app_order_item_index', true, 303)
             ->willReturn(new Response('', 303));
 
         $commandFlow = new CommandFlow($flashes, $redirector, $urls);
@@ -110,7 +115,8 @@ final class DeleteFlowTest extends TestCase
         $request->request->set('_token', 'good-token');
 
         $command = (object) ['id' => 9];
-        $context = FlowContext::forDelete('OrderItem');
+        $model = FlowModel::simple('order_item');
+        $context = FlowContext::forDelete($model);
 
         $twig = $this->createStub(Environment::class);
         $flashes = new FlashMessenger();
@@ -122,12 +128,12 @@ final class DeleteFlowTest extends TestCase
 
         $urls = $this->createMock(UrlGeneratorInterface::class);
         $urls->expects($this->once())->method('generate')
-            ->with('app_orderitem_index', [])
-            ->willReturn('/gen/app_orderitem_index');
+            ->with('app_order_item_index', [])
+            ->willReturn('/gen/app_order_item_index');
 
         $redirector = $this->createMock(RedirectorInterface::class);
         $redirector->expects($this->once())->method('to')
-            ->with($request, '/gen/app_orderitem_index', true, 303)
+            ->with($request, '/gen/app_order_item_index', true, 303)
             ->willReturn(new Response('', 303));
 
         $handler = fn (object $cmd): Result => Result::ok('Deleted');

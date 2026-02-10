@@ -5,7 +5,7 @@
 {% block body %}
     <twig:Search
         flowModel="{{ flowModel }}"
-        flowRoute="{{ flowRoute }}"
+        routes="{{ routes }}"
         results="{{ results }}"
     >
         <twig:block name="sort">
@@ -20,7 +20,33 @@
         </twig:block>
 
         <twig:block name="list_item">
-            {{ include('review/_review_card.html.twig', {review: result}) }}
+            <twig:Card
+                showLink="{{ path('app_review_show', {'id': result.publicId.value }) }}"
+                padding="p-0"
+                statusHighlight="{{ result.status.value }}"
+            >
+                <div class="flex items-center justify-between">
+                    <twig:ProductImage
+                        imageName="{{ result.product.hasProductImage ? result.product.getFirstImage.imageName : null }}"
+                        filter="small_thumbnail"
+                        alt="{{ result.product.name }}"
+                    ></twig:ProductImage>
+                    <div class="m-3 w-full">
+                        <div class="flex items-center justify-between mb-1">
+                            <p class="text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">
+                                {{ result.title}}
+                            </p>
+                            <twig:StatusBadge status="{{ result.status.value }}"/>
+                        </div>
+                        <p class="text-sm text-gray-500 line-clamp-1 dark:text-gray-400">
+                            {{ result.product.name }} <span class="mx-1 text-gray-300 dark:text-gray-600">&middot;</span> Product #{{ '%06d'|format(result.product.id) }}
+                        </p>
+                        <p class="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                            {{ result.customer.fullName }} <span class="mx-1 text-gray-300 dark:text-gray-600">&middot;</span> {{ result.createdAt|date('d M Y') }}
+                        </p>
+                    </div>
+                </div>
+            </twig:Card>
         </twig:block>
 
         <twig:block name="add">

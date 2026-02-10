@@ -8,6 +8,7 @@ use App\Shared\UI\Http\FlashMessenger;
 use App\Shared\UI\Http\FormFlow\CommandFlow;
 use App\Shared\UI\Http\FormFlow\Redirect\RedirectorInterface;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
+use App\Shared\UI\Http\FormFlow\View\FlowModel;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -48,12 +49,12 @@ final class CommandFlowTest extends TestCase
     public function testProcessSuccessAddsSuccessFlashAndRedirectsToSuccessRoute(): void
     {
         $request = $this->newRequest();
-        $context = FlowContext::forCreate('OrderItem'); // successRoute: app_order_item_index
+        $context = FlowContext::forCreate(FlowModel::simple('order_item')); // successRoute: app_order_item_index
 
         $urls = $this->createMock(UrlGeneratorInterface::class);
         $urls->expects($this->once())
             ->method('generate')
-            ->with('app_orderitem_index', [])
+            ->with('app_order_item_index', [])
             ->willReturn('/gen/app_order_item_index');
 
         $redirector = $this->createMock(RedirectorInterface::class);
@@ -74,12 +75,12 @@ final class CommandFlowTest extends TestCase
     public function testProcessFailureAddsErrorFlashAndRedirectsToSuccessRoute(): void
     {
         $request = $this->newRequest();
-        $context = FlowContext::forCreate('OrderItem');
+        $context = FlowContext::forCreate(FlowModel::simple('order_item'));
 
         $urls = $this->createMock(UrlGeneratorInterface::class);
         $urls->expects($this->once())
             ->method('generate')
-            ->with('app_orderitem_index', [])
+            ->with('app_order_item_index', [])
             ->willReturn('/gen/app_order_item_index');
 
         $redirector = $this->createMock(RedirectorInterface::class);
@@ -100,7 +101,7 @@ final class CommandFlowTest extends TestCase
     public function testProcessSuccessWithRedirectTargetOverridesSuccessRoute(): void
     {
         $request = $this->newRequest();
-        $context = FlowContext::forCreate('OrderItem'); // should be ignored due to redirect target
+        $context = FlowContext::forCreate(FlowModel::simple('order_item')); // should be ignored due to redirect target
 
         $target = new RedirectTarget('app_order_item_show', ['id' => 5], 302);
 
@@ -127,12 +128,12 @@ final class CommandFlowTest extends TestCase
     public function testProcessUsesContextRedirectOptions(): void
     {
         $request = $this->newRequest();
-        $context = FlowContext::forCreate('OrderItem')->redirectOptions(true, 307);
+        $context = FlowContext::forCreate(FlowModel::simple('order_item'))->redirectOptions(true, 307);
 
         $urls = $this->createMock(UrlGeneratorInterface::class);
         $urls->expects($this->once())
             ->method('generate')
-            ->with('app_orderitem_index', [])
+            ->with('app_order_item_index', [])
             ->willReturn('/gen/app_order_item_index');
 
         $redirector = $this->createMock(RedirectorInterface::class);
@@ -152,12 +153,12 @@ final class CommandFlowTest extends TestCase
     public function testProcessSuccessWithNullMessageDoesNotFlash(): void
     {
         $request = $this->newRequest();
-        $context = FlowContext::forCreate('OrderItem');
+        $context = FlowContext::forCreate(FlowModel::simple('order_item'));
 
         $urls = $this->createMock(UrlGeneratorInterface::class);
         $urls->expects($this->once())
             ->method('generate')
-            ->with('app_orderitem_index', [])
+            ->with('app_order_item_index', [])
             ->willReturn('/gen/app_order_item_index');
 
         $redirector = $this->createMock(RedirectorInterface::class);

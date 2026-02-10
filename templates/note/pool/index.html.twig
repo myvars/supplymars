@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Pool Search{% endblock %}
+
+{% block body %}
+    <twig:Search
+        flowModel="{{ flowModel }}"
+        routes="{{ routes }}"
+        results="{{ results }}"
+    >
+        <twig:block name="sort">
+            <twig:Card>
+                <div class="flex justify-between overflow-auto">
+                    <twig:SortLink sortValue="id">Id</twig:SortLink>
+                    <twig:SortLink sortValue="name">Pool</twig:SortLink>
+                    <twig:SortLink sortValue="isActive">Status</twig:SortLink>
+                </div>
+            </twig:Card>
+        </twig:block>
+
+        <twig:block name="list_item">
+            <twig:Card
+                editLink="{{ path('app_note_pool_edit', {'id': result.publicId.value }) }}"
+                showLink="{{ path('app_note_pool_show', {'id': result.publicId.value }) }}"
+                statusHighlight="{{ result.isActive ? 'ACTIVE' : 'INACTIVE' }}"
+            >
+                <div class="flex items-center justify-between pe-6">
+                    <div>
+                        <p class="text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">{{ result.name }}</p>
+                        {% if result.description %}
+                            <p class="mt-1 text-sm text-gray-500 line-clamp-1 dark:text-gray-400">{{ result.description }}</p>
+                        {% endif %}
+                    </div>
+                    <div class="flex items-center gap-2">
+                        {% if result.customerVisible %}
+                            <span class="text-xs text-gray-500 dark:text-gray-400">Customer Visible</span>
+                        {% endif %}
+                        <twig:StatusBadge status="{{ result.isActive ? 'ACTIVE' : 'INACTIVE' }}"/>
+                    </div>
+                </div>
+            </twig:Card>
+        </twig:block>
+
+        <twig:block name="add">
+            <twig:Button
+                tag="a"
+                variant="alternative"
+                href="{{ path('app_note_pool_new') }}"
+                data-turbo-frame="modal"
+            >
+                <twig:ux:icon name="bi:plus-lg" class="h-4 w-4"/>
+                <span>Create Pool</span>
+            </twig:Button>
+        </twig:block>
+
+        <twig:block name="filter"></twig:block>
+    </twig:Search>
+
+{% endblock %}

@@ -25,7 +25,7 @@ final class UpdateProductCostFlowTest extends WebTestCase
             ->get('/pricing/' . $publicId . '/cost/product/edit')
             ->fillField('product_cost[defaultMarkup]', '7.500')
             ->fillField('product_cost[priceModel]', PriceModel::PRETTY_99->value)
-            ->click('Update Pricing')
+            ->click('Update Product Cost')
             ->assertOn('/pricing/' . $publicId . '/cost')
             ->assertSee('Product cost updated');
     }

@@ -1,0 +1,13 @@
+<?php
+
+namespace App\Note\Application\Command\Pool;
+
+use App\Note\Domain\Model\Pool\PoolPublicId;
+
+final readonly class TogglePoolSubscription
+{
+    public function __construct(
+        public PoolPublicId $poolId,
+    ) {
+    }
+}

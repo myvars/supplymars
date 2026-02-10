@@ -2,6 +2,8 @@
 
 namespace App\Tests\Shared\UI\Http\FormFlow\View;
 
+use App\Shared\UI\Http\FormFlow\View\FlowModel;
+use App\Shared\UI\Http\FormFlow\View\FlowRoutes;
 use App\Shared\UI\Http\FormFlow\View\TemplateContext;
 use PHPUnit\Framework\TestCase;
 
@@ -9,29 +11,57 @@ final class TemplateContextTest extends TestCase
 {
     public function testFromBuildsExpectedDefaults(): void
     {
-        $context = TemplateContext::from('Sales/OrderItem', 'edit');
+        $model = FlowModel::create('catalog', 'manufacturer');
+        $context = TemplateContext::from($model, 'edit');
 
-        self::assertSame('OrderItem', $context->flowModel); // ucfirst of flattened model
-        self::assertSame('sales_orderitem', $context->flowRoute);
-        self::assertSame('sales/orderitem/', $context->flowPath);
+        self::assertSame('Manufacturer', $context->flowModel);
         self::assertSame('edit', $context->flowOperation);
-        self::assertSame('sales/orderitem/edit.html.twig', $context->template);
+        self::assertSame('catalog/manufacturer/edit.html.twig', $context->template);
+        self::assertSame($model->routes, $context->routes);
         self::assertSame([
-            'flowModel' => 'OrderItem',
-            'flowRoute' => 'sales_orderitem',
-            'flowPath' => 'sales/orderitem/',
+            'flowModel' => 'Manufacturer',
             'flowOperation' => 'edit',
-            'template' => 'sales/orderitem/edit.html.twig',
+            'template' => 'catalog/manufacturer/edit.html.twig',
+            'routes' => $model->routes,
         ], $context->toArray());
     }
 
     public function testFromWithTemplateOverride(): void
     {
-        $context = TemplateContext::from('OrderItem', 'show', 'custom.html.twig');
-        self::assertSame('OrderItem', $context->flowModel);
-        self::assertSame('orderitem', $context->flowRoute);
-        self::assertSame('orderitem/', $context->flowPath);
-        self::assertSame('show', $context->flowOperation);
-        self::assertSame('custom.html.twig', $context->template);
+        $model = FlowModel::simple('review');
+        $context = TemplateContext::from($model, 'update', 'review/reject.html.twig');
+
+        self::assertSame('Review', $context->flowModel);
+        self::assertSame('update', $context->flowOperation);
+        self::assertSame('review/reject.html.twig', $context->template);
+    }
+
+    public function testFromWithRouteOverride(): void
+    {
+        $model = FlowModel::create('catalog', 'product');
+        $customRoutes = FlowRoutes::fromPrefix('app_custom');
+        $context = TemplateContext::from($model, 'index', routes: $customRoutes);
+
+        self::assertSame($customRoutes, $context->routes);
+        self::assertSame($customRoutes, $context->toArray()['routes']);
+    }
+
+    public function testFromWithDisplayNameOverride(): void
+    {
+        $model = FlowModel::simple('pricing')->withDisplayName('Product Cost');
+        $context = TemplateContext::from($model, 'update');
+
+        self::assertSame('Product Cost', $context->flowModel);
+        self::assertSame('pricing/update.html.twig', $context->template);
+    }
+
+    public function testFromSimpleModel(): void
+    {
+        $model = FlowModel::simple('customer');
+        $context = TemplateContext::from($model, 'create');
+
+        self::assertSame('Customer', $context->flowModel);
+        self::assertSame('create', $context->flowOperation);
+        self::assertSame('customer/create.html.twig', $context->template);
     }
 }

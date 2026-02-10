@@ -25,7 +25,7 @@ final class UpdateSubcategoryCostFlowTest extends WebTestCase
             ->get('/pricing/' . $publicId . '/cost/subcategory/edit')
             ->fillField('subcategory_cost[defaultMarkup]', '7.500')
             ->fillField('subcategory_cost[priceModel]', PriceModel::PRETTY_99->value)
-            ->click('Update Pricing')
+            ->click('Update Subcategory Cost')
             ->assertOn('/pricing/' . $publicId . '/cost')
             ->assertSee('Subcategory cost updated');
     }

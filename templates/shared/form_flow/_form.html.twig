@@ -13,6 +13,6 @@
 <twig:Button
     type="submit"
     class="w-full"
-    data-turbo-frame="{{ app.request.headers.get('turbo-frame') == 'modal' ? 'modal' : '_top' }}"
+    data-turbo-frame="{{ formFrame|default(app.request.headers.get('turbo-frame') ?: '_top') }}"
 >{{ button_label|default('Save') }}</twig:Button>
 {{ form_end(form) }}

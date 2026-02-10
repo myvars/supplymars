@@ -9,6 +9,8 @@ use App\Shared\UI\Http\FlashMessenger;
 use App\Shared\UI\Http\FormFlow\Redirect\RedirectorInterface;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
+use App\Shared\UI\Http\FormFlow\View\FlowModel;
+use App\Shared\UI\Http\FormFlow\View\FlowRoutes;
 use Pagerfanta\Adapter\AdapterInterface;
 use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Pagerfanta;
@@ -76,11 +78,11 @@ final class SearchFlowTest extends TestCase
         $twig->expects($this->once())->method('render')
             ->with(
                 'shared/form_flow/base.html.twig',
-                $this->callback(fn (array $vars): bool => $vars['flowModel'] === 'OrderItem'
-                    && $vars['flowRoute'] === 'orderitem'
-                    && $vars['flowPath'] === 'orderitem/'
+                $this->callback(fn (array $vars): bool => $vars['flowModel'] === 'Order Item'
                     && $vars['flowOperation'] === 'index'
-                    && $vars['template'] === 'orderitem/index.html.twig'
+                    && $vars['template'] === 'order_item/index.html.twig'
+                    && $vars['routes'] instanceof FlowRoutes
+                    && $vars['routes']->index === 'app_order_item_index'
                     && $vars['results'] instanceof Pagerfanta)
             )->willReturn('<html>OK</html>');
 
@@ -89,7 +91,7 @@ final class SearchFlowTest extends TestCase
 
         $flow = new SearchFlow(new Paginator(), $twig, new FlashMessenger(), $redirector, $urls);
 
-        $response = $flow->search($request, $repository, $criteria, FlowContext::forSearch('OrderItem'));
+        $response = $flow->search($request, $repository, $criteria, FlowContext::forSearch(FlowModel::simple('order_item')));
 
         self::assertSame(Response::HTTP_OK, $response->getStatusCode());
         self::assertSame('<html>OK</html>', $response->getContent());
@@ -106,17 +108,17 @@ final class SearchFlowTest extends TestCase
 
         $urls = $this->createMock(UrlGeneratorInterface::class);
         $urls->expects($this->once())->method('generate')
-            ->with('app_orderitem_index', ['foo' => 'bar', 'page' => TestSearchCriteria::PAGE_DEFAULT])
-            ->willReturn('/gen/app_orderitem_index?foo=bar&page=1');
+            ->with('app_order_item_index', ['foo' => 'bar', 'page' => TestSearchCriteria::PAGE_DEFAULT])
+            ->willReturn('/gen/app_order_item_index?foo=bar&page=1');
 
         $redirector = $this->createMock(RedirectorInterface::class);
         $redirector->expects($this->once())->method('to')
-            ->with($request, '/gen/app_orderitem_index?foo=bar&page=1')
+            ->with($request, '/gen/app_order_item_index?foo=bar&page=1')
             ->willReturn(new Response('', 303));
 
         $flow = new SearchFlow(new Paginator(), $twig, new FlashMessenger(), $redirector, $urls);
 
-        $response = $flow->search($request, $repository, $criteria, FlowContext::forSearch('OrderItem'));
+        $response = $flow->search($request, $repository, $criteria, FlowContext::forSearch(FlowModel::simple('order_item')));
 
         self::assertSame(303, $response->getStatusCode());
         self::assertSame(['Page 99 not found.'], $this->getFlashBag($request)->get('warning'));

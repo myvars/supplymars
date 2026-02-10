@@ -9,40 +9,37 @@ final readonly class TemplateContext
 {
     public function __construct(
         public string $flowModel,
-        public string $flowRoute,
-        public string $flowPath,
         public string $flowOperation,
         public string $template,
+        public ?FlowRoutes $routes = null,
     ) {
     }
 
     /**
-     * Create a context for a given model and operation; resolves defaults for template names.
+     * Create a context from a FlowModel value object.
      */
-    public static function from(string $model, string $operation, ?string $template = null): self
+    public static function from(FlowModel $model, string $operation, ?string $template = null, ?FlowRoutes $routes = null): self
     {
         return new self(
-            flowModel: ucfirst(ModelPath::model($model)),
-            flowRoute: ModelPath::route($model),
-            flowPath: ModelPath::path($model),
+            flowModel: $model->displayName,
             flowOperation: $operation,
-            template: $template ?? ModelPath::template($model, $operation),
+            template: $template ?? $model->template($operation),
+            routes: $routes ?? $model->routes,
         );
     }
 
     /**
      * Export keys expected by Twig templates.
      *
-     * @return array<string, string>
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
         return [
             'flowModel' => $this->flowModel,
-            'flowRoute' => $this->flowRoute,
-            'flowPath' => $this->flowPath,
             'flowOperation' => $this->flowOperation,
             'template' => $this->template,
+            'routes' => $this->routes,
         ];
     }
 }

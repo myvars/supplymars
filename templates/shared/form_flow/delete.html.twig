@@ -9,7 +9,7 @@
         <p class="mb-4 text-sm font-light text-gray-500 dark:text-gray-400">
             Are you sure you want to delete this {{ flowModel }}?
         </p>
-        <form method="post" action="{{ path('app_'~flowRoute~'_delete', {'id': result.publicId.value}) }}">
+        <form method="post" action="{{ path(routes.delete, {'id': result.publicId.value}) }}">
             <input type="hidden" name="_token" value="{{ csrf_token('delete'~result.publicId.value) }}">
             <div class="flex gap-3">
                 <twig:Button type="button" variant="alternative" class="w-full" data-action="basic-modal#close">

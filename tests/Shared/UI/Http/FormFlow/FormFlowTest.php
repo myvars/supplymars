@@ -9,6 +9,8 @@ use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\Guard\AutoUpdateGuard;
 use App\Shared\UI\Http\FormFlow\Redirect\RedirectorInterface;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
+use App\Shared\UI\Http\FormFlow\View\FlowModel;
+use App\Shared\UI\Http\FormFlow\View\FlowRoutes;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
@@ -82,7 +84,12 @@ final class FormFlowTest extends TestCase
 
         $twig = $this->createMock(Environment::class);
         $twig->expects($this->once())->method('render')
-            ->with($this->equalTo('shared/form_flow/base.html.twig'), $this->arrayHasKey('form'))
+            ->with(
+                $this->equalTo('shared/form_flow/base.html.twig'),
+                $this->callback(fn (array $vars): bool => isset($vars['form'])
+                    && $vars['routes'] instanceof FlowRoutes
+                    && $vars['routes']->index === 'app_order_item_index')
+            )
             ->willReturn('<html>GET</html>');
 
         $urls = $this->createStub(UrlGeneratorInterface::class);
@@ -92,7 +99,7 @@ final class FormFlowTest extends TestCase
         $autoUpdate->method('is')->willReturn(false);
 
         $flow = new FormFlow($forms, new FlashMessenger(), $twig, $urls, $redirector, $autoUpdate);
-        $ctx = FlowContext::forCreate('OrderItem');
+        $ctx = FlowContext::forCreate(FlowModel::simple('order_item'));
 
         // @phpstan-ignore argument.type (test uses mock form type string)
         $response = $flow->form($request, 'FormType', [], $this->mapper(), $this->handlerOk(), $ctx);
@@ -112,12 +119,12 @@ final class FormFlowTest extends TestCase
 
         $urls = $this->createMock(UrlGeneratorInterface::class);
         $urls->expects($this->once())->method('generate')
-            ->with('app_orderitem_index', [])
-            ->willReturn('/gen/app_orderitem_index');
+            ->with('app_order_item_index', [])
+            ->willReturn('/gen/app_order_item_index');
 
         $redirector = $this->createMock(RedirectorInterface::class);
         $redirector->expects($this->once())->method('to')
-            ->with($request, '/gen/app_orderitem_index', false, 303)
+            ->with($request, '/gen/app_order_item_index', false, 303)
             ->willReturn(new Response('', 303));
 
         // @phpstan-ignore method.unresolvableReturnType
@@ -126,7 +133,7 @@ final class FormFlowTest extends TestCase
 
         $twig = $this->createStub(Environment::class);
         $flow = new FormFlow($forms, new FlashMessenger(), $twig, $urls, $redirector, $autoUpdate);
-        $ctx = FlowContext::forCreate('OrderItem');
+        $ctx = FlowContext::forCreate(FlowModel::simple('order_item'));
 
         // @phpstan-ignore argument.type (test uses mock form type string)
         $response = $flow->form($request, 'FormType', [], $this->mapper(), $this->handlerOk('Saved'), $ctx);
@@ -143,16 +150,16 @@ final class FormFlowTest extends TestCase
         $forms = $this->createStub(FormFactoryInterface::class);
         $forms->method('create')->willReturn($form);
 
-        $rt = new RedirectTarget('app_orderitem_show', ['id' => 5], 307);
+        $rt = new RedirectTarget('app_order_item_show', ['id' => 5], 307);
 
         $urls = $this->createMock(UrlGeneratorInterface::class);
         $urls->expects($this->once())->method('generate')
-            ->with('app_orderitem_show', ['id' => 5])
-            ->willReturn('/gen/app_orderitem_show?id=5');
+            ->with('app_order_item_show', ['id' => 5])
+            ->willReturn('/gen/app_order_item_show?id=5');
 
         $redirector = $this->createMock(RedirectorInterface::class);
         $redirector->expects($this->once())->method('to')
-            ->with($request, '/gen/app_orderitem_show?id=5', false, 307, true)
+            ->with($request, '/gen/app_order_item_show?id=5', false, 307, true)
             ->willReturn(new Response('', 307));
 
         // @phpstan-ignore method.unresolvableReturnType
@@ -161,7 +168,7 @@ final class FormFlowTest extends TestCase
 
         $twig = $this->createStub(Environment::class);
         $flow = new FormFlow($forms, new FlashMessenger(), $twig, $urls, $redirector, $autoUpdate);
-        $ctx = FlowContext::forUpdate('OrderItem');
+        $ctx = FlowContext::forUpdate(FlowModel::simple('order_item'));
 
         // @phpstan-ignore argument.type (test uses mock form type string)
         $response = $flow->form($request, 'FormType', [], $this->mapper(), $this->handlerOk('Updated', $rt), $ctx);
@@ -188,7 +195,7 @@ final class FormFlowTest extends TestCase
         $autoUpdate->method('is')->willReturn(false);
 
         $flow = new FormFlow($forms, new FlashMessenger(), $twig, $urls, $redirector, $autoUpdate);
-        $ctx = FlowContext::forCreate('OrderItem');
+        $ctx = FlowContext::forCreate(FlowModel::simple('order_item'));
 
         // @phpstan-ignore argument.type (test uses mock form type string)
         $response = $flow->form($request, 'FormType', [], $this->mapper(), $this->handlerFail(), $ctx);
@@ -216,7 +223,7 @@ final class FormFlowTest extends TestCase
         $autoUpdate->method('is')->willReturn(false);
 
         $flow = new FormFlow($forms, new FlashMessenger(), $twig, $urls, $redirector, $autoUpdate);
-        $ctx = FlowContext::forCreate('OrderItem');
+        $ctx = FlowContext::forCreate(FlowModel::simple('order_item'));
 
         // @phpstan-ignore argument.type (test uses mock form type string)
         $response = $flow->form($request, 'FormType', [], $this->mapper(), $this->handlerFail('Failed'), $ctx);
@@ -246,7 +253,7 @@ final class FormFlowTest extends TestCase
         $autoUpdate->expects($this->once())->method('clear')->with($form);
 
         $flow = new FormFlow($forms, new FlashMessenger(), $twig, $urls, $redirector, $autoUpdate);
-        $ctx = FlowContext::forCreate('OrderItem');
+        $ctx = FlowContext::forCreate(FlowModel::simple('order_item'));
 
         // @phpstan-ignore argument.type (test uses mock form type string)
         $response = $flow->form($request, 'FormType', [], $this->mapper(), $this->handlerFail('Ignored'), $ctx);

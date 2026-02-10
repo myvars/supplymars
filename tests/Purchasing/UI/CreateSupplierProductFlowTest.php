@@ -48,7 +48,7 @@ final class CreateSupplierProductFlowTest extends WebTestCase
             ->fillField('supplier_product[cost]', '19.99')
             ->fillField('supplier_product[product]', (string) $product->getId())
             ->fillField('supplier_product[isActive]', '1')
-            ->click('Create Supplier product')
+            ->click('Create Supplier Product')
             ->assertOn('/supplier-product/')
             ->assertSee('Flow Supplier Product');
     }
@@ -58,7 +58,7 @@ final class CreateSupplierProductFlowTest extends WebTestCase
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
             ->get('/supplier-product/new')
-            ->click('Create Supplier product')
+            ->click('Create Supplier Product')
             ->assertOn('/supplier-product/new')
             ->assertSee('Please enter a supplier product name')
             ->assertSee('Please enter a product code')

@@ -16,6 +16,7 @@ use App\Shared\UI\Http\FormFlow\DeleteFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
+use App\Shared\UI\Http\FormFlow\View\FlowModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,7 +28,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 class CustomerController extends AbstractController
 {
-    public const string MODEL = 'customer';
+    private function model(): FlowModel
+    {
+        return FlowModel::simple('customer');
+    }
 
     #[Route(path: '/customer/', name: 'app_customer_index', methods: ['GET'])]
     public function index(
@@ -40,7 +44,7 @@ class CustomerController extends AbstractController
             request: $request,
             repository: $repository,
             criteria: $criteria,
-            context: FlowContext::forSearch(self::MODEL),
+            context: FlowContext::forSearch($this->model()),
         );
     }
 
@@ -58,7 +62,7 @@ class CustomerController extends AbstractController
             data: CustomerForm::fromEntity($customer),
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forUpdate(self::MODEL)
+            context: FlowContext::forUpdate($this->model())
                 ->allowDelete(true)
                 ->successRoute('app_customer_show', ['id' => $customer->getPublicId()->value()])
         );
@@ -71,7 +75,7 @@ class CustomerController extends AbstractController
     ): Response {
         return $flow->deleteConfirm(
             entity: $customer,
-            context: FlowContext::forDelete(self::MODEL),
+            context: FlowContext::forDelete($this->model()),
         );
     }
 
@@ -86,7 +90,7 @@ class CustomerController extends AbstractController
             request: $request,
             command: new DeleteCustomer($customer->getPublicId()),
             handler: $handler,
-            context: FlowContext::forDelete(self::MODEL),
+            context: FlowContext::forDelete($this->model()),
         );
     }
 

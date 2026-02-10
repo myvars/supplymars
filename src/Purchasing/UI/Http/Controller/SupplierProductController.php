@@ -27,6 +27,7 @@ use App\Shared\UI\Http\FormFlow\DeleteFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
+use App\Shared\UI\Http\FormFlow\View\FlowModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,7 +39,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 class SupplierProductController extends AbstractController
 {
-    public const string MODEL = 'purchasing/supplier product';
+    private function model(): FlowModel
+    {
+        return FlowModel::create('purchasing', 'supplier_product');
+    }
 
     #[Route(path: '/supplier-product/', name: 'app_purchasing_supplier_product_index', methods: ['GET'])]
     public function index(
@@ -51,7 +55,7 @@ class SupplierProductController extends AbstractController
             request: $request,
             repository: $repository,
             criteria: $criteria,
-            context: FlowContext::forSearch(self::MODEL),
+            context: FlowContext::forSearch($this->model()),
         );
     }
 
@@ -72,7 +76,7 @@ class SupplierProductController extends AbstractController
             data: $criteria,
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forFilter(self::MODEL),
+            context: FlowContext::forFilter($this->model()),
         );
     }
 
@@ -89,7 +93,7 @@ class SupplierProductController extends AbstractController
             data: new SupplierProductForm(),
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forCreate(self::MODEL),
+            context: FlowContext::forCreate($this->model()),
         );
     }
 
@@ -107,7 +111,7 @@ class SupplierProductController extends AbstractController
             data: SupplierProductForm::fromEntity($supplierProduct),
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forUpdate(self::MODEL)
+            context: FlowContext::forUpdate($this->model())
                 ->allowDelete(true)
                 ->successRoute('app_purchasing_supplier_product_show', [
                     'id' => $supplierProduct->getPublicId()->value(),
@@ -126,7 +130,7 @@ class SupplierProductController extends AbstractController
     ): Response {
         return $flow->deleteConfirm(
             entity: $supplierProduct,
-            context: FlowContext::forDelete(self::MODEL),
+            context: FlowContext::forDelete($this->model()),
         );
     }
 
@@ -141,7 +145,7 @@ class SupplierProductController extends AbstractController
             request: $request,
             command: new DeleteSupplierProduct($supplierProduct->getPublicId()),
             handler: $handler,
-            context: FlowContext::forDelete(self::MODEL),
+            context: FlowContext::forDelete($this->model()),
         );
     }
 
@@ -173,7 +177,7 @@ class SupplierProductController extends AbstractController
             request: $request,
             command: new RemoveSupplierProduct($supplierProduct->getPublicId()),
             handler: $handler,
-            context: FlowContext::forDelete(self::MODEL)
+            context: FlowContext::forDelete($this->model())
             ->successRoute('app_pricing_stock', [
                 'id' => $supplierProduct->getProduct()->getPublicId()->value(),
             ]),

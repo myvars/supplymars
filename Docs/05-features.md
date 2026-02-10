@@ -622,6 +622,75 @@ The Review context provides a customer feedback and moderation system. Reviews a
 
 ---
 
+## Support Pools & Tickets
+
+### Purpose
+
+The Note context provides an internal support system for managing customer queries and staff communication. Pools organize tickets by topic, and tickets contain threaded messages with visibility controls.
+
+### Main Workflows
+
+**Pool Management:**
+1. Navigate to `/note/pool/new`
+2. Set name, description, active status, and customer visibility
+3. Staff can subscribe to pools to filter their ticket view
+4. Toggle subscriptions via the pool detail page
+
+**Ticket Lifecycle:**
+1. Create ticket at `/note/ticket/new` — select pool, customer, subject, and initial message
+2. Staff reply via `/note/ticket/{id}/reply` — choose PUBLIC or INTERNAL visibility
+3. Close ticket — adds system message audit trail, status transitions to CLOSED
+4. Reopen ticket — adds system message, status transitions back to OPEN
+5. Reassign ticket to a different pool
+6. Snooze ticket until a future date (hidden from default view until then)
+
+**Message Visibility Model:**
+- **PUBLIC** — visible to both staff and customers
+- **INTERNAL** — visible to staff only, for private notes and discussion
+
+**System Messages:**
+- Generated automatically for close, reopen, and reassign actions
+- Provide audit trail within the ticket conversation
+- Cannot be deleted
+
+### Entry Points
+
+| Action | Controller | Route |
+|--------|------------|-------|
+| List pools | `PoolController::index` | `app_note_pool_index` |
+| Create pool | `PoolController::new` | `app_note_pool_new` |
+| Edit pool | `PoolController::edit` | `app_note_pool_edit` |
+| Delete pool | `PoolController::delete` | `app_note_pool_delete` |
+| Toggle subscription | `PoolController::subscribe` | `app_note_pool_subscribe` |
+| List tickets | `TicketController::index` | `app_note_ticket_index` |
+| Create ticket | `TicketController::new` | `app_note_ticket_new` |
+| View ticket | `TicketController::show` | `app_note_ticket_show` |
+| Reply to ticket | `TicketController::reply` | `app_note_ticket_reply` |
+| Close ticket | `TicketController::close` | `app_note_ticket_close` |
+| Reopen ticket | `TicketController::reopen` | `app_note_ticket_reopen` |
+| Reassign ticket | `TicketController::reassign` | `app_note_ticket_reassign` |
+| Snooze ticket | `TicketController::toggleSnooze` | `app_note_ticket_toggle_snooze` |
+| Delete message | `TicketController::deleteMessage` | `app_note_ticket_message_delete` |
+
+**Key files:**
+- `src/Note/UI/Http/Controller/PoolController.php`
+- `src/Note/UI/Http/Controller/TicketController.php`
+- `src/Note/Domain/Model/Pool/Pool.php`
+- `src/Note/Domain/Model/Ticket/Ticket.php`
+- `src/Note/Domain/Model/Message/Message.php`
+
+### Business Rules
+
+1. **Pool deletion cascades:** Deleting a pool removes all associated tickets and messages
+2. **Ticket status transitions:** OPEN ↔ REPLIED ↔ CLOSED, with guards on invalid transitions
+3. **Reply status effect:** Staff reply sets REPLIED; customer reply sets OPEN; closed tickets remain CLOSED
+4. **Snooze filtering:** Snoozed tickets hidden from default index unless explicitly included
+5. **Original message protection:** The first message in a ticket cannot be deleted
+6. **System message protection:** System-generated messages cannot be deleted
+7. **Message count tracking:** `messageCount` and `lastMessageAt` are maintained on the ticket for sorting
+
+---
+
 ## FormFlow Pattern
 
 ### Purpose

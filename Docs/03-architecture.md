@@ -18,6 +18,7 @@ src/
 ├── Pricing/                  # VAT rates, pricing listeners
 ├── Purchasing/               # Suppliers, supplier products, purchase orders
 ├── Reporting/                # Sales reporting and dashboards
+├── Note/                     # Support pools, tickets, internal messaging
 ├── Review/                   # Product reviews and moderation
 └── Shared/                   # Cross-cutting concerns (Shared Kernel)
 ```

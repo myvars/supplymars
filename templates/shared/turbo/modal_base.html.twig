@@ -1,1 +1,2 @@
-{% extends  app.request.headers.get('turbo-frame') == 'modal' ? 'shared/turbo/modal_frame.html.twig' : 'base.html.twig' %}
+{% set _turbo_frame = app.request.headers.get('turbo-frame') %}
+{% extends _turbo_frame == 'modal' ? 'shared/turbo/modal_frame.html.twig' : (_turbo_frame ? 'shared/turbo/embedded_frame.html.twig' : 'base.html.twig') %}

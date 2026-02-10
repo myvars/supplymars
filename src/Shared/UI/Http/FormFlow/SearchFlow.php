@@ -8,7 +8,7 @@ use App\Shared\Infrastructure\Persistence\Search\Paginator;
 use App\Shared\UI\Http\FlashMessenger;
 use App\Shared\UI\Http\FormFlow\Redirect\RedirectorInterface;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
-use App\Shared\UI\Http\FormFlow\View\ModelPath;
+use App\Shared\UI\Http\FormFlow\View\FlowModel;
 use App\Shared\UI\Http\FormFlow\View\TemplateContext;
 use Pagerfanta\Exception\OutOfRangeCurrentPageException;
 use Symfony\Component\HttpFoundation\Request;
@@ -37,14 +37,13 @@ final readonly class SearchFlow
         FlowContext $context,
     ): Response {
         $context->validateForSearch();
-        $model = $context->getModel();
         $operation = $context->getOperation()->value;
 
         try {
             $pagination = $this->paginator->searchPagination($repository, $criteria);
         } catch (OutOfRangeCurrentPageException) {
             $this->flashes->warning($request, 'Page ' . $criteria->getPage() . ' not found.');
-            $url = $this->urls->generate('app_' . ModelPath::route($model) . '_index', array_merge(
+            $url = $this->urls->generate($context->getRoutes()->index, array_merge(
                 $request->query->all(),
                 ['page' => '1'],
             ));
@@ -52,8 +51,13 @@ final readonly class SearchFlow
             return $this->redirector->to($request, $url);
         }
 
-        $templateContext = TemplateContext::from($model, $operation);
-        $html = $this->twig->render(ModelPath::BASE_TEMPLATE, array_merge(
+        $templateContext = TemplateContext::from(
+            $context->getFlowModel(),
+            $operation,
+            routes: $context->getRoutes(),
+        );
+
+        $html = $this->twig->render(FlowModel::BASE_TEMPLATE, array_merge(
             $templateContext->toArray(),
             ['results' => $pagination],
         ));

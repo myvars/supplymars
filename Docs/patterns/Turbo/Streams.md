@@ -193,7 +193,7 @@ The Search component uses streams to update result counts and filter state:
 <turbo-stream action="replace" target="{{ flowModel|slug }}-search-filter">
     <template>
         <a id="{{ flowModel|slug }}-search-filter"
-           href="{{ path(flowRoute ~ '_search_filter') }}"
+           href="{{ path(routes.filter) }}"
            class="{{ hasFilters ? 'bg-blue-100' : '' }}">
             Filters
         </a>

@@ -1,0 +1,10 @@
+<li class="ms-7 pb-6 last:pb-0">
+    <span class="absolute z-10 -start-4 flex h-8 w-8 items-center justify-center rounded-full
+                 bg-gray-100 dark:bg-gray-700">
+        <twig:ux:icon name="bi:info-circle" class="h-3.5 w-3.5 text-gray-400 dark:text-gray-500"/>
+    </span>
+    <p class="py-1.5 text-sm text-gray-500 dark:text-gray-400">
+        {{ message.body }}
+        <span class="text-xs text-gray-400 dark:text-gray-500">{{ message.createdAt|ago }}</span>
+    </p>
+</li>

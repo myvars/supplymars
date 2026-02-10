@@ -25,7 +25,7 @@ final class UpdateCategoryCostFlowTest extends WebTestCase
             ->get('/pricing/' . $publicId . '/cost/category/edit')
             ->fillField('category_cost[defaultMarkup]', '7.500')
             ->fillField('category_cost[priceModel]', PriceModel::PRETTY_99->value)
-            ->click('Update Pricing')
+            ->click('Update Category Cost')
             ->assertOn('/pricing/' . $publicId . '/cost')
             ->assertSee('Category cost updated');
     }

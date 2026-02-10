@@ -17,6 +17,7 @@ use App\Pricing\UI\Http\Form\Type\ProductCostType;
 use App\Pricing\UI\Http\Form\Type\SubcategoryCostType;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
+use App\Shared\UI\Http\FormFlow\View\FlowModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,7 +28,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 class PricingController extends AbstractController
 {
-    public const string MODEL = 'pricing';
+    private function model(): FlowModel
+    {
+        return FlowModel::simple('pricing');
+    }
 
     #[Route(path: '/pricing/{id}/stock', name: 'app_pricing_stock', methods: ['GET'])]
     public function showStock(#[ValueResolver('public_id')] Product $product): Response
@@ -59,7 +63,7 @@ class PricingController extends AbstractController
             data: ProductCostForm::fromEntity($product),
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forUpdate(self::MODEL)
+            context: FlowContext::forUpdate($this->model()->withDisplayName('Product Cost'))
                 ->successRoute('app_pricing_cost', ['id' => $product->getPublicId()->value()]),
         );
     }
@@ -82,7 +86,7 @@ class PricingController extends AbstractController
             data: CategoryCostForm::fromEntity($product->getCategory()),
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forUpdate(self::MODEL)
+            context: FlowContext::forUpdate($this->model()->withDisplayName('Category Cost'))
                 ->successRoute('app_pricing_cost', ['id' => $product->getPublicId()->value()]),
         );
     }
@@ -105,7 +109,7 @@ class PricingController extends AbstractController
             data: SubcategoryCostForm::fromEntity($product->getSubcategory()),
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forUpdate(self::MODEL)
+            context: FlowContext::forUpdate($this->model()->withDisplayName('Subcategory Cost'))
                 ->successRoute('app_pricing_cost', ['id' => $product->getPublicId()->value()]),
         );
     }

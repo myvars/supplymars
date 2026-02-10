@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Ticket Search{% endblock %}
+
+{% block body %}
+    <twig:Search
+        flowModel="{{ flowModel }}"
+        routes="{{ routes }}"
+        results="{{ results }}"
+    >
+        <twig:block name="sort">
+            <twig:Card>
+                <div class="flex justify-between overflow-auto">
+                    <twig:SortLink sortValue="id">Id</twig:SortLink>
+                    <twig:SortLink sortValue="status">Status</twig:SortLink>
+                    <twig:SortLink sortValue="lastMessageAt">Last Message</twig:SortLink>
+                    <twig:SortLink sortValue="createdAt">Created</twig:SortLink>
+                </div>
+            </twig:Card>
+        </twig:block>
+
+        <twig:block name="list_item">
+            <twig:Card
+                showLink="{{ path('app_note_ticket_show', {'id': result.publicId.value }) }}"
+                statusHighlight="{{ result.status.value }}"
+            >
+                <div class="flex items-center justify-between">
+                    <p class="min-w-0 flex-1 text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">{{ result.subject }}</p>
+                    <div class="flex shrink-0 items-center gap-1.5">
+                        {% if result.snoozed %}
+                            <span class="inline-flex items-center gap-1 rounded-md bg-amber-50 px-2 py-1 text-xs font-medium text-amber-700 ring-1 ring-amber-600/20 ring-inset dark:bg-amber-400/10 dark:text-amber-400 dark:ring-amber-400/20">
+                                <twig:ux:icon name="bi:bell-slash" class="h-3 w-3"/>
+                                Snoozed
+                            </span>
+                        {% endif %}
+                        <twig:StatusBadge status="{{ result.status.value }}"/>
+                    </div>
+                </div>
+                <div class="mt-2 flex items-center justify-between">
+                    <div class="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
+                        <span>{{ result.customer.fullName }}</span>
+                        <span class="inline-flex items-center gap-3 max-md:hidden">
+                            <span class="text-gray-300 dark:text-gray-600">&middot;</span>
+                            <span>{{ result.pool.name }}</span>
+                        </span>
+                        <span class="text-gray-300 dark:text-gray-600">&middot;</span>
+                        <span class="inline-flex items-center gap-1">
+                            <twig:ux:icon name="bi:chat-dots" class="h-3.5 w-3.5"/>
+                            {{ result.messageCount }}
+                        </span>
+                    </div>
+                    {% if result.lastMessageAt %}
+                        <span class="text-xs text-gray-500 dark:text-gray-400">{{ result.lastMessageAt|ago }}</span>
+                    {% endif %}
+                </div>
+            </twig:Card>
+        </twig:block>
+
+        <twig:block name="add">
+            <twig:Button
+                tag="a"
+                variant="alternative"
+                href="{{ path('app_note_ticket_new') }}"
+                data-turbo-frame="modal"
+            >
+                <twig:ux:icon name="bi:plus-lg" class="h-4 w-4"/>
+                <span>Create Ticket</span>
+            </twig:Button>
+        </twig:block>
+    </twig:Search>
+
+{% endblock %}

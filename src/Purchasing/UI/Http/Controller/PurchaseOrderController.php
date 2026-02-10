@@ -14,6 +14,7 @@ use App\Shared\UI\Http\FormFlow\DeleteFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
+use App\Shared\UI\Http\FormFlow\View\FlowModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,7 +26,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 class PurchaseOrderController extends AbstractController
 {
-    public const string MODEL = 'purchasing/purchase order';
+    private function model(): FlowModel
+    {
+        return FlowModel::create('purchasing', 'purchase_order');
+    }
 
     #[Route(path: '/purchase/order/', name: 'app_purchasing_purchase_order_index', methods: ['GET'])]
     public function index(
@@ -38,7 +42,7 @@ class PurchaseOrderController extends AbstractController
             request: $request,
             repository: $repository,
             criteria: $criteria,
-            context: FlowContext::forSearch(self::MODEL),
+            context: FlowContext::forSearch($this->model()),
         );
     }
 
@@ -56,7 +60,7 @@ class PurchaseOrderController extends AbstractController
             data: $criteria,
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forFilter(self::MODEL),
+            context: FlowContext::forFilter($this->model()),
         );
     }
 
@@ -73,7 +77,7 @@ class PurchaseOrderController extends AbstractController
     ): Response {
         return $flow->deleteConfirm(
             entity: $purchaseOrder,
-            context: FlowContext::forDelete(self::MODEL)
+            context: FlowContext::forDelete($this->model())
                 ->template('purchasing/purchase_order/rewind.html.twig'),
         );
     }
@@ -89,7 +93,7 @@ class PurchaseOrderController extends AbstractController
             request: $request,
             command: new RewindPurchaseOrder($purchaseOrder->getPublicId()),
             handler: $handler,
-            context: FlowContext::forDelete(self::MODEL)
+            context: FlowContext::forDelete($this->model())
                 ->successRoute('app_purchasing_purchase_order_show', ['id' => $purchaseOrder->getPublicId()->value()]),
         );
     }

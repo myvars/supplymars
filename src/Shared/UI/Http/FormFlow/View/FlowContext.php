@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  */
 final class FlowContext
 {
-    private ?string $model = null;
+    private ?FlowModel $flowModel = null;
 
     private ?string $template = null;
 
@@ -21,6 +21,8 @@ final class FlowContext
 
     /** @var array<string, mixed> */
     private array $successParams = [];
+
+    private ?FlowRoutes $routes = null;
 
     private bool $allowDelete = false;
 
@@ -59,19 +61,19 @@ final class FlowContext
     }
 
     /** Factory for create operation defaults. */
-    public static function forCreate(string $model): self
+    public static function forCreate(FlowModel $model): self
     {
         return self::fromOperation($model, FormOperation::Create);
     }
 
     /** Factory for update operation defaults. */
-    public static function forUpdate(string $model): self
+    public static function forUpdate(FlowModel $model): self
     {
         return self::fromOperation($model, FormOperation::Update);
     }
 
     /** Factory for delete operation defaults. */
-    public static function forDelete(string $model): self
+    public static function forDelete(FlowModel $model): self
     {
         $self = self::fromOperation($model, FormOperation::Delete);
         $self->redirectRefresh = true; // Enable smart navigation for deletes
@@ -80,40 +82,46 @@ final class FlowContext
     }
 
     /** Factory for filter operation defaults. */
-    public static function forFilter(string $model): self
+    public static function forFilter(FlowModel $model): self
     {
         return self::fromOperation($model, FormOperation::Filter);
     }
 
     /** Factory for search/index operation defaults. */
-    public static function forSearch(string $model): self
+    public static function forSearch(FlowModel $model): self
     {
         $self = new self();
-        $self->model = $model;
+        $self->flowModel = $model;
         $self->operation = FormOperation::Index;
-        $self->template = ModelPath::template($model, FormOperation::Index->value);
+        $self->template = $model->template(FormOperation::Index->value);
+        $self->routes = $model->routes;
 
         return $self;
     }
 
     /** Factory for generic operation defaults. */
-    private static function fromOperation(string $model, FormOperation $operation): self
+    private static function fromOperation(FlowModel $model, FormOperation $operation): self
     {
         $self = new self();
-
-        $self->model = $model;
+        $self->flowModel = $model;
         $self->operation = $operation;
-        $self->template = ModelPath::template($model, $operation->value);
-        $self->successRoute = sprintf('app_%s_index', ModelPath::route($model));
+        $self->template = $model->template($operation->value);
+        $self->routes = $model->routes;
+        $self->successRoute = $model->defaultSuccessRoute;
 
         return $self;
     }
 
-    public function model(string $model): self
+    public function model(FlowModel $model): self
     {
-        $this->model = $model;
+        $this->flowModel = $model;
 
         return $this;
+    }
+
+    public function getFlowModel(): ?FlowModel
+    {
+        return $this->flowModel;
     }
 
     public function template(string $template): self
@@ -159,9 +167,17 @@ final class FlowContext
         return $this;
     }
 
-    public function getModel(): ?string
+    /** Replace all routes from a new prefix (e.g. "app_catalog_product"). */
+    public function routePrefix(string $prefix): self
     {
-        return $this->model;
+        $this->routes = FlowRoutes::fromPrefix($prefix);
+
+        return $this;
+    }
+
+    public function getRoutes(): ?FlowRoutes
+    {
+        return $this->routes;
     }
 
     public function getTemplate(): ?string
@@ -209,7 +225,7 @@ final class FlowContext
      */
     public function validate(): void
     {
-        if (null === $this->model) {
+        if (!$this->flowModel instanceof FlowModel) {
             throw new \LogicException('Model not configured.');
         }
 
@@ -237,7 +253,7 @@ final class FlowContext
      */
     public function validateForSearch(): void
     {
-        if (null === $this->model) {
+        if (!$this->flowModel instanceof FlowModel) {
             throw new \LogicException('Model not configured.');
         }
     }

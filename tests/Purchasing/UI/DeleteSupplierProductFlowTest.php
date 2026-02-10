@@ -21,8 +21,8 @@ final class DeleteSupplierProductFlowTest extends WebTestCase
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
             ->get('/supplier-product/' . $publicId . '/delete/confirm')
-            ->click('Delete Supplier product')
+            ->click('Delete Supplier Product')
             ->assertOn('/supplier-product/')
-            ->assertSee('Supplier product deleted');
+            ->assertSee('Supplier Product deleted');
     }
 }

@@ -8,7 +8,7 @@ use App\Shared\UI\Http\FormFlow\Concerns\RedirectsResponses;
 use App\Shared\UI\Http\FormFlow\Guard\AutoUpdateGuard;
 use App\Shared\UI\Http\FormFlow\Redirect\RedirectorInterface;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
-use App\Shared\UI\Http\FormFlow\View\ModelPath;
+use App\Shared\UI\Http\FormFlow\View\FlowModel;
 use App\Shared\UI\Http\FormFlow\View\TemplateContext;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
@@ -148,12 +148,13 @@ final readonly class FormFlow
     ): Response {
         // Build a consistent set of Twig variables for template.
         $templateContext = TemplateContext::from(
-            $context->getModel(),
+            $context->getFlowModel(),
             $context->getOperation()->value,
             $context->getTemplate(),
+            $context->getRoutes(),
         );
 
-        $html = $this->twig->render(ModelPath::BASE_TEMPLATE, array_merge(
+        $html = $this->twig->render(FlowModel::BASE_TEMPLATE, array_merge(
             $templateContext->toArray(),
             [
                 'flowBackLink' => $context->resolveBackUrl($request),

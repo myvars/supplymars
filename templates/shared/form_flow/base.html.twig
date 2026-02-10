@@ -1,5 +1,5 @@
 
-{# Base layout for all FormFlow pages. Expects: flowModel, flowRoute, flowPath, flowOperation, template. #}
+{# Base layout for all FormFlow pages. Expects: flowModel, flowOperation, template, routes (FlowRoutes). #}
 {% if flowOperation|default(null) is null %}
     {{ include([template, 'shared/form_flow/missing.html.twig']) }}
 {% else %}

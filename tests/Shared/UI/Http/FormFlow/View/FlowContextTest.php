@@ -3,8 +3,9 @@
 namespace App\Tests\Shared\UI\Http\FormFlow\View;
 
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
+use App\Shared\UI\Http\FormFlow\View\FlowModel;
+use App\Shared\UI\Http\FormFlow\View\FlowRoutes;
 use App\Shared\UI\Http\FormFlow\View\FormOperation;
-use App\Shared\UI\Http\FormFlow\View\ModelPath;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -35,11 +36,48 @@ final class FlowContextTest extends TestCase
 
     public function testFactoryForCreateSetsDefaults(): void
     {
-        $ctx = FlowContext::forCreate('Sales/OrderItem');
-        self::assertSame('Sales/OrderItem', $ctx->getModel());
+        $model = FlowModel::create('catalog', 'manufacturer');
+        $ctx = FlowContext::forCreate($model);
+
+        self::assertSame($model, $ctx->getFlowModel());
         self::assertSame(FormOperation::Create, $ctx->getOperation());
-        self::assertSame(ModelPath::template('Sales/OrderItem', 'create'), $ctx->getTemplate());
-        self::assertSame('app_sales_orderitem_index', $ctx->getSuccessRoute());
+        self::assertSame('catalog/manufacturer/create.html.twig', $ctx->getTemplate());
+        self::assertSame('app_catalog_manufacturer_index', $ctx->getSuccessRoute());
+
+        $routes = $ctx->getRoutes();
+        self::assertInstanceOf(FlowRoutes::class, $routes);
+        self::assertSame('app_catalog_manufacturer_index', $routes->index);
+        self::assertSame('app_catalog_manufacturer_new', $routes->new);
+        self::assertSame('app_catalog_manufacturer_delete', $routes->delete);
+    }
+
+    public function testForSearchSetsRoutes(): void
+    {
+        $model = FlowModel::create('catalog', 'product');
+        $ctx = FlowContext::forSearch($model);
+
+        $routes = $ctx->getRoutes();
+        self::assertInstanceOf(FlowRoutes::class, $routes);
+        self::assertSame('app_catalog_product_index', $routes->index);
+        self::assertSame('app_catalog_product_search_filter', $routes->filter);
+    }
+
+    public function testRoutePrefixReplacesAllRoutes(): void
+    {
+        $model = FlowModel::simple('order_item');
+        $ctx = FlowContext::forCreate($model)->routePrefix('app_custom');
+
+        $routes = $ctx->getRoutes();
+        self::assertInstanceOf(FlowRoutes::class, $routes);
+        self::assertSame('app_custom_index', $routes->index);
+        self::assertSame('app_custom_new', $routes->new);
+        self::assertSame('app_custom_delete', $routes->delete);
+    }
+
+    public function testNewContextHasNoRoutes(): void
+    {
+        $ctx = FlowContext::new();
+        self::assertNull($ctx->getRoutes());
     }
 
     public function testValidateThrowsWhenModelMissing(): void
@@ -54,32 +92,32 @@ final class FlowContextTest extends TestCase
     {
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessage('Form operation not configured.');
-        $ctx = FlowContext::new()->model('OrderItem');
+        $ctx = FlowContext::new()->model(FlowModel::simple('order'));
         $ctx->validate();
     }
 
     public function testResolveSuccessUrlUsesConfiguredRoute(): void
     {
-        $ctx = FlowContext::forCreate('OrderItem')->successParams(['page' => 2]);
+        $model = FlowModel::simple('order_item');
+        $ctx = FlowContext::forCreate($model)->successParams(['page' => 2]);
         $req = Request::create('/current');
         $url = $ctx->resolveSuccessUrl($req, $this->urlGenerator());
-        self::assertSame('/gen/app_orderitem_index?page=2', $url);
+        self::assertSame('/gen/app_order_item_index?page=2', $url);
     }
 
     public function testResolveSuccessUrlFallsBackToReferer(): void
     {
-        FlowContext::new()->model('OrderItem')->template('x')->successRoute('', []);
         $req = Request::create('/current');
         $req->headers->set('referer', '/prev');
-        // Clear successRoute to trigger fallback
-        $refCtx = FlowContext::new()->model('OrderItem');
+        // No successRoute set on a bare context
+        $refCtx = FlowContext::new()->model(FlowModel::simple('order'));
         $ref = $refCtx->resolveSuccessUrl($req, $this->urlGenerator());
         self::assertSame('/prev', $ref);
     }
 
     public function testResolveSuccessUrlFallsBackToCurrentWhenNoReferer(): void
     {
-        $ctx = FlowContext::new()->model('OrderItem');
+        $ctx = FlowContext::new()->model(FlowModel::simple('order'));
         $req = Request::create('/current');
         $url = $ctx->resolveSuccessUrl($req, $this->urlGenerator());
         self::assertSame('/current', $url);
@@ -96,19 +134,68 @@ final class FlowContextTest extends TestCase
 
     public function testMutators(): void
     {
+        $model = FlowModel::simple('order');
         $ctx = FlowContext::new()
-            ->model('OrderItem')
+            ->model($model)
             ->template('custom.html.twig')
             ->successRoute('app_custom', ['id' => 10])
             ->allowDelete(true)
             ->redirectOptions(true, 302);
 
-        self::assertSame('OrderItem', $ctx->getModel());
+        self::assertSame($model, $ctx->getFlowModel());
         self::assertSame('custom.html.twig', $ctx->getTemplate());
         self::assertSame('app_custom', $ctx->getSuccessRoute());
         self::assertSame(['id' => 10], $ctx->getSuccessParams());
         self::assertTrue($ctx->isAllowDelete());
         self::assertTrue($ctx->isRedirectRefresh());
         self::assertSame(302, $ctx->getRedirectStatus());
+    }
+
+    public function testForUpdateWithFlowModel(): void
+    {
+        $model = FlowModel::create('purchasing', 'supplier_product');
+        $ctx = FlowContext::forUpdate($model);
+
+        self::assertSame('Supplier Product', $ctx->getFlowModel()->displayName);
+        self::assertSame(FormOperation::Update, $ctx->getOperation());
+        self::assertSame('purchasing/supplier_product/update.html.twig', $ctx->getTemplate());
+        self::assertSame('app_purchasing_supplier_product_index', $ctx->getSuccessRoute());
+    }
+
+    public function testForDeleteWithFlowModel(): void
+    {
+        $model = FlowModel::simple('order');
+        $ctx = FlowContext::forDelete($model);
+
+        self::assertSame('Order', $ctx->getFlowModel()->displayName);
+        self::assertSame(FormOperation::Delete, $ctx->getOperation());
+        self::assertTrue($ctx->isRedirectRefresh());
+        self::assertSame('app_order_index', $ctx->getSuccessRoute());
+    }
+
+    public function testForFilterWithFlowModel(): void
+    {
+        $model = FlowModel::create('catalog', 'category');
+        $ctx = FlowContext::forFilter($model);
+
+        self::assertSame('Category', $ctx->getFlowModel()->displayName);
+        self::assertSame(FormOperation::Filter, $ctx->getOperation());
+        self::assertSame('catalog/category/filter.html.twig', $ctx->getTemplate());
+    }
+
+    public function testWithDisplayNameOverride(): void
+    {
+        $model = FlowModel::simple('pricing')->withDisplayName('Product Cost');
+        $ctx = FlowContext::forUpdate($model);
+
+        self::assertSame('Product Cost', $ctx->getFlowModel()->displayName);
+        self::assertSame('pricing/update.html.twig', $ctx->getTemplate());
+        self::assertSame('app_pricing_index', $ctx->getSuccessRoute());
+    }
+
+    public function testGetFlowModelIsNullForBareContext(): void
+    {
+        $ctx = FlowContext::new();
+        self::assertNull($ctx->getFlowModel());
     }
 }

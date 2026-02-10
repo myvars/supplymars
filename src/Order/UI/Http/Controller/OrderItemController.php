@@ -20,6 +20,7 @@ use App\Purchasing\Domain\Model\SupplierProduct\SupplierProductPublicId;
 use App\Shared\UI\Http\FormFlow\CommandFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
+use App\Shared\UI\Http\FormFlow\View\FlowModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,7 +31,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 class OrderItemController extends AbstractController
 {
-    public const string MODEL = 'Order Item';
+    private function model(): FlowModel
+    {
+        return FlowModel::simple('order_item');
+    }
 
     #[Route(path: '/order/', name: 'app_order_item_index', methods: ['GET'])]
     public function index(): Response
@@ -52,7 +56,7 @@ class OrderItemController extends AbstractController
             data: OrderItemForm::fromEntity($order),
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forCreate(self::MODEL)
+            context: FlowContext::forCreate($this->model())
                 ->successRoute('app_order_show', ['id' => $order->getPublicId()->value()]),
         );
     }
@@ -71,7 +75,7 @@ class OrderItemController extends AbstractController
             data: UpdateOrderItemForm::fromEntity($orderItem),
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forUpdate(self::MODEL)
+            context: FlowContext::forUpdate($this->model())
                 ->template('/order/update_item.html.twig')
                 ->successRoute('app_order_show', [
                     'id' => $orderItem->getCustomerOrder()->getPublicId()->value(),

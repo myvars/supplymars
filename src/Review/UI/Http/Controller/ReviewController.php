@@ -32,6 +32,7 @@ use App\Shared\UI\Http\FormFlow\DeleteFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
+use App\Shared\UI\Http\FormFlow\View\FlowModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -43,7 +44,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[IsGranted('ROLE_ADMIN')]
 class ReviewController extends AbstractController
 {
-    public const string MODEL = 'review';
+    private function model(): FlowModel
+    {
+        return FlowModel::simple('review');
+    }
 
     #[Route(path: '/review/', name: 'app_review_index', methods: ['GET'])]
     public function index(
@@ -56,7 +60,7 @@ class ReviewController extends AbstractController
             request: $request,
             repository: $repository,
             criteria: $criteria,
-            context: FlowContext::forSearch(self::MODEL),
+            context: FlowContext::forSearch($this->model()),
         );
     }
 
@@ -74,7 +78,7 @@ class ReviewController extends AbstractController
             data: $criteria,
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forFilter(self::MODEL),
+            context: FlowContext::forFilter($this->model()),
         );
     }
 
@@ -91,7 +95,7 @@ class ReviewController extends AbstractController
             data: new ReviewForm(),
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forCreate(self::MODEL),
+            context: FlowContext::forCreate($this->model()),
         );
     }
 
@@ -109,7 +113,7 @@ class ReviewController extends AbstractController
             data: ReviewForm::fromEntity($review),
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forUpdate(self::MODEL)
+            context: FlowContext::forUpdate($this->model())
                 ->allowDelete(true)
                 ->successRoute('app_review_show', ['id' => $review->getPublicId()->value()])
         );
@@ -122,7 +126,7 @@ class ReviewController extends AbstractController
     ): Response {
         return $flow->deleteConfirm(
             entity: $review,
-            context: FlowContext::forDelete(self::MODEL),
+            context: FlowContext::forDelete($this->model()),
         );
     }
 
@@ -137,7 +141,7 @@ class ReviewController extends AbstractController
             request: $request,
             command: new DeleteReview($review->getPublicId()),
             handler: $handler,
-            context: FlowContext::forDelete(self::MODEL),
+            context: FlowContext::forDelete($this->model()),
         );
     }
 
@@ -176,7 +180,7 @@ class ReviewController extends AbstractController
             data: RejectReviewForm::fromEntity($review),
             mapper: $mapper,
             handler: $handler,
-            context: FlowContext::forUpdate(self::MODEL)
+            context: FlowContext::forUpdate($this->model())
                 ->template('review/reject.html.twig')
                 ->successRoute('app_review_show', ['id' => $review->getPublicId()->value()]),
         );
