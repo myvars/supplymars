@@ -1,5 +1,5 @@
-{# Order detail page — composes _order_card, _order_summary_card, _order_items_card,
-   and purchase order cards. Variable: result (CustomerOrder) #}
+{# Order detail page — header, summary, items, and purchase order cards.
+   Variable: result (CustomerOrder) #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Order Details{% endblock %}
@@ -7,11 +7,139 @@
 {% block body %}
 
     <div class="m-3 space-y-4">
-        {{ include('order/_order_card.html.twig', {order: result}) }}
-        {{ include('order/_order_summary_card.html.twig', {order: result}) }}
-        {{ include('order/_order_items_card.html.twig', {order: result}) }}
+
+        <twig:Card editLink="{{ result.allowEdit ? path('app_order_cancel_confirm', {id: result.publicId.value}) : null }}"
+                   editIcon="bi:x-lg"
+                   statusHighlight="{{ result.status.value }}"
+                   data-customer-id="{{ result.customer.id }}">
+
+            {# Header — status, lock, dates, cancel action #}
+            <h5 class="flex items-center text-xl font-semibold text-gray-900 dark:text-white">
+                Order #{{ '%06d'|format(result.id) }}
+                <a href="{{ path('app_order_lock_toggle_status', {id: result.publicId.value}) }}"
+                   data-turbo-frame="body"
+                   data-turbo-prefetch="false"
+                   data-order-lock="{{ result.orderLock ? 'locked' : 'unlocked' }}"
+                   class="flex items-center text-base ms-3 {{ result.orderLock ? 'text-yellow-600 hover:text-yellow-500 dark:text-yellow-500 dark:hover:text-yellow-300' : 'text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300' }}"
+                >
+                    {% if result.orderLock is not null %}
+                        <twig:ux:icon name="flowbite:lock-solid" class="w-4 me-1"/>
+                        <span class="text-sm me-1 max-md:hidden">Locked by</span>
+                        <span class="text-sm">{{ result.orderLock.fullName }}</span>
+                    {% else %}
+                        <twig:ux:icon name="flowbite:lock-open-solid" class="w-4 me-1.5"/>
+                    {% endif %}
+                </a>
+            </h5>
+            <div class="mt-1.5 flex items-center justify-between">
+                <p class="text-sm text-gray-500 dark:text-gray-400">
+                    {{ result.createdAt|date('jS M Y H:i') }}
+                    {% if result.customerOrderRef is not null %}
+                        <span class="mx-1 text-gray-300 dark:text-gray-600">&middot;</span>
+                        <span>{{ result.customerOrderRef }}</span>
+                    {% endif %}
+                </p>
+                <div class="flex items-center gap-2">
+                    {% if result.allowEdit %}
+                        <a href="{{ path('app_order_allocate', {id: result.publicId.value}) }}"
+                           data-turbo-frame="body"
+                           data-turbo-prefetch="false"
+                           class="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
+                        >
+                            <twig:ux:icon name="bi:lightning-fill" class="h-4 w-4"/>
+                            <span>Allocate</span>
+                        </a>
+                    {% endif %}
+                    <a href="{{ path('app_order_status_log', {'id': result.publicId.value }) }}"
+                       data-turbo-frame="modal"
+                    >
+                        <twig:StatusBadge status="{{ result.status.value }}" :interactive="true"/>
+                    </a>
+                </div>
+            </div>
+
+            {# Summary — delivery address and financial totals #}
+            <div class="mt-4 border-t border-gray-200 pt-4 dark:border-white/10">
+                <div class="grid gap-6 sm:grid-cols-[1fr_auto]">
+                    <div>
+                        <p class="mb-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-500">Delivery Address</p>
+                        <div class="space-y-0.5 text-sm text-gray-600 dark:text-gray-400">
+                            <a href="{{ path('app_customer_show', { id: result.customer.publicId }) }}" class="font-medium text-gray-900 hover:text-gray-600 dark:text-white dark:hover:text-gray-300">{{ result.customer.fullName }}</a>
+                            <p>{{ result.shippingAddress.street }}</p>
+                            {% if result.shippingAddress.street2 is not null %}
+                                <p>{{ result.shippingAddress.street2 }}</p>
+                            {% endif %}
+                            <p>{{ result.shippingAddress.city }}, {{ result.shippingAddress.postCode }}</p>
+                            <p>{{ result.shippingAddress.country }}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <p class="mb-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-500">Order Summary</p>
+                        <div class="space-y-1 text-sm">
+                            <div class="flex justify-between gap-6 text-gray-600 dark:text-gray-400">
+                                <p>Item(s) subtotal</p>
+                                {% if result.isCancelled %}
+                                    <p>{{ 0.00|format_currency('GBP') }}</p>
+                                {% else %}
+                                    <p>{{ (result.totalPrice - result.shippingPrice)|format_currency('GBP') }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="flex justify-between gap-6 text-gray-600 dark:text-gray-400">
+                                <p>Shipping</p>
+                                {% if result.isCancelled %}
+                                    <p>{{ 0.00|format_currency('GBP') }}</p>
+                                {% else %}
+                                    <p>{{ result.shippingPrice|format_currency('GBP') }}</p>
+                                {% endif %}
+                            </div>
+                            <div class="flex justify-between gap-6 text-gray-600 dark:text-gray-400">
+                                <p>VAT</p>
+                                <p>{{ (result.totalPriceIncVat - result.totalPrice)|format_currency('GBP') }}</p>
+                            </div>
+                            <div class="border-t border-gray-200 pt-2 dark:border-gray-700">
+                                <div class="flex justify-between gap-6 font-medium text-gray-900 dark:text-white">
+                                    <p>Total</p>
+                                    <p>{{ result.totalPriceIncVat|format_currency('GBP') }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# Order items #}
+            <div class="mt-4 border-t border-gray-200 pt-4 dark:border-white/10">
+                <div class="flex w-full items-center justify-between">
+                    <p class="text-gray-500 dark:text-gray-300">
+                        {{ result.lineCount }} {% if result.lineCount == 1 %}line{% else %}lines{% endif %}
+                        <span class="ms-1 text-gray-400 dark:text-gray-500">
+                            ({{ result.itemCount }} {% if result.itemCount == 1 %}item{% else %}items{% endif %})
+                        </span>
+                    </p>
+                    {% if result.allowEdit %}
+                        <twig:Button
+                            tag="a"
+                            variant="alternative"
+                            href="{{ path('app_order_item_new', {id: result.publicId.value}) }}"
+                            data-turbo-frame="modal"
+                        >
+                            <twig:ux:icon name="bi:plus-lg" class="h-4 w-4"/>
+                            <span>Add Item</span>
+                        </twig:Button>
+                    {% endif %}
+                </div>
+                <ul class="mt-2 w-full space-y-3">
+                    {% for orderItem in result.customerOrderItems %}
+                        {% if orderItem.outstandingQty > 0 %}
+                            {{ include('order/_order_item_card.html.twig', {orderItem: orderItem}) }}
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </twig:Card>
+
         {% if result.purchaseOrders|length > 0 %}
-            <p class="px-1 text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">Purchase Orders</p>
+            <p class="px-1 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-500">Purchase Orders</p>
             {% for purchaseOrder in result.purchaseOrders %}
                 {{ include('purchasing/purchase_order/_order_po_card.html.twig', {purchaseOrder: purchaseOrder}) }}
             {% endfor %}

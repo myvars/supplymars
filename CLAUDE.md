@@ -152,8 +152,11 @@ Controllers are thin orchestrators. 4 flow types:
 ## Workflow
 
 - Always produce a clear implementation plan **before writing code**.
+- Research docs (`Docs/adr/`, `Docs/patterns/`) before proposing designs. Cite file paths for every claim.
+- Consider "do nothing" as a valid option — say so if the current code already handles it.
+- For non-trivial tasks, state: objective, what changes, options considered, and blocking questions.
 - If assumptions would materially affect design or complexity, **stop and ask first**.
-- Commit messages: clear, concise, written as a human contributor. Do not mention AI a a contributor.
+- Commit messages: clear, concise, written as a human contributor. Do not mention AI as a contributor.
 
 ## Reference
 

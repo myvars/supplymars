@@ -8,10 +8,6 @@
     : 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900 dark:text-emerald-400'
 %}
 {% set iconName = isCustomer ? 'bi:person' : 'bi:headset' %}
-{% set badgeClasses = isCustomer
-    ? 'bg-blue-50 text-blue-700 dark:bg-blue-400/10 dark:text-blue-400'
-    : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-400/10 dark:text-emerald-400'
-%}
 {% set borderClasses = isInternal
     ? 'border-amber-200 dark:border-amber-700/30'
     : 'border-gray-200 dark:border-gray-600'
@@ -28,11 +24,9 @@
             <span class="text-sm font-medium text-gray-900 dark:text-white">
                 {{ message.author ? message.author.fullName : 'Unknown' }}
             </span>
-            <span class="inline-flex items-center rounded-md px-1.5 py-0.5 text-xs font-medium {{ badgeClasses }}">
-                {{ message.authorType.label }}
-            </span>
+            <twig:StatusBadge status="{{ message.authorType.value }}"/>
             {% if isInternal %}
-                <span class="inline-flex items-center rounded-md bg-amber-50 px-1.5 py-0.5 text-xs font-medium text-amber-700 ring-1 ring-amber-600/20 ring-inset dark:bg-amber-400/10 dark:text-amber-400 dark:ring-amber-400/20">
+                <span class="inline-flex items-center rounded-md bg-amber-50 px-1.5 py-0.5 text-xs font-medium text-amber-700 inset-ring inset-ring-amber-600/20 dark:bg-amber-400/10 dark:text-amber-400 dark:inset-ring-amber-400/20">
                     <twig:ux:icon name="bi:eye-slash" class="mr-0.5 h-3 w-3"/>
                     Internal
                 </span>

@@ -8,9 +8,6 @@
 
     <div class="m-3 space-y-4">
         {{ include('catalog/subcategory/_subcategory_card.html.twig', {subcategory: result}) }}
-        {% if result.products.count > 0 %}
-            {{ include('catalog/subcategory/_subcategory_products_card.html.twig', {subcategory: result}) }}
-        {% endif %}
         {{ include('reporting/_dashboard_card.html.twig', {
             dashboardSrc: path('app_reporting_dashboard_product_sales', {subcategoryId: result.id})
         }) }}

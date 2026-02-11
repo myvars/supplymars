@@ -6,15 +6,7 @@
             <twig:ux:icon name="ic:sharp-bar-chart" class="h-5 w-5"/>
             Customer Insights
         </div>
-        {% set segmentColors = {
-            'new': 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300',
-            'returning': 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300',
-            'loyal': 'bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300',
-            'lapsed': 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300',
-        } %}
-        <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold {{ segmentColors[insights.segment]|default('bg-gray-100 text-gray-800') }}">
-            {{ insights.segment|upper }}
-        </span>
+        <twig:StatusBadge status="{{ insights.segment }}"/>
     </div>
 
     {% set ordersUrl = path('app_order_index', {customerId: customer.id}) %}

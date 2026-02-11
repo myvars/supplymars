@@ -25,25 +25,32 @@
                 showLink="{{ path('app_catalog_product_show', {'id': result.publicId.value }) }}"
                 padding="p-0"
             >
-                <div class="flex items-center justify-between">
+                <div class="flex">
                     <twig:ProductImage
                         imageName="{{ result.hasProductImage ? result.getFirstImage.imageName : null }}"
                         filter="medium_thumbnail"
                         alt="{{ result.name }}"
                     ></twig:ProductImage>
-                    <div class="m-3 w-full pe-6">
+                    <div class="flex flex-1 min-w-0 flex-col justify-center py-3 ps-3 pe-8">
                         <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-lg font-semibold text-gray-900 dark:text-white line-clamp-1">{{ result.name }}</p>
-                                <p class="text-sm text-gray-500 dark:text-gray-400">Product #{{ '%06d'|format(result.id) }}</p>
-                            </div>
-                            <p class="text-lg font-light text-gray-900 dark:text-white">{{ result.sellPriceIncVat|format_currency('GBP') }}
-                                <span class="hidden md:inline text-sm text-gray-500 dark:text-gray-400">inc VAT</span>
-                            </p>
-                        </div>
-                        <div class="mt-2 flex items-center justify-between">
-                            <p class="text-xs text-gray-500 dark:text-gray-500">{{ result.stock }} in stock</p>
+                            <p class="text-lg font-semibold text-gray-900 dark:text-white line-clamp-1">{{ result.name }}</p>
                             <twig:StatusBadge status="{{ result.isActive ? 'ACTIVE' : 'INACTIVE' }}"/>
+                        </div>
+                        <p class="mt-0.5 flex items-center gap-1.5 -ms-0.5 text-xs text-gray-500 dark:text-gray-400">
+                            <twig:ux:icon name="mdi:pound" class="h-3.5 w-3.5 text-gray-400 dark:text-gray-500"/>
+                            {{ '%06d'|format(result.id) }}
+                        </p>
+                        {% set stockClasses = result.stock > 0
+                            ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                            : 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400' %}
+                        <div class="mt-2 flex items-baseline justify-between">
+                            <span class="inline-block rounded-full -ms-2 px-2 py-0.5 text-xs font-medium {{ stockClasses }}">
+                                {{ result.stock > 0 ? result.stock ~ ' in stock' : 'Out of stock' }}
+                            </span>
+                            <p class="text-xl font-semibold shrink-0 ms-3 text-gray-900 dark:text-white">
+                                {{ result.sellPriceIncVat|format_currency('GBP') }}
+                                <span class="hidden md:inline text-xs font-normal text-gray-500 dark:text-gray-400">inc VAT</span>
+                            </p>
                         </div>
                     </div>
                 </div>

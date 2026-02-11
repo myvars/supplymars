@@ -32,7 +32,7 @@
         {% endif %}
                 <div class="{{ padding }} text-sm text-gray-600 dark:text-gray-400 {{ layout == 'horizontal' and not showLink ? 'flex-1 min-w-0' : '' }}">
                     {% if title %}
-                        <p class="mb-1 text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">{{ title }}</p>
+                        <p class="mb-1 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-500">{{ title }}</p>
                     {% endif %}
                     {% block content %}{% endblock %}
                 </div>

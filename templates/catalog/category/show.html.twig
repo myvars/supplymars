@@ -8,9 +8,6 @@
 
     <div class="m-3 space-y-4">
         {{ include('catalog/category/_category_card.html.twig', {category: result}) }}
-        {% if result.products.count > 0 %}
-            {{ include('catalog/category/_category_products_card.html.twig', {category: result}) }}
-        {% endif %}
         {% if result.subcategories.count > 0 %}
             {{ include('catalog/category/_subcategories_card.html.twig', {subcategories: result.subcategories}) }}
         {% endif %}

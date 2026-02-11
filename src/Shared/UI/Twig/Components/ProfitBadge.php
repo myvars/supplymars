@@ -22,7 +22,7 @@ final class ProfitBadge
     public function getColorClasses(): string
     {
         return $this->isPositive()
-            ? 'bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-            : 'bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400';
+            ? 'bg-green-50 text-green-700 inset-ring inset-ring-green-600/20 dark:bg-green-400/10 dark:text-green-400 dark:inset-ring-green-400/20'
+            : 'bg-red-50 text-red-700 inset-ring inset-ring-red-600/10 dark:bg-red-400/10 dark:text-red-400 dark:inset-ring-red-400/20';
     }
 }

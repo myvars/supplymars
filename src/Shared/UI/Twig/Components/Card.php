@@ -31,7 +31,7 @@ final class Card
     public function getBackgroundClasses(): string
     {
         return match ($this->colour) {
-            'gray' => 'bg-linear-to-tr from-white to-gray-50 dark:from-gray-700 dark:to-gray-600',
+            'gray' => 'bg-white dark:bg-linear-to-tr dark:from-gray-700 dark:to-gray-600',
             'green' => 'bg-linear-to-tr from-green-50 to-emerald-50 dark:from-green-950 dark:to-emerald-950',
             'supplier1' => 'bg-linear-to-tr from-supplier1-100 to-supplier1-50 dark:from-supplier1-900 dark:to-supplier1-800',
             'supplier2' => 'bg-linear-to-tr from-supplier2-100 to-supplier2-50 dark:from-supplier2-900 dark:to-supplier2-600',
@@ -44,13 +44,13 @@ final class Card
     public function getBorderClasses(): string
     {
         return match ($this->borderColour) {
-            'gray', null => 'border border-gray-200/80 dark:border-gray-800',
-            'supplier1' => 'border border-supplier1-300 dark:border-supplier1-700',
-            'supplier2' => 'border border-supplier2-300 dark:border-supplier2-700',
-            'supplier3' => 'border border-supplier3-300 dark:border-supplier3-700',
-            'supplier4' => 'border border-supplier4-300 dark:border-supplier4-700',
-            'green' => 'border border-2 border-green-200 dark:border-green-700',
-            'red' => 'border border-2 border-red-200 dark:border-red-700',
+            'gray', null => 'border border-gray-200 dark:border-white/10',
+            'supplier1' => 'border border-supplier1-300 dark:border-white/10',
+            'supplier2' => 'border border-supplier2-300 dark:border-white/10',
+            'supplier3' => 'border border-supplier3-300 dark:border-white/10',
+            'supplier4' => 'border border-supplier4-300 dark:border-white/10',
+            'green' => 'border border-2 border-green-200 dark:border-white/10',
+            'red' => 'border border-2 border-red-200 dark:border-white/10',
             default => throw new \LogicException(sprintf('Unknown colourScheme "%s"', $this->borderColour)),
         };
     }

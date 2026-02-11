@@ -8,9 +8,6 @@
 
     <div class="m-3 space-y-4">
         {{ include('catalog/manufacturer/_manufacturer_card.html.twig', {manufacturer: result}) }}
-        {% if result.products.count > 0 %}
-            {{ include('catalog/manufacturer/_manufacturer_products_card.html.twig', {manufacturer: result}) }}
-        {% endif %}
         {{ include('reporting/_dashboard_card.html.twig', {
             dashboardSrc: path('app_reporting_dashboard_product_sales', {manufacturerId: result.id})
         }) }}
