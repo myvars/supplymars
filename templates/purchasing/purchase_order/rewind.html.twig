@@ -4,20 +4,19 @@
 
 {% block body %}
 
-    <twig:Dialog title="Rewind Purchase Order">
-        <p class="mb-4 text-sm font-light text-gray-500 dark:text-gray-400">
-            Are you sure you want to rewind this Purchase Order to pending?
-            This will reset all items and remove status history.
-        </p>
-        <form method="post" action="{{ path('app_purchasing_purchase_order_rewind', {'id': result.publicId.value}) }}">
-            <input type="hidden" name="_token" value="{{ csrf_token('delete'~result.publicId.value) }}">
-            <div class="flex gap-3">
-                <twig:Button type="button" variant="alternative" class="w-full" data-action="basic-modal#close">
-                    Cancel
-                </twig:Button>
-                <twig:Button type="submit" variant="warning" class="w-full">Rewind to Pending</twig:Button>
-            </div>
-        </form>
-    </twig:Dialog>
+    <twig:ConfirmDialog
+        title="Rewind Purchase Order"
+        formAction="{{ path('app_purchasing_purchase_order_rewind', {'id': result.publicId.value}) }}"
+        csrfId="delete{{ result.publicId.value }}"
+        confirmLabel="Rewind to Pending"
+        confirmVariant="warning"
+    >
+        <twig:block name="message">
+            <p class="mb-4 text-sm font-light text-gray-500 dark:text-gray-400">
+                Are you sure you want to rewind this Purchase Order to pending?
+                This will reset all items and remove status history.
+            </p>
+        </twig:block>
+    </twig:ConfirmDialog>
 
 {% endblock %}

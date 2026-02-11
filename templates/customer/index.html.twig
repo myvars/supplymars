@@ -7,6 +7,8 @@
         flowModel="{{ flowModel }}"
         routes="{{ routes }}"
         results="{{ results }}"
+        showFilter="{{ false }}"
+        showAdd="{{ false }}"
     >
         <twig:block name="sort">
             <twig:Card>
@@ -41,8 +43,6 @@
                 </div>
             </twig:Card>
         </twig:block>
-
-        <twig:block name="filter"></twig:block>
     </twig:Search>
 
 {% endblock %}

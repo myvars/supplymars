@@ -4,8 +4,6 @@ namespace App\Shared\Application\Search;
 
 abstract class SearchCriteria implements SearchCriteriaInterface
 {
-    public const string TEMPLATE = 'shared/form_flow/search_filter.html.twig';
-
     public const int PAGE_DEFAULT = 1;
 
     public const int LIMIT_MAX = 50;

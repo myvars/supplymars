@@ -59,12 +59,12 @@ SupplyMars uses all three, with a structured frame hierarchy for consistent beha
 Forms automatically detect their context:
 
 ```twig
-{# In shared/form_flow/_form.html.twig #}
+{# In components/FlowForm.html.twig #}
 <twig:Button
     type="submit"
-    data-turbo-frame="{{ app.request.headers.get('turbo-frame') == 'modal' ? 'modal' : '_top' }}"
+    data-turbo-frame="{{ formFrame ?? app.request.headers.get('turbo-frame') ?: '_top' }}"
 >
-    Save
+    {{ buttonLabel }}
 </twig:Button>
 ```
 

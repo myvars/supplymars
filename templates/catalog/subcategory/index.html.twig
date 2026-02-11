@@ -45,19 +45,6 @@
                 </div>
             </twig:Card>
         </twig:block>
-
-        <twig:block name="add">
-            <twig:Button
-                tag="a"
-                variant="alternative"
-                href="{{ path('app_catalog_subcategory_new') }}"
-                data-turbo-frame="modal"
-            >
-                <twig:ux:icon name="bi:plus-lg" class="h-4 w-4"/>
-                <span>Create Subcategory</span>
-            </twig:Button>
-        </twig:block>
-
     </twig:Search>
 
 {% endblock %}

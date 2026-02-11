@@ -5,7 +5,7 @@
 {% block body %}
 
     <twig:Dialog title="{{ flowModel }} Filter">
-        {{ include('shared/form_flow/_form.html.twig', {'button_label': 'Apply Filter'}) }}
+        <twig:FlowForm :form="form" buttonLabel="Apply Filter"/>
     </twig:Dialog>
 
 {% endblock %}

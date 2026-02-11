@@ -203,12 +203,12 @@ close() {
 Submit buttons auto-detect modal context:
 
 ```twig
-{# templates/shared/form_flow/_form.html.twig #}
+{# templates/components/FlowForm.html.twig #}
 <twig:Button
     type="submit"
-    data-turbo-frame="{{ app.request.headers.get('turbo-frame') == 'modal' ? 'modal' : '_top' }}"
+    data-turbo-frame="{{ formFrame ?? app.request.headers.get('turbo-frame') ?: '_top' }}"
 >
-    {{ button_label|default('Save') }}
+    {{ buttonLabel }}
 </twig:Button>
 ```
 

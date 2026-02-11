@@ -5,7 +5,7 @@
 {% block body %}
 
     <twig:Dialog title="Reject Review">
-        {{ include('shared/form_flow/_form.html.twig', {'button_label': 'Reject Review'}) }}
+        <twig:FlowForm :form="form" buttonLabel="Reject Review"/>
     </twig:Dialog>
 
 {% endblock %}

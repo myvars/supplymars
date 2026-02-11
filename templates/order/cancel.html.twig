@@ -4,19 +4,19 @@
 
 {% block body %}
 
-    <twig:Dialog title="Cancel Order">
-        <p class="mb-4 text-sm font-light text-gray-500 dark:text-gray-400">
-            Are you sure you want to cancel this Order?
-        </p>
-        <form method="post" action="{{ path('app_order_cancel', {'id': result.publicId.value}) }}">
-            <input type="hidden" name="_token" value="{{ csrf_token('delete'~result.publicId.value) }}">
-            <div class="flex gap-3">
-                <twig:Button type="button" variant="alternative" class="w-full" data-action="basic-modal#close">
-                    Go Back
-                </twig:Button>
-                <twig:Button type="submit" variant="warning" class="w-full">Cancel Order</twig:Button>
-            </div>
-        </form>
-    </twig:Dialog>
+    <twig:ConfirmDialog
+        title="Cancel Order"
+        formAction="{{ path('app_order_cancel', {'id': result.publicId.value}) }}"
+        csrfId="delete{{ result.publicId.value }}"
+        confirmLabel="Cancel Order"
+        confirmVariant="warning"
+        cancelLabel="Go Back"
+    >
+        <twig:block name="message">
+            <p class="mb-4 text-sm font-light text-gray-500 dark:text-gray-400">
+                Are you sure you want to cancel this Order?
+            </p>
+        </twig:block>
+    </twig:ConfirmDialog>
 
 {% endblock %}

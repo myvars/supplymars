@@ -2,5 +2,5 @@
 
 {% block body %}
     <p class="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">Reply</p>
-    {{ include('shared/form_flow/_form.html.twig', {'button_label': 'Send Reply'}) }}
+    <twig:FlowForm :form="form" buttonLabel="Send Reply"/>
 {% endblock %}

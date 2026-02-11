@@ -22,9 +22,9 @@ Embedded forms render a FormFlow form inline within another page, as opposed to 
 
 ### Submit Frame Target
 
-`_form.html.twig` sets `data-turbo-frame` on the submit button. Priority:
+`FlowForm` sets `data-turbo-frame` on the submit button. Priority:
 
-1. `formFrame` template variable (explicit override)
+1. `formFrame` prop (explicit override)
 2. `Turbo-Frame` request header value
 3. `_top` fallback
 
@@ -39,7 +39,7 @@ Extends `modal_base.html.twig` but does **not** use `<twig:Dialog>`. This handle
 
 {% block body %}
     <p class="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">Form Title</p>
-    {{ include('shared/form_flow/_form.html.twig', {'button_label': 'Submit'}) }}
+    <twig:FlowForm :form="form" buttonLabel="Submit"/>
 {% endblock %}
 ```
 
@@ -57,11 +57,7 @@ In the host template, wrap it in a `<turbo-frame>` and pass `formFrame`:
 
 ```twig
 <turbo-frame id="your-form">
-    {{ include('shared/form_flow/_form.html.twig', {
-        'form': yourForm,
-        'button_label': 'Submit',
-        'formFrame': 'your-form'
-    }) }}
+    <twig:FlowForm :form="yourForm" buttonLabel="Submit" formFrame="your-form"/>
 </turbo-frame>
 ```
 

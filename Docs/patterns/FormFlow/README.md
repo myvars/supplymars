@@ -226,6 +226,8 @@ src/Shared/Application/
 ## Related Documentation
 
 - [Usage Patterns and Examples](Usage.md)
+- [Template Overrides Cookbook](Overrides.md) - How to customize default templates
+- [Embedded Forms](EmbeddedForms.md) - Inline forms within host pages
 - [Turbo Integration](../Turbo/README.md) - How FormFlow uses Turbo for SPA-like responses
 - [ADR 006: FormFlow Pattern](../../adr/006-formflow-controller-pattern.md) - Architecture decision
 - [ADR 007: Turbo Architecture](../../adr/007-turbo-frame-modal-architecture.md) - Frame and modal design

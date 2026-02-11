@@ -5,7 +5,7 @@
 {% block body %}
 
     <twig:Dialog title="Edit {{ flowModel }}">
-        {{ include('shared/form_flow/_form.html.twig', {'button_label': 'Update '~flowModel}) }}
+        <twig:FlowForm :form="form" buttonLabel="Update {{ flowModel }}"/>
         {% if flowAllowDelete %}
             <hr class="my-6 h-px border-0 bg-gray-200 dark:bg-gray-700">
             <twig:Button

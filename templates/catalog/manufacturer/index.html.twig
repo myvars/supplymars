@@ -7,6 +7,7 @@
         flowModel="{{ flowModel }}"
         routes="{{ routes }}"
         results="{{ results }}"
+        showFilter="{{ false }}"
     >
         <twig:block name="sort">
             <twig:Card>
@@ -30,20 +31,6 @@
                 </div>
             </twig:Card>
         </twig:block>
-
-        <twig:block name="add">
-            <twig:Button
-                tag="a"
-                variant="alternative"
-                href="{{ path('app_catalog_manufacturer_new') }}"
-                data-turbo-frame="modal"
-            >
-                <twig:ux:icon name="bi:plus-lg" class="h-4 w-4"/>
-                <span>Create Manufacturer</span>
-            </twig:Button>
-        </twig:block>
-
-        <twig:block name="filter"></twig:block>
     </twig:Search>
 
 {% endblock %}

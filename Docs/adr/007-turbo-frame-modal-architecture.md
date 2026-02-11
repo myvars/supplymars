@@ -104,8 +104,8 @@ The `TurboAwareRedirector` detects Turbo requests and returns streams instead of
 Forms automatically target the correct frame based on request context:
 
 ```twig
-{# Submit button in _form.html.twig #}
-data-turbo-frame="{{ app.request.headers.get('turbo-frame') == 'modal' ? 'modal' : '_top' }}"
+{# Submit button in FlowForm component #}
+data-turbo-frame="{{ formFrame ?? app.request.headers.get('turbo-frame') ?: '_top' }}"
 ```
 
 ## Consequences

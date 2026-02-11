@@ -1,0 +1,29 @@
+{% props
+    title,
+    formAction,
+    csrfId,
+    confirmLabel,
+    confirmVariant = 'danger',
+    cancelLabel = 'Cancel'
+%}
+
+<div class="relative">
+    <div class="flex items-center justify-between border-b border-gray-200 px-4 py-3 dark:border-gray-700/50">
+        <h3 class="text-base font-semibold text-gray-900 dark:text-gray-100">
+            {{ title }}
+        </h3>
+    </div>
+
+    <div class="p-3 text-sm text-gray-600 dark:text-gray-400">
+        {% block message %}{% endblock %}
+        <form method="post" action="{{ formAction }}">
+            <input type="hidden" name="_token" value="{{ csrf_token(csrfId) }}">
+            <div class="flex gap-3">
+                <twig:Button type="button" variant="alternative" class="w-full" data-action="basic-modal#close">
+                    {{ cancelLabel }}
+                </twig:Button>
+                <twig:Button type="submit" variant="{{ confirmVariant }}" class="w-full">{{ confirmLabel }}</twig:Button>
+            </div>
+        </form>
+    </div>
+</div>

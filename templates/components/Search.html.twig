@@ -1,4 +1,4 @@
-{% props flowModel, routes, results %}
+{% props flowModel, routes, results, showFilter = true, showAdd = true %}
 
 <div class="mx-auto max-w-(--breakpoint-xl) p-3">
     {% block result_count %}
@@ -22,18 +22,20 @@
                     <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
                         <twig:ux:icon name="flowbite:search-outline" class="h-4.5 w-4.5 text-gray-400 dark:text-gray-500"/>
                     </div>
-                    {% block filter %}
-                        <a href="{{ path(routes.filter, app.request.query.all) }}"
-                           class="absolute inset-y-0 right-0 flex items-center pr-3 transition-colors"
-                           data-turbo-frame="modal"
-                           id="{{ flowModel|slug }}-search-filter">
-                            {% if app.request.query.get('filter') %}
-                                <twig:ux:icon name="mynaui:filter" class="h-5 w-5 text-yellow-500 hover:text-yellow-600 dark:text-yellow-400 dark:hover:text-yellow-200"/>
-                            {% else %}
-                                <twig:ux:icon name="mynaui:filter" class="h-5 w-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"/>
-                            {% endif %}
-                        </a>
-                    {% endblock %}
+                    {% if showFilter %}
+                        {% block filter %}
+                            <a href="{{ path(routes.filter, app.request.query.all) }}"
+                               class="absolute inset-y-0 right-0 flex items-center pr-3 transition-colors"
+                               data-turbo-frame="modal"
+                               id="{{ flowModel|slug }}-search-filter">
+                                {% if app.request.query.get('filter') %}
+                                    <twig:ux:icon name="mynaui:filter" class="h-5 w-5 text-yellow-500 hover:text-yellow-600 dark:text-yellow-400 dark:hover:text-yellow-200"/>
+                                {% else %}
+                                    <twig:ux:icon name="mynaui:filter" class="h-5 w-5 text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"/>
+                                {% endif %}
+                            </a>
+                        {% endblock %}
+                    {% endif %}
                     <input
                         type="text"
                         name="query"
@@ -51,7 +53,19 @@
         </div>
         <div
             class="flex w-full shrink-0 flex-col items-stretch justify-end space-y-2 md:space-y-0 md:space-x-3 md:w-auto md:flex-row md:items-center">
-            {% block add %}{% endblock %}
+            {% block add %}
+                {% if showAdd and routes.new %}
+                    <twig:Button
+                        tag="a"
+                        variant="alternative"
+                        href="{{ path(routes.new) }}"
+                        data-turbo-frame="modal"
+                    >
+                        <twig:ux:icon name="bi:plus-lg" class="h-4 w-4"/>
+                        <span>Create {{ flowModel }}</span>
+                    </twig:Button>
+                {% endif %}
+            {% endblock %}
         </div>
     </div>
 
@@ -72,10 +86,12 @@
             </template>
         </turbo-stream>
 
-        <turbo-stream action="replace" target="{{ flowModel|slug }}-search-filter">
-            <template>
-                {{ block('filter') }}
-            </template>
-        </turbo-stream>
+        {% if showFilter %}
+            <turbo-stream action="replace" target="{{ flowModel|slug }}-search-filter">
+                <template>
+                    {{ block('filter') }}
+                </template>
+            </turbo-stream>
+        {% endif %}
     </turbo-frame>
 </div>
