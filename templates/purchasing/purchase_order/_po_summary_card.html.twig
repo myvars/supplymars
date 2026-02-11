@@ -1,3 +1,5 @@
+{# Purchase order financial summary — totals, item count, and supplier info.
+   Used on: purchase order show page. Variable: purchaseOrder (PurchaseOrder) #}
 {% set colourScheme = purchaseOrder.supplier.colourScheme %}
 <twig:Card colour="{{ colourScheme }}">
     <div class="grid gap-6 sm:grid-cols-[1fr_auto]">

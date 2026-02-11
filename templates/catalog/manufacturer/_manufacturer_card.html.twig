@@ -1,3 +1,5 @@
+{# Manufacturer detail card with inline-editable name and status.
+   Used on: manufacturer show page. Variable: manufacturer (Manufacturer) #}
 <twig:Card editLink="{{ path('app_catalog_manufacturer_edit', {'id': manufacturer.publicId.value }) }}" title="Manufacturer" statusHighlight="{{ manufacturer.isActive ? 'ACTIVE' : 'INACTIVE' }}">
     <p class="mb-3">{{ include('catalog/manufacturer/_inline_name.html.twig', {manufacturer: manufacturer}) }}</p>
     <twig:CardFooter :updatedAt="manufacturer.updatedAt">

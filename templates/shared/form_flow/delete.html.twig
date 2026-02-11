@@ -1,3 +1,5 @@
+{# FormFlow delete confirmation. Renders as modal via modal_base.
+   Variables: flowModel (string), result (entity with publicId and name), routes (FlowRoutes) #}
 {% extends 'shared/turbo/modal_base.html.twig' %}
 
 {% block title %}Delete {{ flowModel }}{% endblock %}

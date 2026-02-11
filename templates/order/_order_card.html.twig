@@ -1,3 +1,5 @@
+{# Order header card with customer, status, dates, and cancel action.
+   Used on: order show page. Variable: order (CustomerOrder), result (same entity) #}
 <twig:Card editLink="{{ order.allowEdit ? path('app_order_cancel_confirm', {id: result.publicId.value}) : null }}"
            editIcon="bi:x-lg"
            statusHighlight="{{ order.status.value }}">

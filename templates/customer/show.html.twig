@@ -1,3 +1,5 @@
+{# Customer detail page — composes _customer_card, _customer_insights_card,
+   and _customer_addresses_card. Variable: result (User), insights (?CustomerInsights) #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Customer Details{% endblock %}
@@ -12,14 +14,7 @@
         {% if result.addresses.count > 0 %}
             {{ include('customer/_customer_addresses_card.html.twig', {customer: result}) }}
         {% endif %}
-        <div class="flex">
-            <a href="{{ path('app_customer_index') }}"
-               class="inline-flex items-center gap-1 text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
-               data-turbo-frame="body">
-                <twig:ux:icon name="bi:arrow-left" class="h-3.5 w-3.5"/>
-                View all customers
-            </a>
-        </div>
+        <twig:BackLink :href="path('app_customer_index')" label="View all customers"/>
     </div>
 
 {% endblock %}

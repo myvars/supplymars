@@ -1,3 +1,5 @@
+{# Product detail page — composes _navigation and _product_card.
+   Variable: result (Product) #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Product Details{% endblock %}
@@ -9,14 +11,7 @@
         <div class="mx-auto max-w-3xl">
             {{ include('catalog/product/_product_card.html.twig', {product: result}) }}
         </div>
-        <div class="flex">
-            <a href="{{ path('app_catalog_product_index') }}"
-               class="inline-flex items-center gap-1 text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
-               data-turbo-frame="body">
-                <twig:ux:icon name="bi:arrow-left" class="h-3.5 w-3.5"/>
-                View all products
-            </a>
-        </div>
+        <twig:BackLink :href="path('app_catalog_product_index')" label="View all products"/>
     </div>
 
 {% endblock %}

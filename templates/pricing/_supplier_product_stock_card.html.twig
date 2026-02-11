@@ -1,3 +1,5 @@
+{# Individual supplier product stock entry with cost and removal action.
+   Used on: pricing stock page (inside _inventory_card). Variable: supplierProduct (SupplierProduct) #}
 <twig:Card
     editLink="{{ path('app_purchasing_supplier_product_remove_confirm', {'id': supplierProduct.publicId.value }) }}"
     editIcon="bi:x-lg"

@@ -1,3 +1,5 @@
+{# Purchase order header card with supplier, date, order link, and rewind action.
+   Used on: purchase order show page. Variable: result/purchaseOrder (PurchaseOrder) #}
 {% set colourScheme = result.supplier.colourScheme %}
 <twig:Card colour="{{ colourScheme }}"
            editLink="{{ path('app_purchasing_purchase_order_rewind_confirm', {id: result.publicId.value}) }}"

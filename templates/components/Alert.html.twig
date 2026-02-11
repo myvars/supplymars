@@ -1,3 +1,5 @@
+{# Inline alert box with contextual icon and colour.
+   Props (PHP): type (info|danger|warning|success, default: info) #}
 <div {{ attributes.defaults({
     'class': 'flex items-center gap-3 rounded-lg border p-3 text-sm ' ~ this.colorClasses,
     'role': 'alert',

@@ -1,3 +1,5 @@
+{# Order detail page — composes _order_card, _order_summary_card, _order_items_card,
+   and purchase order cards. Variable: result (CustomerOrder) #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Order Details{% endblock %}
@@ -14,14 +16,7 @@
                 {{ include('purchasing/purchase_order/_order_po_card.html.twig', {purchaseOrder: purchaseOrder}) }}
             {% endfor %}
         {% endif %}
-        <div class="flex">
-            <a href="{{ path('app_order_index') }}"
-               class="inline-flex items-center gap-1 text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
-               data-turbo-frame="body">
-                <twig:ux:icon name="bi:arrow-left" class="h-3.5 w-3.5"/>
-                View all orders
-            </a>
-        </div>
+        <twig:BackLink :href="path('app_order_index')" label="View all orders"/>
     </div>
 
 {% endblock %}

@@ -1,3 +1,5 @@
+{# Category detail card with inline-editable name, VAT rate, and markup info.
+   Used on: category show page. Variable: category (Category) #}
 <twig:Card editLink="{{ path('app_catalog_category_edit', {id: category.publicId.value}) }}" title="Category" statusHighlight="{{ category.isActive ? 'ACTIVE' : 'INACTIVE' }}">
     <p class="mb-3">{{ include('catalog/category/_inline_name.html.twig', {category: category}) }}</p>
     <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">

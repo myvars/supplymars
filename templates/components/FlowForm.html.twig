@@ -1,3 +1,8 @@
+{# Standard form wrapper for FormFlow. Renders form fields with a submit button.
+   - form: Symfony FormView
+   - buttonLabel: Submit button text (default: Save)
+   - formFrame: Turbo frame target for submit (defaults to current request's turbo-frame header)
+   Block: before_submit (content between form fields and submit button, e.g., delete link) #}
 {% props
     form,
     buttonLabel = 'Save',

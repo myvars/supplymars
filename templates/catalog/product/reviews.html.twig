@@ -12,14 +12,7 @@
             <twig:EmptyState icon="flowbite:star-solid" message="No published reviews yet"/>
         {% endfor %}
         {% if reviews is not empty %}
-            <div class="flex">
-                <a href="{{ path('app_review_index', {productId: result.id}) }}"
-                   class="inline-flex items-center gap-1 text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
-                   data-turbo-frame="body">
-                    <twig:ux:icon name="bi:arrow-left" class="h-3.5 w-3.5"/>
-                    View all reviews
-                </a>
-            </div>
+            <twig:BackLink :href="path('app_review_index', {productId: result.id})" label="View all reviews"/>
         {% endif %}
     </div>
 {% endblock %}

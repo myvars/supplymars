@@ -1,3 +1,5 @@
+{# Single order item card with product image, price, quantity, and supplier toggle.
+   Used on: order show page (inside _order_items_card). Variable: orderItem (CustomerOrderItem) #}
 <li class="first:mt-3">
     <twig:Card
         editLink="{{ orderItem.allowEdit ? path('app_order_item_edit', {'id': orderItem.publicId.value }) : null }}"

@@ -1,3 +1,12 @@
+{# KPI metric card with value, optional comparison arrow, and percentage change.
+   - title: Metric label displayed above the value
+   - value: The primary numeric value
+   - compare: Previous-period value for comparison (shows arrow + percentage change)
+   - valueType: Formatting type (count|currency|percentage|text, default: count)
+   - format: Currency format (default: GBP)
+   - maxFractionDigits: Decimal places for formatting (default: 0)
+   - href: Optional link URL (makes entire card clickable)
+   - turboFrame: Turbo frame target when href is set #}
 {% props
     title,
     value,

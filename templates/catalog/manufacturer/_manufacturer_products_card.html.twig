@@ -1,3 +1,5 @@
+{# Products count link for a manufacturer — navigates to filtered product index.
+   Used on: manufacturer show page. Variable: result (Manufacturer) #}
 <twig:Card title="Products">
     <a href="{{ path('app_catalog_product_index', {manufacturerId: result.id}) }}"
        class="group flex items-center justify-between text-sm text-gray-600 dark:text-gray-400"

@@ -1,3 +1,5 @@
+{# Manufacturer detail page — composes _manufacturer_card, _manufacturer_products_card,
+   and embedded sales dashboard. Variable: result (Manufacturer) #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Manufacturer Details{% endblock %}
@@ -12,14 +14,7 @@
         {{ include('reporting/_dashboard_card.html.twig', {
             dashboardSrc: path('app_reporting_dashboard_product_sales', {manufacturerId: result.id})
         }) }}
-        <div class="flex">
-            <a href="{{ path('app_catalog_manufacturer_index') }}"
-               class="inline-flex items-center gap-1 text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
-               data-turbo-frame="body">
-                <twig:ux:icon name="bi:arrow-left" class="h-3.5 w-3.5"/>
-                View all manufacturers
-            </a>
-        </div>
+        <twig:BackLink :href="path('app_catalog_manufacturer_index')" label="View all manufacturers"/>
     </div>
 
 {% endblock %}

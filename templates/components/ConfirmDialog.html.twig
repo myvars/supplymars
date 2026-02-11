@@ -1,3 +1,11 @@
+{# CSRF-protected confirmation dialog. Used for delete confirmations and destructive actions.
+   - title: Dialog heading
+   - formAction: POST URL for the form submission
+   - csrfId: CSRF token identifier (e.g., 'delete' ~ entity.publicId.value)
+   - confirmLabel: Text on the confirm button
+   - confirmVariant: Button variant for confirm (default: danger)
+   - cancelLabel: Text on the cancel button (default: Cancel)
+   Block: message (confirmation text shown above buttons) #}
 {% props
     title,
     formAction,

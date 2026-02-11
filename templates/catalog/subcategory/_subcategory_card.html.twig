@@ -1,3 +1,5 @@
+{# Subcategory detail card with inline-editable name, parent category, and markup.
+   Used on: subcategory show page. Variable: subcategory (Subcategory) #}
 <twig:Card editLink="{{ path('app_catalog_subcategory_edit', { id: subcategory.publicId.value }) }}" title="Subcategory" statusHighlight="{{ subcategory.isActive ? 'ACTIVE' : 'INACTIVE' }}">
     <p class="mb-1">{{ include('catalog/subcategory/_inline_name.html.twig', {subcategory: subcategory}) }}</p>
     <p class="mb-3 text-sm text-gray-500 line-clamp-1 dark:text-gray-400">

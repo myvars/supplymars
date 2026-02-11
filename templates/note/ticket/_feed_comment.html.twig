@@ -1,3 +1,5 @@
+{# Single message in the ticket feed — supports customer, staff, and internal styles.
+   Used on: ticket show page (feed). Variable: message (TicketMessage) #}
 {% set isCustomer = message.authorType.value == 'CUSTOMER' %}
 {% set isInternal = message.isInternal %}
 

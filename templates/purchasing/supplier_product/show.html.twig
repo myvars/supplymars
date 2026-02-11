@@ -1,3 +1,5 @@
+{# Supplier product detail page — composes _supplier_product_card.
+   Variable: result (SupplierProduct) #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Supplier Product Details{% endblock %}
@@ -6,14 +8,7 @@
 
     <div class="m-3 space-y-4">
         {{ include('purchasing/supplier_product/_supplier_product_card.html.twig', {supplierProduct: result}) }}
-        <div class="flex">
-            <a href="{{ path('app_purchasing_supplier_product_index') }}"
-               class="inline-flex items-center gap-1 text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
-               data-turbo-frame="body">
-                <twig:ux:icon name="bi:arrow-left" class="h-3.5 w-3.5"/>
-                View all supplier products
-            </a>
-        </div>
+        <twig:BackLink :href="path('app_purchasing_supplier_product_index')" label="View all supplier products"/>
     </div>
 
 {% endblock %}

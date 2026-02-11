@@ -1,3 +1,5 @@
+{# Sortable column header link. Toggles ASC/DESC on click, highlights active sort.
+   - sortValue: The sort field name matching SearchCriteria SORT_OPTIONS #}
 {% props sortValue='' %}
 
 {% set isActive = sortValue == app.request.query.get('sort') %}

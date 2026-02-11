@@ -1,3 +1,5 @@
+{# Category detail page — composes _category_card, _category_products_card,
+   _subcategories_card, and embedded sales dashboard. Variable: result (Category) #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Category Details{% endblock %}
@@ -15,14 +17,7 @@
         {{ include('reporting/_dashboard_card.html.twig', {
             dashboardSrc: path('app_reporting_dashboard_product_sales', {categoryId: result.id})
         }) }}
-        <div class="flex">
-            <a href="{{ path('app_catalog_category_index') }}"
-               class="inline-flex items-center gap-1 text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
-               data-turbo-frame="body">
-                <twig:ux:icon name="bi:arrow-left" class="h-3.5 w-3.5"/>
-                View all categories
-            </a>
-        </div>
+        <twig:BackLink :href="path('app_catalog_category_index')" label="View all categories"/>
     </div>
 
 {% endblock %}

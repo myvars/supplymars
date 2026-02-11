@@ -1,3 +1,5 @@
+{# Turbo-frame wrapper that lazy-loads the reporting dashboard.
+   Used on: reporting index. Variable: dashboardSrc (string URL) #}
 <div>
     <turbo-frame id="reports" src="{{ dashboardSrc }}" refresh="morph"></turbo-frame>
 </div>

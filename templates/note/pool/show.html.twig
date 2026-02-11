@@ -1,3 +1,5 @@
+{# Pool detail page — composes _pool_card and subscription toggle.
+   Variable: result (Pool), is_subscribed (bool) #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Pool Details{% endblock %}
@@ -22,14 +24,7 @@
             </div>
         </twig:Card>
 
-        <div class="flex">
-            <a href="{{ path('app_note_pool_index') }}"
-               class="inline-flex items-center gap-1 text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
-               data-turbo-frame="body">
-                <twig:ux:icon name="bi:arrow-left" class="h-3.5 w-3.5"/>
-                View all pools
-            </a>
-        </div>
+        <twig:BackLink :href="path('app_note_pool_index')" label="View all pools"/>
     </div>
 
 {% endblock %}

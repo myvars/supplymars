@@ -1,3 +1,5 @@
+{# Purchase order card shown in order context — includes nested PO item cards.
+   Used on: order show page (inside purchase orders section). Variable: purchaseOrder (PurchaseOrder) #}
 {% set colourScheme = purchaseOrder.supplier.colourScheme %}
 <twig:Card colour="{{ colourScheme }}" statusHighlight="{{ purchaseOrder.status.value }}">
     <div class="flex w-full items-center justify-between">
@@ -22,7 +24,7 @@
         {% for purchaseOrderItem in purchaseOrder.purchaseOrderItems %}
             {{ include('purchasing/purchase_order_item/_order_po_item_card.html.twig', {purchaseOrderItem: purchaseOrderItem}) }}
         {% else %}
-            <li class="flex justify-between text-gray-400 dark:text-gray-500">No items found</li>
+            <twig:EmptyState message="No items found"/>
         {% endfor %}
     </ul>
 </twig:Card>

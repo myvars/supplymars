@@ -1,3 +1,6 @@
+{# Product image with Liip Imagine filtering. Shows "no image" placeholder if imageName is null.
+   Props (PHP): imageName (?string), alt (string), filter (small_thumbnail|medium_thumbnail|large_thumbnail),
+   style (additional CSS classes), showLink (?string URL to wrap image in a link) #}
 {% if this.showLink%}
     <a href="{{ this.showLink }}" data-turbo-frame="body">
 {% endif %}

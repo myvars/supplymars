@@ -1,3 +1,10 @@
+{# Search/list page layout with searchbox, filter, sort headers, result list, and pagination.
+   - flowModel: Entity name string (e.g., "Product") — used for headings and turbo-frame IDs
+   - routes: FlowRoutes object (.index, .new, .filter)
+   - results: Pagerfanta paginated result set
+   - showFilter: Show the filter icon in the search bar (default: true)
+   - showAdd: Show the "Create" button (default: true)
+   Blocks: result_count, filter, add, sort (column headers), list_item (single result card) #}
 {% props flowModel, routes, results, showFilter = true, showAdd = true %}
 
 <div class="mx-auto max-w-(--breakpoint-xl) p-3">

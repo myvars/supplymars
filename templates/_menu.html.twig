@@ -1,3 +1,5 @@
+{# Sidebar navigation drawer. Managed by basic-drawer Stimulus controller.
+   Sections: Home, Catalog, Orders, Purchasing, Customers, Reviews, Reporting, Admin, Notes #}
 <div id="side-menu" class="fixed top-0 left-0 z-40 h-screen w-72 -translate-x-full overflow-y-auto bg-white dark:bg-gray-900" data-action="turbo:before-cache@window->basic-drawer#close" tabindex="-1" aria-hidden="true">
     <div class="flex h-full flex-col overflow-y-auto border-r border-gray-200 bg-white dark:border-gray-700/50 dark:bg-gray-900">
         <div class="flex items-center justify-between border-b border-gray-200 px-4 py-4 dark:border-gray-700/50">
@@ -11,6 +13,7 @@
         </div>
         <nav class="flex-1 px-3 py-4">
             <ul class="space-y-1">
+                {# ── Home ── #}
                 <li>
                     <a href="{{ path('app_homepage') }}"
                        class="flex items-center rounded-lg px-3 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
@@ -21,6 +24,7 @@
                         <span class="ml-3">Home</span>
                     </a>
                 </li>
+                {# ── Catalog (Products, Categories, Subcategories, Manufacturers) ── #}
                 <li>
                     <button type="button" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-catalog" data-collapse-toggle="dropdown-catalog">
                         <twig:ux:icon name="ri:box-3-fill" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
@@ -58,6 +62,7 @@
                         </li>
                     </ul>
                 </li>
+                {# ── Orders ── #}
                 <li>
                     <a href="{{ path('app_order_index') }}"
                        class="flex items-center rounded-lg px-3 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
@@ -69,6 +74,7 @@
                     </a>
                 </li>
 
+                {# ── Purchasing (POs, Suppliers, Supplier Products) ── #}
                 <li>
                     <button type="button" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-purchasing" data-collapse-toggle="dropdown-purchasing">
                         <twig:ux:icon name="bxs:factory" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
@@ -99,6 +105,7 @@
                         </li>
                     </ul>
                 </li>
+                {# ── Customers ── #}
                 <li>
                     <a href="{{ path('app_customer_index') }}"
                        class="flex items-center rounded-lg px-3 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
@@ -109,6 +116,7 @@
                         <span class="ml-3 flex-1 whitespace-nowrap text-left">Customers</span>
                     </a>
                 </li>
+                {# ── Reviews (Search, Moderation Queue) ── #}
                 <li>
                     <button type="button" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-reviews" data-collapse-toggle="dropdown-reviews">
                         <twig:ux:icon name="flowbite:star-solid" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
@@ -132,6 +140,7 @@
                         </li>
                     </ul>
                 </li>
+                {# ── Reporting (Dashboards, Summaries) ── #}
                 <li>
                     <button type="button" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-reporting" data-collapse-toggle="dropdown-reporting">
                         <twig:ux:icon name="ic:sharp-bar-chart" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
@@ -190,6 +199,7 @@
                         </li>
                     </ul>
                 </li>
+                {# ── Admin (VAT Rates) ── #}
                 <li>
                     <button type="button" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-admin" data-collapse-toggle="dropdown-admin">
                         <twig:ux:icon name="flowbite:cog-solid" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
@@ -207,6 +217,7 @@
                     </ul>
                 </li>
             </ul>
+            {# ── Notes (Tickets, Pools) — separated by divider ── #}
             <div class="mt-4 border-t border-gray-200 pt-4 dark:border-gray-700/50">
                 <ul class="space-y-1">
                     <li>

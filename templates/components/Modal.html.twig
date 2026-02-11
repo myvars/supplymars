@@ -1,3 +1,10 @@
+{# Native <dialog> modal managed by the basic-modal Stimulus controller.
+   Placed once in base.html.twig. Turbo loads content into the modal frame.
+   - allowSmallWidth: Skip min-width constraint on medium screens (default: false)
+   - closeButton: Show an X close button in the top-right corner (default: false)
+   - padding: Tailwind padding for content area (default: p-5)
+   - fixedTop: Position dialog near the top of viewport (default: false)
+   Blocks: trigger, content, loading_template #}
 {% props
     allowSmallWidth=false,
     closeButton=false,

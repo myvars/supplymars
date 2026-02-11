@@ -1,3 +1,5 @@
+{# Single PO item card with product image, price, quantity, profit, and status.
+   Used on: purchase order show page (inside _po_items_card). Variable: purchaseOrderItem (PurchaseOrderItem) #}
 {% if colourScheme is not defined %}
     {% set colourScheme = purchaseOrderItem.purchaseOrder.supplier.colourScheme %}
 {% endif %}

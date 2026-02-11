@@ -1,3 +1,5 @@
+{# Supplier products count link — navigates to filtered supplier product index.
+   Used on: supplier show page. Variable: result (Supplier) #}
 <twig:Card title="Supplier Products" colour="{{ result.colourScheme }}">
     <a href="{{ path('app_purchasing_supplier_product_index', {supplierId: result.id}) }}"
        class="group flex items-center justify-between text-sm text-gray-600 dark:text-gray-400"

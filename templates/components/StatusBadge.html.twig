@@ -1,3 +1,5 @@
+{# Coloured status pill. Colour resolved via StatusColor utility.
+   Props (PHP): status (string, e.g., "ACTIVE"), showIcon (bool, default: false), interactive (bool, default: false — adds hover opacity) #}
 <span {{ attributes.defaults({
     'class': 'inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium '~this.getColorClasses~(interactive ? ' transition-opacity hover:opacity-75' : ''),
 }) }}>

@@ -1,3 +1,5 @@
+{# Products count link for a category — navigates to filtered product index.
+   Used on: category show page. Variable: result (Category) #}
 <twig:Card title="Products">
     <a href="{{ path('app_catalog_product_index', {categoryId: result.id}) }}"
        class="group flex items-center justify-between text-sm text-gray-600 dark:text-gray-400"

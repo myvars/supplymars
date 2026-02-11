@@ -1,3 +1,15 @@
+{# Reusable card container with optional edit/show links and status highlight.
+   Props (PHP):
+   - title: Optional heading above content
+   - editLink: URL for floating edit button (opens modal)
+   - showLink: URL wrapping entire card content as a clickable link
+   - statusHighlight: Status string for coloured left border (via StatusColor)
+   - colour: Background scheme (gray|green|supplier1-4)
+   - borderColour: Border scheme override (gray|green|red|supplier1-4)
+   - layout: vertical (default) or horizontal (side-by-side with cardImage block)
+   - padding: Tailwind padding class (default: p-3)
+   - editIcon: Icon name for edit button (default: mynaui:edit-one)
+   Blocks: content (implicit), cardImage (for horizontal layout) #}
 <div {{ attributes.defaults({
     'class': width~' relative h-full rounded-xl shadow-sm dark:shadow-none '~this.getBackgroundClasses~' '~this.getBorderClasses~' '~this.getHighlightClasses,
 }) }}

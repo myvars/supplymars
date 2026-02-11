@@ -1,3 +1,5 @@
+{# Supplier product detail card with category breadcrumb, cost, stock, and product mapping.
+   Used on: supplier product show page. Variable: supplierProduct (SupplierProduct) #}
 <twig:Card editLink="{{ path('app_purchasing_supplier_product_edit', {id: supplierProduct.publicId.value}) }}" title="Supplier Product" statusHighlight="{{ supplierProduct.isActive ? 'ACTIVE' : 'INACTIVE' }}">
 
     <div class="space-y-4">

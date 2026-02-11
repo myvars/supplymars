@@ -1,3 +1,5 @@
+{# Review aggregate summary — average rating, star distribution, and pending count.
+   Used on: product reviews page. Variable: summary (ReviewSummary) #}
 <twig:Card title="Review Summary">
     {% if summary is not null and summary.hasReviews %}
         <div class="space-y-4">

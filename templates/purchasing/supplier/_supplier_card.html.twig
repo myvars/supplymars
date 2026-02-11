@@ -1,3 +1,5 @@
+{# Supplier detail card with inline-editable name, contact info, and colour scheme.
+   Used on: supplier show page. Variable: supplier (Supplier) #}
 <twig:Card
     editLink="{{ path('app_purchasing_supplier_edit', { id: supplier.publicId.value }) }}"
     title="Supplier"
