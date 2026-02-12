@@ -12,6 +12,7 @@ use App\Purchasing\Domain\Repository\PurchaseOrderRepository;
 use App\Shared\Application\Search\SearchCriteriaInterface;
 use App\Shared\Infrastructure\Persistence\Search\FindByCriteriaInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\Persistence\ManagerRegistry;
 use Pagerfanta\Adapter\AdapterInterface;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
@@ -171,15 +172,21 @@ class PurchaseOrderDoctrineRepository extends ServiceEntityRepository implements
             SELECT po.id
             FROM purchase_order po
             JOIN purchase_order_item poi ON poi.purchase_order_id = po.id
-            WHERE po.created_at >= DATE_SUB(NOW(), INTERVAL {$daysBack} DAY)
+            WHERE po.created_at >= DATE_SUB(NOW(), INTERVAL :daysBack DAY)
             GROUP BY po.id
             HAVING COUNT(DISTINCT poi.status) > 1
                AND SUM(poi.status = 'REJECTED') > 0
             ORDER BY po.created_at DESC
-            LIMIT {$limit}
+            LIMIT :limit
             SQL;
 
-        $result = $conn->executeQuery($sql)->fetchAllAssociative();
+        $result = $conn->executeQuery($sql, [
+            'daysBack' => $daysBack,
+            'limit' => $limit,
+        ], [
+            'daysBack' => ParameterType::INTEGER,
+            'limit' => ParameterType::INTEGER,
+        ])->fetchAllAssociative();
 
         if ($result === []) {
             return [];

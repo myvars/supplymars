@@ -20,6 +20,7 @@ use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PurchaseOrderDoctrineRepository::class)]
+#[ORM\Index(name: 'idx_purchase_order_supplier_status_created', columns: ['supplier_id', 'status', 'created_at'])]
 class PurchaseOrder implements DomainEventProviderInterface
 {
     use TimestampableEntity;
