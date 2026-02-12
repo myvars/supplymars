@@ -543,16 +543,27 @@ The Audit context tracks significant changes to entities, particularly status tr
 2. Audit listener captures before/after values
 3. Stored in `SupplierStockChangeLog` entity
 
+**Stock/Cost History Charts:**
+1. Navigate to a product → History tab (`/product/{id}/history`)
+2. Two line charts: Stock History (stepped lines) and Cost History (smooth lines)
+3. One line per supplier, colour-matched to supplier colour scheme
+4. Duration picker: LAST 7 / LAST 30 / LAST 90 / ALL (default: LAST 30)
+5. Daily data points with carry-forward normalization
+
 ### Entry Points
 
 Audit logs are primarily accessed via:
 - Entity detail pages (shows history)
 - Admin reporting (aggregate views)
+- Product History tab (stock/cost charts)
 
 **Key files:**
 - `src/Audit/Domain/Model/StatusChangeLog/StatusChangeLog.php`
 - `src/Audit/Domain/Model/SupplierStockChangeLog/SupplierStockChangeLog.php`
 - `src/Audit/Application/Listener/` (event listeners)
+- `src/Audit/UI/Http/Controller/StockChangeHistoryController.php` (history charts)
+- `src/Audit/UI/Http/Chart/StockHistoryChartBuilder.php` (chart building)
+- `src/Audit/Domain/Model/StockChange/HistoryDuration.php` (duration enum)
 
 ### Business Rules
 
@@ -560,6 +571,8 @@ Audit logs are primarily accessed via:
 2. **User tracking:** Changes associated with acting user
 3. **Timestamp precision:** DateTimeImmutable for accuracy
 4. **Event-driven:** No direct writes, only via listeners
+5. **Carry-forward:** Chart data fills gaps with last known value per supplier per day
+6. **Multi-year display:** Date labels include year suffix when data spans multiple years
 
 ---
 

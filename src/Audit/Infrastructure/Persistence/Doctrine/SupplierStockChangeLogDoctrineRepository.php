@@ -38,4 +38,23 @@ class SupplierStockChangeLogDoctrineRepository extends ServiceEntityRepository i
     {
         return $this->findOneBy(['publicId' => $publicId]);
     }
+
+    public function findBySupplierProductIds(array $supplierProductIds, ?\DateTimeImmutable $since = null): array
+    {
+        if ($supplierProductIds === []) {
+            return [];
+        }
+
+        $qb = $this->createQueryBuilder('l')
+            ->where('l.supplierProductId IN (:ids)')
+            ->setParameter('ids', $supplierProductIds)
+            ->orderBy('l.eventTimestamp', 'ASC');
+
+        if ($since instanceof \DateTimeImmutable) {
+            $qb->andWhere('l.eventTimestamp >= :since')
+                ->setParameter('since', $since);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }

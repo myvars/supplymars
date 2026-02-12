@@ -18,4 +18,11 @@ interface SupplierStockChangeLogRepository
     public function get(SupplierStockChangeLogId $id): ?SupplierStockChangeLog;
 
     public function getByPublicId(SupplierStockChangeLogPublicId $publicId): ?SupplierStockChangeLog;
+
+    /**
+     * @param array<int, int> $supplierProductIds
+     *
+     * @return array<int, SupplierStockChangeLog>
+     */
+    public function findBySupplierProductIds(array $supplierProductIds, ?\DateTimeImmutable $since = null): array;
 }

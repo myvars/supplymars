@@ -247,6 +247,16 @@ hasPositiveCost()             // cost > 0
 |--------|------|-------------|
 | StatusChangeLog | `src/Audit/Domain/Model/StatusChangeLog/StatusChangeLog.php` | Status transition log |
 | SupplierStockChangeLog | `src/Audit/Domain/Model/SupplierStockChangeLog/SupplierStockChangeLog.php` | Stock change log |
+| HistoryDuration | `src/Audit/Domain/Model/StockChange/HistoryDuration.php` | Duration filter enum (LAST_7, LAST_30, LAST_90, ALL) |
+
+### UI / Charts
+
+| Class | File | Description |
+|-------|------|-------------|
+| StockChangeHistoryController | `src/Audit/UI/Http/Controller/StockChangeHistoryController.php` | `/product/{id}/history` — stock/cost history charts |
+| StockHistoryChartBuilder | `src/Audit/UI/Http/Chart/StockHistoryChartBuilder.php` | Builds Chart.js line charts for stock and cost history |
+| SupplierColorProvider | `src/Audit/UI/Http/Chart/SupplierColorProvider.php` | Maps supplier colour schemes to hex colors |
+| line_chart_controller | `assets/controllers/line_chart_controller.js` | Stimulus controller for line chart formatting |
 
 ---
 
