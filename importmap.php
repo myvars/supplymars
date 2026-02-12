@@ -61,7 +61,7 @@ return [
         'version' => '6.2.0',
     ],
     'sortablejs' => [
-        'version' => '1.15.6',
+        'version' => '1.15.7',
     ],
     'flowbite/dist/flowbite.min.css' => [
         'version' => '4.0.1',

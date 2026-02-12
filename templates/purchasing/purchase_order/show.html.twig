@@ -1,5 +1,4 @@
-{# Purchase order detail page — composes _po_card, _po_summary_card, _po_items_card.
-   Variable: result (PurchaseOrder) #}
+{# Purchase order detail page. Variable: result (PurchaseOrder) #}
 {% extends 'base.html.twig' %}
 
 {% block title %}Purchase Order Details{% endblock %}
@@ -8,8 +7,6 @@
 
     <div class="m-3 space-y-4">
         {{ include('purchasing/purchase_order/_po_card.html.twig', {purchaseOrder: result}) }}
-        {{ include('purchasing/purchase_order/_po_summary_card.html.twig', {purchaseOrder: result}) }}
-        {{ include('purchasing/purchase_order/_po_items_card.html.twig', {purchaseOrder: result}) }}
     </div>
 
 {% endblock %}

@@ -5,12 +5,14 @@ namespace App\Tests\Shared\Infrastructure\FileStorage;
 use App\Shared\Infrastructure\FileStorage\UploadHelper;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Visibility;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\String\UnicodeString;
 
+#[AllowMockObjectsWithoutExpectations]
 final class UploadHelperTest extends TestCase
 {
     private MockObject $filesystem;

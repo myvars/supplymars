@@ -1,14 +1,16 @@
-{# Purchase order header card with supplier, date, order link, and rewind action.
-   Used on: purchase order show page. Variable: result/purchaseOrder (PurchaseOrder) #}
-{% set colourScheme = result.supplier.colourScheme %}
+{# Purchase order card — header, financial summary, and items list.
+   Used on: purchase order show page. Variable: purchaseOrder (PurchaseOrder) #}
+{% set colourScheme = purchaseOrder.supplier.colourScheme %}
 <twig:Card colour="{{ colourScheme }}"
-           editLink="{{ path('app_purchasing_purchase_order_rewind_confirm', {id: result.publicId.value}) }}"
+           editLink="{{ path('app_purchasing_purchase_order_rewind_confirm', {id: purchaseOrder.publicId.value}) }}"
            editIcon="mingcute:back-line"
            statusHighlight="{{ purchaseOrder.status.value }}">
+
+    {# Header — PO number, supplier, date, order link, status #}
     <h5 class="flex items-center text-xl font-semibold text-gray-900 dark:text-white">
-        PO #{{ '%06d'|format(result.id) }}
+        PO #{{ '%06d'|format(purchaseOrder.id) }}
         <span class="mx-1 text-gray-300 dark:text-gray-600">&middot;</span>
-        <span class="text-base font-normal text-gray-500 dark:text-gray-400">{{ result.supplier.name }}</span>
+        <span class="text-base font-normal text-gray-500 dark:text-gray-400">{{ purchaseOrder.supplier.name }}</span>
     </h5>
     <div class="mt-1.5 flex items-center justify-between">
         <p class="text-sm text-gray-500 dark:text-gray-400">
@@ -25,5 +27,70 @@
         >
             <twig:StatusBadge status="{{ purchaseOrder.status.value }}" :showIcon="true" :interactive="true"/>
         </a>
+    </div>
+
+    {# Summary — delivery address and financial totals #}
+    <div class="mt-4 border-t border-gray-200 pt-4 dark:border-white/10">
+        <div class="grid gap-6 sm:grid-cols-[1fr_auto]">
+            <div>
+                <p class="mb-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-500">Delivery Address</p>
+                <div class="space-y-0.5 text-sm text-gray-600 dark:text-gray-400">
+                    <p class="font-medium text-gray-900 dark:text-white">{{ purchaseOrder.customerOrder.customer.fullName }}</p>
+                    <p>{{ purchaseOrder.customerOrder.shippingAddress.street }}</p>
+                    {% if purchaseOrder.customerOrder.shippingAddress.street2 is not null %}
+                        <p>{{ purchaseOrder.customerOrder.shippingAddress.street2 }}</p>
+                    {% endif %}
+                    <p>{{ purchaseOrder.customerOrder.shippingAddress.city }}, {{ purchaseOrder.customerOrder.shippingAddress.postCode }}</p>
+                    <p>{{ purchaseOrder.customerOrder.shippingAddress.country }}</p>
+                </div>
+            </div>
+            <div>
+                <p class="mb-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-500">PO Summary</p>
+                <div class="space-y-1 text-sm">
+                    <div class="flex justify-between gap-6 text-gray-600 dark:text-gray-400">
+                        <p>Item(s) subtotal</p>
+                        <p>{{ (purchaseOrder.totalPrice - purchaseOrder.shippingPrice)|format_currency('GBP') }}</p>
+                    </div>
+                    <div class="flex justify-between gap-6 text-gray-600 dark:text-gray-400">
+                        <p>Shipping</p>
+                        <p>{{ purchaseOrder.shippingPrice|format_currency('GBP') }}</p>
+                    </div>
+                    <div class="hidden flex justify-between gap-6 text-gray-600 md:flex dark:text-gray-400">
+                        <p>Total before VAT</p>
+                        <p>{{ purchaseOrder.totalPrice|format_currency('GBP') }}</p>
+                    </div>
+                    <div class="flex justify-between gap-6 text-gray-600 dark:text-gray-400">
+                        <p>VAT</p>
+                        <p>{{ (purchaseOrder.totalPriceIncVat - purchaseOrder.totalPrice)|format_currency('GBP') }}</p>
+                    </div>
+                    <div class="border-t border-gray-200 pt-2 dark:border-gray-700">
+                        <div class="flex justify-between gap-6 font-medium text-gray-900 dark:text-white">
+                            <p>Grand Total</p>
+                            <p>{{ purchaseOrder.totalPriceIncVat|format_currency('GBP') }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# PO Items #}
+    <div class="mt-4 border-t border-gray-200 pt-4 dark:border-white/10">
+        <p class="flex items-center gap-2 text-gray-500 dark:text-gray-300">
+            <span>
+                {{ purchaseOrder.lineCount }} {% if purchaseOrder.lineCount == 1 %}line{% else %}lines{% endif %}
+                <span class="ms-1 text-gray-400 dark:text-gray-500">
+                    ({{ purchaseOrder.itemCount }} {% if purchaseOrder.itemCount == 1 %}item{% else %}items{% endif %})
+                </span>
+            </span>
+            <twig:ProfitBadge :value="purchaseOrder.calculateProfit"/>
+        </p>
+        <ul class="w-full space-y-3">
+            {% for purchaseOrderItem in purchaseOrder.purchaseOrderItems %}
+                {{ include('purchasing/purchase_order_item/_po_item_card.html.twig', {purchaseOrderItem: purchaseOrderItem}) }}
+            {% else %}
+                <twig:EmptyState message="No items found"/>
+            {% endfor %}
+        </ul>
     </div>
 </twig:Card>

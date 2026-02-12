@@ -13,7 +13,8 @@ final class UpdateSupplierMapper
         return new UpdateSupplier(
             SupplierPublicId::fromString($data->id),
             $data->name,
-            $data->isActive
+            $data->isActive,
+            $data->colourScheme,
         );
     }
 }

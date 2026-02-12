@@ -19,6 +19,10 @@ vendor/bin/php-cs-fixer fix   # @Symfony rules, yoda_style: false
 vendor/bin/phpstan analyse    # Level 7
 vendor/bin/rector process     # Dead code, type declarations, Doctrine/Symfony sets
 
+# Migrations
+symfony console make:migration        # Generate migration from entity changes
+symfony console doctrine:migrations:migrate  # Run pending migrations
+
 # Docker (alternative to symfony serve)
 make up / make down / make bash
 

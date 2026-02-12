@@ -26,6 +26,7 @@ final readonly class CreateSupplierHandler
         $supplier = Supplier::create(
             name: $command->name,
             isActive: $command->isActive,
+            colourScheme: $command->colourScheme,
         );
 
         $errors = $this->validator->validate($supplier);

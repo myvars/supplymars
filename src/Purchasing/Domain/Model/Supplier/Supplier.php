@@ -14,6 +14,7 @@ use App\Shared\Domain\Event\DomainEventProviderTrait;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapping\HasPublicUlid;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -64,6 +65,9 @@ class Supplier implements DomainEventProviderInterface
     #[ORM\Column]
     private bool $isWarehouse = false;
 
+    #[ORM\Column(type: Types::STRING, length: 10, enumType: SupplierColourScheme::class)]
+    private SupplierColourScheme $colourScheme = SupplierColourScheme::Violet;
+
     final public function __construct()
     {
         $this->initializePublicId();
@@ -74,19 +78,30 @@ class Supplier implements DomainEventProviderInterface
         $this->purchaseOrders = new ArrayCollection();
     }
 
-    public static function create(string $name, bool $isActive): self
-    {
+    public static function create(
+        string $name,
+        bool $isActive,
+        SupplierColourScheme $colourScheme = SupplierColourScheme::Violet,
+    ): self {
         $self = new self();
         $self->rename($name);
         $self->setActive($isActive);
+        $self->colourScheme = $colourScheme;
 
         return $self;
     }
 
-    public function update(string $name, bool $isActive): void
-    {
+    public function update(
+        string $name,
+        bool $isActive,
+        ?SupplierColourScheme $colourScheme = null,
+    ): void {
         $this->rename($name);
         $this->setActive($isActive);
+
+        if ($colourScheme instanceof SupplierColourScheme) {
+            $this->colourScheme = $colourScheme;
+        }
     }
 
     public function setAsWarehouse(bool $isWarehouse): void
@@ -111,8 +126,12 @@ class Supplier implements DomainEventProviderInterface
 
     public function getColourScheme(): string
     {
-        // return a colour scheme based on the supplier ID
-        return 'supplier' . ($this->getId() < 5 ? $this->getId() : 1);
+        return $this->colourScheme->cssPrefix();
+    }
+
+    public function getColourSchemeEnum(): SupplierColourScheme
+    {
+        return $this->colourScheme;
     }
 
     public function isWarehouse(): bool

@@ -33,10 +33,10 @@ final class Card
         return match ($this->colour) {
             'gray' => 'bg-white dark:bg-linear-to-tr dark:from-gray-700 dark:to-gray-600',
             'green' => 'bg-linear-to-tr from-green-50 to-emerald-50 dark:from-green-950 dark:to-emerald-950',
-            'supplier1' => 'bg-linear-to-tr from-supplier1-100 to-supplier1-50 dark:from-supplier1-900 dark:to-supplier1-800',
-            'supplier2' => 'bg-linear-to-tr from-supplier2-100 to-supplier2-50 dark:from-supplier2-900 dark:to-supplier2-600',
-            'supplier3' => 'bg-linear-to-tr from-supplier3-100 to-supplier3-50 dark:from-supplier3-900 dark:to-supplier3-600',
-            'supplier4' => 'bg-linear-to-tr from-supplier4-100 to-supplier4-50 dark:from-supplier4-900 dark:to-supplier4-600',
+            'supplier1' => 'bg-linear-to-tr from-supplier1-200 to-supplier1-50 dark:from-supplier1-900 dark:to-supplier1-700',
+            'supplier2' => 'bg-linear-to-tr from-supplier2-200 to-supplier2-50 dark:from-supplier2-900 dark:to-supplier2-600',
+            'supplier3' => 'bg-linear-to-tr from-supplier3-200 to-supplier3-50 dark:from-supplier3-900 dark:to-supplier3-600',
+            'supplier4' => 'bg-linear-to-tr from-supplier4-200 to-supplier4-50 dark:from-supplier4-900 dark:to-supplier4-600',
             default => throw new \LogicException(sprintf('Unknown colourScheme "%s"', $this->colour)),
         };
     }

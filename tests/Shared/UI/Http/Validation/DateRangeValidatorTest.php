@@ -4,12 +4,14 @@ namespace App\Tests\Shared\UI\Http\Validation;
 
 use App\Shared\UI\Http\Validation\DateRange;
 use App\Shared\UI\Http\Validation\DateRangeValidator;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 use Symfony\Component\Validator\Test\ConstraintValidatorTestCase;
 
 /**
  * @extends ConstraintValidatorTestCase<DateRangeValidator>
  */
+#[AllowMockObjectsWithoutExpectations]
 final class DateRangeValidatorTest extends ConstraintValidatorTestCase
 {
     protected function createValidator(): DateRangeValidator

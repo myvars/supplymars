@@ -3,6 +3,7 @@
 namespace App\Audit\UI\Http\Chart;
 
 use App\Audit\Domain\Model\StockChange\SupplierStockChangeLog;
+use App\Purchasing\UI\Http\Chart\SupplierColorProvider;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
 

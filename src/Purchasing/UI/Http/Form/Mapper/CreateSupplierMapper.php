@@ -12,6 +12,7 @@ final class CreateSupplierMapper
         return new CreateSupplier(
             $data->name,
             $data->isActive,
+            $data->colourScheme,
         );
     }
 }

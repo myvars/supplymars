@@ -28,6 +28,7 @@ final readonly class UpdateSupplierHandler
         $supplier->update(
             name: $command->name,
             isActive: $command->isActive,
+            colourScheme: $command->colourScheme,
         );
 
         $errors = $this->validator->validate($supplier);

@@ -2,6 +2,7 @@
 
 namespace App\Purchasing\Application\Command\Supplier;
 
+use App\Purchasing\Domain\Model\Supplier\SupplierColourScheme;
 use App\Purchasing\Domain\Model\Supplier\SupplierPublicId;
 
 final readonly class UpdateSupplier
@@ -10,6 +11,7 @@ final readonly class UpdateSupplier
         public SupplierPublicId $id,
         public string $name,
         public bool $isActive,
+        public SupplierColourScheme $colourScheme = SupplierColourScheme::Violet,
     ) {
     }
 }

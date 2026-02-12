@@ -255,7 +255,7 @@ hasPositiveCost()             // cost > 0
 |-------|------|-------------|
 | StockChangeHistoryController | `src/Audit/UI/Http/Controller/StockChangeHistoryController.php` | `/product/{id}/history` — stock/cost history charts |
 | StockHistoryChartBuilder | `src/Audit/UI/Http/Chart/StockHistoryChartBuilder.php` | Builds Chart.js line charts for stock and cost history |
-| SupplierColorProvider | `src/Audit/UI/Http/Chart/SupplierColorProvider.php` | Maps supplier colour schemes to hex colors |
+| SupplierColorProvider | `src/Purchasing/UI/Http/Chart/SupplierColorProvider.php` | Maps supplier colour schemes to hex colors |
 | line_chart_controller | `assets/controllers/line_chart_controller.js` | Stimulus controller for line chart formatting |
 
 ---

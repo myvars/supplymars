@@ -4,6 +4,7 @@ namespace App\Tests\Purchasing\Domain;
 
 use App\Purchasing\Domain\Model\Supplier\Event\SupplierStatusWasChangedEvent;
 use App\Purchasing\Domain\Model\Supplier\Supplier;
+use App\Purchasing\Domain\Model\Supplier\SupplierColourScheme;
 use PHPUnit\Framework\TestCase;
 
 class SupplierDomainTest extends TestCase
@@ -78,5 +79,78 @@ class SupplierDomainTest extends TestCase
             name: '',
             isActive: true,
         );
+    }
+
+    public function testCreateDefaultsToDefaultColourScheme(): void
+    {
+        $supplier = Supplier::create(
+            name: 'Supplier A',
+            isActive: true,
+        );
+
+        self::assertSame(SupplierColourScheme::Violet, $supplier->getColourSchemeEnum());
+        self::assertSame('supplier1', $supplier->getColourScheme());
+    }
+
+    public function testCreateWithExplicitColourScheme(): void
+    {
+        $supplier = Supplier::create(
+            name: 'Supplier B',
+            isActive: true,
+            colourScheme: SupplierColourScheme::Amber,
+        );
+
+        self::assertSame(SupplierColourScheme::Amber, $supplier->getColourSchemeEnum());
+        self::assertSame('supplier2', $supplier->getColourScheme());
+    }
+
+    public function testUpdatePreservesColourSchemeWhenNotProvided(): void
+    {
+        $supplier = Supplier::create(
+            name: 'Supplier A',
+            isActive: true,
+            colourScheme: SupplierColourScheme::Teal,
+        );
+
+        $supplier->update(
+            name: 'Supplier A Updated',
+            isActive: true,
+        );
+
+        self::assertSame(SupplierColourScheme::Teal, $supplier->getColourSchemeEnum());
+    }
+
+    public function testUpdateChangesColourSchemeWhenProvided(): void
+    {
+        $supplier = Supplier::create(
+            name: 'Supplier A',
+            isActive: true,
+            colourScheme: SupplierColourScheme::Violet,
+        );
+
+        $supplier->update(
+            name: 'Supplier A',
+            isActive: true,
+            colourScheme: SupplierColourScheme::Rose,
+        );
+
+        self::assertSame(SupplierColourScheme::Rose, $supplier->getColourSchemeEnum());
+        self::assertSame('supplier4', $supplier->getColourScheme());
+    }
+
+    public function testColourSchemeEnumCssPrefixes(): void
+    {
+        self::assertSame('supplier1', SupplierColourScheme::Violet->cssPrefix());
+        self::assertSame('supplier2', SupplierColourScheme::Amber->cssPrefix());
+        self::assertSame('supplier3', SupplierColourScheme::Teal->cssPrefix());
+        self::assertSame('supplier4', SupplierColourScheme::Rose->cssPrefix());
+    }
+
+    public function testColourSchemeEnumChartColors(): void
+    {
+        self::assertSame('#8b5cf6', SupplierColourScheme::Violet->chartColor());
+        self::assertSame('#f59e0b', SupplierColourScheme::Amber->chartColor());
+        self::assertSame('#14b8a6', SupplierColourScheme::Teal->chartColor());
+        self::assertSame('#f43f5e', SupplierColourScheme::Rose->chartColor());
     }
 }
