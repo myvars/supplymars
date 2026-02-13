@@ -31,7 +31,8 @@ SupplyMars follows a **testing pyramid** approach:
 1. **Test behavior, not implementation:** Focus on what code does, not how
 2. **Use factories for data:** Foundry factories ensure consistent test data
 3. **Transaction rollback:** DAMA bundle isolates each test
-4. **Meaningful assertions:** Test outcomes, not internal state
+4. **Clean up side effects:** File uploads (via `UploadHelper`) persist outside DB transactions — delete them at the end of each test that uploads
+5. **Meaningful assertions:** Test outcomes, not internal state
 
 ## Test Types
 

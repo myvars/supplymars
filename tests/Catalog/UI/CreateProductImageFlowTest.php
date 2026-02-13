@@ -2,6 +2,7 @@
 
 namespace App\Tests\Catalog\UI;
 
+use App\Shared\Infrastructure\FileStorage\UploadHelper;
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -54,6 +55,12 @@ final class CreateProductImageFlowTest extends WebTestCase
             ->assertOn('/product_image/' . $product->getPublicId()->value() . '/images')
             ->assertSee('2 images added')
             ->assertSee('2 Product Images');
+
+        $uploadHelper = self::getContainer()->get(UploadHelper::class);
+        $reloaded = ProductFactory::repository()->find($product->getId());
+        foreach ($reloaded->getProductImages() as $image) {
+            $uploadHelper->deleteFile('uploads/products/' . $image->getImageName());
+        }
     }
 
     public function testUploadInvalidType(): void

@@ -63,13 +63,4 @@ enum TicketStatus: string
             self::CLOSED => 'Closed',
         };
     }
-
-    public function getColor(): string
-    {
-        return match ($this) {
-            self::OPEN => 'text-blue-500',
-            self::REPLIED => 'text-yellow-500',
-            self::CLOSED => 'text-gray-500',
-        };
-    }
 }

@@ -16,13 +16,4 @@ enum AuthorType: string
             self::SYSTEM => 'System',
         };
     }
-
-    public function getColor(): string
-    {
-        return match ($this) {
-            self::CUSTOMER => 'text-blue-500',
-            self::STAFF => 'text-green-500',
-            self::SYSTEM => 'text-gray-500',
-        };
-    }
 }

@@ -67,8 +67,6 @@ final class SubcategoryPricingWasChangedListenerTest extends KernelTestCase
         $product = ProductFactory::new()->withActiveSource()->create();
         $subcategory = $product->getSubcategory();
 
-        $before = $product->getSellPriceIncVat();
-
         /** @var MockObject&FlusherInterface $flusher */
         $flusher = $this->createMock(FlusherInterface::class);
         $flusher->expects(self::once())->method('flush');
@@ -91,7 +89,8 @@ final class SubcategoryPricingWasChangedListenerTest extends KernelTestCase
 
         /** @var Product $reloaded */
         $reloaded = $this->em->getRepository(Product::class)->find($product->getId());
-        self::assertNotSame($before, $reloaded->getSellPriceIncVat());
+        // Verify PRETTY_99 price model was applied (price ends in .99)
+        self::assertStringEndsWith('.99', $reloaded->getSellPriceIncVat());
     }
 
     public function testDoesNotFlushWhenNoRelevantChanges(): void

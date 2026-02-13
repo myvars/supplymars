@@ -68,7 +68,7 @@ final class StatusChangeLoggerTest extends TestCase
             statusChange: $statusChange,
         );
 
-        $this->resolver->method('resolve')->with($publicId)->willReturn(123);
+        $this->resolver->method('resolve')->willReturn(123);
 
         $this->writer
             ->expects(self::once())
@@ -93,7 +93,7 @@ final class StatusChangeLoggerTest extends TestCase
             statusChange: $statusChange,
         );
 
-        $this->resolver->method('resolve')->with($publicId)->willReturn(456);
+        $this->resolver->method('resolve')->willReturn(456);
 
         $this->writer
             ->expects(self::once())
@@ -118,7 +118,7 @@ final class StatusChangeLoggerTest extends TestCase
             statusChange: $statusChange,
         );
 
-        $this->resolver->method('resolve')->with($publicId)->willReturn(789);
+        $this->resolver->method('resolve')->willReturn(789);
 
         $this->writer
             ->expects(self::once())
@@ -143,7 +143,7 @@ final class StatusChangeLoggerTest extends TestCase
             statusChange: $statusChange,
         );
 
-        $this->resolver->method('resolve')->with($publicId)->willReturn(321);
+        $this->resolver->method('resolve')->willReturn(321);
 
         $this->writer
             ->expects(self::once())
@@ -168,7 +168,7 @@ final class StatusChangeLoggerTest extends TestCase
             statusChange: $statusChange,
         );
 
-        $this->resolver->method('resolve')->with($publicId)->willReturn(null);
+        $this->resolver->method('resolve')->willReturn(null);
 
         $this->writer->expects(self::never())->method('write');
 
@@ -203,7 +203,7 @@ final class StatusChangeLoggerTest extends TestCase
             statusChange: $statusChange,
         );
 
-        $this->resolver->method('resolve')->with($publicId)->willReturn(123);
+        $this->resolver->method('resolve')->willReturn(123);
 
         $this->writer
             ->expects(self::once())

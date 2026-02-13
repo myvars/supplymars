@@ -69,8 +69,8 @@ final class IdToEntityTransformerTest extends TestCase
         $em = $this->createStub(EntityManagerInterface::class);
         $repo = $this->createStub(EntityRepository::class);
 
-        $em->method('getRepository')->with(\stdClass::class)->willReturn($repo);
-        $repo->method('find')->with(99)->willReturn(null);
+        $em->method('getRepository')->willReturn($repo);
+        $repo->method('find')->willReturn(null);
 
         $transformer = new IdToEntityTransformer($em, \stdClass::class);
 

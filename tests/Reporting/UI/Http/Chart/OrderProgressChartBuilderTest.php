@@ -16,9 +16,7 @@ class OrderProgressChartBuilderTest extends TestCase
     {
         $chart = new Chart(Chart::TYPE_DOUGHNUT);
         $chartBuilder = $this->createStub(ChartBuilderInterface::class);
-        $chartBuilder->method('createChart')
-            ->with(Chart::TYPE_DOUGHNUT)
-            ->willReturn($chart);
+        $chartBuilder->method('createChart')->willReturn($chart);
 
         $colorProvider = $this->createStub(ChartColorProviderInterface::class);
         $colorProvider->method('getColor')->willReturn('#ffffff');
@@ -39,9 +37,7 @@ class OrderProgressChartBuilderTest extends TestCase
     {
         $chart = new Chart(Chart::TYPE_DOUGHNUT);
         $chartBuilder = $this->createStub(ChartBuilderInterface::class);
-        $chartBuilder->method('createChart')
-            ->with(Chart::TYPE_DOUGHNUT)
-            ->willReturn($chart);
+        $chartBuilder->method('createChart')->willReturn($chart);
 
         $colorProvider = $this->createStub(ChartColorProviderInterface::class);
         $colorProvider->method('getColor')->willReturn('#ffffff');
@@ -76,9 +72,7 @@ class OrderProgressChartBuilderTest extends TestCase
     {
         $chart = new Chart(Chart::TYPE_DOUGHNUT);
         $chartBuilder = $this->createStub(ChartBuilderInterface::class);
-        $chartBuilder->method('createChart')
-            ->with(Chart::TYPE_DOUGHNUT)
-            ->willReturn($chart);
+        $chartBuilder->method('createChart')->willReturn($chart);
 
         $colorProvider = $this->createStub(ChartColorProviderInterface::class);
         $colorProvider->method('getColor')

@@ -30,7 +30,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set up PHP configuration directory
 ENV PHP_INI_SCAN_DIR="$PHP_INI_DIR/conf.d:$PHP_INI_DIR/app.conf.d"
 
-# Copy PHP configuration, wait-for-it script, and entrypoint script
+# Copy PHP configuration and entrypoint script
 COPY --link docker/php/conf.d/10-app.ini $PHP_INI_DIR/app.conf.d/
 COPY --link docker/php/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 

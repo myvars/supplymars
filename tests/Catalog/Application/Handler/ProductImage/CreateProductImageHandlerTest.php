@@ -5,6 +5,7 @@ namespace App\Tests\Catalog\Application\Handler\ProductImage;
 use App\Catalog\Application\Command\ProductImage\CreateProductImage;
 use App\Catalog\Application\Handler\ProductImage\CreateProductImageHandler;
 use App\Catalog\Domain\Repository\ProductRepository;
+use App\Shared\Infrastructure\FileStorage\UploadHelper;
 use App\Tests\Shared\Factory\ProductFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -18,11 +19,14 @@ final class CreateProductImageHandlerTest extends KernelTestCase
 
     private ProductRepository $products;
 
+    private UploadHelper $uploadHelper;
+
     protected function setUp(): void
     {
         self::bootKernel();
         $this->handler = self::getContainer()->get(CreateProductImageHandler::class);
         $this->products = self::getContainer()->get(ProductRepository::class);
+        $this->uploadHelper = self::getContainer()->get(UploadHelper::class);
     }
 
     private function validImage(string $name = 'dummy-image.jpg'): UploadedFile
@@ -59,6 +63,11 @@ final class CreateProductImageHandlerTest extends KernelTestCase
 
         self::assertTrue($result->ok);
         self::assertStringContainsString('1 image', $result->message);
+
+        $reloaded = $this->products->getByPublicId($product->getPublicId());
+        foreach ($reloaded->getProductImages() as $image) {
+            $this->uploadHelper->deleteFile('uploads/products/' . $image->getImageName());
+        }
     }
 
     public function testHandleAddsImageAndPersists(): void
@@ -78,5 +87,7 @@ final class CreateProductImageHandlerTest extends KernelTestCase
         $first = $productImages[0];
         self::assertSame($file->getMimeType(), $first->getImageMimeType());
         self::assertNotSame($file->getClientOriginalName(), $first->getImageName());
+
+        $this->uploadHelper->deleteFile('uploads/products/' . $first->getImageName());
     }
 }

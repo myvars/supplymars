@@ -55,7 +55,7 @@ final class PublicIdResolverTest extends TestCase
         $registry = $this->createStub(ManagerRegistry::class);
         $manager = $this->createStub(ObjectManager::class);
 
-        $registry->method('getManagerForClass')->with(\stdClass::class)->willReturn($manager);
+        $registry->method('getManagerForClass')->willReturn($manager);
 
         $resolver = new PublicIdResolver($registry);
 
@@ -73,8 +73,8 @@ final class PublicIdResolverTest extends TestCase
         $manager = $this->createStub(ObjectManager::class);
         $repo = $this->createMock(ObjectRepository::class);
 
-        $registry->method('getManagerForClass')->with(\stdClass::class)->willReturn($manager);
-        $manager->method('getRepository')->with(\stdClass::class)->willReturn($repo);
+        $registry->method('getManagerForClass')->willReturn($manager);
+        $manager->method('getRepository')->willReturn($repo);
 
         $repo->expects(self::once())
             ->method('findOneBy')
@@ -94,9 +94,9 @@ final class PublicIdResolverTest extends TestCase
         $manager = $this->createStub(ObjectManager::class);
         $repo = $this->createStub(ObjectRepository::class);
 
-        $registry->method('getManagerForClass')->with(\stdClass::class)->willReturn($manager);
-        $manager->method('getRepository')->with(\stdClass::class)->willReturn($repo);
-        $repo->method('findOneBy')->with(['publicId' => 'xyz'])->willReturn(null);
+        $registry->method('getManagerForClass')->willReturn($manager);
+        $manager->method('getRepository')->willReturn($repo);
+        $repo->method('findOneBy')->willReturn(null);
 
         $request = new Request([], [], ['id' => 'xyz']);
         $resolver = new PublicIdResolver($registry);

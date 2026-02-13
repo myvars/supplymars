@@ -14,15 +14,6 @@ enum MessageVisibility: string
             self::INTERNAL => 'Internal',
         };
     }
-
-    public function getColor(): string
-    {
-        return match ($this) {
-            self::PUBLIC => 'text-green-500',
-            self::INTERNAL => 'text-yellow-500',
-        };
-    }
-
     public function isInternal(): bool
     {
         return $this === self::INTERNAL;

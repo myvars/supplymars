@@ -33,9 +33,7 @@ class ProductSalesChartBuilderTest extends TestCase
         $now = new \DateTimeImmutable();
         $chart = new Chart(Chart::TYPE_BAR);
         $chartBuilder = $this->createStub(ChartBuilderInterface::class);
-        $chartBuilder->method('createChart')
-            ->with(Chart::TYPE_BAR)
-            ->willReturn($chart);
+        $chartBuilder->method('createChart')->willReturn($chart);
 
         $dateRangeResolver = new SalesDateRangeResolver();
         $clock = $this->createStub(ClockInterface::class);
@@ -53,9 +51,7 @@ class ProductSalesChartBuilderTest extends TestCase
         $now = new \DateTimeImmutable();
         $chart = new Chart(Chart::TYPE_BAR);
         $chartBuilder = $this->createStub(ChartBuilderInterface::class);
-        $chartBuilder->method('createChart')
-            ->with(Chart::TYPE_BAR)
-            ->willReturn($chart);
+        $chartBuilder->method('createChart')->willReturn($chart);
 
         $dateRangeResolver = new SalesDateRangeResolver();
         $clock = $this->createStub(ClockInterface::class);

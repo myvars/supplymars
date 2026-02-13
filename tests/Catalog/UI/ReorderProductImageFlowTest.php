@@ -2,6 +2,7 @@
 
 namespace App\Tests\Catalog\UI;
 
+use App\Shared\Infrastructure\FileStorage\UploadHelper;
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -73,5 +74,10 @@ final class ReorderProductImageFlowTest extends WebTestCase
 
         self::assertEquals($productImages[1]->getId(), $reordered[0]->getId());
         self::assertEquals($productImages[0]->getId(), $reordered[1]->getId());
+
+        $uploadHelper = self::getContainer()->get(UploadHelper::class);
+        foreach ($reordered as $image) {
+            $uploadHelper->deleteFile('uploads/products/' . $image->getImageName());
+        }
     }
 }

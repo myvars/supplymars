@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 @source "../../templates/**/*.html.twig";
-@source "../../src/**/*.php";
+@source "../../src/Shared/UI/Twig/Components/*.php";
 @source '../../vendor/tales-from-a-dev/flowbite-bundle/templates!**!*.html.twig';
 
 @custom-variant dark (&:is(.dark *));

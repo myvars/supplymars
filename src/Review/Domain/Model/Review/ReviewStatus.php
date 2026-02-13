@@ -47,14 +47,4 @@ enum ReviewStatus: string
             self::REJECTED => 4,
         };
     }
-
-    public function getColor(): string
-    {
-        return match ($this) {
-            self::PENDING => 'text-yellow-500',
-            self::PUBLISHED => 'text-green-500',
-            self::REJECTED => 'text-red-500',
-            self::HIDDEN => 'text-gray-500',
-        };
-    }
 }
