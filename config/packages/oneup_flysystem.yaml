@@ -3,11 +3,17 @@ oneup_flysystem:
         products_adapter:
             local:
                 location: '%kernel.project_dir%/public'
+        backups_adapter:
+            local:
+                location: '%kernel.project_dir%/var/backups'
 
     filesystems:
         products_fs:
             adapter: products_adapter
             mount: products_fs
+        backups_fs:
+            adapter: backups_adapter
+            mount: backups_fs
 
 when@prod:
     oneup_flysystem:
@@ -16,3 +22,8 @@ when@prod:
                 awss3v3:
                     client: Aws\S3\S3Client
                     bucket: '%env(AWS_S3_BUCKET)%'
+            backups_adapter:
+                awss3v3:
+                    client: Aws\S3\S3Client
+                    bucket: '%env(AWS_S3_BUCKET)%'
+                    prefix: backups

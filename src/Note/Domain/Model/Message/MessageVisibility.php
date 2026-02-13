@@ -14,6 +14,7 @@ enum MessageVisibility: string
             self::INTERNAL => 'Internal',
         };
     }
+
     public function isInternal(): bool
     {
         return $this === self::INTERNAL;

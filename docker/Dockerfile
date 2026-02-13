@@ -3,7 +3,7 @@ FROM php:8.5.2-fpm AS php-base
 
 # Install system dependencies for extensions
 RUN apt-get update && apt-get install -y \
-    git cron unzip procps \
+    git cron unzip procps default-mysql-client \
     libicu-dev libzip-dev zlib1g-dev \
     libjpeg62-turbo-dev libpng-dev libfreetype6-dev libwebp-dev libxpm-dev \
     libxslt1-dev \
