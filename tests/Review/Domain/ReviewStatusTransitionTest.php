@@ -3,90 +3,60 @@
 namespace App\Tests\Review\Domain;
 
 use App\Review\Domain\Model\Review\ReviewStatus;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ReviewStatusTransitionTest extends TestCase
 {
-    public function testPendingCanTransitionToPublished(): void
+    #[DataProvider('transitionProvider')]
+    public function testCanTransitionTo(ReviewStatus $from, ReviewStatus $to, bool $expected): void
     {
-        self::assertTrue(ReviewStatus::PENDING->canTransitionTo(ReviewStatus::PUBLISHED));
+        self::assertSame($expected, $from->canTransitionTo($to));
     }
 
-    public function testPendingCanTransitionToRejected(): void
+    /**
+     * @return iterable<string, array{ReviewStatus, ReviewStatus, bool}>
+     */
+    public static function transitionProvider(): iterable
     {
-        self::assertTrue(ReviewStatus::PENDING->canTransitionTo(ReviewStatus::REJECTED));
-    }
+        // PENDING → can transition to PUBLISHED or REJECTED only
+        yield 'PENDING → PUBLISHED' => [ReviewStatus::PENDING, ReviewStatus::PUBLISHED, true];
+        yield 'PENDING → REJECTED' => [ReviewStatus::PENDING, ReviewStatus::REJECTED, true];
+        yield 'PENDING → HIDDEN' => [ReviewStatus::PENDING, ReviewStatus::HIDDEN, false];
+        yield 'PENDING → PENDING' => [ReviewStatus::PENDING, ReviewStatus::PENDING, false];
 
-    public function testPendingCannotTransitionToHidden(): void
-    {
-        self::assertFalse(ReviewStatus::PENDING->canTransitionTo(ReviewStatus::HIDDEN));
-    }
+        // PUBLISHED → can transition to HIDDEN only
+        yield 'PUBLISHED → HIDDEN' => [ReviewStatus::PUBLISHED, ReviewStatus::HIDDEN, true];
+        yield 'PUBLISHED → REJECTED' => [ReviewStatus::PUBLISHED, ReviewStatus::REJECTED, false];
+        yield 'PUBLISHED → PENDING' => [ReviewStatus::PUBLISHED, ReviewStatus::PENDING, false];
+        yield 'PUBLISHED → PUBLISHED' => [ReviewStatus::PUBLISHED, ReviewStatus::PUBLISHED, false];
 
-    public function testPendingCannotTransitionToPending(): void
-    {
-        self::assertFalse(ReviewStatus::PENDING->canTransitionTo(ReviewStatus::PENDING));
-    }
+        // HIDDEN → can transition to PUBLISHED only
+        yield 'HIDDEN → PUBLISHED' => [ReviewStatus::HIDDEN, ReviewStatus::PUBLISHED, true];
+        yield 'HIDDEN → REJECTED' => [ReviewStatus::HIDDEN, ReviewStatus::REJECTED, false];
+        yield 'HIDDEN → PENDING' => [ReviewStatus::HIDDEN, ReviewStatus::PENDING, false];
 
-    public function testPublishedCanTransitionToHidden(): void
-    {
-        self::assertTrue(ReviewStatus::PUBLISHED->canTransitionTo(ReviewStatus::HIDDEN));
-    }
-
-    public function testPublishedCannotTransitionToRejected(): void
-    {
-        self::assertFalse(ReviewStatus::PUBLISHED->canTransitionTo(ReviewStatus::REJECTED));
-    }
-
-    public function testPublishedCannotTransitionToPending(): void
-    {
-        self::assertFalse(ReviewStatus::PUBLISHED->canTransitionTo(ReviewStatus::PENDING));
-    }
-
-    public function testPublishedCannotTransitionToPublished(): void
-    {
-        self::assertFalse(ReviewStatus::PUBLISHED->canTransitionTo(ReviewStatus::PUBLISHED));
-    }
-
-    public function testHiddenCanTransitionToPublished(): void
-    {
-        self::assertTrue(ReviewStatus::HIDDEN->canTransitionTo(ReviewStatus::PUBLISHED));
-    }
-
-    public function testHiddenCannotTransitionToRejected(): void
-    {
-        self::assertFalse(ReviewStatus::HIDDEN->canTransitionTo(ReviewStatus::REJECTED));
-    }
-
-    public function testHiddenCannotTransitionToPending(): void
-    {
-        self::assertFalse(ReviewStatus::HIDDEN->canTransitionTo(ReviewStatus::PENDING));
-    }
-
-    public function testRejectedCannotTransitionToAnyStatus(): void
-    {
+        // REJECTED → terminal state
         foreach (ReviewStatus::cases() as $status) {
-            self::assertFalse(ReviewStatus::REJECTED->canTransitionTo($status));
+            yield 'REJECTED → ' . $status->name => [ReviewStatus::REJECTED, $status, false];
         }
     }
 
-    public function testAllowEditForPending(): void
+    #[DataProvider('allowEditProvider')]
+    public function testAllowEdit(ReviewStatus $status, bool $expected): void
     {
-        self::assertTrue(ReviewStatus::PENDING->allowEdit());
+        self::assertSame($expected, $status->allowEdit());
     }
 
-    public function testAllowEditForPublished(): void
+    /**
+     * @return iterable<string, array{ReviewStatus, bool}>
+     */
+    public static function allowEditProvider(): iterable
     {
-        self::assertTrue(ReviewStatus::PUBLISHED->allowEdit());
-    }
-
-    public function testDisallowEditForRejected(): void
-    {
-        self::assertFalse(ReviewStatus::REJECTED->allowEdit());
-    }
-
-    public function testDisallowEditForHidden(): void
-    {
-        self::assertFalse(ReviewStatus::HIDDEN->allowEdit());
+        yield 'PENDING' => [ReviewStatus::PENDING, true];
+        yield 'PUBLISHED' => [ReviewStatus::PUBLISHED, true];
+        yield 'REJECTED' => [ReviewStatus::REJECTED, false];
+        yield 'HIDDEN' => [ReviewStatus::HIDDEN, false];
     }
 
     public function testGetLevelOrdering(): void

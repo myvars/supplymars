@@ -7,6 +7,7 @@ use App\Order\Domain\Repository\OrderRepository;
 use App\Purchasing\Application\Service\OrderAllocator;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Infrastructure\Security\DefaultUserAuthenticator;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Attribute\Option;
@@ -26,6 +27,7 @@ readonly class BuildPOsCommand
         private OrderAllocator $orderAllocator,
         private DefaultUserAuthenticator $defaultUserAuthenticator,
         private FlusherInterface $flusher,
+        private LoggerInterface $logger,
     ) {
     }
 
@@ -67,34 +69,44 @@ readonly class BuildPOsCommand
         $posCreated = 0;
         $itemsAllocated = 0;
         $processedIds = [];
+        $failed = 0;
 
         foreach ($customerOrders as $customerOrder) {
             if (!$customerOrder instanceof CustomerOrder) {
                 continue;
             }
 
-            $poCountBefore = $customerOrder->getPurchaseOrders()->count();
+            try {
+                $poCountBefore = $customerOrder->getPurchaseOrders()->count();
 
-            if (!$dryRun) {
-                $this->orderAllocator->process($customerOrder);
+                if (!$dryRun) {
+                    $this->orderAllocator->process($customerOrder);
+                }
+
+                $poCountAfter = $customerOrder->getPurchaseOrders()->count();
+                $newPosCount = $poCountAfter - $poCountBefore;
+                $posCreated += $newPosCount;
+
+                // Count allocated items across all new POs
+                foreach ($customerOrder->getPurchaseOrders() as $po) {
+                    $itemsAllocated += $po->getPurchaseOrderItems()->count();
+                }
+
+                $processedIds[] = sprintf(
+                    'Order #%d: %d PO(s)',
+                    $customerOrder->getId(),
+                    $newPosCount
+                );
+
+                ++$processed;
+            } catch (\Throwable $throwable) {
+                ++$failed;
+                $this->logger->error('Failed to process customer order {id}', [
+                    'id' => $customerOrder->getId(),
+                    'error' => $throwable->getMessage(),
+                ]);
             }
 
-            $poCountAfter = $customerOrder->getPurchaseOrders()->count();
-            $newPosCount = $poCountAfter - $poCountBefore;
-            $posCreated += $newPosCount;
-
-            // Count allocated items across all new POs
-            foreach ($customerOrder->getPurchaseOrders() as $po) {
-                $itemsAllocated += $po->getPurchaseOrderItems()->count();
-            }
-
-            $processedIds[] = sprintf(
-                'Order #%d: %d PO(s)',
-                $customerOrder->getId(),
-                $newPosCount
-            );
-
-            ++$processed;
             $progress->advance();
         }
 
@@ -104,6 +116,10 @@ readonly class BuildPOsCommand
 
         $progress->finish();
         $io->newLine(2);
+
+        if ($failed > 0) {
+            $io->warning(sprintf('%d order(s) failed — see logs for details.', $failed));
+        }
 
         $io->success(sprintf(
             '%sProcessed %d customer orders. Created %d PO(s), allocated %d item(s).',
@@ -118,7 +134,7 @@ readonly class BuildPOsCommand
             $io->listing($processedIds);
         }
 
-        return Command::SUCCESS;
+        return $failed > 0 ? Command::FAILURE : Command::SUCCESS;
     }
 
     /**

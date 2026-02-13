@@ -2,6 +2,22 @@
 
 This document lists all custom console commands in SupplyMars. Most of these run on cron to simulate e-commerce activity - creating orders, processing shipments, and fluctuating stock levels.
 
+## Error Handling
+
+All simulation and reporting commands that process entities in loops follow a consistent error handling pattern (see [ADR-003](adr/003-simulation-first-design.md)):
+
+- **Continue on failure:** If an individual item fails, the command catches the exception, logs it, and continues to the next item. A single failure does not halt the entire batch.
+- **Failure logging:** Each failure is logged with structured context (entity ID, error message) via Monolog.
+- **Console warning:** After the loop completes, if any items failed, a warning is displayed: `N item(s) failed — see logs for details.`
+- **Exit codes:**
+  - `0` (`Command::SUCCESS`) — all items processed successfully.
+  - `1` (`Command::FAILURE`) — one or more items failed during processing.
+  - `2` (`Command::INVALID`) — invalid input arguments.
+
+This applies to: `app:create-customer-orders`, `app:build-purchase-orders`, `app:accept-purchase-orders`, `app:ship-purchase-order-items`, `app:deliver-purchase-order-items`, `app:refund-purchase-orders`, `app:update-supplier-stock`, `app:generate-reviews`, `app:calculate-order-sales`, `app:calculate-customer-sales`, `app:calculate-product-sales`.
+
+---
+
 ## Order Context
 
 ### app:create-customer-orders

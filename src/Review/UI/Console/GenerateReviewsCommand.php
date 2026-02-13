@@ -56,6 +56,10 @@ final readonly class GenerateReviewsCommand
             $this->flusher->flush();
         }
 
+        if ($result['failed'] > 0) {
+            $io->warning(sprintf('%d review(s) failed — see logs for details.', $result['failed']));
+        }
+
         $io->success(sprintf(
             '%s%d reviews generated.',
             $dryRun ? '[DRY RUN] ' : '',
@@ -71,6 +75,6 @@ final readonly class GenerateReviewsCommand
             }
         }
 
-        return Command::SUCCESS;
+        return $result['failed'] > 0 ? Command::FAILURE : Command::SUCCESS;
     }
 }

@@ -20,6 +20,8 @@ use App\Order\Domain\Repository\OrderRepository;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Domain\ValueObject\ShippingMethod;
 use App\Shared\Infrastructure\Security\DefaultUserAuthenticator;
+use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Attribute\Option;
@@ -49,6 +51,8 @@ readonly class CreateCustomerOrdersCommand
         private CreateOrderItemHandler $createOrderItemHandler,
         private DefaultUserAuthenticator $defaultUserAuthenticator,
         private FlusherInterface $flusher,
+        private EntityManagerInterface $entityManager,
+        private LoggerInterface $logger,
     ) {
     }
 
@@ -92,6 +96,7 @@ readonly class CreateCustomerOrdersCommand
 
         $processed = 0;
         $processedIds = [];
+        $failed = 0;
 
         for ($i = 0; $i < $orderCount; ++$i) {
             if (!$skipTiming) {
@@ -105,19 +110,34 @@ readonly class CreateCustomerOrdersCommand
                 continue;
             }
 
-            $user = $this->getOrCreateUser();
-            $this->createBillingAddress($user);
+            try {
+                $user = $this->getOrCreateUser();
+                $this->createBillingAddress($user);
 
-            $order = $this->placeCustomerOrder($user);
-            $this->addCustomerOrderItems($order);
+                $order = $this->placeCustomerOrder($user);
+                $this->addCustomerOrderItems($order);
 
-            $processedIds[] = (string) $order->getId();
-            ++$processed;
+                $processedIds[] = (string) $order->getId();
+                ++$processed;
+            } catch (\Throwable $throwable) {
+                ++$failed;
+                $this->logger->error('Failed to create customer order (iteration {i})', [
+                    'i' => $i + 1,
+                    'error' => $throwable->getMessage(),
+                ]);
+                $this->entityManager->clear();
+            }
+
             $progress->advance();
         }
 
         $progress->finish();
         $io->newLine(2);
+
+        if ($failed > 0) {
+            $io->warning(sprintf('%d order(s) failed — see logs for details.', $failed));
+        }
+
         $io->success(sprintf(
             '%sCreated %d customer orders.',
             $dryRun ? '[DRY RUN] ' : '',
@@ -129,7 +149,7 @@ readonly class CreateCustomerOrdersCommand
             $io->listing($processedIds);
         }
 
-        return Command::SUCCESS;
+        return $failed > 0 ? Command::FAILURE : Command::SUCCESS;
     }
 
     private function getOrCreateUser(): User

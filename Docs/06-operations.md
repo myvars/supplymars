@@ -118,10 +118,10 @@ Located at `docker/php/cron/prod-crontab`:
 ```cron
 # Order simulation
 */5  * * * * app:create-customer-orders 2 --random
-*/30 * * * * app:build-purchase-orders 20
 
-# Purchase order workflow
-*/15 * * * * app:accept-purchase-orders 20
+# Purchase order workflow (build before accept)
+*/15       * * * * app:build-purchase-orders 20
+1,16,31,46 * * * * app:accept-purchase-orders 20
 0    * * * * app:ship-purchase-order-items 100
 0    * * * * app:deliver-purchase-order-items 100
 
@@ -154,8 +154,8 @@ Located at `docker/php/cron/prod-crontab`:
 | Schedule | Command | Purpose |
 |----------|---------|---------|
 | */5 min | `app:create-customer-orders 2` | Continuous order flow |
-| */30 min | `app:build-purchase-orders 20` | Allocate pending orders |
-| */15 min | `app:accept-purchase-orders 20` | Simulate supplier responses |
+| */15 min | `app:build-purchase-orders 20` | Allocate pending orders |
+| :01,:16,:31,:46 | `app:accept-purchase-orders 20` | Simulate supplier responses (1 min after build) |
 | Hourly | `app:ship-purchase-order-items 100` | Progress to shipped |
 | Hourly | `app:deliver-purchase-order-items 100` | Complete deliveries |
 | */15 min | `app:update-supplier-stock 20` | Stock level fluctuation |
@@ -166,6 +166,17 @@ Located at `docker/php/cron/prod-crontab`:
 | Daily 00:17 | `app:calculate-customer-sales-summary` | Customer summaries |
 | */20,50 | `app:calculate-customer-sales 1 0` | Hourly customer updates |
 | On demand | `app:generate-reviews {count}` | Generate fake reviews for testing |
+
+### Error Handling
+
+All cron commands use a continue-on-failure pattern (see [ADR-003](adr/003-simulation-first-design.md)). When an individual item fails during processing:
+
+1. The exception is caught and logged with structured context (entity ID, error message)
+2. Processing continues with the next item
+3. A summary warning is output: `N item(s) failed — see logs for details.`
+4. The command exits with code 1 (`Command::FAILURE`)
+
+This means a single database error or entity issue will not halt an entire batch. Operators should monitor for non-zero exit codes in cron output and review application logs for failure details.
 
 ## Workers / Consumers
 
@@ -351,10 +362,11 @@ This avoids expensive aggregations on every dashboard load.
 
 ### Monitoring Recommendations
 
-1. **Queue depth:** Alert if RabbitMQ queue exceeds threshold
-2. **Failed messages:** Alert on any failed messenger messages
-3. **Database size:** Monitor growth from simulation data
-4. **Response times:** Track slow queries and API latency
+1. **Cron exit codes:** Alert on non-zero exit codes from simulation/reporting commands (indicates partial failures — see [Error Handling](#error-handling) above)
+2. **Queue depth:** Alert if RabbitMQ queue exceeds threshold
+3. **Failed messages:** Alert on any failed messenger messages
+4. **Database size:** Monitor growth from simulation data
+5. **Response times:** Track slow queries and API latency
 
 ### Backup Strategy
 

@@ -76,6 +76,7 @@ SupplyMars is a **modular monolith** - bounded contexts are self-contained modul
 - **[06-operations.md](06-operations.md)** - Deployment, cron jobs, workers, data simulation
 - **[07-testing.md](07-testing.md)** - Test strategy, factories, running tests
 - **[08-security.md](08-security.md)** - Authentication, authorization, safety assumptions
+- **[11-runbook.md](11-runbook.md)** - Production runbook: deployment, backup/restore, troubleshooting
 
 ### Reference
 - **[09-cli-reference.md](09-cli-reference.md)** - All console commands with examples
@@ -95,6 +96,7 @@ SupplyMars is a **modular monolith** - bounded contexts are self-contained modul
 - **[adr/006-formflow-controller-pattern.md](adr/006-formflow-controller-pattern.md)** - FormFlow abstraction for thin controllers
 - **[adr/007-turbo-frame-modal-architecture.md](adr/007-turbo-frame-modal-architecture.md)** - Turbo Frames with native dialog modals
 - **[adr/008-server-driven-ui-architecture.md](adr/008-server-driven-ui-architecture.md)** - Server-driven UI instead of JavaScript SPA
+- **[adr/009-support-ticket-system.md](adr/009-support-ticket-system.md)** - Pool-based support ticket system with conversation threads
 
 ---
 

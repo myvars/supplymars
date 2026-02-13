@@ -10,6 +10,7 @@ use App\Purchasing\Domain\Repository\PurchaseOrderRepository;
 use App\Purchasing\Domain\Repository\SupplierRepository;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Infrastructure\Security\DefaultUserAuthenticator;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Attribute\Option;
@@ -31,6 +32,7 @@ readonly class AcceptPOsCommand
         private PurchaseOrderRepository $purchaseOrders,
         private DefaultUserAuthenticator $defaultUserAuthenticator,
         private FlusherInterface $flusher,
+        private LoggerInterface $logger,
     ) {
     }
 
@@ -81,26 +83,36 @@ readonly class AcceptPOsCommand
         $accepted = 0;
         $rejected = 0;
         $processedIds = [];
+        $failed = 0;
 
         foreach ($purchaseOrders as $purchaseOrder) {
             if (!$purchaseOrder instanceof PurchaseOrder) {
                 continue;
             }
 
-            $status = $this->simulateStatus();
-            if ($status === PurchaseOrderStatus::ACCEPTED) {
-                ++$accepted;
-            } else {
-                ++$rejected;
-            }
-
-            if (!$dryRun) {
-                foreach ($purchaseOrder->getPurchaseOrderItems() as $purchaseOrderItem) {
-                    $purchaseOrderItem->updateItemStatus(newStatus: $status);
+            try {
+                $status = $this->simulateStatus();
+                if ($status === PurchaseOrderStatus::ACCEPTED) {
+                    ++$accepted;
+                } else {
+                    ++$rejected;
                 }
+
+                if (!$dryRun) {
+                    foreach ($purchaseOrder->getPurchaseOrderItems() as $purchaseOrderItem) {
+                        $purchaseOrderItem->updateItemStatus(newStatus: $status);
+                    }
+                }
+
+                $processedIds[] = $purchaseOrder->getId() . ' : ' . $status->value;
+            } catch (\Throwable $throwable) {
+                ++$failed;
+                $this->logger->error('Failed to process purchase order {id}', [
+                    'id' => $purchaseOrder->getId(),
+                    'error' => $throwable->getMessage(),
+                ]);
             }
 
-            $processedIds[] = $purchaseOrder->getId() . ' : ' . $status->value;
             $progress->advance();
         }
 
@@ -110,6 +122,10 @@ readonly class AcceptPOsCommand
 
         $progress->finish();
         $io->newLine(2);
+
+        if ($failed > 0) {
+            $io->warning(sprintf('%d purchase order(s) failed — see logs for details.', $failed));
+        }
 
         $io->success(sprintf(
             '%sProcessed %d purchase orders: %d accepted, %d rejected.',
@@ -124,7 +140,7 @@ readonly class AcceptPOsCommand
             $io->listing($processedIds);
         }
 
-        return Command::SUCCESS;
+        return $failed > 0 ? Command::FAILURE : Command::SUCCESS;
     }
 
     private function resolveSupplier(?int $supplierId): ?Supplier

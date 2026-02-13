@@ -20,6 +20,11 @@ class ProductSalesDoctrineRepository extends ServiceEntityRepository implements 
         parent::__construct($registry, ProductSales::class);
     }
 
+    public function add(ProductSales $productSales): void
+    {
+        $this->getEntityManager()->persist($productSales);
+    }
+
     /**
      * @return array<int, array<string, mixed>>
      */

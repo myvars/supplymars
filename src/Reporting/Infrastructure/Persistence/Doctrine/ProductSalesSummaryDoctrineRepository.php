@@ -21,6 +21,11 @@ class ProductSalesSummaryDoctrineRepository extends ServiceEntityRepository impl
         parent::__construct($registry, ProductSalesSummary::class);
     }
 
+    public function add(ProductSalesSummary $productSalesSummary): void
+    {
+        $this->getEntityManager()->persist($productSalesSummary);
+    }
+
     /**
      * @return array<string, mixed>|null
      */

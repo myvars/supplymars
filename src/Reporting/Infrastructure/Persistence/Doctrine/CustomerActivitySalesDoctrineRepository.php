@@ -17,6 +17,11 @@ class CustomerActivitySalesDoctrineRepository extends ServiceEntityRepository im
         parent::__construct($registry, CustomerActivitySales::class);
     }
 
+    public function add(CustomerActivitySales $customerActivitySales): void
+    {
+        $this->getEntityManager()->persist($customerActivitySales);
+    }
+
     public function deleteByDate(string $date): void
     {
         $this->createQueryBuilder('cas')

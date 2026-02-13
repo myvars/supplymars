@@ -2,17 +2,23 @@
 
 namespace App\Reporting\Application\Handler;
 
-use App\Customer\Domain\Model\User\User;
-use App\Order\Domain\Model\Order\CustomerOrder;
+use App\Customer\Infrastructure\Persistence\Doctrine\UserDoctrineRepository;
+use App\Order\Infrastructure\Persistence\Doctrine\CustomerOrderDoctrineRepository;
 use App\Reporting\Domain\Model\SalesType\CustomerActivitySales;
 use App\Reporting\Domain\Model\SalesType\CustomerSales;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Reporting\Domain\Repository\CustomerActivitySalesRepository;
+use App\Reporting\Domain\Repository\CustomerSalesRepository;
+use App\Shared\Application\FlusherInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final readonly class CalculateCustomerSalesHandler
 {
     public function __construct(
-        private EntityManagerInterface $em,
+        private CustomerSalesRepository $customerSalesRepository,
+        private CustomerActivitySalesRepository $customerActivitySalesRepository,
+        private CustomerOrderDoctrineRepository $orderRepository,
+        private UserDoctrineRepository $userRepository,
+        private FlusherInterface $flusher,
         private ValidatorInterface $validator,
     ) {
     }
@@ -27,11 +33,11 @@ final readonly class CalculateCustomerSalesHandler
 
     private function processCustomerSales(string $date, bool $dryRun = false): int
     {
-        $sales = $this->em->getRepository(CustomerOrder::class)
+        $sales = $this->orderRepository
             ->findCustomerSalesByDate(new \DateTime($date), new \DateTime($date)->modify('+ 1 day'));
 
         if (!$dryRun) {
-            $this->em->getRepository(CustomerSales::class)->deleteByDate($date);
+            $this->customerSalesRepository->deleteByDate($date);
         }
 
         $processed = 0;
@@ -50,14 +56,14 @@ final readonly class CalculateCustomerSalesHandler
             }
 
             if (!$dryRun) {
-                $this->em->persist($customerSales);
+                $this->customerSalesRepository->add($customerSales);
             }
 
             ++$processed;
         }
 
         if (!$dryRun) {
-            $this->em->flush();
+            $this->flusher->flush();
         }
 
         return $processed;
@@ -68,14 +74,14 @@ final readonly class CalculateCustomerSalesHandler
         $startDate = new \DateTime($date);
         $endDate = new \DateTime($date)->modify('+ 1 day');
 
-        $activity = $this->em->getRepository(CustomerOrder::class)
+        $activity = $this->orderRepository
             ->findCustomerActivityByDate($startDate, $endDate);
 
         if (!$dryRun) {
-            $this->em->getRepository(CustomerActivitySales::class)->deleteByDate($date);
+            $this->customerActivitySalesRepository->deleteByDate($date);
         }
 
-        $totalCustomers = $this->em->getRepository(User::class)->countNonStaffCustomers();
+        $totalCustomers = $this->userRepository->countNonStaffCustomers();
 
         $customerActivity = CustomerActivitySales::create(
             $date,
@@ -91,8 +97,8 @@ final readonly class CalculateCustomerSalesHandler
         }
 
         if (!$dryRun) {
-            $this->em->persist($customerActivity);
-            $this->em->flush();
+            $this->customerActivitySalesRepository->add($customerActivity);
+            $this->flusher->flush();
         }
 
         return 1;

@@ -14,6 +14,7 @@ use App\Order\Domain\Repository\OrderRepository;
 use App\Review\Domain\Model\Review\ProductReview;
 use App\Review\Domain\Repository\ReviewRepository;
 use App\Review\Infrastructure\Persistence\Doctrine\ReviewDoctrineRepository;
+use Psr\Log\LoggerInterface;
 
 class ReviewGenerator
 {
@@ -58,11 +59,12 @@ class ReviewGenerator
         private readonly UserRepository $users,
         private readonly ProductRepository $products,
         private readonly OrderRepository $orders,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
     /**
-     * @return array{count: int, ids: array<int, string>}
+     * @return array{count: int, failed: int, ids: array<int, string>}
      */
     public function generate(int $maxCount, ?int $productId = null, bool $dryRun = false): array
     {
@@ -71,44 +73,54 @@ class ReviewGenerator
 
         $created = 0;
         $createdIds = [];
+        $failed = 0;
         foreach ($eligibleItems as $item) {
-            $customer = $this->users->get(UserId::fromInt((int) $item['customer_id']));
-            $product = $this->products->get(ProductId::fromInt((int) $item['product_id']));
-            $order = $this->orders->get(OrderId::fromInt((int) $item['order_id']));
-            if (!$customer instanceof User) {
-                continue;
-            }
+            try {
+                $customer = $this->users->get(UserId::fromInt((int) $item['customer_id']));
+                $product = $this->products->get(ProductId::fromInt((int) $item['product_id']));
+                $order = $this->orders->get(OrderId::fromInt((int) $item['order_id']));
+                if (!$customer instanceof User) {
+                    continue;
+                }
 
-            if (!$product instanceof Product) {
-                continue;
-            }
+                if (!$product instanceof Product) {
+                    continue;
+                }
 
-            if (!$order instanceof CustomerOrder) {
-                continue;
-            }
+                if (!$order instanceof CustomerOrder) {
+                    continue;
+                }
 
-            if ($dryRun) {
+                if ($dryRun) {
+                    ++$created;
+                    continue;
+                }
+
+                $rating = $this->generateRating();
+
+                $review = ProductReview::create(
+                    customer: $customer,
+                    product: $product,
+                    customerOrder: $order,
+                    rating: $rating,
+                    title: $this->generateTitle($rating),
+                    body: $this->generateBody($rating),
+                );
+
+                $this->reviews->add($review);
                 ++$created;
-                continue;
+                $createdIds[] = (string) $review->getPublicId();
+            } catch (\Throwable $throwable) {
+                ++$failed;
+                $this->logger->error('Failed to generate review for order {orderId}', [
+                    'orderId' => $item['order_id'] ?? null,
+                    'productId' => $item['product_id'] ?? null,
+                    'error' => $throwable->getMessage(),
+                ]);
             }
-
-            $rating = $this->generateRating();
-
-            $review = ProductReview::create(
-                customer: $customer,
-                product: $product,
-                customerOrder: $order,
-                rating: $rating,
-                title: $this->generateTitle($rating),
-                body: $this->generateBody($rating),
-            );
-
-            $this->reviews->add($review);
-            ++$created;
-            $createdIds[] = (string) $review->getPublicId();
         }
 
-        return ['count' => $created, 'ids' => $createdIds];
+        return ['count' => $created, 'failed' => $failed, 'ids' => $createdIds];
     }
 
     private function generateRating(): int

@@ -11,6 +11,7 @@ use App\Purchasing\Domain\Repository\PurchaseOrderItemRepository;
 use App\Purchasing\Domain\Repository\SupplierRepository;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Infrastructure\Security\DefaultUserAuthenticator;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Attribute\Option;
@@ -31,6 +32,7 @@ readonly class DeliverPOItemsCommand
         private ProcessingSimulator $processingSimulator,
         private DefaultUserAuthenticator $defaultUserAuthenticator,
         private FlusherInterface $flusher,
+        private LoggerInterface $logger,
     ) {
     }
 
@@ -84,23 +86,32 @@ readonly class DeliverPOItemsCommand
         $delivered = 0;
         $skipped = 0;
         $processedIds = [];
+        $failed = 0;
 
         foreach ($purchaseOrderItems as $purchaseOrderItem) {
             if (!$purchaseOrderItem instanceof PurchaseOrderItem) {
                 continue;
             }
 
-            $canDeliver = $skipTiming || $this->processingSimulator->canDeliver($purchaseOrderItem);
+            try {
+                $canDeliver = $skipTiming || $this->processingSimulator->canDeliver($purchaseOrderItem);
 
-            if ($canDeliver) {
-                if (!$dryRun) {
-                    $purchaseOrderItem->updateItemStatus(newStatus: PurchaseOrderStatus::DELIVERED);
+                if ($canDeliver) {
+                    if (!$dryRun) {
+                        $purchaseOrderItem->updateItemStatus(newStatus: PurchaseOrderStatus::DELIVERED);
+                    }
+
+                    $processedIds[] = $purchaseOrderItem->getId() . ' : DELIVERED';
+                    ++$delivered;
+                } else {
+                    ++$skipped;
                 }
-
-                $processedIds[] = $purchaseOrderItem->getId() . ' : DELIVERED';
-                ++$delivered;
-            } else {
-                ++$skipped;
+            } catch (\Throwable $throwable) {
+                ++$failed;
+                $this->logger->error('Failed to deliver PO item {id}', [
+                    'id' => $purchaseOrderItem->getId(),
+                    'error' => $throwable->getMessage(),
+                ]);
             }
 
             $progress->advance();
@@ -112,6 +123,10 @@ readonly class DeliverPOItemsCommand
 
         $progress->finish();
         $io->newLine(2);
+
+        if ($failed > 0) {
+            $io->warning(sprintf('%d PO item(s) failed — see logs for details.', $failed));
+        }
 
         $io->success(sprintf(
             '%sProcessed %d PO items: %d delivered, %d skipped.',
@@ -126,7 +141,7 @@ readonly class DeliverPOItemsCommand
             $io->listing($processedIds);
         }
 
-        return Command::SUCCESS;
+        return $failed > 0 ? Command::FAILURE : Command::SUCCESS;
     }
 
     private function resolveSupplier(?int $supplierId): ?Supplier

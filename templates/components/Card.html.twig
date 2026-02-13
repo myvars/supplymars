@@ -19,6 +19,7 @@
            class="absolute z-10 -top-2 -right-2 p-1.5 text-yellow-500 rounded-full shadow-md transition-all duration-200 hover:scale-110 hover:shadow-lg {{ this.getEditLinkClasses }}"
            data-turbo-frame="modal"
            data-turbo-prefetch="false"
+           aria-label="Edit{{ title ? ' ' ~ title : '' }}"
         >
             <twig:ux:icon name="{{ editIcon }}" class="h-6 w-6 p-0.5"/>
         </a>

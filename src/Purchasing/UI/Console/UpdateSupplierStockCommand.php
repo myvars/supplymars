@@ -9,6 +9,7 @@ use App\Purchasing\Domain\Repository\SupplierProductRepository;
 use App\Purchasing\Domain\Repository\SupplierRepository;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Infrastructure\Security\DefaultUserAuthenticator;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Attribute\Option;
@@ -34,6 +35,7 @@ readonly class UpdateSupplierStockCommand
         private SupplierProductRepository $supplierProducts,
         private DefaultUserAuthenticator $defaultUserAuthenticator,
         private FlusherInterface $flusher,
+        private LoggerInterface $logger,
     ) {
     }
 
@@ -85,44 +87,53 @@ readonly class UpdateSupplierStockCommand
         $stockIncreased = 0;
         $stockDecreased = 0;
         $processedItems = [];
+        $failed = 0;
 
         foreach ($supplierProducts as $supplierProduct) {
             if (!$supplierProduct instanceof SupplierProduct) {
                 continue;
             }
 
-            $previousStock = $supplierProduct->getStock();
-            $previousCost = $supplierProduct->getCost();
+            try {
+                $previousStock = $supplierProduct->getStock();
+                $previousCost = $supplierProduct->getCost();
 
-            if (!$dryRun) {
-                $this->realWorldStockLevelSimulator($supplierProduct);
-            } else {
-                // Simulate what would happen for dry-run reporting
-                $wouldReplenish = $supplierProduct->getStock() <= self::STOCK_REPLENISH_LEVEL;
-                if ($wouldReplenish) {
-                    ++$stockIncreased;
+                if (!$dryRun) {
+                    $this->realWorldStockLevelSimulator($supplierProduct);
                 } else {
-                    ++$stockDecreased;
+                    // Simulate what would happen for dry-run reporting
+                    $wouldReplenish = $supplierProduct->getStock() <= self::STOCK_REPLENISH_LEVEL;
+                    if ($wouldReplenish) {
+                        ++$stockIncreased;
+                    } else {
+                        ++$stockDecreased;
+                    }
                 }
-            }
 
-            if (!$dryRun) {
-                if ($supplierProduct->getStock() > $previousStock) {
-                    ++$stockIncreased;
-                } elseif ($supplierProduct->getStock() < $previousStock) {
-                    ++$stockDecreased;
+                if (!$dryRun) {
+                    if ($supplierProduct->getStock() > $previousStock) {
+                        ++$stockIncreased;
+                    } elseif ($supplierProduct->getStock() < $previousStock) {
+                        ++$stockDecreased;
+                    }
                 }
-            }
 
-            $processedItems[] = sprintf(
-                '%s : stock %d (%d) : cost %s (%s)',
-                $supplierProduct->getProductCode(),
-                $dryRun ? $previousStock : $supplierProduct->getStock(),
-                $previousStock,
-                $dryRun ? $previousCost : $supplierProduct->getCost(),
-                $previousCost
-            );
-            ++$processed;
+                $processedItems[] = sprintf(
+                    '%s : stock %d (%d) : cost %s (%s)',
+                    $supplierProduct->getProductCode(),
+                    $dryRun ? $previousStock : $supplierProduct->getStock(),
+                    $previousStock,
+                    $dryRun ? $previousCost : $supplierProduct->getCost(),
+                    $previousCost
+                );
+                ++$processed;
+            } catch (\Throwable $throwable) {
+                ++$failed;
+                $this->logger->error('Failed to update supplier product {id}', [
+                    'id' => $supplierProduct->getId(),
+                    'error' => $throwable->getMessage(),
+                ]);
+            }
 
             $progress->advance();
         }
@@ -133,6 +144,10 @@ readonly class UpdateSupplierStockCommand
 
         $progress->finish();
         $io->newLine(2);
+
+        if ($failed > 0) {
+            $io->warning(sprintf('%d supplier product(s) failed — see logs for details.', $failed));
+        }
 
         $io->success(sprintf(
             '%sProcessed %d supplier products: %d stock increased, %d stock decreased.',
@@ -147,7 +162,7 @@ readonly class UpdateSupplierStockCommand
             $io->listing($processedItems);
         }
 
-        return Command::SUCCESS;
+        return $failed > 0 ? Command::FAILURE : Command::SUCCESS;
     }
 
     private function resolveSupplier(?int $supplierId): ?Supplier

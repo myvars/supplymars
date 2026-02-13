@@ -19,6 +19,11 @@ class OrderSalesDoctrineRepository extends ServiceEntityRepository implements Or
         parent::__construct($registry, OrderSales::class);
     }
 
+    public function add(OrderSales $orderSales): void
+    {
+        $this->getEntityManager()->persist($orderSales);
+    }
+
     /**
      * @return array<int, array<string, mixed>>
      */

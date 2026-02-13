@@ -2,21 +2,29 @@
 
 namespace App\Reporting\Application\Handler;
 
-use App\Customer\Domain\Model\User\User;
-use App\Order\Domain\Model\Order\CustomerOrder;
+use App\Customer\Infrastructure\Persistence\Doctrine\UserDoctrineRepository;
+use App\Order\Infrastructure\Persistence\Doctrine\CustomerOrderDoctrineRepository;
 use App\Reporting\Domain\Metric\CustomerSegment;
 use App\Reporting\Domain\Metric\SalesDuration;
 use App\Reporting\Domain\Model\SalesType\CustomerGeographicSummary;
 use App\Reporting\Domain\Model\SalesType\CustomerSalesSummary;
 use App\Reporting\Domain\Model\SalesType\CustomerSalesType;
 use App\Reporting\Domain\Model\SalesType\CustomerSegmentSummary;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Reporting\Domain\Repository\CustomerGeographicSummaryRepository;
+use App\Reporting\Domain\Repository\CustomerSalesSummaryRepository;
+use App\Reporting\Domain\Repository\CustomerSegmentSummaryRepository;
+use App\Shared\Application\FlusherInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final readonly class CalculateCustomerSalesSummaryHandler
 {
     public function __construct(
-        private EntityManagerInterface $em,
+        private CustomerSalesSummaryRepository $customerSalesSummaryRepository,
+        private CustomerGeographicSummaryRepository $customerGeographicSummaryRepository,
+        private CustomerSegmentSummaryRepository $customerSegmentSummaryRepository,
+        private CustomerOrderDoctrineRepository $orderRepository,
+        private UserDoctrineRepository $userRepository,
+        private FlusherInterface $flusher,
         private ValidatorInterface $validator,
     ) {
     }
@@ -43,21 +51,20 @@ final readonly class CalculateCustomerSalesSummaryHandler
         $startDate = new \DateTime($customerSalesType->getStartDate());
         $endDate = new \DateTime($customerSalesType->getEndDate());
 
-        $orderRepo = $this->em->getRepository(CustomerOrder::class);
-        $activity = $orderRepo->findCustomerActivityByDate($startDate, $endDate);
+        $activity = $this->orderRepository->findCustomerActivityByDate($startDate, $endDate);
 
-        $totalCustomers = $this->em->getRepository(User::class)->countNonStaffCustomers();
+        $totalCustomers = $this->userRepository->countNonStaffCustomers();
         $activeCustomers = (int) ($activity['activeCustomers'] ?? 0);
         $newCustomers = (int) ($activity['newCustomers'] ?? 0);
         $returningCustomers = (int) ($activity['returningCustomers'] ?? 0);
 
         // Calculate revenue metrics
-        $revenueData = $orderRepo->findRevenueMetrics($startDate, $endDate);
+        $revenueData = $this->orderRepository->findRevenueMetrics($startDate, $endDate);
         $totalRevenue = $revenueData['totalRevenue'] ?? '0.00';
         $averageAov = $revenueData['averageAov'] ?? '0.00';
 
         // Calculate CLV (lifetime revenue / total customers)
-        $lifetimeRevenue = $orderRepo->findLifetimeRevenue();
+        $lifetimeRevenue = $this->orderRepository->findLifetimeRevenue();
         $averageClv = $totalCustomers > 0
             ? bcdiv($lifetimeRevenue, (string) $totalCustomers, 2)
             : '0.00';
@@ -68,7 +75,7 @@ final readonly class CalculateCustomerSalesSummaryHandler
             : '0.00';
 
         // Review rate
-        $reviewRate = $orderRepo->findReviewRate($startDate, $endDate, $activeCustomers);
+        $reviewRate = $this->orderRepository->findReviewRate($startDate, $endDate, $activeCustomers);
 
         // Average orders per customer
         $averageOrdersPerCustomer = $activeCustomers > 0
@@ -97,9 +104,9 @@ final readonly class CalculateCustomerSalesSummaryHandler
         }
 
         if (!$dryRun) {
-            $this->em->getRepository(CustomerSalesSummary::class)->deleteByCustomerSalesType($customerSalesType);
-            $this->em->persist($summary);
-            $this->em->flush();
+            $this->customerSalesSummaryRepository->deleteByCustomerSalesType($customerSalesType);
+            $this->customerSalesSummaryRepository->add($summary);
+            $this->flusher->flush();
         }
 
         return 1;
@@ -110,11 +117,11 @@ final readonly class CalculateCustomerSalesSummaryHandler
         $startDate = new \DateTime($customerSalesType->getStartDate());
         $endDate = new \DateTime($customerSalesType->getEndDate());
 
-        $geoData = $this->em->getRepository(CustomerOrder::class)
+        $geoData = $this->orderRepository
             ->findCustomerGeographicSales($startDate, $endDate);
 
         if (!$dryRun) {
-            $this->em->getRepository(CustomerGeographicSummary::class)->deleteByCustomerSalesType($customerSalesType);
+            $this->customerGeographicSummaryRepository->deleteByCustomerSalesType($customerSalesType);
         }
 
         $dateString = $customerSalesType->getStartDate();
@@ -137,14 +144,14 @@ final readonly class CalculateCustomerSalesSummaryHandler
             }
 
             if (!$dryRun) {
-                $this->em->persist($summary);
+                $this->customerGeographicSummaryRepository->add($summary);
             }
 
             ++$processed;
         }
 
         if (!$dryRun) {
-            $this->em->flush();
+            $this->flusher->flush();
         }
 
         return $processed;
@@ -155,11 +162,11 @@ final readonly class CalculateCustomerSalesSummaryHandler
         $startDate = new \DateTime($customerSalesType->getStartDate());
         $endDate = new \DateTime($customerSalesType->getEndDate());
 
-        $segmentData = $this->em->getRepository(CustomerOrder::class)
+        $segmentData = $this->orderRepository
             ->findCustomerSegmentSales($startDate, $endDate);
 
         if (!$dryRun) {
-            $this->em->getRepository(CustomerSegmentSummary::class)->deleteByCustomerSalesType($customerSalesType);
+            $this->customerSegmentSummaryRepository->deleteByCustomerSalesType($customerSalesType);
         }
 
         $dateString = $customerSalesType->getStartDate();
@@ -188,14 +195,14 @@ final readonly class CalculateCustomerSalesSummaryHandler
             }
 
             if (!$dryRun) {
-                $this->em->persist($summary);
+                $this->customerSegmentSummaryRepository->add($summary);
             }
 
             ++$processed;
         }
 
         if (!$dryRun) {
-            $this->em->flush();
+            $this->flusher->flush();
         }
 
         return $processed;

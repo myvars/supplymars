@@ -3,6 +3,7 @@
 namespace App\Reporting\UI\Console;
 
 use App\Reporting\Application\Handler\CalculateProductSalesHandler;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Attribute\Option;
@@ -23,6 +24,7 @@ final readonly class CalculateProductSalesCommand
     public function __construct(
         private CalculateProductSalesHandler $productSalesCalculator,
         private CalculateProductSalesSummaryCommand $productSalesSummaryCommand,
+        private LoggerInterface $logger,
     ) {
     }
 
@@ -57,16 +59,30 @@ final readonly class CalculateProductSalesCommand
         $progress->start();
 
         $processedDates = [];
+        $failed = 0;
         for ($day = 0; $day < $dayCount; ++$day) {
             $startDate = new \DateTime('-' . ($day + $dayOffset) . ' day')->format(self::DATE_FORMAT);
 
-            $this->productSalesCalculator->process($startDate, $dryRun);
-            $processedDates[] = $startDate;
+            try {
+                $this->productSalesCalculator->process($startDate, $dryRun);
+                $processedDates[] = $startDate;
+            } catch (\Throwable $throwable) {
+                ++$failed;
+                $this->logger->error('Failed to calculate product sales for {date}', [
+                    'date' => $startDate,
+                    'error' => $throwable->getMessage(),
+                ]);
+            }
+
             $progress->advance();
         }
 
         $progress->finish();
         $io->newLine(2);
+
+        if ($failed > 0) {
+            $io->warning(sprintf('%d day(s) failed — see logs for details.', $failed));
+        }
 
         $io->success(sprintf(
             '%sProcessed product sales data for %d days',
@@ -83,7 +99,7 @@ final readonly class CalculateProductSalesCommand
             $this->runTheProductSalesSummaryCommand($output);
         }
 
-        return Command::SUCCESS;
+        return $failed > 0 ? Command::FAILURE : Command::SUCCESS;
     }
 
     public function runTheProductSalesSummaryCommand(OutputInterface $output): void

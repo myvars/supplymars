@@ -2,15 +2,18 @@
 
 namespace App\Reporting\Application\Handler;
 
-use App\Order\Domain\Model\Order\CustomerOrder;
+use App\Order\Infrastructure\Persistence\Doctrine\CustomerOrderDoctrineRepository;
 use App\Reporting\Domain\Model\SalesType\OrderSales;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Reporting\Domain\Repository\OrderSalesRepository;
+use App\Shared\Application\FlusherInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final readonly class CalculateOrderSalesHandler
 {
     public function __construct(
-        private EntityManagerInterface $em,
+        private OrderSalesRepository $orderSalesRepository,
+        private CustomerOrderDoctrineRepository $orderRepository,
+        private FlusherInterface $flusher,
         private ValidatorInterface $validator,
     ) {
     }
@@ -38,14 +41,14 @@ final readonly class CalculateOrderSalesHandler
             }
 
             if (!$dryRun) {
-                $this->em->persist($orderSales);
+                $this->orderSalesRepository->add($orderSales);
             }
 
             ++$processed;
         }
 
         if (!$dryRun) {
-            $this->em->flush();
+            $this->flusher->flush();
         }
 
         return $processed;
@@ -56,13 +59,12 @@ final readonly class CalculateOrderSalesHandler
      */
     private function getOrderSales(string $date): array
     {
-        return $this->em->getRepository(CustomerOrder::class)
+        return $this->orderRepository
             ->findOrderSalesByDate(new \DateTime($date), new \DateTime($date)->modify('+ 1 day'));
     }
 
     private function removeExistingOrderSales(string $date): void
     {
-        $this->em->getRepository(OrderSales::class)
-            ->deleteByDate($date);
+        $this->orderSalesRepository->deleteByDate($date);
     }
 }

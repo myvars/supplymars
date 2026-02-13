@@ -5,12 +5,14 @@ namespace App\Purchasing\Application\Service;
 use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
+use Psr\Log\LoggerInterface;
 
 final readonly class OrderAllocator
 {
     public function __construct(
         private EditablePurchaseOrderProvider $purchaseOrderProvider,
         private OrderItemAllocator $orderItemAllocator,
+        private LoggerInterface $logger,
     ) {
     }
 
@@ -42,8 +44,11 @@ final readonly class OrderAllocator
                     $orderItem,
                     $bestSource
                 );
-            } catch (\Throwable) {
-                // Skip this item and continue processing others.
+            } catch (\Throwable $throwable) {
+                $this->logger->warning('Failed to allocate order item {id}', [
+                    'id' => $orderItem->getId(),
+                    'error' => $throwable->getMessage(),
+                ]);
                 continue;
             }
         }

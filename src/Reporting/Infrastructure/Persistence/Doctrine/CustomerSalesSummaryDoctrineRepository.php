@@ -20,6 +20,11 @@ class CustomerSalesSummaryDoctrineRepository extends ServiceEntityRepository imp
         parent::__construct($registry, CustomerSalesSummary::class);
     }
 
+    public function add(CustomerSalesSummary $customerSalesSummary): void
+    {
+        $this->getEntityManager()->persist($customerSalesSummary);
+    }
+
     /**
      * @return array<string, mixed>|null
      */

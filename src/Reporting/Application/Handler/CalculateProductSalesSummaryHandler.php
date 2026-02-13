@@ -4,16 +4,19 @@ namespace App\Reporting\Application\Handler;
 
 use App\Reporting\Domain\Metric\SalesDuration;
 use App\Reporting\Domain\Metric\SalesType;
-use App\Reporting\Domain\Model\SalesType\ProductSales;
 use App\Reporting\Domain\Model\SalesType\ProductSalesSummary;
 use App\Reporting\Domain\Model\SalesType\ProductSalesType;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Reporting\Domain\Repository\ProductSalesRepository;
+use App\Reporting\Domain\Repository\ProductSalesSummaryRepository;
+use App\Shared\Application\FlusherInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final readonly class CalculateProductSalesSummaryHandler
 {
     public function __construct(
-        private EntityManagerInterface $em,
+        private ProductSalesRepository $productSalesRepository,
+        private ProductSalesSummaryRepository $productSalesSummaryRepository,
+        private FlusherInterface $flusher,
         private ValidatorInterface $validator,
     ) {
     }
@@ -49,10 +52,10 @@ final readonly class CalculateProductSalesSummaryHandler
 
     private function processProductSalesType(ProductSalesType $productSalesType, bool $dryRun = false): int
     {
-        $sales = $this->getSales($productSalesType);
+        $sales = $this->productSalesRepository->findProductSalesSummary($productSalesType);
 
         if (!$dryRun) {
-            $this->removeExistingSummary($productSalesType);
+            $this->productSalesSummaryRepository->deleteByProductSalesType($productSalesType);
         }
 
         $processed = 0;
@@ -72,31 +75,16 @@ final readonly class CalculateProductSalesSummaryHandler
             }
 
             if (!$dryRun) {
-                $this->em->persist($productSalesSummary);
+                $this->productSalesSummaryRepository->add($productSalesSummary);
             }
 
             ++$processed;
         }
 
         if (!$dryRun) {
-            $this->em->flush();
+            $this->flusher->flush();
         }
 
         return $processed;
-    }
-
-    /**
-     * @return array<int, array<string, mixed>>
-     */
-    private function getSales(ProductSalesType $productSalesType): array
-    {
-        return $this->em->getRepository(ProductSales::class)
-            ->findProductSalesSummary($productSalesType);
-    }
-
-    private function removeExistingSummary(ProductSalesType $productSalesType): void
-    {
-        $this->em->getRepository(ProductSalesSummary::class)
-            ->deleteByProductSalesType($productSalesType);
     }
 }

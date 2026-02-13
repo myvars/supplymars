@@ -17,7 +17,8 @@
                        class="inline-flex items-center rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-gray-300"
                        data-turbo-frame="body"
                        data-turbo-prefetch="false"
-                       title="{{ ticket.snoozed ? 'Unsnooze' : 'Snooze' }}">
+                       title="{{ ticket.snoozed ? 'Unsnooze' : 'Snooze' }}"
+                       aria-label="{{ ticket.snoozed ? 'Unsnooze' : 'Snooze' }}">
                         <twig:ux:icon name="{{ ticket.snoozed ? 'bi:bell-slash' : 'bi:bell' }}" class="h-3.5 w-3.5"/>
                     </a>
                 {% endif %}
@@ -26,7 +27,8 @@
                        class="inline-flex items-center rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-gray-300"
                        data-turbo-frame="body"
                        data-turbo-prefetch="false"
-                       title="Close">
+                       title="Close"
+                       aria-label="Close ticket">
                         <twig:ux:icon name="bi:x-circle" class="h-3.5 w-3.5"/>
                     </a>
                 {% else %}
@@ -34,7 +36,8 @@
                        class="inline-flex items-center rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-gray-300"
                        data-turbo-frame="body"
                        data-turbo-prefetch="false"
-                       title="Reopen">
+                       title="Reopen"
+                       aria-label="Reopen ticket">
                         <twig:ux:icon name="bi:arrow-counterclockwise" class="h-3.5 w-3.5"/>
                     </a>
                 {% endif %}

@@ -19,6 +19,11 @@ class CustomerGeographicSummaryDoctrineRepository extends ServiceEntityRepositor
         parent::__construct($registry, CustomerGeographicSummary::class);
     }
 
+    public function add(CustomerGeographicSummary $customerGeographicSummary): void
+    {
+        $this->getEntityManager()->persist($customerGeographicSummary);
+    }
+
     /**
      * @return array<int, array<string, mixed>>
      */

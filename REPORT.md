@@ -18,15 +18,15 @@
 
 ### Top Risks
 
-1. **No database backup strategy.** Production MySQL data has no documented or automated backup mechanism. A single failure could cause total data loss.
-2. **Silent failure modes in batch processing.** Console commands swallow exceptions in loops, meaning partial failures go unnoticed. Combined with no centralized logging/alerting, operational failures are invisible.
-3. **Unused async event infrastructure.** `AsyncDomainEventInterface` and `MessageBus` dispatch logic exist but are dead code. All domain events are synchronous, meaning a slow listener blocks the HTTP request.
+1. ~~**No database backup strategy.** Production MySQL data has no documented or automated backup mechanism. A single failure could cause total data loss.~~ **Done.** `app:backup-database` (daily cron to S3) and `app:restore-database` (dev-only) implemented.
+2. ~~**Silent failure modes in batch processing.** Console commands swallow exceptions in loops, meaning partial failures go unnoticed. Combined with no centralized logging/alerting, operational failures are invisible.~~ **Done.** All command loops now have try-catch with structured logging, failure counters, warning output, and `Command::FAILURE` exit codes.
+3. ~~**Unused async event infrastructure.** `AsyncDomainEventInterface` and `MessageBus` dispatch logic exist but are dead code. All domain events are synchronous, meaning a slow listener blocks the HTTP request.~~ **Done.** Decision: keep the infrastructure for future use. Not dead code — intentional forward investment.
 
 ### If You Only Do 3 Things Next
 
-1. **Implement automated database backups** with pre-deployment snapshots and daily offsite copies.
-2. **Add try-catch with logging inside all console command loops** so batch processing is resilient and failures are observable.
-3. **Decide on async events:** either implement `AsyncDomainEventInterface` on appropriate events (pricing cascade, audit logging) or remove the dead infrastructure to reduce confusion.
+1. ~~**Implement automated database backups** with pre-deployment snapshots and daily offsite copies.~~ **Done.**
+2. ~~**Add try-catch with logging inside all console command loops** so batch processing is resilient and failures are observable.~~ **Done.**
+3. ~~**Decide on async events:** either implement `AsyncDomainEventInterface` on appropriate events (pricing cascade, audit logging) or remove the dead infrastructure to reduce confusion.~~ **Done.** Decision: keep for future use.
 
 ---
 
@@ -47,13 +47,13 @@ The documentation claims a modular monolith with strong DDD influences, simulati
 | Two-layer reporting (daily + summaries) | Implemented with separate entity classes and scheduled recalculation | Aligned |
 | Rich domain models, thin controllers | Controllers delegate to flows/handlers; entities contain business logic | Aligned |
 | `bcmath` for financial precision | Used consistently in pricing, cost calculations, and VAT | Aligned |
-| Async events via RabbitMQ | **Partially misaligned:** `AsyncDomainEventInterface` defined but never implemented on any event. RabbitMQ used for Messenger transport but not domain events. | Gap |
+| Async events via RabbitMQ | `AsyncDomainEventInterface` defined and dispatch path wired. No events use it yet — intentionally retained for future use. RabbitMQ active for Messenger transport. | Aligned (planned) |
 
 ### Documentation Gaps
 
 - **InlineEdit pattern** is documented in `Docs/patterns/InlineEdit/README.md` but not referenced from the main `Docs/README.md` index.
 - No **troubleshooting guide** for common development issues (the setup doc covers some failures but is incomplete).
-- **ADR for the Note/Ticket context** is missing -- it was added without a corresponding architectural decision record.
+- ~~**ADR for the Note/Ticket context** is missing -- it was added without a corresponding architectural decision record.~~ **Done.** `Docs/adr/009-support-ticket-system.md` created.
 
 ---
 
@@ -89,7 +89,7 @@ Cross-context coupling is intentional and minimal:
 ### Data Access Patterns
 
 - **Repository interfaces** in `Domain/Repository/` with Doctrine implementations in `Infrastructure/Persistence/`. Every entity has both. Consistent.
-- **FlusherInterface** wraps Doctrine flush with change detection. Returns `bool` indicating if changes were persisted. Used consistently in handlers -- **except** reporting handlers, which bypass it with direct `EntityManager::flush()`.
+- **FlusherInterface** wraps Doctrine flush with change detection. Returns `bool` indicating if changes were persisted. Used consistently in all handlers.
 - **Doctrine configuration** maps all 10 contexts in `config/packages/doctrine.yaml` with attribute-based mapping. Production uses Redis-backed query and result cache.
 
 ### Event Architecture
@@ -97,7 +97,7 @@ Cross-context coupling is intentional and minimal:
 - **21 concrete domain events** across 5 contexts.
 - **DomainEventDispatcher** (Doctrine postFlush listener) dispatches events after persistence.
 - **StatusWasChangedEventInterface** provides a consistent contract for status-change events.
-- **Dead code:** `AsyncDomainEventInterface` and its `MessageBus` dispatch path in `DomainEventDispatcher` lines 56-60 are never exercised.
+- **Planned infrastructure:** `AsyncDomainEventInterface` and its `MessageBus` dispatch path in `DomainEventDispatcher` are wired but not yet used by any event. Retained for future use.
 
 ---
 
@@ -124,14 +124,7 @@ Cross-context coupling is intentional and minimal:
 
 **Handlers:** Consistently return `Result::ok()` or `Result::fail()`. Business logic failures are caught and converted to Result failures. No exceptions leak to controllers.
 
-**Console commands:** This is the weakest area. Most command loops have no try-catch, meaning a single handler failure stops the entire batch. Example from `OrderAllocator`:
-
-```
-src/Purchasing/Application/Service/OrderAllocator.php:45-47
-try { ... } catch (\Throwable) { continue; }
-```
-
-This silently swallows all exceptions without logging. While the service verifies allocation success post-hoc, failures are invisible to operators.
+**Console commands:** ~~This is the weakest area. Most command loops have no try-catch, meaning a single handler failure stops the entire batch.~~ **Resolved.** All command loops now wrap each iteration in try-catch, log failures with structured context (entity ID, error message), continue processing, and return `Command::FAILURE` if any items failed. `OrderAllocator`'s previously silent catch now logs a warning. `CreateCustomerOrdersCommand` additionally clears the EntityManager after failures to reset UoW state. Documentation updated in `Docs/06-operations.md` and `Docs/09-cli-reference.md`.
 
 ### Typing & Precision
 
@@ -146,8 +139,7 @@ This silently swallows all exceptions without logging. While the service verifie
 - **SQL injection** prevented by Doctrine parameter binding.
 - **XSS** mitigated by Twig auto-escaping.
 - **Remember-me** is `always_remember_me: true` -- less secure, as users never need to re-authenticate.
-- **No login throttling** -- `login_throttling: null` in security config.
-- **No rate limiting** at any layer.
+- ~~**No login throttling**~~ -- **Resolved.** `login_throttling` enabled (5 attempts/15 min). Nginx rate limiting on `/login`, `/register`, `/reset-password`.
 
 ---
 
@@ -212,7 +204,7 @@ All controllers use `stimulusFetch: 'lazy'` for code-splitting. Clean connect/di
 - `aria-hidden="true"` on decorative elements (e.g., InlineEdit sizer span).
 - Semantic HTML structure with `<main>`, `<nav>`, `<header>`.
 - Keyboard support in InlineEdit (Enter to save, Escape to cancel).
-- **Gap:** No explicit `aria-label` on icon-only buttons. No skip-navigation link. No focus-trap in modals (though native `<dialog>` provides some focus management).
+- ~~**Gap:** No explicit `aria-label` on icon-only buttons. No skip-navigation link. No focus-trap in modals (though native `<dialog>` provides some focus management).~~ **Resolved.** `aria-label` added to all icon-only buttons/links. Skip-navigation link added to `base.html.twig`. Native `<dialog>` focus management confirmed adequate.
 
 ### Dark Mode
 
@@ -318,11 +310,11 @@ The pyramid is inverted from the traditional ideal (more integration than unit t
 
 | Gap | Risk Level | Impact |
 |---|---|---|
-| No database backups | **Critical** | Total data loss on failure |
+| ~~No database backups~~ | ~~**Critical**~~ | ~~Total data loss on failure~~ **Resolved** |
 | No APM/monitoring | **High** | Blind to performance degradation |
 | No centralized logging | **High** | Logs lost on container restart |
-| No rate limiting | **Medium** | Vulnerable to abuse |
-| OPcache preload disabled | **Low** | ~10-15% performance opportunity |
+| ~~No rate limiting~~ | ~~**Medium**~~ | ~~Vulnerable to abuse~~ **Resolved** |
+| OPcache preload disabled | **Low** | ~10% performance opportunity (deferred — PHP 8.5 compatibility issue) |
 | Single Redis instance | **Low** | Sessions, cache, and queues compete for memory |
 | No login throttling | **Medium** | Brute-force vulnerability |
 | `always_remember_me: true` | **Low** | Users never forced to re-authenticate |
@@ -340,7 +332,7 @@ Production cron (`docker/php/cron/prod-crontab`) runs simulation commands on a s
 Nightly + hourly  reporting calculations     Near-real-time dashboards
 ```
 
-**Issue:** Build POs runs every 30 min but Accept POs runs every 15 min. POs could be accepted before they're built. The build step should run more frequently or be synchronized.
+~~**Issue:** Build POs runs every 30 min but Accept POs runs every 15 min. POs could be accepted before they're built. The build step should run more frequently or be synchronized.~~ **Resolved.** Build now runs every 15 min, accept offset by 1 min.
 
 ---
 
@@ -359,7 +351,7 @@ Nightly + hourly  reporting calculations     Near-real-time dashboards
 1. **No troubleshooting guide** for common development issues beyond setup failures.
 2. **InlineEdit pattern not indexed** in the main `Docs/README.md`.
 3. **No ADR for the Note/Ticket context** -- it was added without documenting the architectural decision.
-4. **No runbook** for production operations (incident response, scaling, maintenance).
+4. ~~**No runbook** for production operations (incident response, scaling, maintenance).~~ **Done.** `Docs/11-runbook.md` created.
 5. **Operational doc (06-operations.md)** discusses cron but doesn't cover monitoring, alerting, or backup procedures.
 
 ### Highest-Leverage Improvement
@@ -370,200 +362,110 @@ Add a **production runbook** covering: backup/restore procedures, incident respo
 
 ## I) Recommendations
 
-### 1. Implement Automated Database Backups
+### ~~1. Implement Automated Database Backups~~ Done
 
 | | |
 |---|---|
-| **Area** | DevOps |
-| **Problem** | No backup strategy exists. Production MySQL data is at risk of total loss from hardware failure, accidental deletion, or failed deployment. |
-| **Proposed Change** | Add `mysqldump` cron job (daily at 02:00) writing to S3 with 30-day retention. Add pre-deployment backup in CI/CD pipeline. |
-| **Importance** | **H** |
-| **Effort** | S |
-| **Risk** | L |
-| **Payoff** | Immediate |
-| **Evidence** | `compose.yaml` (no backup volume), `.github/workflows/ci.yml` (no backup step), `docker/php/cron/prod-crontab` (no backup job) |
+| **Status** | **Complete** |
+| **Resolution** | `app:backup-database` command with daily cron to S3 (30-day retention). `app:restore-database` (dev-only, `#[When(env: 'dev')]`) supports local and S3 restore. |
 
-### 2. Add Error Handling in Console Command Loops
+### ~~2. Add Error Handling in Console Command Loops~~ Done
 
 | | |
 |---|---|
-| **Area** | Application / Console |
-| **Problem** | Console commands iterate entities without try-catch. A single handler failure stops the entire batch, and with no logging, the failure is invisible. |
-| **Proposed Change** | Wrap each iteration in try-catch, log failures with entity ID, continue processing. Add a summary of failures at the end. |
-| **Importance** | **H** |
-| **Effort** | S |
-| **Risk** | L |
-| **Payoff** | Immediate |
-| **Evidence** | `src/Purchasing/UI/Console/BuildPOsCommand.php`, `AcceptPOsCommand.php`, `ShipPOItemsCommand.php`, `DeliverPOItemsCommand.php`, `RefundPOsCommand.php` |
+| **Status** | **Complete** |
+| **Resolution** | All 11 simulation/reporting commands and 2 service-layer loops (`OrderAllocator`, `ReviewGenerator`) now have try-catch with structured logging, `$failed` counters, warning output, and `Command::FAILURE` exit codes. `CreateCustomerOrdersCommand` additionally clears the EntityManager on failure. Docs updated in `06-operations.md` and `09-cli-reference.md`. |
 
-### 3. Resolve AsyncDomainEventInterface Dead Code
+### ~~3. Resolve AsyncDomainEventInterface Dead Code~~ Done
 
 | | |
 |---|---|
-| **Area** | Architecture |
-| **Problem** | `AsyncDomainEventInterface` and its `MessageBus` dispatch path in `DomainEventDispatcher` are defined but never used. This creates confusion about the intended event architecture. |
-| **Proposed Change** | Either: (a) implement async dispatch on appropriate events (audit logging, pricing cascade for bulk changes), or (b) remove the interface and dead dispatch code. |
-| **Importance** | **H** |
-| **Effort** | M |
-| **Risk** | M |
-| **Payoff** | Soon |
-| **Evidence** | `src/Shared/Domain/Event/AsyncDomainEventInterface.php`, `src/Shared/Infrastructure/Persistence/Doctrine/EventListener/DomainEventDispatcher.php:56-60` |
+| **Status** | **Complete** |
+| **Resolution** | Decision: keep `AsyncDomainEventInterface` and the `MessageBus` dispatch path as intentional forward infrastructure. Events will be migrated to async as needed (audit logging, pricing cascade for bulk changes). |
 
-### 4. Use FlusherInterface in Reporting Handlers
+### ~~4. Use FlusherInterface in Reporting Handlers~~ Done
 
 | | |
 |---|---|
-| **Area** | Code Quality |
-| **Problem** | Reporting handlers (`CalculateOrderSalesHandler`, `CalculateCustomerSalesHandler`, `CalculateProductSalesHandler`) bypass `FlusherInterface` and use `EntityManager::persist()`/`flush()` directly. This breaks the established pattern and bypasses change detection. |
-| **Proposed Change** | Inject `FlusherInterface` and repository, use `$repository->add()` + `$flusher->flush()`. |
-| **Importance** | **M** |
-| **Effort** | S |
-| **Risk** | L |
-| **Payoff** | Immediate |
-| **Evidence** | `src/Reporting/Application/Handler/CalculateOrderSalesHandler.php`, `CalculateCustomerSalesHandler.php`, `CalculateProductSalesHandler.php` |
+| **Status** | **Complete** |
+| **Resolution** | All 6 reporting calculation handlers refactored to use `FlusherInterface` + typed repository injection. 9 repository interfaces extended with `add()`, `deleteBy*()`, and query methods. 9 Doctrine implementations updated with `add()` methods. Own-context repos injected via domain interface; cross-context repos via concrete Doctrine class (matching established pattern). PHPStan Level 7 clean, all 157 reporting tests pass. |
 
-### 5. Add Login Throttling and Rate Limiting
+### ~~5. Add Login Throttling and Rate Limiting~~ Done
 
 | | |
 |---|---|
-| **Area** | Security |
-| **Problem** | Login throttling is explicitly disabled (`login_throttling: null`). No rate limiting at any layer. Brute-force attacks against the login form are unmitigated. |
-| **Proposed Change** | Enable Symfony's built-in `login_throttling` (e.g., `max_attempts: 5`). Add Nginx rate limiting for `/login` and form submission endpoints. |
-| **Importance** | **M** |
-| **Effort** | S |
-| **Risk** | L |
-| **Payoff** | Immediate |
-| **Evidence** | `config/packages/security.yaml` (login_throttling: null), `docker/nginx/conf.d/prod.conf` (no rate limiting) |
+| **Status** | **Complete** |
+| **Resolution** | Symfony `login_throttling` enabled (5 attempts/15 min per IP+username). Nginx rate limiting added for `/login` (10 req/min), `/register` (2 req/min), and `/reset-password/*` (2 req/min). Security docs updated. |
 
-### 6. Add Centralized Logging
+### ~~6. Add Centralized Logging~~ Deferred
 
 | | |
 |---|---|
-| **Area** | DevOps |
-| **Problem** | Logs go to container stderr (Docker) with no aggregation. Container restarts lose all logs. No alerting on errors. |
-| **Proposed Change** | Add CloudWatch Logs agent or similar (Loki, ELK) to collect and retain logs. Set up alerts for error-level log spikes. |
-| **Importance** | **M** |
-| **Effort** | M |
-| **Risk** | L |
-| **Payoff** | Soon |
-| **Evidence** | `config/packages/monolog.yaml` (prod: php://stderr), `compose.yaml` (no logging driver) |
+| **Status** | **Deferred** |
+| **Resolution** | Infrastructure task requiring external service setup (CloudWatch/Loki/ELK). Deferred for future implementation when monitoring stack is prioritized. |
 
-### 7. Fix Cron Schedule: Build Before Accept
+### ~~7. Fix Cron Schedule: Build Before Accept~~ Done
 
 | | |
 |---|---|
-| **Area** | Operations |
-| **Problem** | `accept-purchase-orders` runs every 15 min but `build-purchase-orders` runs every 30 min. POs can be accepted before they're built, creating inconsistent states. |
-| **Proposed Change** | Run `build-purchase-orders` every 15 min (before accept), or chain them sequentially. |
-| **Importance** | **M** |
-| **Effort** | S |
-| **Risk** | L |
-| **Payoff** | Immediate |
-| **Evidence** | `docker/php/cron/prod-crontab` lines 6-8 |
+| **Status** | **Complete** |
+| **Resolution** | `build-purchase-orders` increased to every 15 min. `accept-purchase-orders` offset to :01,:16,:31,:46 (1 min after build). Ensures POs are always built before acceptance. Docs updated in `06-operations.md`. |
 
-### 8. Replace Command Chaining Antipattern
+### ~~8. Replace Command Chaining Antipattern~~ Won't Fix
 
 | | |
 |---|---|
-| **Area** | Code Quality |
-| **Problem** | Reporting commands chain by directly calling `$this->otherCommand->__invoke()`. This is fragile and couples commands tightly. |
-| **Proposed Change** | Use Symfony's `Application::find()` + `CommandTester::run()` or extract shared logic into a service. |
-| **Importance** | **M** |
-| **Effort** | S |
-| **Risk** | L |
-| **Payoff** | Soon |
-| **Evidence** | `src/Reporting/UI/Console/CalculateCustomerSalesCommand.php`, `CalculateProductSalesCommand.php`, `CalculateOrderSalesCommand.php` |
+| **Status** | **Won't Fix** |
+| **Resolution** | Decision: keep the current `__invoke()` chaining. The pattern works, cron already coordinates the commands independently, and the alternatives either lose the full command output (progress bars, verbose listings) or require injecting `Application` for no practical benefit. The coupling is acceptable given these commands are in the same context and always logically paired. |
 
-### 9. Enrich Thin Event Payloads
+### ~~9. Enrich Thin Event Payloads~~ Won't Fix
 
 | | |
 |---|---|
-| **Area** | Architecture |
-| **Problem** | Some events carry only an entity ID (`OrderWasCreatedEvent`, `ReviewWasCreatedEvent`, `OrderItemWasCreatedEvent`). Listeners must re-fetch from the database, adding unnecessary queries. |
-| **Proposed Change** | Include key attributes in event payload (e.g., product ID, customer ID, total) so listeners can act without re-fetching. |
-| **Importance** | **L** |
-| **Effort** | S |
-| **Risk** | L |
-| **Payoff** | Soon |
-| **Evidence** | `src/Order/Domain/Model/Order/Event/OrderWasCreatedEvent.php`, `src/Review/Domain/Model/Review/Event/ReviewWasCreatedEvent.php` |
+| **Status** | **Won't Fix** |
+| **Resolution** | Events are intentionally thin per DDD convention. Pricing listeners need full entity traversal (e.g., iterating all products under a category) regardless of payload richness — no reasonable payload would eliminate those fetches. Creation events without listeners are retained for future use. |
 
-### 10. Increase Parameterized Tests
+### ~~10. Increase Parameterized Tests~~ Done
 
 | | |
 |---|---|
-| **Area** | Testing |
-| **Problem** | Only 5 `@dataProvider` methods across 254 tests. Status transition combinations, price model edge cases, and form validation scenarios are tested with repetitive individual methods. |
-| **Proposed Change** | Add DataProviders for: status transition matrices, price model rounding, form validation rules. Target: 15+ DataProviders. |
-| **Importance** | **L** |
-| **Effort** | M |
-| **Risk** | L |
-| **Payoff** | Long-term |
-| **Evidence** | `tests/Shared/Domain/Service/Pricing/MarkupCalculatorDomainTest.php` (good example), `tests/Order/Domain/OrderDomainTest.php` (27 individual test methods that could be parameterized) |
+| **Status** | **Complete** |
+| **Resolution** | Refactored `ReviewStatusTransitionTest` to use DataProviders for transition matrix (15 cases) and allowEdit rules (4 cases), replacing 18 individual methods. Remaining test files already use DataProviders where appropriate (MarkupCalculator, PriceModel) or test meaningfully distinct scenarios that don't benefit from parameterization. |
 
-### 11. Enable OPcache Preload
+### ~~11. Enable OPcache Preload~~ Deferred
 
 | | |
 |---|---|
-| **Area** | DevOps |
-| **Problem** | OPcache preload is commented out in production PHP config. This means every request incurs class loading overhead. |
-| **Proposed Change** | Uncomment and configure `opcache.preload` in `docker/php/conf.d/20-app.prod.ini`. Also set `opcache.validate_timestamps=0` for production. |
-| **Importance** | **L** |
-| **Effort** | S |
-| **Risk** | L |
-| **Payoff** | Immediate |
-| **Evidence** | `docker/php/conf.d/20-app.prod.ini` lines 1-3 (commented out) |
+| **Status** | **Deferred** |
+| **Resolution** | Preloading was intentionally disabled after the PHP 8.5 upgrade due to critical errors caused by changed behaviour. Symfony still supports preloading (~9-10% gain per benchmarks), but re-enabling requires investigating the PHP 8.5-specific failures first. Not a quick win. |
 
-### 12. Add Production Runbook
+### ~~12. Add Production Runbook~~ Done
 
 | | |
 |---|---|
-| **Area** | Documentation |
-| **Problem** | No operational runbook exists. Production incidents, scaling, backup/restore, and maintenance procedures are undocumented. |
-| **Proposed Change** | Create `Docs/11-runbook.md` covering: incident response, backup/restore, scaling, deploy rollback, monitoring setup, common operational tasks. |
-| **Importance** | **M** |
-| **Effort** | M |
-| **Risk** | L |
-| **Payoff** | Soon |
-| **Evidence** | `Docs/06-operations.md` (covers cron but not incident response or backups) |
+| **Status** | **Complete** |
+| **Resolution** | Created `Docs/11-runbook.md` covering: service architecture reference, deployment (automated + manual + rollback), health checks, backup/restore procedures, maintenance mode, troubleshooting (502/504, queue backlog, cron, slow pages, failed messages, disk space), certificate renewal, and database maintenance. Cross-references `06-operations.md` and `09-cli-reference.md`. Added to `Docs/README.md` index. |
 
-### 13. Add ADR for Note/Ticket Context
+### ~~13. Add ADR for Note/Ticket Context~~ Done
 
 | | |
 |---|---|
-| **Area** | Documentation |
-| **Problem** | The Note context (support pools, tickets, messages) was added without an ADR documenting the design decisions. |
-| **Proposed Change** | Write `Docs/adr/009-support-ticket-system.md` documenting: context, decision, pool/ticket/message model, visibility rules, and consequences. |
-| **Importance** | **L** |
-| **Effort** | S |
-| **Risk** | L |
-| **Payoff** | Long-term |
-| **Evidence** | `src/Note/` exists, `Docs/adr/` has ADRs 001-008 but nothing for Note |
+| **Status** | **Complete** |
+| **Resolution** | Created `Docs/adr/009-support-ticket-system.md` documenting: pool-based routing, staff subscription model, three-entity model (Pool → Ticket → Message), automatic status transitions by author type, snooze as orthogonal to status, denormalized listing fields, message visibility (PUBLIC/INTERNAL), and system messages for audit trail. Added to `Docs/README.md` index. |
 
-### 14. Add Accessibility Improvements
+### ~~14. Add Accessibility Improvements~~ Done
 
 | | |
 |---|---|
-| **Area** | UI/UX |
-| **Problem** | Icon-only buttons lack `aria-label`. No skip-navigation link. Focus management in modals relies solely on native `<dialog>` behavior. |
-| **Proposed Change** | Add `aria-label` to all icon-only buttons. Add skip-nav link to admin layout. Audit modal focus trapping with screen reader. |
-| **Importance** | **L** |
-| **Effort** | S |
-| **Risk** | L |
-| **Payoff** | Long-term |
-| **Evidence** | `templates/shared/form_flow/inline_edit_form.html.twig` (icon buttons have `title` but not `aria-label`), `templates/layouts/admin.html.twig` (no skip-nav) |
+| **Status** | **Complete** |
+| **Resolution** | Added `aria-label` to all icon-only buttons/links across 5 templates (inline edit save/cancel, ticket snooze/close/reopen, message delete, Card edit link, product image delete). Added skip-navigation link to `base.html.twig` with `id="main-content"` on `<main>`. Modal focus management confirmed adequate via native `<dialog>` + `showModal()`. |
 
-### 15. Expand Customer Context Test Coverage
+### ~~15. Expand Customer Context Test Coverage~~ Deferred
 
 | | |
 |---|---|
-| **Area** | Testing |
-| **Problem** | Customer context has only 11 tests. Registration flow, password reset, email verification, and address management are undertested relative to their user-facing importance. |
-| **Proposed Change** | Add tests for: registration validation, email verification happy/error paths, password reset token expiry, address CRUD, profile update. Target: 25+ tests. |
-| **Importance** | **L** |
-| **Effort** | M |
-| **Risk** | L |
-| **Payoff** | Long-term |
-| **Evidence** | `tests/Customer/` (11 tests vs. Purchasing's 57) |
+| **Status** | **Deferred** |
+| **Resolution** | Registration, email verification, and password reset currently rely on SymfonyCasts bundles. These will be rewritten to align with standard project patterns first. Test coverage expansion deferred until after that rewrite. |
 
 ---
 
@@ -573,31 +475,31 @@ Add a **production runbook** covering: backup/restore procedures, incident respo
 
 | PR | Description | Recommendations |
 |---|---|---|
-| **PR-1: Database backup cron** | Add `mysqldump` to cron with S3 upload. Add pre-deploy backup to CI. | #1 |
-| **PR-2: Console command resilience** | Add try-catch + logging in all command loops. | #2 |
-| **PR-3: Login throttling** | Enable `login_throttling: max_attempts: 5` in security.yaml. | #5 |
-| **PR-4: Fix cron schedule** | Sync build/accept PO timing. | #7 |
-| **PR-5: Enable OPcache preload** | Uncomment in prod PHP config, add `validate_timestamps=0`. | #11 |
+| ~~**PR-1: Database backup cron**~~ | ~~Add `mysqldump` to cron with S3 upload. Add pre-deploy backup to CI.~~ **Done.** | #1 |
+| ~~**PR-2: Console command resilience**~~ | ~~Add try-catch + logging in all command loops.~~ **Done.** | #2 |
+| ~~**PR-3: Login throttling**~~ | ~~Enable `login_throttling: max_attempts: 5` in security.yaml.~~ **Done.** | #5 |
+| ~~**PR-4: Fix cron schedule**~~ | ~~Sync build/accept PO timing.~~ **Done.** | #7 |
+| ~~**PR-5: Enable OPcache preload**~~ | ~~Uncomment in prod PHP config.~~ **Deferred** — PHP 8.5 behaviour change causes critical errors. | #11 |
 
 ### Phase 1: High-Leverage Refactors (1-2 weeks)
 
 | PR | Description | Recommendations |
 |---|---|---|
-| **PR-6: Async event decision** | Either implement `AsyncDomainEventInterface` on audit/pricing events, or remove dead code. | #3 |
-| **PR-7: Reporting handler consistency** | Refactor reporting handlers to use `FlusherInterface`. | #4 |
-| **PR-8: Command chaining refactor** | Replace `__invoke()` chaining with proper Symfony command invocation or shared services. | #8 |
-| **PR-9: Centralized logging** | Set up log aggregation (CloudWatch/Loki). Configure alerts. | #6 |
-| **PR-10: Production runbook** | Write `Docs/11-runbook.md` with operational procedures. | #12 |
+| ~~**PR-6: Async event decision**~~ | ~~Either implement `AsyncDomainEventInterface` on audit/pricing events, or remove dead code.~~ **Done.** Decision: keep for future use. | #3 |
+| ~~**PR-7: Reporting handler consistency**~~ | ~~Refactor reporting handlers to use `FlusherInterface`.~~ **Done.** | #4 |
+| ~~**PR-8: Command chaining refactor**~~ | ~~Replace `__invoke()` chaining with proper Symfony command invocation or shared services.~~ **Won't fix** — coupling acceptable, alternatives lose output fidelity. | #8 |
+| ~~**PR-9: Centralized logging**~~ | ~~Set up log aggregation (CloudWatch/Loki). Configure alerts.~~ **Deferred.** | #6 |
+| ~~**PR-10: Production runbook**~~ | ~~Write `Docs/11-runbook.md` with operational procedures.~~ **Done.** | #12 |
 
 ### Phase 2: Long-Term Quality (2-4 weeks)
 
 | PR | Description | Recommendations |
 |---|---|---|
-| **PR-11: Enrich event payloads** | Add key attributes to thin domain events. | #9 |
-| **PR-12: Parameterized tests** | Add DataProviders for status transitions, price models, and validation rules. | #10 |
-| **PR-13: Customer test coverage** | Expand Customer context to 25+ tests. | #15 |
-| **PR-14: Accessibility audit** | Add aria-labels, skip-nav, and focus management. | #14 |
-| **PR-15: Note context ADR** | Document architectural decisions for the ticket system. | #13 |
+| ~~**PR-11: Enrich event payloads**~~ | ~~Add key attributes to thin domain events.~~ **Won't fix** — thin by design, listeners need entity traversal regardless. | #9 |
+| ~~**PR-12: Parameterized tests**~~ | ~~Add DataProviders for status transitions, price models, and validation rules.~~ **Done.** | #10 |
+| ~~**PR-13: Customer test coverage**~~ | ~~Expand Customer context to 25+ tests.~~ **Deferred** — auth flows to be rewritten first. | #15 |
+| ~~**PR-14: Accessibility audit**~~ | ~~Add aria-labels, skip-nav, and focus management.~~ **Done.** | #14 |
+| ~~**PR-15: Note context ADR**~~ | ~~Document architectural decisions for the ticket system.~~ **Done.** | #13 |
 
 ---
 

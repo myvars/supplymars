@@ -3,16 +3,19 @@
 namespace App\Reporting\Application\Handler;
 
 use App\Reporting\Domain\Metric\SalesDuration;
-use App\Reporting\Domain\Model\SalesType\OrderSales;
 use App\Reporting\Domain\Model\SalesType\OrderSalesSummary;
 use App\Reporting\Domain\Model\SalesType\OrderSalesType;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Reporting\Domain\Repository\OrderSalesRepository;
+use App\Reporting\Domain\Repository\OrderSalesSummaryRepository;
+use App\Shared\Application\FlusherInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final readonly class CalculateOrderSalesSummaryHandler
 {
     public function __construct(
-        private EntityManagerInterface $em,
+        private OrderSalesRepository $orderSalesRepository,
+        private OrderSalesSummaryRepository $orderSalesSummaryRepository,
+        private FlusherInterface $flusher,
         private ValidatorInterface $validator,
     ) {
     }
@@ -35,10 +38,10 @@ final readonly class CalculateOrderSalesSummaryHandler
 
     private function processOrderSalesType(OrderSalesType $orderSalesType, bool $dryRun = false): int
     {
-        $sales = $this->getOrderSalesSummary($orderSalesType);
+        $sales = $this->orderSalesRepository->findOrderSalesSummary($orderSalesType);
 
         if (!$dryRun) {
-            $this->removeExistingSummary($orderSalesType);
+            $this->orderSalesSummaryRepository->deleteByOrderSalesType($orderSalesType);
         }
 
         $processed = 0;
@@ -57,31 +60,16 @@ final readonly class CalculateOrderSalesSummaryHandler
             }
 
             if (!$dryRun) {
-                $this->em->persist($orderSalesSummary);
+                $this->orderSalesSummaryRepository->add($orderSalesSummary);
             }
 
             ++$processed;
         }
 
         if (!$dryRun) {
-            $this->em->flush();
+            $this->flusher->flush();
         }
 
         return $processed;
-    }
-
-    /**
-     * @return array<int, array<string, mixed>>
-     */
-    private function getOrderSalesSummary(OrderSalesType $orderSalesType): array
-    {
-        return $this->em->getRepository(OrderSales::class)
-            ->findOrderSalesSummary($orderSalesType);
-    }
-
-    private function removeExistingSummary(OrderSalesType $orderSalesType): void
-    {
-        $this->em->getRepository(OrderSalesSummary::class)
-            ->deleteByOrderSalesType($orderSalesType);
     }
 }

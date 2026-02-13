@@ -8,6 +8,7 @@ use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use App\Purchasing\Domain\Repository\PurchaseOrderRepository;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Infrastructure\Security\DefaultUserAuthenticator;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Attribute\Option;
@@ -27,6 +28,7 @@ readonly class RefundPOsCommand
         private OrderAllocator $orderAllocator,
         private DefaultUserAuthenticator $defaultUserAuthenticator,
         private FlusherInterface $flusher,
+        private LoggerInterface $logger,
     ) {
     }
 
@@ -67,38 +69,47 @@ readonly class RefundPOsCommand
         $refunded = 0;
         $reallocated = 0;
         $processedIds = [];
+        $failed = 0;
 
         foreach ($purchaseOrders as $purchaseOrder) {
             if (!$purchaseOrder instanceof PurchaseOrder) {
                 continue;
             }
 
-            $itemsRefunded = 0;
-            foreach ($purchaseOrder->getPurchaseOrderItems() as $purchaseOrderItem) {
-                if ($purchaseOrderItem->getStatus() !== PurchaseOrderStatus::REJECTED) {
-                    continue;
+            try {
+                $itemsRefunded = 0;
+                foreach ($purchaseOrder->getPurchaseOrderItems() as $purchaseOrderItem) {
+                    if ($purchaseOrderItem->getStatus() !== PurchaseOrderStatus::REJECTED) {
+                        continue;
+                    }
+
+                    if (!$dryRun) {
+                        $purchaseOrderItem->updateItemStatus(newStatus: PurchaseOrderStatus::REFUNDED);
+                    }
+
+                    ++$itemsRefunded;
                 }
+
+                $refunded += $itemsRefunded;
 
                 if (!$dryRun) {
-                    $purchaseOrderItem->updateItemStatus(newStatus: PurchaseOrderStatus::REFUNDED);
+                    $this->orderAllocator->process($purchaseOrder->getCustomerOrder());
+                    ++$reallocated;
                 }
 
-                ++$itemsRefunded;
+                $processedIds[] = sprintf(
+                    'PO #%d: %d item(s) refunded, status: %s',
+                    $purchaseOrder->getId(),
+                    $itemsRefunded,
+                    $purchaseOrder->getStatus()->value
+                );
+            } catch (\Throwable $throwable) {
+                ++$failed;
+                $this->logger->error('Failed to refund purchase order {id}', [
+                    'id' => $purchaseOrder->getId(),
+                    'error' => $throwable->getMessage(),
+                ]);
             }
-
-            $refunded += $itemsRefunded;
-
-            if (!$dryRun) {
-                $this->orderAllocator->process($purchaseOrder->getCustomerOrder());
-                ++$reallocated;
-            }
-
-            $processedIds[] = sprintf(
-                'PO #%d: %d item(s) refunded, status: %s',
-                $purchaseOrder->getId(),
-                $itemsRefunded,
-                $purchaseOrder->getStatus()->value
-            );
 
             $progress->advance();
         }
@@ -109,6 +120,10 @@ readonly class RefundPOsCommand
 
         $progress->finish();
         $io->newLine(2);
+
+        if ($failed > 0) {
+            $io->warning(sprintf('%d purchase order(s) failed — see logs for details.', $failed));
+        }
 
         $io->success(sprintf(
             '%sProcessed %d purchase orders. Refunded %d item(s), triggered %d reallocation(s).',
@@ -123,7 +138,7 @@ readonly class RefundPOsCommand
             $io->listing($processedIds);
         }
 
-        return Command::SUCCESS;
+        return $failed > 0 ? Command::FAILURE : Command::SUCCESS;
     }
 
     /**

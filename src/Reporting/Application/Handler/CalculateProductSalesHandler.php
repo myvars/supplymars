@@ -2,17 +2,22 @@
 
 namespace App\Reporting\Application\Handler;
 
-use App\Catalog\Domain\Model\Product\Product;
-use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItem;
-use App\Purchasing\Domain\Model\Supplier\Supplier;
+use App\Catalog\Infrastructure\Persistence\Doctrine\ProductDoctrineRepository;
+use App\Purchasing\Infrastructure\Persistence\Doctrine\PurchaseOrderItemDoctrineRepository;
+use App\Purchasing\Infrastructure\Persistence\Doctrine\SupplierDoctrineRepository;
 use App\Reporting\Domain\Model\SalesType\ProductSales;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Reporting\Domain\Repository\ProductSalesRepository;
+use App\Shared\Application\FlusherInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final readonly class CalculateProductSalesHandler
 {
     public function __construct(
-        private EntityManagerInterface $em,
+        private ProductSalesRepository $productSalesRepository,
+        private PurchaseOrderItemDoctrineRepository $purchaseOrderItemRepository,
+        private ProductDoctrineRepository $productRepository,
+        private SupplierDoctrineRepository $supplierRepository,
+        private FlusherInterface $flusher,
         private ValidatorInterface $validator,
     ) {
     }
@@ -27,8 +32,8 @@ final readonly class CalculateProductSalesHandler
 
         $processed = 0;
         foreach ($sales as $sale) {
-            $product = $this->em->getRepository(Product::class)->find($sale['productId']);
-            $supplier = $this->em->getRepository(Supplier::class)->find($sale['supplierId']);
+            $product = $this->productRepository->find($sale['productId']);
+            $supplier = $this->supplierRepository->find($sale['supplierId']);
 
             if ($product !== null) {
                 $productSales = ProductSales::create(
@@ -46,7 +51,7 @@ final readonly class CalculateProductSalesHandler
                 }
 
                 if (!$dryRun) {
-                    $this->em->persist($productSales);
+                    $this->productSalesRepository->add($productSales);
                 }
 
                 ++$processed;
@@ -54,7 +59,7 @@ final readonly class CalculateProductSalesHandler
         }
 
         if (!$dryRun) {
-            $this->em->flush();
+            $this->flusher->flush();
         }
 
         return $processed;
@@ -65,14 +70,12 @@ final readonly class CalculateProductSalesHandler
      */
     private function getPurchaseOrderItemSales(string $date): array
     {
-        return $this->em
-            ->getRepository(PurchaseOrderItem::class)
+        return $this->purchaseOrderItemRepository
             ->calculateProductSales(new \DateTime($date), new \DateTime($date)->modify('+ 1 day'));
     }
 
     private function removeExistingProductSales(string $date): void
     {
-        $this->em->getRepository(ProductSales::class)
-            ->deleteByDate($date);
+        $this->productSalesRepository->deleteByDate($date);
     }
 }

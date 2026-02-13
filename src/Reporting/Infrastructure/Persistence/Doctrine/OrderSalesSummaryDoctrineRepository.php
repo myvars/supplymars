@@ -20,6 +20,11 @@ class OrderSalesSummaryDoctrineRepository extends ServiceEntityRepository implem
         parent::__construct($registry, OrderSalesSummary::class);
     }
 
+    public function add(OrderSalesSummary $orderSalesSummary): void
+    {
+        $this->getEntityManager()->persist($orderSalesSummary);
+    }
+
     /**
      * @return array<string, mixed>|null
      */

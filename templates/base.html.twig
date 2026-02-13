@@ -29,13 +29,14 @@
     </head>
 
     <body class="antialiased bg-gray-200 text-gray-900 dark:bg-gray-950 dark:text-gray-100">
+        <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-gray-900 focus:shadow-lg dark:focus:bg-gray-800 dark:focus:text-white">Skip to main content</a>
         <div class="container mx-auto flex min-h-screen flex-col md:px-3">
 
             <!-- Header -->
             {{ include('_header.html.twig') }}
 
             <!-- Main -->
-            <main class="{% block main_class %}grow bg-gray-200 dark:bg-gray-900{% endblock %}">
+            <main id="main-content" class="{% block main_class %}grow bg-gray-200 dark:bg-gray-900{% endblock %}">
                 <turbo-frame id="body" data-turbo-action="advance" refresh="morph">
                     {% block body %}{% endblock %}
                 </turbo-frame>

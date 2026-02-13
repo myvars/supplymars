@@ -19,6 +19,11 @@ class CustomerSegmentSummaryDoctrineRepository extends ServiceEntityRepository i
         parent::__construct($registry, CustomerSegmentSummary::class);
     }
 
+    public function add(CustomerSegmentSummary $customerSegmentSummary): void
+    {
+        $this->getEntityManager()->persist($customerSegmentSummary);
+    }
+
     /**
      * @return array<int, array<string, mixed>>
      */

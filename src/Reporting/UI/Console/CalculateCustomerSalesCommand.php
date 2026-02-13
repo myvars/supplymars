@@ -3,6 +3,7 @@
 namespace App\Reporting\UI\Console;
 
 use App\Reporting\Application\Handler\CalculateCustomerSalesHandler;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Attribute\Option;
@@ -23,6 +24,7 @@ final readonly class CalculateCustomerSalesCommand
     public function __construct(
         private CalculateCustomerSalesHandler $customerSalesCalculator,
         private CalculateCustomerSalesSummaryCommand $customerSalesSummaryCommand,
+        private LoggerInterface $logger,
     ) {
     }
 
@@ -57,16 +59,30 @@ final readonly class CalculateCustomerSalesCommand
         $progress->start();
 
         $processedDates = [];
+        $failed = 0;
         for ($day = 0; $day < $dayCount; ++$day) {
             $startDate = new \DateTime('-' . ($day + $dayOffset) . ' day')->format(self::DATE_FORMAT);
 
-            $this->customerSalesCalculator->process($startDate, $dryRun);
-            $processedDates[] = $startDate;
+            try {
+                $this->customerSalesCalculator->process($startDate, $dryRun);
+                $processedDates[] = $startDate;
+            } catch (\Throwable $throwable) {
+                ++$failed;
+                $this->logger->error('Failed to calculate customer sales for {date}', [
+                    'date' => $startDate,
+                    'error' => $throwable->getMessage(),
+                ]);
+            }
+
             $progress->advance();
         }
 
         $progress->finish();
         $io->newLine(2);
+
+        if ($failed > 0) {
+            $io->warning(sprintf('%d day(s) failed — see logs for details.', $failed));
+        }
 
         $io->success(sprintf(
             '%sProcessed customer sales data for %d days',
@@ -83,7 +99,7 @@ final readonly class CalculateCustomerSalesCommand
             $this->runTheCustomerSalesSummaryCommand($output);
         }
 
-        return Command::SUCCESS;
+        return $failed > 0 ? Command::FAILURE : Command::SUCCESS;
     }
 
     public function runTheCustomerSalesSummaryCommand(OutputInterface $output): void

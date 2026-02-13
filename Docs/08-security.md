@@ -58,6 +58,9 @@ security:
                 secret: '%kernel.secret%'
                 lifetime: 604800  # 7 days
                 always_remember_me: true
+            login_throttling:
+                max_attempts: 5
+                interval: '15 minutes'
 ```
 
 ### Password Handling
@@ -183,8 +186,7 @@ Development/operations tools with restricted access:
 
 This is a demonstration system with intentional simplifications:
 
-1. **No rate limiting:** Login throttling disabled
-2. **No 2FA:** Single-factor authentication only
+1. **No 2FA:** Single-factor authentication only
 3. **No audit of admin actions:** Status changes logged, but not user sessions
 4. **Simulation data:** Fabricated, not real customer data
 
@@ -258,6 +260,69 @@ add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" alway
 - TLSv1.2 and TLSv1.3 only
 - Modern cipher suite (ECDHE, AES-GCM)
 - HSTS enabled
+
+## Rate Limiting
+
+### Login Throttling (Symfony)
+
+Login attempts are throttled at the application layer using Symfony's built-in `login_throttling`:
+
+```yaml
+# config/packages/security.yaml
+
+login_throttling:
+    max_attempts: 5
+    interval: '15 minutes'
+```
+
+- Tracks failed attempts per **IP + username** combination
+- After 5 failed attempts within 15 minutes, further login attempts are blocked
+- Returns a `TooManyLoginAttemptsAuthenticationException` with a `Retry-After` header
+- State stored in the cache pool (Redis in production)
+- Resets automatically after the interval expires
+
+### Nginx Rate Limiting
+
+All public auth endpoints are rate-limited at the Nginx layer (production only):
+
+```nginx
+# docker/nginx/conf.d/prod.conf
+
+limit_req_zone $binary_remote_addr zone=login:10m rate=10r/m;
+limit_req_zone $binary_remote_addr zone=register:10m rate=2r/m;
+
+location = /login {
+    limit_req zone=login burst=5 nodelay;
+}
+
+location = /register {
+    limit_req zone=register burst=1 nodelay;
+}
+
+location ^~ /reset-password {
+    limit_req zone=register burst=1 nodelay;
+}
+```
+
+| Endpoint | Zone | Limit | Burst | Rationale |
+|----------|------|-------|-------|-----------|
+| `/login` | `login` | 10/min per IP | 5 | Moderate — legitimate users may retry |
+| `/register` | `register` | 2/min per IP | 1 | Tight — registration also gated by `ROLE_ADMIN` |
+| `/reset-password/*` | `register` | 2/min per IP | 1 | Tight — prevents email-sending abuse |
+
+- Returns `503 Service Temporarily Unavailable` when exceeded
+- Not applied in development (dev Nginx config has no rate limiting)
+
+### Defence in Depth
+
+The two layers complement each other:
+
+| Layer | Scope | Tracks By | Limit |
+|-------|-------|-----------|-------|
+| Nginx | Reverse proxy | IP address | 2–10 req/min (by endpoint) |
+| Symfony | Application | IP + username | 5 attempts/15 min (login only) |
+
+Nginx catches high-volume automated attacks. Symfony catches targeted brute-force against specific accounts.
 
 ## Input Validation
 

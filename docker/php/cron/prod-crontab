@@ -2,8 +2,8 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 0 0 * * 0 root truncate -s 0 /var/log/cron.log
 */10 * * * * root echo "Cron test: $(date)" >> /var/log/cron.log 2>&1
 */5  * * * * root cd /app && php bin/console app:create-customer-orders 2 --random >> /var/log/cron.log 2>&1
-*/15 * * * * root cd /app && php bin/console app:accept-purchase-orders 20 >> /var/log/cron.log 2>&1
-*/30 * * * * root cd /app && php bin/console app:build-purchase-orders 20 >> /var/log/cron.log 2>&1
+*/15 * * * * root cd /app && php bin/console app:build-purchase-orders 20 >> /var/log/cron.log 2>&1
+1,16,31,46 * * * * root cd /app && php bin/console app:accept-purchase-orders 20 >> /var/log/cron.log 2>&1
 0    * * * * root cd /app && php bin/console app:ship-purchase-order-items 100 >> /var/log/cron.log 2>&1
 0    * * * * root cd /app && php bin/console app:deliver-purchase-order-items 100 >> /var/log/cron.log 2>&1
 */15 * * * * root cd /app && php bin/console app:update-supplier-stock 20 >> /var/log/cron.log 2>&1
