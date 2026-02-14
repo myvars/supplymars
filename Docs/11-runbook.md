@@ -146,8 +146,7 @@ docker compose -f compose.yaml -f compose.prod.yaml exec php \
   php bin/console messenger:failed:show
 
 # Check cron output
-docker compose -f compose.yaml -f compose.prod.yaml exec cron \
-  tail -50 /var/log/cron.log
+docker compose -f compose.yaml -f compose.prod.yaml logs --tail=50 cron
 
 # MySQL process list (check for long-running queries)
 docker compose -f compose.yaml -f compose.prod.yaml exec database \
@@ -166,7 +165,7 @@ The cron container runs `app:backup-database` daily at 02:00 UTC (see `docker/ph
 - Uploads to the S3 backups filesystem (`unicorn-bucket-two/backups/`)
 - Deletes backups older than 30 days (default retention)
 
-Backup logs appear in `/var/log/cron.log` inside the cron container.
+Backup logs appear in `docker compose logs cron`.
 
 ### 4.2 Manual Backup
 
@@ -351,8 +350,7 @@ docker compose -f compose.yaml -f compose.prod.yaml restart messenger
 docker compose -f compose.yaml -f compose.prod.yaml ps cron
 
 # Check cron log
-docker compose -f compose.yaml -f compose.prod.yaml exec cron \
-  tail -100 /var/log/cron.log
+docker compose -f compose.yaml -f compose.prod.yaml logs --tail=100 cron
 
 # Verify crontab is installed
 docker compose -f compose.yaml -f compose.prod.yaml exec cron \

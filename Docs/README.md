@@ -86,6 +86,7 @@ SupplyMars is a **modular monolith** - bounded contexts are self-contained modul
 - **[patterns/FormFlow/](patterns/FormFlow/README.md)** - Thin controller orchestration for CRUD operations
 - **[patterns/Turbo/](patterns/Turbo/README.md)** - Turbo Frames, Streams, and modal system
 - **[patterns/UI/](patterns/UI/README.md)** - Server-driven UI with Twig Components, Stimulus, and Forms
+- **[patterns/InlineEdit/](patterns/InlineEdit/README.md)** - Click-to-edit fields with auto-save
 
 ### Architecture Decision Records
 - **[adr/001-multi-supplier-sourcing.md](adr/001-multi-supplier-sourcing.md)** - Why orders split across suppliers
@@ -97,6 +98,7 @@ SupplyMars is a **modular monolith** - bounded contexts are self-contained modul
 - **[adr/007-turbo-frame-modal-architecture.md](adr/007-turbo-frame-modal-architecture.md)** - Turbo Frames with native dialog modals
 - **[adr/008-server-driven-ui-architecture.md](adr/008-server-driven-ui-architecture.md)** - Server-driven UI instead of JavaScript SPA
 - **[adr/009-support-ticket-system.md](adr/009-support-ticket-system.md)** - Pool-based support ticket system with conversation threads
+- **[adr/010-customer-insights-reporting.md](adr/010-customer-insights-reporting.md)** - Customer segmentation, geographic, and insights reporting
 
 ---
 

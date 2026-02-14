@@ -79,3 +79,7 @@ jobs:
                       export RABBITMQ_PASSWORD="${{ secrets.RABBITMQ_PASSWORD }}"
                       export MESSENGER_TRANSPORT_DSN="${{ secrets.MESSENGER_TRANSPORT_DSN }}"
                       docker compose -f compose.yaml -f compose.prod.yaml up -d --build --remove-orphans --wait
+                      echo "Running post-deploy smoke test..."
+                      curl -kf --retry 3 --retry-delay 5 https://localhost
+                      docker compose -f compose.yaml -f compose.prod.yaml exec -T php php bin/console doctrine:migrations:up-to-date
+                      echo "Smoke test passed."

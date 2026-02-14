@@ -20,7 +20,6 @@ export default class extends Controller {
                             method: 'POST',
                             body: JSON.stringify(sortable.toArray())
                         });
-                    console.log('response', response);
                     if (!response.ok) {
                         console.error('Network response was not ok.');
                     }

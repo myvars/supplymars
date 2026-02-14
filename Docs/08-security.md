@@ -245,12 +245,21 @@ Customer data is fabricated:
 ```nginx
 # docker/nginx/conf.d/prod.conf
 
+add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
 add_header X-Content-Type-Options "nosniff" always;
 add_header X-Frame-Options "SAMEORIGIN" always;
-add_header X-XSS-Protection "1; mode=block" always;
 add_header Referrer-Policy "strict-origin-when-cross-origin" always;
-add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; form-action 'self'; base-uri 'self'" always;
 ```
+
+### Content Security Policy
+
+The CSP header includes `'unsafe-inline'` for both `script-src` and `style-src`:
+
+- **`script-src 'unsafe-inline'`** — Required for the dark-mode FOUC-prevention script in `templates/base.html.twig` (lines 4-8), which must run before page paint to avoid a flash of unstyled content.
+- **`style-src 'unsafe-inline'`** — Required for Tailwind CSS runtime style injection and Flowbite component styles.
+
+Removing `unsafe-inline` would require nonce-based CSP, which Symfony's Asset Mapper does not currently support. If Asset Mapper adds nonce support in a future release, the inline script should be migrated and `unsafe-inline` removed.
 
 ### SSL/TLS
 

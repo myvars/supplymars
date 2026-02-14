@@ -607,12 +607,14 @@ class Product
                 continue;
             }
 
-            if ($supplierProduct->getCost() < $activeSource->getCost()) {
+            $costComparison = bccomp($supplierProduct->getCost() ?? '0', $activeSource->getCost() ?? '0', 2);
+
+            if ($costComparison < 0) {
                 $activeSource = $supplierProduct;
                 continue;
             }
 
-            if ($supplierProduct->getCost() === $activeSource->getCost()
+            if ($costComparison === 0
                 && $supplierProduct->getStock() > $activeSource->getStock()
             ) {
                 $activeSource = $supplierProduct;

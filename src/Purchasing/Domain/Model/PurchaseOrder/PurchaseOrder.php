@@ -53,9 +53,11 @@ class PurchaseOrder implements DomainEventProviderInterface
     #[ORM\Column]
     private \DateTimeImmutable $dueDate;
 
+    /** @var numeric-string */
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private string $shippingPrice = '0';
 
+    /** @var numeric-string */
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     private string $shippingPriceIncVat = '0';
 
@@ -139,21 +141,21 @@ class PurchaseOrder implements DomainEventProviderInterface
 
     public function recalculateTotal(): void
     {
-        $totalPrice = 0;
-        $totalPriceIncVat = 0;
+        $totalPrice = '0';
+        $totalPriceIncVat = '0';
         $totalWeight = 0;
 
         foreach ($this->purchaseOrderItems as $purchaseOrderItem) {
-            $totalPrice += $purchaseOrderItem->getTotalPrice();
-            $totalPriceIncVat += $purchaseOrderItem->getTotalPriceIncVat();
+            $totalPrice = bcadd($totalPrice, $purchaseOrderItem->getTotalPrice(), 2);
+            $totalPriceIncVat = bcadd($totalPriceIncVat, $purchaseOrderItem->getTotalPriceIncVat(), 2);
             $totalWeight += $purchaseOrderItem->getTotalWeight();
         }
 
-        $totalPrice += (float) $this->shippingPrice;
-        $totalPriceIncVat += (float) $this->shippingPriceIncVat;
+        $totalPrice = bcadd($totalPrice, $this->shippingPrice, 2);
+        $totalPriceIncVat = bcadd($totalPriceIncVat, $this->shippingPriceIncVat, 2);
 
-        $this->changeTotalPrice((string) $totalPrice);
-        $this->changeTotalPriceIncVat((string) $totalPriceIncVat);
+        $this->changeTotalPrice($totalPrice);
+        $this->changeTotalPriceIncVat($totalPriceIncVat);
         $this->changeTotalWeight($totalWeight);
     }
 
@@ -223,11 +225,13 @@ class PurchaseOrder implements DomainEventProviderInterface
         return $this->dueDate;
     }
 
+    /** @return numeric-string */
     public function getShippingPrice(): string
     {
         return $this->shippingPrice;
     }
 
+    /** @return numeric-string */
     public function getShippingPriceIncVat(): string
     {
         return $this->shippingPriceIncVat;
@@ -285,6 +289,7 @@ class PurchaseOrder implements DomainEventProviderInterface
         return $profit;
     }
 
+    /** @param numeric-string $shippingPrice */
     private function changeShippingPrice(string $shippingPrice): void
     {
         if ((float) $shippingPrice < 0) {
@@ -294,6 +299,7 @@ class PurchaseOrder implements DomainEventProviderInterface
         $this->shippingPrice = $shippingPrice;
     }
 
+    /** @param numeric-string $shippingPriceIncVat */
     private function changeShippingPriceIncVat(string $shippingPriceIncVat): void
     {
         if ((float) $shippingPriceIncVat < 0) {

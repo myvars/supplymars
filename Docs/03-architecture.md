@@ -474,8 +474,8 @@ Production cron schedule (inferred from `docker/php/cron/prod-crontab`):
 | Interval | Command | Purpose |
 |----------|---------|---------|
 | */5 min | `app:create-customer-orders 2 --random` | Steady order flow |
-| */15 min | `app:accept-purchase-orders 20` | Supplier responses |
-| */30 min | `app:build-purchase-orders 20` | Allocation catchup |
+| */15 min | `app:build-purchase-orders 20` | Allocate orders to suppliers |
+| +1 min offset | `app:accept-purchase-orders 20` | Supplier responses (runs 1 min after build) |
 | Hourly | `app:ship-purchase-order-items 100` | Ship accepted items |
 | Hourly | `app:deliver-purchase-order-items 100` | Complete deliveries |
 | */15 min | `app:update-supplier-stock 20` | Stock fluctuation |

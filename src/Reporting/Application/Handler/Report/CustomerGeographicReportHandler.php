@@ -59,13 +59,19 @@ final readonly class CustomerGeographicReportHandler
             ];
         }
 
-        $totalRevenue = array_sum(array_map(fn (array $row): float => (float) $row['orderValue'], $geoData));
+        $totalRevenue = '0';
+        foreach ($geoData as $row) {
+            /** @var numeric-string $orderValue */
+            $orderValue = (string) ($row['orderValue'] ?? '0');
+            $totalRevenue = bcadd($totalRevenue, $orderValue, 2);
+        }
+
         $cityCount = count($geoData);
 
         return [
             'topCity' => $geoData[0]['city'] ?? '-',
             'cityCount' => $cityCount,
-            'avgRevenuePerCity' => $cityCount > 0 ? number_format($totalRevenue / $cityCount, 2, '.', '') : '0.00',
+            'avgRevenuePerCity' => $cityCount > 0 ? bcdiv($totalRevenue, (string) $cityCount, 2) : '0.00',
         ];
     }
 }

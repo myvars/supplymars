@@ -3,6 +3,12 @@
 # ========================================
 # Secure, production-ready settings: real secrets, no dev mounts, real SSL, isolated service configs.
 
+x-common-logging: &common-logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
 x-common-php-env: &common-php-env
   APP_SECRET: ${APP_SECRET}                               # Production app secret
   DEFAULT_DOMAIN: ${DEFAULT_DOMAIN}                       # Production domain
@@ -20,6 +26,7 @@ x-common-php-env: &common-php-env
 services:
   # --- MySQL Database (Prod) ---
   database:
+    logging: *common-logging
     ports:
       - "127.0.0.1:3306:3306"   # Bind MySQL to localhost only (not exposed to public)
     environment:
@@ -30,12 +37,14 @@ services:
 
   # --- Redis (Prod) ---
   redis:
+    logging: *common-logging
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD}    # Protect Redis in prod (set strong pw)
 
 
   # --- RabbitMQ Message Broker ---
   rabbitmq:
+    logging: *common-logging
     expose:
       - "5672"  # Expose RabbitMQ AMQP port internally (not to host)
     environment:
@@ -47,6 +56,7 @@ services:
 
   # --- PHP Application (Prod) ---
   php:
+    logging: *common-logging
     build:
       context: .
       dockerfile: docker/Dockerfile
@@ -59,6 +69,7 @@ services:
 
   # --- Messenger Worker (Prod) ---
   messenger:
+    logging: *common-logging
     build:
       context: .
       dockerfile: docker/Dockerfile
@@ -70,6 +81,7 @@ services:
 
   # --- Cron Jobs (Prod) ---
   cron:
+    logging: *common-logging
     build:
       context: .
       dockerfile: docker/Dockerfile
@@ -81,6 +93,7 @@ services:
 
   # --- Nginx Webserver (Prod) ---
   nginx:
+    logging: *common-logging
     build:
       context: .
       dockerfile: docker/Dockerfile

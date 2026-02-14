@@ -234,17 +234,19 @@ Summaries refresh via scheduled commands.
 
 ## Bounded Contexts
 
-The system is organized into eight bounded contexts:
+The system is organized into ten bounded contexts:
 
 | Context | Responsibility | Key Entities |
 |---------|---------------|--------------|
+| **Audit** | Change tracking | StatusChangeLog, SupplierStockChangeLog |
 | **Catalog** | Product information | Product, Category, Subcategory, Manufacturer |
-| **Purchasing** | Supplier relationships | Supplier, SupplierProduct, PurchaseOrder |
+| **Customer** | Users and addresses | User, Address |
+| **Home** | Homepage and static pages | — |
+| **Note** | Support tickets | Pool, Ticket, Message |
 | **Order** | Customer orders | CustomerOrder, CustomerOrderItem |
 | **Pricing** | Price management | VatRate, pricing listeners |
-| **Reporting** | Business intelligence | ProductSales, OrderSales, Dashboards |
-| **Customer** | Users and addresses | User, Address |
-| **Audit** | Change tracking | StatusChangeLog, SupplierStockChangeLog |
+| **Purchasing** | Supplier relationships | Supplier, SupplierProduct, PurchaseOrder |
+| **Reporting** | Business intelligence | ProductSales, OrderSales, CustomerSales, Dashboards |
 | **Review** | Product reviews | ProductReview, ProductReviewSummary |
 
 Plus a **Shared Kernel** containing cross-cutting concerns.

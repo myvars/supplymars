@@ -14,15 +14,9 @@ export default class extends Controller {
             backdrop: true,
             bodyScrolling: false,
             backdropClasses: 'bg-gray-900/50 dark:bg-gray-900/80 fixed inset-0 z-30',
-            onHide: () => {
-                console.log('Drawer is hidden');
-            },
-            onShow: () => {
-                console.log('Drawer is shown');
-            },
-            onToggle: () => {
-                console.log('Drawer has been toggled');
-            },
+            onHide: () => {},
+            onShow: () => {},
+            onToggle: () => {},
         };
 
         // Initialize the Drawer only if it hasn't been initialized yet

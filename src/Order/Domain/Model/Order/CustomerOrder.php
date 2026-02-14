@@ -55,10 +55,12 @@ class CustomerOrder implements DomainEventProviderInterface
     #[ORM\Column]
     private \DateTimeImmutable $dueDate;
 
+    /** @var numeric-string */
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     #[Assert\Range(notInRangeMessage: 'Shipping price must be between {{ min }} and {{ max }}', min: 0, max: 10000)]
     private string $shippingPrice = '0';
 
+    /** @var numeric-string */
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2)]
     #[Assert\Range(
         notInRangeMessage: 'Shipping price int VAT must be between {{ min }} and {{ max }}', min: 0, max: 10000
@@ -139,8 +141,8 @@ class CustomerOrder implements DomainEventProviderInterface
 
     public function recalculateTotal(): void
     {
-        $totalPrice = 0;
-        $totalPriceIncVat = 0;
+        $totalPrice = '0';
+        $totalPriceIncVat = '0';
         $totalWeight = 0;
 
         foreach ($this->customerOrderItems as $customerOrderItem) {
@@ -148,18 +150,18 @@ class CustomerOrder implements DomainEventProviderInterface
                 continue;
             }
 
-            $totalPrice += $customerOrderItem->getTotalPrice();
-            $totalPriceIncVat += $customerOrderItem->getTotalPriceIncVat();
+            $totalPrice = bcadd($totalPrice, $customerOrderItem->getTotalPrice() ?? '0', 2);
+            $totalPriceIncVat = bcadd($totalPriceIncVat, $customerOrderItem->getTotalPriceIncVat() ?? '0', 2);
             $totalWeight += $customerOrderItem->getTotalWeight();
         }
 
         if (OrderStatus::CANCELLED !== $this->getStatus()) {
-            $totalPrice += (float) $this->getShippingPrice();
-            $totalPriceIncVat += (float) $this->getShippingPriceIncVat();
+            $totalPrice = bcadd($totalPrice, $this->getShippingPrice(), 2);
+            $totalPriceIncVat = bcadd($totalPriceIncVat, $this->getShippingPriceIncVat(), 2);
         }
 
-        $this->changeTotalPrice((string) $totalPrice);
-        $this->changeTotalPriceIncVat((string) $totalPriceIncVat);
+        $this->changeTotalPrice($totalPrice);
+        $this->changeTotalPriceIncVat($totalPriceIncVat);
         $this->changeTotalWeight($totalWeight);
     }
 
@@ -259,11 +261,13 @@ class CustomerOrder implements DomainEventProviderInterface
         return $this->dueDate;
     }
 
+    /** @return numeric-string */
     public function getShippingPrice(): string
     {
         return $this->shippingPrice;
     }
 
+    /** @return numeric-string */
     public function getShippingPriceIncVat(): string
     {
         return $this->shippingPriceIncVat;
@@ -314,6 +318,7 @@ class CustomerOrder implements DomainEventProviderInterface
         return OrderStatus::CANCELLED === $this->status;
     }
 
+    /** @param numeric-string $shippingPrice */
     private function changeShippingPrice(string $shippingPrice): void
     {
         if ((float) $shippingPrice < 0) {
@@ -323,6 +328,7 @@ class CustomerOrder implements DomainEventProviderInterface
         $this->shippingPrice = $shippingPrice;
     }
 
+    /** @param numeric-string $shippingPriceIncVat */
     private function changeShippingPriceIncVat(string $shippingPriceIncVat): void
     {
         if ((float) $shippingPriceIncVat < 0) {
