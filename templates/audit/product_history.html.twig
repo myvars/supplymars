@@ -6,6 +6,7 @@
     {{ include('catalog/product/_navigation.html.twig', {result: result}) }}
 
     <div class="m-3 space-y-4">
+        <twig:Breadcrumb :href="path('app_catalog_product_index')" label="Products" :current="result.name"/>
         {% if hasData %}
             <twig:Card>
                 <div class="mb-3 flex items-center justify-between">

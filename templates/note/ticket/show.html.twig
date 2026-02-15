@@ -7,6 +7,7 @@
 {% block body %}
 
     <div class="m-3 space-y-4">
+        <twig:Breadcrumb :href="path('app_note_ticket_index')" label="Tickets" :current="result.subject"/>
         {{ include('note/ticket/_ticket_card.html.twig', {ticket: result}) }}
 
         <twig:Card>
@@ -39,7 +40,6 @@
             {% endif %}
         </twig:Card>
 
-        <twig:BackLink :href="path('app_note_ticket_index')" label="View all tickets"/>
     </div>
 
 {% endblock %}

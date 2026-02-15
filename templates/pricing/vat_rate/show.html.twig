@@ -7,9 +7,9 @@
 {% block body %}
 
     <div class="m-3 space-y-4">
+        <twig:Breadcrumb :href="path('app_pricing_vat_rate_index')" label="VAT Rates" :current="result.name"/>
         {{ include('pricing/vat_rate/_vat_rate_card.html.twig', {vatRate: result}) }}
         {{ include('pricing/vat_rate/_categories_card.html.twig', {vatRate: result}) }}
-        <twig:BackLink :href="path('app_pricing_vat_rate_index')" label="View all VAT rates"/>
     </div>
 
 {% endblock %}

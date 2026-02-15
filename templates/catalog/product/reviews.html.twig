@@ -5,14 +5,12 @@
 {% block body %}
     {{ include('catalog/product/_navigation.html.twig', {result: result}) }}
     <div class="m-3 space-y-4">
+        <twig:Breadcrumb :href="path('app_catalog_product_index')" label="Products" :current="result.name"/>
         {{ include('review/_review_summary_card.html.twig', {summary: summary}) }}
         {% for review in reviews %}
             {{ include('review/_review_preview_card.html.twig', {review: review}) }}
         {% else %}
             <twig:EmptyState icon="flowbite:star-solid" message="No published reviews yet"/>
         {% endfor %}
-        {% if reviews is not empty %}
-            <twig:BackLink :href="path('app_review_index', {productId: result.id})" label="View all reviews"/>
-        {% endif %}
     </div>
 {% endblock %}

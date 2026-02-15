@@ -7,6 +7,7 @@
 {% block body %}
 
     <div class="m-3 space-y-4">
+        <twig:Breadcrumb :href="path('app_order_index')" label="Orders" current="Order #{{ '%06d'|format(result.id) }}"/>
 
         <twig:Card editLink="{{ result.allowEdit ? path('app_order_cancel_confirm', {id: result.publicId.value}) : null }}"
                    editIcon="bi:x-lg"
@@ -144,7 +145,6 @@
                 {{ include('purchasing/purchase_order/_order_po_card.html.twig', {purchaseOrder: purchaseOrder}) }}
             {% endfor %}
         {% endif %}
-        <twig:BackLink :href="path('app_order_index')" label="View all orders"/>
     </div>
 
 {% endblock %}

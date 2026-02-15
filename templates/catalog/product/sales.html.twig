@@ -7,6 +7,7 @@
     {{ include('catalog/product/_navigation.html.twig', {product: result}) }}
 
     <div class="m-3 space-y-4">
+        <twig:Breadcrumb :href="path('app_catalog_product_index')" label="Products" :current="result.name"/>
         {{ include('reporting/_dashboard_card.html.twig', {
             dashboardSrc: path('app_reporting_dashboard_product_sales', {productId: result.id})
         }) }}

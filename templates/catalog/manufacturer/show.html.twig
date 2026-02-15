@@ -7,11 +7,11 @@
 {% block body %}
 
     <div class="m-3 space-y-4">
+        <twig:Breadcrumb :href="path('app_catalog_manufacturer_index')" label="Manufacturers" :current="result.name"/>
         {{ include('catalog/manufacturer/_manufacturer_card.html.twig', {manufacturer: result}) }}
         {{ include('reporting/_dashboard_card.html.twig', {
             dashboardSrc: path('app_reporting_dashboard_product_sales', {manufacturerId: result.id})
         }) }}
-        <twig:BackLink :href="path('app_catalog_manufacturer_index')" label="View all manufacturers"/>
     </div>
 
 {% endblock %}

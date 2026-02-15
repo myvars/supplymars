@@ -6,6 +6,7 @@
 {% block body %}
 
     <div class="m-3 space-y-4">
+        <twig:Breadcrumb :href="path('app_purchasing_purchase_order_index')" label="Purchase Orders" current="PO #{{ '%06d'|format(result.id) }}"/>
         {{ include('purchasing/purchase_order/_po_card.html.twig', {purchaseOrder: result}) }}
     </div>
 

@@ -7,6 +7,7 @@
 {% block body %}
 
     <div class="m-3 space-y-4">
+        <twig:Breadcrumb :href="path('app_catalog_category_index')" label="Categories" :current="result.name"/>
         {{ include('catalog/category/_category_card.html.twig', {category: result}) }}
         {% if result.subcategories.count > 0 %}
             {{ include('catalog/category/_subcategories_card.html.twig', {subcategories: result.subcategories}) }}
@@ -14,7 +15,6 @@
         {{ include('reporting/_dashboard_card.html.twig', {
             dashboardSrc: path('app_reporting_dashboard_product_sales', {categoryId: result.id})
         }) }}
-        <twig:BackLink :href="path('app_catalog_category_index')" label="View all categories"/>
     </div>
 
 {% endblock %}

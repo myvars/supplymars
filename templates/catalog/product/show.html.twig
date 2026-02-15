@@ -8,10 +8,10 @@
 
     {{ include('catalog/product/_navigation.html.twig', {product: result}) }}
     <div class="m-3 space-y-4">
+        <twig:Breadcrumb :href="path('app_catalog_product_index')" label="Products" :current="result.name"/>
         <div class="mx-auto max-w-3xl">
             {{ include('catalog/product/_product_card.html.twig', {product: result}) }}
         </div>
-        <twig:BackLink :href="path('app_catalog_product_index')" label="View all products"/>
     </div>
 
 {% endblock %}

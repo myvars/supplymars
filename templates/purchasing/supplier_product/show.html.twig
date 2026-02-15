@@ -7,8 +7,8 @@
 {% block body %}
 
     <div class="m-3 space-y-4">
+        <twig:Breadcrumb :href="path('app_purchasing_supplier_product_index')" label="Supplier Products" :current="result.name"/>
         {{ include('purchasing/supplier_product/_supplier_product_card.html.twig', {supplierProduct: result}) }}
-        <twig:BackLink :href="path('app_purchasing_supplier_product_index')" label="View all supplier products"/>
     </div>
 
 {% endblock %}
