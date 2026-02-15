@@ -24,7 +24,7 @@ final class Card
 
     public ?string $showLink = null;
 
-    public string $editIcon = 'mynaui:edit-one';
+    public string $editIcon = 'bi:pencil-square';
 
     public ?string $statusHighlight = null;
 

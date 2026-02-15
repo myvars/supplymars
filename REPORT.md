@@ -272,17 +272,19 @@ That said, the interface leans toward **information density over visual breathin
 
 ---
 
-### C9. Consolidate Icon Library Sources
+### ~~C9. Consolidate Icon Library Sources~~ ✅
 
-**What changes:** The codebase uses icons from 8+ different icon sets via Symfony UX Icons: `flowbite:*`, `bi:*` (Bootstrap), `ri:*` (Remix), `lets-icons:*`, `mingcute:*`, `hugeicons:*`, `mynaui:*`, `bxs:*` (Boxicons), `mdi:*` (Material), `ic:*`, `clarity:*`, `simple-icons:*`, `icon-park-solid:*`. While Symfony UX Icons handles loading, the visual style varies (filled vs outlined, rounded vs sharp corners, line weights).
+~~**What changes:** The codebase uses icons from 8+ different icon sets via Symfony UX Icons: `flowbite:*`, `bi:*` (Bootstrap), `ri:*` (Remix), `lets-icons:*`, `mingcute:*`, `hugeicons:*`, `mynaui:*`, `bxs:*` (Boxicons), `mdi:*` (Material), `ic:*`, `clarity:*`, `simple-icons:*`, `icon-park-solid:*`. While Symfony UX Icons handles loading, the visual style varies (filled vs outlined, rounded vs sharp corners, line weights).~~
 
-Audit icon usage and prefer 1-2 primary sets (suggest: `bi:*` for general UI icons, `flowbite:*` for navigation/status) with others only for specialized cases.
+~~Audit icon usage and prefer 1-2 primary sets (suggest: `bi:*` for general UI icons, `flowbite:*` for navigation/status) with others only for specialized cases.~~
 
-**Where:** All templates. Primarily impacts `_menu.html.twig`, `StatusIcon.php`, and various card templates.
+~~**Where:** All templates. Primarily impacts `_menu.html.twig`, `StatusIcon.php`, and various card templates.~~
 
-**Risk:** Low-Medium — visual change, needs side-by-side comparison.
-**Effort:** Medium (half day for audit, 1 day for replacement).
-**Value:** Low-Medium — improves visual cohesion, reduces cognitive load of mixing icon styles.
+~~**Risk:** Low-Medium — visual change, needs side-by-side comparison.~~
+~~**Effort:** Medium (half day for audit, 1 day for replacement).~~
+~~**Value:** Low-Medium — improves visual cohesion, reduces cognitive load of mixing icon styles.~~
+
+**Resolved:** Consolidated from 15 icon sets down to 3: `bi:*` (Bootstrap Icons, primary), `flowbite:*` (established patterns), `simple-icons:*` (brand logos). Replaced all `mdi:*`, `mingcute:*`, `ic:*`, `bxs:*`, `ri:*`, `lets-icons:*`, `clarity:*`, `hugeicons:*`, `icon-park-solid:*`, `mynaui:*`, `radix-icons:*`, `icomoon-free:*` across 22 files (3 PHP, 19 Twig).
 
 ---
 
@@ -602,11 +604,11 @@ Audit icon usage and prefer 1-2 primary sets (suggest: `bi:*` for general UI ico
 
 ### Phase 2 — Optional Refinements (2-3 PRs, opportunistic)
 
-**PR 2a: Icon Consolidation**
-- Audit all icon usage across templates
-- Choose 1-2 primary icon sets (suggest: Bootstrap Icons + Flowbite)
-- Replace outliers where visually equivalent icons exist in primary sets
-- Document icon conventions
+~~**PR 2a: Icon Consolidation**~~ ✅
+~~- Audit all icon usage across templates~~
+~~- Choose 1-2 primary icon sets (suggest: Bootstrap Icons + Flowbite)~~
+~~- Replace outliers where visually equivalent icons exist in primary sets~~
+~~- Document icon conventions~~
 
 ~~**PR 2b: Loading/Skeleton States**~~ — Declined
 ~~- Create Skeleton component (animated pulse placeholders)~~

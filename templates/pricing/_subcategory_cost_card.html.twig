@@ -4,7 +4,7 @@
     <p class="mb-3 text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">{{ product.subcategory.name }}</p>
     <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
         <p class="flex items-center gap-2">
-            <twig:ux:icon name="mdi:percent-outline" class="h-4 w-4 text-gray-400 dark:text-gray-500"/>
+            <twig:ux:icon name="bi:percent" class="h-4 w-4 text-gray-400 dark:text-gray-500"/>
             {% if product.subcategory.hasDefaultMarkup %}
                 {{ product.subcategory.defaultMarkup|number_format(3) }}% mark-up
                 {% if product.activeMarkupTarget == 'SUBCATEGORY' %}
@@ -15,7 +15,7 @@
             {% endif %}
         </p>
         <p class="flex items-center gap-2">
-            <twig:ux:icon name="mdi:tag-outline" class="h-4 w-4 text-gray-400 dark:text-gray-500"/>
+            <twig:ux:icon name="bi:tag" class="h-4 w-4 text-gray-400 dark:text-gray-500"/>
             {% if product.subcategory.hasPriceModel %}
                 {{ product.subcategory.priceModel.getName }} price model
                 {% if product.activePriceModelTarget == 'SUBCATEGORY' %}

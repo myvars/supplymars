@@ -45,7 +45,7 @@ final class InlineEdit
     /**
      * Icon to use for the edit link.
      */
-    public string $editIcon = 'mynaui:edit-one';
+    public string $editIcon = 'bi:pencil-square';
 
     /**
      * Size class for the edit icon.

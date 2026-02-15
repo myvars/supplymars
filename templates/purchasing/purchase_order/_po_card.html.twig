@@ -3,7 +3,7 @@
 {% set colourScheme = purchaseOrder.supplier.colourScheme %}
 <twig:Card colour="{{ colourScheme }}"
            editLink="{{ path('app_purchasing_purchase_order_rewind_confirm', {id: purchaseOrder.publicId.value}) }}"
-           editIcon="mingcute:back-line"
+           editIcon="bi:arrow-counterclockwise"
            statusHighlight="{{ purchaseOrder.status.value }}">
 
     {# Header — PO number, supplier, date, order link, status #}

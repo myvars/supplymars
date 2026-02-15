@@ -4,11 +4,11 @@
     <p class="mb-3">{{ include('catalog/category/_inline_name.html.twig', {category: category}) }}</p>
     <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
         <p class="flex items-center gap-2">
-            <twig:ux:icon name="mdi:percent-outline" class="h-4 w-4 text-gray-400 dark:text-gray-500"/>
+            <twig:ux:icon name="bi:percent" class="h-4 w-4 text-gray-400 dark:text-gray-500"/>
             {{ category.defaultMarkup|number_format(3) }}% mark-up
         </p>
         <p class="flex items-center gap-2">
-            <twig:ux:icon name="mdi:tag-outline" class="h-4 w-4 text-gray-400 dark:text-gray-500"/>
+            <twig:ux:icon name="bi:tag" class="h-4 w-4 text-gray-400 dark:text-gray-500"/>
             {{ category.priceModel.getName }} price model
         </p>
         <p class="flex items-center gap-2">

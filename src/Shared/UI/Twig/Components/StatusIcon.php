@@ -12,15 +12,15 @@ final class StatusIcon
     public function getIconName(): string
     {
         return match ($this->type) {
-            'created' => 'lets-icons:order',
+            'created' => 'bi:bag-check',
             'pending' => 'bi:hourglass-split',
-            'processing' => 'clarity:cog-solid',
-            'accepted', 'active', 'verified' => 'hugeicons:tick-01',
+            'processing' => 'flowbite:cog-solid',
+            'accepted', 'active', 'verified' => 'bi:check-circle-fill',
             'rejected', 'inactive', 'unverified' => 'bi:x-lg',
-            'refunded' => 'lets-icons:refund-back',
-            'shipped' => 'hugeicons:delivery-truck-01',
-            'delivered' => 'ri:box-3-fill',
-            'cancelled' => 'clarity:cancel-line',
+            'refunded' => 'bi:arrow-return-left',
+            'shipped' => 'bi:truck',
+            'delivered' => 'bi:box-seam-fill',
+            'cancelled' => 'bi:x-circle',
             default => throw new \LogicException(sprintf('Unknown icon "%s"', $this->type)),
         };
     }

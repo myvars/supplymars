@@ -48,9 +48,9 @@
         {% if compare is not null %}
             {% set difference = value - compare %}
             {% if difference > 0 %}
-                <twig:ux:icon name="bxs:up-arrow" class="h-4 w-4 self-center text-green-500" />
+                <twig:ux:icon name="bi:caret-up-fill" class="h-4 w-4 self-center text-green-500" />
             {% elseif difference < 0 %}
-                <twig:ux:icon name="bxs:down-arrow" class="h-4 w-4 self-center text-red-500" />
+                <twig:ux:icon name="bi:caret-down-fill" class="h-4 w-4 self-center text-red-500" />
             {% endif %}
         {% endif %}
     </div>

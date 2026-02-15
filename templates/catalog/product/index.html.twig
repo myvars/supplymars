@@ -33,7 +33,7 @@
                             <twig:StatusBadge status="{{ result.isActive ? 'ACTIVE' : 'INACTIVE' }}"/>
                         </div>
                         <p class="mt-0.5 flex items-center gap-1.5 -ms-0.5 text-xs text-gray-500 dark:text-gray-400">
-                            <twig:ux:icon name="mdi:pound" class="h-3.5 w-3.5 text-gray-400 dark:text-gray-500"/>
+                            <twig:ux:icon name="bi:currency-pound" class="h-3.5 w-3.5 text-gray-400 dark:text-gray-500"/>
                             {{ '%06d'|format(result.id) }}
                         </p>
                         {% set stockClasses = result.stock > 0

@@ -17,7 +17,7 @@
            class="text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
             {{ product.category.name|u.truncate(30, '...') }}
         </a>
-        <twig:ux:icon name="ic:baseline-navigate-next" class="w-4 text-gray-400 dark:text-gray-500"/>
+        <twig:ux:icon name="bi:chevron-right" class="w-4 text-gray-400 dark:text-gray-500"/>
         <a href="{{ path('app_catalog_subcategory_show', {id: product.subcategory.publicId.value}) }}"
            data-turbo-frame="body"
            class="text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
@@ -40,15 +40,15 @@
     </div>
     <div class="space-y-1.5 text-xs text-gray-500 dark:text-gray-400">
         <p class="flex items-center gap-1.5">
-            <twig:ux:icon name="mdi:pound" class="h-3.5 w-3.5 text-gray-400 dark:text-gray-500"/>
+            <twig:ux:icon name="bi:currency-pound" class="h-3.5 w-3.5 text-gray-400 dark:text-gray-500"/>
             {{ '%06d'|format(product.id) }}
         </p>
         <p class="flex items-center gap-1.5">
-            <twig:ux:icon name="mdi:factory" class="h-3.5 w-3.5 text-gray-400 dark:text-gray-500"/>
+            <twig:ux:icon name="bi:building" class="h-3.5 w-3.5 text-gray-400 dark:text-gray-500"/>
             {{ product.manufacturer.name }} <span class="mx-1 text-gray-300 dark:text-gray-600">&middot;</span> {{ product.mfrPartNumber }}
         </p>
         <p class="flex items-center gap-1.5">
-            <twig:ux:icon name="mdi:account-outline" class="h-3.5 w-3.5 text-gray-400 dark:text-gray-500"/>
+            <twig:ux:icon name="bi:person" class="h-3.5 w-3.5 text-gray-400 dark:text-gray-500"/>
             {% if product.hasOwner %}
                 {{ product.owner.fullName }}
             {% else %}
