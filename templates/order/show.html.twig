@@ -14,7 +14,7 @@
                    data-customer-id="{{ result.customer.id }}">
 
             {# Header — status, lock, dates, cancel action #}
-            <h5 class="flex items-center text-xl font-semibold text-gray-900 dark:text-white">
+            <h1 class="flex items-center text-xl font-semibold text-gray-900 dark:text-white">
                 Order #{{ '%06d'|format(result.id) }}
                 <a href="{{ path('app_order_lock_toggle_status', {id: result.publicId.value}) }}"
                    data-turbo-frame="body"
@@ -30,7 +30,7 @@
                         <twig:ux:icon name="flowbite:lock-open-solid" class="w-4 me-1.5"/>
                     {% endif %}
                 </a>
-            </h5>
+            </h1>
             <div class="mt-1.5 flex items-center justify-between">
                 <p class="text-sm text-gray-500 dark:text-gray-400">
                     {{ result.createdAt|date('jS M Y H:i') }}
@@ -59,7 +59,7 @@
             </div>
 
             {# Summary — delivery address and financial totals #}
-            <div class="mt-4 border-t border-gray-200 pt-4 dark:border-white/10">
+            <div class="mt-4 border-t border-gray-200 pt-4 dark:border-gray-600">
                 <div class="grid gap-6 sm:grid-cols-[1fr_auto]">
                     <div>
                         <p class="mb-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-500">Delivery Address</p>
@@ -108,7 +108,7 @@
             </div>
 
             {# Order items #}
-            <div class="mt-4 border-t border-gray-200 pt-4 dark:border-white/10">
+            <div class="mt-4 border-t border-gray-200 pt-4 dark:border-gray-600">
                 <div class="flex w-full items-center justify-between">
                     <p class="text-gray-500 dark:text-gray-300">
                         {{ result.lineCount }} {% if result.lineCount == 1 %}line{% else %}lines{% endif %}

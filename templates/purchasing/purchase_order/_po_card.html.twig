@@ -7,11 +7,11 @@
            statusHighlight="{{ purchaseOrder.status.value }}">
 
     {# Header — PO number, supplier, date, order link, status #}
-    <h5 class="flex items-center text-xl font-semibold text-gray-900 dark:text-white">
+    <h1 class="flex items-center text-xl font-semibold text-gray-900 dark:text-white">
         PO #{{ '%06d'|format(purchaseOrder.id) }}
         <span class="mx-1 text-gray-300 dark:text-gray-600">&middot;</span>
         <span class="text-base font-normal text-gray-500 dark:text-gray-400">{{ purchaseOrder.supplier.name }}</span>
-    </h5>
+    </h1>
     <div class="mt-1.5 flex items-center justify-between">
         <p class="text-sm text-gray-500 dark:text-gray-400">
             {{ purchaseOrder.createdAt|date('jS M Y H:i') }}
@@ -30,7 +30,7 @@
     </div>
 
     {# Summary — delivery address and financial totals #}
-    <div class="mt-4 border-t border-gray-200 pt-4 dark:border-white/10">
+    <div class="mt-4 border-t border-gray-200 pt-4 dark:border-gray-600">
         <div class="grid gap-6 sm:grid-cols-[1fr_auto]">
             <div>
                 <p class="mb-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-500">Delivery Address</p>
@@ -75,7 +75,7 @@
     </div>
 
     {# PO Items #}
-    <div class="mt-4 border-t border-gray-200 pt-4 dark:border-white/10">
+    <div class="mt-4 border-t border-gray-200 pt-4 dark:border-gray-600">
         <p class="flex items-center gap-2 text-gray-500 dark:text-gray-300">
             <span>
                 {{ purchaseOrder.lineCount }} {% if purchaseOrder.lineCount == 1 %}line{% else %}lines{% endif %}

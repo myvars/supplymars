@@ -44,13 +44,13 @@ final class Card
     public function getBorderClasses(): string
     {
         return match ($this->borderColour) {
-            'gray', null => 'border border-gray-200 dark:border-white/10',
-            'supplier1' => 'border border-supplier1-300 dark:border-white/10',
-            'supplier2' => 'border border-supplier2-300 dark:border-white/10',
-            'supplier3' => 'border border-supplier3-300 dark:border-white/10',
-            'supplier4' => 'border border-supplier4-300 dark:border-white/10',
-            'green' => 'border border-2 border-green-200 dark:border-white/10',
-            'red' => 'border border-2 border-red-200 dark:border-white/10',
+            'gray', null => 'border border-gray-200 dark:border-gray-600',
+            'supplier1' => 'border border-supplier1-300 dark:border-gray-600',
+            'supplier2' => 'border border-supplier2-300 dark:border-gray-600',
+            'supplier3' => 'border border-supplier3-300 dark:border-gray-600',
+            'supplier4' => 'border border-supplier4-300 dark:border-gray-600',
+            'green' => 'border border-2 border-green-200 dark:border-gray-600',
+            'red' => 'border border-2 border-red-200 dark:border-gray-600',
             default => throw new \LogicException(sprintf('Unknown colourScheme "%s"', $this->borderColour)),
         };
     }

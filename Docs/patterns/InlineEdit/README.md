@@ -208,7 +208,7 @@ This keeps the `onSave` callback clean and makes the domain intent explicit.
 
 ## Success Toast
 
-On save, a success toast ("Updated successfully") is delivered via a second Turbo Stream in the success response (`inline_edit_success.stream.html.twig`). It appends a `Toast` component to `#flash-container` (defined in `base.html.twig`). The toast auto-closes after 1200ms via the `closeable` Stimulus controller (`closeable_controller.js`, uses `stimulus-use` transitions). The toast only appears when the value actually changed (Doctrine change detection).
+On save, a success toast ("Updated successfully") is delivered via a second Turbo Stream in the success response (`inline_edit_success.stream.html.twig`). It appends a `Toast` component to `#flash-container` (defined in `base.html.twig`). The toast auto-closes after 3500ms (success) or 6000ms (warning/danger) via the `closeable` Stimulus controller (`closeable_controller.js`, uses `stimulus-use` transitions). Duration is type-dependent, set by `Toast::getDuration()`. The toast only appears when the value actually changed (Doctrine change detection).
 
 To disable the toast, pass `successMessage: null` to `InlineEditContext::create()`.
 

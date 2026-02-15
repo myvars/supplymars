@@ -38,4 +38,14 @@ final class Toast
             default => throw new \LogicException(sprintf('Unknown Timerbar color "%s"', $this->type)),
         };
     }
+
+    public function getDuration(): int
+    {
+        return match ($this->type) {
+            'success' => 3500,
+            'danger' => 6000,
+            'warning' => 6000,
+            default => 3500,
+        };
+    }
 }

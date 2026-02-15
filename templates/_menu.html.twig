@@ -1,8 +1,9 @@
 {# Sidebar navigation drawer. Managed by basic-drawer Stimulus controller.
+   Active state managed by sidebar-active controller (JS), updated on drawer open.
    Sections: Home, Catalog, Orders, Purchasing, Customers, Reviews, Reporting, Admin, Notes #}
 <div id="side-menu" class="fixed top-0 left-0 z-40 h-screen w-72 -translate-x-full overflow-y-auto bg-white dark:bg-gray-900" data-action="turbo:before-cache@window->basic-drawer#close" tabindex="-1" aria-hidden="true">
-    <div class="flex h-full flex-col overflow-y-auto border-r border-gray-200 bg-white dark:border-gray-700/50 dark:bg-gray-900">
-        <div class="flex items-center justify-between border-b border-gray-200 px-4 py-4 dark:border-gray-700/50">
+    <div class="flex h-full flex-col overflow-y-auto border-r border-gray-200 bg-white dark:border-gray-600 dark:bg-gray-900">
+        <div class="flex items-center justify-between border-b border-gray-200 px-4 py-4 dark:border-gray-600">
             <a href="{{ path('app_homepage') }}" data-turbo-frame="body" data-action="basic-drawer#close">
                 {{ include('_logo.html.twig', { 'logoHeight': 28 }) }}
             </a>
@@ -11,51 +12,58 @@
                 <span class="sr-only">Close menu</span>
             </button>
         </div>
-        <nav class="flex-1 px-3 py-4">
+        <nav class="flex-1 px-3 py-4"
+             data-controller="sidebar-active"
+             data-action="turbo:frame-load@window->sidebar-active#update">
             <ul class="space-y-1">
                 {# ── Home ── #}
                 <li>
                     <a href="{{ path('app_homepage') }}"
-                       class="flex items-center rounded-lg px-3 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+                       data-nav="top"
+                       class="flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors text-gray-900 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
                        data-turbo-frame="body"
                        data-action="basic-drawer#close"
                     >
-                        <twig:ux:icon name="flowbite:home-solid" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
+                        <twig:ux:icon name="flowbite:home-solid" data-nav="icon" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
                         <span class="ml-3">Home</span>
                     </a>
                 </li>
                 {# ── Catalog (Products, Categories, Subcategories, Manufacturers) ── #}
                 <li>
-                    <button type="button" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-catalog" data-collapse-toggle="dropdown-catalog">
-                        <twig:ux:icon name="ri:box-3-fill" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
+                    <button type="button" data-nav="section" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors text-gray-900 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-catalog" data-collapse-toggle="dropdown-catalog">
+                        <twig:ux:icon name="ri:box-3-fill" data-nav="icon" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
                         <span class="ml-3 flex-1 whitespace-nowrap text-left">Catalog</span>
-                        <twig:ux:icon name="mingcute:down-line" class="h-4 w-4 text-gray-400"/>
+                        <twig:ux:icon name="mingcute:down-line" data-nav="chevron" class="h-4 w-4 text-gray-400"/>
                     </button>
-                    <ul id="dropdown-catalog" class="mt-1 hidden space-y-0.5 pl-4">
+                    <ul id="dropdown-catalog" data-nav="dropdown" class="mt-1 hidden space-y-0.5 pl-4">
                         <li>
                             <a href="{{ path('app_catalog_product_index') }}"
-                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-nav="child"
+                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
                                data-action="basic-drawer#close"
                             >Products</a>
                         </li>
                         <li>
                             <a href="{{ path('app_catalog_category_index') }}"
-                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-nav="child"
+                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
                                data-action="basic-drawer#close"
                             >Categories</a>
                         </li>
                         <li>
                             <a href="{{ path('app_catalog_subcategory_index') }}"
-                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-nav="child"
+                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
                                data-action="basic-drawer#close"
                             >Subcategories</a>
                         </li>
                         <li>
                             <a href="{{ path('app_catalog_manufacturer_index') }}"
-                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-nav="child"
+                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
                                data-action="basic-drawer#close"
                             >Manufacturers</a>
@@ -65,40 +73,44 @@
                 {# ── Orders ── #}
                 <li>
                     <a href="{{ path('app_order_index') }}"
-                       class="flex items-center rounded-lg px-3 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+                       data-nav="top"
+                       class="flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors text-gray-900 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
                        data-turbo-frame="body"
                        data-action="basic-drawer#close"
                     >
-                        <twig:ux:icon name="lets-icons:order" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
+                        <twig:ux:icon name="lets-icons:order" data-nav="icon" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
                         <span class="ml-3">Orders</span>
                     </a>
                 </li>
 
                 {# ── Purchasing (POs, Suppliers, Supplier Products) ── #}
                 <li>
-                    <button type="button" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-purchasing" data-collapse-toggle="dropdown-purchasing">
-                        <twig:ux:icon name="bxs:factory" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
+                    <button type="button" data-nav="section" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors text-gray-900 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-purchasing" data-collapse-toggle="dropdown-purchasing">
+                        <twig:ux:icon name="bxs:factory" data-nav="icon" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
                         <span class="ml-3 flex-1 whitespace-nowrap text-left">Purchasing</span>
-                        <twig:ux:icon name="mingcute:down-line" class="h-4 w-4 text-gray-400"/>
+                        <twig:ux:icon name="mingcute:down-line" data-nav="chevron" class="h-4 w-4 text-gray-400"/>
                     </button>
-                    <ul id="dropdown-purchasing" class="mt-1 hidden space-y-0.5 pl-4">
+                    <ul id="dropdown-purchasing" data-nav="dropdown" class="mt-1 hidden space-y-0.5 pl-4">
                         <li>
                             <a href="{{ path('app_purchasing_purchase_order_index') }}"
-                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-nav="child"
+                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
                                data-action="basic-drawer#close"
                             >Purchase Orders</a>
                         </li>
                         <li>
                             <a href="{{ path('app_purchasing_supplier_index') }}"
-                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-nav="child"
+                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
                                data-action="basic-drawer#close"
                             >Suppliers</a>
                         </li>
                         <li>
                             <a href="{{ path('app_purchasing_supplier_product_index') }}"
-                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-nav="child"
+                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
                                data-action="basic-drawer#close"
                             >Supplier Products</a>
@@ -108,32 +120,35 @@
                 {# ── Customers ── #}
                 <li>
                     <a href="{{ path('app_customer_index') }}"
-                       class="flex items-center rounded-lg px-3 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+                       data-nav="top"
+                       class="flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors text-gray-900 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
                        data-turbo-frame="body"
                        data-action="basic-drawer#close"
                     >
-                        <twig:ux:icon name="flowbite:users-solid" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
+                        <twig:ux:icon name="flowbite:users-solid" data-nav="icon" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
                         <span class="ml-3 flex-1 whitespace-nowrap text-left">Customers</span>
                     </a>
                 </li>
                 {# ── Reviews (Search, Moderation Queue) ── #}
                 <li>
-                    <button type="button" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-reviews" data-collapse-toggle="dropdown-reviews">
-                        <twig:ux:icon name="flowbite:star-solid" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
+                    <button type="button" data-nav="section" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors text-gray-900 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-reviews" data-collapse-toggle="dropdown-reviews">
+                        <twig:ux:icon name="flowbite:star-solid" data-nav="icon" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
                         <span class="ml-3 flex-1 whitespace-nowrap text-left">Reviews</span>
-                        <twig:ux:icon name="mingcute:down-line" class="h-4 w-4 text-gray-400"/>
+                        <twig:ux:icon name="mingcute:down-line" data-nav="chevron" class="h-4 w-4 text-gray-400"/>
                     </button>
-                    <ul id="dropdown-reviews" class="mt-1 hidden space-y-0.5 pl-4">
+                    <ul id="dropdown-reviews" data-nav="dropdown" class="mt-1 hidden space-y-0.5 pl-4">
                         <li>
                             <a href="{{ path('app_review_index') }}"
-                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-nav="child"
+                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
                                data-action="basic-drawer#close"
                             >Review Search</a>
                         </li>
                         <li>
                             <a href="{{ path('app_review_index', {reviewStatus: 'PENDING'}) }}"
-                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-nav="child"
+                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
                                data-action="basic-drawer#close"
                             >Moderation Queue</a>
@@ -142,57 +157,64 @@
                 </li>
                 {# ── Reporting (Dashboards, Summaries) ── #}
                 <li>
-                    <button type="button" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-reporting" data-collapse-toggle="dropdown-reporting">
-                        <twig:ux:icon name="ic:sharp-bar-chart" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
+                    <button type="button" data-nav="section" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors text-gray-900 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-reporting" data-collapse-toggle="dropdown-reporting">
+                        <twig:ux:icon name="ic:sharp-bar-chart" data-nav="icon" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
                         <span class="ml-3 flex-1 whitespace-nowrap text-left">Reporting</span>
-                        <twig:ux:icon name="mingcute:down-line" class="h-4 w-4 text-gray-400"/>
+                        <twig:ux:icon name="mingcute:down-line" data-nav="chevron" class="h-4 w-4 text-gray-400"/>
                     </button>
-                    <ul id="dropdown-reporting" class="mt-1 hidden space-y-0.5 pl-4">
+                    <ul id="dropdown-reporting" data-nav="dropdown" class="mt-1 hidden space-y-0.5 pl-4">
                         <li>
                             <a href="{{ path('app_reporting_dashboard') }}"
-                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-nav="child"
+                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
                                data-action="basic-drawer#close"
                             >Dashboard</a>
                         </li>
                         <li>
                             <a href="{{ path('app_reporting_dashboard_product_sales') }}"
-                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-nav="child"
+                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
                                data-action="basic-drawer#close"
                             >Product Sales</a>
                         </li>
                         <li>
                             <a href="{{ path('app_reporting_dashboard_order_summary') }}"
-                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-nav="child"
+                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
                                data-action="basic-drawer#close"
                             >Order Summary</a>
                         </li>
                         <li>
                             <a href="{{ path('app_reporting_dashboard_customer_insights') }}"
-                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-nav="child"
+                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
                                data-action="basic-drawer#close"
                             >Customer Insights</a>
                         </li>
                         <li>
                             <a href="{{ path('app_reporting_dashboard_po_performance') }}"
-                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-nav="child"
+                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
                                data-action="basic-drawer#close"
                             >PO Performance</a>
                         </li>
                         <li>
                             <a href="{{ path('app_reporting_dashboard_overdue_orders', {'duration': 'last30'}) }}"
-                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-nav="child"
+                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
                                data-action="basic-drawer#close"
                             >Overdue Orders</a>
                         </li>
                         <li>
                             <a href="{{ path('app_purchasing_purchase_order_index', {'purchaseOrderStatus': 'REJECTED'}) }}"
-                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-nav="child"
+                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
                                data-action="basic-drawer#close"
                             >Rejected POs</a>
@@ -201,15 +223,16 @@
                 </li>
                 {# ── Admin (VAT Rates) ── #}
                 <li>
-                    <button type="button" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-admin" data-collapse-toggle="dropdown-admin">
-                        <twig:ux:icon name="flowbite:cog-solid" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
+                    <button type="button" data-nav="section" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors text-gray-900 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-admin" data-collapse-toggle="dropdown-admin">
+                        <twig:ux:icon name="flowbite:cog-solid" data-nav="icon" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
                         <span class="ml-3 flex-1 whitespace-nowrap text-left">Admin</span>
-                        <twig:ux:icon name="mingcute:down-line" class="h-4 w-4 text-gray-400"/>
+                        <twig:ux:icon name="mingcute:down-line" data-nav="chevron" class="h-4 w-4 text-gray-400"/>
                     </button>
-                    <ul id="dropdown-admin" class="mt-1 hidden space-y-0.5 pl-4">
+                    <ul id="dropdown-admin" data-nav="dropdown" class="mt-1 hidden space-y-0.5 pl-4">
                         <li>
                             <a href="{{ path('app_pricing_vat_rate_index') }}"
-                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-nav="child"
+                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
                                data-action="basic-drawer#close"
                             >VAT Rates</a>
@@ -218,32 +241,35 @@
                 </li>
             </ul>
             {# ── Notes (Tickets, Pools) — separated by divider ── #}
-            <div class="mt-4 border-t border-gray-200 pt-4 dark:border-gray-700/50">
+            <div class="mt-4 border-t border-gray-200 pt-4 dark:border-gray-600">
                 <ul class="space-y-1">
                     <li>
-                        <button type="button" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-notes" data-collapse-toggle="dropdown-notes">
-                            <twig:ux:icon name="icon-park-solid:inbox-success" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
+                        <button type="button" data-nav="section" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors text-gray-900 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-notes" data-collapse-toggle="dropdown-notes">
+                            <twig:ux:icon name="icon-park-solid:inbox-success" data-nav="icon" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
                             <span class="ml-3 flex-1 whitespace-nowrap text-left">Notes</span>
-                            <twig:ux:icon name="mingcute:down-line" class="h-4 w-4 text-gray-400"/>
+                            <twig:ux:icon name="mingcute:down-line" data-nav="chevron" class="h-4 w-4 text-gray-400"/>
                         </button>
-                        <ul id="dropdown-notes" class="mt-1 hidden space-y-0.5 pl-4">
+                        <ul id="dropdown-notes" data-nav="dropdown" class="mt-1 hidden space-y-0.5 pl-4">
                             <li>
                                 <a href="{{ path('app_note_ticket_index', {'myPools': 1}) }}"
-                                   class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                                   data-nav="child"
+                                   class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                    data-turbo-frame="body"
                                    data-action="basic-drawer#close"
                                 >My Queue</a>
                             </li>
                             <li>
                                 <a href="{{ path('app_note_ticket_index') }}"
-                                   class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                                   data-nav="child"
+                                   class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                    data-turbo-frame="body"
                                    data-action="basic-drawer#close"
                                 >Tickets</a>
                             </li>
                             <li>
                                 <a href="{{ path('app_note_pool_index') }}"
-                                   class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                                   data-nav="child"
+                                   class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                    data-turbo-frame="body"
                                    data-action="basic-drawer#close"
                                 >Pools</a>

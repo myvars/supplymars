@@ -222,6 +222,23 @@ this.countValue = 10;
 </div>
 ```
 
+**`sidebar_active_controller`**
+- Highlights active nav item in sidebar based on current URL
+- Matches links by longest pathname prefix, with query param awareness
+- Updates on `connect()` and `turbo:frame-load@window`
+- Manages section dropdown open/close and active styling for top-level links, section buttons, child links, icons
+
+```html
+<nav data-controller="sidebar-active"
+     data-action="turbo:frame-load@window->sidebar-active#update">
+    <a data-nav="top" href="/orders">...</a>
+    <button data-nav="section">...</button>
+    <ul data-nav="dropdown">
+        <a data-nav="child" href="/catalog/products">...</a>
+    </ul>
+</nav>
+```
+
 **`user_menu_controller`**
 - Dropdown menu for user profile
 - Click-outside to close
