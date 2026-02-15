@@ -2,6 +2,8 @@
 
 {% block title %}Dashboard{% endblock %}
 
+{% set rowClasses = 'border-b odd:bg-white even:bg-gray-50 transition-colors hover:bg-gray-100 dark:border-gray-700 dark:odd:bg-gray-900 dark:even:bg-gray-800 dark:hover:bg-gray-700/50' %}
+
 {% block body %}
 
     <div class="m-3">
@@ -41,20 +43,18 @@
                             />
                         </div>
 
-                        <div class="relative overflow-x-auto rounded-lg border border-gray-200/80 dark:border-gray-700">
-                            <span class="flex justify-center pt-3 text-sm font-medium text-gray-600 dark:text-gray-500">Today's Latest Orders</span>
-                            <table class="mt-3 w-full text-left text-sm text-gray-500 dark:text-gray-400">
-                                <thead class="bg-gray-100 text-xs font-semibold uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+                        <twig:DataTable title="Today's Latest Orders">
+                            {% block head %}
                                 <tr>
                                     <th scope="col" class="px-6 py-3">Customer</th>
                                     <th scope="col" class="px-6 py-3">
                                         <div class="flex justify-end">Total</div>
                                     </th>
                                 </tr>
-                                </thead>
-                                <tbody>
+                            {% endblock %}
+                            {% block body %}
                                 {% for order in report.latestOrders %}
-                                    <tr class="border-b odd:bg-white even:bg-gray-50 transition-colors hover:bg-gray-100 dark:border-gray-700 dark:odd:bg-gray-900 dark:even:bg-gray-800 dark:hover:bg-gray-700/50">
+                                    <tr class="{{ rowClasses }}">
                                         <th scope="row" class="whitespace-nowrap px-6 py-3 font-medium text-gray-900 dark:text-gray-300">
                                             <a href="{{ path('app_order_show', {'id': order.publicId.value }) }}"
                                                class="dark:hover:text-white"
@@ -68,9 +68,8 @@
                                         </td>
                                     </tr>
                                 {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
+                            {% endblock %}
+                        </twig:DataTable>
                     </div>
                 </div>
 
@@ -106,20 +105,18 @@
                             />
                         </div>
 
-                        <div class="relative overflow-x-auto rounded-lg border border-gray-200/80 dark:border-gray-700">
-                            <span class="flex justify-center pt-3 text-sm font-medium text-gray-600 dark:text-gray-500">Today's Top Products</span>
-                            <table class="mt-3 w-full text-left text-sm text-gray-500 dark:text-gray-400">
-                                <thead class="bg-gray-100 text-xs font-semibold uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+                        <twig:DataTable title="Today's Top Products">
+                            {% block head %}
                                 <tr>
                                     <th scope="col" class="px-6 py-3">Product name</th>
                                     <th scope="col" class="px-6 py-3">
                                         <div class="flex justify-end">Qty</div>
                                     </th>
                                 </tr>
-                                </thead>
-                                <tbody>
+                            {% endblock %}
+                            {% block body %}
                                 {% for sale in report.latestProductSales %}
-                                    <tr class="border-b odd:bg-white even:bg-gray-50 transition-colors hover:bg-gray-100 dark:border-gray-700 dark:odd:bg-gray-900 dark:even:bg-gray-800 dark:hover:bg-gray-700/50">
+                                    <tr class="{{ rowClasses }}">
                                         <th scope="row" class="whitespace-nowrap px-6 py-3 font-medium text-gray-900 dark:text-gray-300">
                                             <a href="{{ path('app_catalog_product_show', {'id': sale.publicId }) }}"
                                                class="dark:hover:text-white"
@@ -133,9 +130,8 @@
                                         </td>
                                     </tr>
                                 {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
+                            {% endblock %}
+                        </twig:DataTable>
                     </div>
                 </div>
 

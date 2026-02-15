@@ -1,0 +1,15 @@
+{% props title = null %}
+
+<div class="relative overflow-x-auto rounded-lg border border-gray-200/80 dark:border-gray-700">
+    {% if title %}
+        <span class="flex justify-center pt-3 text-sm font-medium text-gray-600 dark:text-gray-500">{{ title }}</span>
+    {% endif %}
+    <table class="{{ title ? 'mt-3 ' : '' }}w-full text-left text-sm text-gray-500 dark:text-gray-400">
+        <thead class="bg-gray-100 text-xs font-semibold uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
+            {% block head %}{% endblock %}
+        </thead>
+        <tbody>
+            {% block body %}{% endblock %}
+        </tbody>
+    </table>
+</div>

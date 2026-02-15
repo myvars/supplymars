@@ -4,7 +4,7 @@
 **Scope:** Twig templates, Twig components, shared layouts, Stimulus controllers, Tailwind CSS usage
 **Methodology:** Documentation review, full template inventory, component analysis, external pattern benchmarking
 
-> **Status:** Phase 1b in progress. ~~Strikethrough~~ marks resolved items. Canonical dark-mode divider: `dark:border-gray-600`. Sidebar active state uses JS (`sidebar_active_controller.js` + `turbo:frame-load@window`) instead of Twig. Sort header differentiated via `Search.html.twig` wrapper (`5e719c6`). Breadcrumb component replaces BackLink on all detail pages (`b7b384f`).
+> **Status:** Phase 1c complete. ~~Strikethrough~~ marks resolved items. Canonical dark-mode divider: `dark:border-gray-600`. Sidebar active state uses JS (`sidebar_active_controller.js` + `turbo:frame-load@window`) instead of Twig. Sort header differentiated via `Search.html.twig` wrapper (`5e719c6`). Breadcrumb component replaces BackLink on all detail pages (`b7b384f`). DataTable component extracted from dashboard (`6f07925`).
 
 ---
 
@@ -76,15 +76,17 @@ That said, the interface leans toward **information density over visual breathin
 
 ---
 
-### B3. Dashboard Tables Use Raw HTML Instead of Component Patterns
+### ~~B3. Dashboard Tables Use Raw HTML Instead of Component Patterns~~ ✅
 
-**Evidence:** `reporting/show.html.twig:43-72` and `reporting/show.html.twig:108-137` contain inline `<table>` elements with hand-written Tailwind classes for striped rows, hover states, and responsive overflow. These are the only tables in the application — every other list uses Card-based layouts.
+~~**Evidence:** `reporting/show.html.twig:43-72` and `reporting/show.html.twig:108-137` contain inline `<table>` elements with hand-written Tailwind classes for striped rows, hover states, and responsive overflow. These are the only tables in the application — every other list uses Card-based layouts.~~
 
-**UX Impact:** Visual inconsistency within the reporting context. The table styling (`odd:bg-white even:bg-gray-50 ... dark:odd:bg-gray-900 dark:even:bg-gray-800`) is well-done but not reusable. If tables are needed elsewhere, the pattern would be duplicated with potential drift.
+~~**UX Impact:** Visual inconsistency within the reporting context. The table styling (`odd:bg-white even:bg-gray-50 ... dark:odd:bg-gray-900 dark:even:bg-gray-800`) is well-done but not reusable. If tables are needed elsewhere, the pattern would be duplicated with potential drift.~~
 
-**Scope:** 2 tables in dashboard, potential growth in reporting.
-**Importance:** Medium — contained to reporting but growing.
-**Effort:** Low-Medium — extract a Table component or shared partial.
+~~**Scope:** 2 tables in dashboard, potential growth in reporting.~~
+~~**Importance:** Medium — contained to reporting but growing.~~
+~~**Effort:** Low-Medium — extract a Table component or shared partial.~~
+
+**Resolved:** `DataTable.html.twig` component extracted with `title` prop and `head`/`body` blocks. Both dashboard tables refactored to use the component. Row classes extracted to a shared `rowClasses` variable.
 
 ---
 
@@ -232,15 +234,17 @@ That said, the interface leans toward **information density over visual breathin
 
 ---
 
-### C6. Extract Dashboard Table as Shared Partial or Component
+### ~~C6. Extract Dashboard Table as Shared Partial or Component~~ ✅
 
-**What changes:** Extract the repeated table pattern from `reporting/show.html.twig` into either a Twig component (`DataTable.html.twig`) or a shared partial. The component should accept: title, column headers, rows (iterable), and a row template block.
+~~**What changes:** Extract the repeated table pattern from `reporting/show.html.twig` into either a Twig component (`DataTable.html.twig`) or a shared partial. The component should accept: title, column headers, rows (iterable), and a row template block.~~
 
-**Where:** New `templates/components/DataTable.html.twig` or `templates/shared/_data_table.html.twig`, refactored from `reporting/show.html.twig:43-72` and `108-137`.
+~~**Where:** New `templates/components/DataTable.html.twig` or `templates/shared/_data_table.html.twig`, refactored from `reporting/show.html.twig:43-72` and `108-137`.~~
 
-**Risk:** Low — refactor of existing working code.
-**Effort:** Small-Medium (3-4 hours).
-**Value:** Medium — reusable for future reporting pages, eliminates duplication.
+~~**Risk:** Low — refactor of existing working code.~~
+~~**Effort:** Small-Medium (3-4 hours).~~
+~~**Value:** Medium — reusable for future reporting pages, eliminates duplication.~~
+
+**Resolved:** See B3. Template-only component with `title` prop and `head`/`body` blocks (no PHP class needed).
 
 ---
 
@@ -414,18 +418,20 @@ Audit icon usage and prefer 1-2 primary sets (suggest: `bi:*` for general UI ico
 
 ## E) Component Extraction Opportunities
 
-### E1. DataTable Component
+### ~~E1. DataTable Component~~ ✅
 
-**Candidate pattern:** Striped, hoverable HTML tables with header, body, and responsive overflow wrapper. Currently exists as inline HTML in `reporting/show.html.twig` (2 instances).
+~~**Candidate pattern:** Striped, hoverable HTML tables with header, body, and responsive overflow wrapper. Currently exists as inline HTML in `reporting/show.html.twig` (2 instances).~~
 
-**Evidence:**
-- `reporting/show.html.twig:43-72`: "Today's Latest Orders" table
-- `reporting/show.html.twig:108-137`: "Today's Top Products" table
-- Both share identical: outer wrapper classes, thead styling, tbody row styling, link patterns
+~~**Evidence:**~~
+~~- `reporting/show.html.twig:43-72`: "Today's Latest Orders" table~~
+~~- `reporting/show.html.twig:108-137`: "Today's Top Products" table~~
+~~- Both share identical: outer wrapper classes, thead styling, tbody row styling, link patterns~~
 
-**Why a component improves it:** Eliminates 50+ lines of duplicated Tailwind classes. As reporting grows (per ADR-005's two-layer reporting strategy), more tables are likely. A component ensures consistent table styling and reduces template size.
+~~**Why a component improves it:** Eliminates 50+ lines of duplicated Tailwind classes. As reporting grows (per ADR-005's two-layer reporting strategy), more tables are likely. A component ensures consistent table styling and reduces template size.~~
 
-**Decision:** **Extract** — create `DataTable.html.twig` with props for `title`, `columns` (block), `rows` (block). Keep it simple — a styled wrapper, not a full abstraction.
+~~**Decision:** **Extract** — create `DataTable.html.twig` with props for `title`, `columns` (block), `rows` (block). Keep it simple — a styled wrapper, not a full abstraction.~~
+
+**Resolved:** See B3. Extracted as `DataTable.html.twig` with `title` prop and `head`/`body` blocks.
 
 ---
 
@@ -572,10 +578,12 @@ Audit icon usage and prefer 1-2 primary sets (suggest: `bi:*` for general UI ico
 
 **Implementation notes:** 2-level breadcrumb (Section > Current Page). Applied to 19 templates (13 show pages + 6 product sub-pages). `BackLink` component fully replaced and deleted. 22 files changed.
 
-**PR 1c: Dashboard Table Extraction**
-- Extract DataTable component from `reporting/show.html.twig`
-- Apply to both existing dashboard tables
-- Document component API
+~~**PR 1c: Dashboard Table Extraction**~~ ✅ (`6f07925`)
+~~- Extract DataTable component from `reporting/show.html.twig`~~
+~~- Apply to both existing dashboard tables~~
+~~- Document component API~~
+
+**Implementation notes:** Template-only component (`DataTable.html.twig`) with `title` prop and `head`/`body` blocks. Row classes extracted to a shared `rowClasses` variable in the calling template. 2 files changed, 1 new file.
 
 **Tests to add/update:**
 - Add a browser flow test that verifies breadcrumb rendering on a detail page (e.g., `OrderFlowTest`)
