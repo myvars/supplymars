@@ -1,7 +1,10 @@
 {# Polymorphic button or link styled as a button.
    Props (PHP): tag (button|a, default: button), variant (primary|secondary|alternative|success|danger|warning|link) #}
+{% set isLink = this.variant == 'link' %}
 <{{ tag }}{{ attributes.defaults({
-    class: 'inline-flex items-center justify-center gap-1.5 font-semibold rounded-lg text-sm py-2 text-center transition-all duration-150 ease-in-out active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none cursor-pointer '~this.variantClasses,
+    class: 'inline-flex items-center justify-center gap-1.5 text-sm text-center transition-all duration-150 ease-in-out disabled:opacity-50 disabled:pointer-events-none cursor-pointer '
+        ~ (isLink ? 'font-medium ' : 'font-semibold rounded-lg py-2 active:scale-[0.98] ')
+        ~ this.variantClasses,
 }) }}>
     {% block content %}{% endblock %}
 </{{ tag }}>

@@ -4,7 +4,7 @@
 **Scope:** Twig templates, Twig components, shared layouts, Stimulus controllers, Tailwind CSS usage
 **Methodology:** Documentation review, full template inventory, component analysis, external pattern benchmarking
 
-> **Status:** Phase 1c complete. ~~Strikethrough~~ marks resolved items. Canonical dark-mode divider: `dark:border-gray-600`. Sidebar active state uses JS (`sidebar_active_controller.js` + `turbo:frame-load@window`) instead of Twig. Sort header differentiated via `Search.html.twig` wrapper (`5e719c6`). Breadcrumb component replaces BackLink on all detail pages (`b7b384f`). DataTable component extracted from dashboard (`6f07925`).
+> **Status:** Phase 1c complete + B4 fix. ~~Strikethrough~~ marks resolved items. Canonical dark-mode divider: `dark:border-gray-600`. Sidebar active state uses JS (`sidebar_active_controller.js` + `turbo:frame-load@window`) instead of Twig. Sort header differentiated via `Search.html.twig` wrapper (`5e719c6`). Breadcrumb component replaces BackLink on all detail pages (`b7b384f`). DataTable component extracted from dashboard (`6f07925`). Button link variant fixed (conditional base classes).
 
 ---
 
@@ -90,15 +90,17 @@ That said, the interface leans toward **information density over visual breathin
 
 ---
 
-### B4. Button Component Missing `px` on `link` Variant
+### ~~B4. Button Component Missing `px` on `link` Variant~~ ✅
 
-**Evidence:** `Button.html.twig:3-4` applies base classes including `py-2` to all variants. The variant-specific classes in `Button.php` add `px-4` for colored variants but the `link` variant typically needs different horizontal padding. All Button variants share the same font-semibold, which may be too heavy for inline text links.
+~~**Evidence:** `Button.html.twig:3-4` applies base classes including `py-2` to all variants. The variant-specific classes in `Button.php` add `px-4` for colored variants but the `link` variant typically needs different horizontal padding. All Button variants share the same font-semibold, which may be too heavy for inline text links.~~
 
-**UX Impact:** Minor visual inconsistency. Link-styled buttons may appear with mismatched padding compared to actual `<a>` elements used elsewhere. The `font-semibold` on link variant creates heavier-than-expected inline links.
+~~**UX Impact:** Minor visual inconsistency. Link-styled buttons may appear with mismatched padding compared to actual `<a>` elements used elsewhere. The `font-semibold` on link variant creates heavier-than-expected inline links.~~
 
-**Scope:** 34 Button usages.
-**Importance:** Medium-Low.
-**Effort:** Low — adjust variant classes in `Button.php`.
+~~**Scope:** 34 Button usages.~~
+~~**Importance:** Medium-Low.~~
+~~**Effort:** Low — adjust variant classes in `Button.php`.~~
+
+**Resolved:** Split base classes in `Button.html.twig` — link variant drops `font-semibold`, `py-2`, `rounded-lg`, `active:scale-[0.98]`; uses `font-medium` instead. Added `hover:underline underline-offset-2` and focus-visible styling to link variant in `Button.php`.
 
 ---
 
@@ -122,15 +124,17 @@ That said, the interface leans toward **information density over visual breathin
 
 ---
 
-### B6. Missing Loading/Skeleton States for Turbo Frames
+### ~~B6. Missing Loading/Skeleton States for Turbo Frames~~ — Declined
 
-**Evidence:** `app.css` contains no skeleton/loading patterns. The only loading feedback is `turbo-frame[busy]` opacity reduction (implied by Turbo defaults) and the modal loading template slot in `Modal.html.twig:42-46`. Dashboard KPI cards (`reporting/show.html.twig`) load via Turbo frame morph but show no skeleton while data loads.
+~~**Evidence:** `app.css` contains no skeleton/loading patterns. The only loading feedback is `turbo-frame[busy]` opacity reduction (implied by Turbo defaults) and the modal loading template slot in `Modal.html.twig:42-46`. Dashboard KPI cards (`reporting/show.html.twig`) load via Turbo frame morph but show no skeleton while data loads.~~
 
-**UX Impact:** On slower connections, KPI cards and search results flash from empty to populated with no intermediate state. This creates perceived jank and uncertainty about whether the page is working.
+~~**UX Impact:** On slower connections, KPI cards and search results flash from empty to populated with no intermediate state. This creates perceived jank and uncertainty about whether the page is working.~~
 
-**Scope:** All Turbo frame content (search results, dashboard, modals).
-**Importance:** Medium — especially for dashboard which is data-heavy.
-**Effort:** Medium — needs skeleton component and integration points.
+~~**Scope:** All Turbo frame content (search results, dashboard, modals).~~
+~~**Importance:** Medium — especially for dashboard which is data-heavy.~~
+~~**Effort:** Medium — needs skeleton component and integration points.~~
+
+**Declined:** Turbo's morph refresh handles transitions cleanly without additional loading states. CSS-based busy indicators (opacity dim, progress bars) add visual noise rather than improving the experience. No change needed.
 
 ---
 
@@ -248,15 +252,17 @@ That said, the interface leans toward **information density over visual breathin
 
 ---
 
-### C7. Add Skeleton Loading States for Key Turbo Frames
+### ~~C7. Add Skeleton Loading States for Key Turbo Frames~~ — Declined
 
-**What changes:** Create a `Skeleton.html.twig` component (or CSS-only approach via `animate-pulse` placeholders) for: (a) KPI card skeletons in dashboard, (b) search result placeholders. Use Turbo's `[busy]` attribute or the `loading` template slot in frames.
+~~**What changes:** Create a `Skeleton.html.twig` component (or CSS-only approach via `animate-pulse` placeholders) for: (a) KPI card skeletons in dashboard, (b) search result placeholders. Use Turbo's `[busy]` attribute or the `loading` template slot in frames.~~
 
-**Where:** `templates/components/Skeleton.html.twig` (new), integrated into `Search.html.twig` and `reporting/show.html.twig`.
+~~**Where:** `templates/components/Skeleton.html.twig` (new), integrated into `Search.html.twig` and `reporting/show.html.twig`.~~
 
-**Risk:** Low — additive, progressive enhancement.
-**Effort:** Medium (half day).
-**Value:** Medium — perceived performance improvement, especially on dashboard.
+~~**Risk:** Low — additive, progressive enhancement.~~
+~~**Effort:** Medium (half day).~~
+~~**Value:** Medium — perceived performance improvement, especially on dashboard.~~
+
+**Declined:** See B6. Turbo morph handles transitions cleanly; additional loading states add noise.
 
 ---
 
@@ -608,11 +614,13 @@ Audit icon usage and prefer 1-2 primary sets (suggest: `bi:*` for general UI ico
 - Replace outliers where visually equivalent icons exist in primary sets
 - Document icon conventions
 
-**PR 2b: Loading/Skeleton States**
-- Create Skeleton component (animated pulse placeholders)
-- Add to dashboard KPI grid (most visible loading delay)
-- Add to search results frame
-- Consider a `<turbo-frame>` CSS approach (`turbo-frame[busy]` selectors)
+~~**PR 2b: Loading/Skeleton States**~~ — Declined
+~~- Create Skeleton component (animated pulse placeholders)~~
+~~- Add to dashboard KPI grid (most visible loading delay)~~
+~~- Add to search results frame~~
+~~- Consider a `<turbo-frame>` CSS approach (`turbo-frame[busy]` selectors)~~
+
+**Declined:** Turbo morph handles transitions cleanly; additional loading states add visual noise. See B6.
 
 **PR 2c: Card Inner Spacing Normalization**
 - Audit and standardize vertical spacing within cards across all contexts
@@ -620,7 +628,7 @@ Audit icon usage and prefer 1-2 primary sets (suggest: `bi:*` for general UI ico
 - Apply consistently, verify no visual regressions
 
 **Tests to add/update:**
-- Skeleton: Visual test or screenshot comparison (no behavioral test needed)
+- ~~Skeleton: Visual test or screenshot comparison (no behavioral test needed)~~ Declined
 - Icons: No tests needed — visual change only
 - Spacing: Existing flow tests cover layout; manual visual review required
 
@@ -632,7 +640,7 @@ Audit icon usage and prefer 1-2 primary sets (suggest: `bi:*` for general UI ico
 **Stop conditions:**
 - Icon consolidation: Stop if primary icon sets lack equivalent icons for specialized cases (e.g., `lets-icons:refund-back`). Keep the outlier rather than losing semantic clarity.
 - Spacing: Stop if normalization creates visual issues in dense contexts (e.g., pricing cascade cards). Per-context overrides are acceptable.
-- Skeletons: Stop if the perceived benefit is minimal (fast API responses make skeletons flash). Consider removing skeleton if response is typically < 200ms.
+- ~~Skeletons: Stop if the perceived benefit is minimal (fast API responses make skeletons flash). Consider removing skeleton if response is typically < 200ms.~~ Declined — Turbo morph handles this well.
 
 ---
 

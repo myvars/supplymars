@@ -20,7 +20,7 @@ final class Button
             'success' => 'px-4 text-white bg-emerald-600 hover:bg-emerald-500 shadow-sm hover:shadow-md focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 dark:bg-emerald-500 dark:hover:bg-emerald-400 dark:focus-visible:ring-emerald-400 dark:focus-visible:ring-offset-gray-900',
             'danger' => 'px-4 text-white bg-red-600 hover:bg-red-500 shadow-sm hover:shadow-md focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-red-500 focus-visible:ring-offset-2 dark:bg-red-500 dark:hover:bg-red-400 dark:focus-visible:ring-red-400 dark:focus-visible:ring-offset-gray-900',
             'warning' => 'px-4 text-white bg-amber-600 hover:bg-amber-500 shadow-sm hover:shadow-md focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 dark:bg-amber-500 dark:hover:bg-amber-400 dark:focus-visible:ring-amber-400 dark:focus-visible:ring-offset-gray-900',
-            'link' => 'text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white',
+            'link' => 'text-gray-700 underline-offset-2 hover:text-gray-900 hover:underline focus-visible:outline-hidden focus-visible:underline dark:text-gray-300 dark:hover:text-white',
             default => throw new \LogicException(sprintf('Unknown button type "%s"', $this->variant)),
         };
     }
