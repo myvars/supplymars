@@ -33,7 +33,7 @@
             </p>
         </div>
     </div>
-    <div class="mt-3 flex items-center justify-between border-t border-gray-100 pt-2.5 dark:border-gray-700">
+    <div class="mt-3 flex items-center justify-between border-t border-gray-100 pt-2.5 dark:border-gray-600">
         <p class="text-xs text-gray-400 dark:text-gray-500">{{ supplierProduct.updatedAt|ago }}</p>
         <div class="inline-flex items-center gap-1.5">
             <a href="{{ path('app_purchasing_supplier_product_toggle_status', {'id': supplierProduct.publicId.value }) }}"

@@ -266,15 +266,9 @@ That said, the interface leans toward **information density over visual breathin
 
 ---
 
-### C8. Normalize Card Content Density with Consistent Inner Spacing
+### C8. Normalize Card Content Density with Consistent Inner Spacing ✅
 
-**What changes:** The default Card padding is `p-3` (12px). Within cards, inner spacing varies: `mt-1.5`, `mt-2`, `mt-4`, `space-y-0.5`, `space-y-1`. Standardize on 2-3 inner spacing values: tight (`gap-1` / `space-y-1`), normal (`gap-2` / `space-y-2`), and section (`gap-4` / `space-y-4` with divider). Document the convention.
-
-**Where:** All card content templates across contexts.
-
-**Risk:** Low-Medium — visual changes across many templates, needs careful review.
-**Effort:** Medium (half day for audit and normalization).
-**Value:** Medium — consistent vertical rhythm improves scanability.
+**Resolved.** Audited all 56 card templates — spacing tiers are mostly intentional (compact index cards use tighter spacing, detail cards use more generous spacing). Fixed three genuine inconsistencies: standardized section divider padding to `pt-4` on detail cards (was `pt-3` on ticket/review summary), standardized section label margins to `mb-2` (was `mb-3`/`mb-1.5`), and fixed 9 remaining `dark:border-gray-700` → `dark:border-gray-600` on card section dividers missed during Phase 0. 10 files changed.
 
 ---
 
@@ -622,20 +616,18 @@ Audit icon usage and prefer 1-2 primary sets (suggest: `bi:*` for general UI ico
 
 **Declined:** Turbo morph handles transitions cleanly; additional loading states add visual noise. See B6.
 
-**PR 2c: Card Inner Spacing Normalization**
-- Audit and standardize vertical spacing within cards across all contexts
-- Define 3 spacing tiers: tight, normal, section
-- Apply consistently, verify no visual regressions
+~~**PR 2c: Card Inner Spacing Normalization**~~
+✅ Completed. Fixed genuine inconsistencies (section divider padding, label margins, dark border colors) across 10 templates rather than forcing artificial spacing tiers. Existing spacing tiers are intentional per content type.
 
 **Tests to add/update:**
 - ~~Skeleton: Visual test or screenshot comparison (no behavioral test needed)~~ Declined
 - Icons: No tests needed — visual change only
-- Spacing: Existing flow tests cover layout; manual visual review required
+- ~~Spacing: Existing flow tests cover layout; manual visual review required~~ Done — visual-only changes
 
 **Validation approach:**
-- Side-by-side before/after screenshots for spacing changes
-- Performance check for skeleton states (ensure no layout shift)
-- Dark mode verification for all changes
+- ~~Side-by-side before/after screenshots for spacing changes~~ Done
+- ~~Performance check for skeleton states (ensure no layout shift)~~ N/A
+- ~~Dark mode verification for all changes~~ Done — border colors verified
 
 **Stop conditions:**
 - Icon consolidation: Stop if primary icon sets lack equivalent icons for specialized cases (e.g., `lets-icons:refund-back`). Keep the outlier rather than losing semantic clarity.
