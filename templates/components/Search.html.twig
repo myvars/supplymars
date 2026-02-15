@@ -77,7 +77,11 @@
     </div>
 
     <turbo-frame id="{{ flowModel|slug }}-table" data-turbo-action="advance" refresh="morph">
-        {% block sort %}No sortable options{% endblock %}
+        <div class="sticky top-0 z-10 rounded-xl border border-gray-200 bg-gray-100 px-3 py-2 dark:border-gray-600 dark:bg-gray-800">
+            <div class="flex justify-between overflow-auto">
+                {% block sort %}{% endblock %}
+            </div>
+        </div>
         <ul class="space-y-3">
             {% for result in results %}
                 <li class="first:mt-3">{% block list_item %}{% endblock %}</li>

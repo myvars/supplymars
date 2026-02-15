@@ -4,7 +4,7 @@
 **Scope:** Twig templates, Twig components, shared layouts, Stimulus controllers, Tailwind CSS usage
 **Methodology:** Documentation review, full template inventory, component analysis, external pattern benchmarking
 
-> **Status:** Phase 0 complete (`d884dd8`). ~~Strikethrough~~ marks resolved items. Canonical dark-mode divider: `dark:border-gray-600`. Sidebar active state uses JS (`sidebar_active_controller.js` + `turbo:frame-load@window`) instead of Twig.
+> **Status:** Phase 1a in progress. ~~Strikethrough~~ marks resolved items. Canonical dark-mode divider: `dark:border-gray-600`. Sidebar active state uses JS (`sidebar_active_controller.js` + `turbo:frame-load@window`) instead of Twig. Sort header differentiated via `Search.html.twig` wrapper (`5e719c6`).
 
 ---
 
@@ -48,15 +48,17 @@ That said, the interface leans toward **information density over visual breathin
 
 ## B) High-Impact Issues (Ranked)
 
-### B1. Sort Header Bar Lacks Visual Separation from List Items
+### ~~B1. Sort Header Bar Lacks Visual Separation from List Items~~ ✅
 
-**Evidence:** In every index page (e.g., `catalog/product/index.html.twig:12-21`, `order/index.html.twig:12-21`, `purchasing/purchase_order/index.html.twig:12-22`), sort headers are wrapped in `<twig:Card>` — the same component used for list items below. There is no visual distinction between the header row and the data rows.
+~~**Evidence:** In every index page (e.g., `catalog/product/index.html.twig:12-21`, `order/index.html.twig:12-21`, `purchasing/purchase_order/index.html.twig:12-22`), sort headers are wrapped in `<twig:Card>` — the same component used for list items below. There is no visual distinction between the header row and the data rows.~~
 
-**UX Impact:** Users must parse the first card to determine whether it's a sort control or a data item. In a list of many cards, the header blends in. This is a scanning/wayfinding issue — the eye has no anchor point to separate controls from content.
+~~**UX Impact:** Users must parse the first card to determine whether it's a sort control or a data item. In a list of many cards, the header blends in. This is a scanning/wayfinding issue — the eye has no anchor point to separate controls from content.~~
 
-**Scope:** All 14+ search index pages.
-**Importance:** High — affects every list view in the application.
-**Effort:** Low — change the sort header Card styling or use a different surface.
+~~**Scope:** All 14+ search index pages.~~
+~~**Importance:** High — affects every list view in the application.~~
+~~**Effort:** Low — change the sort header Card styling or use a different surface.~~
+
+**Resolved:** Sort wrapper moved into `Search.html.twig` with distinct control-surface styling (`bg-gray-100`/`dark:bg-gray-800`, border, no shadow, `sticky top-0 z-10`). Removed `<twig:Card>` from all 13 index page sort blocks.
 
 ---
 
@@ -172,15 +174,17 @@ That said, the interface leans toward **information density over visual breathin
 
 ---
 
-### C2. Differentiate Sort Header from List Cards
+### ~~C2. Differentiate Sort Header from List Cards~~ ✅
 
-**What changes:** Add a visual distinction for the sort header bar. Options: (a) remove Card wrapping and use a simpler `div` with lighter background, (b) add a Card variant prop like `variant="header"` with distinct styling (e.g., `bg-gray-50 dark:bg-gray-800/50` with no shadow), or (c) add subtle bottom border accent.
+~~**What changes:** Add a visual distinction for the sort header bar. Options: (a) remove Card wrapping and use a simpler `div` with lighter background, (b) add a Card variant prop like `variant="header"` with distinct styling (e.g., `bg-gray-50 dark:bg-gray-800/50` with no shadow), or (c) add subtle bottom border accent.~~
 
-**Where:** `Search.html.twig` (the `sort` block default wrapper), all 14+ index page `sort` blocks.
+~~**Where:** `Search.html.twig` (the `sort` block default wrapper), all 14+ index page `sort` blocks.~~
 
-**Risk:** Low — visual only, no behavioral change.
-**Effort:** Small (2-3 hours).
-**Value:** High — every list page becomes easier to scan.
+~~**Risk:** Low — visual only, no behavioral change.~~
+~~**Effort:** Small (2-3 hours).~~
+~~**Value:** High — every list page becomes easier to scan.~~
+
+**Resolved:** See B1. Went with option (a) — replaced Card with a styled `div` in `Search.html.twig`, removed Card+div wrappers from all 13 index pages.
 
 ---
 
@@ -471,15 +475,17 @@ Audit icon usage and prefer 1-2 primary sets (suggest: `bi:*` for general UI ico
 
 ---
 
-### F2. Differentiate Sort Header Visually (2 hours)
+### ~~F2. Differentiate Sort Header Visually~~ ✅
 
-In `Search.html.twig`, change the sort block's default `<twig:Card>` wrapper to use a lighter surface:
-- Light: `bg-gray-50 border-gray-200` (vs Card's `bg-white`)
-- Dark: `bg-gray-800/50 border-gray-700/50` (vs Card's `bg-gray-800`)
-- Remove `shadow-sm` from the sort header
-- Consider `sticky top-0 z-10` for scroll persistence
+~~In `Search.html.twig`, change the sort block's default `<twig:Card>` wrapper to use a lighter surface:~~
+~~- Light: `bg-gray-50 border-gray-200` (vs Card's `bg-white`)~~
+~~- Dark: `bg-gray-800/50 border-gray-700/50` (vs Card's `bg-gray-800`)~~
+~~- Remove `shadow-sm` from the sort header~~
+~~- Consider `sticky top-0 z-10` for scroll persistence~~
 
-**Files:** Either modify the `sort` block default in `Search.html.twig`, or add a Card variant prop.
+~~**Files:** Either modify the `sort` block default in `Search.html.twig`, or add a Card variant prop.~~
+
+**Note:** Used `bg-gray-100`/`dark:bg-gray-800` (slightly adjusted from proposed values). Sticky behavior included. 14 files changed.
 
 ---
 
@@ -548,10 +554,10 @@ In `Search.html.twig`, change the sort block's default `<twig:Card>` wrapper to 
 
 ### Phase 1 — Systemic Normalization (2-3 PRs, 3-5 days)
 
-**PR 1a: Sort Header + Search Polish**
-- Differentiate sort header bar from list items (new surface treatment)
-- Consider sticky header behavior for long lists
-- Files: `Search.html.twig`, optionally `Card.php` (new variant)
+~~**PR 1a: Sort Header + Search Polish**~~ ✅ (`5e719c6`)
+~~- Differentiate sort header bar from list items (new surface treatment)~~
+~~- Consider sticky header behavior for long lists~~
+~~- Files: `Search.html.twig`, optionally `Card.php` (new variant)~~
 
 **PR 1b: Breadcrumb Component + Page Context**
 - Create `Breadcrumb.html.twig` component

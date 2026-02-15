@@ -10,13 +10,9 @@
         showFilter="{{ false }}"
     >
         <twig:block name="sort">
-            <twig:Card>
-                <div class="flex justify-between overflow-auto">
-                    <twig:SortLink sortValue="id">Id</twig:SortLink>
-                    <twig:SortLink sortValue="name">Manufacturer</twig:SortLink>
-                    <twig:SortLink sortValue="isActive">Status</twig:SortLink>
-                </div>
-            </twig:Card>
+            <twig:SortLink sortValue="id">Id</twig:SortLink>
+            <twig:SortLink sortValue="name">Manufacturer</twig:SortLink>
+            <twig:SortLink sortValue="isActive">Status</twig:SortLink>
         </twig:block>
 
         <twig:block name="list_item">

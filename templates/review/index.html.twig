@@ -9,14 +9,10 @@
         results="{{ results }}"
     >
         <twig:block name="sort">
-            <twig:Card>
-                <div class="flex justify-between overflow-auto">
-                    <twig:SortLink sortValue="id">Id</twig:SortLink>
-                    <twig:SortLink sortValue="rating">Rating</twig:SortLink>
-                    <twig:SortLink sortValue="status">Status</twig:SortLink>
-                    <twig:SortLink sortValue="createdAt">Created</twig:SortLink>
-                </div>
-            </twig:Card>
+            <twig:SortLink sortValue="id">Id</twig:SortLink>
+            <twig:SortLink sortValue="rating">Rating</twig:SortLink>
+            <twig:SortLink sortValue="status">Status</twig:SortLink>
+            <twig:SortLink sortValue="createdAt">Created</twig:SortLink>
         </twig:block>
 
         <twig:block name="list_item">
