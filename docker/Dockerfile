@@ -87,11 +87,13 @@ RUN set -eux; \
 # Switch to www-data for cache building (safe, non-root)
 USER www-data
 
-# Build assets and compile cache
+# Build assets, compile cache, and warm the Symfony container (generates preload file)
 RUN set -eux; \
     php bin/console tailwind:build --minify && \
     php bin/console importmap:install --no-interaction && \
-    php bin/console asset-map:compile --env=prod --no-debug;
+    php bin/console asset-map:compile --env=prod --no-debug && \
+    php bin/console cache:warmup --env=prod --no-debug && \
+    sed -i '/Preloader::preload/d' var/cache/prod/App_KernelProdContainer.preload.php;
 
 
 # ------------ Php Production Stage ------------

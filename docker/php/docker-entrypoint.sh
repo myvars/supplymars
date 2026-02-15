@@ -25,8 +25,18 @@ else
     echo "[docker-entrypoint] Skipping composer install/asset builds for production"
 fi
 
-# Clear cache
-php -d memory_limit=256M bin/console cache:clear --env="${APP_ENV:-dev}" || echo "Cache clear failed"
+# Warm cache (prod uses pre-built cache from Docker image; dev/test rebuild fresh)
+if [ "$APP_ENV" = "prod" ]; then
+    php -d memory_limit=256M bin/console cache:warmup --env=prod || echo "Cache warmup failed"
+    # PHP 8.5 workaround: Preloader::preload() crashes FPM when preloading 900+ classes recursively.
+    # The require statements in the preload file already provide the bulk of OPcache preloading benefit.
+    PRELOAD_FILE="var/cache/prod/App_KernelProdContainer.preload.php"
+    if [ -f "$PRELOAD_FILE" ]; then
+        sed -i '/Preloader::preload/d' "$PRELOAD_FILE"
+    fi
+else
+    php -d memory_limit=256M bin/console cache:clear --env="${APP_ENV:-dev}" || echo "Cache clear failed"
+fi
 
 # Early exit for test env
 if [ "$APP_ENV" = "test" ]; then
