@@ -4,6 +4,7 @@
 
 {% block body %}
 
+    <div class="m-3">
     <turbo-frame id="reports" refresh="morph">
         <twig:Card>
             {% if report.summary is not null %}
@@ -102,5 +103,6 @@
             {% endif %}
         </twig:Card>
     </turbo-frame>
+    </div>
 
 {% endblock %}

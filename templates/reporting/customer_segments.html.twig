@@ -4,6 +4,7 @@
 
 {% block body %}
 
+    <div class="m-3">
     <turbo-frame id="reports" refresh="morph">
         <twig:Card>
             {{ include('reporting/_customer_insights_nav.html.twig') }}
@@ -86,5 +87,6 @@
             {% endif %}
         </twig:Card>
     </turbo-frame>
+    </div>
 
 {% endblock %}

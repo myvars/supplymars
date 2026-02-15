@@ -4,7 +4,7 @@
 **Scope:** Twig templates, Twig components, shared layouts, Stimulus controllers, Tailwind CSS usage
 **Methodology:** Documentation review, full template inventory, component analysis, external pattern benchmarking
 
-> **Status:** Phase 1a in progress. ~~Strikethrough~~ marks resolved items. Canonical dark-mode divider: `dark:border-gray-600`. Sidebar active state uses JS (`sidebar_active_controller.js` + `turbo:frame-load@window`) instead of Twig. Sort header differentiated via `Search.html.twig` wrapper (`5e719c6`).
+> **Status:** Phase 1b in progress. ~~Strikethrough~~ marks resolved items. Canonical dark-mode divider: `dark:border-gray-600`. Sidebar active state uses JS (`sidebar_active_controller.js` + `turbo:frame-load@window`) instead of Twig. Sort header differentiated via `Search.html.twig` wrapper (`5e719c6`). Breadcrumb component replaces BackLink on all detail pages (`b7b384f`).
 
 ---
 
@@ -62,15 +62,17 @@ That said, the interface leans toward **information density over visual breathin
 
 ---
 
-### B2. No Breadcrumb or Page Context Indicator
+### ~~B2. No Breadcrumb or Page Context Indicator~~ ✅
 
-**Evidence:** Detail pages (e.g., `order/show.html.twig`, `catalog/product/show.html.twig`) rely solely on `<twig:BackLink>` at the bottom of the page. There is no breadcrumb trail or header indicating the current location within the application hierarchy. The page title block (e.g., `{% block title %}Order Details{% endblock %}`) appears only in the browser tab, not in the visible page content.
+~~**Evidence:** Detail pages (e.g., `order/show.html.twig`, `catalog/product/show.html.twig`) rely solely on `<twig:BackLink>` at the bottom of the page. There is no breadcrumb trail or header indicating the current location within the application hierarchy. The page title block (e.g., `{% block title %}Order Details{% endblock %}`) appears only in the browser tab, not in the visible page content.~~
 
-**UX Impact:** Users who land on a detail page (via direct link, bookmark, or deep navigation) have no visible context about where they are. The sidebar drawer is closed by default and doesn't show active state. The only orientation cue is the BackLink at the page bottom — which requires scrolling past all content to find.
+~~**UX Impact:** Users who land on a detail page (via direct link, bookmark, or deep navigation) have no visible context about where they are. The sidebar drawer is closed by default and doesn't show active state. The only orientation cue is the BackLink at the page bottom — which requires scrolling past all content to find.~~
 
-**Scope:** All 16 show/detail pages across all contexts.
-**Importance:** High — fundamental wayfinding issue.
-**Effort:** Medium — needs a shared partial or component, plus integration into base layout or each detail page.
+~~**Scope:** All 16 show/detail pages across all contexts.~~
+~~**Importance:** High — fundamental wayfinding issue.~~
+~~**Effort:** Medium — needs a shared partial or component, plus integration into base layout or each detail page.~~
+
+**Resolved:** `Breadcrumb.html.twig` component added with 2-level trail (Section > Current Page). Replaced `BackLink` on all 19 detail pages (13 standard show pages + 6 product sub-pages). `BackLink` component deleted.
 
 ---
 
@@ -188,15 +190,17 @@ That said, the interface leans toward **information density over visual breathin
 
 ---
 
-### C3. Add Breadcrumb Component
+### ~~C3. Add Breadcrumb Component~~ ✅
 
-**What changes:** Create a `Breadcrumb.html.twig` component that renders a lightweight trail (e.g., `Orders > Order #000123`). Include it in detail pages above or inside the main Card. The component should accept an array of `{label, href}` pairs plus a current-page label.
+~~**What changes:** Create a `Breadcrumb.html.twig` component that renders a lightweight trail (e.g., `Orders > Order #000123`). Include it in detail pages above or inside the main Card. The component should accept an array of `{label, href}` pairs plus a current-page label.~~
 
-**Where:** New component in `templates/components/`, used in all `show.html.twig` templates. Consider integrating into the base layout flow or as a block in `base.html.twig`.
+~~**Where:** New component in `templates/components/`, used in all `show.html.twig` templates. Consider integrating into the base layout flow or as a block in `base.html.twig`.~~
 
-**Risk:** Low — additive, doesn't change existing behavior.
-**Effort:** Medium (half day for component + integration across 16 detail pages).
-**Value:** High — solves the wayfinding gap (B2) across all detail views.
+~~**Risk:** Low — additive, doesn't change existing behavior.~~
+~~**Effort:** Medium (half day for component + integration across 16 detail pages).~~
+~~**Value:** High — solves the wayfinding gap (B2) across all detail views.~~
+
+**Resolved:** See B2. `Breadcrumb.html.twig` component created, `BackLink` replaced on all 19 detail pages and deleted.
 
 ---
 
@@ -425,15 +429,17 @@ Audit icon usage and prefer 1-2 primary sets (suggest: `bi:*` for general UI ico
 
 ---
 
-### E2. PageHeader / Breadcrumb Component
+### ~~E2. PageHeader / Breadcrumb Component~~ ✅
 
-**Candidate pattern:** Page-level heading with breadcrumb trail and optional action buttons.
+~~**Candidate pattern:** Page-level heading with breadcrumb trail and optional action buttons.~~
 
-**Evidence:** Currently absent. Every detail page uses ad-hoc heading inside Card content. `<twig:BackLink>` at page bottom is the only navigation aid.
+~~**Evidence:** Currently absent. Every detail page uses ad-hoc heading inside Card content. `<twig:BackLink>` at page bottom is the only navigation aid.~~
 
-**Why a component improves it:** Solves wayfinding (B2, B7). A `PageHeader` component could render breadcrumbs + heading + optional actions in a consistent bar above the main Card content.
+~~**Why a component improves it:** Solves wayfinding (B2, B7). A `PageHeader` component could render breadcrumbs + heading + optional actions in a consistent bar above the main Card content.~~
 
-**Decision:** **Extract** — create `Breadcrumb.html.twig` as a lightweight navigation trail. Consider a `PageHeader.html.twig` only if the breadcrumb + heading + actions pattern repeats enough to warrant it. Start with Breadcrumb alone.
+~~**Decision:** **Extract** — create `Breadcrumb.html.twig` as a lightweight navigation trail. Consider a `PageHeader.html.twig` only if the breadcrumb + heading + actions pattern repeats enough to warrant it. Start with Breadcrumb alone.~~
+
+**Resolved:** `Breadcrumb.html.twig` extracted as decided. `BackLink` component replaced and deleted. `PageHeader` deferred — not needed with current breadcrumb approach.
 
 ---
 
@@ -559,10 +565,12 @@ Audit icon usage and prefer 1-2 primary sets (suggest: `bi:*` for general UI ico
 ~~- Consider sticky header behavior for long lists~~
 ~~- Files: `Search.html.twig`, optionally `Card.php` (new variant)~~
 
-**PR 1b: Breadcrumb Component + Page Context**
-- Create `Breadcrumb.html.twig` component
-- Integrate into all 16 detail pages
-- Consider removing bottom BackLink where Breadcrumb provides the same navigation
+~~**PR 1b: Breadcrumb Component + Page Context**~~ ✅ (`b7b384f`)
+~~- Create `Breadcrumb.html.twig` component~~
+~~- Integrate into all 16 detail pages~~
+~~- Consider removing bottom BackLink where Breadcrumb provides the same navigation~~
+
+**Implementation notes:** 2-level breadcrumb (Section > Current Page). Applied to 19 templates (13 show pages + 6 product sub-pages). `BackLink` component fully replaced and deleted. 22 files changed.
 
 **PR 1c: Dashboard Table Extraction**
 - Extract DataTable component from `reporting/show.html.twig`
