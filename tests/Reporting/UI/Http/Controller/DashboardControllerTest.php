@@ -71,7 +71,10 @@ class DashboardControllerTest extends WebTestCase
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
             ->get('/dashboard/')
-            ->assertSuccessful();
+            ->assertSuccessful()
+            ->assertSee("Today's Latest Orders")
+            ->assertSee("Today's Top Products")
+            ->assertSeeElement('table');
     }
 
     public function testProductSalesRendersWithDefaultCriteria(): void

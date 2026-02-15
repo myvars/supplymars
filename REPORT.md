@@ -4,7 +4,7 @@
 **Scope:** Twig templates, Twig components, shared layouts, Stimulus controllers, Tailwind CSS usage
 **Methodology:** Documentation review, full template inventory, component analysis, external pattern benchmarking
 
-> **Status:** Phase 1c complete + B4 fix. ~~Strikethrough~~ marks resolved items. Canonical dark-mode divider: `dark:border-gray-600`. Sidebar active state uses JS (`sidebar_active_controller.js` + `turbo:frame-load@window`) instead of Twig. Sort header differentiated via `Search.html.twig` wrapper (`5e719c6`). Breadcrumb component replaces BackLink on all detail pages (`b7b384f`). DataTable component extracted from dashboard (`6f07925`). Button link variant fixed (conditional base classes).
+> **Status:** All phases complete. ~~Strikethrough~~ marks resolved items. Canonical dark-mode divider: `dark:border-gray-600`. Sidebar active state uses JS (`sidebar_active_controller.js` + `turbo:frame-load@window`) instead of Twig. Sort header differentiated via `Search.html.twig` wrapper (`5e719c6`). Breadcrumb component replaces BackLink on all detail pages (`b7b384f`). DataTable component extracted from dashboard (`6f07925`). Button link variant fixed (conditional base classes). D3 `<dl>` semantics adopted on financial summaries. D7 feed/timeline already aligned. Phase 1 browser tests added.
 
 ---
 
@@ -332,17 +332,19 @@ That said, the interface leans toward **information density over visual breathin
 
 ---
 
-### D3. Description List (Tailwind UI: Application UI / Data Display / Description Lists)
+### ~~D3. Description List (Tailwind UI: Application UI / Data Display / Description Lists)~~ ✅
 
-**Pattern:** Tailwind UI description lists use `<dl>` with alternating grid rows, clear label/value separation via `dt`/`dd` pairs, and `grid-cols-[auto_1fr]` layout. Labels are `text-sm font-medium text-gray-500`, values are `text-sm text-gray-900`.
+~~**Pattern:** Tailwind UI description lists use `<dl>` with alternating grid rows, clear label/value separation via `dt`/`dd` pairs, and `grid-cols-[auto_1fr]` layout. Labels are `text-sm font-medium text-gray-500`, values are `text-sm text-gray-900`.~~
 
-**Where it applies:** Order summary sections (`order/show.html.twig:62-108`), ticket detail metadata (`note/ticket/_ticket_card.html.twig:48-68`), pricing cascade cards.
+~~**Where it applies:** Order summary sections (`order/show.html.twig:62-108`), ticket detail metadata (`note/ticket/_ticket_card.html.twig:48-68`), pricing cascade cards.~~
 
-**Why it helps:** The ticket card already uses `<dl>` with this pattern well (`_ticket_card.html.twig:48`). The order summary uses a `div`-based layout for the financial breakdown. Using `<dl>` semantics consistently would improve accessibility (screen readers announce term/definition pairs) and visual consistency.
+~~**Why it helps:** The ticket card already uses `<dl>` with this pattern well (`_ticket_card.html.twig:48`). The order summary uses a `div`-based layout for the financial breakdown. Using `<dl>` semantics consistently would improve accessibility (screen readers announce term/definition pairs) and visual consistency.~~
 
-**Effort:** Small per instance.
-**Risk:** Very low — semantic improvement.
-**Recommendation:** **Adopt incrementally** — use `<dl>` for structured key-value data wherever it occurs naturally. Don't retrofit where the current layout works well (e.g., the order financial summary is already clear).
+~~**Effort:** Small per instance.~~
+~~**Risk:** Very low — semantic improvement.~~
+~~**Recommendation:** **Adopt incrementally** — use `<dl>` for structured key-value data wherever it occurs naturally. Don't retrofit where the current layout works well (e.g., the order financial summary is already clear).~~
+
+**Resolved:** Converted financial summary sections in `order/show.html.twig` and `purchasing/purchase_order/_po_card.html.twig` from `<div>`/`<p>` to `<dl>`/`<dt>`/`<dd>`. Flex `<div>` wrappers retained for layout (valid HTML5 within `<dl>`). No visual change — purely semantic improvement for accessibility.
 
 ---
 
@@ -390,17 +392,19 @@ That said, the interface leans toward **information density over visual breathin
 
 ---
 
-### D7. Feed/Timeline Pattern (Tailwind UI: Application UI / Data Display / Feeds)
+### ~~D7. Feed/Timeline Pattern (Tailwind UI: Application UI / Data Display / Feeds)~~ ✅
 
-**Pattern:** Tailwind UI feeds use a vertical timeline with connected dots, avatar + content pairs, and timestamp metadata. The connector line runs through left-aligned dots.
+~~**Pattern:** Tailwind UI feeds use a vertical timeline with connected dots, avatar + content pairs, and timestamp metadata. The connector line runs through left-aligned dots.~~
 
-**Where it applies:** Ticket conversation timeline (`note/ticket/show.html.twig`).
+~~**Where it applies:** Ticket conversation timeline (`note/ticket/show.html.twig`).~~
 
-**Why it helps:** The ticket show page likely already uses some timeline pattern for conversation messages. The Tailwind UI feed pattern provides a clean reference for consistent message threading.
+~~**Why it helps:** The ticket show page likely already uses some timeline pattern for conversation messages. The Tailwind UI feed pattern provides a clean reference for consistent message threading.~~
 
-**Effort:** Small if already implemented similarly, medium if restructuring.
-**Risk:** Low.
-**Recommendation:** **Review and align** — compare current ticket timeline implementation against this pattern. Adopt if it improves clarity; skip if current implementation is already clean.
+~~**Effort:** Small if already implemented similarly, medium if restructuring.~~
+~~**Risk:** Low.~~
+~~**Recommendation:** **Review and align** — compare current ticket timeline implementation against this pattern. Adopt if it improves clarity; skip if current implementation is already clean.~~
+
+**Already aligned — no changes needed.** The ticket timeline (`show.html.twig`, `_feed_comment.html.twig`, `_feed_event.html.twig`) already implements the Tailwind UI feed pattern: vertical `<ol>` with `border-s-2` timeline, absolute-positioned color-coded dots (blue=customer, emerald=staff, gray=system), content cards with header metadata and timestamps, internal message differentiation via amber tinting, and full dark mode support.
 
 ---
 
@@ -587,10 +591,10 @@ That said, the interface leans toward **information density over visual breathin
 
 **Implementation notes:** Template-only component (`DataTable.html.twig`) with `title` prop and `head`/`body` blocks. Row classes extracted to a shared `rowClasses` variable in the calling template. 2 files changed, 1 new file.
 
-**Tests to add/update:**
-- Add a browser flow test that verifies breadcrumb rendering on a detail page (e.g., `OrderFlowTest`)
-- Verify Search component renders sort header with new styling
-- Verify DataTable component renders correctly in dashboard
+**Tests added:**
+- `tests/Order/UI/ShowOrderFlowTest.php` — verifies breadcrumb nav, `<dl>` description list rendering on order detail page
+- `tests/Catalog/UI/CategoryIndexFlowTest.php` — verifies sort header column rendering on category index
+- `tests/Reporting/UI/Http/Controller/DashboardControllerTest.php` — augmented with DataTable title and `<table>` element assertions
 
 **Validation approach:**
 - Cross-browser visual check (Safari, Chrome, Firefox)

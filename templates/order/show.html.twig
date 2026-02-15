@@ -76,34 +76,34 @@
                     </div>
                     <div>
                         <p class="mb-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-500">Order Summary</p>
-                        <div class="space-y-1 text-sm">
+                        <dl class="space-y-1 text-sm">
                             <div class="flex justify-between gap-6 text-gray-600 dark:text-gray-400">
-                                <p>Item(s) subtotal</p>
+                                <dt>Item(s) subtotal</dt>
                                 {% if result.isCancelled %}
-                                    <p>{{ 0.00|format_currency('GBP') }}</p>
+                                    <dd>{{ 0.00|format_currency('GBP') }}</dd>
                                 {% else %}
-                                    <p>{{ (result.totalPrice - result.shippingPrice)|format_currency('GBP') }}</p>
+                                    <dd>{{ (result.totalPrice - result.shippingPrice)|format_currency('GBP') }}</dd>
                                 {% endif %}
                             </div>
                             <div class="flex justify-between gap-6 text-gray-600 dark:text-gray-400">
-                                <p>Shipping</p>
+                                <dt>Shipping</dt>
                                 {% if result.isCancelled %}
-                                    <p>{{ 0.00|format_currency('GBP') }}</p>
+                                    <dd>{{ 0.00|format_currency('GBP') }}</dd>
                                 {% else %}
-                                    <p>{{ result.shippingPrice|format_currency('GBP') }}</p>
+                                    <dd>{{ result.shippingPrice|format_currency('GBP') }}</dd>
                                 {% endif %}
                             </div>
                             <div class="flex justify-between gap-6 text-gray-600 dark:text-gray-400">
-                                <p>VAT</p>
-                                <p>{{ (result.totalPriceIncVat - result.totalPrice)|format_currency('GBP') }}</p>
+                                <dt>VAT</dt>
+                                <dd>{{ (result.totalPriceIncVat - result.totalPrice)|format_currency('GBP') }}</dd>
                             </div>
                             <div class="border-t border-gray-200 pt-2 dark:border-gray-600">
                                 <div class="flex justify-between gap-6 font-medium text-gray-900 dark:text-white">
-                                    <p>Total</p>
-                                    <p>{{ result.totalPriceIncVat|format_currency('GBP') }}</p>
+                                    <dt>Total</dt>
+                                    <dd>{{ result.totalPriceIncVat|format_currency('GBP') }}</dd>
                                 </div>
                             </div>
-                        </div>
+                        </dl>
                     </div>
                 </div>
             </div>

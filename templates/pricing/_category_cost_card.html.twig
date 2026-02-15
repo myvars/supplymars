@@ -7,14 +7,14 @@
             <twig:ux:icon name="bi:percent" class="h-4 w-4 text-gray-400 dark:text-gray-500"/>
             {{ product.category.defaultMarkup|number_format(3) }}% mark-up
             {% if product.activeMarkupTarget == 'CATEGORY' %}
-                <twig:ux:icon name="bi:check-circle-fill" class="h-4 w-4 text-green-500 dark:text-green-400"/>
+                <twig:ux:icon name="bi:check-lg" class="h-4 w-4 text-green-500 dark:text-green-400"/>
             {% endif %}
         </p>
         <p class="flex items-center gap-2">
             <twig:ux:icon name="bi:tag" class="h-4 w-4 text-gray-400 dark:text-gray-500"/>
             {{ product.category.priceModel.getName }} price model
             {% if product.activePriceModelTarget == 'CATEGORY' %}
-                <twig:ux:icon name="bi:check-circle-fill" class="h-4 w-4 text-green-500 dark:text-green-400"/>
+                <twig:ux:icon name="bi:check-lg" class="h-4 w-4 text-green-500 dark:text-green-400"/>
             {% endif %}
         </p>
     </div>

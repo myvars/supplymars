@@ -46,30 +46,30 @@
             </div>
             <div>
                 <p class="mb-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-500">PO Summary</p>
-                <div class="space-y-1 text-sm">
+                <dl class="space-y-1 text-sm">
                     <div class="flex justify-between gap-6 text-gray-600 dark:text-gray-400">
-                        <p>Item(s) subtotal</p>
-                        <p>{{ (purchaseOrder.totalPrice - purchaseOrder.shippingPrice)|format_currency('GBP') }}</p>
+                        <dt>Item(s) subtotal</dt>
+                        <dd>{{ (purchaseOrder.totalPrice - purchaseOrder.shippingPrice)|format_currency('GBP') }}</dd>
                     </div>
                     <div class="flex justify-between gap-6 text-gray-600 dark:text-gray-400">
-                        <p>Shipping</p>
-                        <p>{{ purchaseOrder.shippingPrice|format_currency('GBP') }}</p>
+                        <dt>Shipping</dt>
+                        <dd>{{ purchaseOrder.shippingPrice|format_currency('GBP') }}</dd>
                     </div>
                     <div class="hidden flex justify-between gap-6 text-gray-600 md:flex dark:text-gray-400">
-                        <p>Total before VAT</p>
-                        <p>{{ purchaseOrder.totalPrice|format_currency('GBP') }}</p>
+                        <dt>Total before VAT</dt>
+                        <dd>{{ purchaseOrder.totalPrice|format_currency('GBP') }}</dd>
                     </div>
                     <div class="flex justify-between gap-6 text-gray-600 dark:text-gray-400">
-                        <p>VAT</p>
-                        <p>{{ (purchaseOrder.totalPriceIncVat - purchaseOrder.totalPrice)|format_currency('GBP') }}</p>
+                        <dt>VAT</dt>
+                        <dd>{{ (purchaseOrder.totalPriceIncVat - purchaseOrder.totalPrice)|format_currency('GBP') }}</dd>
                     </div>
                     <div class="border-t border-gray-200 pt-2 dark:border-gray-600">
                         <div class="flex justify-between gap-6 font-medium text-gray-900 dark:text-white">
-                            <p>Grand Total</p>
-                            <p>{{ purchaseOrder.totalPriceIncVat|format_currency('GBP') }}</p>
+                            <dt>Grand Total</dt>
+                            <dd>{{ purchaseOrder.totalPriceIncVat|format_currency('GBP') }}</dd>
                         </div>
                     </div>
-                </div>
+                </dl>
             </div>
         </div>
     </div>
