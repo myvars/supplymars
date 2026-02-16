@@ -8,7 +8,7 @@
             <div class="flex items-center justify-end">
                 <button id="navigationButton"
                         type="button"
-                        class="inline-flex h-9 w-9 items-center justify-center rounded-lg p-2 text-sm text-gray-400 transition-colors hover:bg-gray-700/70 hover:text-gray-200 focus:outline-hidden focus:ring-2 focus:ring-gray-500"
+                        class="inline-flex h-9 w-9 items-center justify-center rounded-lg p-2 text-sm text-gray-400 transition-colors hover:bg-gray-700/70 hover:text-gray-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500"
                         data-action="click->basic-drawer#open"
                 >
                     <span class="sr-only">Open side menu</span>
@@ -22,7 +22,7 @@
             <div class="flex items-center gap-1 md:order-2">
                 <div data-controller="theme-toggle">
                     <button type="button"
-                            class="inline-flex h-9 w-9 items-center justify-center rounded-lg p-2 text-sm text-gray-400 transition-colors hover:bg-gray-700/70 hover:text-gray-200 focus:outline-hidden focus:ring-2 focus:ring-gray-500"
+                            class="inline-flex h-9 w-9 items-center justify-center rounded-lg p-2 text-sm text-gray-400 transition-colors hover:bg-gray-700/70 hover:text-gray-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500"
                             data-action="theme-toggle#toggle"
                     >
                         <span class="sr-only">Toggle dark mode</span>
@@ -37,7 +37,7 @@
                 {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
                     <div class="relative" data-controller="user-menu">
                         <button type="button"
-                                class="flex items-center rounded-full p-1 transition-opacity hover:opacity-80 focus:outline-hidden focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 focus:ring-offset-gray-900"
+                                class="flex items-center rounded-full p-1 transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500"
                                 data-action="click->user-menu#toggle">
                             <span class="sr-only">Open user menu</span>
                             <img class="h-7 w-7 rounded-full ring-2 ring-gray-600" src="{{ asset('images/avatar.png') }}" alt="user photo">

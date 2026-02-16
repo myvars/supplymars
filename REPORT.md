@@ -377,7 +377,11 @@ These are actually reasonable per-context hover states. Document the hover conve
 
 ---
 
-### C6. Complete Focus Ring Migration
+### ~~C6. Complete Focus Ring Migration~~ ✅
+
+**Status:** Resolved in Phase 2a. Migrated all button `focus:ring-*` patterns to `focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500`: Toast close button, sidebar toggle, theme toggle, user avatar button. Form inputs (login, register, resend-verify, search) intentionally left with `focus:ring-*` to match Flowbite form theme styling. Modal close button was already migrated in Phase 0.
+
+<details><summary>Original description</summary>
 
 **What changes:** Several templates still use `focus:ring-*` instead of the preferred `focus-visible:outline-*` pattern:
 - `templates/customer/security/login.html.twig:28,32,37` — form inputs
@@ -392,6 +396,8 @@ Migrate all remaining `focus:ring-*` patterns on interactive elements to `focus-
 **Risk:** Low — visual change on keyboard focus only.
 **Effort:** Small (1-2 hours).
 **Value:** Medium — eliminates click-triggered focus rings (mouse users) while preserving keyboard indicators.
+
+</details>
 
 ---
 
@@ -630,9 +636,9 @@ All quick wins completed in Phase 0.
 
 ### Phase 2 — Optional Refinements (Opportunistic)
 
-**PR 2a: Focus Ring Migration**
-- Migrate remaining `focus:ring-*` patterns to `focus-visible:outline-*` on custom interactive elements
-- Files: `Search.html.twig`, `Toast.html.twig`, `login.html.twig` (only custom-styled elements; leave Flowbite form theme as-is)
+**~~PR 2a: Focus Ring Migration~~** ✅
+- Migrated 4 buttons to `focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500`: Toast close (`Toast.html.twig`), sidebar toggle, theme toggle, user avatar (`_header.html.twig`)
+- Form inputs (login, register, resend-verify, search) left as-is — they use standard Flowbite `focus:ring` pattern and changing them would create inconsistency with Flowbite-themed forms elsewhere
 
 **PR 2b: Product Sub-Navigation Tabs Accessibility**
 - Add `role="tablist"` / `role="tab"` / `aria-selected` to product sub-navigation (`_navigation.html.twig`)
