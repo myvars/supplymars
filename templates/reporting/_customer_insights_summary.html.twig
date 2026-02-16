@@ -1,11 +1,11 @@
-<div class="grid grid-cols-2 gap-3 md:grid-cols-4">
+<div class="grid grid-cols-2 gap-px overflow-hidden rounded-lg bg-gray-900/5 dark:bg-white/5 md:grid-cols-4">
     <twig:KpiCard title="Total Customers" value="{{ summary.totalCustomers|default(0) }}"/>
     <twig:KpiCard title="Active Customers" value="{{ summary.activeCustomers|default(0) }}" href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'activeCustomers'})) }}"/>
     <twig:KpiCard title="New Customers" value="{{ summary.newCustomers|default(0) }}" href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'newCustomers'})) }}"/>
     <twig:KpiCard title="Repeat Rate" value="{{ summary.repeatRate|default(0) }}" valueType="percentage" maxFractionDigits="1" href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'returningCustomers'})) }}"/>
 </div>
 
-<div class="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
+<div class="mt-3 grid grid-cols-2 gap-px overflow-hidden rounded-lg bg-gray-900/5 dark:bg-white/5 md:grid-cols-4">
     <twig:KpiCard title="Avg CLV" value="{{ summary.averageClv|default(0) }}" valueType="currency"/>
     <twig:KpiCard title="Avg AOV" value="{{ summary.averageAov|default(0) }}" valueType="currency"/>
     <twig:KpiCard title="Avg Orders/Customer" value="{{ summary.averageOrdersPerCustomer|default(0) }}" maxFractionDigits="2"/>

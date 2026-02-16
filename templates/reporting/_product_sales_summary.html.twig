@@ -1,4 +1,4 @@
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+<div class="grid grid-cols-2 gap-px overflow-hidden rounded-lg bg-gray-900/5 dark:bg-white/5 lg:grid-cols-4">
     <twig:KpiCard title="Sales Qty" value="{{ summary.salesQty|default(0) }}" href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'salesQty'})) }}"/>
     <twig:KpiCard title="Sales Cost" value="{{ summary.salesCost|default(0) }}" valueType="currency" href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'salesCost'})) }}"/>
     <twig:KpiCard title="Sales Profit" value="{{ summary.salesProfit|default(0) }}" valueType="currency" href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'salesProfit'})) }}"/>

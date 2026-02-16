@@ -1,4 +1,4 @@
-<div class="grid grid-cols-2 gap-3">
+<div class="grid grid-cols-2 gap-px overflow-hidden rounded-lg bg-gray-900/5 dark:bg-white/5">
     <twig:KpiCard title="Overdue Order Count" value="{{ summary.orderCount|default(0) }}" href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'dueDate', 'sortDirection': 'asc'})) }}"/>
     <twig:KpiCard title="Overdue Order Value" value="{{ summary.orderValue|default(0) }}" valueType="currency" href="{{ path(app.current_route, app.request.query.all|merge({'sort': 'totalPrice', 'sortDirection': 'desc'})) }}"/>
 </div>

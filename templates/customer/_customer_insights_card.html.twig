@@ -10,7 +10,7 @@
     </div>
 
     {% set ordersUrl = path('app_order_index', {customerId: customer.id}) %}
-    <div class="grid grid-cols-2 gap-3 md:grid-cols-3">
+    <div class="grid grid-cols-2 gap-px overflow-hidden rounded-lg bg-gray-900/5 dark:bg-white/5 md:grid-cols-3">
         <twig:KpiCard title="Total Revenue" value="{{ insights.totalRevenue|default(0) }}" valueType="currency" href="{{ ordersUrl }}"/>
         <twig:KpiCard title="Order Count" value="{{ insights.orderCount|default(0) }}" href="{{ ordersUrl }}"/>
         <twig:KpiCard title="Avg Order Value" value="{{ insights.averageOrderValue|default(0) }}" valueType="currency" href="{{ ordersUrl }}"/>
@@ -20,7 +20,7 @@
     </div>
 
     {% if insights.reviewCount > 0 %}
-        <div class="mt-3 grid grid-cols-2 gap-3 md:grid-cols-3">
+        <div class="mt-3 grid grid-cols-2 gap-px overflow-hidden rounded-lg bg-gray-900/5 dark:bg-white/5 md:grid-cols-3">
             <twig:KpiCard title="Published Reviews" value="{{ insights.reviewCount }}"/>
         </div>
     {% endif %}

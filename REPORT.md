@@ -104,7 +104,11 @@ The issue: entity headings inconsistently use `text-xl` vs `text-lg`. Some `<h1>
 
 ---
 
-### B3. Card Component Lacks Structured Section Pattern
+### ~~B3. Card Component Lacks Structured Section Pattern~~ — Declined
+
+**Decision:** **Skip** — see E1. `divide-y` creates unwanted dividers given varied card content structures (mixed header/section children, negative-margin bottom links, inner `<dl>` dividers needing per-section control). Manual `border-t` approach provides necessary flexibility. Stop condition met in E1.
+
+<details><summary>Original finding</summary>
 
 **Evidence:** Card content sections are separated via ad-hoc `border-t` dividers applied in each calling template:
 ```twig
@@ -127,6 +131,8 @@ This is repeated ~30 times across detail page templates. Each template manually 
     <div>Section 2</div>  {# divider auto-inserted #}
 </twig:Card>
 ```
+
+</details>
 
 ---
 
@@ -269,7 +275,11 @@ The `focus:` pseudo-class triggers on both mouse click and keyboard navigation. 
 
 ---
 
-### D4. Gap-as-Border Pattern for KPI Grids (Tailwind UI: Stats)
+### ~~D4. Gap-as-Border Pattern for KPI Grids (Tailwind UI: Stats)~~ ✅
+
+**Resolved:** All 12 KPI grids across 9 templates migrated from individually bordered cards (`gap-3` + `border border-gray-200`) to gap-as-border pattern (`gap-px overflow-hidden rounded-lg bg-gray-900/5 dark:bg-white/5`). KpiCard component stripped of border/rounded-lg/hover-border classes. Custom card in `customer_geographic.html.twig` aligned to match.
+
+<details><summary>Original finding</summary>
 
 **Pattern:** Instead of explicit borders between KPI cards, use `gap-px bg-gray-900/5 dark:bg-white/5` on the grid container with `bg-white dark:bg-gray-900` on each card. This creates pixel-perfect divider lines from the gap color showing through.
 
@@ -280,6 +290,8 @@ The `focus:` pseudo-class triggers on both mouse click and keyboard navigation. 
 **Effort:** Very small — CSS class change on grid container + card elements.
 **Risk:** Very low.
 **Recommendation:** **Nice to have** — try on the dashboard and see if it looks better. The current bordered cards are solid.
+
+</details>
 
 ---
 

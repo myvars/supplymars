@@ -14,7 +14,7 @@
                 <div>
                     <div class="mb-3 font-semibold text-gray-700 dark:text-gray-500">Order Overview</div>
                     <div class="space-y-3">
-                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                        <div class="grid grid-cols-1 gap-px overflow-hidden rounded-lg bg-gray-900/5 dark:bg-white/5 sm:grid-cols-3">
                             <twig:KpiCard
                                 title="Order Count"
                                 value="{{ report.orderSalesSummary.orderCount|default(0) }}"
@@ -75,7 +75,7 @@
                 <div>
                     <div class="mb-3 font-semibold text-gray-700 dark:text-gray-500">Sales Overview</div>
                     <div class="space-y-3">
-                        <div class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                        <div class="grid grid-cols-1 gap-px overflow-hidden rounded-lg bg-gray-900/5 dark:bg-white/5 sm:grid-cols-3">
                             <twig:KpiCard
                                 title="Sales Cost"
                                 value="{{ report.productSalesSummary.salesCost|default(0) }}"
@@ -136,7 +136,7 @@
                 {# Action Required Section #}
                 <div>
                     <div class="mb-3 font-semibold text-gray-700 dark:text-gray-500">Action Required</div>
-                    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    <div class="grid grid-cols-1 gap-px overflow-hidden rounded-lg bg-gray-900/5 dark:bg-white/5 sm:grid-cols-2">
                         <twig:KpiCard
                             title="Overdue Orders"
                             value="{{ report.overdueOrderSummary.orderCount|default(0) }}"

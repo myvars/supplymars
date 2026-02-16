@@ -9,7 +9,7 @@
         <twig:Card>
             {{ include('reporting/_customer_insights_nav.html.twig') }}
 
-            <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
+            <div class="grid grid-cols-2 gap-px overflow-hidden rounded-lg bg-gray-900/5 dark:bg-white/5 md:grid-cols-4">
                 <twig:KpiCard title="New" value="{{ report.summary.new|default(0) }}"/>
                 <twig:KpiCard title="Returning" value="{{ report.summary.returning|default(0) }}"/>
                 <twig:KpiCard title="Loyal" value="{{ report.summary.loyal|default(0) }}"/>
