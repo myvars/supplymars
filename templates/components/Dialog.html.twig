@@ -1,14 +1,18 @@
 {# Simple dialog wrapper with header bar and content area. Used inside modals.
    - title: Heading displayed in the top bar
    - padding: Tailwind padding for the content area (default: p-3)
+   - size: Modal width variant — sm|md|lg|xl (default: md). Communicated to
+     the singleton <dialog> via data-modal-size attribute, read by Stimulus.
    Block: content (implicit) #}
 {% props
     title = null,
-    padding = 'p-3'
+    padding = 'p-3',
+    size = 'md'
 %}
 
 <div {{ attributes.defaults({
     'class': 'relative',
+    'data-modal-size': size,
 }) }}
 >
     <div class="flex items-center justify-between border-b border-gray-200 px-4 py-3 dark:border-gray-600">

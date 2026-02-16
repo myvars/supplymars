@@ -118,7 +118,7 @@ Native dialog with Stimulus bindings:
 |--------|---------|--------|
 | `open()` | Manual or frameLoaded | `dialog.showModal()`, body overflow |
 | `close()` | submitEnd, click outside, escape | Clear frame, `dialog.close()` |
-| `frameLoaded()` | `turbo:frame-load` | Auto-open if not already open |
+| `frameLoaded()` | `turbo:frame-load` | Read content size, auto-open if not already open |
 | `submitEnd(event)` | `turbo:submit-end` | Close if `event.detail.success` |
 | `frameBusy()` | `turbo:before-fetch-request` | Set loading state |
 | `frameIdle()` | `turbo:frame-render` | Clear loading state |
@@ -214,7 +214,20 @@ Submit buttons auto-detect modal context:
 
 ## Styling
 
-### Dialog Styles
+### Dialog Sizes
+
+Size is controlled by a `data-modal-size` attribute on the `<dialog>`, driven by the loaded content. `Dialog.html.twig` exposes a `size` prop; `ConfirmDialog` defaults to `sm`.
+
+| Size | CSS Class | Width | Use Case |
+|------|-----------|-------|----------|
+| `sm` | `md:max-w-md` | 28rem | Delete confirmations, simple actions |
+| `md` | `md:min-w-[50%] md:max-w-[50%]` | 50% viewport | Standard forms (default) |
+| `lg` | `md:max-w-2xl` | 42rem | Complex forms, multi-column |
+| `xl` | `md:max-w-5xl` | 64rem | Wide content, data tables |
+
+The Stimulus controller reads `data-modal-size` from the first matching element inside the turbo-frame in `frameLoaded()`, then sets it on the `<dialog>`. On close, it resets to `md`.
+
+### Dialog Base Styles
 
 ```css
 dialog {
@@ -222,10 +235,9 @@ dialog {
     margin: auto;
     inset: 0;
 
-    /* Sizing */
-    width: 100%;
-    max-width: 50%;
-    max-height: 100%;
+    /* Base sizing — size variants applied via data-[modal-size=*] */
+    width: 100%;       /* full-width on mobile */
+    md:w-fit;          /* fit-content on desktop */
 
     /* Appearance */
     border-radius: 0.5rem;

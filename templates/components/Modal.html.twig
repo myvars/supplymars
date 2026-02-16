@@ -1,12 +1,13 @@
 {# Native <dialog> modal managed by the basic-modal Stimulus controller.
    Placed once in base.html.twig. Turbo loads content into the modal frame.
-   - allowSmallWidth: Skip min-width constraint on medium screens (default: false)
    - closeButton: Show an X close button in the top-right corner (default: false)
    - padding: Tailwind padding for content area (default: p-5)
    - fixedTop: Position dialog near the top of viewport (default: false)
+   Size is controlled by the loaded content's data-modal-size attribute (sm|md|lg|xl).
+   Dialog.html.twig exposes a `size` prop; ConfirmDialog defaults to sm.
+   The Stimulus controller reads this attribute and applies it to the <dialog>.
    Blocks: trigger, content, loading_template #}
 {% props
-    allowSmallWidth=false,
     closeButton=false,
     padding='p-5',
     fixedTop=false
@@ -20,8 +21,13 @@
     {% block trigger %}{% endblock %}
     <dialog
         data-basic-modal-target="dialog"
-        class="open:flex m-auto rounded-lg border border-gray-200 bg-white shadow-2xl inset-0 w-full md:w-fit md:max-w-[50%] {{ allowSmallWidth ? '' : 'md:min-w-[50%] ' }}
-        max-h-full animate-fade-in backdrop:bg-gray-900/60 dark:border-gray-600 dark:bg-gray-800 dark:backdrop:bg-gray-900/80 {{ fixedTop ? ' mt-14' : '' }}"
+        data-modal-size="md"
+        class="open:flex m-auto rounded-lg border border-gray-200 bg-white shadow-2xl inset-0 w-full md:w-fit
+        data-[modal-size=sm]:md:max-w-md
+        data-[modal-size=md]:md:min-w-[50%] data-[modal-size=md]:md:max-w-[50%]
+        data-[modal-size=lg]:md:max-w-2xl
+        data-[modal-size=xl]:md:max-w-5xl
+        max-h-full animate-fade-in backdrop:bg-gray-900/60 dark:border-gray-600 dark:bg-gray-800 dark:backdrop:bg-gray-900/80{{ fixedTop ? ' mt-14' : '' }}"
         data-action="close->basic-modal#close mousedown->basic-modal#onMouseDown click->basic-modal#clickOutside"
     >
         <div class="grow overflow-auto p-1">

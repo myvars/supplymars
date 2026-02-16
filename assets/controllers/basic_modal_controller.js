@@ -19,6 +19,7 @@ export default class extends Controller {
     close() {
         if (this.hasDialogTarget) {
             this.dialogTarget.close();
+            this.dialogTarget.dataset.modalSize = 'md';
         }
         if (this.hasFrameTarget) {
             this.frameTarget.removeAttribute('src');
@@ -29,6 +30,7 @@ export default class extends Controller {
 
     frameLoaded(event) {
         if (event.target === this.frameTarget && !this.dialogTarget.open) {
+            this.#applySizeFromContent();
             this.open();
         }
     }
@@ -69,6 +71,11 @@ export default class extends Controller {
 
     frameIdle() {
         delete this.frameTarget.dataset.loading;
+    }
+
+    #applySizeFromContent() {
+        const content = this.frameTarget.querySelector('[data-modal-size]');
+        this.dialogTarget.dataset.modalSize = content?.dataset.modalSize || 'md';
     }
 
     #isClickInElement(event, element) {

@@ -149,23 +149,9 @@ The `focus:` pseudo-class triggers on both mouse click and keyboard navigation. 
 
 ---
 
-### B5. Modal Size API Uses Boolean Instead of Explicit Sizes
+### ~~B5. Modal Size API Uses Boolean Instead of Explicit Sizes~~ ✅
 
-**Evidence:** `Modal.html.twig` uses `allowSmallWidth` boolean:
-```twig
-{% props allowSmallWidth=false %}
-{# Results in: md:min-w-[50%] when false #}
-```
-
-This binary approach (either constrain to 50% min-width or don't) limits the Modal to two size states. Some forms need narrow modals (delete confirmations), while others need wide modals (complex edit forms with many fields).
-
-**Reference:** Flowbite offers discrete size variants mapped to `max-w-*` classes: `sm` → `max-w-md`, `md` → `max-w-lg`, `lg` → `max-w-2xl`, `xl` → `max-w-5xl`. This gives more precise control.
-
-**Scope:** `Modal.html.twig`, `Modal.php` (if exists), 66 modal usages.
-**Importance:** Low-Medium — current approach works but is inflexible.
-**Effort:** Small — replace `allowSmallWidth` boolean with `size` string prop.
-
-**Recommendation:** Add a `size` prop accepting `sm|md|lg|xl` (default `md`) mapped to `max-w-*` classes. Keep `allowSmallWidth` as deprecated alias for backwards compatibility. This is a non-breaking change.
+**Resolved:** Replaced `allowSmallWidth` boolean with `size` prop (`sm|md|lg|xl`) on `Dialog.html.twig`. Size communicated to singleton `<dialog>` via `data-modal-size` attribute, read by Stimulus controller in `frameLoaded()`. `ConfirmDialog` defaults to `sm`. Docs updated in `Docs/patterns/Turbo/Modals.md`.
 
 ---
 
@@ -385,28 +371,15 @@ This binary approach (either constrain to 50% min-width or don't) limits the Mod
 
 ## E) Component Enhancement Opportunities
 
-### E1. Card `divided` Prop
+### ~~E1. Card `divided` Prop~~ — Declined
 
-**Candidate:** Add `divided` boolean prop to `Card.html.twig` that applies `divide-y divide-gray-200 dark:divide-gray-700` to the content wrapper. This eliminates manual `border-t` classes on section dividers within cards.
-
-**Evidence:** ~30 instances of manual `border-t border-gray-200 ... dark:border-gray-600` within card content across detail pages.
-
-**Decision:** **Consider** — would reduce template boilerplate. Test with one detail page first to ensure the automatic dividers don't create unwanted lines on empty blocks.
+**Decision:** **Skip** — `divide-y` creates unwanted dividers in practice. Card content structures vary too much: order show mixes header/date/section children at the same level; category/supplier cards use `-mx-3 -mb-3` negative-margin bottom links incompatible with `divide-y`; financial `<dl>` dividers need inner control. The manual `border-t` approach gives needed per-section control. Stop condition met.
 
 ---
 
-### E2. Modal `size` Prop
+### ~~E2. Modal `size` Prop~~ ✅
 
-**Candidate:** Replace `allowSmallWidth` boolean with `size` string prop (`sm|md|lg|xl`).
-
-| Size | Max-Width | Use Case |
-|------|-----------|----------|
-| `sm` | `max-w-md` (28rem) | Delete confirmation, simple actions |
-| `md` | `max-w-lg` (32rem) | Standard forms (current default) |
-| `lg` | `max-w-2xl` (42rem) | Complex forms, multi-column |
-| `xl` | `max-w-5xl` (64rem) | Wide content, data tables |
-
-**Decision:** **Adopt** — clean API improvement, backwards compatible. Keep `md:min-w-[50%] md:max-w-[50%]` as the `md` default.
+**Resolved:** See B5 resolution above. Implemented via `data-modal-size` attribute system with `data-[modal-size=*]:` Tailwind variants on `<dialog>`.
 
 ---
 
@@ -495,20 +468,11 @@ Create a surface layering reference in `Docs/patterns/UI/` documenting backgroun
 
 ---
 
-### Phase 1 — Component API Improvements (1-2 PRs, 2-3 days)
+### ~~Phase 1 — Component API Improvements~~ ✅
 
-**PR 1a: Modal Size Variants**
-- Add `size` prop to Modal component (sm/md/lg/xl)
-- Keep `allowSmallWidth` as deprecated alias
-- Files: `Modal.html.twig`, `Modal.php` (if PHP class exists), update callers gradually
+**PR 1a: Modal Size Variants** — Complete. `size` prop on `Dialog.html.twig` (sm/md/lg/xl), `ConfirmDialog` defaults to `sm`. Data-attribute driven sizing via Stimulus controller. `allowSmallWidth` removed (had no callers). Docs updated.
 
-**PR 1b: Card Divided Sections (Optional)**
-- Add `divided` prop to Card component
-- Test on one detail page (e.g., order show)
-- Migrate remaining detail pages if successful
-- Files: `Card.html.twig`, `Card.php`, detail page templates
-
-**Validation:** Visual check across modal sizes, detail page section dividers
+**PR 1b: Card Divided Sections** — Declined. `divide-y` creates unwanted dividers given varied card content structures. Stop condition met.
 
 ---
 
@@ -528,7 +492,7 @@ Create a surface layering reference in `Docs/patterns/UI/` documenting backgroun
 
 **Stop conditions:**
 - Sidebar badges: Skip if repository queries create noticeable latency on nav render. The sidebar renders on every page via Turbo morph — counts must be fast.
-- Card divided: Skip if `divide-y` creates unwanted dividers on empty blocks or conditional sections.
+- ~~Card divided: Skip if `divide-y` creates unwanted dividers on empty blocks or conditional sections.~~ — Skipped (stop condition met).
 
 ---
 
