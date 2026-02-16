@@ -24,6 +24,8 @@ Home
 │   ├── Subcategories
 │   └── Manufacturers
 ├── Orders
+│   ├── Orders
+│   └── Pending Orders ④
 ├── Purchasing
 │   ├── Purchase Orders
 │   ├── Suppliers
@@ -31,12 +33,21 @@ Home
 ├── Customers
 ├── Reviews
 │   ├── Review Search
-│   └── Moderation Queue
+│   └── Moderation Queue ④
 ├── Reporting
 │   ├── Dashboard
-│   └── Customer Insights
-└── Admin
-    └── VAT Rates
+│   ├── Product Sales
+│   ├── Order Summary
+│   ├── Customer Insights
+│   ├── PO Performance
+│   ├── Overdue Orders ④
+│   └── Rejected POs ④
+├── Admin
+│   └── VAT Rates
+└── Notes
+    ├── My Queue ④
+    ├── Tickets
+    └── Pools
 ```
 
 ### Expandable Sections
@@ -49,23 +60,51 @@ Some menu items have a **▼** arrow indicating they expand to show sub-items:
    - Subcategories
    - Manufacturers
 
-2. Click on **Purchasing** to expand and see:
+2. Click on **Orders** to expand and see:
+   - Orders (all orders)
+   - Pending Orders (filtered to pending status)
+
+3. Click on **Purchasing** to expand and see:
    - Purchase Orders
    - Suppliers
    - Supplier Products
 
-3. Click on **Reviews** to expand and see:
+4. Click on **Reviews** to expand and see:
    - Review Search
    - Moderation Queue
 
-4. Click on **Reporting** to expand and see:
+5. Click on **Reporting** to expand and see:
    - Dashboard
+   - Product Sales
+   - Order Summary
    - Customer Insights
+   - PO Performance
+   - Overdue Orders
+   - Rejected POs
 
-5. Click on **Admin** to expand and see:
+6. Click on **Admin** to expand and see:
    - VAT Rates
 
+7. Click on **Notes** to expand and see:
+   - My Queue
+   - Tickets
+   - Pools
+
 Click the section again to collapse it.
+
+### Notification Badges
+
+Some menu items display a count badge showing items that need attention:
+
+| Badge | Colour | What It Shows |
+|-------|--------|---------------|
+| Pending Orders | Yellow | Orders awaiting processing |
+| Moderation Queue | Red | Reviews awaiting moderation |
+| Overdue Orders | Orange | Orders past their due date |
+| Rejected POs | Red | Purchase orders rejected by suppliers |
+| My Queue | Blue | Open tickets in your subscribed pools |
+
+Badges only appear when the count is greater than zero. Counts are cached and update automatically when relevant actions occur.
 
 ## Page Types
 

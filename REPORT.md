@@ -182,7 +182,7 @@ The `focus:` pseudo-class triggers on both mouse click and keyboard navigation. 
 
 ### ~~C2. Add Sidebar Notification Badges for Actionable Counts~~ ✅
 
-**Resolved:** Count badges added to 4 sidebar nav items: Moderation Queue (pending reviews), Rejected POs, Overdue Orders (last 30 days), and My Queue (open tickets in user's pools). Counts cached in Redis with separate keys — event-driven invalidation for reviews/POs/orders (`SidebarBadgeCacheInvalidator` listener), 5-min TTL for tickets (no domain events in Notes context). Zero DB queries on cache hit. My Queue also now excludes closed tickets by default when `myPools` is active. Commit `82ff978`.
+**Resolved:** Count badges added to 5 sidebar nav items: Pending Orders, Moderation Queue (pending reviews), Rejected POs, Overdue Orders (last 30 days), and My Queue (open tickets in user's pools). Counts cached in Redis with separate keys — event-driven invalidation for reviews/POs/orders (`SidebarBadgeCacheInvalidator` listener), 5-min TTL for tickets (no domain events in Notes context). Zero DB queries on cache hit. My Queue also now excludes closed tickets by default when `myPools` is active. Orders section converted from a single nav link to a dropdown with "Orders" (all) and "Pending Orders" (filtered + yellow badge). Commits `82ff978`, `5c7fa16`.
 
 ---
 
@@ -465,7 +465,7 @@ Create a surface layering reference in `Docs/patterns/UI/` documenting backgroun
 
 ### Phase 2 — Information Architecture (1-2 PRs, opportunistic)
 
-**PR 2a: Sidebar Notification Badges** ✅ — Complete. Redis-cached count badges on 4 nav items (Moderation Queue, Rejected POs, Overdue Orders, My Queue). Event-driven invalidation for 3 of 4; short TTL for tickets. My Queue excludes closed tickets. Commit `82ff978`.
+**PR 2a: Sidebar Notification Badges** ✅ — Complete. Redis-cached count badges on 5 nav items (Pending Orders, Moderation Queue, Rejected POs, Overdue Orders, My Queue). Event-driven invalidation for 4 of 5; short TTL for tickets. Orders section converted from single link to dropdown (Orders + Pending Orders). My Queue excludes closed tickets. Commits `82ff978`, `5c7fa16`.
 
 **PR 2b: Documentation**
 - Typography scale (F5)

@@ -24,4 +24,6 @@ interface OrderRepository extends FindByCriteriaInterface
     public function findNextOrdersToBeProcessed(int $orderCount = 1): ?array;
 
     public function countOverdueOrders(): int;
+
+    public function countPendingOrders(): int;
 }

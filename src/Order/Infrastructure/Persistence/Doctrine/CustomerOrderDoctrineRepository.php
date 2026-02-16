@@ -221,6 +221,11 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
             ->getSingleScalarResult();
     }
 
+    public function countPendingOrders(): int
+    {
+        return $this->count(['status' => OrderStatus::PENDING]);
+    }
+
     public function getOverdueOrders(\DateTime $startDate): QueryBuilder
     {
         return $this->createQueryBuilder('co')

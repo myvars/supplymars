@@ -71,17 +71,31 @@
                         </li>
                     </ul>
                 </li>
-                {# ── Orders ── #}
+                {# ── Orders (Order Search, Pending Orders) ── #}
                 <li>
-                    <a href="{{ path('app_order_index') }}"
-                       data-nav="top"
-                       class="flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors text-gray-900 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
-                       data-turbo-frame="body"
-                       data-action="basic-drawer#close"
-                    >
+                    <button type="button" data-nav="section" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors text-gray-900 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-orders" data-collapse-toggle="dropdown-orders">
                         <twig:ux:icon name="bi:bag-check" data-nav="icon" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
-                        <span class="ml-3">Orders</span>
-                    </a>
+                        <span class="ml-3 flex-1 whitespace-nowrap text-left">Orders</span>
+                        <twig:ux:icon name="bi:chevron-down" data-nav="chevron" class="h-4 w-4 text-gray-400"/>
+                    </button>
+                    <ul id="dropdown-orders" data-nav="dropdown" class="mt-1 hidden space-y-0.5 pl-4">
+                        <li>
+                            <a href="{{ path('app_order_index') }}"
+                               data-nav="child"
+                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-turbo-frame="body"
+                               data-action="basic-drawer#close"
+                            >Orders</a>
+                        </li>
+                        <li>
+                            <a href="{{ path('app_order_index', {orderStatus: 'PENDING'}) }}"
+                               data-nav="child"
+                               class="flex w-full items-center justify-between rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               data-turbo-frame="body"
+                               data-action="basic-drawer#close"
+                            >Pending Orders{% if badges.pendingOrders > 0 %}<span class="ml-auto inline-flex items-center rounded-full bg-yellow-100 px-2 py-0.5 text-xs font-medium text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">{{ badges.pendingOrders }}</span>{% endif %}</a>
+                        </li>
+                    </ul>
                 </li>
 
                 {# ── Purchasing (POs, Suppliers, Supplier Products) ── #}

@@ -12,6 +12,7 @@ use Symfony\Contracts\Cache\ItemInterface;
 
 final class SidebarBadgeProvider
 {
+    public const string KEY_PENDING_ORDERS = 'sidebar.badge.pending_orders';
     public const string KEY_PENDING_REVIEWS = 'sidebar.badge.pending_reviews';
     public const string KEY_REJECTED_POS = 'sidebar.badge.rejected_pos';
     public const string KEY_OVERDUE_ORDERS = 'sidebar.badge.overdue_orders';
@@ -30,15 +31,25 @@ final class SidebarBadgeProvider
     ) {
     }
 
-    /** @return array{pendingReviews: int, rejectedPos: int, overdueOrders: int, myQueue: int} */
+    /** @return array{pendingOrders: int, pendingReviews: int, rejectedPos: int, overdueOrders: int, myQueue: int} */
     public function getCounts(): array
     {
         return [
+            'pendingOrders' => $this->getPendingOrderCount(),
             'pendingReviews' => $this->getPendingReviewCount(),
             'rejectedPos' => $this->getRejectedPoCount(),
             'overdueOrders' => $this->getOverdueOrderCount(),
             'myQueue' => $this->getMyQueueCount(),
         ];
+    }
+
+    private function getPendingOrderCount(): int
+    {
+        return $this->cache->get(self::KEY_PENDING_ORDERS, function (ItemInterface $item): int {
+            $item->expiresAfter(self::TTL_SHORT);
+
+            return $this->orderRepository->countPendingOrders();
+        });
     }
 
     private function getPendingReviewCount(): int
