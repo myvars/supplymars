@@ -118,7 +118,7 @@ class CustomerController extends AbstractController
         return $flow->handleField(
             request: $request,
             value: $customer->getFullName(),
-            onSave: fn ($value) => $customer->setFullName((string) $value),
+            onSave: function ($value) use ($customer): void { $customer->setFullName((string) $value); },
             context: InlineEditContext::create(
                 frameId: 'inline-edit-customer-' . $customer->getPublicId() . '-fullname',
                 displayTemplate: 'customer/_inline_fullname.html.twig',
