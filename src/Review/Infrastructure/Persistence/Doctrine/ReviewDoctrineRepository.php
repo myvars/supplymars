@@ -113,6 +113,11 @@ class ReviewDoctrineRepository extends ServiceEntityRepository implements FindBy
         return new QueryAdapter($qb);
     }
 
+    public function countPendingReviews(): int
+    {
+        return $this->count(['status' => ReviewStatus::PENDING]);
+    }
+
     /**
      * @return array{count: int, average: string, distribution: array<int, int>, pendingCount: int}
      */

@@ -23,4 +23,6 @@ interface ReviewRepository extends FindByCriteriaInterface
 
     /** @return ProductReview[] */
     public function findLatestPublishedForProduct(Product $product, int $limit = 5): array;
+
+    public function countPendingReviews(): int;
 }

@@ -6,6 +6,7 @@ use App\Note\Application\Search\TicketSearchCriteria;
 use App\Note\Domain\Model\Ticket\Ticket;
 use App\Note\Domain\Model\Ticket\TicketId;
 use App\Note\Domain\Model\Ticket\TicketPublicId;
+use App\Note\Domain\Model\Ticket\TicketStatus;
 use App\Note\Domain\Repository\TicketRepository;
 use App\Shared\Application\Search\SearchCriteriaInterface;
 use App\Shared\Infrastructure\Persistence\Search\FindByCriteriaInterface;
@@ -93,10 +94,30 @@ class TicketDoctrineRepository extends ServiceEntityRepository implements FindBy
         if ($criteria->myPools && $this->userProvider->hasUser()) {
             $qb->innerJoin('p.subscribers', 'sub', 'WITH', 'sub = :currentUser')
                 ->setParameter('currentUser', $this->userProvider->get());
+
+            if ($criteria->status === null) {
+                $qb->andWhere('t.status != :closedStatus')
+                    ->setParameter('closedStatus', TicketStatus::CLOSED->value);
+            }
         }
 
         $qb->orderBy('t.' . $sort, $sortDirection);
 
         return new QueryAdapter($qb);
+    }
+
+    public function countOpenTicketsForUser(int $userId): int
+    {
+        return (int) $this->createQueryBuilder('t')
+            ->select('COUNT(t.id)')
+            ->innerJoin('t.pool', 'p')
+            ->innerJoin('p.subscribers', 'sub', 'WITH', 'sub = :userId')
+            ->andWhere('t.status != :closed')
+            ->andWhere('t.snoozedUntil IS NULL OR t.snoozedUntil <= :now')
+            ->setParameter('userId', $userId)
+            ->setParameter('closed', TicketStatus::CLOSED)
+            ->setParameter('now', new \DateTimeImmutable())
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 }

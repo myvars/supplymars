@@ -12,6 +12,7 @@
                 <span class="sr-only">Close menu</span>
             </button>
         </div>
+        {% set badges = sidebar_badges() %}
         <nav class="flex-1 px-3 py-4"
              data-controller="sidebar-active"
              data-action="turbo:frame-load@window->sidebar-active#update">
@@ -148,10 +149,10 @@
                         <li>
                             <a href="{{ path('app_review_index', {reviewStatus: 'PENDING'}) }}"
                                data-nav="child"
-                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               class="flex w-full items-center justify-between rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
                                data-action="basic-drawer#close"
-                            >Moderation Queue</a>
+                            >Moderation Queue{% if badges.pendingReviews > 0 %}<span class="ml-auto inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900/30 dark:text-red-400">{{ badges.pendingReviews }}</span>{% endif %}</a>
                         </li>
                     </ul>
                 </li>
@@ -206,18 +207,18 @@
                         <li>
                             <a href="{{ path('app_reporting_dashboard_overdue_orders', {'duration': 'last30'}) }}"
                                data-nav="child"
-                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               class="flex w-full items-center justify-between rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
                                data-action="basic-drawer#close"
-                            >Overdue Orders</a>
+                            >Overdue Orders{% if badges.overdueOrders > 0 %}<span class="ml-auto inline-flex items-center rounded-full bg-orange-100 px-2 py-0.5 text-xs font-medium text-orange-800 dark:bg-orange-900/30 dark:text-orange-400">{{ badges.overdueOrders }}</span>{% endif %}</a>
                         </li>
                         <li>
                             <a href="{{ path('app_purchasing_purchase_order_index', {'purchaseOrderStatus': 'REJECTED'}) }}"
                                data-nav="child"
-                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                               class="flex w-full items-center justify-between rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
                                data-action="basic-drawer#close"
-                            >Rejected POs</a>
+                            >Rejected POs{% if badges.rejectedPos > 0 %}<span class="ml-auto inline-flex items-center rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-800 dark:bg-red-900/30 dark:text-red-400">{{ badges.rejectedPos }}</span>{% endif %}</a>
                         </li>
                     </ul>
                 </li>
@@ -253,10 +254,10 @@
                             <li>
                                 <a href="{{ path('app_note_ticket_index', {'myPools': 1}) }}"
                                    data-nav="child"
-                                   class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                                   class="flex w-full items-center justify-between rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                    data-turbo-frame="body"
                                    data-action="basic-drawer#close"
-                                >My Queue</a>
+                                >My Queue{% if badges.myQueue > 0 %}<span class="ml-auto inline-flex items-center rounded-full bg-blue-100 px-2 py-0.5 text-xs font-medium text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">{{ badges.myQueue }}</span>{% endif %}</a>
                             </li>
                             <li>
                                 <a href="{{ path('app_note_ticket_index') }}"

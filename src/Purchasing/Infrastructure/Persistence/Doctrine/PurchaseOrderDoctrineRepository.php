@@ -159,6 +159,11 @@ class PurchaseOrderDoctrineRepository extends ServiceEntityRepository implements
             ->getSingleResult();
     }
 
+    public function countRejectedPurchaseOrders(): int
+    {
+        return $this->count(['status' => PurchaseOrderStatus::REJECTED]);
+    }
+
     public function findByStatus(PurchaseOrderStatus $status, int $limit): array
     {
         return $this->findBy(['status' => $status], null, $limit);

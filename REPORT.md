@@ -180,22 +180,9 @@ The `focus:` pseudo-class triggers on both mouse click and keyboard navigation. 
 
 ---
 
-### C2. Add Sidebar Notification Badges for Actionable Counts
+### ~~C2. Add Sidebar Notification Badges for Actionable Counts~~ ✅
 
-**What changes:** Display small count indicators on sidebar navigation items that represent pending actions — moderation queue count, rejected PO count, overdue order count.
-
-**Reference:** Both Tailwind UI and Flowbite show notification badges on nav items: `absolute -top-1 -end-1 inline-flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white`.
-
-**Where it applies:**
-- "Moderation Queue" nav item → pending review count
-- "Rejected POs" nav item → unresolved rejected PO count
-- "Overdue Orders" nav item → overdue order count
-
-**Technical approach:** The sidebar already renders via Turbo morph on `turbo:frame-load@window`. Counts could be rendered server-side in `_menu.html.twig` using lightweight repository queries (already cached via the reporting layer).
-
-**Risk:** Low — additive.
-**Effort:** Medium — needs repository queries + template integration.
-**Value:** High — surfaces actionable work without navigation. The most impactful UX improvement available.
+**Resolved:** Count badges added to 4 sidebar nav items: Moderation Queue (pending reviews), Rejected POs, Overdue Orders (last 30 days), and My Queue (open tickets in user's pools). Counts cached in Redis with separate keys — event-driven invalidation for reviews/POs/orders (`SidebarBadgeCacheInvalidator` listener), 5-min TTL for tickets (no domain events in Notes context). Zero DB queries on cache hit. My Queue also now excludes closed tickets by default when `myPools` is active. Commit `82ff978`.
 
 ---
 
@@ -478,11 +465,7 @@ Create a surface layering reference in `Docs/patterns/UI/` documenting backgroun
 
 ### Phase 2 — Information Architecture (1-2 PRs, opportunistic)
 
-**PR 2a: Sidebar Notification Badges**
-- Add actionable count badges to Moderation Queue, Rejected POs, Overdue Orders nav items
-- Implement lightweight repository queries for counts
-- Consider caching counts per request (already have reporting layer)
-- Files: `_menu.html.twig`, new/existing repository methods
+**PR 2a: Sidebar Notification Badges** ✅ — Complete. Redis-cached count badges on 4 nav items (Moderation Queue, Rejected POs, Overdue Orders, My Queue). Event-driven invalidation for 3 of 4; short TTL for tickets. My Queue excludes closed tickets. Commit `82ff978`.
 
 **PR 2b: Documentation**
 - Typography scale (F5)
@@ -491,7 +474,7 @@ Create a surface layering reference in `Docs/patterns/UI/` documenting backgroun
 - Files: New docs files
 
 **Stop conditions:**
-- Sidebar badges: Skip if repository queries create noticeable latency on nav render. The sidebar renders on every page via Turbo morph — counts must be fast.
+- ~~Sidebar badges: Skip if repository queries create noticeable latency on nav render.~~ — Redis cache ensures sub-ms reads. No latency concern.
 - ~~Card divided: Skip if `divide-y` creates unwanted dividers on empty blocks or conditional sections.~~ — Skipped (stop condition met).
 
 ---

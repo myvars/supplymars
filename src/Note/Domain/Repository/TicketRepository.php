@@ -19,4 +19,6 @@ interface TicketRepository extends FindByCriteriaInterface
     public function get(TicketId $id): ?Ticket;
 
     public function getByPublicId(TicketPublicId $publicId): ?Ticket;
+
+    public function countOpenTicketsForUser(int $userId): int;
 }

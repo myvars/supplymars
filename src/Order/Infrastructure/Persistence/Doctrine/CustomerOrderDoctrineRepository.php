@@ -213,6 +213,14 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
             ->getOneOrNullResult();
     }
 
+    public function countOverdueOrders(): int
+    {
+        return (int) $this->getOverdueOrders(new \DateTime('-29 days'))
+            ->select('COUNT(co.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     public function getOverdueOrders(\DateTime $startDate): QueryBuilder
     {
         return $this->createQueryBuilder('co')
