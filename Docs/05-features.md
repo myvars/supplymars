@@ -754,3 +754,39 @@ public function new(
 3. **Flash messages:** Standardized success/error messaging
 4. **Redirect handling:** Configurable success routes
 5. **Validation:** Integrated with Symfony Validator
+
+---
+
+## Inline Editing
+
+### Purpose
+
+Inline editing allows staff to edit entity names directly on show pages without navigating to a full edit form. Uses Turbo Frames for seamless in-place editing.
+
+### Supported Entities
+
+| Entity | Field | Route |
+|--------|-------|-------|
+| Manufacturer | name | `/manufacturer/{id}/inline/name` |
+| Category | name | `/category/{id}/inline/name` |
+| Subcategory | name | `/subcategory/{id}/inline/name` |
+| Product | name | `/product/{id}/inline/name` |
+| Supplier | name | `/supplier/{id}/inline/name` |
+| VatRate | name | `/vat-rate/{id}/inline/name` |
+| Customer | fullName | `/customer/{id}/inline/fullname` |
+
+### How It Works
+
+1. Click on the displayed value to enter edit mode
+2. Modify the value in the inline input
+3. Press Enter or click outside to save; Escape to cancel
+4. Success toast shown only when value actually changes
+
+### Key Files
+
+- `src/Shared/UI/Http/FormFlow/InlineEdit/InlineEditFlow.php` — flow handler
+- `src/Shared/UI/Http/FormFlow/InlineEdit/InlineEditContext.php` — configuration
+- `templates/components/InlineEdit.html.twig` — Twig component
+- `assets/controllers/inline_edit_controller.js` — Stimulus controller
+
+Full pattern documentation: `Docs/patterns/InlineEdit/README.md`

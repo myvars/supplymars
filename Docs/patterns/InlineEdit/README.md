@@ -212,6 +212,20 @@ On save, a success toast ("Updated successfully") is delivered via a second Turb
 
 To disable the toast, pass `successMessage: null` to `InlineEditContext::create()`.
 
+## Supported Entities
+
+| Entity | Route | Field | Controller |
+|--------|-------|-------|------------|
+| Manufacturer | `app_catalog_manufacturer_inline_name` | name | `ManufacturerController::inlineName` |
+| Category | `app_catalog_category_inline_name` | name | `CategoryController::inlineName` |
+| Subcategory | `app_catalog_subcategory_inline_name` | name | `SubcategoryController::inlineName` |
+| Product | `app_catalog_product_inline_name` | name | `ProductController::inlineName` |
+| Supplier | `app_purchasing_supplier_inline_name` | name | `SupplierController::inlineName` |
+| VatRate | `app_pricing_vat_rate_inline_name` | name | `VatRateController::inlineName` |
+| Customer | `app_customer_inline_fullname` | fullName | `CustomerController::inlineFullName` |
+
+> **Note:** Customer uses `entityVarName: 'customer'` explicitly in `InlineEditContext::create()` because the entity class is `User`, not `Customer`.
+
 ## Files
 
 ```

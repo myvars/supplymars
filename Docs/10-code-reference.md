@@ -235,7 +235,7 @@ hasPositiveCost()             // cost > 0
 | SecurityController | `src/Customer/UI/Http/Controller/SecurityController.php` | `/login`, `/logout` |
 | RegistrationController | `src/Customer/UI/Http/Controller/RegistrationController.php` | `/register`, `/verify/email` |
 | ResetPasswordController | `src/Customer/UI/Http/Controller/ResetPasswordController.php` | `/reset-password` |
-| CustomerController | `src/Customer/UI/Http/Controller/CustomerController.php` | `/customer/*` |
+| CustomerController | `src/Customer/UI/Http/Controller/CustomerController.php` | `/customer/*`, inline fullName |
 
 ---
 
@@ -432,6 +432,8 @@ hasPositiveCost()             // cost > 0
 | CommandFlow | `src/Shared/UI/Http/FormFlow/CommandFlow.php` | Command execution flow |
 | DeleteFlow | `src/Shared/UI/Http/FormFlow/DeleteFlow.php` | Delete with confirmation |
 | SearchFlow | `src/Shared/UI/Http/FormFlow/SearchFlow.php` | Paginated index flow |
+| InlineEditFlow | `src/Shared/UI/Http/FormFlow/InlineEdit/InlineEditFlow.php` | Inline field editing |
+| InlineEditContext | `src/Shared/UI/Http/FormFlow/InlineEdit/InlineEditContext.php` | Inline edit configuration |
 | FlowContext | `src/Shared/UI/Http/FormFlow/View/FlowContext.php` | Flow configuration |
 | TurboAwareRedirector | `src/Shared/UI/Http/FormFlow/Redirect/TurboAwareRedirector.php` | Turbo-compatible redirects |
 

@@ -14,6 +14,8 @@ use App\Customer\UI\Http\Form\Type\CustomerType;
 use App\Reporting\Application\Handler\Report\CustomerProfileInsightsHandler;
 use App\Shared\UI\Http\FormFlow\DeleteFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
+use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditContext;
+use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditFlow;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
 use App\Shared\UI\Http\FormFlow\View\FlowModel;
@@ -105,5 +107,24 @@ class CustomerController extends AbstractController
             'result' => $customer,
             'insights' => $insights->payload,
         ]);
+    }
+
+    #[Route(path: '/customer/{id}/inline/fullname', name: 'app_customer_inline_fullname', methods: ['GET', 'POST'])]
+    public function inlineFullName(
+        Request $request,
+        #[ValueResolver('public_id')] User $customer,
+        InlineEditFlow $flow,
+    ): Response {
+        return $flow->handleField(
+            request: $request,
+            value: $customer->getFullName(),
+            onSave: fn ($value) => $customer->setFullName((string) $value),
+            context: InlineEditContext::create(
+                frameId: 'inline-edit-customer-' . $customer->getPublicId() . '-fullname',
+                displayTemplate: 'customer/_inline_fullname.html.twig',
+                entity: $customer,
+                entityVarName: 'customer',
+            ),
+        );
     }
 }

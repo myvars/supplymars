@@ -1,0 +1,16 @@
+{#
+    Inline editable customer full name.
+
+    Include this partial in place of a static customer name display.
+    The InlineEdit component handles the edit/save flow via Turbo Frames.
+
+    Variables:
+    - customer: The User entity
+#}
+<twig:InlineEdit
+    editUrl="{{ path('app_customer_inline_fullname', {id: customer.publicId}) }}"
+    frameId="inline-edit-customer-{{ customer.publicId }}-fullname"
+    displayClass="text-xl font-semibold text-gray-900 line-clamp-1 dark:text-white"
+>
+    {{ customer.fullName }}
+</twig:InlineEdit>

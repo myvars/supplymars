@@ -159,6 +159,32 @@ final class InlineEditFlowTest extends WebTestCase
             ->assertSee('Reduced');
     }
 
+    public function testCustomerFullNameInlineEditDisplays(): void
+    {
+        $customer = UserFactory::createOne(['fullName' => 'Jane Doe']);
+        $publicId = $customer->getPublicId()->value();
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/customer/' . $publicId . '/inline/fullname')
+            ->assertSuccessful()
+            ->assertSee('Jane Doe');
+    }
+
+    public function testCustomerFullNameInlineEditSubmit(): void
+    {
+        $customer = UserFactory::createOne(['fullName' => 'Jane Doe']);
+        $publicId = $customer->getPublicId()->value();
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/customer/' . $publicId . '/inline/fullname?edit=1')
+            ->fillField('inline_field[value]', 'Jane Smith')
+            ->click('Save (Enter)')
+            ->assertSuccessful()
+            ->assertSee('Jane Smith');
+    }
+
     public function testInlineEditValidationError(): void
     {
         $manufacturer = ManufacturerFactory::createOne(['name' => 'Valid Name']);
