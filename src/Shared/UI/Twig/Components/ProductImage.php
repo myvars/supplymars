@@ -26,4 +26,15 @@ final class ProductImage
             default => throw new \LogicException(sprintf('Unknown filter "%s"', $this->filter)),
         };
     }
+
+    /** @return array{width: int, height: int} */
+    public function getImageDimensions(): array
+    {
+        return match ($this->filter) {
+            'small_thumbnail' => ['width' => 90, 'height' => 90],
+            'medium_thumbnail' => ['width' => 130, 'height' => 130],
+            'large_thumbnail' => ['width' => 230, 'height' => 230],
+            default => throw new \LogicException(sprintf('Unknown filter "%s"', $this->filter)),
+        };
+    }
 }

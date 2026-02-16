@@ -14,6 +14,8 @@
         loading="lazy"
         src="{{ asset(product_uploads~this.imageName)|imagine_filter(this.filter) }}"
         alt="{{ this.alt }}"
+        width="{{ this.imageDimensions.width }}"
+        height="{{ this.imageDimensions.height }}"
     >
     {% else %}
         <span class="text-center text-xs text-gray-500 dark:text-gray-400">no image</span>

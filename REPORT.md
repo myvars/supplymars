@@ -179,7 +179,11 @@ No `aria-sort="ascending"`, `aria-sort="descending"`, or `aria-sort="none"` on t
 
 ---
 
-### B6. Reporting Dashboard Uses Non-Semantic Headings
+### ~~B6. Reporting Dashboard Uses Non-Semantic Headings~~ ✅
+
+**Status:** Resolved in Phase 1b. Three `<div>` section headings in `templates/reporting/show.html.twig` changed to `<h2>` with identical styling.
+
+<details><summary>Original finding</summary>
 
 **Evidence:** `templates/reporting/show.html.twig` uses `<div class="mb-3 font-semibold text-gray-700 dark:text-gray-500">` for section titles like "Order Overview", "Sales Overview", and "Action Required" instead of semantic heading tags (`<h2>`, `<h3>`).
 
@@ -188,6 +192,8 @@ No `aria-sort="ascending"`, `aria-sort="descending"`, or `aria-sort="none"` on t
 **Scope:** Dashboard and reporting pages (~6 templates with non-semantic section headings).
 **Importance:** Medium — affects navigability of the most data-dense pages.
 **Effort:** Low — change `<div>` to `<h2>` with identical styling.
+
+</details>
 
 ---
 
@@ -223,7 +229,11 @@ No `aria-sort="ascending"`, `aria-sort="descending"`, or `aria-sort="none"` on t
 
 ---
 
-### B9. Reporting Tables Missing `<caption>` Elements
+### ~~B9. Reporting Tables Missing `<caption>` Elements~~ ✅
+
+**Status:** Resolved in Phase 1b. Added `<caption class="sr-only">` to all 6 inline reporting tables (`product_sales`, `customer_insights`, `customer_geographic`, `customer_segments`, `overdue_orders`, `po_item_performance`). Dashboard DataTables get captions automatically via the new `caption` prop (E2/C7).
+
+<details><summary>Original finding</summary>
 
 **Evidence:** All reporting tables (`product_sales.html.twig`, `order_summary.html.twig`, `customer_insights.html.twig`, `overdue_orders.html.twig`, `customer_geographic.html.twig`, `customer_segments.html.twig`, `po_item_performance.html.twig`) have section headings above the table as `<p>` or `<div>` elements, but no `<caption>` inside the `<table>`.
 
@@ -243,9 +253,15 @@ The heading "Top Products" is visually associated but not programmatically linke
 **Importance:** Medium — accessibility gap on data-dense pages.
 **Effort:** Low — add `<caption class="sr-only">` to each table or use `aria-labelledby` pointing to the heading.
 
+</details>
+
 ---
 
-### B10. ProductImage Component Missing Width/Height Attributes
+### ~~B10. ProductImage Component Missing Width/Height Attributes~~ ✅
+
+**Status:** Resolved in Phase 1b. Added `getImageDimensions()` method to `ProductImage.php` returning `{width, height}` per filter size (90/130/230). Template now renders `width` and `height` attributes on the `<img>` tag.
+
+<details><summary>Original finding</summary>
 
 **Evidence:** `templates/components/ProductImage.html.twig:12-17`:
 ```html
@@ -262,6 +278,8 @@ No `width` or `height` attributes. When images load lazily, the browser cannot r
 **Scope:** All product listing and detail pages with images.
 **Importance:** Medium — affects Core Web Vitals (CLS metric).
 **Effort:** Low-Medium — add dimensions based on the Imagine filter sizes (small_thumbnail, medium_thumbnail, large_thumbnail).
+
+</details>
 
 ---
 
@@ -306,21 +324,25 @@ No `width` or `height` attributes. When images load lazily, the browser cannot r
 
 ---
 
-### ~~C3. Add Accessibility Attributes to Interactive Components~~ (5/7 done)
+### ~~C3. Add Accessibility Attributes to Interactive Components~~ ✅
 
-**Status:** Items 1-5 completed in Phase 0. Items 6-7 (reporting table captions, semantic headings) remain for Phase 1 PR 1b.
+**Status:** All 7 items completed. Items 1-5 in Phase 0, items 6-7 in Phase 1b.
 
 1. ~~**SortLink**: `aria-current`, sr-only sort direction text, `aria-hidden` on icons~~ ✅
 2. ~~**Flash container**: `aria-live="polite"` + `pointer-events-none`~~ ✅
 3. ~~**KpiCard**: sr-only "increased" / "decreased" text~~ ✅
 4. ~~**Theme toggle**: `focus:ring-2 focus:ring-gray-500`~~ ✅
 5. ~~**Modal close**: `focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500`~~ ✅
-6. **Reporting tables**: Add `<caption class="sr-only">` — pending (Phase 1 PR 1b)
-7. **Reporting headings**: Change `<div>` to `<h2>` — pending (Phase 1 PR 1b)
+6. ~~**Reporting tables**: Add `<caption class="sr-only">`~~ ✅ (Phase 1b)
+7. ~~**Reporting headings**: Change `<div>` to `<h2>`~~ ✅ (Phase 1b)
 
 ---
 
-### C4. Add Explicit Dimensions to ProductImage Component
+### ~~C4. Add Explicit Dimensions to ProductImage Component~~ ✅
+
+**Status:** Completed in Phase 1b. Added `getImageDimensions()` method to `ProductImage.php` and `width`/`height` attributes to the `<img>` tag. Dimensions match Tailwind classes: 90×90, 130×130, 230×230.
+
+<details><summary>Original description</summary>
 
 **What changes:** Add `width` and `height` attributes to the `<img>` tag in `ProductImage.html.twig` based on the Imagine filter dimensions. Map filter names to pixel dimensions in `ProductImage.php`:
 - `small_thumbnail` → 80×80
@@ -332,6 +354,8 @@ No `width` or `height` attributes. When images load lazily, the browser cannot r
 **Risk:** Very low — prevents layout shift, no visual change.
 **Effort:** Small (1-2 hours).
 **Value:** Medium — improves CLS score and perceived performance.
+
+</details>
 
 ---
 
@@ -371,7 +395,11 @@ Migrate all remaining `focus:ring-*` patterns on interactive elements to `focus-
 
 ---
 
-### C7. Add `<caption>` to DataTable Component
+### ~~C7. Add `<caption>` to DataTable Component~~ ✅
+
+**Status:** Completed in Phase 1b. Added `caption` prop to `DataTable.html.twig`. Falls back to `title` when no explicit caption is provided, so the 2 dashboard DataTable usages get accessible captions with zero template changes. Inline reporting tables also received manual `<caption class="sr-only">` additions (B9).
+
+<details><summary>Original description</summary>
 
 **What changes:** Add an optional `caption` prop to `DataTable.html.twig`. When provided, render `<caption class="sr-only">{{ caption }}</caption>` inside the `<table>`. This benefits all tables using the component automatically.
 
@@ -382,6 +410,8 @@ For reporting tables not using DataTable (inline `<table>` elements), add `<capt
 **Risk:** Very low — sr-only caption is invisible to sighted users.
 **Effort:** Small (1-2 hours).
 **Value:** Medium — improves table accessibility for screen reader users.
+
+</details>
 
 ---
 
@@ -503,7 +533,11 @@ For reporting tables not using DataTable (inline `<table>` elements), add `<capt
 
 ---
 
-### E2. DataTable: Optional `<caption>` Prop
+### ~~E2. DataTable: Optional `<caption>` Prop~~ ✅
+
+**Status:** Implemented in Phase 1b. Added `caption` prop with fallback to `title`. Both dashboard DataTable usages now have accessible captions automatically.
+
+<details><summary>Original description</summary>
 
 **Candidate:** Add a `caption` prop to `DataTable.html.twig`.
 
@@ -512,6 +546,8 @@ For reporting tables not using DataTable (inline `<table>` elements), add `<capt
 **Why a component improvement helps:** Adding a caption prop to DataTable gives both existing usages an accessible label with zero effort. For inline reporting tables, a `<caption class="sr-only">` should be added manually.
 
 **Decision:** **Implement** — add `{% props title, caption=null %}` and render `{% if caption %}<caption class="sr-only">{{ caption }}</caption>{% endif %}` inside the `<table>`.
+
+</details>
 
 ---
 
@@ -568,13 +604,13 @@ All quick wins completed in Phase 0.
 - 67 instances across 34 files normalized: 11 → `dark:text-white`, 1 → `dark:text-gray-200`, 55 → `dark:text-gray-400`
 - Zero `dark:text-gray-300` remains in code
 
-**PR 1b: Component Accessibility Enhancements**
-- Add `<caption>` prop to DataTable component (E2)
-- Add `<caption class="sr-only">` to inline reporting tables (B9)
-- Convert dashboard section `<div>` headings to `<h2>` (B6)
-- Add `width`/`height` to ProductImage component (B10/C4)
-- Add `pointer-events-auto` to Toast component
-- Files: `DataTable.html.twig`, `ProductImage.html.twig`, `ProductImage.php`, `reporting/show.html.twig`, 7+ reporting templates
+**~~PR 1b: Component Accessibility Enhancements~~** ✅
+- `<caption>` prop added to DataTable component with `title` fallback (E2/C7)
+- `<caption class="sr-only">` added to 6 inline reporting tables (B9)
+- Dashboard section `<div>` headings converted to `<h2>` (B6)
+- `width`/`height` attributes added to ProductImage component (B10/C4)
+- Toast `pointer-events-auto` already present — no change needed
+- Files changed: `DataTable.html.twig`, `ProductImage.html.twig`, `ProductImage.php`, `reporting/show.html.twig`, 6 reporting templates
 
 **Tests to add/update:**
 - Visual regression: dark mode screenshots of reporting pages before/after text color changes
