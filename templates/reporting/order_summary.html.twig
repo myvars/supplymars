@@ -15,7 +15,7 @@
 
                 {% if report.orderSalesChart %}
                     <div
-                        class="mt-3 flex h-80 md:h-96 flex-wrap justify-around rounded-lg border border-gray-200/80 bg-white text-center font-light dark:border-gray-700 dark:bg-gray-800">
+                        class="mt-3 flex h-80 md:h-96 flex-wrap justify-around rounded-lg border border-gray-200/80 bg-white text-center font-light dark:border-gray-600 dark:bg-gray-800">
                         {{ render_chart(report.orderSalesChart, {
                             'data-controller': 'bar_chart',
                             'data-bar-chart-link-url-value': path('app_order_index'),
@@ -29,7 +29,7 @@
                         <p class="font-medium text-gray-600 dark:text-gray-500">Order Progress</p>
                     </div>
                     <div
-                        class="flex h-60 md:h-72 flex-wrap justify-around rounded-lg border border-gray-200/80 bg-white text-center font-light dark:border-gray-700 dark:bg-gray-800">
+                        class="flex h-60 md:h-72 flex-wrap justify-around rounded-lg border border-gray-200/80 bg-white text-center font-light dark:border-gray-600 dark:bg-gray-800">
                         {{ render_chart(report.orderProgressChart, {
                             'data-controller': 'doughnut_chart',
                             'data-doughnut-chart-link-url-value': path('app_order_index') ~ '?orderStatus={label}&startDate=' ~ report.startDate ~ '&endDate=' ~ report.endDate,

@@ -52,9 +52,11 @@
         {% if compare is not null %}
             {% set difference = value - compare %}
             {% if difference > 0 %}
-                <twig:ux:icon name="bi:caret-up-fill" class="h-4 w-4 self-center text-green-500" />
+                <span class="sr-only">increased</span>
+                <twig:ux:icon name="bi:caret-up-fill" class="h-4 w-4 self-center text-green-500" aria-hidden="true" />
             {% elseif difference < 0 %}
-                <twig:ux:icon name="bi:caret-down-fill" class="h-4 w-4 self-center text-red-500" />
+                <span class="sr-only">decreased</span>
+                <twig:ux:icon name="bi:caret-down-fill" class="h-4 w-4 self-center text-red-500" aria-hidden="true" />
             {% endif %}
         {% endif %}
     </div>

@@ -13,11 +13,13 @@
         sort: sortValue,
         sortDirection: isAsc ? 'DESC' : 'ASC',
     }) }}"
+    {% if isActive %}aria-current="true"{% endif %}
 >
     {% block content %}{% endblock %}
     {% if isActive %}
-        <twig:ux:icon name="{{ isAsc ? 'flowbite:caret-up-solid' : 'flowbite:caret-down-solid' }}" class="h-3.5 w-3.5" />
+        <twig:ux:icon name="{{ isAsc ? 'flowbite:caret-up-solid' : 'flowbite:caret-down-solid' }}" class="h-3.5 w-3.5" aria-hidden="true" />
+        <span class="sr-only">, sorted {{ isAsc ? 'ascending' : 'descending' }}</span>
     {% else %}
-        <twig:ux:icon name="bi:arrow-down-up" class="h-3.5 w-3.5 opacity-0 group-hover:opacity-50" />
+        <twig:ux:icon name="bi:arrow-down-up" class="h-3.5 w-3.5 opacity-0 group-hover:opacity-50" aria-hidden="true" />
     {% endif %}
 </a>

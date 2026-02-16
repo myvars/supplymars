@@ -1,7 +1,7 @@
 {# Auto-closing toast notification. Rendered in _flashes.html.twig for flash messages.
    Props (PHP): type (success|danger|warning, default: success) #}
 <div  {{ attributes.defaults({
-    'class': 'relative flex items-center w-full max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800',
+    'class': 'pointer-events-auto relative flex items-center w-full max-w-xs p-4 text-gray-500 bg-white rounded-lg shadow-sm dark:text-gray-400 dark:bg-gray-800',
     'data-turbo-temporary': true,
     'data-controller': 'closeable',
     'data-closeable-auto-close-value': this.duration,
