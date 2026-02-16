@@ -6,9 +6,9 @@
 
     <twig:Dialog title="Reply to Ticket">
         <twig:FlowForm :form="form" buttonLabel="Send Reply"/>
-        {% if flowBackLink is not null %}
+        {% if flowBackLink is not null and _turbo_frame != 'modal' %}
             <p class="mt-3 text-sm font-light text-gray-500 dark:text-gray-400">
-                <a href="{{ flowBackLink }}" class="hover:underline">Back to ticket</a>
+                <a href="{{ flowBackLink }}" class="hover:underline">&larr; Back</a>
             </p>
         {% endif %}
     </twig:Dialog>
