@@ -224,7 +224,11 @@ The `focus:` pseudo-class triggers on both mouse click and keyboard navigation. 
 
 ## D) External Pattern Insights
 
-### D1. DescriptionList Component (Tailwind UI: Data Display)
+### ~~D1. DescriptionList Component (Tailwind UI: Data Display)~~ — Deferred
+
+**Decision:** **Low priority.** Current card-based detail pages work well. Revisit only if new detail pages are being built or label/value formatting becomes inconsistent.
+
+<details><summary>Original finding</summary>
 
 **Pattern:** Tailwind UI description lists use `<dl>` with `divide-y` rows, responsive grid layout (`sm:grid sm:grid-cols-3 sm:gap-4`), and clear label/value separation. Labels: `text-sm font-medium text-gray-500`, values: `text-sm text-gray-900 sm:col-span-2`.
 
@@ -235,6 +239,8 @@ The `focus:` pseudo-class triggers on both mouse click and keyboard navigation. 
 **Effort:** Medium — new component + gradual adoption across detail pages.
 **Risk:** Low — additive, doesn't change existing pages until adopted.
 **Recommendation:** **Consider for future** — the current card-based approach works well. A DescriptionList component would help most if new detail pages are being built. Not urgent for existing pages.
+
+</details>
 
 ---
 
@@ -250,7 +256,11 @@ The `focus:` pseudo-class triggers on both mouse click and keyboard navigation. 
 
 ---
 
-### D3. Timeline/Feed Pattern for Audit Logs (Flowbite/Tailwind UI: Feeds)
+### ~~D3. Timeline/Feed Pattern for Audit Logs (Flowbite/Tailwind UI: Feeds)~~ — Already implemented
+
+**Decision:** **No action needed.** The audit log (`audit/log.html.twig`) already uses a vertical timeline with `<ol>`, positioned dots (`absolute -start-4`), `StatusIcon` components, timestamps, and duration annotations. The original finding incorrectly described the audit log as "a modal table" — it was already implemented as the exact Flowbite timeline pattern recommended.
+
+<details><summary>Original finding</summary>
 
 **Pattern:** Vertical timeline with left-side connector line (`border-s border-gray-200`), positioned dots (`absolute w-3 h-3 bg-gray-200 rounded-full -start-1.5`), timestamps, and descriptions.
 
@@ -272,6 +282,8 @@ The `focus:` pseudo-class triggers on both mouse click and keyboard navigation. 
 **Effort:** Medium — template change for audit log display.
 **Risk:** Low.
 **Recommendation:** **Adopt when audit log UI is next touched.** The ticket timeline proves the pattern works in this codebase. Applying it to audit logs would significantly improve readability.
+
+</details>
 
 ---
 
@@ -341,7 +353,11 @@ The `focus:` pseudo-class triggers on both mouse click and keyboard navigation. 
 
 ---
 
-### D8. Dot Separator for Inline Metadata (Tailwind UI: Headings)
+### ~~D8. Dot Separator for Inline Metadata (Tailwind UI: Headings)~~ — Deferred
+
+**Decision:** **Low priority.** Cosmetic polish only. Revisit opportunistically when metadata lines are being reworked.
+
+<details><summary>Original finding</summary>
 
 **Pattern:** Instead of pipe (`|`) or comma separators for inline metadata, use a small dot SVG:
 ```html
@@ -357,6 +373,8 @@ The `focus:` pseudo-class triggers on both mouse click and keyboard navigation. 
 **Current state:** Some templates use ` · ` text characters, others use separate `<p>` elements for metadata.
 
 **Recommendation:** **Nice to have** — a polished touch for metadata lines. Low priority.
+
+</details>
 
 ---
 
@@ -406,13 +424,17 @@ The `focus:` pseudo-class triggers on both mouse click and keyboard navigation. 
 
 ---
 
-### E3. FinancialSummary Partial
+### ~~E3. FinancialSummary Partial~~ — Deferred
+
+**Decision:** **Low priority** — only 2 instances. Extract if a third appears (invoice, quote, credit note).
+
+<details><summary>Original finding</summary>
 
 **Candidate:** Extract the financial breakdown pattern (`<dl>` with label/value rows, divider before total) from `order/show.html.twig` and `_po_card.html.twig`.
 
 **Current state:** 2 instances. Both now use `<dl>` semantics (from Round 1 D3 resolution).
 
-**Decision:** **Defer** — only 2 instances. Extract if a third appears (invoice, quote, credit note).
+</details>
 
 ---
 
