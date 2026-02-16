@@ -16,7 +16,7 @@
                     {{ is_subscribed ? 'You are subscribed to this pool.' : 'You are not subscribed to this pool.' }}
                 </p>
                 <a href="{{ path('app_note_pool_toggle_subscription', {'id': result.publicId.value}) }}"
-                   class="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium {{ is_subscribed ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600' : 'bg-primary-600 text-white hover:bg-primary-500 dark:bg-primary-500 dark:hover:bg-primary-400' }}"
+                   class="inline-flex items-center gap-1 rounded-md px-3 py-1.5 text-sm font-medium {{ is_subscribed ? 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600' : 'bg-primary-600 text-white hover:bg-primary-500 dark:bg-primary-500 dark:hover:bg-primary-400' }}"
                    data-turbo-frame="body"
                    data-turbo-prefetch="false">
                     <twig:ux:icon name="{{ is_subscribed ? 'bi:bell-slash' : 'bi:bell' }}" class="h-4 w-4"/>

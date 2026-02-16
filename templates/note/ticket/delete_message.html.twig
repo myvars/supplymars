@@ -5,7 +5,7 @@
 {% block body %}
 
     <twig:Dialog title="Delete Message?">
-        <div class="mb-3 rounded-md bg-gray-50 p-3 text-sm text-gray-600 dark:bg-gray-700 dark:text-gray-300">
+        <div class="mb-3 rounded-md bg-gray-50 p-3 text-sm text-gray-600 dark:bg-gray-700 dark:text-gray-400">
             {{ message.body|length > 120 ? message.body|slice(0, 120) ~ '...' : message.body }}
         </div>
         <p class="mb-4 text-sm font-light text-gray-500 dark:text-gray-400">

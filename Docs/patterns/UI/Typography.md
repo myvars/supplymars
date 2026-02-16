@@ -21,6 +21,7 @@ Standardized typography classes used across SupplyMars. All text uses Tailwind's
 | Context | Light | Dark |
 |---------|-------|------|
 | Primary text | `text-gray-900` | `dark:text-white` |
+| Active navigation | `text-gray-700` | `dark:text-gray-200` |
 | Secondary text | `text-gray-600` | `dark:text-gray-400` |
 | Tertiary / muted | `text-gray-500` | `dark:text-gray-500` |
 | Link text | `text-primary-600` | `dark:text-primary-400` |

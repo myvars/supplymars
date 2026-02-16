@@ -75,7 +75,7 @@
                         {% for sale in report.sales %}
                             <tr class="border-b odd:bg-white even:bg-gray-50 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:odd:bg-gray-900 dark:even:bg-gray-800 dark:hover:bg-gray-700/50">
                                 <th scope="row"
-                                    class="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-gray-300">
+                                    class="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white">
                                     <a href="{{ path('app_catalog_product_show', {'id': sale.publicId }) }}"
                                        class="dark:hover:text-white"
                                        data-turbo-frame="body"
