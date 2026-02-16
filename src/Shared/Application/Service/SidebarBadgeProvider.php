@@ -10,24 +10,29 @@ use App\Shared\Infrastructure\Security\CurrentUserProvider;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
-final class SidebarBadgeProvider
+final readonly class SidebarBadgeProvider
 {
     public const string KEY_PENDING_ORDERS = 'sidebar.badge.pending_orders';
+
     public const string KEY_PENDING_REVIEWS = 'sidebar.badge.pending_reviews';
+
     public const string KEY_REJECTED_POS = 'sidebar.badge.rejected_pos';
+
     public const string KEY_OVERDUE_ORDERS = 'sidebar.badge.overdue_orders';
+
     public const string KEY_MY_QUEUE_PREFIX = 'sidebar.badge.my_queue.';
 
     private const int TTL_LONG = 3600;
+
     private const int TTL_SHORT = 300;
 
     public function __construct(
-        private readonly CacheInterface $cache,
-        private readonly ReviewRepository $reviewRepository,
-        private readonly PurchaseOrderRepository $purchaseOrderRepository,
-        private readonly OrderRepository $orderRepository,
-        private readonly TicketRepository $ticketRepository,
-        private readonly CurrentUserProvider $userProvider,
+        private CacheInterface $cache,
+        private ReviewRepository $reviewRepository,
+        private PurchaseOrderRepository $purchaseOrderRepository,
+        private OrderRepository $orderRepository,
+        private TicketRepository $ticketRepository,
+        private CurrentUserProvider $userProvider,
     ) {
     }
 

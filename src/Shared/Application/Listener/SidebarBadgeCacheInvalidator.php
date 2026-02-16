@@ -26,7 +26,7 @@ final readonly class SidebarBadgeCacheInvalidator
     ) {
     }
 
-    public function onReviewCreated(ReviewWasCreatedEvent $event): void
+    public function onReviewCreated(): void
     {
         $this->cache->delete(SidebarBadgeProvider::KEY_PENDING_REVIEWS);
     }
@@ -49,7 +49,7 @@ final readonly class SidebarBadgeCacheInvalidator
         }
     }
 
-    public function onOrderCreated(OrderWasCreatedEvent $event): void
+    public function onOrderCreated(): void
     {
         $this->cache->delete(SidebarBadgeProvider::KEY_PENDING_ORDERS);
     }
