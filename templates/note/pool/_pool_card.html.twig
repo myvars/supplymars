@@ -1,7 +1,7 @@
 {# Pool detail card with name, description, and active status.
    Used on: pool show page. Variable: pool (Pool) #}
 <twig:Card editLink="{{ path('app_note_pool_edit', {'id': pool.publicId.value }) }}" title="Pool" statusHighlight="{{ pool.isActive ? 'ACTIVE' : 'INACTIVE' }}">
-    <p class="mb-1 text-lg font-semibold text-gray-900 dark:text-white">{{ pool.name }}</p>
+    <p class="mb-1 text-xl font-semibold text-gray-900 dark:text-white">{{ pool.name }}</p>
     {% if pool.description %}
         <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">{{ pool.description }}</p>
     {% endif %}

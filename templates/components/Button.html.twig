@@ -1,5 +1,5 @@
 {# Polymorphic button or link styled as a button.
-   Props (PHP): tag (button|a, default: button), variant (primary|secondary|alternative|success|danger|warning|link) #}
+   Props (PHP): tag (button|a, default: button), variant (primary|secondary|alternative|success|danger|danger-outline|warning|link) #}
 {% set isLink = this.variant == 'link' %}
 <{{ tag }}{{ attributes.defaults({
     class: 'inline-flex items-center justify-center gap-1.5 text-sm text-center transition-all duration-150 ease-in-out disabled:opacity-50 disabled:pointer-events-none cursor-pointer '

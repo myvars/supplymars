@@ -137,6 +137,8 @@ importmap.php                      # JavaScript dependencies
 
 ## Related Documentation
 
+- [Typography](Typography.md) - Typography scale and conventions
+- [Surfaces](Surfaces.md) - Surface hierarchy and layering conventions
 - [Stimulus Controllers](StimulusControllers.md) - Controller patterns
 - [Symfony Forms](Forms.md) - Form architecture
 - [ADR 008](../../adr/008-server-driven-ui-architecture.md) - Architecture decision

@@ -72,7 +72,11 @@ The `bg-red-900/20` mixes shade + opacity, while Tailwind UI's canonical pattern
 
 ---
 
-### B2. No Formalized Typography Scale
+### ~~B2. No Formalized Typography Scale~~
+
+**Resolved:** Entity headings normalized to `text-xl font-semibold` across all 12 show page detail cards. Typography scale documented in `Docs/patterns/UI/Typography.md`. Commit PR 2b.
+
+<details><summary>Original finding</summary>
 
 **Evidence:** Typography is consistent within each context but not documented as a system. Current usage observed across templates:
 
@@ -95,6 +99,8 @@ The issue: entity headings inconsistently use `text-xl` vs `text-lg`. Some `<h1>
 **Effort:** Small — audit and normalize heading size to one consistent value.
 
 **Recommendation:** Standardize entity headings to `text-xl font-semibold` across all detail pages. Document the typography scale in `Docs/patterns/UI/`.
+
+</details>
 
 ---
 
@@ -157,7 +163,11 @@ The `focus:` pseudo-class triggers on both mouse click and keyboard navigation. 
 
 ## C) Systemic Improvements
 
-### C1. Adopt Surface Hierarchy Convention
+### ~~C1. Adopt Surface Hierarchy Convention~~
+
+**Resolved:** 7-layer surface hierarchy documented in `Docs/patterns/UI/Surfaces.md` with border conventions, card wells pattern, and dark mode tinted background guidelines. Commit PR 2b.
+
+<details><summary>Original finding</summary>
 
 **What changes:** Establish a documented surface layering system for consistent depth perception across light and dark modes.
 
@@ -177,6 +187,8 @@ The `focus:` pseudo-class triggers on both mouse click and keyboard navigation. 
 **Risk:** Very low — documentation, no code changes.
 **Effort:** Small.
 **Value:** Prevents future drift and helps new developers make consistent surface choices.
+
+</details>
 
 ---
 
@@ -297,7 +309,11 @@ The `focus:` pseudo-class triggers on both mouse click and keyboard navigation. 
 
 ---
 
-### D7. Card Wells / Inset Sections (Tailwind UI: Layout)
+### ~~D7. Card Wells / Inset Sections (Tailwind UI: Layout)~~
+
+**Resolved:** Card wells convention documented in `Docs/patterns/UI/Surfaces.md` with usage guidelines and class pattern (`rounded-lg bg-gray-50 p-4 dark:bg-gray-900/50`). Commit PR 2b.
+
+<details><summary>Original finding</summary>
 
 **Pattern:** Secondary content areas within cards use an inset/well treatment: `rounded-lg bg-gray-50 p-4 dark:bg-gray-900/50`.
 
@@ -308,6 +324,8 @@ The `focus:` pseudo-class triggers on both mouse click and keyboard navigation. 
 **Effort:** Very small — CSS class pattern, no component needed.
 **Risk:** Very low.
 **Recommendation:** **Adopt as a convention** — document in pattern guide. Use for clearly secondary content like embedded addresses, metadata blocks, or collapsed section content.
+
+</details>
 
 ---
 
@@ -342,7 +360,11 @@ The `focus:` pseudo-class triggers on both mouse click and keyboard navigation. 
 
 ---
 
-### D11. Button Outline-Danger Variant (Flowbite: CRUD Update)
+### ~~D11. Button Outline-Danger Variant (Flowbite: CRUD Update)~~
+
+**Resolved:** Added `danger-outline` variant to `Button.php` with light/dark mode support. Commit PR 2b.
+
+<details><summary>Original finding</summary>
 
 **Pattern:** Flowbite uses an outlined danger button (`text-red-600 border border-red-600 hover:bg-red-600 hover:text-white`) for delete actions that appear alongside save buttons in update forms. The filled danger button is too visually dominant when placed next to a primary save button.
 
@@ -353,6 +375,8 @@ The `focus:` pseudo-class triggers on both mouse click and keyboard navigation. 
 **Effort:** Small — add one variant to `Button.php`.
 **Risk:** Very low — additive, no existing usage affected.
 **Recommendation:** **Consider** — add a `danger-outline` variant with `text-red-600 border border-red-600 bg-transparent hover:bg-red-600 hover:text-white`. Useful for forms that need both save and delete actions without two competing filled buttons. Lower priority than other items.
+
+</details>
 
 ---
 
@@ -412,19 +436,15 @@ The `focus:` pseudo-class triggers on both mouse click and keyboard navigation. 
 
 ---
 
-### F5. Document Typography Scale
+### ~~F5. Document Typography Scale~~ ✅
 
-Create a typography scale reference in `Docs/patterns/UI/` documenting the standardized heading/body/label sizes used across the application.
-
-**Files:** New file `Docs/patterns/UI/Typography.md`
+**Resolved:** `Docs/patterns/UI/Typography.md` created with full scale, color conventions, and guidelines. Commit PR 2b.
 
 ---
 
-### F6. Document Surface Hierarchy
+### ~~F6. Document Surface Hierarchy~~ ✅
 
-Create a surface layering reference in `Docs/patterns/UI/` documenting background/border conventions for cards, modals, wells, and control surfaces.
-
-**Files:** New file `Docs/patterns/UI/Surfaces.md`
+**Resolved:** `Docs/patterns/UI/Surfaces.md` created with 7-layer hierarchy, border conventions, card wells, and dark mode tinted background guidelines. Commit PR 2b.
 
 ---
 
@@ -467,11 +487,7 @@ Create a surface layering reference in `Docs/patterns/UI/` documenting backgroun
 
 **PR 2a: Sidebar Notification Badges** ✅ — Complete. Redis-cached count badges on 5 nav items (Pending Orders, Moderation Queue, Rejected POs, Overdue Orders, My Queue). Event-driven invalidation for 4 of 5; short TTL for tickets. Orders section converted from single link to dropdown (Orders + Pending Orders). My Queue excludes closed tickets. Commits `82ff978`, `5c7fa16`.
 
-**PR 2b: Documentation**
-- Typography scale (F5)
-- Surface hierarchy (F6)
-- Update `Docs/patterns/UI/README.md` with references
-- Files: New docs files
+**PR 2b: Typography, Surfaces & danger-outline Button** ✅ — Complete. Entity headings normalized to `text-xl` across 12 detail card templates (B2). `danger-outline` Button variant added (D11). Typography scale documented in `Docs/patterns/UI/Typography.md` (F5). Surface hierarchy documented in `Docs/patterns/UI/Surfaces.md` with card wells convention (F6, C1, D7). `Docs/patterns/UI/README.md` updated with references.
 
 **Stop conditions:**
 - ~~Sidebar badges: Skip if repository queries create noticeable latency on nav render.~~ — Redis cache ensures sub-ms reads. No latency concern.
