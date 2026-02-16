@@ -2,43 +2,35 @@
    Used on: pricing stock page. Variable: result (Product) #}
 <twig:Card padding="p-0" statusHighlight="{{ result.hasActiveProductSource ? 'ACTIVE' : 'INACTIVE' }}">
     {% if result.isValidProduct %}
-        <div class="divide-y divide-gray-100 dark:divide-gray-800">
-            <div class="grid grid-cols-2 gap-y-5 p-5 text-center md:grid-cols-4 md:gap-y-0 md:divide-x md:divide-gray-100 dark:md:divide-gray-800">
-                <div class="md:px-5">
-                    <p class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-500">Cost Price</p>
-                    <p class="mt-1 text-2xl font-bold {{ type == 'cost' ? 'text-gray-500 dark:text-gray-500' : 'text-gray-800 dark:text-gray-200' }}">
-                        {{ result.cost|format_currency('GBP') }}</p>
-                    <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-500">
-                        {{ result.activeProductSource.supplier.name }}</p>
-                </div>
-                <div class="md:px-5">
-                    <p class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-500">Stock</p>
-                    <p class="mt-1 text-2xl font-bold {{ type == 'cost' ? 'text-gray-500 dark:text-gray-500' : 'text-gray-900 dark:text-white' }}">{{ result.stock }}</p>
-                    <p class="mt-0.5 text-xs text-gray-500 dark:text-gray-500">
-                        {{ result.activeProductSource.updatedAt|ago }}</p>
-                </div>
-                <div class="md:px-5">
-                    <p class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-500">Sell Price</p>
-                    <p class="mt-1 text-2xl font-bold {{ type == 'cost' ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400' }}">
-                        {{ result.sellPrice|format_currency('GBP') }}</p>
-                </div>
-                <div class="md:px-5">
-                    <p class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-500">Sell Inc VAT</p>
-                    <p class="mt-1 text-2xl font-bold {{ type == 'cost' ? 'text-gray-900 dark:text-white' : 'text-gray-500 dark:text-gray-400' }}">
-                        {{ result.sellPriceIncVat|format_currency('GBP') }}</p>
-                </div>
-            </div>
-            <div class="px-5 py-3 text-center">
-                <p class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-500">Mark-up</p>
-                <p class="mt-0.5 text-xl font-semibold text-gray-800 dark:text-white">{{ result.markup|number_format(3) }}%</p>
-                <p class="mt-1 text-xs text-gray-500 dark:text-gray-500 inline-flex max-md:hidden">
-                    {{ result.category.vatRate.name|title }} VAT
-                    <span class="mx-1 text-gray-300 dark:text-gray-600">&middot;</span>
-                    {{ result.activePriceModelTarget|title }} price model
-                    <span class="mx-1 text-gray-300 dark:text-gray-600">&middot;</span>
-                    {{ result.activeMarkupTarget|title }} mark-up
-                </p>
-            </div>
+        {# KPI metrics grid #}
+        <div class="grid grid-cols-2 gap-px overflow-hidden rounded-t-xl bg-gray-900/5 dark:bg-white/5 md:grid-cols-4">
+            <twig:KpiCard title="Cost Price"
+                value="{{ result.cost|format_currency('GBP') }}" valueType="text"
+                subtitle="{{ result.activeProductSource.supplier.name }}"
+                :muted="type == 'cost'"/>
+            <twig:KpiCard title="Stock"
+                value="{{ result.stock }}" valueType="count"
+                subtitle="{{ result.activeProductSource.updatedAt|ago }}"
+                :muted="type == 'cost'"/>
+            <twig:KpiCard title="Sell Price"
+                value="{{ result.sellPrice|format_currency('GBP') }}" valueType="text"
+                :muted="type == 'stock'"/>
+            <twig:KpiCard title="Sell Inc VAT"
+                value="{{ result.sellPriceIncVat|format_currency('GBP') }}" valueType="text"
+                :muted="type == 'stock'"/>
+        </div>
+
+        {# Markup section — custom layout, not a KpiCard #}
+        <div class="border-t border-gray-900/5 px-5 py-3 text-center dark:border-white/5">
+            <p class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Mark-up</p>
+            <p class="mt-0.5 text-xl font-semibold text-gray-800 dark:text-white">{{ result.markup|number_format(3) }}%</p>
+            <p class="mt-1 inline-flex text-xs text-gray-500 dark:text-gray-400 max-md:hidden">
+                {{ result.category.vatRate.name|title }} VAT
+                <span class="mx-1 text-gray-300 dark:text-gray-600">&middot;</span>
+                {{ result.activePriceModelTarget|title }} price model
+                <span class="mx-1 text-gray-300 dark:text-gray-600">&middot;</span>
+                {{ result.activeMarkupTarget|title }} mark-up
+            </p>
         </div>
     {% else %}
         <div class="p-6 text-center">

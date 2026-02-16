@@ -6,7 +6,9 @@
    - format: Currency format (default: GBP)
    - maxFractionDigits: Decimal places for formatting (default: 0)
    - href: Optional link URL (makes entire card clickable)
-   - turboFrame: Turbo frame target when href is set #}
+   - turboFrame: Turbo frame target when href is set
+   - subtitle: Optional text displayed below the value/comparison section
+   - muted: When true, dims the value text to gray-400 #}
 {% props
     title,
     value,
@@ -15,7 +17,9 @@
     format = 'GBP',
     maxFractionDigits = 0,
     href = null,
-    turboFrame = null
+    turboFrame = null,
+    subtitle = null,
+    muted = false
     %}
 
 {% macro formatValue(value, valueType, format, maxFractionDigits) %}
@@ -42,7 +46,7 @@
     <p class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ title }}</p>
 
     <div class="flex max-w-full items-baseline gap-1.5">
-        <span class="truncate text-xl font-semibold tabular-nums text-gray-900 dark:text-gray-100 sm:text-2xl">
+        <span class="truncate text-xl font-semibold tabular-nums sm:text-2xl {{ muted ? 'text-gray-400 dark:text-gray-500' : 'text-gray-900 dark:text-gray-100' }}">
             {{ _self.formatValue(value, valueType, format, maxFractionDigits) }}
         </span>
         {% if compare is not null %}
@@ -73,6 +77,10 @@
                 0%
             </span>
         {% endif %}
+    {% endif %}
+
+    {% if subtitle %}
+        <p class="max-w-full truncate text-xs text-gray-500 dark:text-gray-400">{{ subtitle }}</p>
     {% endif %}
 {% if href %}
 </a>
