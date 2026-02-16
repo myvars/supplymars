@@ -5,16 +5,18 @@
 {% block body %}
         <section class="mx-auto flex items-center justify-center bg-white dark:bg-orange-400/10 md:h-screen" style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
             <div data-turbo-temporary class="mx-auto max-w-(--breakpoint-xl) px-4 py-8 sm:py-12 lg:px-6">
-                <div class="mb-10 max-w-(--breakpoint-md) dark:text-white">
-                    <h2 class="mb-8 text-3xl tracking-tight">403: Unauthorized Access to Mars Colony Systems</h2>
-                    <p class="mb-4 sm:text-base">
-                        Oops! It looks like your clearance level isn’t high enough to explore this part of the Martian colony.
+                <div class="mb-10 max-w-(--breakpoint-md)">
+                    <p class="mb-4 text-7xl font-extrabold tracking-tight text-orange-400 lg:text-9xl dark:text-orange-300">403</p>
+                    <h2 class="mb-4 text-3xl font-bold tracking-tight text-white md:text-4xl">Unauthorized Access to Mars Colony Systems</h2>
+                    <p class="mb-4 text-lg font-light text-gray-300">
+                        Oops! It looks like your clearance level isn't high enough to explore this part of the Martian colony.
                         Our systems have detected an attempt to access restricted areas without the proper credentials.
-                        Don’t worry—no airlocks were breached in the process!
+                        Don't worry — no airlocks were breached in the process!
                     </p>
-                    <p>
+                    <p class="mb-8 text-sm text-gray-400">
                         (Note: You might need to wait for your Login credentials to be verified)
                     </p>
+                    <twig:Button tag="a" href="{{ path('app_homepage') }}" data-turbo-frame="body">Back to Colony HQ</twig:Button>
                 </div>
             </div>
         </section>

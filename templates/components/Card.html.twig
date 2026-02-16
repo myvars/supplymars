@@ -28,7 +28,7 @@
         {% block cardImage %}{% endblock %}
 
         {% if showLink %}
-        <a href="{{ showLink }}" data-turbo-frame="body" class="block rounded-xl transition-all duration-200 hover:shadow-md hover:brightness-95 dark:hover:brightness-125 dark:hover:shadow-none {{ layout == 'horizontal' ? 'flex-1 min-w-0' : '' }}">
+        <a href="{{ showLink }}" data-turbo-frame="body" class="group block rounded-xl transition-all duration-200 hover:shadow-md hover:brightness-95 dark:hover:brightness-125 dark:hover:shadow-none {{ layout == 'horizontal' ? 'flex-1 min-w-0' : '' }}">
         {% endif %}
                 <div class="{{ padding }} text-sm text-gray-600 dark:text-gray-400 {{ layout == 'horizontal' and not showLink ? 'flex-1 min-w-0' : '' }}">
                     {% if title %}

@@ -5,14 +5,17 @@
 {% block body %}
         <section class="mx-auto flex items-center justify-center bg-white dark:bg-orange-400/10 md:h-screen" style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
             <div data-turbo-temporary class="mx-auto max-w-(--breakpoint-xl) px-4 py-8 sm:py-12 lg:px-6">
-                <div class="mb-10 max-w-(--breakpoint-md) dark:text-white">
-                    <h2 class="mb-8 text-3xl tracking-tight">Error: Unexpected Problem on Mars</h2>
-                    <p class="mb-4 sm:text-base">
-                        Oops! It seems like something’s not quite right in the Martian colony.
-                        We’ve encountered an error, but don’t worry—our systems are recalibrating as we speak.                    </p>
-                    <p>
-                        Mars is unpredictable, but we’re working hard to get everything back on track!
+                <div class="mb-10 max-w-(--breakpoint-md)">
+                    <p class="mb-4 text-7xl font-extrabold tracking-tight text-orange-400 lg:text-9xl dark:text-orange-300">Error</p>
+                    <h2 class="mb-4 text-3xl font-bold tracking-tight text-white md:text-4xl">Unexpected Problem on Mars</h2>
+                    <p class="mb-4 text-lg font-light text-gray-300">
+                        Oops! It seems like something's not quite right in the Martian colony.
+                        We've encountered an error, but don't worry — our systems are recalibrating as we speak.
                     </p>
+                    <p class="mb-8 text-sm text-gray-400">
+                        Mars is unpredictable, but we're working hard to get everything back on track!
+                    </p>
+                    <twig:Button tag="a" href="{{ path('app_homepage') }}" data-turbo-frame="body">Back to Colony HQ</twig:Button>
                 </div>
             </div>
         </section>

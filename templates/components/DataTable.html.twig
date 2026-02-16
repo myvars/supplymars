@@ -8,7 +8,7 @@
         <thead class="bg-gray-100 text-xs font-semibold uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
             {% block head %}{% endblock %}
         </thead>
-        <tbody>
+        <tbody class="[&>tr]:border-b [&>tr]:border-gray-200 [&>tr]:transition-colors [&>tr:nth-child(odd)]:bg-white [&>tr:nth-child(even)]:bg-gray-50 [&>tr:hover]:bg-gray-100 dark:[&>tr]:border-gray-700 dark:[&>tr:nth-child(odd)]:bg-gray-900 dark:[&>tr:nth-child(even)]:bg-gray-800 dark:[&>tr:hover]:bg-gray-700/50">
             {% block body %}{% endblock %}
         </tbody>
     </table>
