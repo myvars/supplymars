@@ -35,16 +35,16 @@
                     </button>
                 </div>
                 {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-                    <div class="relative" data-controller="user-menu">
+                    <div class="relative" data-controller="toggle" data-toggle-close-on-click-outside-value="true">
                         <button type="button"
                                 class="flex items-center rounded-full p-1 transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500"
-                                data-action="click->user-menu#toggle">
+                                data-action="click->toggle#toggle">
                             <span class="sr-only">Open user menu</span>
                             <img class="h-7 w-7 rounded-full ring-2 ring-gray-600" src="{{ asset('images/avatar.png') }}" alt="user photo">
                         </button>
                         <div
                             class="absolute right-0 top-full z-50 mt-2 hidden w-52 list-none overflow-hidden rounded-lg bg-gray-800 text-base shadow-xl ring-1 ring-gray-700 divide-y divide-gray-700"
-                            data-user-menu-target="menu">
+                            data-toggle-target="toggleable">
                             <div class="px-4 py-3">
                                 <p class="text-sm font-medium text-white">{{ app.user.fullName }}</p>
                                 <p class="mt-0.5 truncate text-xs text-gray-400">{{ app.user.userIdentifier }}</p>

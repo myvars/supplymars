@@ -1,9 +1,21 @@
+/**
+ * Symfony CSRF Protection Module (NOT a Stimulus controller)
+ *
+ * This file uses import side effects to register global event listeners for
+ * CSRF token management via Symfony's SameOriginCsrfTokenManager. It lives
+ * in the controllers directory so Symfony's Stimulus bundle auto-imports it
+ * on page load, triggering the listeners below.
+ *
+ * Do NOT convert this to a Stimulus controller class — the current pattern
+ * is intentional and required by the Symfony CSRF system.
+ *
+ * @see https://symfony.com/doc/current/security/csrf.html
+ */
 const nameCheck = /^[-_a-zA-Z0-9]{4,22}$/;
 const tokenCheck = /^[-_/+a-zA-Z0-9]{24,}$/;
 
-// Generate and double-submit a CSRF token in a form field and a cookie, as defined by Symfony's SameOriginCsrfTokenManager
-// Use `form.requestSubmit()` to ensure that the submit event is triggered. Using `form.submit()` will not trigger the event
-// and thus this event-listener will not be executed.
+// Generate and double-submit a CSRF token in a form field and a cookie.
+// Use `form.requestSubmit()` (not `form.submit()`) to ensure the submit event fires.
 document.addEventListener('submit', function (event) {
     generateCsrfToken(event.target);
 }, true);

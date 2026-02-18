@@ -1,6 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 import Dropzone from "dropzone";
 import 'dropzone/dist/dropzone.css'
+import { turboRefresh } from '../lib/turbo.js';
 
 /* stimulusFetch: 'lazy' */
 export default class extends Controller {
@@ -39,14 +40,8 @@ export default class extends Controller {
             // wait for 500ms before refreshing the page
             // to give the server time to process the uploaded files
             setTimeout(() => {
-                this.turboRefresh();
+                turboRefresh();
             }, 500);
         });
-    }
-
-    turboRefresh() {
-        if (window.Turbo) {
-            Turbo.visit(window.location, {action: 'replace'});
-        }
     }
 }

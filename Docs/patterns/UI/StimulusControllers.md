@@ -16,6 +16,9 @@ No client-side state management.
 assets/
 ├── app.js                    # Entry point, imports bootstrap
 ├── stimulus_bootstrap.js     # Auto-loads controllers
+├── lib/                      # Shared utility modules
+│   ├── chart_format.js       # Value formatting for charts (currency, %, integer)
+│   └── turbo.js              # Turbo helper functions (turboRefresh)
 └── controllers/              # Controller files
     ├── basic_modal_controller.js
     ├── searchbox_controller.js
@@ -214,11 +217,19 @@ this.countValue = 10;
 
 **`toggle_controller`**
 - Show/hide elements
+- Optional click-outside-to-close behavior (replaces `user_menu_controller`)
 
 ```html
+<!-- Simple toggle -->
 <div data-controller="toggle">
     <button data-action="click->toggle#toggle">Toggle</button>
     <div data-toggle-target="toggleable" class="hidden">Content</div>
+</div>
+
+<!-- Dropdown with click-outside-to-close -->
+<div data-controller="toggle" data-toggle-close-on-click-outside-value="true">
+    <button data-action="click->toggle#toggle">Menu</button>
+    <div data-toggle-target="toggleable" class="hidden">Dropdown</div>
 </div>
 ```
 
@@ -239,42 +250,30 @@ this.countValue = 10;
 </nav>
 ```
 
-**`user_menu_controller`**
-- Dropdown menu for user profile
-- Click-outside to close
-
 **`theme_toggle_controller`**
 - Dark mode toggle
 - Persists to localStorage
 
 ### Data Visualization
 
-**`bar_chart_controller`**
-- Chart.js bar chart integration
-- Click-to-navigate support
-- Currency/percentage formatting
+**`bar_chart_controller`** / **`line_chart_controller`** / **`doughnut_chart_controller`**
+- Chart.js integration (bar, line, doughnut)
+- Shared formatting via `assets/lib/chart_format.js` (currency, percentage, integer)
+- Click-to-navigate support (bar, doughnut)
 
 ```html
 <canvas data-controller="bar-chart"
         data-bar-chart-link-url-value="/reports/product/{label}">
 ```
 
-**`doughnut_chart_controller`**
-- Chart.js doughnut chart
-- Clickable segments for drill-down
-
 ### Utilities
-
-**`stretched_link_controller`**
-- Makes parent element clickable
-- For card-style navigation
 
 **`auto_url_updater_controller`**
 - Updates browser URL without navigation
 - For filter/search state
 
-**`csrf_protection_controller`**
-- Manages CSRF tokens for AJAX
+**`csrf_protection_controller`** *(not a Stimulus controller — Symfony CSRF side-effect module)*
+- Manages CSRF tokens via global event listeners
 
 **`aos_controller`**
 - Animate On Scroll initialization
