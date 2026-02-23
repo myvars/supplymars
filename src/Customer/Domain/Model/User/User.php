@@ -232,7 +232,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
     /**
      * @see PasswordAuthenticatedUserInterface
      */
-    public function getPassword(): string
+    public function getPassword(): ?string
     {
         return $this->password;
     }

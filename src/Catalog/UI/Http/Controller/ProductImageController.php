@@ -77,6 +77,10 @@ class ProductImageController extends AbstractController
         ReorderProductImageHandler $handler,
         CommandFlow $flow,
     ): Response {
+        if (!$this->isCsrfTokenValid('product_image_reorder', $request->headers->get('X-CSRF-Token'))) {
+            return $this->json(['detail' => 'Invalid CSRF token'], 403);
+        }
+
         $imageIdOrder = json_decode($request->getContent(), true);
         if (null === $imageIdOrder) {
             return $this->json(['detail' => 'Invalid body'], 400);

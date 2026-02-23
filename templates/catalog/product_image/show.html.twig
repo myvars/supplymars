@@ -40,6 +40,7 @@
             <div class="grid grid-cols-1 justify-items-center gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
                  data-controller="sortable"
                  data-sortable-reorder-url-value="{{ path('app_catalog_product_image_reorder', {id: result.publicId.value}) }}"
+                 data-sortable-csrf-token-value="{{ csrf_token('product_image_reorder') }}"
             >
                 {% for productImage in result.productImages %}
                     {{ include('catalog/product_image/_product_image_card.html.twig', {productImage: productImage, loop: loop}) }}

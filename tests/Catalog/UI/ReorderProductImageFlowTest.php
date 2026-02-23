@@ -59,11 +59,15 @@ final class ReorderProductImageFlowTest extends WebTestCase
             1 => $productImages[0]->getId(),
         ];
 
+        // Use Zenstruck browser to establish a session, then POST with CSRF
         $this->browser()
             ->actingAs($user)
-            ->request('POST', '/product/' . $product->getPublicId()->value() . '/images/reorder', [
+            ->get('/product_image/' . $product->getPublicId()->value() . '/images')
+            ->assertSuccessful()
+            ->post('/product/' . $product->getPublicId()->value() . '/images/reorder', [
                 'headers' => [
                     'Content-Type' => 'application/json',
+                    'X-CSRF-Token' => self::getContainer()->get('security.csrf.token_manager')->getToken('product_image_reorder')->getValue(),
                 ],
                 'body' => json_encode($reverseOrder),
             ])

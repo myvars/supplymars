@@ -6,6 +6,7 @@ import { turboRefresh } from '../lib/turbo.js';
 export default class extends Controller {
     static values = {
         reorderUrl: String,
+        csrfToken: String,
     };
 
     connect() {
@@ -14,10 +15,15 @@ export default class extends Controller {
             onEnd: async () => {
                 if (!this.reorderUrlValue) return;
 
+                const headers = { 'Content-Type': 'application/json' };
+                if (this.csrfTokenValue) {
+                    headers['X-CSRF-Token'] = this.csrfTokenValue;
+                }
+
                 try {
                     const response = await fetch(this.reorderUrlValue, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers,
                         body: JSON.stringify(sortable.toArray()),
                     });
                     if (!response.ok) {

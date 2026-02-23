@@ -6,5 +6,5 @@
     {% if showIcon %}
         <twig:StatusIcon type="{{ status|lower }}" class="me-1"/>
     {% endif %}
-    {{ status|title }}
+    {{ status|replace({'_': ' '})|title }}
 </span>

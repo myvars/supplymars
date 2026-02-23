@@ -9,3 +9,4 @@ framework:
             - submit
             - authenticate
             - logout
+            - product_image_reorder
