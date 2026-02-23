@@ -367,6 +367,7 @@ This avoids expensive aggregations on every dashboard load.
 3. **Failed messages:** Alert on any failed messenger messages
 4. **Database size:** Monitor growth from simulation data
 5. **Response times:** Track slow queries and API latency
+6. **API error rates:** Monitor 4xx/5xx responses on `/api/` routes
 
 ### Backup Strategy
 

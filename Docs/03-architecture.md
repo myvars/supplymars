@@ -43,6 +43,7 @@ Each bounded context follows a consistent internal structure:
 │   └── Factory/              # Object creation utilities
 └── UI/                       # Presentation
     ├── Http/                 # Controllers, Forms, DTOs
+    │   └── Api/              # API controllers, Resources, Requests
     └── Console/              # CLI commands
 ```
 
@@ -50,7 +51,7 @@ Each bounded context follows a consistent internal structure:
 
 ### UI Layer
 
-**Responsibility:** Handle HTTP requests, console commands, render views.
+**Responsibility:** Handle HTTP requests, console commands, render views, serve API responses.
 
 **Allowed dependencies:** Application layer only.
 
@@ -59,8 +60,11 @@ Each bounded context follows a consistent internal structure:
 - Forms (Symfony form types)
 - Console commands
 - Twig templates
+- API controllers (JSON endpoints, delegate to handlers/repositories)
+- API Resource classes (readonly DTOs for JSON serialization)
+- API Request classes (validated input DTOs)
 
-**Rule:** Controllers must not contain business logic. They orchestrate via FormFlow classes.
+**Rule:** Controllers must not contain business logic. Web controllers orchestrate via FormFlow; API controllers use handlers directly and return `ApiResponse` helpers.
 
 ### Application Layer
 
@@ -184,6 +188,68 @@ Each bounded context follows a consistent internal structure:
 | Handler | Context-specific handlers | `src/{Context}/Application/Handler/` |
 | Repository | Domain interfaces + Doctrine impl | `src/{Context}/Domain/Repository/` + `Infrastructure/Persistence/` |
 | EventDispatcher | `DomainEventDispatcher` | `src/Shared/Infrastructure/Persistence/Doctrine/EventListener/` |
+
+### API Request → Response
+
+API endpoints follow a simpler flow than FormFlow. Controllers receive JSON input, delegate to existing handlers or repositories, and return JSON via `ApiResponse`.
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│                            HTTP REQUEST                                │
+│  Authorization: Bearer <token>                                         │
+│  Content-Type: application/json                                        │
+└────────────────────────────────────────────────────────────────────────┘
+                                   │
+                                   ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                          SYMFONY KERNEL                                │
+│  • Route matching (/api/v1/...)                                        │
+│  • API firewall (stateless, Bearer token via ApiTokenHandler)          │
+│  • MapRequestPayload / MapQueryString for input DTOs                   │
+└────────────────────────────────────────────────────────────────────────┘
+                                   │
+                                   ▼
+┌────────────────────────────────────────────────────────────────────────┐
+│                        API CONTROLLER                                  │
+│  • Extends AbstractApiController                                       │
+│  • Receives validated Request DTO or SearchCriteria                    │
+│  • Delegates to Handler (writes) or Repository (reads)                 │
+│  • Transforms result via Resource class                                │
+│  • Returns ApiResponse (item / collection / error / noContent)         │
+└────────────────────────────────────────────────────────────────────────┘
+                          │                    │
+                          ▼                    ▼
+              ┌───────────────────┐  ┌──────────────────────────────────┐
+              │   RESOURCE (DTO)  │  │           HANDLER                │
+              │  Entity → array   │  │  (same as web: domain logic,    │
+              │  for JSON output  │  │   returns Result ok/fail)        │
+              └───────────────────┘  └──────────────────────────────────┘
+                                               │
+                                               ▼
+              ┌────────────────────────────────────────────────────────────┐
+              │                    JSON RESPONSE                           │
+              │  • 200 { "data": {...} }              (single item)       │
+              │  • 200 { "data": [...], "meta": {}, "links": {} }         │
+              │  • 201 { "data": {...} }              (created)            │
+              │  • 204                                (no content)         │
+              │  • 4xx/5xx RFC 7807 problem+json      (errors)            │
+              └────────────────────────────────────────────────────────────┘
+```
+
+**On error**, `ApiExceptionListener` intercepts exceptions for `/api/` routes and returns RFC 7807 problem+json responses. Validation errors include a `violations` array.
+
+### Key API Classes
+
+| Class | Location | Purpose |
+|-------|----------|---------|
+| AbstractApiController | `src/Shared/UI/Http/Api/` | Base controller with `handleResult()` and `resolveFilterId()` |
+| ApiResponse | `src/Shared/UI/Http/Api/` | Static factory for JSON responses |
+| ApiExceptionListener | `src/Shared/UI/Http/Api/EventListener/` | Converts exceptions to RFC 7807 JSON |
+| ApiTokenHandler | `src/Shared/Infrastructure/Security/` | Validates Bearer tokens |
+| Resource classes | `src/{Context}/UI/Http/Api/Resource/` | Entity → JSON transformation |
+| Request classes | `src/{Context}/UI/Http/Api/Request/` | Validated input DTOs |
+
+See [API Pattern](patterns/API/README.md) for implementation details and [ADR 011](adr/011-rest-api-layer.md) for the architectural decision.
 
 ## Supplier Model
 

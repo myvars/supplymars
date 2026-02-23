@@ -455,12 +455,60 @@ hasPositiveCost()             // cost > 0
 
 ---
 
+## REST API
+
+### API Infrastructure
+
+| Class | File | Purpose |
+|-------|------|---------|
+| AbstractApiController | `src/Shared/UI/Http/Api/AbstractApiController.php` | Base controller with `handleResult()` and `resolveFilterId()` |
+| ApiResourceInterface | `src/Shared/UI/Http/Api/ApiResourceInterface.php` | Resource contract (`toArray()`) for class-string support in `collection()` |
+| ApiResponse | `src/Shared/UI/Http/Api/ApiResponse.php` | Static factory: `item()`, `collection()`, `error()`, `noContent()` |
+| ApiExceptionListener | `src/Shared/UI/Http/Api/EventListener/ApiExceptionListener.php` | Converts exceptions to RFC 7807 JSON for `/api/` routes |
+| ApiTokenHandler | `src/Shared/Infrastructure/Security/ApiTokenHandler.php` | Validates Bearer tokens via UserRepository |
+| ApiAuthenticationFailureHandler | `src/Shared/Infrastructure/Security/ApiAuthenticationFailureHandler.php` | Returns 401 JSON on auth failure |
+
+### API Controllers
+
+| Controller | File | Routes |
+|------------|------|--------|
+| ProductApiController | `src/Catalog/UI/Http/Api/ProductApiController.php` | `/api/v1/catalog/products` |
+| CategoryApiController | `src/Catalog/UI/Http/Api/CategoryApiController.php` | `/api/v1/catalog/categories` |
+| SubcategoryApiController | `src/Catalog/UI/Http/Api/SubcategoryApiController.php` | `/api/v1/catalog/subcategories` |
+| ManufacturerApiController | `src/Catalog/UI/Http/Api/ManufacturerApiController.php` | `/api/v1/catalog/manufacturers` |
+| OrderApiController | `src/Order/UI/Http/Api/OrderApiController.php` | `/api/v1/orders` |
+| OrderItemApiController | `src/Order/UI/Http/Api/OrderItemApiController.php` | `/api/v1/orders/{id}/items` |
+
+### API Resource Classes (Output DTOs)
+
+| Class | File | Purpose |
+|-------|------|---------|
+| ProductResource | `src/Catalog/UI/Http/Api/Resource/ProductResource.php` | Full product detail |
+| ProductListResource | `src/Catalog/UI/Http/Api/Resource/ProductListResource.php` | Product list item |
+| CategoryResource | `src/Catalog/UI/Http/Api/Resource/CategoryResource.php` | Category with optional subcategories |
+| SubcategoryResource | `src/Catalog/UI/Http/Api/Resource/SubcategoryResource.php` | Subcategory |
+| ManufacturerResource | `src/Catalog/UI/Http/Api/Resource/ManufacturerResource.php` | Manufacturer |
+| OrderResource | `src/Order/UI/Http/Api/Resource/OrderResource.php` | Full order detail |
+| OrderListResource | `src/Order/UI/Http/Api/Resource/OrderListResource.php` | Order list item |
+| OrderItemResource | `src/Order/UI/Http/Api/Resource/OrderItemResource.php` | Order item |
+
+### API Request Classes (Input DTOs)
+
+| Class | File | Purpose |
+|-------|------|---------|
+| CreateOrderPayload | `src/Order/UI/Http/Api/Payload/CreateOrderPayload.php` | Create order payload |
+| AddOrderItemPayload | `src/Order/UI/Http/Api/Payload/AddOrderItemPayload.php` | Add order item payload |
+| UpdateOrderItemPayload | `src/Order/UI/Http/Api/Payload/UpdateOrderItemPayload.php` | Update order item payload |
+
+---
+
 ## Configuration Files
 
 | File | Purpose |
 |------|---------|
 | `config/packages/doctrine.yaml` | Database and ORM |
-| `config/packages/security.yaml` | Authentication |
+| `config/packages/security.yaml` | Authentication (web + API firewalls) |
+| `config/packages/nelmio_api_doc.yaml` | Swagger/OpenAPI documentation |
 | `config/packages/messenger.yaml` | Queue configuration |
 | `config/packages/cache.yaml` | Caching strategy |
 | `config/services.yaml` | Service definitions |
@@ -475,7 +523,7 @@ hasPositiveCost()             // cost > 0
 | `tests/Shared/Story/` | Reusable test stories |
 | `tests/{Context}/Domain/` | Unit tests |
 | `tests/{Context}/Application/Handler/` | Integration tests |
-| `tests/{Context}/UI/` | Functional tests |
+| `tests/{Context}/UI/` | Functional tests (web + API) |
 
 ---
 
@@ -509,6 +557,14 @@ hasPositiveCost()             // cost > 0
 2. `src/Note/Domain/Model/Ticket/TicketStatus.php` (status enum, allowed transitions)
 3. `src/Note/Domain/Model/Message/Message.php` (message entity, visibility, author types)
 4. `src/Note/Domain/Model/Pool/Pool.php` (pool entity, subscriptions)
+
+### "I need to understand the REST API"
+1. `src/Shared/UI/Http/Api/AbstractApiController.php` (base controller)
+2. `src/Shared/UI/Http/Api/ApiResourceInterface.php` (resource contract)
+3. `src/Shared/UI/Http/Api/ApiResponse.php` (response factory)
+4. `src/Shared/UI/Http/Api/EventListener/ApiExceptionListener.php` (error handling)
+5. `src/Shared/Infrastructure/Security/ApiTokenHandler.php` (authentication)
+6. `src/{Context}/UI/Http/Api/` (controllers, resources, requests)
 
 ### "I need to add a new entity"
 1. Create entity in `src/{Context}/Domain/Model/{Entity}/`

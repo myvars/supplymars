@@ -13,6 +13,7 @@ The platform focuses on post-checkout complexity: what happens when orders need 
 - **Intelligent order fulfillment** that splits across suppliers
 - **End-to-end simulation** of the complete order lifecycle
 - **Operational reporting** with dimensional analysis
+- **REST API** for programmatic access to catalog and order data
 
 ## Key Domain Concepts
 

@@ -19,6 +19,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private bool $isVerified;        // Email verification status
     private bool $isStaff;           // Admin flag
     private array $roles;            // Symfony roles
+    private ?string $apiToken;       // API Bearer token (64-char hex)
 }
 ```
 
@@ -44,6 +45,13 @@ security:
                 property: email
 
     firewalls:
+        api:
+            pattern: ^/api/
+            stateless: true
+            entry_point: App\Shared\Infrastructure\Security\ApiAuthenticationFailureHandler
+            access_token:
+                token_handler: App\Shared\Infrastructure\Security\ApiTokenHandler
+                failure_handler: App\Shared\Infrastructure\Security\ApiAuthenticationFailureHandler
         main:
             lazy: true
             provider: app_user_provider
@@ -89,6 +97,75 @@ New users must verify their email:
 5. Token invalidated after use
 
 **Reset controller:** `src/Customer/UI/Http/Controller/ResetPasswordController.php`
+
+## API Authentication
+
+### Overview
+
+The REST API uses **stateless Bearer token authentication**, separate from the session-based web login. API requests never create sessions or set cookies.
+
+### How It Works
+
+1. Each user has an optional `api_token` field (64-character hex string)
+2. Clients send the token in the `Authorization` header: `Authorization: Bearer <token>`
+3. `ApiTokenHandler` looks up the user by token via `UserRepository::findByApiToken()`
+4. If the token is invalid or missing, `ApiAuthenticationFailureHandler` returns a 401 RFC 7807 JSON response
+
+### Security Configuration
+
+```yaml
+# config/packages/security.yaml
+
+firewalls:
+    api:
+        pattern: ^/api/
+        stateless: true
+        entry_point: App\Shared\Infrastructure\Security\ApiAuthenticationFailureHandler
+        access_token:
+            token_handler: App\Shared\Infrastructure\Security\ApiTokenHandler
+            failure_handler: App\Shared\Infrastructure\Security\ApiAuthenticationFailureHandler
+```
+
+### Access Control
+
+```yaml
+access_control:
+    - { path: ^/api/doc, roles: PUBLIC_ACCESS }        # Swagger UI
+    - { path: ^/api/v1/catalog, roles: PUBLIC_ACCESS }  # Public catalog
+    - { path: ^/api/, roles: ROLE_ADMIN }               # All other API routes
+```
+
+- **Catalog endpoints** are publicly accessible (no token required)
+- **Order endpoints** and any future write APIs require `ROLE_ADMIN`
+- **Swagger documentation** is publicly accessible in development
+
+### Token Management
+
+Tokens are managed via the `User` entity:
+
+```php
+$user->regenerateApiToken();  // Generates new 64-char hex token
+$user->getApiToken();         // Returns current token (or null)
+$user->setApiToken(null);     // Revokes API access
+```
+
+### Error Responses
+
+All API authentication errors return RFC 7807 `application/problem+json`:
+
+```json
+{
+    "type": "about:blank",
+    "title": "Unauthorized",
+    "status": 401,
+    "detail": "Authentication required."
+}
+```
+
+**Key files:**
+- `src/Shared/Infrastructure/Security/ApiTokenHandler.php`
+- `src/Shared/Infrastructure/Security/ApiAuthenticationFailureHandler.php`
+- `src/Customer/Domain/Model/User/User.php` (`api_token` field)
 
 ## Authorization Model
 
@@ -142,12 +219,17 @@ class CustomerController extends AbstractController
 # config/packages/security.yaml
 
 access_control:
+    # API routes
+    - { path: ^/api/doc, roles: PUBLIC_ACCESS }
+    - { path: ^/api/v1/catalog, roles: PUBLIC_ACCESS }
+    - { path: ^/api/, roles: ROLE_ADMIN }
+
     # Public routes
     - { path: ^/login, roles: PUBLIC_ACCESS }
     - { path: ^/reset-password, roles: PUBLIC_ACCESS }
 
-    # Admin routes (example)
-    - { path: ^/admin, roles: ROLE_ADMIN }
+    # Admin routes
+    - { path: ^/, roles: ROLE_ADMIN }
 ```
 
 ## Admin Surface vs. Internal Tools

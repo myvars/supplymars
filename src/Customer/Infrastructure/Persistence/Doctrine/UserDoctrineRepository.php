@@ -125,6 +125,11 @@ class UserDoctrineRepository extends ServiceEntityRepository implements Password
         return $this->find($userId);
     }
 
+    public function findByApiToken(string $token): ?User
+    {
+        return $this->findOneBy(['apiToken' => $token]);
+    }
+
     public function countNonStaffCustomers(): int
     {
         return (int) $this->createQueryBuilder('u')

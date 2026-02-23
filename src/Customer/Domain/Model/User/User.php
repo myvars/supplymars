@@ -57,6 +57,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $isStaff = false;
 
+    #[ORM\Column(type: Types::STRING, length: 64, unique: true, nullable: true)]
+    private ?string $apiToken = null;
+
     /** @var Collection<int, Category> */
     #[ORM\OneToMany(targetEntity: Category::class, mappedBy: 'owner')]
     private Collection $categories;
@@ -282,6 +285,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
     public function isAdmin(): bool
     {
         return in_array('ROLE_ADMIN', $this->getRoles(), true);
+    }
+
+    public function getApiToken(): ?string
+    {
+        return $this->apiToken;
+    }
+
+    public function setApiToken(?string $apiToken): void
+    {
+        $this->apiToken = $apiToken;
+    }
+
+    public function regenerateApiToken(): string
+    {
+        $this->apiToken = bin2hex(random_bytes(32));
+
+        return $this->apiToken;
     }
 
     /**

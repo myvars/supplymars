@@ -23,4 +23,6 @@ interface UserRepository extends FindByCriteriaInterface
     public function getStaffById(UserId $id): ?User;
 
     public function getRandomUser(): ?User;
+
+    public function findByApiToken(string $token): ?User;
 }

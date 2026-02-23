@@ -1,0 +1,18 @@
+when@dev:
+    nelmio_api_doc:
+        documentation:
+            info:
+                title: 'SupplyMars API'
+                description: 'REST API for the SupplyMars application'
+                version: '1.0.0'
+            components:
+                securitySchemes:
+                    Bearer:
+                        type: http
+                        scheme: bearer
+                        description: 'API token authentication. Pass your token in the Authorization header.'
+            security:
+                -   Bearer: [ ]
+        areas:
+            path_patterns:
+                - '^/api/'

@@ -172,6 +172,64 @@ class ManufacturerFlowTest extends WebTestCase
 }
 ```
 
+### API Tests
+
+**Purpose:** Test JSON API endpoints, authentication, error handling, and response structure.
+
+**Location:** `tests/{Context}/UI/Api/` and `tests/Shared/UI/Http/Api/`
+
+**Characteristics:**
+- Extend `WebTestCase` with `HasBrowser` and `Factories` traits
+- Public endpoints (Catalog) tested without authentication
+- Authenticated endpoints use `->actingAs($user, 'api')` to attach the API firewall
+- Assert JSON structure, status codes, pagination meta, and RFC 7807 error responses
+- Named `{Context}ApiTest.php`
+
+**Example:**
+```php
+// tests/Order/UI/Api/OrderApiTest.php
+
+final class OrderApiTest extends WebTestCase
+{
+    use HasBrowser;
+    use Factories;
+
+    public function testOrderIndexRequiresAuthentication(): void
+    {
+        $this->browser()
+            ->get('/api/v1/orders')
+            ->assertStatus(401);
+    }
+
+    public function testCreateOrderReturns201(): void
+    {
+        $user = UserFactory::new()->asStaff()->create();
+        $customer = UserFactory::createOne();
+        AddressFactory::createOne([
+            'customer' => $customer,
+            'isDefaultBillingAddress' => true,
+            'isDefaultShippingAddress' => true,
+        ]);
+        VatRateFactory::new()->withStandardRate()->create();
+
+        $this->browser()
+            ->actingAs($user, 'api')
+            ->post('/api/v1/orders', HttpOptions::json([
+                'customer' => $customer->getPublicId()->value(),
+                'shippingMethod' => 'THREE_DAY',
+            ]))
+            ->assertStatus(201)
+            ->assertJson()
+            ->assertJsonMatches('"data"."id" != null', true);
+    }
+}
+```
+
+**Key test files:**
+- `tests/Catalog/UI/Api/CatalogApiTest.php` — Public catalog API (products, categories, subcategories, manufacturers)
+- `tests/Order/UI/Api/OrderApiTest.php` — Authenticated order CRUD and item management
+- `tests/Shared/UI/Http/Api/ApiAuthenticationTest.php` — Token auth, error format (RFC 7807), validation errors
+
 ## How to Run Tests
 
 ### Via Docker (Recommended)

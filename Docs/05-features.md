@@ -41,6 +41,27 @@ The Catalog context manages the product information displayed to customers and u
 - `src/Catalog/Application/Handler/Product/CreateProductHandler.php`
 - `src/Catalog/Domain/Model/Product/Product.php`
 
+### API Endpoints (Catalog)
+
+The Catalog context exposes **public** read-only API endpoints (no authentication required):
+
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| GET | `/api/v1/catalog/products` | List products (paginated, filterable by category/subcategory/manufacturer) |
+| GET | `/api/v1/catalog/products/{id}` | Get product detail (includes review summary) |
+| GET | `/api/v1/catalog/categories` | List categories |
+| GET | `/api/v1/catalog/categories/{id}` | Get category detail (includes subcategories) |
+| GET | `/api/v1/catalog/subcategories` | List subcategories (filterable by category) |
+| GET | `/api/v1/catalog/manufacturers` | List manufacturers |
+| GET | `/api/v1/catalog/manufacturers/{id}` | Get manufacturer detail |
+
+**Key files:**
+- `src/Catalog/UI/Http/Api/ProductApiController.php`
+- `src/Catalog/UI/Http/Api/CategoryApiController.php`
+- `src/Catalog/UI/Http/Api/SubcategoryApiController.php`
+- `src/Catalog/UI/Http/Api/ManufacturerApiController.php`
+- `src/Catalog/UI/Http/Api/Resource/` — Resource DTOs for JSON serialization
+
 ### Business Rules
 
 1. **Unique part numbers:** `mfrPartNumber` must be unique across products
@@ -142,6 +163,27 @@ PENDING → PROCESSING → SHIPPED → DELIVERED
 - `src/Order/Application/Handler/CreateOrderHandler.php`
 - `src/Order/Domain/Model/Order/CustomerOrder.php`
 - `src/Order/Domain/Model/Order/CustomerOrderItem.php`
+
+### API Endpoints (Orders)
+
+The Order context exposes **authenticated** API endpoints (requires `ROLE_ADMIN` via Bearer token):
+
+| Method | Endpoint | Purpose |
+|--------|----------|---------|
+| GET | `/api/v1/orders` | List orders (paginated, filterable by customer) |
+| POST | `/api/v1/orders` | Create an order |
+| GET | `/api/v1/orders/{id}` | Get order detail (includes items) |
+| POST | `/api/v1/orders/{id}/cancel` | Cancel an order |
+| POST | `/api/v1/orders/{id}/allocate` | Allocate order to suppliers |
+| POST | `/api/v1/orders/{id}/items` | Add an order item |
+| PUT | `/api/v1/orders/{id}/items/{itemId}` | Update an order item quantity |
+| DELETE | `/api/v1/orders/{id}/items/{itemId}` | Remove an order item |
+
+**Key files:**
+- `src/Order/UI/Http/Api/OrderApiController.php`
+- `src/Order/UI/Http/Api/OrderItemApiController.php`
+- `src/Order/UI/Http/Api/Request/` — Validated input DTOs
+- `src/Order/UI/Http/Api/Resource/` — Resource DTOs for JSON serialization
 
 ### Business Rules
 

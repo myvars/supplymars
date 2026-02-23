@@ -18,10 +18,10 @@ SupplyMars is a **modular monolith** - bounded contexts are self-contained modul
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                            PRESENTATION LAYER                               │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐ │
-│  │   Twig +    │  │  FormFlow   │  │   Console   │  │  Turbo Frames &     │ │
-│  │  Tailwind   │  │ Controllers │  │  Commands   │  │  Streams            │ │
-│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────────────┘ │
+│  ┌───────────┐ ┌───────────┐ ┌───────────┐ ┌───────────────┐ ┌───────────┐  │
+│  │  Twig +   │ │ FormFlow  │ │  Console  │ │ Turbo Frames  │ │   REST    │  │
+│  │ Tailwind  │ │Controllers│ │ Commands  │ │  & Streams    │ │   API     │  │
+│  └───────────┘ └───────────┘ └───────────┘ └───────────────┘ └───────────┘  │
 └─────────────────────────────────────────────────────────────────────────────┘
                                       │
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -87,6 +87,7 @@ SupplyMars is a **modular monolith** - bounded contexts are self-contained modul
 - **[patterns/Turbo/](patterns/Turbo/README.md)** - Turbo Frames, Streams, and modal system
 - **[patterns/UI/](patterns/UI/README.md)** - Server-driven UI with Twig Components, Stimulus, and Forms
 - **[patterns/InlineEdit/](patterns/InlineEdit/README.md)** - Click-to-edit fields with auto-save
+- **[patterns/API/](patterns/API/README.md)** - REST API controllers, resources, and request DTOs
 
 ### Architecture Decision Records
 - **[adr/001-multi-supplier-sourcing.md](adr/001-multi-supplier-sourcing.md)** - Why orders split across suppliers
@@ -99,6 +100,7 @@ SupplyMars is a **modular monolith** - bounded contexts are self-contained modul
 - **[adr/008-server-driven-ui-architecture.md](adr/008-server-driven-ui-architecture.md)** - Server-driven UI instead of JavaScript SPA
 - **[adr/009-support-ticket-system.md](adr/009-support-ticket-system.md)** - Pool-based support ticket system with conversation threads
 - **[adr/010-customer-insights-reporting.md](adr/010-customer-insights-reporting.md)** - Customer segmentation, geographic, and insights reporting
+- **[adr/011-rest-api-layer.md](adr/011-rest-api-layer.md)** - REST API alongside server-rendered UI
 
 ---
 
@@ -154,6 +156,7 @@ symfony console app:calculate-order-sales 7        # Last 7 days
 | Service | URL |
 |---------|-----|
 | Application | https://localhost:8000 |
+| API Docs (Swagger) | https://localhost:8000/api/doc |
 | PHPMyAdmin | http://localhost:8080 |
 | Mailpit | http://localhost:8025 |
 | RabbitMQ Management | http://localhost:15672 |
@@ -171,6 +174,7 @@ symfony console app:calculate-order-sales 7        # Last 7 days
 | Queue | RabbitMQ | Async event processing |
 | Cache | Redis | Sessions, query cache |
 | Frontend | Tailwind CSS + Turbo | Styling, SPA-like UX |
+| API Docs | NelmioApiDoc (Swagger) | OpenAPI documentation |
 | Testing | PHPUnit + Foundry | Test framework + factories |
 | File Storage | S3 / Local | Product images |
 
