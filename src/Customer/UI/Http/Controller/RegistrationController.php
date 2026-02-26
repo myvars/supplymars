@@ -12,8 +12,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\RateLimiter\RateLimiterFactory;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
 use Symfony\Component\Security\Http\Authenticator\FormLoginAuthenticator;
@@ -29,14 +29,24 @@ class RegistrationController extends AbstractController
     ) {
     }
 
-    #[IsGranted('ROLE_ADMIN')]
     #[Route(path: '/register', name: 'app_register')]
     public function register(
         Request $request,
         UserPasswordHasherInterface $userPasswordHasher,
         UserAuthenticatorInterface $userAuthenticator,
         EntityManagerInterface $em,
+        RateLimiterFactory $registrationLimiter,
     ): Response {
+        if ($request->isMethod('POST')) {
+            $limiter = $registrationLimiter->create($request->getClientIp());
+
+            if (!$limiter->consume()->isAccepted()) {
+                $this->addFlash('danger', 'Too many attempts. Please try again later.');
+
+                return $this->redirectToRoute('app_register');
+            }
+        }
+
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user, [
             'action' => $this->generateUrl('app_register'),

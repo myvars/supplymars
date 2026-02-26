@@ -1,20 +1,22 @@
-{% apply inky_to_html|inline_css(source('@styles/email.css'), source('@styles/foundation-emails.min.css')) %}
+{% apply inky_to_html|inline_css(source('@styles/foundation-emails.min.css'), source('@styles/email.css')) %}
     <container>
         <row class="header">
             <columns>
-                <br>
+                <spacer size="16"></spacer>
                 <a href="{{ url('app_homepage') }}">
-                    {{ include('_logo.html.twig', { logoHeight: 80 }) }}
+                    {{ include('_logo.html.twig', { logoHeight: 48 }) }}
                 </a>
+                <spacer size="8"></spacer>
             </columns>
         </row>
 
         {% block content %}{% endblock %}
 
+        <spacer size="16"></spacer>
         <row class="footer">
             <columns>
-                <p>Cheers,</p>
-                <p>Your friendly {{ domain|title }} team</p>
+                <hr>
+                <p class="text-center">&copy; {{ "now"|date("Y") }} {{ domain|title }}</p>
             </columns>
         </row>
     </container>

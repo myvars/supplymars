@@ -21,8 +21,24 @@ final class UserDomainTest extends TestCase
         self::assertTrue($user->isVerified());
         self::assertTrue($user->isStaff());
         self::assertTrue($user->isAdmin());
+        self::assertFalse($user->isSimulated());
         self::assertContains('ROLE_USER', $user->getRoles());
         self::assertContains('ROLE_ADMIN', $user->getRoles());
+    }
+
+    public function testSimulatedFlag(): void
+    {
+        $user = User::create(
+            fullName: 'Sim User',
+            email: 'sim@example.com',
+            isStaff: false,
+            isVerified: true,
+        );
+
+        self::assertFalse($user->isSimulated());
+
+        $user->setSimulated(true);
+        self::assertTrue($user->isSimulated());
     }
 
     public function testUpdateChangesFieldsAndTogglesAdminRole(): void

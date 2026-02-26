@@ -3,6 +3,7 @@
 namespace App\Customer\UI\Http\Form\Type;
 
 use App\Customer\Domain\Model\User\User;
+use App\Shared\UI\Http\Form\Type\TurnstileType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
@@ -23,7 +24,7 @@ final class RegistrationFormType extends AbstractType
         $builder
             ->add('fullName', null, [
                 'priority' => 4,
-                'attr' => ['placeholder' => 'e.g. Bonnie Green'],
+                'attr' => ['placeholder' => 'e.g. Tim Apple'],
             ])
             ->add('email', null, [
                 'attr' => ['placeholder' => 'name@company.com'],
@@ -48,6 +49,7 @@ final class RegistrationFormType extends AbstractType
                     new Length(min: 6, max: 4096, minMessage: 'Your password should be at least {{ limit }} characters'),
                 ],
             ])
+            ->add('turnstileResponse', TurnstileType::class)
         ;
     }
 

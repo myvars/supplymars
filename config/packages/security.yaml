@@ -59,6 +59,7 @@ security:
         - { path: ^/api/doc, roles: PUBLIC_ACCESS }
         - { path: ^/api/v1/catalog, roles: PUBLIC_ACCESS }
         - { path: ^/api/, roles: ROLE_ADMIN }
+        - { path: ^/register$, roles: PUBLIC_ACCESS }
         - { path: ^/login$, roles: PUBLIC_ACCESS }
         - { path: ^/logout$, roles: PUBLIC_ACCESS }
         - { path: ^/reset-password, roles: PUBLIC_ACCESS }

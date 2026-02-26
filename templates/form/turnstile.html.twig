@@ -1,0 +1,15 @@
+{% block turnstile_row %}
+    <div
+        data-controller="turnstile"
+        data-turnstile-sitekey-value="{{ site_key }}"
+    >
+        <div data-turnstile-target="container"></div>
+        <input
+            type="hidden"
+            id="{{ id }}"
+            name="{{ full_name }}"
+            data-turnstile-target="response"
+        />
+        {{ form_errors(form) }}
+    </div>
+{% endblock %}

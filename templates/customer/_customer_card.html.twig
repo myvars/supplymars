@@ -11,6 +11,9 @@
         <twig:ux:icon name="bi:envelope" class="h-4 w-4 text-gray-400 dark:text-gray-500"/>
         {{ customer.email }}
     </div>
+    <div class="mt-3 text-xs text-gray-500 dark:text-gray-400">
+        {{ customer.isSimulated ? 'Simulated account' : 'Registered account' }}
+    </div>
     <twig:CardFooter :updatedAt="customer.updatedAt">
         <twig:StatusBadge status="{{ customer.isVerified ? 'VERIFIED' : 'UNVERIFIED' }}"/>
     </twig:CardFooter>

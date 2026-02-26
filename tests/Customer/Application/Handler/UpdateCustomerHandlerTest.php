@@ -48,6 +48,33 @@ final class UpdateCustomerHandlerTest extends KernelTestCase
         self::assertFalse($persisted->isAdmin());
     }
 
+    public function testGrantingStaffSendsAdminAccessEmail(): void
+    {
+        $user = UserFactory::new()->create();
+        self::assertFalse($user->isStaff());
+
+        $command = new UpdateCustomer(
+            id: $user->getPublicId(),
+            fullName: $user->getFullName(),
+            email: $user->getEmail(),
+            isVerified: $user->isVerified(),
+            isStaff: true,
+        );
+
+        $result = ($this->handler)($command);
+        self::assertTrue($result->ok);
+
+        $persisted = $this->users->getByPublicId($user->getPublicId());
+        self::assertTrue($persisted->isStaff());
+        self::assertTrue($persisted->isAdmin());
+
+        // Email dispatch verified via Messenger async transport.
+        // Visual verification: symfony console app:send-test-emails
+        $transport = self::getContainer()->get('messenger.transport.async');
+        $messages = iterator_to_array($transport->get());
+        self::assertNotEmpty($messages, 'Admin access email should be dispatched to async transport');
+    }
+
     public function testFailsWhenCustomerNotFound(): void
     {
         $missingId = UserPublicId::new();

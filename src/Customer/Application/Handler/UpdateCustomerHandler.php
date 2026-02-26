@@ -5,6 +5,7 @@ namespace App\Customer\Application\Handler;
 use App\Customer\Application\Command\UpdateCustomer;
 use App\Customer\Domain\Model\User\User;
 use App\Customer\Domain\Repository\UserRepository;
+use App\Customer\Infrastructure\Mailer\MailerHelper;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Application\Result;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -15,6 +16,7 @@ final readonly class UpdateCustomerHandler
         private UserRepository $customers,
         private FlusherInterface $flusher,
         private ValidatorInterface $validator,
+        private MailerHelper $mailerHelper,
     ) {
     }
 
@@ -24,6 +26,8 @@ final readonly class UpdateCustomerHandler
         if (!$customer instanceof User) {
             return Result::fail('Customer not found.');
         }
+
+        $wasStaff = $customer->isStaff();
 
         $customer->update(
             fullName: $command->fullName,
@@ -38,6 +42,10 @@ final readonly class UpdateCustomerHandler
         }
 
         $this->flusher->flush();
+
+        if (!$wasStaff && $command->isStaff) {
+            $this->mailerHelper->sendAdminAccessGrantedMessage($customer);
+        }
 
         return Result::ok('Customer updated.', $customer->getPublicId());
     }

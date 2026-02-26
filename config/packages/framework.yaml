@@ -6,6 +6,12 @@ framework:
     session:
         handler_id: null
 
+    rate_limiter:
+        registration:
+            policy: sliding_window
+            limit: 5
+            interval: '60 minutes'
+
     #esi: true
     #fragments: true
 

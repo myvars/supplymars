@@ -1,29 +1,31 @@
 {% extends 'shared/email/emailBase.html.twig' %}
 
 {% block content %}
-    <spacer size="10"></spacer>
+    <spacer size="16"></spacer>
     <row>
         <columns>
+            <h1>Welcome to {{ domain|title }}</h1>
+        </columns>
+    </row>
+    <row>
+        <columns>
+            <p>Hi {{ email.toName }},</p>
             <p>
-                Hi {{ email.toName }}!
-            </p>
-            <p>
-                Thanks for joining <strong>{{ domain|title }}</strong>, our Mars-inspired demo experience. We’re excited to have you on board.
+                Thanks for creating your account. To get started, please confirm your email address
+                by clicking the button below. Note that full site access may not be available until
+                an administrator has approved your account.
             </p>
         </columns>
     </row>
     <row>
         <columns>
-            <p>
-                <a href="{{ signedUrl|raw }}">
-                    Please confirm your email address by clicking this link
-                </a>
-            </p>
+            <button href="{{ signedUrl|raw }}" class="large expanded">Verify Email Address</button>
         </columns>
     </row>
+    <spacer size="8"></spacer>
     <row>
         <columns>
-            <p>
+            <p class="text-muted text-center">
                 This link will expire in {{ expiresAtMessageKey|trans(expiresAtMessageData, 'VerifyEmailBundle') }}.
             </p>
         </columns>

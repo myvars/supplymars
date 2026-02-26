@@ -746,6 +746,37 @@ The Note context provides an internal support system for managing customer queri
 
 ---
 
+## Transactional Emails
+
+### Purpose
+
+The Customer context sends transactional emails for key account lifecycle events. Emails use Inky (Foundation for Emails) with inline CSS for cross-client compatibility, styled with a dark theme matching the site's default appearance.
+
+### Email Templates
+
+| Email | Template | Trigger |
+|-------|----------|---------|
+| Verify Email | `customer/registration/verify-email.html.twig` | User registration |
+| Reset Password | `customer/reset_password/reset-password.html.twig` | Password reset request |
+| Admin Access Granted | `customer/admin-access-granted.html.twig` | Staff status granted via `UpdateCustomerHandler` |
+
+### Architecture
+
+- **Base template:** `templates/shared/email/emailBase.html.twig` — logo, footer, Inky/CSS processing
+- **CSS:** `assets/styles/email.css` — dark theme (gray-900 background, gray-800 content, blue CTA buttons)
+- **Sender service:** `src/Customer/Infrastructure/Mailer/MailerHelper.php` — one method per email type
+- **Test command:** `app:send-test-emails` (dev only) — sends all templates to Mailpit for preview
+
+### Key Files
+
+- `src/Customer/Infrastructure/Mailer/MailerHelper.php`
+- `src/Customer/Domain/Model/User/EmailVerifier.php`
+- `templates/shared/email/emailBase.html.twig`
+- `assets/styles/email.css`
+- `assets/styles/foundation-emails.min.css`
+
+---
+
 ## FormFlow Pattern
 
 ### Purpose

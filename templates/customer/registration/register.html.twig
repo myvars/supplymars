@@ -16,6 +16,9 @@
             {% for flash_error in app.flashes('verify_email_error') %}
                 <twig:Alert type="danger">{{ flash_error }}</twig:Alert>
             {% endfor %}
+            {% for flash_error in app.flashes('danger') %}
+                <twig:Alert type="danger">{{ flash_error }}</twig:Alert>
+            {% endfor %}
             {{ form_start(registrationForm, {
                 'attr': {
                     'class': 'space-y-4 md:space-y-6',
@@ -45,6 +48,7 @@
                     {{ form_errors(registrationForm.agreeTerms) }}
                 </div>
             </div>
+            {{ form_row(registrationForm.turnstileResponse) }}
             <twig:Button type="submit" class="w-full" data-turbo-frame="_top">Create account</twig:Button>
             <p class="text-center text-sm font-light text-gray-500 dark:text-gray-400">
                 Already have an account?

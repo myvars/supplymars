@@ -230,12 +230,27 @@ hasPositiveCost()             // cost > 0
 
 ### Controllers
 
+### Infrastructure
+
+| Class | File | Description |
+|-------|------|-------------|
+| MailerHelper | `src/Customer/Infrastructure/Mailer/MailerHelper.php` | Transactional email sender (verify, reset, admin access) |
+| RandomUserFactory | `src/Customer/Infrastructure/Factory/RandomUserFactory.php` | Creates simulated users with `isSimulated = true` |
+
+### Controllers
+
 | Controller | File | Routes |
 |------------|------|--------|
 | SecurityController | `src/Customer/UI/Http/Controller/SecurityController.php` | `/login`, `/logout` |
 | RegistrationController | `src/Customer/UI/Http/Controller/RegistrationController.php` | `/register`, `/verify/email` |
 | ResetPasswordController | `src/Customer/UI/Http/Controller/ResetPasswordController.php` | `/reset-password` |
 | CustomerController | `src/Customer/UI/Http/Controller/CustomerController.php` | `/customer/*`, inline fullName |
+
+### Console Commands
+
+| Command | File | Description |
+|---------|------|-------------|
+| `app:send-test-emails` | `src/Customer/UI/Console/SendTestEmailsCommand.php` | Send all email templates to Mailpit (dev only) |
 
 ---
 

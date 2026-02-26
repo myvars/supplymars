@@ -30,10 +30,12 @@ symfony console app:create-customer-orders 10
 - `--random` - Randomise actual count (0 to orderCount)
 
 **What it creates:**
-- New customer accounts (or reuses existing)
+- New customer accounts flagged as `isSimulated = true` (or reuses existing simulated accounts)
 - Addresses for shipping/billing
 - Orders with 1-5 line items each
 - Random product quantities
+
+**Note:** Simulated users are visually distinguished from registered users on the customer detail page. Staff users are excluded from random selection for new orders.
 
 ### Order Allocation
 

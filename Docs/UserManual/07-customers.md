@@ -103,6 +103,13 @@ A confirmation page shows:
 | Verified | No | Whether email has been verified |
 | Staff Member | No | Whether user has administrator access |
 
+### Simulated vs Registered Accounts
+
+The customer detail card indicates whether an account is a **Simulated account** or a **Registered account**:
+
+- **Simulated account** — Created by the simulator (`app:create-customer-orders`). These are fake accounts used for demonstration and testing.
+- **Registered account** — Created via the public registration form by a real user.
+
 ### Address Fields
 
 Each customer can have multiple addresses:
@@ -140,7 +147,7 @@ New accounts start as unverified. Customers must click a verification link sent 
 | **Administrator** | Full access to all SupplyMars features |
 | **Standard User** | Can view their own profile only |
 
-Setting "Staff Member" to true grants the customer `ROLE_ADMIN` access.
+Setting "Staff Member" to true grants the customer `ROLE_ADMIN` access. When admin access is granted, the user receives an email notification informing them of their new access level.
 
 ## Customer Registration
 

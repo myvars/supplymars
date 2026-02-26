@@ -31,6 +31,21 @@ final readonly class MailerHelper
         return $email;
     }
 
+    public function sendAdminAccessGrantedMessage(User $user): TemplatedEmail
+    {
+        $email = new TemplatedEmail()
+            ->to(new Address($user->getEmail(), $user->getFullName()))
+            ->subject('You now have admin access')
+            ->htmlTemplate('customer/admin-access-granted.html.twig')
+            ->context([
+                'user' => $user,
+            ]);
+
+        $this->sendEmail($email);
+
+        return $email;
+    }
+
     public function sendEmailResetPasswordMessage(User $user, ResetPasswordToken $resetToken): TemplatedEmail
     {
         $email = new TemplatedEmail()

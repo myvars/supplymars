@@ -687,6 +687,35 @@ symfony console app:backfill-ulids --limit=1000
 
 ---
 
+## Customer Context
+
+### app:send-test-emails
+
+**Purpose:** Send all customer email templates to Mailpit for visual preview. Dev environment only.
+
+**File:** `src/Customer/UI/Console/SendTestEmailsCommand.php`
+
+**Arguments:** None
+
+**Example:**
+```bash
+symfony console app:send-test-emails
+```
+
+**Side Effects:**
+- Sends three emails to Mailpit: Verify Email, Reset Password, Admin Access Granted
+- Uses `MailerHelper` with dummy data (no database interaction)
+- Only registered in the `dev` environment (`#[When('dev')]`)
+
+**Emails sent:**
+| Email | Template |
+|-------|----------|
+| Verify Email | `customer/registration/verify-email.html.twig` |
+| Reset Password | `customer/reset_password/reset-password.html.twig` |
+| Admin Access Granted | `customer/admin-access-granted.html.twig` |
+
+---
+
 ## Standard Symfony Commands
 
 ### Database

@@ -57,6 +57,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $isStaff = false;
 
+    #[ORM\Column(type: Types::BOOLEAN)]
+    private bool $isSimulated = false;
+
     #[ORM\Column(type: Types::STRING, length: 64, unique: true, nullable: true)]
     private ?string $apiToken = null;
 
@@ -275,6 +278,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
     public function isStaff(): bool
     {
         return $this->isStaff;
+    }
+
+    public function isSimulated(): bool
+    {
+        return $this->isSimulated;
+    }
+
+    public function setSimulated(bool $isSimulated): self
+    {
+        $this->isSimulated = $isSimulated;
+
+        return $this;
     }
 
     public function isDeletable(): bool

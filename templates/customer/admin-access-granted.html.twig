@@ -1,0 +1,32 @@
+{% extends 'shared/email/emailBase.html.twig' %}
+
+{% block content %}
+    <spacer size="16"></spacer>
+    <row>
+        <columns>
+            <h1>Admin Access Granted</h1>
+        </columns>
+    </row>
+    <row>
+        <columns>
+            <p>Hi {{ user.fullName }},</p>
+            <p>
+                Your account has been upgraded to admin. You now have full access to the
+                {{ domain|title }} dashboard, including product management, orders, purchasing, and reporting.
+            </p>
+        </columns>
+    </row>
+    <row>
+        <columns>
+            <button href="{{ url('app_homepage') }}" class="large expanded">Explore {{ domain|title }}</button>
+        </columns>
+    </row>
+    <spacer size="8"></spacer>
+    <row>
+        <columns>
+            <p class="text-muted text-center">
+                If you believe this was done in error, please contact your site administrator.
+            </p>
+        </columns>
+    </row>
+{% endblock %}

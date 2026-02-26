@@ -1,36 +1,68 @@
-body {
-    margin: 0;
-    padding: 0;
-    background-color: #f3f3f3;
-    font-family: Helvetica, Arial, sans-serif;
+/* Base */
+body, table.body {
+    background-color: #111827;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    color: #d1d5db;
 }
+
+table.container {
+    background: #1f2937;
+}
+
+/* Typography */
 h1 {
-    background-color: #212529;
-    color: #ffffff;
-    /*padding: 30px 0 50px 0;*/
-    font-weight: normal;
+    color: #f3f4f6;
+    font-weight: 600;
+    font-size: 22px;
+    background-color: transparent;
 }
+
+p {
+    color: #d1d5db;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+a {
+    color: #60a5fa;
+}
+
 hr {
     border: none;
-    border-top: 3px solid #212529;
-    margin: 20px;
+    border-top: 1px solid #374151;
+    margin: 20px 0;
 }
-.welcome {
-    background-color: #212529;
+
+/* Sections */
+.header {
+    text-align: center;
 }
-.bottom {
-    background-color: #efefee;
+
+.footer p {
+    color: #6b7280;
+    font-size: 13px;
+    line-height: 1.5;
 }
-.logo {
-    width: 100%;
-}
+
+/* Utilities */
 .text-center {
     text-align: center;
 }
-table.button a {
-    background-color: #212529;
+
+.text-muted {
+    color: #9ca3af;
+    font-size: 13px;
 }
+
+/* CTA Buttons */
 table.button table td {
-    background-color: #212529;
-    border: 2px solid #212529;
+    background: #2563eb;
+    border: 2px solid #2563eb;
+}
+
+table.button table a {
+    background: #2563eb;
+    border: 0 solid #2563eb;
+    color: #ffffff;
+    font-weight: 600;
 }

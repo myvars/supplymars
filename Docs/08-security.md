@@ -18,6 +18,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private string $fullName;        // Display name
     private bool $isVerified;        // Email verification status
     private bool $isStaff;           // Admin flag
+    private bool $isSimulated;       // Created by simulator (not a real registration)
     private array $roles;            // Symfony roles
     private ?string $apiToken;       // API Bearer token (64-char hex)
 }
@@ -87,6 +88,17 @@ New users must verify their email:
 4. Unverified users may have restricted access (configurable)
 
 **Verification controller:** `src/Customer/UI/Http/Controller/RegistrationController.php`
+
+### Admin Access Notification
+
+When a user account is granted staff/admin access (via the customer edit form), an email notification is sent automatically:
+
+1. `UpdateCustomerHandler` detects `isStaff` changed from `false` to `true`
+2. `MailerHelper::sendAdminAccessGrantedMessage()` sends the notification
+3. Email informs the user they now have full dashboard access
+
+**Template:** `templates/customer/admin-access-granted.html.twig`
+**Handler:** `src/Customer/Application/Handler/UpdateCustomerHandler.php`
 
 ### Password Reset
 
@@ -309,6 +321,9 @@ Customer data is fabricated:
 - Email addresses are test domains
 - Addresses are Mars-themed
 - Orders are generated, not placed by real users
+- Simulated users are flagged with `isSimulated = true` on the User entity
+- Users created via the public registration form have `isSimulated = false`
+- The `getRandomUser()` repository method excludes staff users from simulation selection
 
 ### Email Handling
 

@@ -25,6 +25,7 @@ final readonly class RandomUserFactory
         $user->setPassword(
             $this->passwordEncoder->hashPassword($user, 'password')
         );
+        $user->setSimulated(true);
 
         return $user;
     }
