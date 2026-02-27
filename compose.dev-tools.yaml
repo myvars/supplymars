@@ -9,7 +9,7 @@ services:
   database:
     image: mysql:8.4
     ports:
-      - "3306:3306"   # Expose for dev tools.
+      - "127.0.0.1:3306:3306"   # Expose for dev tools (localhost only).
     environment:
       MYSQL_DATABASE: app
       MYSQL_ROOT_PASSWORD: password
@@ -30,7 +30,7 @@ services:
   redis:
     image: redis:8.4-alpine
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6379:6379"   # Localhost only
     environment:
       REDIS_PASSWORD: password    # Dev pw (never use in prod!)
     volumes:
@@ -49,8 +49,8 @@ services:
   rabbitmq:
     image: rabbitmq:4.2-management-alpine
     ports:
-      - "5672:5672"      # AMQP protocol (internal use)
-      - "15672:15672"    # RabbitMQ Management UI (dev only; see below)
+      - "127.0.0.1:5672:5672"      # AMQP protocol (localhost only)
+      - "127.0.0.1:15672:15672"    # RabbitMQ Management UI (localhost only)
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
@@ -70,7 +70,7 @@ services:
       database:
         condition: service_healthy
     ports:
-      - "8080:80"   # Access at http://localhost:8080
+      - "127.0.0.1:8080:80"   # Access at http://localhost:8080
     environment:
       PMA_HOST: database
     restart: unless-stopped
@@ -80,7 +80,7 @@ services:
   phpmyadmin-prod:
     image: phpmyadmin
     ports:
-      - "8081:80"   # Access at http://localhost:8081
+      - "127.0.0.1:8081:80"   # Access at http://localhost:8081
     environment:
       PMA_HOST: host.docker.internal
       PMA_PORT: 3307
@@ -93,8 +93,8 @@ services:
   mailer:
     image: axllent/mailpit
     ports:
-      - "1025:1025"   # SMTP for app to deliver to Mailpit
-      - "8025:8025"   # Web UI for inspecting mails (http://localhost:8025)
+      - "127.0.0.1:1025:1025"   # SMTP for app to deliver to Mailpit (localhost only)
+      - "127.0.0.1:8025:8025"   # Web UI for inspecting mails (localhost only)
     environment:
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
