@@ -1,0 +1,12 @@
+<?php
+
+namespace App\Customer\UI\Http\Form\Model;
+
+use Symfony\Component\Validator\Constraints as Assert;
+
+final class ResendVerificationForm
+{
+    #[Assert\NotBlank(message: 'Please enter your email')]
+    #[Assert\Email]
+    public ?string $email = null;
+}

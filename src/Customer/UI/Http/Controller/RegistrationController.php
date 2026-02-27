@@ -2,39 +2,49 @@
 
 namespace App\Customer\UI\Http\Controller;
 
+use App\Customer\Application\Handler\RegisterUserHandler;
 use App\Customer\Domain\Model\User\EmailVerifier;
 use App\Customer\Domain\Model\User\User;
+use App\Customer\Domain\Model\User\UserId;
+use App\Customer\Domain\Repository\UserRepository;
 use App\Customer\Infrastructure\Mailer\MailerHelper;
-use App\Customer\Infrastructure\Persistence\Doctrine\UserDoctrineRepository;
+use App\Customer\UI\Http\Form\Mapper\RegisterUserMapper;
+use App\Customer\UI\Http\Form\Model\RegistrationForm;
+use App\Customer\UI\Http\Form\Model\ResendVerificationForm;
 use App\Customer\UI\Http\Form\Type\RegistrationFormType;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Customer\UI\Http\Form\Type\ResendVerificationFormType;
+use App\Shared\UI\Http\FormFlow\FormFlow;
+use App\Shared\UI\Http\FormFlow\View\FlowContext;
+use App\Shared\UI\Http\FormFlow\View\FlowModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\RateLimiter\RateLimiterFactory;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
-use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
-use Symfony\Component\Security\Http\Authenticator\FormLoginAuthenticator;
-use Symfony\Contracts\Translation\TranslatorInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 
-class RegistrationController extends AbstractController
+final class RegistrationController extends AbstractController
 {
     public function __construct(
         private readonly EmailVerifier $emailVerifier,
-        private readonly FormLoginAuthenticator $formLoginAuthenticator,
         private readonly MailerHelper $mailerHelper,
     ) {
+    }
+
+    private function model(): FlowModel
+    {
+        return FlowModel::create('customer', 'registration');
     }
 
     #[Route(path: '/register', name: 'app_register')]
     public function register(
         Request $request,
-        UserPasswordHasherInterface $userPasswordHasher,
-        UserAuthenticatorInterface $userAuthenticator,
-        EntityManagerInterface $em,
+        RegisterUserMapper $mapper,
+        RegisterUserHandler $handler,
+        FormFlow $flow,
         RateLimiterFactory $registrationLimiter,
     ): Response {
         if ($request->isMethod('POST')) {
@@ -47,115 +57,76 @@ class RegistrationController extends AbstractController
             }
         }
 
-        $user = new User();
-        $form = $this->createForm(RegistrationFormType::class, $user, [
-            'action' => $this->generateUrl('app_register'),
-        ]);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            // encode the plain password
-            $user->setPassword(
-                $userPasswordHasher->hashPassword(
-                    $user,
-                    $form->get('plainPassword')->getData()
-                )
-            );
-
-            $em->persist($user);
-            $em->flush();
-
-            // generate a signed url and email it to the user
-            $this->emailVerification($user);
-
-            // do anything else you need here, like send an email
-            $this->addFlash(
-                'success',
-                'Your account has been created. Follow the link in your email to verify your account.'
-            );
-
-            return $userAuthenticator->authenticateUser(
-                $user,
-                $this->formLoginAuthenticator,
-                $request
-            );
-        }
-
-        return $this->render('customer/registration/register.html.twig', [
-            'registrationForm' => $form,
-        ]);
+        return $flow->form(
+            request: $request,
+            formType: RegistrationFormType::class,
+            data: new RegistrationForm(),
+            mapper: $mapper,
+            handler: $handler,
+            context: FlowContext::forCreate($this->model())
+                ->template('customer/registration/register.html.twig')
+                ->successRoute('app_homepage'),
+        );
     }
 
     #[Route(path: '/verify/email', name: 'app_verify_email')]
     public function verifyUserEmail(
         Request $request,
-        TranslatorInterface $translator,
-        UserDoctrineRepository $userRepository,
-        UserAuthenticatorInterface $userAuthenticator,
-    ): Response {
+        UserRepository $userRepository,
+        Security $security,
+    ): RedirectResponse {
         $id = $request->query->get('id');
-        if (null === $id) {
+        if ($id === null) {
             return $this->redirectToRoute('app_register');
         }
 
-        $user = $userRepository->find($id);
-        if (null === $user) {
+        $user = $userRepository->get(UserId::fromInt((int) $id));
+        if (!$user instanceof User) {
             return $this->redirectToRoute('app_register');
         }
 
-        // validate email confirmation link, sets User::isVerified=true and persists
         try {
             $this->emailVerifier->handleEmailConfirmation($request, $user);
         } catch (VerifyEmailExceptionInterface $verifyEmailException) {
-            $this->addFlash(
-                'verify_email_error',
-                $translator->trans($verifyEmailException->getReason(), [], 'VerifyEmailBundle')
-            );
+            $this->addFlash('verify_email_error', $verifyEmailException->getReason());
 
             return $this->redirectToRoute('app_register');
         }
 
         $this->addFlash('success', 'Your account has been verified.');
+        $security->login($user);
 
-        return $userAuthenticator->authenticateUser(
-            $user,
-            $this->formLoginAuthenticator,
-            $request
-        );
+        return $this->redirectToRoute('app_homepage');
     }
 
-    #[Route(path: 'verify/resend', name: 'app_verify_resend_email')]
-    public function resendVerifyUserEmail(AuthenticationUtils $authenticationUtils): Response
-    {
-        // remove the login error if there is one
-        $authenticationUtils->getLastAuthenticationError();
+    #[Route(path: 'verify/resend', name: 'app_verify_resend_email', methods: ['GET', 'POST'])]
+    public function resendVerifyUserEmail(
+        Request $request,
+        AuthenticationUtils $authenticationUtils,
+        UserRepository $repository,
+    ): Response {
+        $data = new ResendVerificationForm();
+        $data->email = $authenticationUtils->getLastUsername();
 
-        // last username entered by the user
-        $lastUsername = $authenticationUtils->getLastUsername();
+        $form = $this->createForm(ResendVerificationFormType::class, $data);
+        $form->handleRequest($request);
 
-        return $this->render('customer/registration/resend-verify-email.html.twig', [
-            'last_username' => $lastUsername,
-        ]);
-    }
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user = $repository->getByEmail($data->email);
+            if ($user instanceof User) {
+                $this->mailerHelper->sendEmailVerificationMessage(
+                    $user,
+                    $this->emailVerifier->createEmailSignatureContext('app_verify_email', $user),
+                );
+            }
 
-    #[Route(path: 'verify/send', name: 'app_verify_send_email')]
-    public function sendVerifyUserEmail(Request $request, UserDoctrineRepository $repository): Response
-    {
-        $user = $repository->getByEmail((string) $request->request->get('email'));
-        if ($user instanceof User) {
-            $this->emailVerification($user);
+            $this->addFlash('success', 'Email has been sent');
+
+            return $this->redirectToRoute('app_verify_resend_email');
         }
 
-        $this->addFlash('success', 'Email has been sent');
-
-        return $this->redirectToRoute('app_verify_resend_email');
-    }
-
-    private function emailVerification(User $user): void
-    {
-        $this->mailerHelper->sendEmailVerificationMessage(
-            $user,
-            $this->emailVerifier->createEmailSignatureContext('app_verify_email', $user),
-        );
+        return $this->render('customer/registration/resend-verify-email.html.twig', [
+            'form' => $form,
+        ]);
     }
 }

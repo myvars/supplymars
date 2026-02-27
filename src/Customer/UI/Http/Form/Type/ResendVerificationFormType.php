@@ -2,16 +2,16 @@
 
 namespace App\Customer\UI\Http\Form\Type;
 
-use App\Customer\UI\Http\Form\Model\ResetPasswordRequestForm;
+use App\Customer\UI\Http\Form\Model\ResendVerificationForm;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * @extends AbstractType<ResetPasswordRequestForm>
+ * @extends AbstractType<ResendVerificationForm>
  */
-final class ResetPasswordRequestFormType extends AbstractType
+final class ResendVerificationFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
@@ -28,7 +28,7 @@ final class ResetPasswordRequestFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => ResetPasswordRequestForm::class,
+            'data_class' => ResendVerificationForm::class,
         ]);
     }
 }

@@ -26,7 +26,6 @@ services:
 
     App\Customer\UI\Http\Controller\RegistrationController:
         bind:
-            $formLoginAuthenticator: '@security.authenticator.form_login.main'
             $registrationLimiter: '@limiter.registration'
 
     App\Shared\UI\Http\Validation\TurnstileValidator:

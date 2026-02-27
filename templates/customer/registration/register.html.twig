@@ -19,22 +19,22 @@
             {% for flash_error in app.flashes('danger') %}
                 <twig:Alert type="danger">{{ flash_error }}</twig:Alert>
             {% endfor %}
-            {{ form_start(registrationForm, {
+            {{ form_start(form, {
                 'attr': {
                     'class': 'space-y-4 md:space-y-6',
                     'novalidate': 'novalidate',
                 }
             }) }}
-            {{ form_row(registrationForm.fullName) }}
-            {{ form_row(registrationForm.email) }}
-            {{ form_row(registrationForm.plainPassword) }}
+            {{ form_row(form.fullName) }}
+            {{ form_row(form.email) }}
+            {{ form_row(form.plainPassword) }}
             <div>
                 <div class="flex items-center">
                     <input type="checkbox" id="registration_form_agreeTerms"
-                           name="{{ field_name(registrationForm.agreeTerms) }}"
+                           name="{{ field_name(form.agreeTerms) }}"
                            required="required"
                            class="h-4 w-4 rounded-sm border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600"
-                           value="{{ field_value(registrationForm.agreeTerms) }}">
+                           value="{{ field_value(form.agreeTerms) }}">
                     <label class="ml-2 text-sm font-light text-gray-500 dark:text-gray-400"
                            for="registration_form_agreeTerms">
                         I accept the
@@ -45,10 +45,10 @@
                     </label>
                 </div>
                 <div class="form-error">
-                    {{ form_errors(registrationForm.agreeTerms) }}
+                    {{ form_errors(form.agreeTerms) }}
                 </div>
             </div>
-            {{ form_row(registrationForm.turnstileResponse) }}
+            {{ form_row(form.turnstileResponse) }}
             <twig:Button type="submit" class="w-full" data-turbo-frame="_top">Create account</twig:Button>
             <p class="text-center text-sm font-light text-gray-500 dark:text-gray-400">
                 Already have an account?
@@ -57,7 +57,7 @@
                     class="font-medium text-primary-600 hover:underline dark:text-primary-500"
                 >Login here</a>
             </p>
-            {{ form_end(registrationForm) }}
+            {{ form_end(form) }}
         {% endblock %}
     {% endembed %}
 {% endblock %}

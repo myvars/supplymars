@@ -242,7 +242,7 @@ hasPositiveCost()             // cost > 0
 | Controller | File | Routes |
 |------------|------|--------|
 | SecurityController | `src/Customer/UI/Http/Controller/SecurityController.php` | `/login`, `/logout` |
-| RegistrationController | `src/Customer/UI/Http/Controller/RegistrationController.php` | `/register`, `/verify/email` |
+| RegistrationController | `src/Customer/UI/Http/Controller/RegistrationController.php` | `/register`, `/verify/email`, `/verify/resend` |
 | ResetPasswordController | `src/Customer/UI/Http/Controller/ResetPasswordController.php` | `/reset-password` |
 | CustomerController | `src/Customer/UI/Http/Controller/CustomerController.php` | `/customer/*`, inline fullName |
 

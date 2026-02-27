@@ -19,13 +19,13 @@
             {% for flash_error in app.flashes('reset_password_error') %}
                 <twig:Alert type="danger">{{ flash_error }}</twig:Alert>
             {% endfor %}
-            {{ form_start(requestForm, {
+            {{ form_start(form, {
                 'attr': {
                     'class': 'space-y-4 md:space-y-6',
                     'novalidate': 'novalidate',
                 }
             }) }}
-            {{ form_row(requestForm.email) }}
+            {{ form_row(form.email) }}
             <twig:Button type="submit" class="w-full">Send Reset Link</twig:Button>
             <p class="text-center text-sm font-light text-gray-500 dark:text-gray-400">
                 Remembered your details?
@@ -34,7 +34,7 @@
                     class="font-medium text-primary-600 hover:underline dark:text-primary-500"
                 >Login here</a>
             </p>
-            {{ form_end(requestForm) }}
+            {{ form_end(form) }}
         {% endblock %}
     {% endembed %}
 {% endblock %}
