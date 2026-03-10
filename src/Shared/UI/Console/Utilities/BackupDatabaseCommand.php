@@ -31,6 +31,8 @@ final readonly class BackupDatabaseCommand
         int $retentionDays = 30,
         #[Option(description: 'Show what would happen without executing.')]
         bool $dryRun = false,
+        #[Option(description: 'Copy the gzipped backup to this local path (e.g. /backups/latest.sql.gz).')]
+        ?string $localCopy = null,
     ): int {
         $startTime = microtime(true);
         $filename = sprintf('supplymars-%s.sql.gz', date('Y-m-d-His'));
@@ -101,14 +103,32 @@ final readonly class BackupDatabaseCommand
         } catch (\Throwable $throwable) {
             $io->error('Failed to upload backup: ' . $throwable->getMessage());
             $this->logger->error('Database backup upload failed', ['error' => $throwable->getMessage()]);
+            $this->cleanupTempFile($tempFile);
 
             return Command::FAILURE;
-        } finally {
-            $this->cleanupTempFile($tempFile);
         }
 
         $sizeMb = round($fileSize / 1024 / 1024, 2);
-        $io->writeln(sprintf('  Uploaded <info>%s</info> (%s MB)', $filename, $sizeMb));
+        $io->writeln(sprintf('  Saved <info>%s</info> (%s MB)', $filename, $sizeMb));
+
+        // 2b. Save a local copy if requested (before temp file cleanup)
+        if ($localCopy !== null) {
+            $dir = dirname($localCopy);
+            if (!is_dir($dir)) {
+                mkdir($dir, 0o755, true);
+            }
+
+            if (!copy($tempFile, $localCopy)) {
+                $io->error('Failed to copy backup to ' . $localCopy);
+                $this->cleanupTempFile($tempFile);
+
+                return Command::FAILURE;
+            }
+
+            $io->writeln(sprintf('  Local copy saved to <info>%s</info>', $localCopy));
+        }
+
+        $this->cleanupTempFile($tempFile);
 
         // 3. Retention cleanup
         $deleted = $this->cleanupOldBackups($retentionDays);

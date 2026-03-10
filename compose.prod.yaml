@@ -1,7 +1,7 @@
 # ========================================
 # Docker Compose: Production configuration
 # ========================================
-# Secure, production-ready settings: real secrets, no dev mounts, real SSL, isolated service configs.
+# Used by both Live and Playground stacks. Differences controlled via env vars.
 
 x-common-logging: &common-logging
   driver: json-file
@@ -22,15 +22,20 @@ x-common-php-env: &common-php-env
   AWS_S3_BUCKET: ${AWS_S3_BUCKET}                         # S3 bucket name
   AWS_S3_ACCESS_ID: ${AWS_S3_ACCESS_ID}                   # AWS S3 access key ID
   AWS_S3_SECRET_ACCESS_KEY: ${AWS_S3_SECRET_ACCESS_KEY}   # AWS S3 secret access key
+  AWS_S3_PRODUCTS_PREFIX: ${AWS_S3_PRODUCTS_PREFIX:-}     # S3 key prefix (empty for live, "playground" for playground)
+  UPLOADS_BASE_URL: ${UPLOADS_BASE_URL}                   # Base URL for uploaded files (includes prefix for playground)
   TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY}               # Turnstile key
   TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY}           # Turnstile secret
+  REDIS_PASSWORD: ${REDIS_PASSWORD}                       # Redis auth password
+  RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}                 # RabbitMQ auth password
+  PLAYGROUND_MODE: ${PLAYGROUND_MODE:-false}               # Show playground banner and behavior
 
 services:
   # --- MySQL Database (Prod) ---
   database:
     logging: *common-logging
     ports:
-      - "127.0.0.1:3306:3306"   # Bind MySQL to localhost only (not exposed to public)
+      - "127.0.0.1:${DB_HOST_PORT:-3306}:3306"   # Localhost only (for SSH tunnel + PhpMyAdmin)
     environment:
       MYSQL_USER: app                               # App-specific DB user (never root in prod)
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}             # Secure, unique app password
@@ -88,9 +93,39 @@ services:
       context: .
       dockerfile: docker/Dockerfile
       target: cron-prod
+      args:
+        CRONTAB_FILE: ${CRONTAB_FILE:-docker/php/cron/live-crontab}
     environment:
       <<: *common-php-env
-    # No volume mounts—cron runs using baked production code and environment
+    volumes:
+      - /home/ubuntu/supplymars-backups:/backups
+
+
+  # --- Playground Reset (nightly DB clone from live) ---
+  reset:
+    profiles: ["playground"]
+    logging: *common-logging
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: playground-reset
+    depends_on:
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - /home/ubuntu/supplymars-backups:/backups:ro
+    environment:
+      <<: *common-php-env
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "ps aux | grep -q '[c]ron -f'"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
 
 
   # --- Nginx Webserver (Prod) ---
@@ -100,10 +135,14 @@ services:
       context: .
       dockerfile: docker/Dockerfile
       target: nginx-prod
-    volumes:
-      # Use real, trusted SSL certificates from Let's Encrypt (must be present on host)
-      - /etc/letsencrypt/live/supplymars.com/fullchain.pem:/etc/ssl/certs/fullchain.pem:ro
-      - /etc/letsencrypt/live/supplymars.com/privkey.pem:/etc/ssl/private/privkey.pem:ro
+    ports:
+      - "127.0.0.1:${NGINX_HOST_PORT:-8080}:80"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost"]
+      interval: 30s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
 
 
 # --- Prod Volumes ---

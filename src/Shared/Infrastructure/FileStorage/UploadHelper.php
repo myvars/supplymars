@@ -67,7 +67,7 @@ final readonly class UploadHelper
                 'mime-type' => $file->getMimeType(),
             ]);
         } catch (FilesystemException $filesystemException) {
-            throw new CannotWriteFileException($filesystemException->getMessage());
+            throw new CannotWriteFileException($filesystemException->getMessage(), $filesystemException->getCode(), $filesystemException);
         } finally {
             if (is_resource($stream)) {
                 fclose($stream);

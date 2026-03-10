@@ -121,22 +121,48 @@ ENTRYPOINT ["docker-entrypoint.sh"]
 # Note: cron-dev uses php-dev directly (no separate stage needed)
 FROM php-prod AS cron-prod
 
-# Copy crontab file for the cron service
-COPY --link docker/php/cron/prod-crontab /etc/cron.d/app-cron
+ARG CRONTAB_FILE=docker/php/cron/live-crontab
+COPY --link ${CRONTAB_FILE} /etc/cron.d/app-cron
 
 # Ensure the crontab file has the correct permissions
 RUN chmod 0644 /etc/cron.d/app-cron;
+
+
+# ---- Playground Reset Stage ----
+FROM debian:bookworm-slim AS playground-reset
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    default-mysql-client \
+    redis-tools \
+    curl \
+    cron \
+    procps \
+    unzip \
+    && curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscli.zip \
+    && unzip -q /tmp/awscli.zip -d /tmp \
+    && /tmp/aws/install \
+    && rm -rf /tmp/aws /tmp/awscli.zip \
+    && apt-get remove -y unzip \
+    && apt-get autoremove -y \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+COPY --link scripts/playground-reset.sh /usr/local/bin/playground-reset.sh
+RUN chmod +x /usr/local/bin/playground-reset.sh
+
+COPY --link docker/php/cron/reset-crontab /etc/cron.d/reset-cron
+RUN chmod 0644 /etc/cron.d/reset-cron
+
+CMD ["cron", "-f"]
 
 
 # ---- NGINX Dev Stage ----
 FROM nginx:alpine AS nginx-dev
 
 
-# ---- NGINX Production Stage ----
+# ---- NGINX Production Stage (behind Caddy) ----
 FROM nginx:alpine AS nginx-prod
 
-# prod stage defaults
 COPY --link docker/nginx/conf.d/prod.conf /etc/nginx/conf.d/default.conf
 
-# Copy built Symfony assets from PHP prod stage
 COPY --from=php-prod /app/public /app/public

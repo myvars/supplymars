@@ -22,6 +22,7 @@ when@prod:
                 awss3v3:
                     client: Aws\S3\S3Client
                     bucket: '%env(AWS_S3_BUCKET)%'
+                    prefix: '%env(AWS_S3_PRODUCTS_PREFIX)%'
             backups_adapter:
                 awss3v3:
                     client: Aws\S3\S3Client

@@ -42,10 +42,8 @@ services:
 
   # --- Nginx Webserver (Prod local) ---
   nginx:
-    volumes:
-      # Use fake SSL certs for local testing
-      - ./docker/nginx/certs/dev-fullchain.pem:/etc/ssl/certs/fullchain.pem:ro
-      - ./docker/nginx/certs/dev-privkey.pem:/etc/ssl/private/privkey.pem:ro
+    ports:
+      - "127.0.0.1:8000:80"   # Override to fixed port for local testing
 
 
   # --- PhpMyAdmin (Prod local Tool) ---

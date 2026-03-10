@@ -14,4 +14,4 @@ PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 11 0  * * *  root cd /app && php bin/console app:calculate-customer-sales 1 1 >> /proc/1/fd/1 2>&1
 13 0  * * *  root cd /app && php bin/console app:calculate-customer-sales-summary 1 >> /proc/1/fd/1 2>&1
 15,45 * * * * root cd /app && php bin/console app:calculate-customer-sales 1 >> /proc/1/fd/1 2>&1
-0 2  * * *   root cd /app && php bin/console app:backup-database >> /proc/1/fd/1 2>&1
+0 2  * * *   root cd /app && php bin/console app:backup-database --local-copy=/backups/latest.sql.gz >> /proc/1/fd/1 2>&1

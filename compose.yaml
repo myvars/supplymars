@@ -125,9 +125,6 @@ services:
     depends_on:
       php:
         condition: service_healthy
-    ports:
-      - "80:80"     # HTTP
-      - "443:443"   # HTTPS (dev SSL cert)
     environment:
       SERVER_NAME: ${SERVER_NAME:-localhost}
     healthcheck:

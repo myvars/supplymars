@@ -51,4 +51,4 @@ services:
 
 when@prod:
     parameters:
-        app.uploads_base_url: 'https://%env(AWS_S3_BUCKET)%.s3.%env(AWS_S3_REGION)%.amazonaws.com'
+        app.uploads_base_url: '%env(UPLOADS_BASE_URL)%'

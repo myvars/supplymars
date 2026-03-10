@@ -76,8 +76,8 @@ services:
     restart: unless-stopped
 
 
-  # --- PhpMyAdmin (Prod Tool - requires ssh tunnel) ---
-  phpmyadmin-prod:
+  # --- PhpMyAdmin (Prod Live - requires ssh tunnel to 3307) ---
+  phpmyadmin-prod-live:
     image: phpmyadmin
     ports:
       - "127.0.0.1:8081:80"   # Access at http://localhost:8081
@@ -85,7 +85,19 @@ services:
       PMA_HOST: host.docker.internal
       PMA_PORT: 3307
     volumes:
-      - ./docker/phpmyadmin/prod-custom-footer.php:/var/www/html/config.footer.inc.php
+      - ./docker/phpmyadmin/live-custom-footer.php:/var/www/html/config.footer.inc.php
+    restart: unless-stopped
+
+  # --- PhpMyAdmin (Prod Playground - requires ssh tunnel to 3308) ---
+  phpmyadmin-prod-playground:
+    image: phpmyadmin
+    ports:
+      - "127.0.0.1:8082:80"   # Access at http://localhost:8082
+    environment:
+      PMA_HOST: host.docker.internal
+      PMA_PORT: 3308
+    volumes:
+      - ./docker/phpmyadmin/playground-custom-footer.php:/var/www/html/config.footer.inc.php
     restart: unless-stopped
 
 

@@ -10,6 +10,7 @@ twig:
     globals:
         domain: '%env(DEFAULT_DOMAIN)%'
         product_uploads: '%app.product_uploads%'
+        playground_mode: '%env(bool:PLAYGROUND_MODE)%'
     debug: true
 
 when@test:

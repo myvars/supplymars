@@ -2,9 +2,9 @@
 
 echo '<style>
 body::before {
-    content: "!!! PRODUCTION DATABASE !!!";
+    content: "!!! PLAYGROUND DATABASE !!!";
     display: block;
-    background: #c00;
+    background: #d97706;
     color: #fff;
     font-size: 2em;
     text-align: center;
