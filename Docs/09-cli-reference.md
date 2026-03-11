@@ -652,6 +652,44 @@ symfony console app:generate-reviews 50 42
 
 ## Shared Context
 
+### app:backup-database
+
+**Purpose:** Backup the MySQL database to the backups filesystem (local disk in dev, S3 in prod).
+
+**File:** `src/Shared/UI/Console/Utilities/BackupDatabaseCommand.php`
+
+**Options:**
+| Name | Type | Default | Description |
+|------|------|---------|-------------|
+| `--retention-days` | int | 30 | Number of days to retain backups (older backups are deleted) |
+| `--dry-run` | bool | false | Show what would happen without executing |
+| `--local-copy` | string | null | Copy the gzipped backup to this local path |
+
+**Example:**
+```bash
+# Standard backup (uploads to S3 in prod, saves to var/backups/ in dev)
+symfony console app:backup-database
+
+# Backup with local copy (used by live cron for playground reset)
+symfony console app:backup-database --local-copy=/backups/latest.sql.gz
+
+# Dry run
+symfony console app:backup-database --dry-run
+
+# Custom retention
+symfony console app:backup-database --retention-days=60
+```
+
+**Side Effects:**
+- Creates a gzipped mysqldump (`supplymars-YYYY-MM-DD-HHmmss.sql.gz`)
+- Uploads to the configured Flysystem backups filesystem
+- Optionally copies the gzipped file to a local path (`--local-copy`)
+- Deletes backups older than the retention period
+
+**Cron:** Runs daily at 02:00 UTC on the live stack (see `docker/php/cron/live-crontab`).
+
+---
+
 ### app:backfill-ulids
 
 **Purpose:** Backfill missing ULID public IDs for entities.

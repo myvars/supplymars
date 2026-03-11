@@ -1,124 +1,111 @@
-# Playground Mode: Deployment Guide
+# Playground Infrastructure
 
-Step-by-step guide to migrate from the existing single-stack production setup to the dual-stack (Live + Playground) setup with Caddy.
+The playground is a full copy of the live site where users can experiment freely. Both stacks run on the same Lightsail instance, isolated by Docker Compose project names.
 
-## Prerequisites
+## Architecture
 
-- SSH access to the Lightsail server
-- DNS management access (for `live.supplymars.com`)
-- The `ai/feature` branch merged to `main`
+```
+                        ┌─────────┐
+            Internet ──▶│  Caddy  │ (auto TLS)
+                        └────┬────┘
+                ┌────────────┼────────────┐
+                ▼                         ▼
+        localhost:8001            localhost:8002
+   ┌─────────────────────┐  ┌───────────────────────┐
+   │   supplymars-live   │  │ supplymars-playground │
+   │ (www.supplymars.com │  │ (live.supplymars.com) │
+   │   supplymars.com)   │  │                       │
+   └─────────────────────┘  └───────────────────────┘
+```
+
+Each stack has its own database, Redis, RabbitMQ, and PHP containers. They share nothing at the Docker level — no shared networks.
+
+### Nightly Reset
+
+At **02:00 UTC**, the live cron container runs `app:backup-database --local-copy=/backups/latest.sql.gz`. This uploads the backup to S3 and saves a copy to `/home/ubuntu/supplymars-backups/` on the host.
+
+At **02:15 UTC**, the playground reset container runs `playground-reset.sh`, which:
+
+1. Restores the database from `/backups/latest.sql.gz` (read-only volume mount)
+2. Syncs S3 uploads/media from the live prefix to the playground prefix
+3. Flushes playground Redis
+4. Purges the playground RabbitMQ queue
+
+### Key Files
+
+| File | Purpose |
+|------|---------|
+| `compose.prod.yaml` | Production overrides (both stacks) |
+| `docker/php/cron/live-crontab` | Live cron schedule (includes backup) |
+| `docker/php/cron/playground-crontab` | Playground cron schedule |
+| `docker/php/cron/reset-crontab` | Reset container cron (02:15 UTC) |
+| `scripts/playground-reset.sh` | Reset script (DB restore, S3 sync, cache flush) |
+| `Docs/infrastructure/Caddyfile` | Reference copy of the Caddyfile |
 
 ---
 
-## Phase 1: Prepare env files (local)
+## Environment Files
 
-Create the two env files on your local machine first, then copy them to the server.
+Both stacks use env files stored at `/home/ubuntu/supplymars-secrets/` on the server (not in the repo).
 
-### 1.1 Create `live.env`
-
-This is everything the current single stack uses, plus the new vars. Take the existing values from your GitHub secrets.
+### live.env
 
 ```env
-
-APP_SECRET=<your-existing-app-secret>
+APP_SECRET=<secret>
 DEFAULT_DOMAIN=supplymars
 DEFAULT_URI=https://www.supplymars.com
-DATABASE_URL=mysql://app:<existing-app-password>@database:3306/app
-REDIS_URL=redis://default:<existing-redis-password>@redis:6379
-REDIS_SESSION_DSN=redis://default:<existing-redis-password>@redis:6379/1
-REDIS_PASSWORD=<existing-redis-password>
-MESSENGER_TRANSPORT_DSN=phpamqplib://app:<existing-rabbitmq-password>@rabbitmq:5672/%2f/messages
-RABBITMQ_PASSWORD=<existing-rabbitmq-password>
-MAILER_DSN=<your-existing-mailer-dsn>
+DATABASE_URL=mysql://app:<password>@database:3306/app
+REDIS_URL=redis://default:<password>@redis:6379
+REDIS_SESSION_DSN=redis://default:<password>@redis:6379/1
+REDIS_PASSWORD=<password>
+MESSENGER_TRANSPORT_DSN=phpamqplib://app:<password>@rabbitmq:5672/%2f/messages
+RABBITMQ_PASSWORD=<password>
+MAILER_DSN=<mailer-dsn>
 AWS_S3_REGION=eu-west-2
 AWS_S3_BUCKET=unicorn-bucket-two
-AWS_S3_ACCESS_ID=<your-s3-access-id>
-AWS_S3_SECRET_ACCESS_KEY=<your-s3-secret-key>
+AWS_S3_ACCESS_ID=<access-id>
+AWS_S3_SECRET_ACCESS_KEY=<secret-key>
 AWS_S3_PRODUCTS_PREFIX=
 UPLOADS_BASE_URL=https://unicorn-bucket-two.s3.eu-west-2.amazonaws.com
-TURNSTILE_SITE_KEY=<your-turnstile-site-key>
-TURNSTILE_SECRET_KEY=<your-turnstile-secret-key>
-MYSQL_PASSWORD=<existing-app-password>
-MYSQL_ROOT_PASSWORD=<existing-root-password>
+TURNSTILE_SITE_KEY=<key>
+TURNSTILE_SECRET_KEY=<key>
+MYSQL_PASSWORD=<password>
+MYSQL_ROOT_PASSWORD=<password>
 PLAYGROUND_MODE=false
 NGINX_HOST_PORT=8001
 DB_HOST_PORT=3307
 CRONTAB_FILE=docker/php/cron/live-crontab
 ```
 
-### 1.2 Create `playground.env`
+### playground.env
 
-Same structure, **different passwords** for all services (new isolated databases), plus playground-specific values.
+Same structure with **different passwords** for all services, plus playground-specific values:
 
 ```env
-APP_SECRET=<generate-new-secret>
-DEFAULT_DOMAIN=supplymars
-DEFAULT_URI=https://www.supplymars.com
-DATABASE_URL=mysql://app:<new-playground-db-password>@database:3306/app
-REDIS_URL=redis://default:<new-playground-redis-password>@redis:6379
-REDIS_SESSION_DSN=redis://default:<new-playground-redis-password>@redis:6379/1
-REDIS_PASSWORD=<new-playground-redis-password>
-MESSENGER_TRANSPORT_DSN=phpamqplib://app:<new-playground-rabbitmq-password>@rabbitmq:5672/%2f/messages
-RABBITMQ_PASSWORD=<new-playground-rabbitmq-password>
-MAILER_DSN=<your-existing-mailer-dsn>
-AWS_S3_REGION=eu-west-2
-AWS_S3_BUCKET=unicorn-bucket-two
-AWS_S3_ACCESS_ID=<your-s3-access-id>
-AWS_S3_SECRET_ACCESS_KEY=<your-s3-secret-key>
+# ... same keys as live.env, with different passwords ...
 AWS_S3_PRODUCTS_PREFIX=playground
 UPLOADS_BASE_URL=https://unicorn-bucket-two.s3.eu-west-2.amazonaws.com/playground
-TURNSTILE_SITE_KEY=<your-turnstile-site-key>
-TURNSTILE_SECRET_KEY=<your-turnstile-secret-key>
-MYSQL_PASSWORD=<new-playground-db-password>
-MYSQL_ROOT_PASSWORD=<new-playground-root-password>
 PLAYGROUND_MODE=true
 NGINX_HOST_PORT=8002
 DB_HOST_PORT=3308
 CRONTAB_FILE=docker/php/cron/playground-crontab
 ```
 
-Generate new passwords with: `openssl rand -base64 24`
-
-Generate a new APP_SECRET with: `openssl rand -hex 16`
+Generate passwords: `openssl rand -base64 24`
+Generate APP_SECRET: `openssl rand -hex 16`
 
 ---
 
-## Phase 2: Server preparation (SSH)
+## Fresh Server Setup
 
-```bash
-ssh ubuntu@<server-ip>
-```
+### Prerequisites
 
-### 2.1 Upload env files
+- Ubuntu on AWS Lightsail
+- Ports 80, 443 open in Lightsail firewall
+- DNS A records for `supplymars.com`, `www.supplymars.com`, `live.supplymars.com` pointing to the instance IP
+- Docker and Docker Compose installed
 
-```bash
-mkdir -p /home/ubuntu/supplymars-secrets
-```
-
-Copy the files from local to server (run from your local machine):
-
-```bash
-scp live.env ubuntu@<server-ip>:/home/ubuntu/supplymars-secrets/live.env
-scp playground.env ubuntu@<server-ip>:/home/ubuntu/supplymars-secrets/playground.env
-```
-
-Back on the server, lock down permissions:
-
-```bash
-chmod 600 /home/ubuntu/supplymars-secrets/*.env
-```
-
-### 2.2 Add DNS record
-
-Add an A record for `live.supplymars.com` pointing to the same IP as `supplymars.com`.
-
-Verify propagation (may take a few minutes):
-
-```bash
-dig +short live.supplymars.com
-```
-
-### 2.3 Install Caddy
+### 1. Install Caddy
 
 ```bash
 sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https curl
@@ -140,69 +127,35 @@ live.supplymars.com {
     reverse_proxy localhost:8002
 }
 EOF
+
+sudo systemctl enable caddy
+sudo systemctl start caddy
 ```
 
-**Don't start Caddy yet** — it needs ports 80/443 which the old nginx still holds.
-
----
-
-## Phase 3: Backup and stop old stack (SSH)
-
-### 3.1 Take a database backup
+### 2. Upload env files
 
 ```bash
-cd /home/ubuntu/supplymars
-
-# Trigger an immediate backup via the existing cron container
-docker compose -f compose.yaml -f compose.prod.yaml exec -T cron php bin/console app:backup-database
+mkdir -p /home/ubuntu/supplymars-secrets
+chmod 700 /home/ubuntu/supplymars-secrets
+# scp live.env and playground.env from local machine
+chmod 600 /home/ubuntu/supplymars-secrets/*.env
 ```
 
-Verify the backup appeared in S3:
+### 3. Create backups directory
 
 ```bash
-aws s3 ls s3://unicorn-bucket-two/backups/ --human-readable | tail -3
+mkdir -p /home/ubuntu/supplymars-backups
 ```
 
-### 3.2 Dump the database locally (belt and braces)
-
-This dump will be restored into the new live stack's database.
+### 4. Clone and deploy
 
 ```bash
-docker compose -f compose.yaml -f compose.prod.yaml exec -T database \
-    mysqldump -u root -p<existing-root-password> --single-transaction --quick app \
-    > /home/ubuntu/supplymars-db-migration.sql
+cd /home/ubuntu
+git clone <repo-url> supplymars
+cd supplymars
 ```
 
-Verify the dump isn't empty:
-
-```bash
-ls -lh /home/ubuntu/supplymars-db-migration.sql
-head -20 /home/ubuntu/supplymars-db-migration.sql
-```
-
-### 3.3 Stop the old stack
-
-```bash
-# Stop all containers (this frees ports 80/443 for Caddy)
-docker compose -f compose.yaml -f compose.prod.yaml down
-```
-
-**The site is now offline.** Work quickly through the next steps.
-
----
-
-## Phase 4: Deploy new code and start stacks (SSH)
-
-### 4.1 Pull the latest code
-
-```bash
-cd /home/ubuntu/supplymars
-git fetch origin
-git reset --hard origin/main
-git clean -fd
-```
-
-### 4.2 Start the live stack
+Start the live stack:
 
 ```bash
 docker compose --env-file ../supplymars-secrets/live.env \
@@ -211,38 +164,16 @@ docker compose --env-file ../supplymars-secrets/live.env \
     up -d --build --remove-orphans --wait
 ```
 
-Wait for all health checks to pass. This creates a fresh database — we'll restore data next.
-
-### 4.3 Restore database into live
+Seed the backup file (required before playground can start):
 
 ```bash
-docker compose --env-file ../supplymars-secrets/live.env \
-    -p supplymars-live \
-    -f compose.yaml -f compose.prod.yaml \
-    exec -T database mysql -u root -p<live-root-password> app \
-    < /home/ubuntu/supplymars-db-migration.sql
-```
-
-### 4.4 Create backups directory and seed initial backup
-
-The playground reset restores from a shared host directory. Create it and run the live backup to populate it:
-
-```bash
-mkdir -p /home/ubuntu/supplymars-backups
-
 docker compose --env-file ../supplymars-secrets/live.env \
     -p supplymars-live \
     -f compose.yaml -f compose.prod.yaml \
     exec -T cron php bin/console app:backup-database --local-copy=/backups/latest.sql.gz
 ```
 
-Verify the backup exists:
-
-```bash
-ls -lh /home/ubuntu/supplymars-backups/latest.sql.gz
-```
-
-### 4.5 Start the playground stack
+Start the playground stack:
 
 ```bash
 docker compose --env-file ../supplymars-secrets/playground.env \
@@ -251,11 +182,7 @@ docker compose --env-file ../supplymars-secrets/playground.env \
     up -d --build --remove-orphans --wait
 ```
 
-This starts all playground services including the `reset` container (which runs the nightly reset cron).
-
-### 4.6 Trigger initial playground reset
-
-The reset container runs on a nightly schedule, but for the first deployment we need to seed playground data immediately. Exec into the reset container and run the script manually:
+Trigger the initial playground reset:
 
 ```bash
 docker compose --env-file ../supplymars-secrets/playground.env \
@@ -264,216 +191,102 @@ docker compose --env-file ../supplymars-secrets/playground.env \
     exec -T reset /usr/local/bin/playground-reset.sh
 ```
 
-This restores the database from the backup file, syncs S3 uploads/media to the playground prefix, and flushes playground Redis.
-
-### 4.7 Start Caddy
+### 5. Verify
 
 ```bash
-sudo systemctl start caddy
-sudo systemctl enable caddy
-```
-
-**The site is back online.**
-
----
-
-## Phase 5: Verify everything works
-
-### 5.1 Check both sites load
-
-```bash
-# From the server (via Caddy)
-curl -sf -o /dev/null -w "%{http_code}" https://supplymars.com
-# Should print: 200
-
-curl -sf -o /dev/null -w "%{http_code}" https://live.supplymars.com
-# Should print: 200
-```
-
-### 5.2 Check playground banner
-
-Open `https://supplymars.com` in a browser — you should see the amber "This is a playground" banner at the top.
-
-Open `https://live.supplymars.com` — no banner.
-
-### 5.3 Check migrations are up to date
-
-```bash
-docker compose --env-file ../supplymars-secrets/live.env \
-    -p supplymars-live \
-    -f compose.yaml -f compose.prod.yaml \
-    exec -T php php bin/console doctrine:migrations:up-to-date
-
-docker compose --env-file ../supplymars-secrets/playground.env \
-    -p supplymars-playground \
-    -f compose.yaml -f compose.prod.yaml \
-    exec -T php php bin/console doctrine:migrations:up-to-date
-```
-
-### 5.4 Check SSL certificates
-
-```bash
-curl -vI https://supplymars.com 2>&1 | grep "subject:"
-curl -vI https://live.supplymars.com 2>&1 | grep "subject:"
-```
-
-Both should show valid Let's Encrypt certs (auto-provisioned by Caddy).
-
-### 5.5 Test image uploads (optional)
-
-Upload a product image on each site and verify S3 paths:
-
-```bash
-# Live should be at root
-aws s3 ls s3://unicorn-bucket-two/uploads/products/ | tail -3
-
-# Playground should be under playground/ prefix
-aws s3 ls s3://unicorn-bucket-two/playground/uploads/products/ | tail -3
-```
-
-### 5.6 Check containers are healthy
-
-```bash
-docker compose --env-file ../supplymars-secrets/live.env \
-    -p supplymars-live \
-    -f compose.yaml -f compose.prod.yaml \
-    ps
-
-docker compose --env-file ../supplymars-secrets/playground.env \
-    -p supplymars-playground \
-    -f compose.yaml -f compose.prod.yaml \
-    ps
-```
-
-All services should show `(healthy)`.
-
----
-
-## Phase 6: Verify nightly reset
-
-The reset runs automatically via the `reset` container in the playground stack (cron at 2:15 AM UTC, after live's 2:00 AM backup). The live backup command writes to `/home/ubuntu/supplymars-backups/latest.sql.gz` via the `--local-copy` option, and the playground reset container reads from it via a read-only volume mount. No shared Docker network needed.
-
-Check the reset container is running:
-
-```bash
-docker compose --env-file ../supplymars-secrets/playground.env \
-    -p supplymars-playground --profile playground \
-    -f compose.yaml -f compose.prod.yaml \
-    ps reset
-```
-
-Check reset logs after the first nightly run:
-
-```bash
-docker compose --env-file ../supplymars-secrets/playground.env \
-    -p supplymars-playground --profile playground \
-    -f compose.yaml -f compose.prod.yaml \
-    logs reset
+curl -sf -o /dev/null -w "%{http_code}" https://supplymars.com       # 200
+curl -sf -o /dev/null -w "%{http_code}" https://live.supplymars.com   # 200
 ```
 
 ---
 
-## Phase 7: Clean up old setup
-
-### 7.1 Remove old certbot (if present)
-
-Caddy handles SSL now. Certbot is no longer needed.
+## Common Commands
 
 ```bash
-# Check if certbot is installed
-which certbot && {
-    # Remove certbot auto-renewal cron/timer
-    sudo systemctl disable certbot.timer 2>/dev/null
-    sudo systemctl stop certbot.timer 2>/dev/null
-
-    # Optionally remove certbot entirely
-    sudo apt remove -y certbot
-}
-```
-
-### 7.2 Remove old Docker volumes
-
-The old single-stack volumes are no longer used:
-
-```bash
-# List old volumes
-docker volume ls | grep supplymars_
-
-# Once you're confident the new stacks are working, remove old volumes
-docker volume rm supplymars_db-data supplymars_redis_data supplymars_rabbitmq_data 2>/dev/null
-```
-
-**Wait a few days before doing this** — keep them as a fallback.
-
-### 7.3 Clean up the migration dump
-
-```bash
-rm /home/ubuntu/supplymars-db-migration.sql
-```
-
-### 7.4 Remove old GitHub secrets (optional)
-
-The following GitHub secrets are no longer used by CI (env files replaced them):
-
-`APP_SECRET`, `DATABASE_URL`, `MAILER_DSN`, `AWS_S3_ACCESS_ID`, `AWS_S3_SECRET_ACCESS_KEY`, `MYSQL_PASSWORD`, `MYSQL_ROOT_PASSWORD`, `REDIS_PASSWORD`, `REDIS_URL`, `REDIS_SESSION_DSN`, `RABBITMQ_PASSWORD`, `MESSENGER_TRANSPORT_DSN`, `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`
-
-Keep `SERVER_HOST`, `SERVER_USER`, `SERVER_SSH_KEY` — CI still needs those for SSH.
-
----
-
-## Rollback plan
-
-If things go wrong, you can revert to the single-stack setup:
-
-```bash
-# Stop new stacks
-docker compose --env-file ../supplymars-secrets/live.env -p supplymars-live -f compose.yaml -f compose.prod.yaml down
-docker compose --env-file ../supplymars-secrets/playground.env -p supplymars-playground -f compose.yaml -f compose.prod.yaml down
-
-# Stop Caddy
-sudo systemctl stop caddy
-
-# Checkout previous commit
-git log --oneline -5   # find the last pre-playground commit
-git reset --hard <commit>
-
-# Restart old stack with inline env vars (as before)
-export APP_SECRET=...   # etc.
-docker compose -f compose.yaml -f compose.prod.yaml up -d --build --remove-orphans --wait
-```
-
-The old `supplymars_db-data` volume still exists (unless you removed it in Phase 7.2) and Docker Compose will reattach to it.
-
----
-
-## Quick reference: common commands after migration
-
-```bash
-# Start/stop live
+# --- Start / Stop ---
 make up-prod-live
 make down-prod-live
-
-# Start/stop playground
 make up-prod-playground
 make down-prod-playground
 
-# View live logs
-docker compose --env-file ../supplymars-secrets/live.env -p supplymars-live -f compose.yaml -f compose.prod.yaml logs -f
+# --- Logs ---
+# Live
+docker compose --env-file ../supplymars-secrets/live.env \
+    -p supplymars-live -f compose.yaml -f compose.prod.yaml logs -f
 
-# View playground logs
-docker compose --env-file ../supplymars-secrets/playground.env -p supplymars-playground -f compose.yaml -f compose.prod.yaml logs -f
+# Playground
+docker compose --env-file ../supplymars-secrets/playground.env \
+    -p supplymars-playground -f compose.yaml -f compose.prod.yaml logs -f
 
-# Exec into live PHP container
-docker compose --env-file ../supplymars-secrets/live.env -p supplymars-live -f compose.yaml -f compose.prod.yaml exec php bash
+# --- Shell access ---
+docker compose --env-file ../supplymars-secrets/live.env \
+    -p supplymars-live -f compose.yaml -f compose.prod.yaml exec php bash
 
-# Manual playground reset
-docker compose --env-file ../supplymars-secrets/playground.env -p supplymars-playground --profile playground -f compose.yaml -f compose.prod.yaml exec -T reset /usr/local/bin/playground-reset.sh
+# --- Manual playground reset ---
+docker compose --env-file ../supplymars-secrets/playground.env \
+    -p supplymars-playground --profile playground \
+    -f compose.yaml -f compose.prod.yaml \
+    exec -T reset /usr/local/bin/playground-reset.sh
 
-# SSH tunnels for PhpMyAdmin (run locally)
-ssh -L 3307:localhost:3307 ubuntu@<server-ip>   # live DB → phpmyadmin-prod-live at localhost:8081
-ssh -L 3308:localhost:3308 ubuntu@<server-ip>   # playground DB → phpmyadmin-prod-playground at localhost:8082
+# --- Manual backup with local copy ---
+docker compose --env-file ../supplymars-secrets/live.env \
+    -p supplymars-live -f compose.yaml -f compose.prod.yaml \
+    exec -T cron php bin/console app:backup-database --local-copy=/backups/latest.sql.gz
 
-# Check Caddy status
+# --- Container health ---
+docker compose --env-file ../supplymars-secrets/live.env \
+    -p supplymars-live -f compose.yaml -f compose.prod.yaml ps
+docker compose --env-file ../supplymars-secrets/playground.env \
+    -p supplymars-playground -f compose.yaml -f compose.prod.yaml ps
+
+# --- SSH tunnels for DB access (run locally) ---
+ssh -L 3307:localhost:3307 ubuntu@<server-ip>   # live DB
+ssh -L 3308:localhost:3308 ubuntu@<server-ip>   # playground DB
+
+# --- Caddy ---
 sudo systemctl status caddy
 sudo journalctl -u caddy --no-pager -n 50
+```
+
+---
+
+## Troubleshooting
+
+### Reset fails: "Backup file not found"
+
+The live backup hasn't run yet, or the volume mount is misconfigured.
+
+```bash
+# Check the file exists on the host
+ls -lh /home/ubuntu/supplymars-backups/latest.sql.gz
+
+# Run backup manually
+docker compose --env-file ../supplymars-secrets/live.env \
+    -p supplymars-live -f compose.yaml -f compose.prod.yaml \
+    exec -T cron php bin/console app:backup-database --local-copy=/backups/latest.sql.gz
+```
+
+### Caddy won't provision certificates
+
+Ensure ports 80 and 443 are open in the Lightsail firewall and DNS A records point to the instance IP.
+
+```bash
+# Check Caddy logs
+sudo journalctl -u caddy --no-pager -n 100 | grep -i "error\|fail\|challenge"
+
+# Restart after fixing
+sudo systemctl restart caddy
+```
+
+### Reset container not running
+
+```bash
+docker compose --env-file ../supplymars-secrets/playground.env \
+    -p supplymars-playground --profile playground \
+    -f compose.yaml -f compose.prod.yaml ps reset
+
+# Check logs
+docker compose --env-file ../supplymars-secrets/playground.env \
+    -p supplymars-playground --profile playground \
+    -f compose.yaml -f compose.prod.yaml logs reset
 ```

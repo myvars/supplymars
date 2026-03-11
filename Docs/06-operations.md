@@ -113,7 +113,7 @@ Only the PHP container has `RUN_MIGRATIONS=true` to prevent race conditions.
 
 ### Production Crontab
 
-Located at `docker/php/cron/prod-crontab`:
+Located at `docker/php/cron/live-crontab`:
 
 ```cron
 # Order simulation
@@ -371,30 +371,24 @@ This avoids expensive aggregations on every dashboard load.
 
 ### Backup Strategy
 
-**Database:**
-```bash
-# Daily backup
-mysqldump -u root -p supplymars > backup_$(date +%Y%m%d).sql
-```
+**Database:** The `app:backup-database` command runs daily at 02:00 UTC via the cron container. It creates a gzipped mysqldump, uploads to S3 (`unicorn-bucket-two/backups/`), and retains 30 days by default. The `--local-copy` option also saves the backup to a host-mounted directory for the playground reset. See [09-cli-reference.md](09-cli-reference.md) and [11-runbook.md](11-runbook.md) for details.
 
-**Redis:** Enable RDB snapshots or AOF persistence
+**Redis:** RDB snapshots enabled by default in the Redis image.
 
-**File storage:** S3 versioning recommended for production
+**File storage:** S3 for all uploads and media.
 
 ### Disaster Recovery
 
-1. **Database restore:**
-   ```bash
-   mysql -u root -p supplymars < backup.sql
-   ```
-   
+1. **Database restore:** See [11-runbook.md](11-runbook.md) Section 4.4 for full restore procedure.
+
 2. **Reprocess failed messages:**
    ```bash
    symfony console messenger:failed:retry --all
    ```
-   
+
 3. **Regenerate reporting:**
    ```bash
-   symfony console app:calculate-product-sales 90 --rebuild
-   symfony console app:calculate-order-sales 90 --rebuild
+   symfony console app:calculate-product-sales 90
+   symfony console app:calculate-order-sales 90
+   symfony console app:calculate-customer-sales 90
    ```

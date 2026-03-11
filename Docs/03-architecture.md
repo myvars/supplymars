@@ -535,7 +535,7 @@ class Product implements DomainEventProviderInterface
 
 ### Simulation Timing
 
-Production cron schedule (inferred from `docker/php/cron/prod-crontab`):
+Production cron schedule (from `docker/php/cron/live-crontab`):
 
 | Interval | Command | Purpose |
 |----------|---------|---------|

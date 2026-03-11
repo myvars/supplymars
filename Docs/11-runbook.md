@@ -1,31 +1,52 @@
 # Production Runbook
 
-Step-by-step operational procedures for the SupplyMars production environment on AWS Lightsail. For architecture details, cron schedules, and worker configuration, see [06-operations.md](06-operations.md). For all console commands, see [09-cli-reference.md](09-cli-reference.md).
+Step-by-step operational procedures for the SupplyMars production environment on AWS Lightsail. For architecture details, cron schedules, and worker configuration, see [06-operations.md](06-operations.md). For all console commands, see [09-cli-reference.md](09-cli-reference.md). For playground-specific details, see [infrastructure/playground.md](infrastructure/playground.md).
 
 ---
 
 ## 1. Service Architecture Quick Reference
 
-The production stack runs 7 Docker containers:
+Two Docker Compose stacks run on the same Lightsail instance, fronted by Caddy (auto TLS via Let's Encrypt):
 
-| Service | Image | Port | Healthcheck | Purpose |
-|---------|-------|------|-------------|---------|
-| nginx | nginx-prod | 80, 443 | `curl -kf https://localhost` | Reverse proxy, SSL termination |
-| php | php-prod | 9000 (internal) | `php-fpm -t` | PHP-FPM application server |
-| messenger | php-prod | — | `ps aux \| grep messenger:consume` | Async message consumer |
-| cron | cron-prod | — | `ps aux \| grep cron` | Scheduled tasks |
-| database | mysql:8.4 | 127.0.0.1:3306 | `mysqladmin ping` | Primary data store |
-| redis | redis:8.4-alpine | 6379 (internal) | `redis-cli ping` | Cache, sessions |
-| rabbitmq | rabbitmq:4.2-management | 5672 (internal) | `rabbitmq-diagnostics ping` | Message queue |
+| Stack | Project Name | Nginx Port | Domain |
+|-------|-------------|------------|--------|
+| Live | `supplymars-live` | 8001 | `supplymars.com`, `www.supplymars.com` |
+| Playground | `supplymars-playground` | 8002 | `live.supplymars.com` |
+
+Each stack runs 7 containers (8 for playground, which includes `reset`):
+
+| Service | Image | Purpose |
+|---------|-------|---------|
+| nginx | nginx-prod | Reverse proxy (HTTP only — Caddy handles TLS) |
+| php | php-prod | PHP-FPM application server |
+| messenger | php-prod | Async message consumer |
+| cron | cron-prod | Scheduled tasks |
+| database | mysql:8.4 | Primary data store |
+| redis | redis:8.4-alpine | Cache, sessions |
+| rabbitmq | rabbitmq:4.2-management | Message queue |
+| reset | playground-reset | Nightly DB reset (playground only) |
 
 **Deploy path:** `/home/ubuntu/supplymars`
+**Env files:** `/home/ubuntu/supplymars-secrets/{live,playground}.env`
+**Backups:** `/home/ubuntu/supplymars-backups/`
 
-**Compose files:** `compose.yaml` + `compose.prod.yaml`
+### Compose Command Prefix
+
+All `docker compose` commands require the env file and project name. For brevity, this runbook uses `$LIVE` and `$PLAYGROUND` as shorthand:
+
+```bash
+# Live stack
+LIVE="--env-file ../supplymars-secrets/live.env -p supplymars-live -f compose.yaml -f compose.prod.yaml"
+
+# Playground stack
+PLAYGROUND="--env-file ../supplymars-secrets/playground.env -p supplymars-playground --profile playground -f compose.yaml -f compose.prod.yaml"
+```
 
 **Quick status:**
 ```bash
 cd /home/ubuntu/supplymars
-docker compose -f compose.yaml -f compose.prod.yaml ps
+docker compose $LIVE ps
+docker compose $PLAYGROUND ps
 ```
 
 ---
@@ -40,7 +61,9 @@ Merging to `main` triggers the GitHub Actions pipeline (`.github/workflows/ci.ym
 2. Runs the full test suite
 3. SSHs to the Lightsail instance
 4. `git fetch origin && git reset --hard origin/main && git clean -fd`
-5. `docker compose -f compose.yaml -f compose.prod.yaml up -d --build --remove-orphans --wait`
+5. Creates `/home/ubuntu/supplymars-backups` if missing
+6. Builds and starts both stacks
+7. Runs smoke tests (HTTP 200 check + migration status)
 
 The PHP container runs migrations automatically on startup (`RUN_MIGRATIONS=true` in `docker-entrypoint.sh`).
 
@@ -49,28 +72,17 @@ The PHP container runs migrations automatically on startup (`RUN_MIGRATIONS=true
 Use when CI is down or for emergency hotfixes:
 
 ```bash
-# 1. SSH to the server
 ssh ubuntu@<server-ip>
-
-# 2. Navigate to project
 cd /home/ubuntu/supplymars
 
-# 3. Pull latest code
 git fetch origin
 git reset --hard origin/main
 git clean -fd
 
-# 4. Export environment variables (source from .env.prod or set manually)
-export APP_ENV=prod
-export APP_SECRET=<secret>
-export DATABASE_URL=<url>
-# ... (all variables from compose.prod.yaml)
+mkdir -p /home/ubuntu/supplymars-backups
 
-# 5. Rebuild and restart containers
-docker compose -f compose.yaml -f compose.prod.yaml up -d --build --remove-orphans --wait
-
-# 6. Verify (see Health Checks below)
-docker compose -f compose.yaml -f compose.prod.yaml ps
+docker compose $LIVE up -d --build --remove-orphans --wait
+docker compose $PLAYGROUND up -d --build --remove-orphans --wait
 ```
 
 ### 2.3 Rollback
@@ -81,20 +93,16 @@ There is no blue-green or canary deployment. Rollback means deploying a previous
 ssh ubuntu@<server-ip>
 cd /home/ubuntu/supplymars
 
-# Find the commit to roll back to
 git log --oneline -10
-
-# Reset to a known-good commit
 git reset --hard <commit-sha>
 
-# Rebuild
-docker compose -f compose.yaml -f compose.prod.yaml up -d --build --remove-orphans --wait
+docker compose $LIVE up -d --build --remove-orphans --wait
+docker compose $PLAYGROUND up -d --build --remove-orphans --wait
 ```
 
 **If the rollback involves a migration reversal**, you must manually revert the migration:
 ```bash
-docker compose -f compose.yaml -f compose.prod.yaml exec php \
-  php bin/console doctrine:migrations:migrate prev --no-interaction
+docker compose $LIVE exec php php bin/console doctrine:migrations:migrate prev --no-interaction
 ```
 
 ---
@@ -108,31 +116,23 @@ Run after every deployment:
 ```bash
 cd /home/ubuntu/supplymars
 
-# 1. All 7 services healthy
-docker compose -f compose.yaml -f compose.prod.yaml ps
-# Expect: all services show "healthy"
+# 1. All services healthy
+docker compose $LIVE ps
+docker compose $PLAYGROUND ps
 
-# 2. App responds
-curl -kf https://localhost
-# Expect: HTTP 200
+# 2. Apps respond (via Caddy)
+curl -sf -o /dev/null -w "%{http_code}" https://supplymars.com          # 200
+curl -sf -o /dev/null -w "%{http_code}" https://live.supplymars.com     # 200
 
-# 3. Migration status
-docker compose -f compose.yaml -f compose.prod.yaml exec php \
-  php bin/console doctrine:migrations:status
-# Expect: no pending migrations
+# 3. Migrations up to date
+docker compose $LIVE exec -T php php bin/console doctrine:migrations:up-to-date
+docker compose $PLAYGROUND exec -T php php bin/console doctrine:migrations:up-to-date
 
 # 4. Messenger transport
-docker compose -f compose.yaml -f compose.prod.yaml exec php \
-  php bin/console messenger:stats
-# Expect: queue counts shown, no errors
+docker compose $LIVE exec -T php php bin/console messenger:stats
 
-# 5. Cron is running
-docker compose -f compose.yaml -f compose.prod.yaml exec cron \
-  ps aux | grep cron
-# Expect: cron process visible
-
-# 6. Check application logs for errors
-docker compose -f compose.yaml -f compose.prod.yaml logs --tail=50 php
+# 5. Check application logs for errors
+docker compose $LIVE logs --tail=50 php
 ```
 
 ### 3.2 Ongoing Monitoring
@@ -142,15 +142,13 @@ docker compose -f compose.yaml -f compose.prod.yaml logs --tail=50 php
 docker stats --no-stream
 
 # Check for failed Messenger messages
-docker compose -f compose.yaml -f compose.prod.yaml exec php \
-  php bin/console messenger:failed:show
+docker compose $LIVE exec -T php php bin/console messenger:failed:show
 
 # Check cron output
-docker compose -f compose.yaml -f compose.prod.yaml logs --tail=50 cron
+docker compose $LIVE logs --tail=50 cron
 
 # MySQL process list (check for long-running queries)
-docker compose -f compose.yaml -f compose.prod.yaml exec database \
-  mysqladmin -u root -p processlist
+docker compose $LIVE exec -T database mysqladmin -u root -p processlist
 ```
 
 ---
@@ -159,30 +157,34 @@ docker compose -f compose.yaml -f compose.prod.yaml exec database \
 
 ### 4.1 Automated Daily Backup
 
-The cron container runs `app:backup-database` daily at 02:00 UTC (see `docker/php/cron/prod-crontab`):
+The live cron container runs `app:backup-database` daily at 02:00 UTC (see `docker/php/cron/live-crontab`):
 
 - Creates a gzipped mysqldump (`supplymars-YYYY-MM-DD-HHmmss.sql.gz`)
 - Uploads to the S3 backups filesystem (`unicorn-bucket-two/backups/`)
-- Deletes backups older than 30 days (default retention)
+- Saves a local copy to `/backups/latest.sql.gz` (host: `/home/ubuntu/supplymars-backups/latest.sql.gz`)
+- Deletes S3 backups older than 30 days (default retention)
 
-Backup logs appear in `docker compose logs cron`.
+The local copy is used by the playground reset at 02:15 UTC.
+
+Backup logs appear in `docker compose $LIVE logs cron`.
 
 ### 4.2 Manual Backup
 
 Trigger a backup outside the cron schedule:
 
 ```bash
-# Run backup
-docker compose -f compose.yaml -f compose.prod.yaml exec cron \
-  php bin/console app:backup-database
+# Run backup (S3 + local copy)
+docker compose $LIVE exec -T cron \
+    php bin/console app:backup-database --local-copy=/backups/latest.sql.gz
+
+# S3 only (no local copy)
+docker compose $LIVE exec -T cron php bin/console app:backup-database
 
 # Dry run (see what would happen)
-docker compose -f compose.yaml -f compose.prod.yaml exec cron \
-  php bin/console app:backup-database --dry-run
+docker compose $LIVE exec -T cron php bin/console app:backup-database --dry-run
 
 # Custom retention (e.g., keep 60 days)
-docker compose -f compose.yaml -f compose.prod.yaml exec cron \
-  php bin/console app:backup-database --retention-days=60
+docker compose $LIVE exec -T cron php bin/console app:backup-database --retention-days=60
 ```
 
 ### 4.3 Pre-Deploy Backup
@@ -190,10 +192,7 @@ docker compose -f compose.yaml -f compose.prod.yaml exec cron \
 Always take a manual backup before risky deployments (migrations that alter/drop columns, large schema changes):
 
 ```bash
-ssh ubuntu@<server-ip>
-cd /home/ubuntu/supplymars
-docker compose -f compose.yaml -f compose.prod.yaml exec cron \
-  php bin/console app:backup-database
+docker compose $LIVE exec -T cron php bin/console app:backup-database
 ```
 
 ### 4.4 Restore (Production)
@@ -209,18 +208,17 @@ aws s3 ls s3://unicorn-bucket-two/backups/ --region eu-west-2
 aws s3 cp s3://unicorn-bucket-two/backups/supplymars-2026-02-13-020001.sql.gz /tmp/
 
 # 2. Stop the application (prevent writes during restore)
-docker compose -f compose.yaml -f compose.prod.yaml stop php messenger cron
+docker compose $LIVE stop php messenger cron
 
 # 3. Restore
 gunzip < /tmp/supplymars-2026-02-13-020001.sql.gz | \
-  docker compose -f compose.yaml -f compose.prod.yaml exec -T database \
-  mysql -u root -p supplymars
+    docker compose $LIVE exec -T database mysql -u root -p app
 
 # 4. Restart services
-docker compose -f compose.yaml -f compose.prod.yaml up -d php messenger cron
+docker compose $LIVE up -d php messenger cron
 
-# 5. Verify (run health checks)
-docker compose -f compose.yaml -f compose.prod.yaml ps
+# 5. Verify
+docker compose $LIVE ps
 ```
 
 ### 4.5 Verify a Backup
@@ -230,7 +228,9 @@ Periodically verify backups are valid (download and check, or test-restore on de
 ```bash
 # Check file exists and has reasonable size on S3
 aws s3 ls s3://unicorn-bucket-two/backups/ --region eu-west-2 --human-readable
-# Expect: recent files, several MB each
+
+# Check local backup exists
+ls -lh /home/ubuntu/supplymars-backups/latest.sql.gz
 
 # Dev: restore and verify
 symfony console app:restore-database --from-s3
@@ -245,36 +245,30 @@ symfony console app:restore-database --from-s3
 For planned maintenance (database migrations, infrastructure changes):
 
 ```bash
-ssh ubuntu@<server-ip>
-cd /home/ubuntu/supplymars
-
 # 1. Stop cron (prevent new jobs)
-docker compose -f compose.yaml -f compose.prod.yaml stop cron
+docker compose $LIVE stop cron
 
 # 2. Drain the Messenger worker (let it finish current messages, then stop)
-docker compose -f compose.yaml -f compose.prod.yaml stop messenger
+docker compose $LIVE stop messenger
 
 # 3. Stop the PHP container (app returns 502 via nginx)
-docker compose -f compose.yaml -f compose.prod.yaml stop php
+docker compose $LIVE stop php
 ```
 
 ### 5.2 Bringing the App Back Online
 
 ```bash
-cd /home/ubuntu/supplymars
-
 # 1. Start PHP (runs migrations if pending)
-docker compose -f compose.yaml -f compose.prod.yaml up -d php
+docker compose $LIVE up -d php
 
 # 2. Wait for PHP to become healthy
-docker compose -f compose.yaml -f compose.prod.yaml ps php
-# Wait until status shows "healthy"
+docker compose $LIVE ps php
 
 # 3. Start Messenger and Cron
-docker compose -f compose.yaml -f compose.prod.yaml up -d messenger cron
+docker compose $LIVE up -d messenger cron
 
 # 4. Verify all services
-docker compose -f compose.yaml -f compose.prod.yaml ps
+docker compose $LIVE ps
 ```
 
 ---
@@ -287,13 +281,9 @@ docker compose -f compose.yaml -f compose.prod.yaml ps
 
 **Diagnosis:**
 ```bash
-# Check PHP-FPM is running
-docker compose -f compose.yaml -f compose.prod.yaml ps php
-# If unhealthy or restarting:
-docker compose -f compose.yaml -f compose.prod.yaml logs --tail=100 php
-
-# Check nginx can reach PHP
-docker compose -f compose.yaml -f compose.prod.yaml logs --tail=50 nginx
+docker compose $LIVE ps php
+docker compose $LIVE logs --tail=100 php
+docker compose $LIVE logs --tail=50 nginx
 ```
 
 **Common causes:**
@@ -303,13 +293,12 @@ docker compose -f compose.yaml -f compose.prod.yaml logs --tail=50 nginx
 
 **Fix:**
 ```bash
-# Restart PHP
-docker compose -f compose.yaml -f compose.prod.yaml restart php
+docker compose $LIVE restart php
 
 # If database is the issue, restart it first
-docker compose -f compose.yaml -f compose.prod.yaml restart database
+docker compose $LIVE restart database
 # Wait for healthy, then restart PHP
-docker compose -f compose.yaml -f compose.prod.yaml restart php
+docker compose $LIVE restart php
 ```
 
 ### 6.2 Queue Backlog Growing
@@ -318,26 +307,14 @@ docker compose -f compose.yaml -f compose.prod.yaml restart php
 
 **Diagnosis:**
 ```bash
-# Check Messenger worker is running
-docker compose -f compose.yaml -f compose.prod.yaml ps messenger
-
-# Check queue stats
-docker compose -f compose.yaml -f compose.prod.yaml exec php \
-  php bin/console messenger:stats
-
-# Check worker logs
-docker compose -f compose.yaml -f compose.prod.yaml logs --tail=100 messenger
+docker compose $LIVE ps messenger
+docker compose $LIVE exec -T php php bin/console messenger:stats
+docker compose $LIVE logs --tail=100 messenger
 ```
-
-**Common causes:**
-- Messenger worker crashed and hasn't restarted
-- Slow consumer (database bottleneck, external service timeout)
-- Spike in async events (pricing cascade after bulk update)
 
 **Fix:**
 ```bash
-# Restart the worker
-docker compose -f compose.yaml -f compose.prod.yaml restart messenger
+docker compose $LIVE restart messenger
 ```
 
 ### 6.3 Cron Jobs Not Running
@@ -346,46 +323,28 @@ docker compose -f compose.yaml -f compose.prod.yaml restart messenger
 
 **Diagnosis:**
 ```bash
-# Check cron container
-docker compose -f compose.yaml -f compose.prod.yaml ps cron
-
-# Check cron log
-docker compose -f compose.yaml -f compose.prod.yaml logs --tail=100 cron
-
-# Verify crontab is installed
-docker compose -f compose.yaml -f compose.prod.yaml exec cron \
-  crontab -l
+docker compose $LIVE ps cron
+docker compose $LIVE logs --tail=100 cron
+docker compose $LIVE exec cron crontab -l
 ```
-
-**Common causes:**
-- Cron container not running
-- Environment variables not available to cron (check `/etc/environment`)
-- Command failing silently (check exit codes in log)
 
 **Fix:**
 ```bash
-# Restart cron container
-docker compose -f compose.yaml -f compose.prod.yaml restart cron
+docker compose $LIVE restart cron
 ```
 
 ### 6.4 Slow Pages
 
 **Diagnosis:**
 ```bash
-# Check MySQL slow query log
-docker compose -f compose.yaml -f compose.prod.yaml exec database \
-  mysqladmin -u root -p status
+# MySQL process list for long-running queries
+docker compose $LIVE exec -T database mysqladmin -u root -p processlist
 
-# Check MySQL process list for long-running queries
-docker compose -f compose.yaml -f compose.prod.yaml exec database \
-  mysqladmin -u root -p processlist
-
-# Check Redis
-docker compose -f compose.yaml -f compose.prod.yaml exec redis \
-  redis-cli info stats | grep instantaneous_ops_per_sec
-
-# Check container resource usage
+# Container resource usage
 docker stats --no-stream
+
+# Redis stats
+docker compose $LIVE exec redis redis-cli -a "$REDIS_PASSWORD" info stats | grep instantaneous_ops_per_sec
 ```
 
 **Common causes:**
@@ -395,103 +354,62 @@ docker stats --no-stream
 
 ### 6.5 Failed Messenger Messages
 
-**Diagnosis:**
 ```bash
 # View failed messages
-docker compose -f compose.yaml -f compose.prod.yaml exec php \
-  php bin/console messenger:failed:show
+docker compose $LIVE exec -T php php bin/console messenger:failed:show
 
-# View a specific failed message
-docker compose -f compose.yaml -f compose.prod.yaml exec php \
-  php bin/console messenger:failed:show <id>
-```
-
-**Fix:**
-```bash
-# Retry all failed messages
-docker compose -f compose.yaml -f compose.prod.yaml exec php \
-  php bin/console messenger:failed:retry
+# Retry all
+docker compose $LIVE exec -T php php bin/console messenger:failed:retry
 
 # Retry a specific message
-docker compose -f compose.yaml -f compose.prod.yaml exec php \
-  php bin/console messenger:failed:retry <id>
+docker compose $LIVE exec -T php php bin/console messenger:failed:retry <id>
 
 # Remove a message that can't be retried
-docker compose -f compose.yaml -f compose.prod.yaml exec php \
-  php bin/console messenger:failed:remove <id>
+docker compose $LIVE exec -T php php bin/console messenger:failed:remove <id>
 ```
 
 ### 6.6 Disk Space
 
 **Diagnosis:**
 ```bash
-# Check host disk usage
 df -h
-
-# Check Docker disk usage
 docker system df
-
-# Check database volume size
-docker volume ls
-du -sh /var/lib/docker/volumes/supplymars_db-data/
 ```
 
 **Fix:**
 ```bash
-# Remove unused Docker images and build cache
 docker system prune -f
 docker image prune -a -f
-
-# Remove old backup files if stored locally
-find /tmp -name "db_backup_*" -mtime +1 -delete
 ```
 
 ---
 
-## 7. Certificate Renewal
+## 7. SSL Certificates
 
-SSL certificates are managed by Let's Encrypt (certbot) on the host, mounted into the nginx container.
+SSL is managed by **Caddy**, which auto-provisions and renews Let's Encrypt certificates. No manual certificate management is needed.
 
-**Certificate paths (host):**
-- Certificate: `/etc/letsencrypt/live/supplymars.com/fullchain.pem`
-- Private key: `/etc/letsencrypt/live/supplymars.com/privkey.pem`
-
-**Certificate paths (nginx container, mounted read-only):**
-- `/etc/ssl/certs/fullchain.pem`
-- `/etc/ssl/private/privkey.pem`
-
-### 7.1 Check Expiry
+### 7.1 Check Status
 
 ```bash
-# On the host
-sudo certbot certificates
-# or
-openssl x509 -enddate -noout -in /etc/letsencrypt/live/supplymars.com/fullchain.pem
+sudo systemctl status caddy
+sudo journalctl -u caddy --no-pager -n 50
 ```
 
-### 7.2 Renew
-
-Certbot typically auto-renews via a systemd timer or cron. To renew manually:
+### 7.2 Verify Certificates
 
 ```bash
-# Stop nginx temporarily (certbot needs port 80)
-cd /home/ubuntu/supplymars
-docker compose -f compose.yaml -f compose.prod.yaml stop nginx
-
-# Renew
-sudo certbot renew
-
-# Restart nginx (picks up new certs via volume mount)
-docker compose -f compose.yaml -f compose.prod.yaml up -d nginx
+curl -vI https://supplymars.com 2>&1 | grep "subject:"
+curl -vI https://live.supplymars.com 2>&1 | grep "subject:"
 ```
 
-### 7.3 Verify
+### 7.3 Troubleshooting
 
-```bash
-# Check the cert served by nginx
-echo | openssl s_client -connect supplymars.com:443 -servername supplymars.com 2>/dev/null | \
-  openssl x509 -noout -dates
-```
+If Caddy fails to provision certificates:
+
+1. Ensure ports 80 and 443 are open in the Lightsail firewall
+2. Ensure DNS A records point to the instance IP
+3. Check Caddy logs: `sudo journalctl -u caddy --no-pager -n 100`
+4. Restart: `sudo systemctl restart caddy`
 
 ---
 
@@ -500,14 +418,14 @@ echo | openssl s_client -connect supplymars.com:443 -servername supplymars.com 2
 ### 8.1 Check Table Sizes
 
 ```bash
-docker compose -f compose.yaml -f compose.prod.yaml exec database \
-  mysql -u root -p -e "
+docker compose $LIVE exec -T database \
+    mysql -u root -p -e "
     SELECT table_name,
            ROUND(data_length/1024/1024, 2) AS data_mb,
            ROUND(index_length/1024/1024, 2) AS index_mb,
            table_rows
     FROM information_schema.tables
-    WHERE table_schema = 'supplymars'
+    WHERE table_schema = 'app'
     ORDER BY data_length DESC
     LIMIT 20;
   "
@@ -518,21 +436,14 @@ docker compose -f compose.yaml -f compose.prod.yaml exec database \
 Run periodically (monthly) for tables with heavy INSERT/DELETE activity:
 
 ```bash
-docker compose -f compose.yaml -f compose.prod.yaml exec database \
-  mysql -u root -p -e "
-    ANALYZE TABLE supplymars.purchase_order_item;
-    ANALYZE TABLE supplymars.customer_order_item;
-    ANALYZE TABLE supplymars.product_sales;
-    ANALYZE TABLE supplymars.order_sales;
-    ANALYZE TABLE supplymars.customer_sales;
+docker compose $LIVE exec -T database \
+    mysql -u root -p -e "
+    ANALYZE TABLE app.purchase_order_item;
+    ANALYZE TABLE app.customer_order_item;
+    ANALYZE TABLE app.product_sales;
+    ANALYZE TABLE app.order_sales;
+    ANALYZE TABLE app.customer_sales;
   "
-```
-
-For tables with significant fragmentation (check `DATA_FREE` in `information_schema.tables`):
-
-```bash
-docker compose -f compose.yaml -f compose.prod.yaml exec database \
-  mysql -u root -p -e "OPTIMIZE TABLE supplymars.<table_name>;"
 ```
 
 **Note:** `OPTIMIZE TABLE` locks the table briefly. Run during low-traffic periods.
@@ -542,12 +453,9 @@ docker compose -f compose.yaml -f compose.prod.yaml exec database \
 If reporting data becomes inconsistent, rebuild from source:
 
 ```bash
-docker compose -f compose.yaml -f compose.prod.yaml exec php \
-  php bin/console app:calculate-product-sales 90
-docker compose -f compose.yaml -f compose.prod.yaml exec php \
-  php bin/console app:calculate-order-sales 90
-docker compose -f compose.yaml -f compose.prod.yaml exec php \
-  php bin/console app:calculate-customer-sales 90
+docker compose $LIVE exec -T php php bin/console app:calculate-product-sales 90
+docker compose $LIVE exec -T php php bin/console app:calculate-order-sales 90
+docker compose $LIVE exec -T php php bin/console app:calculate-customer-sales 90
 ```
 
 See [09-cli-reference.md](09-cli-reference.md) for full command options.
