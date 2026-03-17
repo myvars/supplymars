@@ -1,12 +1,12 @@
-<footer class="rounded-b-lg border-t border-gray-200 bg-white dark:border-gray-600 dark:bg-gray-900">
-    <div class="mx-auto w-full max-w-(--breakpoint-xl) px-4 py-6 lg:py-8">
+<footer class="rounded-b-lg border-t border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+    <div class="mx-auto w-full max-w-(--breakpoint-xl) px-6 py-6 lg:py-8">
         <div class="sm:flex sm:items-center sm:justify-between">
             <a href="{{ path('app_homepage') }}"
                class="mb-4 flex items-center sm:mb-0"
                data-turbo-frame="body">
                 {{ include('_logo.html.twig', { 'logoHeight': 28 }) }}
             </a>
-            <ul class="mb-6 flex flex-wrap items-center gap-6 text-sm text-gray-500 dark:text-gray-400 sm:mb-0 md:gap-8">
+            <ul class="mb-6 flex flex-wrap items-center gap-6 text-sm text-gray-500 dark:text-gray-400 sm:mb-0">
                 <li>
                     <a href="{{ path('app_about_page') }}" data-turbo-frame="body"
                        class="transition-colors hover:text-gray-900 dark:hover:text-white">About</a>
@@ -17,7 +17,7 @@
                 </li>
                 <li>
                     <a href="{{ path('app_privacy_page') }}" data-turbo-frame="body"
-                       class="transition-colors hover:text-gray-900 dark:hover:text-white">Privacy Policy</a>
+                       class="transition-colors hover:text-gray-900 dark:hover:text-white">Privacy</a>
                 </li>
                 <li>
                     <a href="{{ path('app_contact_page') }}" data-turbo-frame="body"
@@ -25,11 +25,12 @@
                 </li>
             </ul>
         </div>
-        <hr class="-mx-4 my-6 border-gray-200 dark:border-gray-600 lg:my-8"/>
-        <p class="text-center text-sm text-gray-400 dark:text-gray-500">
-            &copy; {{ "now"|date("Y") }}
-            <a href="{{ path('app_homepage') }}" class="transition-colors hover:text-gray-900 dark:hover:text-white" data-turbo-frame="body">{{ domain }}</a>.
-            All rights reserved.
-        </p>
+        <div class="mt-6 border-t border-gray-100 pt-6 dark:border-gray-800 lg:mt-8 lg:pt-8">
+            <p class="text-center text-sm text-gray-400 dark:text-gray-500">
+                &copy; {{ "now"|date("Y") }}
+                <a href="{{ path('app_homepage') }}" class="transition-colors hover:text-gray-900 dark:hover:text-white" data-turbo-frame="body">{{ domain }}</a>.
+                All rights reserved.
+            </p>
+        </div>
     </div>
 </footer>

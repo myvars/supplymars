@@ -14,7 +14,7 @@ Standardized typography classes used across SupplyMars. All text uses Tailwind's
 | Financial unit value | `text-lg font-light` | Individual line prices in order/PO summaries |
 | Financial total | `text-xl font-semibold` | Grand totals in order/PO summaries |
 | KPI value | `text-2xl font-bold` | `KpiCard` primary metric |
-| KPI label | `text-sm font-medium text-gray-500` | `KpiCard` title |
+| KPI label | `text-xs font-medium uppercase tracking-wide text-gray-500` | `KpiCard` title |
 
 ## Color Conventions
 

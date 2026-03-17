@@ -9,16 +9,17 @@
     <twig:Dialog title="Edit {{ flowModel }}">
         <twig:FlowForm :form="form" buttonLabel="Update {{ flowModel }}"/>
         {% if flowAllowDelete %}
-            <hr class="my-6 h-px border-0 bg-gray-200 dark:bg-gray-600">
-            <twig:Button
-                tag="a"
-                href="{{ path(routes.deleteConfirm, {'id': result.id}) }}"
-                type="submit"
-                variant="danger"
-                class="w-full"
-                data-turbo-prefetch="false">
-                Delete
-            </twig:Button>
+            <div class="mt-6 border-t border-gray-200 pt-4 dark:border-gray-700">
+                <twig:Button
+                    tag="a"
+                    href="{{ path(routes.deleteConfirm, {'id': result.id}) }}"
+                    type="submit"
+                    variant="danger-outline"
+                    class="w-full"
+                    data-turbo-prefetch="false">
+                    Delete {{ flowModel }}
+                </twig:Button>
+            </div>
         {% endif %}
     </twig:Dialog>
 

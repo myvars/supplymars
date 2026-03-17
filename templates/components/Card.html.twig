@@ -16,12 +16,12 @@
 >
     {% if editLink %}
         <a href="{{ editLink }}"
-           class="absolute z-10 -top-2 -right-2 p-1.5 text-yellow-500 rounded-full shadow-md transition-all duration-200 hover:scale-110 hover:shadow-lg {{ this.getEditLinkClasses }}"
+           class="absolute z-10 -top-2 -right-2 flex h-8 w-8 items-center justify-center rounded-full text-yellow-500 shadow-sm transition-all duration-150 hover:shadow-md hover:brightness-110 {{ this.getEditLinkClasses }}"
            data-turbo-frame="modal"
            data-turbo-prefetch="false"
            aria-label="Edit{{ title ? ' ' ~ title : '' }}"
         >
-            <twig:ux:icon name="{{ editIcon }}" class="h-6 w-6 p-0.5"/>
+            <twig:ux:icon name="{{ editIcon }}" class="h-4 w-4"/>
         </a>
     {% endif %}
     <div class="{{ layout == 'horizontal' ? 'flex flex-col md:flex-row' : '' }}">

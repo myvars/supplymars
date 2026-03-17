@@ -18,7 +18,10 @@
         height="{{ this.imageDimensions.height }}"
     >
     {% else %}
-        <span class="text-center text-xs text-gray-500 dark:text-gray-400">no image</span>
+        <div class="flex flex-col items-center gap-1">
+            <twig:ux:icon name="bi:image" class="h-6 w-6 text-gray-300 dark:text-gray-600"/>
+            <span class="text-center text-[10px] text-gray-400 dark:text-gray-500">No image</span>
+        </div>
     {% endif %}
 </div>
 {% if this.showLink %}

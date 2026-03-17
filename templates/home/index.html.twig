@@ -274,56 +274,30 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {# Browser frame 1 #}
-                <div class="rounded-xl overflow-hidden shadow-2xl border border-gray-700/50" data-aos="fade-up" data-aos-delay="0">
-                    <div class="bg-gray-800 px-4 py-3 flex items-center gap-3">
+                {% set showcaseItems = [
+                    { icon: 'bi:grid-3x3-gap-fill', title: 'Product Catalog', desc: 'Browse products with images, pricing, stock levels, and supplier sourcing', url: domain ~ '/products' },
+                    { icon: 'bi:cart-fill', title: 'Order Management', desc: 'Track orders through allocation, fulfilment, and delivery lifecycle', url: domain ~ '/orders' },
+                    { icon: 'bi:bar-chart-line-fill', title: 'Reporting Dashboard', desc: 'Revenue, margin, and operational KPIs with period comparisons', url: domain ~ '/reporting' },
+                ] %}
+                {% for item in showcaseItems %}
+                <div class="rounded-xl overflow-hidden shadow-2xl border border-gray-700/50" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 100 }}">
+                    <div class="bg-gray-800 px-4 py-2.5 flex items-center gap-3">
                         <div class="flex gap-1.5">
-                            <div class="w-2.5 h-2.5 rounded-full bg-gray-600"></div>
-                            <div class="w-2.5 h-2.5 rounded-full bg-gray-600"></div>
-                            <div class="w-2.5 h-2.5 rounded-full bg-gray-600"></div>
+                            <div class="w-2 h-2 rounded-full bg-gray-600"></div>
+                            <div class="w-2 h-2 rounded-full bg-gray-600"></div>
+                            <div class="w-2 h-2 rounded-full bg-gray-600"></div>
                         </div>
-                        <div class="flex-1 text-center text-xs text-gray-500">{{ domain }}/products</div>
+                        <div class="flex-1 text-center text-xs text-gray-500">{{ item.url }}</div>
                     </div>
-                    <div class="bg-gray-800/50 aspect-[4/3] flex flex-col items-center justify-center p-8 text-center">
-                        <twig:ux:icon name="bi:grid-3x3-gap-fill" class="h-12 w-12 text-gray-700 mb-4" />
-                        <p class="text-sm font-medium text-gray-500">Product Catalog</p>
-                        <p class="text-xs text-gray-600 mt-1">Screenshot placeholder</p>
+                    <div class="bg-gradient-to-br from-gray-800/80 to-gray-900/80 aspect-[4/3] flex flex-col items-center justify-center p-8 text-center">
+                        <div class="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-700/50">
+                            <twig:ux:icon name="{{ item.icon }}" class="h-8 w-8 text-gray-500" />
+                        </div>
+                        <p class="text-base font-semibold text-gray-300">{{ item.title }}</p>
+                        <p class="mt-2 max-w-[14rem] text-xs leading-relaxed text-gray-500">{{ item.desc }}</p>
                     </div>
                 </div>
-
-                {# Browser frame 2 #}
-                <div class="rounded-xl overflow-hidden shadow-2xl border border-gray-700/50" data-aos="fade-up" data-aos-delay="100">
-                    <div class="bg-gray-800 px-4 py-3 flex items-center gap-3">
-                        <div class="flex gap-1.5">
-                            <div class="w-2.5 h-2.5 rounded-full bg-gray-600"></div>
-                            <div class="w-2.5 h-2.5 rounded-full bg-gray-600"></div>
-                            <div class="w-2.5 h-2.5 rounded-full bg-gray-600"></div>
-                        </div>
-                        <div class="flex-1 text-center text-xs text-gray-500">{{ domain }}/orders</div>
-                    </div>
-                    <div class="bg-gray-800/50 aspect-[4/3] flex flex-col items-center justify-center p-8 text-center">
-                        <twig:ux:icon name="bi:cart-fill" class="h-12 w-12 text-gray-700 mb-4" />
-                        <p class="text-sm font-medium text-gray-500">Order Management</p>
-                        <p class="text-xs text-gray-600 mt-1">Screenshot placeholder</p>
-                    </div>
-                </div>
-
-                {# Browser frame 3 #}
-                <div class="rounded-xl overflow-hidden shadow-2xl border border-gray-700/50" data-aos="fade-up" data-aos-delay="200">
-                    <div class="bg-gray-800 px-4 py-3 flex items-center gap-3">
-                        <div class="flex gap-1.5">
-                            <div class="w-2.5 h-2.5 rounded-full bg-gray-600"></div>
-                            <div class="w-2.5 h-2.5 rounded-full bg-gray-600"></div>
-                            <div class="w-2.5 h-2.5 rounded-full bg-gray-600"></div>
-                        </div>
-                        <div class="flex-1 text-center text-xs text-gray-500">{{ domain }}/reporting</div>
-                    </div>
-                    <div class="bg-gray-800/50 aspect-[4/3] flex flex-col items-center justify-center p-8 text-center">
-                        <twig:ux:icon name="bi:bar-chart-line-fill" class="h-12 w-12 text-gray-700 mb-4" />
-                        <p class="text-sm font-medium text-gray-500">Reporting Dashboard</p>
-                        <p class="text-xs text-gray-600 mt-1">Screenshot placeholder</p>
-                    </div>
-                </div>
+                {% endfor %}
             </div>
         </div>
     </section>

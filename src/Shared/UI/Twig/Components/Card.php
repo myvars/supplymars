@@ -31,7 +31,7 @@ final class Card
     public function getBackgroundClasses(): string
     {
         return match ($this->colour) {
-            'gray' => 'bg-white dark:bg-linear-to-tr dark:from-gray-700 dark:to-gray-600',
+            'gray' => 'bg-white dark:bg-gray-700/50',
             'green' => 'bg-linear-to-tr from-green-50 to-emerald-50 dark:from-green-950 dark:to-emerald-950',
             'supplier1' => 'bg-linear-to-tr from-supplier1-200 to-supplier1-50 dark:from-supplier1-900 dark:to-supplier1-700',
             'supplier2' => 'bg-linear-to-tr from-supplier2-200 to-supplier2-50 dark:from-supplier2-900 dark:to-supplier2-600',

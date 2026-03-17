@@ -1,14 +1,14 @@
 <nav aria-label="Breadcrumb">
-    <ol class="flex items-center gap-1.5 text-sm">
+    <ol class="flex items-center gap-2 text-sm">
         <li>
             <a href="{{ href }}"
-               class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+               class="text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                data-turbo-frame="body">
                 {{ label }}
             </a>
         </li>
         <li aria-hidden="true">
-            <twig:ux:icon name="bi:chevron-right" class="h-3.5 w-3.5 text-gray-400 dark:text-gray-500"/>
+            <twig:ux:icon name="bi:chevron-right" class="h-3 w-3 text-gray-400 dark:text-gray-500"/>
         </li>
         <li class="font-medium text-gray-700 dark:text-gray-200 truncate" aria-current="page">
             {{ current }}

@@ -6,7 +6,7 @@
 {% set isAsc = isActive and app.request.query.get('sortDirection') == 'ASC' %}
 
 <a {{ attributes.defaults({
-    class: 'group inline-flex items-center gap-1 text-sm transition-colors ' ~ (isActive ? 'font-medium text-gray-900 dark:text-white' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'),
+    class: 'group inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap transition-colors ' ~ (isActive ? 'text-gray-900 dark:text-white' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'),
 }) }}
     href="{{ path(app.current_route, {
         ...app.request.query.all(),

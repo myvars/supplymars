@@ -22,12 +22,12 @@
     <dialog
         data-basic-modal-target="dialog"
         data-modal-size="md"
-        class="open:flex m-auto rounded-lg border border-gray-200 bg-white shadow-2xl inset-0 w-full md:w-fit
+        class="open:flex m-auto rounded-xl border border-gray-200 bg-white shadow-2xl inset-0 w-full md:w-fit
         data-[modal-size=sm]:md:max-w-md
         data-[modal-size=md]:md:min-w-[50%] data-[modal-size=md]:md:max-w-[50%]
         data-[modal-size=lg]:md:max-w-2xl
         data-[modal-size=xl]:md:max-w-5xl
-        max-h-full animate-fade-in backdrop:bg-gray-900/60 dark:border-gray-600 dark:bg-gray-800 dark:backdrop:bg-gray-900/80{{ fixedTop ? ' mt-14' : '' }}"
+        max-h-full animate-fade-in backdrop:bg-gray-900/40 backdrop:backdrop-blur-[2px] dark:border-gray-700 dark:bg-gray-800 dark:backdrop:bg-gray-950/50{{ fixedTop ? ' mt-14' : '' }}"
         data-action="close->basic-modal#close mousedown->basic-modal#onMouseDown click->basic-modal#clickOutside"
     >
         <div class="grow overflow-auto p-1">

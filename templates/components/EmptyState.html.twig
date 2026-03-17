@@ -1,10 +1,12 @@
 {# Placeholder shown when a list or section has no content.
    Props (PHP): icon (UX icon name), message (main text), subtitle (?string) #}
-<div class="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 py-12 dark:border-gray-600">
-    <twig:ux:icon name="{{ icon }}" class="mb-3 h-12 w-12 text-gray-400 dark:text-gray-600"/>
+<div class="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 px-6 py-14 dark:border-gray-600">
+    <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
+        <twig:ux:icon name="{{ icon }}" class="h-7 w-7 text-gray-400 dark:text-gray-500"/>
+    </div>
     <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ message }}</p>
     {% if subtitle %}
-        <p class="mt-1 text-xs text-gray-400 dark:text-gray-500">{{ subtitle }}</p>
+        <p class="mt-1.5 text-xs text-gray-400 dark:text-gray-500">{{ subtitle }}</p>
     {% endif %}
     {% block action %}{% endblock %}
 </div>
