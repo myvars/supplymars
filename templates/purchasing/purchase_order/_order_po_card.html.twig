@@ -1,14 +1,16 @@
 {# Purchase order card shown in order context — includes nested PO item cards.
    Used on: order show page (inside purchase orders section). Variable: purchaseOrder (PurchaseOrder) #}
 {% set colourScheme = purchaseOrder.supplier.colourScheme %}
-<twig:Card colour="{{ colourScheme }}" statusHighlight="{{ purchaseOrder.status.value }}">
+<twig:Card colour="{{ colourScheme }}"
+           statusHighlight="{{ purchaseOrder.status.value }}"
+           class="cursor-pointer transition-all duration-200 hover:shadow-md hover:brightness-[0.97] dark:hover:brightness-110"
+           data-controller="card-link"
+           data-card-link-url-value="{{ path('app_purchasing_purchase_order_show', {id: purchaseOrder.publicId.value}) }}"
+           data-action="click->card-link#visit">
     <div class="flex w-full items-center justify-between">
         <div class="flex items-center gap-2">
             <h2 class="text-base font-medium text-gray-700 dark:text-white">
-                <a href="{{ path('app_purchasing_purchase_order_show', {id: purchaseOrder.publicId.value}) }}"
-                   data-turbo-frame="_top"
-                   class="hover:text-gray-900 dark:hover:text-white"
-                >PO #{{ '%06d'|format(purchaseOrder.id) }}</a>
+                PO #{{ '%06d'|format(purchaseOrder.id) }}
             </h2>
             <span class="text-sm text-gray-500 dark:text-gray-400">{{ purchaseOrder.supplier.name }}</span>
             <twig:ProfitBadge :value="purchaseOrder.calculateProfit" class="ml-1"/>

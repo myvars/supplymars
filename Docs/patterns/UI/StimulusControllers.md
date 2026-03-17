@@ -233,6 +233,21 @@ this.countValue = 10;
 </div>
 ```
 
+**`card_link_controller`**
+- Makes an entire card clickable as a navigation link
+- Inner links and buttons still work normally (clicks on `<a>` or `<button>` are ignored)
+- Uses Turbo `visit()` for navigation
+
+```html
+<div data-controller="card-link"
+     data-card-link-url-value="/purchase/order/123"
+     data-action="click->card-link#visit"
+     class="cursor-pointer">
+    <p>Clicking here navigates to the URL</p>
+    <a href="/status">This link still works independently</a>
+</div>
+```
+
 **`sidebar_active_controller`**
 - Highlights active nav item in sidebar based on current URL
 - Matches links by longest pathname prefix, with query param awareness
