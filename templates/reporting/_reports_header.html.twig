@@ -11,7 +11,7 @@
         <twig:ux:icon name="bi:bar-chart-line-fill" class="h-4.5 w-4.5 text-gray-400 dark:text-gray-500"/>
         <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ title }}</span>
     </div>
-    {% if showDurations|default(true) %}
+    {% if not isDashboard|default(false) and showDurations|default(true) %}
         {{ include('reporting/_sales_durations.html.twig') }}
     {% endif %}
 </div>
