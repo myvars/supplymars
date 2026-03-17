@@ -26,7 +26,10 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">{{ result.name }}</p>
-                        <p class="text-sm text-gray-500 dark:text-gray-400">{{ result.supplier.name }} <span class="mx-1 text-gray-300 dark:text-gray-600">&middot;</span> {{ result.productCode }}</p>
+                        <p class="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
+                            <twig:SupplierDot colour="{{ result.supplier.colourScheme }}"/>
+                            {{ result.supplier.name }} <span class="mx-1 text-gray-300 dark:text-gray-600">&middot;</span> {{ result.productCode }}
+                        </p>
                     </div>
                     <p class="text-lg font-light text-gray-900 dark:text-white">{{ result.cost|format_currency('GBP') }}</p>
                 </div>

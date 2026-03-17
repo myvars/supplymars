@@ -23,6 +23,7 @@
         <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
             <p class="flex items-center gap-2">
                 <twig:ux:icon name="bi:truck" class="h-4 w-4 text-gray-400 dark:text-gray-500"/>
+                <twig:SupplierDot colour="{{ supplierProduct.supplier.colourScheme }}"/>
                 <a href="{{ path('app_purchasing_supplier_show', {'id': supplierProduct.supplier.publicId.value }) }}"
                    class="font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300"
                    data-turbo-frame="body"
