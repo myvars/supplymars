@@ -264,40 +264,129 @@
     </section>
 
     {# ── Demo Showcase ───────────────────────────────────────────────────── #}
-    <section class="bg-gray-900 py-24 lg:py-32">
-        <div class="mx-auto max-w-(--breakpoint-xl) px-6">
-            <div class="mb-16 lg:mb-20 text-center" data-aos="fade-up">
+    <section class="relative bg-gray-950 py-32 lg:py-40 overflow-hidden">
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(120,119,198,0.06),transparent)]"></div>
+
+        <div class="relative mx-auto max-w-(--breakpoint-xl) px-6">
+            <div class="mb-20 lg:mb-28 text-center" data-aos="fade-up">
                 <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">The Demo</p>
-                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+                <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-6">
                     See It in Action
                 </h2>
+                <p class="text-lg text-gray-500 max-w-2xl mx-auto">
+                    A fully operational platform, not a prototype. Explore the real interface.
+                </p>
             </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                {% set showcaseItems = [
-                    { icon: 'bi:grid-3x3-gap-fill', title: 'Product Catalog', desc: 'Browse products with images, pricing, stock levels, and supplier sourcing', url: domain ~ '/products' },
-                    { icon: 'bi:cart-fill', title: 'Order Management', desc: 'Track orders through allocation, fulfilment, and delivery lifecycle', url: domain ~ '/orders' },
-                    { icon: 'bi:bar-chart-line-fill', title: 'Reporting Dashboard', desc: 'Revenue, margin, and operational KPIs with period comparisons', url: domain ~ '/reporting' },
-                ] %}
-                {% for item in showcaseItems %}
-                <div class="rounded-xl overflow-hidden shadow-2xl border border-gray-700/50" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 100 }}">
-                    <div class="bg-gray-800 px-4 py-2.5 flex items-center gap-3">
-                        <div class="flex gap-1.5">
-                            <div class="w-2 h-2 rounded-full bg-gray-600"></div>
-                            <div class="w-2 h-2 rounded-full bg-gray-600"></div>
-                            <div class="w-2 h-2 rounded-full bg-gray-600"></div>
-                        </div>
-                        <div class="flex-1 text-center text-xs text-gray-500">{{ item.url }}</div>
+            {# ─ Feature 1: Product Catalog ─ #}
+            <div class="mb-24 lg:mb-36" data-aos="fade-up">
+                <div class="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
+                    <div class="relative lg:w-[60%] shrink-0">
+                        <div class="absolute -inset-12 bg-gradient-to-br from-orange-500/[0.12] via-amber-500/[0.06] to-transparent rounded-[2.5rem] blur-3xl"></div>
+                        <a href="{{ path('app_catalog_product_index') }}" class="group relative block rounded-2xl overflow-hidden shadow-2xl shadow-black/50 ring-1 ring-white/[0.08] transition-all duration-500 hover:shadow-orange-500/[0.1] hover:ring-white/[0.14]" data-turbo-prefetch="false">
+                            <div class="bg-[#1a1d23] px-4 py-3 flex items-center gap-3 border-b border-white/[0.06]">
+                                <div class="flex gap-2">
+                                    <div class="w-3 h-3 rounded-full bg-[#ff5f57]"></div>
+                                    <div class="w-3 h-3 rounded-full bg-[#febc2e]"></div>
+                                    <div class="w-3 h-3 rounded-full bg-[#28c840]"></div>
+                                </div>
+                                <div class="flex-1 mx-4">
+                                    <div class="bg-black/30 rounded-md px-3 py-1 text-center text-xs text-gray-500 font-mono">{{ domain }}/products</div>
+                                </div>
+                            </div>
+                            <div class="relative aspect-[16/10] overflow-hidden">
+                                <img src="{{ asset('images/Product-Catalog.png') }}"
+                                     alt="Product Catalog interface showing product details, pricing, and sales analytics"
+                                     class="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.02]"
+                                     loading="lazy">
+                                <div class="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-gray-950 to-transparent pointer-events-none"></div>
+                            </div>
+                        </a>
                     </div>
-                    <div class="bg-gradient-to-br from-gray-800/80 to-gray-900/80 aspect-[4/3] flex flex-col items-center justify-center p-8 text-center">
-                        <div class="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-700/50">
-                            <twig:ux:icon name="{{ item.icon }}" class="h-8 w-8 text-gray-500" />
-                        </div>
-                        <p class="text-base font-semibold text-gray-300">{{ item.title }}</p>
-                        <p class="mt-2 max-w-[14rem] text-xs leading-relaxed text-gray-500">{{ item.desc }}</p>
+                    <div class="lg:w-[40%]">
+                        <p class="text-sm font-semibold uppercase tracking-widest text-orange-400/80 mb-3">Product Catalog</p>
+                        <h3 class="text-2xl lg:text-3xl font-bold tracking-tight text-white mb-5">
+                            Every product, beautifully organised
+                        </h3>
+                        <p class="text-gray-400 leading-relaxed text-base lg:text-lg">
+                            Rich product pages with images, pricing, stock levels, sales performance, and multi-supplier sourcing — all at a glance.
+                        </p>
                     </div>
                 </div>
-                {% endfor %}
+            </div>
+
+            {# ─ Feature 2: Order Management ─ #}
+            <div class="mb-24 lg:mb-36" data-aos="fade-up">
+                <div class="flex flex-col lg:flex-row-reverse items-center gap-10 lg:gap-16">
+                    <div class="relative lg:w-[60%] shrink-0">
+                        <div class="absolute -inset-12 bg-gradient-to-br from-blue-500/[0.12] via-cyan-500/[0.06] to-transparent rounded-[2.5rem] blur-3xl"></div>
+                        <a href="{{ path('app_order_index') }}" class="group relative block rounded-2xl overflow-hidden shadow-2xl shadow-black/50 ring-1 ring-white/[0.08] transition-all duration-500 hover:shadow-blue-500/[0.1] hover:ring-white/[0.14]" data-turbo-prefetch="false">
+                            <div class="bg-[#1a1d23] px-4 py-3 flex items-center gap-3 border-b border-white/[0.06]">
+                                <div class="flex gap-2">
+                                    <div class="w-3 h-3 rounded-full bg-[#ff5f57]"></div>
+                                    <div class="w-3 h-3 rounded-full bg-[#febc2e]"></div>
+                                    <div class="w-3 h-3 rounded-full bg-[#28c840]"></div>
+                                </div>
+                                <div class="flex-1 mx-4">
+                                    <div class="bg-black/30 rounded-md px-3 py-1 text-center text-xs text-gray-500 font-mono">{{ domain }}/orders</div>
+                                </div>
+                            </div>
+                            <div class="relative aspect-[16/10] overflow-hidden">
+                                <img src="{{ asset('images/Order-Management.png') }}"
+                                     alt="Order management interface showing order details and purchase order tracking"
+                                     class="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.02]"
+                                     loading="lazy">
+                                <div class="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-gray-950 to-transparent pointer-events-none"></div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="lg:w-[40%]">
+                        <p class="text-sm font-semibold uppercase tracking-widest text-blue-400/80 mb-3">Order Management</p>
+                        <h3 class="text-2xl lg:text-3xl font-bold tracking-tight text-white mb-5">
+                            From order to doorstep, fully tracked
+                        </h3>
+                        <p class="text-gray-400 leading-relaxed text-base lg:text-lg">
+                            Track every order through allocation, multi-supplier fulfilment, and delivery — with real-time status across the entire lifecycle.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {# ─ Feature 3: Reporting Dashboard ─ #}
+            <div data-aos="fade-up">
+                <div class="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
+                    <div class="relative lg:w-[60%] shrink-0">
+                        <div class="absolute -inset-12 bg-gradient-to-br from-violet-500/[0.12] via-purple-500/[0.06] to-transparent rounded-[2.5rem] blur-3xl"></div>
+                        <a href="{{ path('app_reporting_dashboard') }}" class="group relative block rounded-2xl overflow-hidden shadow-2xl shadow-black/50 ring-1 ring-white/[0.08] transition-all duration-500 hover:shadow-violet-500/[0.1] hover:ring-white/[0.14]" data-turbo-prefetch="false">
+                            <div class="bg-[#1a1d23] px-4 py-3 flex items-center gap-3 border-b border-white/[0.06]">
+                                <div class="flex gap-2">
+                                    <div class="w-3 h-3 rounded-full bg-[#ff5f57]"></div>
+                                    <div class="w-3 h-3 rounded-full bg-[#febc2e]"></div>
+                                    <div class="w-3 h-3 rounded-full bg-[#28c840]"></div>
+                                </div>
+                                <div class="flex-1 mx-4">
+                                    <div class="bg-black/30 rounded-md px-3 py-1 text-center text-xs text-gray-500 font-mono">{{ domain }}/reporting</div>
+                                </div>
+                            </div>
+                            <div class="relative aspect-[16/10] overflow-hidden">
+                                <img src="{{ asset('images/Reporting-Dashboard.png') }}"
+                                     alt="Reporting dashboard showing customer insights, geographic data, and revenue analytics"
+                                     class="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.02]"
+                                     loading="lazy">
+                                <div class="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-gray-950 to-transparent pointer-events-none"></div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="lg:w-[40%]">
+                        <p class="text-sm font-semibold uppercase tracking-widest text-violet-400/80 mb-3">Reporting Dashboard</p>
+                        <h3 class="text-2xl lg:text-3xl font-bold tracking-tight text-white mb-5">
+                            Insights that drive decisions
+                        </h3>
+                        <p class="text-gray-400 leading-relaxed text-base lg:text-lg">
+                            Revenue, margin, and operational KPIs with geographic breakdowns, period comparisons, and pre-computed summaries for instant dashboards.
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
