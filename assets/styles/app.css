@@ -201,7 +201,7 @@ html[data-turbo-visit-direction="back"] ::view-transition-new(root) {
     animation: heroFadeDown 0.8s ease-out both;
 }
 .hero-fade-up {
-    animation: heroFadeUp 0.8s ease-out 0.3s both;
+    animation: heroFadeUp 0.8s ease-out both;
 }
 
 @keyframes heroFadeDown {

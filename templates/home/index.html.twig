@@ -13,31 +13,69 @@
     <div data-controller="aos">
 
     {# ── Hero ────────────────────────────────────────────────────────────── #}
-    <section class="relative flex items-center justify-center h-screen overflow-hidden">
+    <section class="relative overflow-hidden">
         <div class="absolute inset-0"
              style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
         </div>
-        <div class="absolute inset-0 bg-gradient-to-t from-gray-950 via-gray-950/30 to-gray-900/50"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-gray-950/70 via-gray-950/40 to-gray-950"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_35%,rgba(249,115,22,0.06),transparent)]"></div>
 
-        <div class="relative text-center px-4">
-            <div class="flex items-center justify-center mb-8" data-aos="zoom-in" data-aos-duration="600">
-                {{ include('_logo.html.twig', { logoHeight: 60 }) }}
-            </div>
-            <h1 class="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6"
-                data-aos="fade-up" data-aos-delay="250" data-aos-duration="800">
-                Welcome to {{ domain }}
-            </h1>
-            <p class="text-xl sm:text-2xl text-gray-300 max-w-2xl mx-auto"
-               data-aos="fade-up" data-aos-delay="550" data-aos-duration="600">
-                Your One-Stop Shop for Life on the Red Planet
+        {# Copy #}
+        <div class="relative text-center px-6 pt-28 sm:pt-36 lg:pt-44 pb-16 sm:pb-20 lg:pb-24 max-w-3xl mx-auto">
+            <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-6 lg:mb-8 hero-fade-down">
+                E-commerce Demo Platform
             </p>
+            <h1 class="text-4xl sm:text-5xl lg:text-7xl font-bold tracking-tight text-white mb-6 lg:mb-8 hero-fade-down"
+                style="animation-delay: 0.1s">
+                Commerce, built for
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-500">Mars</span>
+            </h1>
+            <p class="text-base sm:text-lg lg:text-xl text-gray-400 max-w-2xl mx-auto mb-10 lg:mb-12 hero-fade-up"
+               style="animation-delay: 0.3s">
+                Multi-supplier sourcing. Dynamic pricing. Full order lifecycle.<br class="hidden sm:inline">
+                All operational.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto hero-fade-up" style="animation-delay: 0.5s">
+                <a href="{{ path('app_catalog_product_index') }}"
+                   class="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-7 py-3 text-sm sm:text-base font-semibold text-white bg-orange-500 hover:bg-orange-400 rounded-lg shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-[0.98]"
+                   data-turbo-prefetch="false">
+                    Explore the Platform
+                </a>
+                <a href="https://github.com/myvars/supplymars"
+                   target="_blank"
+                   class="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-7 py-3 text-sm sm:text-base font-semibold text-gray-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg ring-1 ring-white/[0.1] hover:ring-white/[0.18] backdrop-blur-sm transition-all duration-200 active:scale-[0.98]">
+                    <twig:ux:icon name="bi:github" class="h-5 w-5" />
+                    View on GitHub
+                </a>
+            </div>
         </div>
 
-        <a href="#the-pitch" class="absolute bottom-10 left-1/2 -translate-x-1/2 scroll-indicator">
-            <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-            </svg>
-        </a>
+        {# Floating UI Preview #}
+        <div class="relative w-full max-w-5xl mx-auto px-6 sm:px-10 pb-16 sm:pb-20 hero-fade-up" style="animation-delay: 0.7s; perspective: 1200px">
+            <div class="absolute -inset-12 bg-gradient-to-t from-orange-500/[0.12] via-amber-500/[0.06] to-transparent rounded-[2.5rem] blur-3xl pointer-events-none"></div>
+            <a href="{{ path('app_catalog_product_index') }}"
+               class="group relative block rounded-2xl overflow-hidden shadow-2xl shadow-black/60 ring-1 ring-white/[0.08] transition-all duration-500 hover:shadow-orange-500/[0.08] hover:ring-white/[0.14]"
+               style="transform: rotateX(2deg); transform-origin: bottom center"
+               data-turbo-prefetch="false">
+                <div class="bg-[#1a1d23] px-3 sm:px-4 py-2.5 sm:py-3 flex items-center gap-2 sm:gap-3 border-b border-white/[0.06]">
+                    <div class="flex gap-1.5 sm:gap-2">
+                        <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ff5f57]"></div>
+                        <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#febc2e]"></div>
+                        <div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#28c840]"></div>
+                    </div>
+                    <div class="flex-1 mx-2 sm:mx-4">
+                        <div class="bg-black/30 rounded-md px-3 py-1 text-center text-xs text-gray-500 font-mono">{{ domain }}/products</div>
+                    </div>
+                </div>
+                <div class="relative overflow-hidden max-h-[220px] sm:max-h-[320px] lg:max-h-[420px]">
+                    <img src="{{ asset('images/Product-Catalog.webp') }}"
+                         alt="Product catalog showing product details, pricing, and sales analytics"
+                         class="w-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.02]"
+                         loading="eager">
+                    <div class="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-gray-950 to-transparent pointer-events-none"></div>
+                </div>
+            </a>
+        </div>
     </section>
 
     {# ── The Pitch ───────────────────────────────────────────────────────── #}
@@ -55,8 +93,8 @@
                 {{ domain|title }} is your destination for everything from habitat maintenance to cutting-edge scientific equipment.
             </p>
             <p class="text-lg sm:text-xl text-gray-400 leading-relaxed" data-aos="fade-up" data-aos-delay="200">
-                It's also a fully functional demo designed to showcase e-commerce development with a modern PHP stack
-                &mdash; modelling real operational complexity, not just add-to-cart basics.
+                It's also a fully functional demo built to show what modern PHP e-commerce actually looks like
+                &mdash; real operational complexity, not just add-to-cart basics.
             </p>
         </div>
     </section>
@@ -78,9 +116,9 @@
                     <div class="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-orange-500/10">
                         <twig:ux:icon name="bi:box-seam-fill" class="h-7 w-7 text-orange-400" />
                     </div>
-                    <h3 class="text-lg font-semibold text-white mb-2">Product Management</h3>
+                    <h3 class="text-lg font-semibold text-white mb-2">Product Catalog</h3>
                     <p class="text-sm text-gray-400 leading-relaxed">
-                        Full product catalogue with categories, subcategories, images, and manufacturer associations.
+                        Structured catalogue with hierarchical categories, rich product pages, image galleries, and manufacturer tracking across the full inventory.
                     </p>
                 </div>
 
@@ -88,9 +126,9 @@
                     <div class="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-violet-500/10">
                         <twig:ux:icon name="bi:truck" class="h-7 w-7 text-violet-400" />
                     </div>
-                    <h3 class="text-lg font-semibold text-white mb-2">Supplier Management</h3>
+                    <h3 class="text-lg font-semibold text-white mb-2">Supplier Network</h3>
                     <p class="text-sm text-gray-400 leading-relaxed">
-                        Multiple suppliers per product with cost tracking, stock levels, and supplier product catalogues.
+                        Multi-supplier sourcing per product with cost comparison, real-time stock visibility, and automated best-source selection.
                     </p>
                 </div>
 
@@ -98,9 +136,9 @@
                     <div class="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-blue-500/10">
                         <twig:ux:icon name="bi:bag-check-fill" class="h-7 w-7 text-blue-400" />
                     </div>
-                    <h3 class="text-lg font-semibold text-white mb-2">Order Processing</h3>
+                    <h3 class="text-lg font-semibold text-white mb-2">Order Management</h3>
                     <p class="text-sm text-gray-400 leading-relaxed">
-                        Customer orders with line items, status tracking, and automatic allocation to supplier purchase orders.
+                        End-to-end order lifecycle with line-item tracking, automatic supplier allocation, and order splitting across multiple sources.
                     </p>
                 </div>
 
@@ -108,9 +146,9 @@
                     <div class="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-cyan-500/10">
                         <twig:ux:icon name="bi:clipboard2-data-fill" class="h-7 w-7 text-cyan-400" />
                     </div>
-                    <h3 class="text-lg font-semibold text-white mb-2">Purchasing</h3>
+                    <h3 class="text-lg font-semibold text-white mb-2">Purchase Orders</h3>
                     <p class="text-sm text-gray-400 leading-relaxed">
-                        Purchase orders generated from customer demand, tracked through acceptance, shipping, and delivery.
+                        Demand-driven purchase orders with full state-machine lifecycle — from allocation through acceptance, shipping, and delivery.
                     </p>
                 </div>
 
@@ -118,9 +156,9 @@
                     <div class="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-emerald-500/10">
                         <twig:ux:icon name="bi:currency-pound" class="h-7 w-7 text-emerald-400" />
                     </div>
-                    <h3 class="text-lg font-semibold text-white mb-2">Pricing &amp; VAT</h3>
+                    <h3 class="text-lg font-semibold text-white mb-2">Pricing Engine</h3>
                     <p class="text-sm text-gray-400 leading-relaxed">
-                        Configurable markup strategies at multiple levels, VAT rate management, and sell-price calculation.
+                        Three-level markup cascades across product, subcategory, and category with multiple pricing models, VAT management, and event-driven recalculation.
                     </p>
                 </div>
 
@@ -128,9 +166,9 @@
                     <div class="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-amber-500/10">
                         <twig:ux:icon name="bi:bar-chart-line-fill" class="h-7 w-7 text-amber-400" />
                     </div>
-                    <h3 class="text-lg font-semibold text-white mb-2">Reporting</h3>
+                    <h3 class="text-lg font-semibold text-white mb-2">Reporting &amp; Analytics</h3>
                     <p class="text-sm text-gray-400 leading-relaxed">
-                        Dashboards with revenue, margin, and order metrics. Daily granular records aggregated into fast summaries.
+                        Revenue, margin, and operational dashboards powered by two-layer aggregation — daily granular records rolled into pre-computed summaries.
                     </p>
                 </div>
             </div>
@@ -155,8 +193,7 @@
                     <div>
                         <h3 class="text-xl sm:text-2xl font-semibold text-white mb-3">Multi-supplier Sourcing</h3>
                         <p class="text-gray-400 max-w-xl leading-relaxed">
-                            Products aggregate multiple supplier sources. A best-source algorithm picks the lowest cost,
-                            with automatic cost optimisation and stock-aware allocation across every product.
+                            Each product aggregates multiple suppliers. A best-source algorithm selects the lowest-cost option with available stock, keeping allocation optimal as prices and inventory shift.
                         </p>
                     </div>
                 </div>
@@ -166,8 +203,7 @@
                     <div>
                         <h3 class="text-xl sm:text-2xl font-semibold text-white mb-3">Dynamic Pricing Cascades</h3>
                         <p class="text-gray-400 max-w-xl leading-relaxed">
-                            Three-level markup cascades across product, subcategory, and category with pretty-price models
-                            and event-driven recalculation.
+                            Markup rules cascade from category down to individual product, with six pricing strategies. When supplier costs change, sell prices recalculate automatically via domain events.
                         </p>
                     </div>
                 </div>
@@ -177,8 +213,7 @@
                     <div>
                         <h3 class="text-xl sm:text-2xl font-semibold text-white mb-3">Order Line Splitting</h3>
                         <p class="text-gray-400 max-w-xl leading-relaxed">
-                            When no single supplier can fulfil the required quantity, order lines can split across multiple suppliers.
-                            Overall status is derived from the lifecycle of the resulting purchase order items.
+                            When no single supplier can fulfil the required quantity, order lines split across multiple sources automatically. Overall order status derives from the lifecycle of each resulting purchase order.
                         </p>
                     </div>
                 </div>
@@ -188,8 +223,7 @@
                     <div>
                         <h3 class="text-xl sm:text-2xl font-semibold text-white mb-3">Purchase Order Lifecycle</h3>
                         <p class="text-gray-400 max-w-xl leading-relaxed">
-                            Full lifecycle management from allocation through acceptance, shipping, and delivery
-                            with state-machine transitions and domain event propagation.
+                            Purchase orders follow a state-machine lifecycle — allocated, accepted, shipped, delivered. Each transition propagates domain events that update order statuses, stock levels, and reporting.
                         </p>
                     </div>
                 </div>
@@ -197,10 +231,9 @@
                 <div class="flex flex-col sm:flex-row items-start gap-6 sm:gap-10 pt-12 lg:pt-16" data-aos="fade-up" data-aos-delay="400">
                     <span class="text-6xl sm:text-7xl font-bold text-gray-800/80 leading-none shrink-0 tabular-nums">05</span>
                     <div>
-                        <h3 class="text-xl sm:text-2xl font-semibold text-white mb-3">Simulation-driven Design</h3>
+                        <h3 class="text-xl sm:text-2xl font-semibold text-white mb-3">Simulation Engine</h3>
                         <p class="text-gray-400 max-w-xl leading-relaxed">
-                            Console commands drive the full order, purchasing, and fulfilment lifecycle with realistic timing,
-                            automated stock fluctuation, and two-layer reporting aggregation.
+                            Console commands simulate the full business cycle — orders, supplier fulfilment, stock fluctuation, and reporting aggregation — producing realistic data without manual setup.
                         </p>
                     </div>
                 </div>
@@ -228,8 +261,7 @@
                     </div>
                     <h3 class="mb-3 text-xl font-semibold text-white">DDD Architecture</h3>
                     <p class="text-gray-400 leading-relaxed">
-                        Modular monolith with bounded contexts, CQRS command/query separation,
-                        and domain events driving cross-context communication.
+                        A modular monolith where each area of the business owns its own logic. Commands and queries stay separate. Contexts communicate through domain events, not tangled dependencies.
                     </p>
                 </div>
 
@@ -240,8 +272,7 @@
                     </div>
                     <h3 class="mb-3 text-xl font-semibold text-white">PHP 8.5 + Symfony 8</h3>
                     <p class="text-gray-400 leading-relaxed">
-                        Modern PHP with readonly classes, enums, and constructor promotion.
-                        Symfony powers the web UI, console commands, and a REST API with OpenAPI docs.
+                        Symfony handles everything from forms and security to async messaging via RabbitMQ. Console commands drive a full simulation engine. A REST API with OpenAPI docs sits alongside the web UI.
                     </p>
                 </div>
 
@@ -252,8 +283,7 @@
                     </div>
                     <h3 class="mb-3 text-xl font-semibold text-white">Hotwire + Tailwind</h3>
                     <p class="text-gray-400 leading-relaxed">
-                        Turbo Frames and Streams deliver SPA-like navigation without page reloads.
-                        Stimulus adds targeted interactivity. Tailwind handles responsive styling.
+                        SPA-like speed without a JavaScript framework. Turbo Frames handle navigation, Stimulus adds interactivity where needed, and Asset Mapper eliminates the build step entirely.
                     </p>
                 </div>
 
@@ -264,8 +294,7 @@
                     </div>
                     <h3 class="mb-3 text-xl font-semibold text-white">Infrastructure</h3>
                     <p class="text-gray-400 leading-relaxed">
-                        MySQL 8.4 with Doctrine ORM, RabbitMQ for async event processing,
-                        Redis for caching and sessions, and S3 for file storage. Deployed on AWS EC2.
+                        MySQL 8.4 for persistence, RabbitMQ for async domain event processing, Redis for caching and sessions, and S3 for file storage. Containerised and deployed on AWS.
                     </p>
                 </div>
             </div>
@@ -318,7 +347,7 @@
                             Every product, beautifully organised
                         </h3>
                         <p class="text-gray-400 leading-relaxed text-base lg:text-lg">
-                            Rich product pages with images, pricing, stock levels, sales performance, and multi-supplier sourcing — all at a glance.
+                            Rich product pages with images, live pricing, multi-supplier stock levels, and 30-day sales trends — everything operational staff would need at a glance.
                         </p>
                     </div>
                 </div>
@@ -355,7 +384,7 @@
                             From order to doorstep, fully tracked
                         </h3>
                         <p class="text-gray-400 leading-relaxed text-base lg:text-lg">
-                            Track every order through allocation, multi-supplier fulfilment, and delivery — with real-time status across the entire lifecycle.
+                            Full order lifecycle from placement through supplier allocation, multi-vendor fulfilment, and delivery — with real-time status tracking across every stage.
                         </p>
                     </div>
                 </div>
@@ -389,10 +418,10 @@
                     <div class="lg:w-[40%]">
                         <p class="text-sm font-semibold uppercase tracking-widest text-violet-400/80 mb-3">Reporting Dashboard</p>
                         <h3 class="text-2xl lg:text-3xl font-bold tracking-tight text-white mb-5">
-                            Insights that drive decisions
+                            The numbers, instantly
                         </h3>
                         <p class="text-gray-400 leading-relaxed text-base lg:text-lg">
-                            Revenue, margin, and operational KPIs with geographic breakdowns, period comparisons, and pre-computed summaries for instant dashboards.
+                            Revenue, margins, customer segments, and geographic breakdowns powered by pre-computed summaries for instant dashboard loading at scale.
                         </p>
                     </div>
                 </div>
@@ -415,7 +444,7 @@
                 Explore the Code
             </h2>
             <p class="text-lg text-gray-400 mb-12 leading-relaxed" data-aos="fade-up" data-aos-delay="100">
-                Dive into the codebase, explore the architecture, or get in touch to learn more about how it's built.
+                The full source is on GitHub. Explore the architecture, or get in touch to discuss the approach.
             </p>
             <div class="flex flex-wrap items-center justify-center gap-4" data-aos="fade-up" data-aos-delay="200">
                 <twig:Button
