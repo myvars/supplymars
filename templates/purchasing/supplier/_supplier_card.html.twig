@@ -6,7 +6,10 @@
     colour="{{ supplier.colourScheme }}"
     statusHighlight="{{ supplier.isActive ? 'ACTIVE' : 'INACTIVE' }}"
 >
-    <p class="mb-3">{{ include('purchasing/supplier/_inline_name.html.twig', {supplier: supplier}) }}</p>
+    <div class="mb-3 flex items-center gap-2.5">
+        <twig:SupplierDot colour="{{ supplier.colourScheme }}"/>
+        <div>{{ include('purchasing/supplier/_inline_name.html.twig', {supplier: supplier}) }}</div>
+    </div>
     <twig:CardFooter :updatedAt="supplier.updatedAt">
         <twig:StatusBadge status="{{ supplier.isActive ? 'ACTIVE' : 'INACTIVE' }}"/>
     </twig:CardFooter>

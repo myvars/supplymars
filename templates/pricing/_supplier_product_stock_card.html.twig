@@ -7,7 +7,8 @@
     borderColour="{{ activeProductSource is same as supplierProduct ? 'green' : null }}"
     statusHighlight="{{ supplierProduct.isActive ? 'ACTIVE' : 'INACTIVE' }}"
 >
-    <p class="text-xs font-medium text-gray-500 dark:text-gray-500">
+    <p class="flex items-center gap-1.5 text-xs font-medium text-gray-500 dark:text-gray-500">
+        <twig:SupplierDot colour="{{ supplierProduct.supplier.colourScheme }}"/>
         {{ supplierProduct.supplier.name }}
         {% if not supplierProduct.hasActiveSupplier %}
             <span class="text-red-600 dark:text-red-500">(Inactive)</span>

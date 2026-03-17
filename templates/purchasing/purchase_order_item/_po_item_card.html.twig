@@ -1,16 +1,12 @@
 {# Single PO item card with product image, price, quantity, profit, and status.
    Used on: purchase order show page (inside _po_items_card). Variable: purchaseOrderItem (PurchaseOrderItem) #}
-{% if colourScheme is not defined %}
-    {% set colourScheme = purchaseOrderItem.purchaseOrder.supplier.colourScheme %}
-{% endif %}
 <li class="first:mt-3">
     <twig:Card
         editLink="{{ purchaseOrderItem.allowStatusChange ? path('app_purchasing_purchase_order_item_status_edit', {'id': purchaseOrderItem.publicId.value }) : null }}"
         padding="p-0"
-        colour="{{ colourScheme }}"
     >
         <div class="overflow-hidden rounded-xl">
-            <div class="flex items-center hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700">
+            <div class="flex items-center hover:bg-gray-50 dark:hover:bg-gray-700/50">
                 <twig:ProductImage
                     imageName="{{ purchaseOrderItem.customerOrderItem.product.hasProductImage ? purchaseOrderItem.customerOrderItem.product.getFirstImage.imageName : null }}"
                     filter="small_thumbnail"

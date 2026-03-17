@@ -4,13 +4,12 @@
 <twig:Card colour="{{ colourScheme }}" statusHighlight="{{ purchaseOrder.status.value }}">
     <div class="flex w-full items-center justify-between">
         <div class="flex items-center gap-2">
-            <h1 class="text-base font-medium text-gray-700 dark:text-white">
+            <h2 class="text-base font-medium text-gray-700 dark:text-white">
                 <a href="{{ path('app_purchasing_purchase_order_show', {id: purchaseOrder.publicId.value}) }}"
                    data-turbo-frame="_top"
                    class="hover:text-gray-900 dark:hover:text-white"
                 >PO #{{ '%06d'|format(purchaseOrder.id) }}</a>
-            </h1>
-            <span class="mx-1 text-gray-300 dark:text-gray-600">&middot;</span>
+            </h2>
             <span class="text-sm text-gray-500 dark:text-gray-400">{{ purchaseOrder.supplier.name }}</span>
             <twig:ProfitBadge :value="purchaseOrder.calculateProfit" class="ml-1"/>
         </div>
@@ -20,7 +19,7 @@
             <twig:StatusBadge status="{{ purchaseOrder.status.value }}" :showIcon="true" :interactive="true"/>
         </a>
     </div>
-    <ul class="w-full space-y-3">
+    <ul class="mt-2 w-full space-y-3">
         {% for purchaseOrderItem in purchaseOrder.purchaseOrderItems %}
             {{ include('purchasing/purchase_order_item/_order_po_item_card.html.twig', {purchaseOrderItem: purchaseOrderItem}) }}
         {% else %}

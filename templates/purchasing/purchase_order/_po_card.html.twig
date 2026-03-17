@@ -1,15 +1,16 @@
 {# Purchase order card — header, financial summary, and items list.
    Used on: purchase order show page. Variable: purchaseOrder (PurchaseOrder) #}
 {% set colourScheme = purchaseOrder.supplier.colourScheme %}
-<twig:Card colour="{{ colourScheme }}"
-           editLink="{{ path('app_purchasing_purchase_order_rewind_confirm', {id: purchaseOrder.publicId.value}) }}"
+<twig:Card editLink="{{ path('app_purchasing_purchase_order_rewind_confirm', {id: purchaseOrder.publicId.value}) }}"
            editIcon="bi:arrow-counterclockwise"
+           colour="{{ colourScheme }}"
            statusHighlight="{{ purchaseOrder.status.value }}">
 
     {# Header — PO number, supplier, date, order link, status #}
-    <h1 class="flex items-center text-xl font-semibold text-gray-900 dark:text-white">
+    <h1 class="flex items-center gap-2 text-xl font-semibold text-gray-900 dark:text-white">
+        <twig:SupplierDot colour="{{ colourScheme }}"/>
         PO #{{ '%06d'|format(purchaseOrder.id) }}
-        <span class="mx-1 text-gray-300 dark:text-gray-600">&middot;</span>
+        <span class="text-gray-300 dark:text-gray-600">&middot;</span>
         <span class="text-base font-normal text-gray-500 dark:text-gray-400">{{ purchaseOrder.supplier.name }}</span>
     </h1>
     <div class="mt-1.5 flex items-center justify-between">

@@ -5,7 +5,8 @@
 {% block body %}
 
     <div class="m-3 space-y-4">
-        <ul class="w-full p-3 pt-0 space-y-3">
+        <twig:Breadcrumb :href="path('app_purchasing_purchase_order_show', {id: result.purchaseOrder.publicId.value})" label="PO #{{ '%06d'|format(result.purchaseOrder.id) }}" :current="result.supplierProduct.name"/>
+        <ul class="w-full space-y-3">
             {{ include('purchasing/purchase_order_item/_po_item_card.html.twig', {purchaseOrderItem: result}) }}
         </ul>
     </div>

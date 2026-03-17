@@ -5,6 +5,7 @@
 {% block body %}
 
     <div class="m-3 space-y-4">
+        <twig:Breadcrumb :href="path('app_order_show', {id: result.customerOrder.publicId.value})" label="Order #{{ '%06d'|format(result.customerOrder.id) }}" :current="result.product.name"/>
         <ul class="w-full space-y-3">
             {{ include('order/_order_item_card.html.twig', {orderItem: result}) }}
         </ul>

@@ -4,10 +4,9 @@
     <twig:Card
         editLink="{{ purchaseOrderItem.allowEdit ? path('app_purchasing_purchase_order_item_edit', {'id': purchaseOrderItem.publicId.value }) : null }}"
         padding="p-0"
-        borderColour="{{ colourScheme }}"
     >
         <div class="overflow-hidden rounded-xl">
-            <div class="flex items-center hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700">
+            <div class="flex items-center hover:bg-gray-50 dark:hover:bg-gray-700/50">
                 <twig:ProductImage
                     imageName="{{ purchaseOrderItem.customerOrderItem.product.hasProductImage ? purchaseOrderItem.customerOrderItem.product.getFirstImage.imageName : null }}"
                     filter="small_thumbnail"

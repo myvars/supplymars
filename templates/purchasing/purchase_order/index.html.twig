@@ -18,10 +18,11 @@
         </twig:block>
 
         <twig:block name="list_item">
-            <twig:Card showLink="{{ path('app_purchasing_purchase_order_show', {'id': result.publicId.value }) }}" statusHighlight="{{ result.status.value }}">
+            <twig:Card showLink="{{ path('app_purchasing_purchase_order_show', {'id': result.publicId.value }) }}" colour="{{ result.supplier.colourScheme }}" statusHighlight="{{ result.status.value }}">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-lg font-semibold text-gray-900 dark:text-white">
+                        <p class="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
+                            <twig:SupplierDot colour="{{ result.supplier.colourScheme }}"/>
                             PO #{{ '%06d'|format(result.id) }}
                         </p>
                         <p class="text-xs text-gray-500 dark:text-gray-500">Order #{{ '%06d'|format(result.customerOrder.id) }}</p>

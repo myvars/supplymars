@@ -23,7 +23,10 @@
                 statusHighlight="{{ result.isActive ? 'ACTIVE' : 'INACTIVE' }}"
             >
                 <div class="flex items-center justify-between pe-6">
-                    <p class="text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">{{ result.name }}</p>
+                    <div class="flex items-center gap-2.5">
+                        <twig:SupplierDot colour="{{ result.colourScheme }}"/>
+                        <p class="text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">{{ result.name }}</p>
+                    </div>
                     <twig:StatusBadge status="{{ result.isActive ? 'ACTIVE' : 'INACTIVE' }}"/>
                 </div>
             </twig:Card>

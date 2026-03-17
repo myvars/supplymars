@@ -6,7 +6,7 @@
         padding="p-0"
     >
         <div data-controller="toggle" data-action="click->toggle#toggle" class="overflow-hidden rounded-xl">
-            <div class="flex items-center hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700">
+            <div class="flex items-center hover:bg-gray-50 dark:hover:bg-gray-700/50">
                 <a href="{{ path('app_catalog_product_show', {'id': orderItem.product.publicId.value }) }}"
                    data-turbo-frame="body"
                    data-action="click->toggle#toggle"
