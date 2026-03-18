@@ -1,45 +1,51 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Contact Us{% endblock %}
+{% block title %}Contact{% endblock %}
+
+{% block main_class %}grow bg-gray-950{% endblock %}
 
 {% block body %}
     <div data-controller="aos">
-        <section class="mx-auto flex items-center justify-center min-h-[60vh]" style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
-            <div class="mx-auto max-w-(--breakpoint-xl) px-4 py-8 sm:py-12 lg:px-6">
-                <div class="max-w-(--breakpoint-md) rounded-2xl bg-white/90 p-8 backdrop-blur-sm dark:bg-gray-900/80 lg:p-10" data-aos="fade-up" data-aos-duration="800">
-                    <div class="mb-4 flex justify-center">
-                        <twig:ux:icon name="bi:envelope-fill" class="h-10 w-10 text-orange-500" />
-                    </div>
-                    <h2 class="mb-8 text-center text-3xl tracking-tight text-gray-900 dark:text-white">Contact Us</h2>
-                    <p class="mb-4 text-gray-700 dark:text-gray-400">
-                        {{ domain|title }} is built and maintained by Adam Ashmore. Whether you're curious about the technologies behind the project, want to explore potential collaborations, or simply want to say hi, feel free to reach out.
-                    </p>
-                    <p class="mb-4 text-gray-700 dark:text-gray-400">
-                        You can also find the full source code, documentation, and issue tracker on GitHub.
-                    </p>
-                    <div class="mt-8 flex flex-wrap items-center justify-center gap-4" data-aos="fade-up" data-aos-delay="200" data-aos-duration="800">
-                        <twig:Button
-                            tag="a"
-                            href="mailto:adamashmore@me.com"
-                            class="flex items-center font-bold space-x-1"
-                            variant="secondary"
-                        >
-                            <twig:ux:icon name="bi:envelope-fill" class="h-5 w-5" />
-                            <span>Email</span>
-                        </twig:Button>
-                        <twig:Button
-                            tag="a"
-                            href="https://github.com/myvars/supplymars"
-                            target="_blank"
-                            class="flex items-center font-bold space-x-1"
-                            variant="secondary"
-                        >
-                            <twig:ux:icon name="bi:github" class="h-5 w-5" />
-                            <span>GitHub</span>
-                        </twig:Button>
-                    </div>
-                </div>
+
+    {# ── Header ─────────────────────────────────────────────────────────── #}
+    <section class="relative overflow-hidden">
+        <div class="absolute inset-0"
+             style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-b from-gray-950/80 via-gray-950/60 to-gray-950"></div>
+        <div class="relative text-center px-6 pt-20 sm:pt-28 pb-12 sm:pb-16">
+            <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">Contact</p>
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white">Get in Touch</h1>
+        </div>
+    </section>
+
+    {# ── Content ────────────────────────────────────────────────────────── #}
+    <section class="bg-gray-950 pt-8 pb-24 lg:pb-32">
+        <div class="mx-auto max-w-2xl px-6 text-center">
+            <div class="space-y-5 text-gray-400 leading-relaxed text-base lg:text-lg mb-12" data-aos="fade-up">
+                <p>
+                    {{ domain|title }} is built and maintained by Adam Ashmore. Whether you're curious about the technologies behind the project, want to explore potential collaborations, or simply want to say hello — feel free to reach out.
+                </p>
+                <p>
+                    The full source code, documentation, and issue tracker are all on GitHub.
+                </p>
             </div>
-        </section>
+
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4" data-aos="fade-up" data-aos-delay="100">
+                <a href="mailto:adamashmore@me.com"
+                   class="inline-flex items-center gap-2 w-full sm:w-auto px-7 py-3 text-base font-semibold text-white bg-orange-500 hover:bg-orange-400 rounded-lg shadow-lg shadow-orange-500/20 transition-all duration-200 active:scale-[0.98]">
+                    <twig:ux:icon name="bi:envelope-fill" class="h-5 w-5" />
+                    Email
+                </a>
+                <a href="https://github.com/myvars/supplymars"
+                   target="_blank"
+                   class="inline-flex items-center gap-2 w-full sm:w-auto px-7 py-3 text-base font-semibold text-gray-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg ring-1 ring-white/[0.1] hover:ring-white/[0.18] transition-all duration-200 active:scale-[0.98]">
+                    <twig:ux:icon name="bi:github" class="h-5 w-5" />
+                    GitHub
+                </a>
+            </div>
+        </div>
+    </section>
+
     </div>
 {% endblock %}

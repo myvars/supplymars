@@ -2,101 +2,120 @@
 
 {% block title %}Privacy Policy{% endblock %}
 
+{% block main_class %}grow bg-gray-950{% endblock %}
+
 {% block body %}
     <div data-controller="aos">
-        <section class="flex justify-center" style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
-            <div class="mx-auto max-w-(--breakpoint-xl) px-4 py-8 sm:py-12 lg:px-6">
-                <div class="max-w-(--breakpoint-md) rounded-2xl bg-white/90 p-8 backdrop-blur-sm dark:bg-gray-900/80 lg:p-10">
-                    <h2 class="mb-8 text-3xl tracking-tight text-gray-900 dark:text-white">Privacy Policy</h2>
 
-                    <p class="mb-6 text-sm text-gray-700 dark:text-gray-400">
-                        Welcome to {{ domain }}, a demo e-commerce website designed to showcase modern web technologies and development practices. This site uses AI-generated data for products, descriptions, and images, along with simulated customer and supplier interactions. While some personal information such as name, email, and password is collected for guest login purposes, no real transactions or personal data exchanges take place.
+    {# ── Header ─────────────────────────────────────────────────────────── #}
+    <section class="relative overflow-hidden">
+        <div class="absolute inset-0"
+             style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-b from-gray-950/80 via-gray-950/60 to-gray-950"></div>
+        <div class="relative text-center px-6 pt-20 sm:pt-28 pb-12 sm:pb-16">
+            <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">Legal</p>
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white">Privacy Policy</h1>
+        </div>
+    </section>
+
+    {# ── Content ────────────────────────────────────────────────────────── #}
+    <section class="bg-gray-950 pt-8 pb-24 lg:pb-32">
+        <div class="mx-auto max-w-3xl px-6">
+
+            <p class="text-gray-400 leading-relaxed mb-12" data-aos="fade-up">
+                {{ domain|title }} is a demo e-commerce site designed to showcase modern web technologies and development practices. All product data, descriptions, and images are AI-generated. Customer and supplier interactions are simulated. While some personal information is collected for guest login, no real transactions or personal data exchanges take place.
+            </p>
+
+            <div class="space-y-10" data-aos="fade-up">
+
+                <div>
+                    <h2 class="text-lg font-semibold text-white mb-3 border-l-4 border-orange-500 pl-4">Data Collection</h2>
+                    <p class="text-gray-400 leading-relaxed mb-4">
+                        For the purpose of guest login, we collect the following:
                     </p>
-
-                    <div class="space-y-6">
-                        <div>
-                            <h3 class="mb-3 border-l-4 border-orange-500 pl-3 text-xl text-gray-900 dark:text-white">Data Collection</h3>
-                            <p class="mb-3 text-sm text-gray-700 dark:text-gray-400">
-                                For the purpose of guest login, we collect the following information:
-                            </p>
-                            <ul class="mb-3 list-inside list-disc space-y-1 text-sm text-gray-700 dark:text-gray-400">
-                                <li><strong>Name</strong>: Used to personalize the guest login experience.</li>
-                                <li><strong>Email</strong>: Required for account creation and identification.</li>
-                                <li><strong>Password</strong>: Securely stored and encrypted, used for login authentication.</li>
-                            </ul>
-                            <p class="text-sm text-gray-700 dark:text-gray-400">
-                                No additional personal information is collected, and any interactions with products, orders, or suppliers are fully simulated.
-                            </p>
-                        </div>
-
-                        <div>
-                            <h3 class="mb-3 border-l-4 border-orange-500 pl-3 text-xl text-gray-900 dark:text-white">How We Use Your Data</h3>
-                            <p class="text-sm text-gray-700 dark:text-gray-400">
-                                The information collected for guest login is used solely to provide access to the demo site and to simulate user interactions. We do not use this data for any real-world transactions, marketing purposes, or sharing with third parties.
-                            </p>
-                        </div>
-
-                        <div>
-                            <h3 class="mb-3 border-l-4 border-orange-500 pl-3 text-xl text-gray-900 dark:text-white">Simulated Interactions</h3>
-                            <p class="text-sm text-gray-700 dark:text-gray-400">
-                                All customer orders, supplier behavior, and other e-commerce activities on this site are computer-generated simulations. There is no real exchange of goods or services, and all product data, including names, descriptions, and images, are created by AI to demonstrate the platform's capabilities.
-                            </p>
-                        </div>
-
-                        <div>
-                            <h3 class="mb-3 border-l-4 border-orange-500 pl-3 text-xl text-gray-900 dark:text-white">Data Security</h3>
-                            <p class="text-sm text-gray-700 dark:text-gray-400">
-                                We take standard security measures to protect the personal information provided, including the encryption of passwords and secure handling of login data. However, as this is a demo site, no sensitive or financial information is required or processed.
-                            </p>
-                        </div>
-
-                        <div>
-                            <h3 class="mb-3 border-l-4 border-orange-500 pl-3 text-xl text-gray-900 dark:text-white">Cookies and Tracking</h3>
-                            <p class="text-sm text-gray-700 dark:text-gray-400">
-                                We may use cookies or similar technologies to enhance your browsing experience by improving site performance or tracking non-personally identifiable usage metrics. However, no personally identifiable information beyond login data is collected.
-                            </p>
-                        </div>
-
-                        <div>
-                            <h3 class="mb-3 border-l-4 border-orange-500 pl-3 text-xl text-gray-900 dark:text-white">Third-Party Services</h3>
-                            <p class="text-sm text-gray-700 dark:text-gray-400">
-                                This demo site is hosted on third-party services including Amazon EC2, RDS, and S3 for compute, database, and file storage infrastructure. These services handle data securely, but no sensitive or financial information is processed as part of this demo.
-                            </p>
-                        </div>
-
-                        <div>
-                            <h3 class="mb-3 border-l-4 border-orange-500 pl-3 text-xl text-gray-900 dark:text-white">Your Rights</h3>
-                            <p class="text-sm text-gray-700 dark:text-gray-400">
-                                As this is a demo site, your personal data is limited to login credentials. You have the right to request the deletion of your login account and its associated data at any time by contacting us.
-                            </p>
-                        </div>
-
-                        <div>
-                            <h3 class="mb-3 border-l-4 border-orange-500 pl-3 text-xl text-gray-900 dark:text-white">Changes to This Policy</h3>
-                            <p class="text-sm text-gray-700 dark:text-gray-400">
-                                We may update this Privacy Policy to reflect new features or changes in the demo setup. Any significant changes will be communicated through the site.
-                            </p>
-                        </div>
-
-                        <div>
-                            <h3 class="mb-3 border-l-4 border-orange-500 pl-3 text-xl text-gray-900 dark:text-white">Contact Us</h3>
-                            <p class="mb-4 text-sm text-gray-700 dark:text-gray-400">
-                                If you have any questions regarding this Privacy Policy or the {{ domain }} demo site, please feel free to contact us.
-                            </p>
-                            <div class="flex items-center justify-center">
-                                <twig:Button
-                                    tag="a"
-                                    href="mailto:adamashmore@me.com"
-                                    class="flex items-center font-bold space-x-1"
-                                    variant="secondary"
-                                >
-                                    <span>Contact Us</span>
-                                </twig:Button>
-                            </div>
-                        </div>
-                    </div>
+                    <ul class="space-y-2 text-gray-400 ml-4">
+                        <li class="flex items-start gap-3">
+                            <span class="mt-2 h-1.5 w-1.5 rounded-full bg-orange-500 shrink-0"></span>
+                            <span><strong class="text-gray-300">Name</strong> — used to personalise the guest login experience.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="mt-2 h-1.5 w-1.5 rounded-full bg-orange-500 shrink-0"></span>
+                            <span><strong class="text-gray-300">Email</strong> — required for account creation and identification.</span>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="mt-2 h-1.5 w-1.5 rounded-full bg-orange-500 shrink-0"></span>
+                            <span><strong class="text-gray-300">Password</strong> — securely stored and encrypted, used for login authentication.</span>
+                        </li>
+                    </ul>
+                    <p class="text-gray-400 leading-relaxed mt-4">
+                        No additional personal information is collected. All interactions with products, orders, and suppliers are fully simulated.
+                    </p>
                 </div>
+
+                <div>
+                    <h2 class="text-lg font-semibold text-white mb-3 border-l-4 border-orange-500 pl-4">How We Use Your Data</h2>
+                    <p class="text-gray-400 leading-relaxed">
+                        The information collected for guest login is used solely to provide access to the demo site and to simulate user interactions. We do not use this data for any real-world transactions, marketing purposes, or sharing with third parties.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-lg font-semibold text-white mb-3 border-l-4 border-orange-500 pl-4">Simulated Interactions</h2>
+                    <p class="text-gray-400 leading-relaxed">
+                        All customer orders, supplier behaviour, and other e-commerce activities on this site are computer-generated simulations. There is no real exchange of goods or services, and all product data is created by AI to demonstrate the platform's capabilities.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-lg font-semibold text-white mb-3 border-l-4 border-orange-500 pl-4">Data Security</h2>
+                    <p class="text-gray-400 leading-relaxed">
+                        We take standard security measures to protect the personal information provided, including the encryption of passwords and secure handling of login data. As this is a demo site, no sensitive or financial information is required or processed.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-lg font-semibold text-white mb-3 border-l-4 border-orange-500 pl-4">Cookies and Tracking</h2>
+                    <p class="text-gray-400 leading-relaxed">
+                        We may use cookies or similar technologies to enhance your browsing experience and track non-personally identifiable usage metrics. No personally identifiable information beyond login data is collected.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-lg font-semibold text-white mb-3 border-l-4 border-orange-500 pl-4">Third-Party Services</h2>
+                    <p class="text-gray-400 leading-relaxed">
+                        This demo site is hosted on Amazon EC2, RDS, and S3 for compute, database, and file storage infrastructure. These services handle data securely. No sensitive or financial information is processed as part of this demo.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-lg font-semibold text-white mb-3 border-l-4 border-orange-500 pl-4">Your Rights</h2>
+                    <p class="text-gray-400 leading-relaxed">
+                        Your personal data is limited to login credentials. You have the right to request the deletion of your account and its associated data at any time by contacting us.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-lg font-semibold text-white mb-3 border-l-4 border-orange-500 pl-4">Changes to This Policy</h2>
+                    <p class="text-gray-400 leading-relaxed">
+                        We may update this Privacy Policy to reflect new features or changes in the demo setup. Any significant changes will be communicated through the site.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-lg font-semibold text-white mb-3 border-l-4 border-orange-500 pl-4">Contact</h2>
+                    <p class="text-gray-400 leading-relaxed mb-6">
+                        If you have any questions regarding this Privacy Policy, please contact us.
+                    </p>
+                    <a href="mailto:adamashmore@me.com"
+                       class="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-gray-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg ring-1 ring-white/[0.1] hover:ring-white/[0.18] transition-all duration-200 active:scale-[0.98]">
+                        Get in Touch
+                    </a>
+                </div>
+
             </div>
-        </section>
+        </div>
+    </section>
+
     </div>
 {% endblock %}

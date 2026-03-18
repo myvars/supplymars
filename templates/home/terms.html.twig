@@ -2,82 +2,91 @@
 
 {% block title %}Terms & Conditions{% endblock %}
 
+{% block main_class %}grow bg-gray-950{% endblock %}
+
 {% block body %}
     <div data-controller="aos">
-        <section class="flex justify-center" style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
-            <div class="mx-auto max-w-(--breakpoint-xl) px-4 py-8 sm:py-12 lg:px-6">
-                <div class="max-w-(--breakpoint-md) rounded-2xl bg-white/90 p-8 backdrop-blur-sm dark:bg-gray-900/80 lg:p-10">
-                    <h2 class="mb-8 text-3xl tracking-tight text-gray-900 dark:text-white">Terms & Conditions</h2>
 
-                    <div class="space-y-6">
-                        <div>
-                            <h3 class="mb-3 border-l-4 border-orange-500 pl-3 text-xl text-gray-900 dark:text-white">Introduction</h3>
-                            <p class="text-sm text-gray-700 dark:text-gray-400">
-                                Welcome to {{ domain }}. By accessing or using this website, you agree to comply with the following terms and conditions. Please read these terms carefully before using the site. This website is a demonstration project. All transactions, orders, and supplier interactions are simulated, and no real goods or payments are exchanged.
-                            </p>
-                        </div>
+    {# ── Header ─────────────────────────────────────────────────────────── #}
+    <section class="relative overflow-hidden">
+        <div class="absolute inset-0"
+             style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-b from-gray-950/80 via-gray-950/60 to-gray-950"></div>
+        <div class="relative text-center px-6 pt-20 sm:pt-28 pb-12 sm:pb-16">
+            <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">Legal</p>
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white">Terms &amp; Conditions</h1>
+        </div>
+    </section>
 
-                        <div>
-                            <h3 class="mb-3 border-l-4 border-orange-500 pl-3 text-xl text-gray-900 dark:text-white">Use of the Website</h3>
-                            <p class="text-sm text-gray-700 dark:text-gray-400">
-                                This site is designed for demonstration purposes only. Any interactions with products, customers, or suppliers are simulated and should not be considered real. No actual transactions or exchanges of goods and services occur on this platform. By using this site, you understand that all data is AI-generated, and any behavior is simulated for the purpose of showcasing e-commerce functionalities.
-                            </p>
-                        </div>
+    {# ── Content ────────────────────────────────────────────────────────── #}
+    <section class="bg-gray-950 pt-8 pb-24 lg:pb-32">
+        <div class="mx-auto max-w-3xl px-6">
+            <div class="space-y-10" data-aos="fade-up">
 
-                        <div>
-                            <h3 class="mb-3 border-l-4 border-orange-500 pl-3 text-xl text-gray-900 dark:text-white">Account Registration</h3>
-                            <p class="text-sm text-gray-700 dark:text-gray-400">
-                                Users may create guest accounts by providing their name, email, and password. These credentials are stored securely, and your password is encrypted. Guest accounts are created solely to allow access to the site and to simulate a logged-in user experience. We do not store any other personal or financial data, nor do we process payments.
-                            </p>
-                        </div>
-
-                        <div>
-                            <h3 class="mb-3 border-l-4 border-orange-500 pl-3 text-xl text-gray-900 dark:text-white">Simulated Interactions</h3>
-                            <p class="text-sm text-gray-700 dark:text-gray-400">
-                                All interactions on this site are simulated. Any orders placed, or supplier responses seen, are generated as part of the demo functionality. These are not real transactions and should not be interpreted as such.
-                            </p>
-                        </div>
-
-                        <div>
-                            <h3 class="mb-3 border-l-4 border-orange-500 pl-3 text-xl text-gray-900 dark:text-white">Intellectual Property</h3>
-                            <p class="text-sm text-gray-700 dark:text-gray-400">
-                                All content on this site, including product descriptions, names, and images, is generated using AI for demonstration purposes. This content is provided solely to showcase the platform's capabilities and may not be copied, distributed, or used for commercial purposes without permission.
-                            </p>
-                        </div>
-
-                        <div>
-                            <h3 class="mb-3 border-l-4 border-orange-500 pl-3 text-xl text-gray-900 dark:text-white">Limitation of Liability</h3>
-                            <p class="text-sm text-gray-700 dark:text-gray-400">
-                                As this is a demo site, {{ domain }} assumes no liability for any errors, inaccuracies, or performance issues. All features and functionality are provided "as-is" for demonstration purposes, and no warranties are provided regarding the performance or operation of the site.
-                            </p>
-                        </div>
-
-                        <div>
-                            <h3 class="mb-3 border-l-4 border-orange-500 pl-3 text-xl text-gray-900 dark:text-white">Changes to the Terms & Conditions</h3>
-                            <p class="text-sm text-gray-700 dark:text-gray-400">
-                                We reserve the right to modify or update these terms at any time. Changes will be posted on this page, and by continuing to use the site, you agree to any revised terms.
-                            </p>
-                        </div>
-
-                        <div>
-                            <h3 class="mb-3 border-l-4 border-orange-500 pl-3 text-xl text-gray-900 dark:text-white">Contact Us</h3>
-                            <p class="mb-4 text-sm text-gray-700 dark:text-gray-400">
-                                If you have any questions regarding these Terms & Conditions, please contact us.
-                            </p>
-                            <div class="flex items-center justify-center">
-                                <twig:Button
-                                    tag="a"
-                                    href="mailto:adamashmore@me.com"
-                                    class="flex items-center font-bold space-x-1"
-                                    variant="secondary"
-                                >
-                                    <span>Contact Us</span>
-                                </twig:Button>
-                            </div>
-                        </div>
-                    </div>
+                <div>
+                    <h2 class="text-lg font-semibold text-white mb-3 border-l-4 border-orange-500 pl-4">Introduction</h2>
+                    <p class="text-gray-400 leading-relaxed">
+                        Welcome to {{ domain }}. By accessing or using this website, you agree to comply with the following terms and conditions. Please read these terms carefully before using the site. This website is a demonstration project. All transactions, orders, and supplier interactions are simulated, and no real goods or payments are exchanged.
+                    </p>
                 </div>
+
+                <div>
+                    <h2 class="text-lg font-semibold text-white mb-3 border-l-4 border-orange-500 pl-4">Use of the Website</h2>
+                    <p class="text-gray-400 leading-relaxed">
+                        This site is designed for demonstration purposes only. Any interactions with products, customers, or suppliers are simulated and should not be considered real. No actual transactions or exchanges of goods and services occur on this platform. By using this site, you understand that all data is AI-generated, and any behaviour is simulated for the purpose of showcasing e-commerce functionalities.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-lg font-semibold text-white mb-3 border-l-4 border-orange-500 pl-4">Account Registration</h2>
+                    <p class="text-gray-400 leading-relaxed">
+                        Users may create guest accounts by providing their name, email, and password. These credentials are stored securely, and your password is encrypted. Guest accounts are created solely to allow access to the site and to simulate a logged-in user experience. We do not store any other personal or financial data, nor do we process payments.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-lg font-semibold text-white mb-3 border-l-4 border-orange-500 pl-4">Simulated Interactions</h2>
+                    <p class="text-gray-400 leading-relaxed">
+                        All interactions on this site are simulated. Any orders placed, or supplier responses seen, are generated as part of the demo functionality. These are not real transactions and should not be interpreted as such.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-lg font-semibold text-white mb-3 border-l-4 border-orange-500 pl-4">Intellectual Property</h2>
+                    <p class="text-gray-400 leading-relaxed">
+                        All content on this site, including product descriptions, names, and images, is generated using AI for demonstration purposes. This content is provided solely to showcase the platform's capabilities and may not be copied, distributed, or used for commercial purposes without permission.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-lg font-semibold text-white mb-3 border-l-4 border-orange-500 pl-4">Limitation of Liability</h2>
+                    <p class="text-gray-400 leading-relaxed">
+                        As this is a demo site, {{ domain }} assumes no liability for any errors, inaccuracies, or performance issues. All features and functionality are provided "as-is" for demonstration purposes, and no warranties are provided regarding the performance or operation of the site.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-lg font-semibold text-white mb-3 border-l-4 border-orange-500 pl-4">Changes to These Terms</h2>
+                    <p class="text-gray-400 leading-relaxed">
+                        We reserve the right to modify or update these terms at any time. Changes will be posted on this page, and by continuing to use the site, you agree to any revised terms.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-lg font-semibold text-white mb-3 border-l-4 border-orange-500 pl-4">Contact</h2>
+                    <p class="text-gray-400 leading-relaxed mb-6">
+                        If you have any questions regarding these terms, please contact us.
+                    </p>
+                    <a href="mailto:adamashmore@me.com"
+                       class="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-gray-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg ring-1 ring-white/[0.1] hover:ring-white/[0.18] transition-all duration-200 active:scale-[0.98]">
+                        Get in Touch
+                    </a>
+                </div>
+
             </div>
-        </section>
+        </div>
+    </section>
+
     </div>
 {% endblock %}
