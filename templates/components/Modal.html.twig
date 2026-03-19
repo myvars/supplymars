@@ -27,7 +27,7 @@
         data-[modal-size=md]:md:min-w-[50%] data-[modal-size=md]:md:max-w-[50%]
         data-[modal-size=lg]:md:max-w-2xl
         data-[modal-size=xl]:md:max-w-5xl
-        max-h-full animate-fade-in backdrop:bg-gray-900/40 backdrop:backdrop-blur-[2px] dark:border-gray-700 dark:bg-gray-800 dark:backdrop:bg-gray-950/50{{ fixedTop ? ' mt-14' : '' }}"
+        max-h-full animate-scale-in backdrop:bg-gray-900/40 backdrop:backdrop-blur-[2px] dark:border-white/[0.1] dark:bg-gray-800 dark:shadow-2xl dark:shadow-black/40 dark:backdrop:bg-gray-950/50{{ fixedTop ? ' mt-14' : '' }}"
         data-action="close->basic-modal#close mousedown->basic-modal#onMouseDown click->basic-modal#clickOutside"
     >
         <div class="grow overflow-auto p-1">
@@ -35,7 +35,7 @@
         </div>
         {% if closeButton %}
             <button
-                class="absolute top-5 right-5 flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500 dark:hover:bg-gray-700 dark:hover:text-white"
+                class="absolute top-5 right-5 flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-all duration-150 hover:bg-gray-100 hover:text-gray-900 hover:scale-110 active:scale-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500 dark:hover:bg-gray-700 dark:hover:text-white"
                 data-action="basic-modal#close"
                 type="button"
             >

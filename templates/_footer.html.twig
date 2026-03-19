@@ -1,4 +1,4 @@
-<footer class="rounded-b-lg border-t border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+<footer class="rounded-b-lg border-t border-gray-200 bg-white dark:border-white/[0.06] dark:bg-gray-900/80">
     <div class="mx-auto w-full max-w-(--breakpoint-xl) px-6 py-6 lg:py-8">
         <div class="sm:flex sm:items-center sm:justify-between">
             <a href="{{ path('app_homepage') }}"
@@ -25,7 +25,7 @@
                 </li>
             </ul>
         </div>
-        <div class="mt-6 border-t border-gray-100 pt-6 dark:border-gray-800 lg:mt-8 lg:pt-8">
+        <div class="mt-6 border-t border-gray-100 pt-6 dark:border-white/[0.04] lg:mt-8 lg:pt-8">
             <p class="text-center text-sm text-gray-400 dark:text-gray-500">
                 &copy; {{ "now"|date("Y") }}
                 <a href="{{ path('app_homepage') }}" class="transition-colors hover:text-gray-900 dark:hover:text-white" data-turbo-frame="body">{{ domain }}</a>.

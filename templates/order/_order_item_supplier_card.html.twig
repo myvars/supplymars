@@ -2,7 +2,7 @@
    Used on: order show page (toggled inside _order_item_card). Variable: orderItem (CustomerOrderItem) #}
 <ul
     data-toggle-target="toggleable"
-    class="hidden w-full divide-y divide-gray-100 border-t border-gray-100 bg-gray-50/50 dark:divide-gray-800 dark:border-gray-600 dark:bg-gray-900/80"
+    class="hidden w-full divide-y divide-gray-100 border-t border-gray-100 bg-gray-50/50 dark:divide-gray-800 dark:border-white/[0.06] dark:bg-gray-900/80"
 >
     {% if orderItem.outstandingQty > 0 %}
         {% for supplierProduct in orderItem.product.activeSupplierProducts %}

@@ -1,9 +1,9 @@
 {# Sidebar navigation drawer. Managed by basic-drawer Stimulus controller.
    Active state managed by sidebar-active controller (JS), updated on drawer open.
    Sections: Home, Catalog, Orders, Purchasing, Customers, Reviews, Reporting, Admin, Notes #}
-<div id="side-menu" class="fixed top-0 left-0 z-40 h-screen w-72 -translate-x-full overflow-y-auto bg-white dark:bg-gray-900" data-action="turbo:before-cache@window->basic-drawer#close" tabindex="-1" aria-hidden="true">
-    <div class="flex h-full flex-col overflow-y-auto border-r border-gray-200 bg-white dark:border-gray-700/50 dark:bg-gray-900">
-        <div class="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-gray-700/50">
+<div id="side-menu" class="fixed top-0 left-0 z-40 h-screen w-72 -translate-x-full overflow-y-auto bg-white dark:bg-gray-900/95 dark:backdrop-blur-xl" data-action="turbo:before-cache@window->basic-drawer#close" tabindex="-1" aria-hidden="true">
+    <div class="flex h-full flex-col overflow-y-auto border-r border-gray-200 bg-white dark:border-white/[0.06] dark:bg-transparent">
+        <div class="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-white/[0.06]">
             <a href="{{ path('app_homepage') }}" data-turbo-frame="body" data-action="basic-drawer#close">
                 {{ include('_logo.html.twig', { 'logoHeight': 28 }) }}
             </a>
@@ -256,7 +256,7 @@
                 </li>
             </ul>
             {# ── Notes (Tickets, Pools) — separated by divider ── #}
-            <div class="mt-4 border-t border-gray-200 pt-4 dark:border-gray-600">
+            <div class="mt-4 border-t border-gray-200 pt-4 dark:border-white/[0.06]">
                 <ul class="space-y-1">
                     <li>
                         <button type="button" data-nav="section" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors text-gray-900 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-notes" data-collapse-toggle="dropdown-notes">

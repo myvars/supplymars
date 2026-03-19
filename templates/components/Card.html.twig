@@ -11,12 +11,12 @@
    - editIcon: Icon name for edit button (default: bi:pencil-square)
    Blocks: content (implicit), cardImage (for horizontal layout) #}
 <div {{ attributes.defaults({
-    'class': width~' relative h-full rounded-xl shadow-sm dark:shadow-none '~this.getBackgroundClasses~' '~this.getBorderClasses~' '~this.getHighlightClasses,
+    'class': width~' relative h-full rounded-xl shadow-sm dark:shadow-md dark:shadow-black/20 '~this.getBackgroundClasses~' '~this.getBorderClasses~' '~this.getHighlightClasses,
 }) }}
 >
     {% if editLink %}
         <a href="{{ editLink }}"
-           class="absolute z-10 -top-2 -right-2 flex h-8 w-8 items-center justify-center rounded-full text-yellow-500 shadow-sm transition-all duration-150 hover:shadow-md hover:brightness-110 {{ this.getEditLinkClasses }}"
+           class="absolute z-10 -top-2 -right-2 flex h-8 w-8 items-center justify-center rounded-full text-yellow-500 shadow-sm transition-all duration-150 hover:scale-110 hover:shadow-md hover:brightness-110 active:scale-95 {{ this.getEditLinkClasses }}"
            data-turbo-frame="modal"
            data-turbo-prefetch="false"
            aria-label="Edit{{ title ? ' ' ~ title : '' }}"
@@ -28,7 +28,7 @@
         {% block cardImage %}{% endblock %}
 
         {% if showLink %}
-        <a href="{{ showLink }}" data-turbo-frame="body" class="group block rounded-xl transition-all duration-200 hover:shadow-md hover:brightness-95 dark:hover:brightness-125 dark:hover:shadow-none {{ layout == 'horizontal' ? 'flex-1 min-w-0' : '' }}">
+        <a href="{{ showLink }}" data-turbo-frame="body" class="group block rounded-xl transition-all duration-200 hover:shadow-md hover:brightness-[0.97] hover:-translate-y-px dark:hover:brightness-125 dark:hover:shadow-none {{ layout == 'horizontal' ? 'flex-1 min-w-0' : '' }}">
         {% endif %}
                 <div class="{{ padding }} text-sm text-gray-600 dark:text-gray-400 {{ layout == 'horizontal' and not showLink ? 'flex-1 min-w-0' : '' }}">
                     {% if title %}

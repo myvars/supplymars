@@ -20,12 +20,12 @@
         </div>
 
         {% if review.body %}
-            <div class="rounded-lg border-l-4 border-gray-200 bg-gray-50 py-3 pr-4 pl-4 dark:border-gray-600 dark:bg-gray-800/50">
+            <div class="rounded-lg border-l-4 border-gray-200 bg-gray-50 py-3 pr-4 pl-4 dark:border-white/[0.06] dark:bg-gray-800/50">
                 <p class="text-sm leading-relaxed text-gray-700 dark:text-gray-400">{{ review.body }}</p>
             </div>
         {% endif %}
 
-        <div class="border-t border-gray-200 pt-4 dark:border-gray-600">
+        <div class="border-t border-gray-200 pt-4 dark:border-white/[0.06]">
             <dl class="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2.5 text-sm">
                 <dt class="text-gray-500 dark:text-gray-400">Product</dt>
                 <dd>
@@ -54,7 +54,7 @@
             </dl>
         </div>
 
-        <div class="flex items-center gap-2 border-t border-gray-200 pt-4 dark:border-gray-600">
+        <div class="flex items-center gap-2 border-t border-gray-200 pt-4 dark:border-white/[0.06]">
             {% if review.status.value == 'PENDING' %}
                 <twig:Button
                     tag="a"

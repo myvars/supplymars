@@ -24,7 +24,7 @@
 
                 {% if report.productSalesChart %}
                     <div
-                        class="mt-3 flex h-80 md:h-96 flex-wrap justify-around rounded-lg border border-gray-200/80 bg-white text-center font-light dark:border-gray-600 dark:bg-gray-800">
+                        class="mt-3 flex h-80 md:h-96 flex-wrap justify-around rounded-lg border border-gray-200/80 bg-white text-center font-light dark:border-white/[0.06] dark:bg-gray-800">
                         {{ render_chart(report.productSalesChart, {'data-controller': 'bar_chart', 'class': 'w-full h-full'}) }}
                     </div>
                 {% endif %}
@@ -42,7 +42,7 @@
                     {% endif %}
                 </div>
 
-                <div class="relative mt-3 overflow-x-auto rounded-lg border border-gray-200/80 dark:border-gray-600">
+                <div class="relative mt-3 overflow-x-auto rounded-lg border border-gray-200/80 dark:border-white/[0.06]">
                     <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
                         <caption class="sr-only">Top Products</caption>
                         <thead class="bg-gray-100 text-xs font-semibold uppercase text-gray-700 dark:bg-gray-700 dark:text-gray-400">
@@ -74,7 +74,7 @@
                         </thead>
                         <tbody>
                         {% for sale in report.sales %}
-                            <tr class="border-b odd:bg-white even:bg-gray-50 transition-colors hover:bg-gray-100 dark:border-gray-600 dark:odd:bg-gray-900 dark:even:bg-gray-800 dark:hover:bg-gray-700/50">
+                            <tr class="border-b odd:bg-white even:bg-gray-50 transition-colors hover:bg-gray-100 dark:border-white/[0.06] dark:odd:bg-gray-900 dark:even:bg-gray-800 dark:hover:bg-gray-700/50">
                                 <th scope="row"
                                     class="whitespace-nowrap px-6 py-4 font-medium text-gray-900 dark:text-white">
                                     <a href="{{ path('app_catalog_product_show', {'id': sale.publicId }) }}"

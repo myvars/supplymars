@@ -20,7 +20,7 @@
             {% if result.messages is empty %}
                 <twig:EmptyState message="No messages yet"/>
             {% else %}
-                <ol class="relative ms-4 border-s-2 border-gray-200 dark:border-gray-600">
+                <ol class="relative ms-4 border-s-2 border-gray-200 dark:border-white/[0.06]">
                     {% for message in result.messages %}
                         {% if message.isSystem %}
                             {{ include('note/ticket/_feed_event.html.twig', {message: message}) }}
@@ -31,7 +31,7 @@
                 </ol>
             {% endif %}
             {% if replyForm %}
-                <div class="mt-4 border-t border-gray-200 pt-4 dark:border-gray-600">
+                <div class="mt-4 border-t border-gray-200 pt-4 dark:border-white/[0.06]">
                     <turbo-frame id="ticket-reply">
                         <p class="mb-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-500">Reply</p>
                         <twig:FlowForm :form="replyForm" buttonLabel="Send Reply" formFrame="ticket-reply"/>

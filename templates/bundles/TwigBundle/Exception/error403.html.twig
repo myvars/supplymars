@@ -3,10 +3,11 @@
 {% block title %}403 Forbidden{% endblock %}
 
 {% block body %}
-        <section class="mx-auto flex items-center justify-center bg-white dark:bg-orange-400/10 md:h-screen" style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
-            <div data-turbo-temporary class="mx-auto max-w-(--breakpoint-xl) px-4 py-8 sm:py-12 lg:px-6">
+        <section class="relative mx-auto flex items-center justify-center bg-white dark:bg-orange-400/10 md:h-screen" style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
+            <div class="absolute inset-0 bg-gradient-to-b from-gray-950/60 via-gray-950/30 to-gray-950/80 pointer-events-none"></div>
+            <div data-turbo-temporary class="relative mx-auto max-w-(--breakpoint-xl) px-4 py-8 sm:py-12 lg:px-6">
                 <div class="mb-10 max-w-(--breakpoint-md)">
-                    <p class="mb-4 text-7xl font-extrabold tracking-tight text-orange-400 lg:text-9xl dark:text-orange-300">403</p>
+                    <p class="mb-4 text-7xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-500 lg:text-9xl">403</p>
                     <h2 class="mb-4 text-3xl font-bold tracking-tight text-white md:text-4xl">Unauthorized Access to Mars Colony Systems</h2>
                     <p class="mb-4 text-lg font-light text-gray-300">
                         Oops! It looks like your clearance level isn't high enough to explore this part of the Martian colony.

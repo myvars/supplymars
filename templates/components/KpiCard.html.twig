@@ -34,8 +34,8 @@
     {% endif %}
 {% endmacro %}
 
-{% set baseClasses = 'flex flex-col items-center justify-center gap-1.5 overflow-hidden bg-white px-4 py-4 dark:bg-gray-900/60 sm:px-5' %}
-{% set hoverClasses = href ? ' transition-colors hover:bg-primary-50/50 dark:hover:bg-primary-900/20' : '' %}
+{% set baseClasses = 'flex flex-col items-center justify-center gap-1.5 overflow-hidden bg-white px-4 py-4 dark:bg-gray-800/40 dark:ring-1 dark:ring-white/[0.06] sm:px-5' %}
+{% set hoverClasses = href ? ' transition-all duration-150 hover:bg-primary-50/50 dark:hover:bg-primary-900/20 hover:scale-[1.01] active:scale-[0.99]' : '' %}
 
 {% if href %}
 <a href="{{ href }}" class="{{ baseClasses }}{{ hoverClasses }}"{% if turboFrame %} data-turbo-frame="{{ turboFrame }}"{% endif %}>

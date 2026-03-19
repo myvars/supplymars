@@ -31,7 +31,7 @@
     </div>
 
     {# Summary — delivery address and financial totals #}
-    <div class="mt-4 border-t border-gray-200 pt-4 dark:border-gray-600">
+    <div class="mt-4 border-t border-gray-200 pt-4 dark:border-white/[0.06]">
         <div class="grid gap-6 sm:grid-cols-[1fr_auto]">
             <div>
                 <p class="mb-2 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-500">Delivery Address</p>
@@ -64,7 +64,7 @@
                         <dt>VAT</dt>
                         <dd>{{ (purchaseOrder.totalPriceIncVat - purchaseOrder.totalPrice)|format_currency('GBP') }}</dd>
                     </div>
-                    <div class="border-t border-gray-200 pt-2 dark:border-gray-600">
+                    <div class="border-t border-gray-200 pt-2 dark:border-white/[0.06]">
                         <div class="flex justify-between gap-6 font-medium text-gray-900 dark:text-white">
                             <dt>Grand Total</dt>
                             <dd>{{ purchaseOrder.totalPriceIncVat|format_currency('GBP') }}</dd>
@@ -76,7 +76,7 @@
     </div>
 
     {# PO Items #}
-    <div class="mt-4 border-t border-gray-200 pt-4 dark:border-gray-600">
+    <div class="mt-4 border-t border-gray-200 pt-4 dark:border-white/[0.06]">
         <p class="flex items-center gap-2 text-gray-500 dark:text-gray-400">
             <span>
                 {{ purchaseOrder.lineCount }} {% if purchaseOrder.lineCount == 1 %}line{% else %}lines{% endif %}

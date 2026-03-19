@@ -2,7 +2,7 @@
    - updatedAt: DateTimeInterface for the "ago" display #}
 {% props updatedAt %}
 
-<div {{ attributes.defaults({'class': 'mt-3 flex items-center justify-between border-t border-gray-100 pt-3 dark:border-gray-700'}) }}>
+<div {{ attributes.defaults({'class': 'mt-3 flex items-center justify-between border-t border-gray-100 pt-3 dark:border-white/[0.06]'}) }}>
     <p class="text-xs text-gray-400 me-10 dark:text-gray-500">Updated {{ updatedAt|ago }}</p>
     {% block content %}{% endblock %}
 </div>

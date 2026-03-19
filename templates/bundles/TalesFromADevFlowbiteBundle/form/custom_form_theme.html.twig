@@ -1,5 +1,9 @@
 {% extends '@TalesFromADevFlowbite/form/default.html.twig' %}
 
+{% block class_input_text -%}
+    text-gray-900 bg-white rounded-lg text-sm block w-full p-2.5 border border-gray-200 focus:z-10 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors dark:bg-gray-900/70 dark:border-white/[0.10] dark:text-white dark:placeholder-gray-500 dark:focus:ring-blue-500 dark:focus:border-blue-500
+{%- endblock class_input_text %}
+
 {% block class_select %}
     {{ block('class_input_text') }} h-10
 {% endblock %}

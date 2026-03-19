@@ -1,8 +1,8 @@
 {% props title = null, caption = null %}
 
-<div class="relative overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+<div class="relative overflow-x-auto rounded-lg border border-gray-200 dark:border-white/[0.10]">
     {% if title %}
-        <div class="border-b border-gray-200 bg-gray-50/50 px-4 py-2.5 dark:border-gray-700 dark:bg-gray-800/50">
+        <div class="border-b border-gray-200 bg-gray-50/50 px-4 py-2.5 dark:border-white/[0.06] dark:bg-gray-800/50">
             <span class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ title }}</span>
         </div>
     {% endif %}
@@ -13,7 +13,7 @@
         <thead class="bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500 dark:bg-gray-800 dark:text-gray-400">
             {% block head %}{% endblock %}
         </thead>
-        <tbody class="[&>tr]:border-b [&>tr]:border-gray-100 [&>tr]:transition-colors [&>tr]:bg-white [&>tr:hover]:bg-gray-50 dark:[&>tr]:border-gray-700 dark:[&>tr]:bg-gray-900 dark:[&>tr:hover]:bg-gray-800/50">
+        <tbody class="[&>tr]:border-b [&>tr]:border-gray-100 [&>tr]:transition-colors [&>tr]:bg-white [&>tr:hover]:bg-gray-50 dark:[&>tr]:border-white/[0.04] dark:[&>tr]:bg-gray-900 dark:[&>tr:hover]:bg-gray-800/50">
             {% block body %}{% endblock %}
         </tbody>
     </table>
