@@ -14,15 +14,16 @@
         <span class="text-base font-normal text-gray-500 dark:text-gray-400">{{ purchaseOrder.supplier.name }}</span>
     </h1>
     <div class="mt-1.5 flex items-center justify-between">
-        <p class="text-sm text-gray-500 dark:text-gray-400">
-            {{ purchaseOrder.createdAt|date('jS M Y H:i') }}
-            <span class="mx-1 text-gray-300 dark:text-gray-600">&middot;</span>
+        <div class="text-sm text-gray-500 dark:text-gray-400">
+            <span>{{ purchaseOrder.createdAt|date('jS M Y H:i') }}</span>
+            <span class="mx-1 hidden sm:inline text-gray-300 dark:text-gray-600">&middot;</span>
+            <br class="sm:hidden">
             <a href="{{ path('app_order_show', {id: purchaseOrder.customerOrder.publicId.value}) }}"
                data-turbo-frame="body"
                class="text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
                 Order #{{ '%06d'|format(purchaseOrder.customerOrder.id) }}
             </a>
-        </p>
+        </div>
         <a href="{{ path('app_purchase_order_status_log', {'id': purchaseOrder.publicId.value }) }}"
            data-turbo-frame="modal"
         >

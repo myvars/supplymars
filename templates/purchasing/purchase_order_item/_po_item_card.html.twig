@@ -19,7 +19,7 @@
                         <div class="flex items-center gap-3 text-sm">
                             <span class="font-medium tabular-nums text-gray-900 dark:text-white">{{ purchaseOrderItem.priceIncVat|format_currency('GBP') }}</span>
                             <span class="text-gray-500 dark:text-gray-400">Qty: {{ purchaseOrderItem.quantity }}</span>
-                            <twig:ProfitBadge :value="(purchaseOrderItem.quantity * purchaseOrderItem.customerOrderItem.price) - purchaseOrderItem.totalPrice"/>
+                            <span class="hidden sm:inline-flex"><twig:ProfitBadge :value="(purchaseOrderItem.quantity * purchaseOrderItem.customerOrderItem.price) - purchaseOrderItem.totalPrice"/></span>
                             <span class="hidden text-gray-400 md:inline dark:text-gray-500">{{ purchaseOrderItem.supplierProduct.productCode }}</span>
                         </div>
                         <div class="flex items-center gap-2">

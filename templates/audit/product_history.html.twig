@@ -9,7 +9,7 @@
         <twig:Breadcrumb :href="path('app_catalog_product_index')" label="Products" :current="result.name"/>
         {% if hasData %}
             <twig:Card>
-                <div class="mb-3 flex items-center justify-between">
+                <div class="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <p class="font-medium text-gray-600 dark:text-gray-500">Stock History</p>
                     {{ include('audit/_history_durations.html.twig') }}
                 </div>
