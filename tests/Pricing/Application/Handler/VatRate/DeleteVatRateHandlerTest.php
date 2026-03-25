@@ -7,7 +7,9 @@ use App\Pricing\Application\Handler\VatRate\DeleteVatRateHandler;
 use App\Pricing\Domain\Model\VatRate\VatRatePublicId;
 use App\Pricing\Domain\Repository\VatRateRepository;
 use App\Tests\Shared\Factory\VatRateFactory;
+use App\Tests\Shared\Story\SuperAdminUserStory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
 final class DeleteVatRateHandlerTest extends KernelTestCase
@@ -25,6 +27,7 @@ final class DeleteVatRateHandlerTest extends KernelTestCase
         $this->rates = self::getContainer()->get(VatRateRepository::class);
     }
 
+    #[WithStory(SuperAdminUserStory::class)]
     public function testDeletesExistingVatRate(): void
     {
         $vatRate = VatRateFactory::createOne();
@@ -39,6 +42,7 @@ final class DeleteVatRateHandlerTest extends KernelTestCase
         self::assertNull($this->rates->getByPublicId($publicId));
     }
 
+    #[WithStory(SuperAdminUserStory::class)]
     public function testFailsWhenVatRateNotFound(): void
     {
         $missingId = VatRatePublicId::new();

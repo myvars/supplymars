@@ -237,6 +237,11 @@ class Subcategory implements DomainEventProviderInterface
         $this->isActive = $active;
     }
 
+    public function isDeletable(): bool
+    {
+        return $this->products->isEmpty();
+    }
+
     /**
      * @return Collection<int, Product>
      */

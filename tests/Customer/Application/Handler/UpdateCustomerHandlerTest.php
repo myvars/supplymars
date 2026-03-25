@@ -6,8 +6,12 @@ use App\Customer\Application\Command\UpdateCustomer;
 use App\Customer\Application\Handler\UpdateCustomerHandler;
 use App\Customer\Domain\Model\User\UserPublicId;
 use App\Customer\Domain\Repository\UserRepository;
+use App\Customer\Infrastructure\Mailer\MailerHelper;
+use App\Shared\Application\FlusherInterface;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Zenstruck\Foundry\Test\Factories;
 
 final class UpdateCustomerHandlerTest extends KernelTestCase
@@ -28,6 +32,7 @@ final class UpdateCustomerHandlerTest extends KernelTestCase
     public function testHandleUpdatesCustomer(): void
     {
         $user = UserFactory::new()->asStaff()->create();
+        $handler = $this->handlerWithSecurity(isSuperAdmin: true);
 
         $command = new UpdateCustomer(
             id: $user->getPublicId(),
@@ -37,7 +42,7 @@ final class UpdateCustomerHandlerTest extends KernelTestCase
             isStaff: false,
         );
 
-        $result = ($this->handler)($command);
+        $result = ($handler)($command);
         self::assertTrue($result->ok);
 
         $persisted = $this->users->getByPublicId($user->getPublicId());
@@ -110,5 +115,85 @@ final class UpdateCustomerHandlerTest extends KernelTestCase
         self::assertFalse($result->ok);
         self::assertStringContainsString('Please enter a full name', $result->message);
         self::assertStringContainsString('This value is not a valid email address', $result->message);
+    }
+
+    private function handlerWithSecurity(bool $isSuperAdmin): UpdateCustomerHandler
+    {
+        $security = $this->createMock(Security::class);
+        $security->method('isGranted')
+            ->with('ROLE_SUPER_ADMIN')
+            ->willReturn($isSuperAdmin);
+
+        return new UpdateCustomerHandler(
+            self::getContainer()->get(UserRepository::class),
+            self::getContainer()->get(FlusherInterface::class),
+            self::getContainer()->get(ValidatorInterface::class),
+            self::getContainer()->get(MailerHelper::class),
+            $security,
+        );
+    }
+
+    public function testNonSuperAdminCannotEditStaffAccount(): void
+    {
+        $staffUser = UserFactory::new()->asStaff()->create();
+        $handler = $this->handlerWithSecurity(isSuperAdmin: false);
+
+        $command = new UpdateCustomer(
+            id: $staffUser->getPublicId(),
+            fullName: 'Hacked Name',
+            email: 'hacked@example.com',
+            isVerified: true,
+            isStaff: true,
+        );
+
+        $result = ($handler)($command);
+
+        self::assertFalse($result->ok);
+        self::assertStringContainsString('Staff accounts cannot be modified', $result->message);
+
+        $persisted = $this->users->getByPublicId($staffUser->getPublicId());
+        self::assertSame($staffUser->getFullName(), $persisted->getFullName());
+    }
+
+    public function testNonSuperAdminCanEditNonStaffAccount(): void
+    {
+        $regularUser = UserFactory::createOne(['fullName' => 'Regular User']);
+        $handler = $this->handlerWithSecurity(isSuperAdmin: false);
+
+        $command = new UpdateCustomer(
+            id: $regularUser->getPublicId(),
+            fullName: 'Updated Name',
+            email: $regularUser->getEmail(),
+            isVerified: $regularUser->isVerified(),
+            isStaff: false,
+        );
+
+        $result = ($handler)($command);
+
+        self::assertTrue($result->ok);
+
+        $persisted = $this->users->getByPublicId($regularUser->getPublicId());
+        self::assertSame('Updated Name', $persisted->getFullName());
+    }
+
+    public function testSuperAdminCanEditStaffAccount(): void
+    {
+        $staffUser = UserFactory::new()->asStaff()->create();
+        $handler = $this->handlerWithSecurity(isSuperAdmin: true);
+
+        $command = new UpdateCustomer(
+            id: $staffUser->getPublicId(),
+            fullName: 'Updated Staff',
+            email: $staffUser->getEmail(),
+            isVerified: $staffUser->isVerified(),
+            isStaff: true,
+        );
+
+        $result = ($handler)($command);
+
+        self::assertTrue($result->ok);
+
+        $persisted = $this->users->getByPublicId($staffUser->getPublicId());
+        self::assertSame('Updated Staff', $persisted->getFullName());
     }
 }

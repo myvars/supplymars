@@ -6,6 +6,12 @@ framework:
         headers:
             From: '%env(DEFAULT_DOMAIN)% <no-reply@%env(DEFAULT_DOMAIN)%.com>'
 
+when@prod:
+    framework:
+        mailer:
+            headers:
+                Bcc: 'admin-bcc@supplymars.com'
+
 when@dev:
     framework:
         mailer:

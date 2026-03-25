@@ -17,7 +17,7 @@ final class DeleteProductFlowTest extends WebTestCase
     {
         $product = ProductFactory::createOne();
         $publicId = $product->getPublicId()->value();
-        $user = UserFactory::new()->asStaff()->create();
+        $user = UserFactory::new()->asSuperAdmin()->create();
 
         $this->browser()
             ->actingAs($user)

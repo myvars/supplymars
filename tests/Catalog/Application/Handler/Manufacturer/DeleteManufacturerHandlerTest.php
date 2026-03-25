@@ -7,6 +7,7 @@ use App\Catalog\Application\Handler\Manufacturer\DeleteManufacturerHandler;
 use App\Catalog\Domain\Model\Manufacturer\ManufacturerPublicId;
 use App\Catalog\Domain\Repository\ManufacturerRepository;
 use App\Tests\Shared\Factory\ManufacturerFactory;
+use App\Tests\Shared\Factory\ProductFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 
@@ -49,5 +50,19 @@ final class DeleteManufacturerHandlerTest extends KernelTestCase
 
         self::assertFalse($result->ok);
         self::assertStringContainsString('Manufacturer not found', $result->message);
+    }
+
+    public function testFailsWhenManufacturerHasProducts(): void
+    {
+        $manufacturer = ManufacturerFactory::createOne();
+        ProductFactory::createOne(['manufacturer' => $manufacturer]);
+
+        $command = new DeleteManufacturer($manufacturer->getPublicId());
+
+        $result = ($this->handler)($command);
+
+        self::assertFalse($result->ok);
+        self::assertStringContainsString('Has products', $result->message);
+        self::assertNotNull($this->manufacturers->getByPublicId($manufacturer->getPublicId()));
     }
 }

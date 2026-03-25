@@ -127,7 +127,7 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
     public function testMapUsesDefaultOwnerWhenNoAuthenticatedUser(): void
     {
         // Create the default owner that the service looks for when no authenticated user
-        UserFactory::createOne(['email' => 'adam@admin.com', 'isStaff' => true]);
+        UserFactory::createOne(['email' => 'admin@supplymars.com', 'isStaff' => true]);
 
         $sp = SupplierProductFactory::createOne(['product' => null]);
         $sc = $sp->getSupplierCategory();
@@ -137,7 +137,7 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
 
         $category = $product->getCategory();
         self::assertSame($sc->getName(), $category->getName());
-        self::assertSame('adam@admin.com', $category->getOwner()->getEmail());
+        self::assertSame('admin@supplymars.com', $category->getOwner()->getEmail());
     }
 
     #[WithStory(StaffUserStory::class)]

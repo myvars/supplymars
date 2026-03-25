@@ -23,6 +23,10 @@ final readonly class DeleteSubcategoryHandler
             return Result::fail('Subcategory not found.');
         }
 
+        if (!$subcategory->isDeletable()) {
+            return Result::fail('Has products — move or remove them first.');
+        }
+
         $this->subcategories->remove($subcategory);
         $this->flusher->flush();
 

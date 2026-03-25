@@ -1,13 +1,19 @@
 -- playground-redact-staff.sql
 -- Runs immediately after database restore to protect staff credentials.
 -- The demo password ('demo') is public by design — the hash is a fixed constant.
+-- The admin account (admin@supplymars.com) is preserved with ROLE_SUPER_ADMIN.
 
 -- Scramble all staff emails and passwords (makes them unusable)
 UPDATE user
 SET email    = CONCAT(HEX(RANDOM_BYTES(8)), '@redacted.local'),
     password = HEX(RANDOM_BYTES(32))
 WHERE is_staff = 1
-  AND email != 'demo@supplymars.com';
+  AND email NOT IN ('demo@supplymars.com', 'admin@supplymars.com');
+
+-- Promote admin account to ROLE_SUPER_ADMIN (preserves existing password)
+UPDATE user
+SET roles = '["ROLE_SUPER_ADMIN"]'
+WHERE email = 'admin@supplymars.com';
 
 -- Create or reset the demo user (bcrypt hash of 'demo')
 INSERT INTO user (public_id, email, password, full_name, roles, is_verified, is_staff, is_simulated, created_at, updated_at)

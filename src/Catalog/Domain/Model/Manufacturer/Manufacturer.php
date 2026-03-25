@@ -80,6 +80,11 @@ class Manufacturer
         return $this->isActive;
     }
 
+    public function isDeletable(): bool
+    {
+        return $this->products->isEmpty();
+    }
+
     private function rename(string $name): void
     {
         $name = trim($name);

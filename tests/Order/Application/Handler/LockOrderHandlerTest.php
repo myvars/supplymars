@@ -42,7 +42,7 @@ class LockOrderHandlerTest extends KernelTestCase
 
         $reloaded = $this->orders->getByPublicId($order->getPublicId());
         self::assertNotNull($reloaded->getOrderLock());
-        self::assertSame('adam@admin.com', $reloaded->getOrderLock()->getUserIdentifier());
+        self::assertSame('admin@supplymars.com', $reloaded->getOrderLock()->getUserIdentifier());
     }
 
     #[WithStory(StaffUserStory::class)]

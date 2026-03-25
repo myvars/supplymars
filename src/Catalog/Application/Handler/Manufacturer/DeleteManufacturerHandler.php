@@ -23,6 +23,10 @@ final readonly class DeleteManufacturerHandler
             return Result::fail('Manufacturer not found.');
         }
 
+        if (!$manufacturer->isDeletable()) {
+            return Result::fail('Has products — reassign them first.');
+        }
+
         $this->manufacturers->remove($manufacturer);
         $this->flusher->flush();
 

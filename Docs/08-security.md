@@ -187,6 +187,17 @@ All API authentication errors return RFC 7807 `application/problem+json`:
 |------|-------------|------------|
 | `ROLE_USER` | Base role | Automatic for all users |
 | `ROLE_ADMIN` | Admin access | When `isStaff = true` |
+| `ROLE_SUPER_ADMIN` | Full access including deletes and staff editing | Manual assignment |
+
+### Role Hierarchy
+
+```yaml
+# config/packages/security.yaml
+role_hierarchy:
+    ROLE_SUPER_ADMIN: ROLE_ADMIN
+```
+
+`ROLE_SUPER_ADMIN` inherits all `ROLE_ADMIN` permissions. The distinction controls destructive operations: only super admins can delete entities or modify staff accounts.
 
 ### Role Assignment
 
@@ -267,6 +278,44 @@ Development/operations tools with restricted access:
 | RabbitMQ | http://localhost:15672 | Credentials required |
 
 **Production:** These tools are not exposed publicly. Use SSH tunneling if needed.
+
+## Playground Restrictions
+
+The playground uses role-based restrictions to protect the demo environment. The demo user has `ROLE_ADMIN` (can browse, create, and edit) while the site owner has `ROLE_SUPER_ADMIN` (unrestricted access).
+
+### What ROLE_ADMIN Can Do
+
+- **Browse:** All pages, reports, and dashboards
+- **Create:** Products, orders, suppliers, and other entities via FormFlow
+- **Edit:** Non-staff customer accounts and all other entities
+- **Confirmed actions:** Cancel orders, remove supplier product mappings, rewind purchase orders
+- **Forms:** Full form submissions (validation, flash messages, redirects)
+
+### What Only ROLE_SUPER_ADMIN Can Do
+
+| Restriction | Scope | Feedback for ROLE_ADMIN |
+|---|---|---|
+| **Delete entities** | Each delete handler individually | Error flash: "Deleting is disabled for this user." |
+| **Edit staff accounts** | Users with `isStaff = true` | Error flash: "Staff accounts cannot be modified in the playground." |
+
+File uploads are additionally blocked by `PLAYGROUND_MODE` environment variable regardless of role.
+
+### Implementation
+
+- **Delete handlers** (e.g. `DeleteProductHandler`, `DeleteCategoryHandler`, etc.): Each handler checks `ROLE_SUPER_ADMIN` before removing the entity. Returns `Result::fail()` which the flow renders as a standard error flash. This is handler-level rather than flow-level because `DeleteFlow` is also used for non-delete confirmed actions (cancel, remove, rewind) that `ROLE_ADMIN` should be able to perform.
+- **UpdateCustomerHandler** (`src/Customer/Application/Handler/UpdateCustomerHandler.php`): Checks `ROLE_SUPER_ADMIN` and target user's `isStaff()` before applying changes. Returns `Result::fail()` which FormFlow renders as a standard error flash.
+- **UploadHelper** (`src/Shared/Infrastructure/FileStorage/UploadHelper.php`): Throws `CannotWriteFileException` when `PLAYGROUND_MODE=true`.
+
+### Playground Account Setup
+
+The `playground-redact-staff.sql` script runs after each nightly database restore:
+1. Scrambles all staff credentials except `admin@supplymars.com` and `demo@supplymars.com`
+2. Promotes `admin@supplymars.com` to `ROLE_SUPER_ADMIN` (preserves existing password)
+3. Creates/resets the demo user with `ROLE_ADMIN` and the public password `demo`
+
+### Data Reset
+
+The playground database resets nightly at 02:15 UTC via cron, restoring a clean copy of production data with staff credentials redacted. See `Docs/infrastructure/playground.md` for details.
 
 ## Data Safety Assumptions
 
@@ -407,15 +456,20 @@ location = /register {
 }
 
 location ^~ /reset-password {
-    limit_req zone=register burst=1 nodelay;
+    limit_req zone=register burst=3 nodelay;
+}
+
+location = /verify/resend {
+    limit_req zone=register burst=3 nodelay;
 }
 ```
 
 | Endpoint | Zone | Limit | Burst | Rationale |
 |----------|------|-------|-------|-----------|
 | `/login` | `login` | 10/min per IP | 5 | Moderate — legitimate users may retry |
-| `/register` | `register` | 2/min per IP | 1 | Tight — registration also gated by `ROLE_ADMIN` |
-| `/reset-password/*` | `register` | 2/min per IP | 1 | Tight — prevents email-sending abuse |
+| `/register` | `register` | 2/min per IP | 1 | Tight — registration also gated by app-level limiter |
+| `/reset-password/*` | `register` | 2/min per IP | 3 | Tight — prevents email-sending abuse; burst accommodates Turbo navigation |
+| `/verify/resend` | `register` | 2/min per IP | 3 | Tight — prevents verification email abuse; burst accommodates Turbo navigation |
 
 - Returns `503 Service Temporarily Unavailable` when exceeded
 - Not applied in development (dev Nginx config has no rate limiting)

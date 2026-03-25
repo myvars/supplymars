@@ -15,17 +15,18 @@ use App\Purchasing\Domain\Model\SupplierProduct\SupplierSubcategory;
 use App\Shared\Domain\Service\Pricing\MarkupCalculator;
 use App\Shared\Infrastructure\Security\CurrentUserProvider;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final readonly class SupplierProductMappingService
 {
-    private const string DEFAULT_OWNER = 'adam@admin.com';
-
     public function __construct(
         private EntityManagerInterface $em,
         private MarkupCalculator $markupCalculator,
         private ValidatorInterface $validator,
         private CurrentUserProvider $currentUserProvider,
+        #[Autowire(env: 'DEFAULT_STAFF_EMAIL')]
+        private string $defaultStaffEmail,
     ) {
     }
 
@@ -160,7 +161,7 @@ final readonly class SupplierProductMappingService
     private function getDefaultOwner(): User
     {
         $owner = $this->em->getRepository(User::class)->findOneBy([
-            'email' => self::DEFAULT_OWNER,
+            'email' => $this->defaultStaffEmail,
             'isStaff' => true,
         ]);
         if (!$owner instanceof User) {

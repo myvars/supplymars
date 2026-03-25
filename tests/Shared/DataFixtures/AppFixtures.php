@@ -39,8 +39,8 @@ class AppFixtures extends Fixture
     {
         $user = UserFactory::createOne([
             'fullName' => 'Adam Ashmore',
-            'email' => 'adam@admin.com',
-            'password' => 'letmein',
+            'email' => 'admin@supplymars.com',
+            'password' => 'password',
         ])->setStaff(true);
 
         AddressFactory::createOne([

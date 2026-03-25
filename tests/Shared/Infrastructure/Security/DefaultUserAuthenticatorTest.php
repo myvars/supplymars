@@ -32,7 +32,8 @@ final class DefaultUserAuthenticatorTest extends TestCase
             $security,
             $userProvider,
             $tokenStorage,
-            $requestStack
+            $requestStack,
+            'test@example.com',
         );
 
         $authenticator->ensureAuthenticated();
@@ -62,7 +63,8 @@ final class DefaultUserAuthenticatorTest extends TestCase
             $security,
             $userProvider,
             $tokenStorage,
-            $requestStack
+            $requestStack,
+            'test@example.com',
         );
 
         $authenticator->login();
@@ -91,7 +93,8 @@ final class DefaultUserAuthenticatorTest extends TestCase
             $security,
             $userProvider,
             $tokenStorage,
-            $requestStack
+            $requestStack,
+            'test@example.com',
         );
 
         $authenticator->login();
@@ -114,7 +117,8 @@ final class DefaultUserAuthenticatorTest extends TestCase
             $security,
             $userProvider,
             $tokenStorage,
-            $requestStack
+            $requestStack,
+            'test@example.com',
         );
 
         self::expectException(\RuntimeException::class);
@@ -146,7 +150,8 @@ final class DefaultUserAuthenticatorTest extends TestCase
             $security,
             $userProvider,
             $tokenStorage,
-            $requestStack
+            $requestStack,
+            'test@example.com',
         );
 
         $authenticator->ensureAuthenticated();

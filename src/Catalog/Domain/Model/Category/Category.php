@@ -241,6 +241,11 @@ class Category implements DomainEventProviderInterface
         $this->isActive = $active;
     }
 
+    public function isDeletable(): bool
+    {
+        return $this->subcategories->isEmpty();
+    }
+
     /**
      * @return Collection<int, Subcategory>
      */

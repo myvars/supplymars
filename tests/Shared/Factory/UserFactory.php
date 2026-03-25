@@ -67,4 +67,14 @@ final class UserFactory extends PersistentObjectFactory
                 $user->setStaff(true);
             });
     }
+
+    public function asSuperAdmin(): self
+    {
+        return $this
+            ->with(['fullName' => 'Super Admin'])
+            ->afterInstantiate(function (User $user): void {
+                $user->setStaff(true);
+                $user->setRoles(['ROLE_SUPER_ADMIN']);
+            });
+    }
 }

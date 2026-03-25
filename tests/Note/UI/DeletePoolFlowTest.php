@@ -19,7 +19,7 @@ final class DeletePoolFlowTest extends WebTestCase
         $publicId = $pool->getPublicId()->value();
 
         $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->actingAs(UserFactory::new()->asSuperAdmin()->create())
             ->get('/note/pool/' . $publicId . '/delete/confirm')
             ->click('Delete')
             ->assertOn('/note/pool/')
@@ -32,7 +32,7 @@ final class DeletePoolFlowTest extends WebTestCase
         $publicId = $pool->getPublicId()->value();
 
         $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->actingAs(UserFactory::new()->asSuperAdmin()->create())
             ->get('/note/pool/' . $publicId . '/delete/confirm')
             ->click('Delete')
             ->assertOn('/note/pool/')

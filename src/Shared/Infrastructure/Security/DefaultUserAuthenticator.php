@@ -4,6 +4,7 @@ namespace App\Shared\Infrastructure\Security;
 
 use App\Customer\Domain\Model\User\User;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -12,8 +13,6 @@ use Symfony\Component\Security\Http\Authenticator\Token\PostAuthenticationToken;
 
 final readonly class DefaultUserAuthenticator
 {
-    public const string DEFAULT_USER_EMAIL = 'adam@admin.com';
-
     public const string DEFAULT_FIREWALL = 'main';
 
     /**
@@ -24,9 +23,15 @@ final readonly class DefaultUserAuthenticator
         private UserProviderInterface $userProvider,
         private TokenStorageInterface $tokenStorage,
         private RequestStack $requestStack,
-        private string $defaultEmail = self::DEFAULT_USER_EMAIL,
+        #[Autowire(env: 'DEFAULT_STAFF_EMAIL')]
+        private string $defaultStaffEmail,
         private string $firewall = self::DEFAULT_FIREWALL,
     ) {
+    }
+
+    public function getDefaultEmail(): string
+    {
+        return $this->defaultStaffEmail;
     }
 
     /**
@@ -46,7 +51,7 @@ final readonly class DefaultUserAuthenticator
      */
     public function login(): void
     {
-        $user = $this->userProvider->loadUserByIdentifier($this->defaultEmail);
+        $user = $this->userProvider->loadUserByIdentifier($this->defaultStaffEmail);
         if (!$user instanceof User) {
             throw new \RuntimeException('Default user is not a valid user.');
         }

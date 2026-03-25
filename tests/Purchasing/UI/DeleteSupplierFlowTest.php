@@ -19,7 +19,7 @@ final class DeleteSupplierFlowTest extends WebTestCase
         $publicId = $supplier->getPublicId()->value();
 
         $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->actingAs(UserFactory::new()->asSuperAdmin()->create())
             ->get('/supplier/' . $publicId . '/delete/confirm')
             ->click('Delete Supplier')
             ->assertOn('/supplier/')

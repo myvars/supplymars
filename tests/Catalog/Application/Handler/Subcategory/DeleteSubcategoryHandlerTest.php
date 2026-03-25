@@ -6,6 +6,7 @@ use App\Catalog\Application\Command\Subcategory\DeleteSubcategory;
 use App\Catalog\Application\Handler\Subcategory\DeleteSubcategoryHandler;
 use App\Catalog\Domain\Model\Subcategory\SubcategoryPublicId;
 use App\Catalog\Domain\Repository\SubcategoryRepository;
+use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\SubcategoryFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
@@ -49,5 +50,19 @@ final class DeleteSubcategoryHandlerTest extends KernelTestCase
 
         self::assertFalse($result->ok);
         self::assertStringContainsString('Subcategory not found', $result->message);
+    }
+
+    public function testFailsWhenSubcategoryHasProducts(): void
+    {
+        $subcategory = SubcategoryFactory::createOne();
+        ProductFactory::createOne(['subcategory' => $subcategory]);
+
+        $command = new DeleteSubcategory($subcategory->getPublicId());
+
+        $result = ($this->handler)($command);
+
+        self::assertFalse($result->ok);
+        self::assertStringContainsString('Has products', $result->message);
+        self::assertNotNull($this->subcategories->getByPublicId($subcategory->getPublicId()));
     }
 }

@@ -131,7 +131,7 @@ Controllers are thin orchestrators. 4 flow types:
 - Tests use `APP_ENV=test` + DAMA Doctrine Test Bundle (transaction rollback per test).
 - Tests mirror `src/` structure in `tests/`.
 - Factories in `tests/Shared/Factory/` (Zenstruck Foundry). Use `Factories` trait in test classes.
-- Auth: `#[WithStory(StaffUserStory::class)]` or `UserFactory::new()->asStaff()->create()`.
+- Auth: `#[WithStory(StaffUserStory::class)]` or `UserFactory::new()->asStaff()->create()`. For delete handlers: `#[WithStory(SuperAdminUserStory::class)]` or `UserFactory::new()->asSuperAdmin()->create()`.
 - Flow tests use `HasBrowser` trait (Zenstruck Browser). Named `{Feature}FlowTest.php` in `tests/{Context}/UI/`.
 
 ## Code Style

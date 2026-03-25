@@ -388,7 +388,7 @@ final class StaffUserStory extends Story
 
     public function build(): void
     {
-        UserFactory::new(['email' => 'adam@admin.com'])
+        UserFactory::new(['email' => $this->authenticator->getDefaultEmail()])
             ->asStaff()
             ->create();
 

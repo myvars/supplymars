@@ -8,6 +8,7 @@ use App\Customer\Domain\Repository\UserRepository;
 use App\Customer\Infrastructure\Mailer\MailerHelper;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Application\Result;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final readonly class UpdateCustomerHandler
@@ -17,6 +18,7 @@ final readonly class UpdateCustomerHandler
         private FlusherInterface $flusher,
         private ValidatorInterface $validator,
         private MailerHelper $mailerHelper,
+        private Security $security,
     ) {
     }
 
@@ -25,6 +27,10 @@ final readonly class UpdateCustomerHandler
         $customer = $this->customers->getByPublicId($command->id);
         if (!$customer instanceof User) {
             return Result::fail('Customer not found.');
+        }
+
+        if (!$this->security->isGranted('ROLE_SUPER_ADMIN') && $customer->isStaff()) {
+            return Result::fail('Staff accounts cannot be modified in the playground.');
         }
 
         $wasStaff = $customer->isStaff();

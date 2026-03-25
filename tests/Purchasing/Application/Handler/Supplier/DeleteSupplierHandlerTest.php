@@ -7,7 +7,9 @@ use App\Purchasing\Application\Handler\Supplier\DeleteSupplierHandler;
 use App\Purchasing\Domain\Model\Supplier\SupplierPublicId;
 use App\Purchasing\Domain\Repository\SupplierRepository;
 use App\Tests\Shared\Factory\SupplierFactory;
+use App\Tests\Shared\Story\SuperAdminUserStory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
 final class DeleteSupplierHandlerTest extends KernelTestCase
@@ -25,6 +27,7 @@ final class DeleteSupplierHandlerTest extends KernelTestCase
         $this->suppliers = self::getContainer()->get(SupplierRepository::class);
     }
 
+    #[WithStory(SuperAdminUserStory::class)]
     public function testDeletesExistingSupplier(): void
     {
         $supplier = SupplierFactory::createOne();
@@ -38,6 +41,7 @@ final class DeleteSupplierHandlerTest extends KernelTestCase
         self::assertNull($this->suppliers->getByPublicId($publicId));
     }
 
+    #[WithStory(SuperAdminUserStory::class)]
     public function testFailsWhenSupplierNotFound(): void
     {
         $missingId = SupplierPublicId::new();
