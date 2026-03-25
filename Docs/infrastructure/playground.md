@@ -27,9 +27,12 @@ At **02:00 UTC**, the live cron container runs `app:backup-database --local-copy
 At **02:15 UTC**, the playground reset container runs `playground-reset.sh`, which:
 
 1. Restores the database from `/backups/latest.sql.gz` (read-only volume mount)
-2. Syncs S3 uploads/media from the live prefix to the playground prefix
-3. Flushes playground Redis
-4. Purges the playground RabbitMQ queue
+2. Redacts staff credentials and creates the demo user (via `playground-redact-staff.sql`, immediately after restore — no window where real credentials are exposed)
+3. Syncs S3 uploads/media from the live prefix to the playground prefix
+4. Flushes playground Redis
+5. Purges the playground RabbitMQ queue
+
+The credential redaction runs as raw SQL in the reset container (which has no PHP) for zero-gap security. See `scripts/playground-redact-staff.sql` for details.
 
 ### Key Files
 
@@ -39,7 +42,8 @@ At **02:15 UTC**, the playground reset container runs `playground-reset.sh`, whi
 | `docker/php/cron/live-crontab` | Live cron schedule (includes backup) |
 | `docker/php/cron/playground-crontab` | Playground cron schedule |
 | `docker/php/cron/reset-crontab` | Reset container cron (02:15 UTC) |
-| `scripts/playground-reset.sh` | Reset script (DB restore, S3 sync, cache flush) |
+| `scripts/playground-reset.sh` | Reset script (DB restore, credential redaction, S3 sync, cache flush) |
+| `scripts/playground-redact-staff.sql` | Staff credential scrambling and demo user creation |
 | `Docs/infrastructure/Caddyfile` | Reference copy of the Caddyfile |
 
 ---

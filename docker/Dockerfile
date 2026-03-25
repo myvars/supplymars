@@ -148,6 +148,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 COPY --link scripts/playground-reset.sh /usr/local/bin/playground-reset.sh
+COPY --link scripts/playground-redact-staff.sql /usr/local/bin/playground-redact-staff.sql
 RUN chmod +x /usr/local/bin/playground-reset.sh
 
 COPY --link docker/php/cron/reset-crontab /etc/cron.d/reset-cron

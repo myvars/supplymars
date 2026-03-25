@@ -22,17 +22,22 @@ gunzip < "$BACKUP_FILE" | mysql -h database -P 3306 \
     -u root -p"${MYSQL_ROOT_PASSWORD}" \
     --skip-ssl app
 
-# 2. Sync S3 uploads and media from live (root) to playground prefix
+# 2. Redact staff credentials and create demo user (immediately, no gap)
+echo "Redacting staff credentials and creating demo user..."
+mysql -h database -P 3306 -u root -p"${MYSQL_ROOT_PASSWORD}" --skip-ssl app \
+    < /usr/local/bin/playground-redact-staff.sql
+
+# 3. Sync S3 uploads and media from live (root) to playground prefix
 echo "Syncing S3 uploads..."
 aws s3 sync "s3://${AWS_S3_BUCKET}/uploads/" "s3://${AWS_S3_BUCKET}/${AWS_S3_PRODUCTS_PREFIX}/uploads/" --delete --acl public-read
 echo "Syncing S3 media..."
 aws s3 sync "s3://${AWS_S3_BUCKET}/media/" "s3://${AWS_S3_BUCKET}/${AWS_S3_PRODUCTS_PREFIX}/media/" --delete --acl public-read
 
-# 3. Flush playground Redis
+# 4. Flush playground Redis
 echo "Flushing playground Redis..."
 redis-cli -h redis -a "${REDIS_PASSWORD}" FLUSHALL
 
-# 4. Purge playground RabbitMQ queue
+# 5. Purge playground RabbitMQ queue
 echo "Purging playground RabbitMQ queue..."
 curl -sf -X DELETE \
     -u "app:${RABBITMQ_PASSWORD}" \
