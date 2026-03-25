@@ -11,6 +11,7 @@ twig:
         domain: '%env(DEFAULT_DOMAIN)%'
         product_uploads: '%app.product_uploads%'
         playground_mode: '%env(bool:PLAYGROUND_MODE)%'
+        turnstile_site_key: '%env(TURNSTILE_SITE_KEY)%'
     debug: true
 
 when@test:

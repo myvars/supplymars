@@ -8,6 +8,7 @@ use League\Flysystem\Visibility;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\HttpFoundation\File\Exception\CannotWriteFileException;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\String\UnicodeString;
@@ -28,7 +29,7 @@ final class UploadHelperTest extends TestCase
             ->method('slug')
             ->willReturn(new UnicodeString('dummy-image'));
 
-        $this->helper = new UploadHelper($this->filesystem, $slugger);
+        $this->helper = new UploadHelper($this->filesystem, $slugger, playgroundMode: false);
     }
 
     public function testUploadFileWritesStreamWithPublicVisibility(): void
@@ -149,5 +150,19 @@ final class UploadHelperTest extends TestCase
             ->willReturn($expected);
 
         self::assertSame($expected, $this->helper->getPublicFilePath($path));
+    }
+
+    public function testUploadFileThrowsInPlaygroundMode(): void
+    {
+        $filesystem = $this->createStub(Filesystem::class);
+        $slugger = $this->createStub(SluggerInterface::class);
+        $playgroundHelper = new UploadHelper($filesystem, $slugger, playgroundMode: true);
+
+        $file = $this->createStub(File::class);
+
+        $this->expectException(CannotWriteFileException::class);
+        $this->expectExceptionMessage('playground mode');
+
+        $playgroundHelper->uploadFile($file, 'images');
     }
 }

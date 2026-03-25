@@ -754,6 +754,31 @@ symfony console app:send-test-emails
 
 ---
 
+### app:setup-playground
+
+**Purpose:** Prepare the playground environment after a database sync from production. Resets staff passwords, scrambles staff emails, and creates or resets the demo user.
+
+**File:** `src/Customer/UI/Console/SetupPlaygroundCommand.php`
+
+**Arguments:** None
+
+**Example:**
+```bash
+symfony console app:setup-playground
+```
+
+**Requires:** `PLAYGROUND_MODE=1` — refuses to run in production.
+
+**What it does:**
+1. Finds all staff users (except the demo user)
+2. Replaces their passwords with random hashes
+3. Replaces their emails with `{random}@redacted.local`
+4. Creates or resets a demo user (`demo@supplymars.com` / `demo`) with `ROLE_ADMIN`
+
+**Typical usage:** Run after the nightly database sync from production to playground.
+
+---
+
 ## Standard Symfony Commands
 
 ### Database

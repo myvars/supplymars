@@ -17,11 +17,17 @@ final readonly class UploadHelper
         #[Autowire(service: 'oneup_flysystem.products_fs_filesystem')]
         private Filesystem $uploadFilesystem,
         private SluggerInterface $slugger,
+        #[Autowire('%env(bool:PLAYGROUND_MODE)%')]
+        private bool $playgroundMode = false,
     ) {
     }
 
     public function uploadFile(File $file, ?string $directory, ?string $existingFilename = null): string
     {
+        if ($this->playgroundMode) {
+            throw new CannotWriteFileException('File uploads are disabled in playground mode.');
+        }
+
         $originalFileName = $this->getOriginalFileName($file);
         $newFileName = $this->getNewFilename($file, $originalFileName);
 

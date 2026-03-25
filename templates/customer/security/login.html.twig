@@ -5,15 +5,54 @@
 {% block body %}
     {% embed 'customer/_auth_layout.html.twig' %}
         {% block auth_content %}
-            <div class="flex flex-col items-center text-center">
-                <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900/30">
-                    <twig:ux:icon name="bi:person-lock" class="h-7 w-7 text-primary-600 dark:text-primary-400"/>
+            {% if playground_mode %}
+                {# ── Playground: Banner + Quick Login ─────────────────── #}
+                <div class="text-center">
+                    <div class="mb-3 flex h-12 w-12 mx-auto items-center justify-center rounded-full bg-orange-500/10">
+                        <twig:ux:icon name="bi:rocket-takeoff-fill" class="h-6 w-6 text-orange-500" />
+                    </div>
+                    <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white md:text-2xl">
+                        Welcome to the Playground
+                    </h1>
+                    <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                        A live demo with simulated orders, suppliers, and pricing. Resets nightly &mdash; explore freely.
+                    </p>
                 </div>
-                <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white md:text-2xl">
-                    Sign in to your account
-                </h1>
-            </div>
-            <form method="post" class="space-y-4 md:space-y-6" action="{{ path('app_login') }}" novalidate="novalidate">
+
+                <form method="post" action="{{ path('app_playground_login') }}" data-turbo-frame="_top">
+                    <div
+                        data-controller="turnstile"
+                        data-turnstile-sitekey-value="{{ turnstile_site_key }}"
+                        class="flex justify-center mb-3"
+                    >
+                        <div data-turnstile-target="container"></div>
+                        <input type="hidden" name="turnstile_response" data-turnstile-target="response" />
+                    </div>
+                    <button type="submit"
+                            class="w-full inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-orange-500 hover:bg-orange-400 rounded-lg shadow-lg shadow-orange-500/20 transition-all duration-200 active:scale-[0.98]">
+                        Explore the Platform
+                    </button>
+                </form>
+
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-200 dark:border-white/[0.06]"></div>
+                    </div>
+                    <div class="relative flex justify-center text-xs">
+                        <span class="px-3 text-gray-400 dark:text-gray-500 bg-white/95 dark:bg-gray-800/90">or sign in with your own account</span>
+                    </div>
+                </div>
+            {% else %}
+                <div class="flex flex-col items-center text-center">
+                    <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary-100 dark:bg-primary-900/30">
+                        <twig:ux:icon name="bi:person-lock" class="h-7 w-7 text-primary-600 dark:text-primary-400"/>
+                    </div>
+                    <h1 class="text-xl font-bold leading-tight tracking-tight text-gray-900 dark:text-white md:text-2xl">
+                        Sign in to your account
+                    </h1>
+                </div>
+            {% endif %}
+            <form method="post" class="space-y-4" action="{{ path('app_login') }}" novalidate="novalidate">
                 {% if app.user %}
                     <twig:Alert type="info">
                         You are logged in as {{ app.user.fullName }}.
@@ -24,11 +63,11 @@
                     <twig:Alert type="danger">{{ error.messageKey|trans(error.messageData, 'security') }}</twig:Alert>
                 {% endif %}
                 <div>
-                    <label for="email" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Your email</label>
+                    <label for="email" class="mb-1.5 block text-sm font-medium text-gray-900 dark:text-white">Your email</label>
                     <input type="email" name="email" id="email" value="{{ last_username }}" autocomplete="email" class="block w-full rounded-lg border border-gray-200 bg-gray-50 p-2.5 text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-white/[0.06] dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm" placeholder="name@company.com" required="">
                 </div>
                 <div>
-                    <label for="password" class="mb-2 block text-sm font-medium text-gray-900 dark:text-white">Password</label>
+                    <label for="password" class="mb-1.5 block text-sm font-medium text-gray-900 dark:text-white">Password</label>
                     <input type="password" name="password" id="password" autocomplete="current-password" class="block w-full rounded-lg border border-gray-200 bg-gray-50 p-2.5 text-gray-900 focus:border-primary-600 focus:ring-primary-600 dark:border-white/[0.06] dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500 sm:text-sm" required="">
                 </div>
                 <div class="flex items-center justify-between">
@@ -50,6 +89,9 @@
                         href="{{ path('app_register') }}"
                         class="font-medium text-primary-600 hover:underline dark:text-primary-500"
                     >Sign up</a>
+                    {% if playground_mode %}
+                        <span class="block mt-1 text-xs text-gray-400 dark:text-gray-500">Accounts reset nightly</span>
+                    {% endif %}
                 </p>
             </form>
         {% endblock %}
