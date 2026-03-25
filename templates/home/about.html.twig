@@ -7,7 +7,7 @@
 {% block body %}
     <div data-controller="aos">
 
-    {# ── Header ─────────────────────────────────────────────────────────── #}
+    {# ── Hero ─────────────────────────────────────────────────────────────── #}
     <section class="relative overflow-hidden">
         <div class="absolute inset-0"
              style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
@@ -15,40 +15,331 @@
         <div class="absolute inset-0 bg-gradient-to-b from-gray-950/80 via-gray-950/60 to-gray-950"></div>
         <div class="relative text-center px-6 pt-20 sm:pt-28 pb-12 sm:pb-16">
             <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">About</p>
-            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white">The Project</h1>
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-4">The Developer</h1>
+            <p class="text-base sm:text-lg text-gray-400 max-w-xl mx-auto">
+                The person and the story behind SupplyMars.
+            </p>
         </div>
     </section>
 
-    {# ── Intro ──────────────────────────────────────────────────────────── #}
+    {# ── The Project ──────────────────────────────────────────────────────── #}
     <section class="bg-gray-950 pt-8 pb-16 lg:pb-24">
         <div class="mx-auto max-w-3xl px-6">
             <div class="space-y-5 text-gray-400 leading-relaxed text-base lg:text-lg" data-aos="fade-up">
                 <p>
-                    Most e-commerce demos stop at "add to cart." {{ domain|title }} focuses on what comes after: orders that need to be sourced from multiple suppliers, prices that cascade through category hierarchies, and fulfilment that progresses through independent purchase-order lifecycles.
+                    SupplyMars is not a product. It is a working demonstration of how I think, how I build, and how I approach complex problems.
                 </p>
                 <p>
-                    While you won't find any actual Martian supplies for sale, you will find a fully functional backend that models real operational complexity: multi-source fulfilment, dynamic pricing, margin tracking, and simulation-driven data across thousands of SKUs. The entire catalog — products, descriptions, and imagery — is AI-generated.
-                </p>
-                <p>
-                    Built with over 20 years of hands-on e-commerce experience, from founding and scaling online retailers to leading engineering teams, this project demonstrates how Domain-Driven Design, event-driven architecture, and modern PHP come together to solve real supply-chain problems.
+                    The platform models real back-office e-commerce operations &mdash; multi-supplier sourcing, dynamic pricing, order fulfilment, reporting. It is fully operational, with live data flowing through it every day. I chose this domain because it is one I know deeply. But the real thing being demonstrated is not the platform &mdash; it is the experience, judgment, and range of skills behind it.
                 </p>
             </div>
         </div>
     </section>
 
-    {# ── CTA ────────────────────────────────────────────────────────────── #}
-    <section class="bg-gray-950 py-16 lg:py-24">
-        <div class="mx-auto max-w-3xl px-6 text-center" data-aos="fade-up">
-            <div class="flex flex-wrap items-center justify-center gap-4">
+    {# ── About Me ─────────────────────────────────────────────────────────── #}
+    <section class="bg-gray-900 py-24 lg:py-32 overflow-hidden">
+        <div class="mx-auto max-w-3xl px-6">
+            <div class="text-center mb-12 lg:mb-16" data-aos="fade-up">
+                <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">About Me</p>
+                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+                    25+ Years Building Software
+                </h2>
+            </div>
+            <div class="space-y-5 text-gray-400 leading-relaxed text-base lg:text-lg" data-aos="fade-up" data-aos-delay="100">
+                <p>
+                    I have been building software for over 25 years. In that time, I have co-founded a business that grew from five people to one of the UK's largest online retailers, led engineering teams, served in management and director roles, and spent years mentoring junior developers &mdash; something I genuinely enjoy. I have worked closely with product managers, designers, and non-technical stakeholders across every part of a business.
+                </p>
+                <p>
+                    Most of my career has been spent building things end to end &mdash; working directly with the people who needed the software, understanding their problems, and turning those into working systems.
+                </p>
+                <p>
+                    Some of the work I am proudest of has been collaborative. SupplyMars is a solo project by choice &mdash; modern tooling made it possible, and it felt too exciting not to try.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    {# ── Background: Ebuyer ───────────────────────────────────────────────── #}
+    <section class="bg-gray-950 py-24 lg:py-32 overflow-hidden">
+        <div class="mx-auto max-w-3xl px-6">
+            <div class="mb-12 lg:mb-16" data-aos="fade-up">
+                <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">Background</p>
+                <p class="text-gray-400 leading-relaxed text-base lg:text-lg mt-6">
+                    I wrote my first program at age 9 on a ZX81, and have never really stopped. With a degree in Electronic Engineering, I spent several years working in electronics, designing high-performance components for military, aerospace, and industrial applications. In 1998, I moved fully into software, building web tools at a UK internet service provider.
+                </p>
+            </div>
+
+            <div class="mb-12 lg:mb-16" data-aos="fade-up">
+                <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">1999&ndash;2014</p>
+                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+                    Ebuyer.com
+                </h2>
+            </div>
+            <div class="space-y-5 text-gray-400 leading-relaxed text-base lg:text-lg" data-aos="fade-up" data-aos-delay="100">
+                <p>
+                    In late 1999, I co-founded Ebuyer.com, an online retailer of computer and electrical goods. In the early years, I was the sole developer &mdash; building both the customer-facing website and the full suite of tools covering procurement, product management, customer service, logistics, fulfilment, returns, accounting, marketing, and analytics, all on a LAMP stack.
+                </p>
+                <p>
+                    MySQL was at the heart of everything. I designed and maintained the database layer: schema design, normalisation, indexing strategies, complex reporting queries, and summary tables. I became deeply proficient in performance tuning and scalability as the data and traffic grew.
+                </p>
+            </div>
+
+            {# Key metrics - subtle, not CV-like #}
+            <div class="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6" data-aos="fade-up" data-aos-delay="200">
+                <div class="rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] p-6 text-center">
+                    <p class="text-2xl sm:text-3xl font-bold text-white mb-1">&pound;300m+</p>
+                    <p class="text-sm text-gray-500">Annual Turnover</p>
+                </div>
+                <div class="rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] p-6 text-center">
+                    <p class="text-2xl sm:text-3xl font-bold text-white mb-1">200+</p>
+                    <p class="text-sm text-gray-500">Staff</p>
+                </div>
+                <div class="rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] p-6 text-center">
+                    <p class="text-2xl sm:text-3xl font-bold text-white mb-1">1m+</p>
+                    <p class="text-sm text-gray-500">Customers</p>
+                </div>
+            </div>
+
+            <div class="mt-12 space-y-5 text-gray-400 leading-relaxed text-base lg:text-lg" data-aos="fade-up" data-aos-delay="100">
+                <p>
+                    I saw that growth at every stage. In the early days, that meant building something from scratch, the excitement of watching the first orders come in, celebrating when we reached 100 in a single day, and still helping pick, pack, and answer customer calls. Later it meant the scale and automation of shipping 10,000 boxes per day across multiple warehouses and couriers, and watching the last trucks leave each evening.
+                </p>
+                <p class="text-gray-300">
+                    Ebuyer was acquired in 2004. I chose to stay for another decade.
+                </p>
+                <p>
+                    As the company grew, so did my role. I built and led an engineering team, mentored developers, and eventually served as IT Director, leading a large cross-functional team. We worked in fast, iterative cycles &mdash; shipping early, gathering feedback, and improving continuously &mdash; long before that had a fashionable name. Code reviews, shared ownership, and close collaboration with non-technical teams were how we operated.
+                </p>
+                <p>
+                    But throughout all of that, what I valued most was the direct relationship with the people using the software &mdash; sitting with each department to understand how they worked, then building the tools that made them faster. That pattern shaped how I think about software to this day.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    {# ── Background: Wren Kitchens ────────────────────────────────────────── #}
+    <section class="bg-gray-900 py-24 lg:py-32 overflow-hidden">
+        <div class="mx-auto max-w-3xl px-6">
+            <div class="mb-12 lg:mb-16" data-aos="fade-up">
+                <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">2009</p>
+                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+                    Wren Kitchens
+                </h2>
+            </div>
+            <div class="space-y-5 text-gray-400 leading-relaxed text-base lg:text-lg" data-aos="fade-up" data-aos-delay="100">
+                <p>
+                    In 2009, we adapted the Ebuyer codebase to launch Wren Kitchens &mdash; taking a platform built for online retail and reshaping it for a completely different business model. As of 2022, Wren had over 100 showrooms, 6,000 employees, and annual turnover exceeding &pound;1.25 billion.
+                </p>
+                <p class="text-lg sm:text-xl text-gray-500 italic">
+                    That says something useful about software: if the foundations are sound, it can travel further than the original brief.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    {# ── Background: Since 2014 ───────────────────────────────────────────── #}
+    <section class="bg-gray-950 py-24 lg:py-32 overflow-hidden">
+        <div class="mx-auto max-w-3xl px-6">
+            <div class="mb-12 lg:mb-16" data-aos="fade-up">
+                <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">Since 2014</p>
+                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+                    Staying Close to the Craft
+                </h2>
+            </div>
+            <div class="space-y-5 text-gray-400 leading-relaxed text-base lg:text-lg" data-aos="fade-up" data-aos-delay="100">
+                <p>
+                    As a co-founder, I was fortunate that the acquisition gave me the freedom to step back when the time was right and raise a young family. But I never stopped building &mdash; I kept writing software, kept learning, and kept up with how the tools and practices around me were changing. Modern frameworks, cleaner architecture, testing, containerised workflows, CI/CD &mdash; all of that became part of how I worked. Some things I used years ago have been replaced by better alternatives; others remain exactly the right tools. What matters is knowing what fits, and why.
+                </p>
+                <p>
+                    I still genuinely enjoy that process. After all this time, the curiosity has not gone anywhere. I think that is what separates the developers who keep getting better from those who quietly plateau.
+                </p>
+                <p>
+                    Now, with my children starting secondary school, I am ready to take on the right kind of work again. The timing feels right in more ways than one. AI-assisted development has changed what a single experienced engineer can do, and working this way feels like the most exciting period in software since the early web.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    {# ── What I Bring ─────────────────────────────────────────────────────── #}
+    <section class="relative bg-gray-900 py-24 lg:py-32 overflow-hidden">
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_0%,rgba(120,119,198,0.04),transparent)]"></div>
+
+        <div class="relative mx-auto max-w-(--breakpoint-xl) px-6">
+            <div class="mb-16 lg:mb-20 text-center" data-aos="fade-up">
+                <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">What I Bring</p>
+                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-6">
+                    A Broad Range of Skills
+                </h2>
+                <p class="text-lg text-gray-400 max-w-2xl mx-auto">
+                    Much of my career has involved work that, in many organisations, would be spread across several roles. The specific tools in this project are only part of the picture.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+                <div class="group rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] p-6 transition-all duration-300 hover:bg-gray-800/60 hover:ring-white/[0.1]" data-aos="fade-up" data-aos-delay="0">
+                    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-orange-500/10">
+                        <twig:ux:icon name="bi:lightbulb-fill" class="h-6 w-6 text-orange-400" />
+                    </div>
+                    <h3 class="text-base font-semibold text-white mb-2">Product Thinking</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">Understanding what matters, what does not, and what the software is actually there to do.</p>
+                </div>
+
+                <div class="group rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] p-6 transition-all duration-300 hover:bg-gray-800/60 hover:ring-white/[0.1]" data-aos="fade-up" data-aos-delay="50">
+                    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-violet-500/10">
+                        <twig:ux:icon name="bi:diagram-3-fill" class="h-6 w-6 text-violet-400" />
+                    </div>
+                    <h3 class="text-base font-semibold text-white mb-2">Technical Architecture</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">Designing systems that are clear, maintainable, and suited to the real problem.</p>
+                </div>
+
+                <div class="group rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] p-6 transition-all duration-300 hover:bg-gray-800/60 hover:ring-white/[0.1]" data-aos="fade-up" data-aos-delay="100">
+                    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500/10">
+                        <twig:ux:icon name="bi:code-slash" class="h-6 w-6 text-blue-400" />
+                    </div>
+                    <h3 class="text-base font-semibold text-white mb-2">Software Engineering</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">Currently PHP and Symfony, but the discipline &mdash; domain modelling, APIs, async workflows, testing &mdash; transfers across stacks.</p>
+                </div>
+
+                <div class="group rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] p-6 transition-all duration-300 hover:bg-gray-800/60 hover:ring-white/[0.1]" data-aos="fade-up" data-aos-delay="150">
+                    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-500/10">
+                        <twig:ux:icon name="bi:database-fill" class="h-6 w-6 text-cyan-400" />
+                    </div>
+                    <h3 class="text-base font-semibold text-white mb-2">Database Design</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">Deep experience with MySQL, from schema design and SQL to reporting and performance.</p>
+                </div>
+
+                <div class="group rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] p-6 transition-all duration-300 hover:bg-gray-800/60 hover:ring-white/[0.1]" data-aos="fade-up" data-aos-delay="200">
+                    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-pink-500/10">
+                        <twig:ux:icon name="bi:palette-fill" class="h-6 w-6 text-pink-400" />
+                    </div>
+                    <h3 class="text-base font-semibold text-white mb-2">UI/UX</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">Interfaces that are clear, task-focused, and built for people who need to get things done.</p>
+                </div>
+
+                <div class="group rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] p-6 transition-all duration-300 hover:bg-gray-800/60 hover:ring-white/[0.1]" data-aos="fade-up" data-aos-delay="250">
+                    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-amber-500/10">
+                        <twig:ux:icon name="bi:window-desktop" class="h-6 w-6 text-amber-400" />
+                    </div>
+                    <h3 class="text-base font-semibold text-white mb-2">Front-end Development</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">Currently Tailwind and Hotwire, but the underlying concern is speed, clarity, and usability.</p>
+                </div>
+
+                <div class="group rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] p-6 transition-all duration-300 hover:bg-gray-800/60 hover:ring-white/[0.1]" data-aos="fade-up" data-aos-delay="0">
+                    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500/10">
+                        <twig:ux:icon name="bi:shield-check" class="h-6 w-6 text-emerald-400" />
+                    </div>
+                    <h3 class="text-base font-semibold text-white mb-2">QA &amp; Testing</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">Quality built in through automated tests, static analysis, code review, and sensible discipline.</p>
+                </div>
+
+                <div class="group rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] p-6 transition-all duration-300 hover:bg-gray-800/60 hover:ring-white/[0.1]" data-aos="fade-up" data-aos-delay="50">
+                    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-sky-500/10">
+                        <twig:ux:icon name="bi:cloud-fill" class="h-6 w-6 text-sky-400" />
+                    </div>
+                    <h3 class="text-base font-semibold text-white mb-2">DevOps &amp; Infrastructure</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">Docker, CI/CD, AWS, queues, caching &mdash; plus years of managing bare-metal LAMP stacks.</p>
+                </div>
+
+                <div class="group rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] p-6 transition-all duration-300 hover:bg-gray-800/60 hover:ring-white/[0.1]" data-aos="fade-up" data-aos-delay="100">
+                    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-500/10">
+                        <twig:ux:icon name="bi:bar-chart-line-fill" class="h-6 w-6 text-indigo-400" />
+                    </div>
+                    <h3 class="text-base font-semibold text-white mb-2">Data &amp; Reporting</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">Reporting, dashboards, summary models, segmentation, and a strong instinct for what operational data is actually useful.</p>
+                </div>
+
+                <div class="group rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] p-6 transition-all duration-300 hover:bg-gray-800/60 hover:ring-white/[0.1]" data-aos="fade-up" data-aos-delay="150">
+                    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-teal-500/10">
+                        <twig:ux:icon name="bi:chat-dots-fill" class="h-6 w-6 text-teal-400" />
+                    </div>
+                    <h3 class="text-base font-semibold text-white mb-2">Communication</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">Explaining trade-offs clearly and translating between technical and non-technical concerns.</p>
+                </div>
+
+                <div class="group rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] p-6 transition-all duration-300 hover:bg-gray-800/60 hover:ring-white/[0.1]" data-aos="fade-up" data-aos-delay="200">
+                    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-rose-500/10">
+                        <twig:ux:icon name="bi:gear-fill" class="h-6 w-6 text-rose-400" />
+                    </div>
+                    <h3 class="text-base font-semibold text-white mb-2">Operations &amp; Process</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">Systems shaped around real workflows, not abstract diagrams.</p>
+                </div>
+
+                <div class="group rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] p-6 transition-all duration-300 hover:bg-gray-800/60 hover:ring-white/[0.1]" data-aos="fade-up" data-aos-delay="250">
+                    <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-fuchsia-500/10">
+                        <twig:ux:icon name="bi:people-fill" class="h-6 w-6 text-fuchsia-400" />
+                    </div>
+                    <h3 class="text-base font-semibold text-white mb-2">Leadership &amp; Mentoring</h3>
+                    <p class="text-sm text-gray-400 leading-relaxed">Building teams, mentoring developers, and helping people improve along with the software.</p>
+                </div>
+            </div>
+
+            <div class="mt-16 mx-auto max-w-3xl space-y-5 text-gray-400 leading-relaxed text-base lg:text-lg text-center" data-aos="fade-up">
+                <p>
+                    Sometimes that means being hands-on across a broad range; sometimes it means working with specialists and seeing the bigger picture. I am comfortable taking a project from an initial conversation through to a running system, or stepping into an existing team where broad experience and judgment are useful.
+                </p>
+                <p>
+                    How software is delivered matters as much as how it is written. Fast iteration, refactoring, automated testing, clean version control, and sensible tooling are part of doing the work properly.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    {# ── Why Now ──────────────────────────────────────────────────────────── #}
+    <section class="bg-gray-950 py-24 lg:py-32 overflow-hidden">
+        <div class="mx-auto max-w-3xl px-6 text-center">
+            <div class="mb-8" data-aos="fade-up">
+                <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">Why Now</p>
+                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+                    Software Is Changing Again
+                </h2>
+            </div>
+            <div class="space-y-5 text-gray-400 leading-relaxed text-base lg:text-lg" data-aos="fade-up" data-aos-delay="100">
+                <p>
+                    AI tooling shortens the distance between an idea and a working system, but it does not remove the need for experience. If anything, it makes judgment more important: understanding the problem properly, choosing what matters, keeping the design clear, and knowing when something is good enough.
+                </p>
+                <p>
+                    I chose e-commerce for this project because I wanted to revisit familiar problems with many years of hindsight and a clean sheet. My experience goes well beyond this domain &mdash; it just happens to bring a lot of the right problems together in one place.
+                </p>
+                <p class="text-gray-300">
+                    SupplyMars exists to show what that looks like in practice &mdash; the thinking, the craft, and the judgment that comes from doing this for a long time and still loving it.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    {# ── CTA ──────────────────────────────────────────────────────────────── #}
+    <section class="relative py-28 lg:py-36 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-950 to-gray-900"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_50%,rgba(249,115,22,0.04),transparent)]"></div>
+        <div class="absolute inset-0 opacity-[0.04]"
+             style="background-image: url({{ asset('images/martian_landscape.webp') }}); background-size: cover; background-position: center;">
+        </div>
+
+        <div class="relative mx-auto max-w-2xl px-6 text-center">
+            <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4" data-aos="fade-up">Get in Touch</p>
+            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-6"
+                data-aos="fade-up" data-aos-delay="50" data-aos-duration="600">
+                Let's Talk
+            </h2>
+            <p class="text-lg text-gray-400 mb-12 leading-relaxed" data-aos="fade-up" data-aos-delay="100">
+                I am open to the right kind of opportunity &mdash; something genuinely interesting, with good people and work that matters.
+            </p>
+            <div class="flex flex-wrap items-center justify-center gap-4" data-aos="fade-up" data-aos-delay="200">
+                <a href="mailto:adamashmore@me.com"
+                   class="inline-flex items-center gap-2 px-7 py-3 text-sm sm:text-base font-semibold text-white bg-orange-500 hover:bg-orange-400 rounded-lg shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-[0.98]">
+                    <twig:ux:icon name="bi:envelope-fill" class="h-5 w-5" />
+                    Get in Touch
+                </a>
+                <a href="{{ path('app_catalog_product_index') }}"
+                   class="inline-flex items-center gap-2 px-7 py-3 text-sm sm:text-base font-semibold text-gray-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg ring-1 ring-white/[0.1] hover:ring-white/[0.18] transition-all duration-200 active:scale-[0.98]"
+                   data-turbo-prefetch="false">
+                    Explore the Platform
+                </a>
                 <a href="https://github.com/myvars/supplymars"
                    target="_blank"
-                   class="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-white bg-orange-500 hover:bg-orange-400 rounded-lg shadow-lg shadow-orange-500/20 transition-all duration-200 active:scale-[0.98]">
+                   class="inline-flex items-center gap-2 px-7 py-3 text-sm sm:text-base font-semibold text-gray-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg ring-1 ring-white/[0.1] hover:ring-white/[0.18] transition-all duration-200 active:scale-[0.98]">
                     <twig:ux:icon name="bi:github" class="h-5 w-5" />
                     View on GitHub
-                </a>
-                <a href="mailto:adamashmore@me.com"
-                   class="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-gray-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg ring-1 ring-white/[0.1] hover:ring-white/[0.18] transition-all duration-200 active:scale-[0.98]">
-                    Get in Touch
                 </a>
             </div>
         </div>

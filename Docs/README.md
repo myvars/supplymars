@@ -1,15 +1,8 @@
 # SupplyMars Documentation
 
-Welcome to the technical documentation for SupplyMars. This guide covers architecture, setup, features, and operations for developers and maintainers working with the codebase.
+Technical documentation for SupplyMars, covering architecture, setup, features, and operations.
 
-## Who Is This For?
-
-- **Senior engineers** inheriting or extending the codebase
-- **Operations staff** managing orders, suppliers, and inventory
-- **Architects** evaluating DDD and modular monolith patterns
-- **Future maintainers** requiring deep system understanding
-
-For a high-level introduction to the project, see the [main README](../README.md). For domain concepts and what makes the system non-trivial, start with [01-overview.md](01-overview.md).
+For a high-level introduction, see the [main README](../README.md). For the background and thinking behind the project, see [ABOUT.md](../ABOUT.md). For domain concepts and what makes the system non-trivial, start with [01-overview.md](01-overview.md).
 
 ## High-Level Architecture
 
@@ -178,12 +171,3 @@ symfony console app:calculate-order-sales 7        # Last 7 days
 | Testing | PHPUnit + Foundry | Test framework + factories |
 | File Storage | S3 / Local | Product images |
 
----
-
-## Contributing
-
-1. Read the architecture documentation before making changes
-2. Follow DDD principles: domain logic in Domain layer, orchestration in Application layer
-3. Write tests using Foundry factories
-4. Run code quality tools before committing
-5. Keep commit messages clear and human-written

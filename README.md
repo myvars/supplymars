@@ -1,25 +1,31 @@
 # SupplyMars
 
-A fully-featured backend e-commerce and supply-chain platform designed to model real-world complexity beyond the checkout.
+A fully operational backend e-commerce platform, built as a portfolio project to demonstrate real-world architectural complexity beyond the checkout.
 
-Built using Domain-Driven Design principles with PHP 8.5+, Symfony 8, Doctrine ORM, MySQL, RabbitMQ, and Redis.
+PHP 8.5+ • Symfony 8 • Doctrine ORM • MySQL 8.4 • RabbitMQ • Redis • Tailwind CSS • Hotwire
 
-**[Live Demo →](https://www.supplymars.com)**
+**[Live Demo →](https://www.supplymars.com)** · **[About the Developer →](ABOUT.md)**
 
-## What is this?
-Most e-commerce demos stop at “add to cart.” SupplyMars focuses on what comes after — when orders split across multiple suppliers, pricing responds to real supplier costs and margins, and fulfillment progresses through independent purchase-order lifecycles.
+---
 
-Built to model real operational complexity, the platform demonstrates multi-source fulfillment, dynamic pricing, and margin tracking at scale across thousands of SKUs. The catalog — products, descriptions, and imagery — is fully AI-generated, while automated simulations keep orders flowing through the system in a realistic, end-to-end way.
+## What Is This?
 
-Whether you’re managing a Martian colony or exploring modern PHP architecture, SupplyMars invites exploration and experimentation within a complete system.
+Most e-commerce demos stop at "add to cart." SupplyMars focuses on what comes after — when orders split across multiple suppliers, pricing responds to real supplier costs and margins, and fulfilment progresses through independent purchase-order lifecycles.
+
+The platform models real operational complexity: multi-source fulfilment, dynamic pricing, and margin tracking at scale across thousands of SKUs. The catalog — products, descriptions, and imagery — is fully AI-generated, and automated simulations keep orders flowing through the system in a realistic, end-to-end way.
+
+This is not a commercial product. It is a working demonstration of how I approach complex problems — from domain modelling and architecture through to UI, testing, and deployment. For more on the background and thinking behind it, see [ABOUT.md](ABOUT.md).
+
 ## Key Features
 
 - **Multi-supplier sourcing** — Products can come from your own warehouse or external dropshippers, each with their own costs and stock levels
 - **Dynamic pricing** — Markups cascade from category to subcategory to product; prices recalculate automatically when supplier costs change
 - **Order allocation & splitting** — Customer orders split across suppliers based on availability and cost optimisation
 - **Purchase order lifecycle** — Track POs from creation through acceptance, shipping, and delivery (or rejection and refund)
-- **Simulation commands** — Console commands generate realistic orders, progress fulfilment, fluctuate stock, and populate reporting data
+- **Simulation engine** — Console commands generate realistic orders, progress fulfilment, fluctuate stock, and populate reporting data
 - **Reporting dashboards** — Pre-aggregated sales and margin reports with filtering by product, category, supplier, and time period
+- **REST API** — OpenAPI-documented endpoints for catalog and order management
+- **Support tickets** — Pool-based internal ticketing with threaded messages and visibility controls
 
 ## Getting Started
 
@@ -44,6 +50,8 @@ symfony serve -d           # Start PHP server at https://127.0.0.1:8000
 **Backend:** PHP 8.5+ • Symfony 8.0 • Doctrine ORM • MySQL 8.4 • RabbitMQ • Redis
 
 **Frontend:** Tailwind CSS • Hotwire (Turbo + Stimulus) • AssetMapper
+
+**Infrastructure:** Docker • GitHub Actions CI/CD • AWS
 
 ## Build & Deploy
 

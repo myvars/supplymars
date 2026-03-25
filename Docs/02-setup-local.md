@@ -91,10 +91,8 @@ symfony console doctrine:migrations:migrate --no-interaction
 # 3. Load fixtures (optional - provides seed data)
 symfony console doctrine:fixtures:load --no-interaction
 
-# 4. Build assets
+# 4. Build Tailwind CSS
 symfony console tailwind:build
-symfony console importmap:install
-symfony console asset-map:compile
 
 # 5. Start Symfony server
 symfony serve -d
@@ -189,6 +187,7 @@ symfony console app:update-supplier-stock 100
 # Generate reporting data
 symfony console app:calculate-product-sales 30
 symfony console app:calculate-order-sales 30
+symfony console app:calculate-customer-sales 30
 ```
 
 ## Common Setup Failures

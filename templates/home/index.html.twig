@@ -47,6 +47,11 @@
                     <twig:ux:icon name="bi:github" class="h-5 w-5" />
                     View on GitHub
                 </a>
+                <a href="{{ path('app_about_page') }}"
+                   class="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-7 py-3 text-sm sm:text-base font-semibold text-gray-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg ring-1 ring-white/[0.1] hover:ring-white/[0.18] backdrop-blur-sm transition-all duration-200 active:scale-[0.98]">
+                    <twig:ux:icon name="bi:person-fill" class="h-5 w-5" />
+                    About the Developer
+                </a>
             </div>
         </div>
 
@@ -78,24 +83,32 @@
         </div>
     </section>
 
-    {# ── The Pitch ───────────────────────────────────────────────────────── #}
-    <section id="the-pitch" class="relative bg-gray-950 py-24 lg:py-32 scroll-mt-6 overflow-hidden">
+    {# ── The Story ─────────────────────────────────────────────────────── #}
+    <section id="the-story" class="relative bg-gray-950 py-24 lg:py-32 scroll-mt-6 overflow-hidden">
         <div class="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_50%_50%,rgba(249,115,22,0.04),transparent)]"></div>
 
         <div class="relative mx-auto max-w-3xl px-6 text-center">
-            <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4" data-aos="fade-up">The Vision</p>
+            <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4" data-aos="fade-up">The Bigger Picture</p>
             <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-8"
                 data-aos="fade-up" data-aos-delay="50" data-aos-duration="600">
-                Pioneering Commerce Beyond Earth
+                More Than a Demo
             </h2>
             <p class="text-lg sm:text-xl text-gray-400 leading-relaxed mb-6" data-aos="fade-up" data-aos-delay="100">
                 Whether you're managing a Martian colony or stocking up for your next extravehicular adventure,
                 {{ domain|title }} is your destination for everything from habitat maintenance to cutting-edge scientific equipment.
             </p>
-            <p class="text-lg sm:text-xl text-gray-400 leading-relaxed" data-aos="fade-up" data-aos-delay="200">
-                It's also a fully functional demo built to show what modern PHP e-commerce actually looks like
-                &mdash; real operational complexity, not just add-to-cart basics.
+            <p class="text-lg sm:text-xl text-gray-400 leading-relaxed mb-8" data-aos="fade-up" data-aos-delay="200">
+                Behind the fiction is a fully operational platform built by a developer with over 25 years of experience
+                &mdash; from co-founding one of the UK's largest online retailers to leading engineering teams and building
+                the tools that powered a fast-growing business. This project is a demonstration of that experience in action:
+                clean architecture, real domain complexity, and thoughtful design.
             </p>
+            <a href="{{ path('app_about_page') }}"
+               class="inline-flex items-center gap-2 text-orange-400 hover:text-orange-300 font-semibold transition-colors"
+               data-aos="fade-up" data-aos-delay="300">
+                Read the full story
+                <twig:ux:icon name="bi:arrow-right" class="h-4 w-4" />
+            </a>
         </div>
     </section>
 
@@ -107,7 +120,7 @@
             <div class="mb-16 lg:mb-20 text-center" data-aos="fade-up">
                 <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">The Platform</p>
                 <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white">
-                    Built for Modern E-commerce
+                    What's Inside
                 </h2>
             </div>
 
@@ -444,7 +457,7 @@
                 Explore the Code
             </h2>
             <p class="text-lg text-gray-400 mb-12 leading-relaxed" data-aos="fade-up" data-aos-delay="100">
-                The full source is on GitHub. Explore the architecture, or get in touch to discuss the approach.
+                The full source is on GitHub. Explore the architecture, read the story behind it, or get in touch.
             </p>
             <div class="flex flex-wrap items-center justify-center gap-4" data-aos="fade-up" data-aos-delay="200">
                 <twig:Button
@@ -456,6 +469,15 @@
                 >
                     <twig:ux:icon name="bi:github" class="h-5 w-5" />
                     <span>View on GitHub</span>
+                </twig:Button>
+                <twig:Button
+                    tag="a"
+                    href="{{ path('app_about_page') }}"
+                    class="flex items-center space-x-2 text-lg px-8 py-3 font-bold"
+                    variant="secondary"
+                >
+                    <twig:ux:icon name="bi:person-fill" class="h-5 w-5" />
+                    <span>About the Developer</span>
                 </twig:Button>
                 <twig:Button
                     tag="a"
