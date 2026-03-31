@@ -2,7 +2,7 @@
 
 Technical documentation for SupplyMars, covering architecture, setup, features, and operations.
 
-For a high-level introduction, see the [main README](../README.md). For the background and thinking behind the project, see [ABOUT.md](../ABOUT.md). For domain concepts and what makes the system non-trivial, start with [01-overview.md](01-overview.md).
+For a high-level introduction, see the [main README](../README.md). For domain concepts and what makes the system non-trivial, start with [01-overview.md](01-overview.md).
 
 ## High-Level Architecture
 

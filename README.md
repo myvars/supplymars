@@ -4,7 +4,7 @@ A fully operational backend e-commerce platform, built as a portfolio project to
 
 PHP 8.5+ • Symfony 8 • Doctrine ORM • MySQL 8.4 • RabbitMQ • Redis • Tailwind CSS • Hotwire
 
-**[Live Demo →](https://www.supplymars.com)** · **[About the Developer →](ABOUT.md)**
+**[Live Demo →](https://www.supplymars.com)** · **[About the Developer →](https://www.supplymars.com/about)**
 
 ---
 
@@ -14,7 +14,7 @@ Most e-commerce demos stop at "add to cart." SupplyMars focuses on what comes af
 
 The platform models real operational complexity: multi-source fulfilment, dynamic pricing, and margin tracking at scale across thousands of SKUs. The catalog — products, descriptions, and imagery — is fully AI-generated, and automated simulations keep orders flowing through the system in a realistic, end-to-end way.
 
-This is not a commercial product. It is a working demonstration of how I approach complex problems — from domain modelling and architecture through to UI, testing, and deployment. For more on the background and thinking behind it, see [ABOUT.md](ABOUT.md).
+This is not a commercial product. It is a working demonstration of how I approach complex problems — from domain modelling and architecture through to UI, testing, and deployment.
 
 ## Key Features
 
