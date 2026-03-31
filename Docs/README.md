@@ -82,6 +82,9 @@ SupplyMars is a **modular monolith** - bounded contexts are self-contained modul
 - **[patterns/InlineEdit/](patterns/InlineEdit/README.md)** - Click-to-edit fields with auto-save
 - **[patterns/API/](patterns/API/README.md)** - REST API controllers, resources, and request DTOs
 
+### Review
+- **[12-technical-review.md](12-technical-review.md)** - Honest technical review of the project as of V1.0 (31 March 2026), covering architecture, strengths, trade-offs, and recommendations
+
 ### Architecture Decision Records
 - **[adr/001-multi-supplier-sourcing.md](adr/001-multi-supplier-sourcing.md)** - Why orders split across suppliers
 - **[adr/002-order-line-splitting.md](adr/002-order-line-splitting.md)** - Why order items can have multiple prices

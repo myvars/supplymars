@@ -44,6 +44,7 @@ symfony serve -d           # Start PHP server at https://127.0.0.1:8000
 |-------|-------------|
 | [Technical Documentation](Docs/README.md) | Architecture, setup, features, operations, CLI reference |
 | [User Manual](Docs/UserManual/README.md) | Day-to-day operations guide for managing orders, suppliers, and products |
+| [Technical Review](Docs/12-technical-review.md) | Honest architectural review of the project as of V1.0 (31 March 2026) |
 
 ## Tech Stack
 
