@@ -2,9 +2,9 @@
 
 <div class="mb-3 flex gap-1 border-b border-gray-200 dark:border-white/[0.06]">
     {% set tabs = {
-        'app_reporting_dashboard_customer_insights': 'Overview',
-        'app_reporting_dashboard_customer_geographic': 'Geographic',
-        'app_reporting_dashboard_customer_segments': 'Segments',
+        'app_reports_customer_insights': 'Overview',
+        'app_reports_customer_geographic': 'Geographic',
+        'app_reports_customer_segments': 'Segments',
     } %}
     {% for route, label in tabs %}
         {% set isActive = app.current_route == route %}

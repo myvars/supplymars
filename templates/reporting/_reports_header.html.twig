@@ -3,15 +3,14 @@
 
     Parameters:
     - title: The page title (required)
-    - isDashboard: If true, shows title only without breadcrumb or duration filters (default: false)
-    - showDurations: If true, shows duration filter buttons (default: true, ignored if isDashboard)
+    - showDurations: If true, shows duration filter buttons (default: true)
 #}
 <div class="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
     <div class="flex items-center gap-2">
         <twig:ux:icon name="bi:bar-chart-line-fill" class="h-4.5 w-4.5 text-gray-400 dark:text-gray-500"/>
         <span class="text-sm font-semibold text-gray-900 dark:text-white">{{ title }}</span>
     </div>
-    {% if not isDashboard|default(false) and showDurations|default(true) %}
+    {% if showDurations|default(true) %}
         {{ include('reporting/_sales_durations.html.twig') }}
     {% endif %}
 </div>

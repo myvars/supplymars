@@ -2,6 +2,7 @@
 
 namespace App\Tests\Home\UI;
 
+use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
@@ -14,6 +15,15 @@ class HomeControllerTest extends WebTestCase
     public function testShowHome(): void
     {
         $this->browser()
+            ->get('/')
+            ->assertSuccessful()
+            ->assertSee('Welcome');
+    }
+
+    public function testShowHomeWhenAuthenticated(): void
+    {
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
             ->get('/')
             ->assertSuccessful()
             ->assertSee('Welcome');

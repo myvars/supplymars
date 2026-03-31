@@ -45,7 +45,7 @@ src/
 ├── Audit/       - Audit logging (status & stock changes)
 ├── Catalog/     - Products, categories, manufacturers, subcategories
 ├── Customer/    - Users, addresses, authentication
-├── Home/        - Homepage (simple, no DDD layers)
+├── Home/        - Homepage, operational dashboard
 ├── Order/       - Customer orders and order items
 ├── Pricing/     - VAT rates, pricing strategies, markup cascades
 ├── Purchasing/  - Purchase orders, suppliers, supplier products

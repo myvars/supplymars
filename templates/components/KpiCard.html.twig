@@ -68,7 +68,7 @@
             {% set positive = difference > 0 %}
             <div class="flex items-center gap-3 text-xs">
                 <span class="text-gray-500 dark:text-gray-400">
-                    {{ positive ? '+' : '' }}{{ difference|number_format(valueType != 'percentage' ? 0 : 2) }}
+                    {% if valueType == 'currency' %}{{ positive ? '+' : '-' }}{{ difference|abs|price_rounded(maxFractionDigits) }}{% elseif valueType == 'percentage' %}{{ positive ? '+' : '' }}{{ difference|number_format(2) }}pp{% else %}{{ positive ? '+' : '' }}{{ difference|number_format(0) }}{% endif %}
                 </span>
                 <span class="font-medium {{ positive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
                     {{ positive ? '+' : '' }}{{ percentage|number_format(2) }}%

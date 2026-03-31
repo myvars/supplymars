@@ -348,17 +348,17 @@ The Customer Insights feature provides analytics on customer behavior, geographi
 3. `app:calculate-customer-sales-summary` pre-computes summaries for fast dashboard loads
 
 **Insights Dashboard:**
-1. Navigate to `/dashboard/report/customer/insights`
+1. Navigate to `/reports/customer/insights`
 2. View top customers by revenue, activity trends
 3. Filter by duration (7d, 30d, 90d, 365d)
 
 **Geographic Analysis:**
-1. Navigate to `/dashboard/report/customer/geographic`
+1. Navigate to `/reports/customer/geographic`
 2. View pie chart of sales distribution by city
 3. Useful for regional marketing decisions
 
 **Segment Analysis:**
-1. Navigate to `/dashboard/report/customer/segments`
+1. Navigate to `/reports/customer/segments`
 2. View customer categorisation: NEW, RETURNING, LOYAL, LAPSED
 3. See revenue contribution by segment
 
@@ -374,12 +374,12 @@ The Customer Insights feature provides analytics on customer behavior, geographi
 
 | Route | Controller | Purpose |
 |-------|------------|---------|
-| `/dashboard/report/customer/insights` | `DashboardController::customerInsights` | Main insights dashboard |
-| `/dashboard/report/customer/geographic` | `DashboardController::customerGeographic` | Geographic breakdown |
-| `/dashboard/report/customer/segments` | `DashboardController::customerSegments` | Segment analysis |
+| `/reports/customer/insights` | `ReportsController::customerInsights` | Main insights dashboard |
+| `/reports/customer/geographic` | `ReportsController::customerGeographic` | Geographic breakdown |
+| `/reports/customer/segments` | `ReportsController::customerSegments` | Segment analysis |
 
 **Key files:**
-- `src/Reporting/UI/Http/Controller/DashboardController.php`
+- `src/Reporting/UI/Http/Controller/ReportsController.php`
 - `src/Reporting/Application/Handler/CustomerInsightsReportHandler.php`
 - `src/Reporting/Application/Handler/CustomerGeographicReportHandler.php`
 - `src/Reporting/Application/Handler/CustomerSegmentReportHandler.php`
@@ -443,24 +443,25 @@ symfony console app:rewind-mixed-status-purchase-orders
 
 ---
 
-## Reporting & Dashboards
+## Reporting & Reports
 
 ### Purpose
 
-The Reporting context provides business intelligence through pre-aggregated sales data and interactive dashboards.
+The Reporting context provides business intelligence through pre-aggregated sales data and interactive reports. The operational dashboard at `/dashboard/` provides a quick overview of today's activity and items needing attention.
 
 ### Main Workflows
 
-**Dashboard Overview:**
+**Operational Dashboard:**
 1. Navigate to `/dashboard/`
-2. View today's orders, sales, and margins
-3. Compare against week-ago baseline
-4. See action items (overdue orders, rejected POs)
+2. View today's orders, revenue, profit, and margin KPIs
+3. Compare against same day last week
+4. See action items (pending/overdue orders, rejected POs)
+5. Browse latest orders and top products
 
 **Detailed Reports:**
-- Product Sales: `/dashboard/report/product/sales`
-- Order Summary: `/dashboard/report/order/summary`
-- Overdue Orders: `/dashboard/report/overdue/orders`
+- Product Sales: `/reports/product/sales`
+- Order Summary: `/reports/order/summary`
+- Overdue Orders: `/reports/overdue/orders`
 
 **Data Aggregation:**
 ```bash
@@ -473,13 +474,12 @@ symfony console app:calculate-order-sales 7
 
 | Action | Controller | Route |
 |--------|------------|-------|
-| Dashboard | `DashboardController::show` | `app_reporting_dashboard` |
-| Product sales | `DashboardController::productSales` | `app_reporting_dashboard_product_sales` |
-| Order summary | `DashboardController::orderSummary` | `app_reporting_dashboard_order_summary` |
-| Overdue orders | `DashboardController::overdueOrders` | `app_reporting_dashboard_overdue_orders` |
+| Product sales | `ReportsController::productSales` | `app_reports_product_sales` |
+| Order summary | `ReportsController::orderSummary` | `app_reports_order_summary` |
+| Overdue orders | `ReportsController::overdueOrders` | `app_reports_overdue_orders` |
 
 **Key files:**
-- `src/Reporting/UI/Http/Controller/DashboardController.php`
+- `src/Reporting/UI/Http/Controller/ReportsController.php`
 - `src/Reporting/UI/Http/Dashboard/DashboardViewer.php`
 - `src/Reporting/Application/Handler/CalculateProductSalesHandler.php`
 
@@ -501,8 +501,8 @@ The PO Item Performance Report tracks purchase order item profitability and fulf
 ### Main Workflows
 
 **Viewing PO Item Performance:**
-1. Navigate to Dashboard → Reports
-2. Select PO Item Performance report
+1. Navigate to Reporting → PO Performance
+2. Select duration filter
 3. Filter by date range (7d, 30d, 90d, 365d)
 4. Sort by profit, status, product, or supplier
 5. View summary totals and paginated item details
@@ -511,7 +511,7 @@ The PO Item Performance Report tracks purchase order item profitability and fulf
 
 | Route | Handler | Purpose |
 |-------|---------|---------|
-| `/dashboard/report/po-item/performance` | `PoItemPerformanceReportHandler` | PO item profitability analysis |
+| `/reports/po/performance` | `ReportsController::poPerformance` | PO item profitability analysis |
 
 **Key files:**
 - `src/Reporting/Application/Handler/Report/PoItemPerformanceReportHandler.php`

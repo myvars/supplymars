@@ -10,7 +10,7 @@
         <twig:Breadcrumb :href="path('app_catalog_subcategory_index')" label="Subcategories" :current="result.name"/>
         {{ include('catalog/subcategory/_subcategory_card.html.twig', {subcategory: result}) }}
         {{ include('reporting/_dashboard_card.html.twig', {
-            dashboardSrc: path('app_reporting_dashboard_product_sales', {subcategoryId: result.id})
+            dashboardSrc: path('app_reports_product_sales', {subcategoryId: result.id})
         }) }}
     </div>
 

@@ -10,7 +10,7 @@
         <twig:Breadcrumb :href="path('app_catalog_manufacturer_index')" label="Manufacturers" :current="result.name"/>
         {{ include('catalog/manufacturer/_manufacturer_card.html.twig', {manufacturer: result}) }}
         {{ include('reporting/_dashboard_card.html.twig', {
-            dashboardSrc: path('app_reporting_dashboard_product_sales', {manufacturerId: result.id})
+            dashboardSrc: path('app_reports_product_sales', {manufacturerId: result.id})
         }) }}
     </div>
 

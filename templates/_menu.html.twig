@@ -29,6 +29,20 @@
                         <span class="ml-3">Home</span>
                     </a>
                 </li>
+                {# ── Dashboard ── #}
+                {% if is_granted('ROLE_ADMIN') %}
+                <li>
+                    <a href="{{ path('app_dashboard') }}"
+                       data-nav="top"
+                       class="flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors text-gray-900 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+                       data-turbo-frame="body"
+                       data-action="basic-drawer#close"
+                    >
+                        <twig:ux:icon name="bi:speedometer2" data-nav="icon" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
+                        <span class="ml-3">Dashboard</span>
+                    </a>
+                </li>
+                {% endif %}
                 {# ── Catalog (Products, Categories, Subcategories, Manufacturers) ── #}
                 <li>
                     <button type="button" data-nav="section" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors text-gray-900 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-catalog" data-collapse-toggle="dropdown-catalog">
@@ -170,7 +184,7 @@
                         </li>
                     </ul>
                 </li>
-                {# ── Reporting (Dashboards, Summaries) ── #}
+                {# ── Reporting (Reports, Summaries) ── #}
                 <li>
                     <button type="button" data-nav="section" class="flex w-full items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors text-gray-900 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800" aria-controls="dropdown-reporting" data-collapse-toggle="dropdown-reporting">
                         <twig:ux:icon name="bi:bar-chart-line-fill" data-nav="icon" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
@@ -179,15 +193,7 @@
                     </button>
                     <ul id="dropdown-reporting" data-nav="dropdown" class="mt-1 hidden space-y-0.5 pl-4">
                         <li>
-                            <a href="{{ path('app_reporting_dashboard') }}"
-                               data-nav="child"
-                               class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
-                               data-turbo-frame="body"
-                               data-action="basic-drawer#close"
-                            >Dashboard</a>
-                        </li>
-                        <li>
-                            <a href="{{ path('app_reporting_dashboard_product_sales') }}"
+                            <a href="{{ path('app_reports_product_sales') }}"
                                data-nav="child"
                                class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
@@ -195,7 +201,7 @@
                             >Product Sales</a>
                         </li>
                         <li>
-                            <a href="{{ path('app_reporting_dashboard_order_summary') }}"
+                            <a href="{{ path('app_reports_order_summary') }}"
                                data-nav="child"
                                class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
@@ -203,7 +209,7 @@
                             >Order Summary</a>
                         </li>
                         <li>
-                            <a href="{{ path('app_reporting_dashboard_customer_insights') }}"
+                            <a href="{{ path('app_reports_customer_insights') }}"
                                data-nav="child"
                                class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
@@ -211,7 +217,7 @@
                             >Customer Insights</a>
                         </li>
                         <li>
-                            <a href="{{ path('app_reporting_dashboard_po_performance') }}"
+                            <a href="{{ path('app_reports_po_performance') }}"
                                data-nav="child"
                                class="flex w-full items-center rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"
@@ -219,7 +225,7 @@
                             >PO Performance</a>
                         </li>
                         <li>
-                            <a href="{{ path('app_reporting_dashboard_overdue_orders', {'duration': 'last30'}) }}"
+                            <a href="{{ path('app_reports_overdue_orders', {'duration': 'last30'}) }}"
                                data-nav="child"
                                class="flex w-full items-center justify-between rounded-lg px-3 py-2 pl-8 text-sm transition-colors text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                                data-turbo-frame="body"

@@ -13,7 +13,7 @@ src/
 ├── Audit/                    # Change tracking and logging
 ├── Catalog/                  # Products, categories, manufacturers
 ├── Customer/                 # Users, addresses, authentication
-├── Home/                     # Homepage (simple, no DDD layers)
+├── Home/                     # Homepage, operational dashboard
 ├── Order/                    # Customer orders and order items
 ├── Pricing/                  # VAT rates, pricing listeners
 ├── Purchasing/               # Suppliers, supplier products, purchase orders

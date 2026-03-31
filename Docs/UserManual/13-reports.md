@@ -1,13 +1,15 @@
-# Reports & Dashboard
+# Reports
 
 ## What Reports Are For
 
 The reporting system provides business intelligence through:
 
-- **Dashboard** - Quick overview of key metrics
-- **Order Summary** - Order trends and status breakdown
 - **Product Sales** - Sales performance by product, category, etc.
+- **Order Summary** - Order trends and status breakdown
 - **Overdue Orders** - Action items requiring attention
+- **Customer Insights** - Customer analytics and segmentation
+
+The operational **Dashboard** (accessible from the sidebar) provides a quick at-a-glance overview with today's KPIs, items needing attention, and recent activity.
 
 ## What You Can Do
 
@@ -20,35 +22,9 @@ The reporting system provides business intelligence through:
 
 ## Screens and Actions
 
-### Dashboard
-
-**Navigate to:** Reporting > Dashboard
-
-The main dashboard displays three sections:
-
-**Order Overview:**
-- Order Count Today (vs. last week)
-- Order Value Today (vs. last week)
-- Average Order Value (vs. last week)
-- Latest 5 orders table
-
-**Sales Overview:**
-- Sales Cost Today (vs. last week)
-- Sales Profit Today (vs. last week)
-- Gross Margin % (vs. last week)
-- Top 5 products by sales quantity
-
-**Action Required:**
-- Overdue Order Count (last 30 days)
-- Rejected Purchase Orders (last 30 days)
-- Direct links to filtered views
-
-Click any KPI to see the detailed report.
-
 ### Order Summary Report
 
-**Navigate to:** Reporting > Dashboard > Click any Order KPI
-Or: Reporting > Dashboard > Click **Reports** > Order Summary
+**Navigate to:** Reporting > Order Summary
 
 **Filter Options:**
 - **Duration:** Today, Last 7 Days, Last 30 Days, Month to Date
@@ -66,8 +42,7 @@ Click metric headers to change the chart display.
 
 ### Product Sales Report
 
-**Navigate to:** Reporting > Dashboard > Click any Sales KPI
-Or: Reporting > Dashboard > Click **Reports** > Product Sales
+**Navigate to:** Reporting > Product Sales
 
 **Filter Options:**
 - **Duration:** Today, Last 7 Days, Last 30 Days, Month to Date
@@ -87,7 +62,7 @@ Click metric headers to change the chart and table sorting.
 
 ### Overdue Orders Report
 
-**Navigate to:** Reporting > Dashboard > Action Required > Overdue Orders
+**Navigate to:** Reporting > Overdue Orders
 
 **Filter Options:**
 - **Duration:** Today, Last 7 Days, Last 30 Days, Month to Date
@@ -112,7 +87,7 @@ The Customer Insights reports help you understand your customer base, identify t
 ### Accessing Customer Insights
 
 1. From the menu, click **Reporting** > **Customer Insights**
-2. Or from the Dashboard, click **Reports** in the sidebar and select **Customer Insights**
+2. Or click **Reporting** in the sidebar and select **Customer Insights**
 
 ### Available Reports
 

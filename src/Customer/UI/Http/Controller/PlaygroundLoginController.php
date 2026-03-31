@@ -47,6 +47,6 @@ class PlaygroundLoginController extends AbstractController
 
         $security->login($user, 'security.authenticator.form_login.main');
 
-        return $this->redirectToRoute('app_catalog_product_index');
+        return $this->redirectToRoute('app_dashboard');
     }
 }

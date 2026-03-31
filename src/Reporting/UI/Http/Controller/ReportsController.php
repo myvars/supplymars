@@ -5,7 +5,6 @@ namespace App\Reporting\UI\Http\Controller;
 use App\Reporting\Application\Handler\Report\CustomerGeographicReportHandler;
 use App\Reporting\Application\Handler\Report\CustomerInsightsReportHandler;
 use App\Reporting\Application\Handler\Report\CustomerSegmentReportHandler;
-use App\Reporting\Application\Handler\Report\DashboardReportHandler;
 use App\Reporting\Application\Handler\Report\OrderSummaryReportHandler;
 use App\Reporting\Application\Handler\Report\OverdueOrdersReportHandler;
 use App\Reporting\Application\Handler\Report\PoItemPerformanceReportHandler;
@@ -24,19 +23,9 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[IsGranted('ROLE_ADMIN')]
-class DashboardController extends AbstractController
+class ReportsController extends AbstractController
 {
-    #[Route(path: '/dashboard/', name: 'app_reporting_dashboard')]
-    public function show(DashboardReportHandler $handler): Response
-    {
-        $result = $handler();
-
-        return $this->render('reporting/show.html.twig', [
-            'report' => $result->payload,
-        ]);
-    }
-
-    #[Route(path: '/dashboard/report/product/sales', name: 'app_reporting_dashboard_product_sales', methods: ['GET'])]
+    #[Route(path: '/reports/product/sales', name: 'app_reports_product_sales', methods: ['GET'])]
     public function productSales(
         ProductSalesReportHandler $handler,
         #[MapQueryString] ProductSalesReportCriteria $criteria = new ProductSalesReportCriteria(),
@@ -48,7 +37,7 @@ class DashboardController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/dashboard/report/order/summary', name: 'app_reporting_dashboard_order_summary', methods: ['GET'])]
+    #[Route(path: '/reports/order/summary', name: 'app_reports_order_summary', methods: ['GET'])]
     public function orderSummary(
         OrderSummaryReportHandler $handler,
         #[MapQueryString] OrderSummaryReportCriteria $criteria = new OrderSummaryReportCriteria(),
@@ -60,7 +49,7 @@ class DashboardController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/dashboard/report/overdue/orders', name: 'app_reporting_dashboard_overdue_orders', methods: ['GET'])]
+    #[Route(path: '/reports/overdue/orders', name: 'app_reports_overdue_orders', methods: ['GET'])]
     public function overdueOrders(
         OverdueOrdersReportHandler $handler,
         #[MapQueryString] OverdueOrderReportCriteria $criteria = new OverdueOrderReportCriteria(),
@@ -72,7 +61,7 @@ class DashboardController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/dashboard/report/customer/insights', name: 'app_reporting_dashboard_customer_insights', methods: ['GET'])]
+    #[Route(path: '/reports/customer/insights', name: 'app_reports_customer_insights', methods: ['GET'])]
     public function customerInsights(
         CustomerInsightsReportHandler $handler,
         #[MapQueryString] CustomerInsightsReportCriteria $criteria = new CustomerInsightsReportCriteria(),
@@ -84,7 +73,7 @@ class DashboardController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/dashboard/report/customer/geographic', name: 'app_reporting_dashboard_customer_geographic', methods: ['GET'])]
+    #[Route(path: '/reports/customer/geographic', name: 'app_reports_customer_geographic', methods: ['GET'])]
     public function customerGeographic(
         CustomerGeographicReportHandler $handler,
         #[MapQueryString] CustomerGeographicReportCriteria $criteria = new CustomerGeographicReportCriteria(),
@@ -96,7 +85,7 @@ class DashboardController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/dashboard/report/customer/segments', name: 'app_reporting_dashboard_customer_segments', methods: ['GET'])]
+    #[Route(path: '/reports/customer/segments', name: 'app_reports_customer_segments', methods: ['GET'])]
     public function customerSegments(
         CustomerSegmentReportHandler $handler,
         #[MapQueryString] CustomerSegmentReportCriteria $criteria = new CustomerSegmentReportCriteria(),
@@ -108,7 +97,7 @@ class DashboardController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/dashboard/report/po/performance', name: 'app_reporting_dashboard_po_performance', methods: ['GET'])]
+    #[Route(path: '/reports/po/performance', name: 'app_reports_po_performance', methods: ['GET'])]
     public function poPerformance(
         PoItemPerformanceReportHandler $handler,
         #[MapQueryString] PoItemPerformanceReportCriteria $criteria = new PoItemPerformanceReportCriteria(),
