@@ -18,7 +18,7 @@ WHERE email = 'admin@supplymars.com';
 -- Create or reset the demo user (bcrypt hash of 'demo')
 INSERT INTO user (public_id, email, password, full_name, roles, is_verified, is_staff, is_simulated, created_at, updated_at)
 VALUES (
-    LOWER(CONCAT(HEX(RANDOM_BYTES(4)), HEX(RANDOM_BYTES(2)), HEX(RANDOM_BYTES(2)), HEX(RANDOM_BYTES(2)), HEX(RANDOM_BYTES(6)))),
+    X'019d4407d12b8e399af3773ab1659317',
     'demo@supplymars.com',
     '$2y$12$97APfjE30ZOC2HUKuSjlZ.lhWRVegKaV.Whbm38u1UA3YSsijY3Im',
     'Demo User',
