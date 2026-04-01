@@ -19,7 +19,6 @@ export default class extends Controller {
             onToggle: () => {},
         };
 
-        // Initialize the Drawer only if it hasn't been initialized yet
         if (!this.drawer) {
             this.drawer = new Drawer($targetEl, options);
         }

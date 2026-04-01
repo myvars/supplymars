@@ -34,12 +34,10 @@ export default class extends Controller {
         }
 
         this.drawer.show();
-        this.isOpen = true;
     }
 
     close() {
         this.drawer.hide();
-        this.isOpen = false;
     }
 
     toggle() {

@@ -21,6 +21,8 @@ use App\Shared\Domain\ValueObject\ShippingMethod;
 
 final readonly class DemoOrderCreator
 {
+    public const string REF_PREFIX = 'DEMO-';
+
     public const int MAX_ORDER_LINES = 5;
 
     public const int MAX_LINE_QTY = 5;
@@ -38,7 +40,7 @@ final readonly class DemoOrderCreator
     ) {
     }
 
-    public function create(string $refPrefix = 'DEMO-'): DemoOrderResult
+    public function create(string $refPrefix = self::REF_PREFIX): DemoOrderResult
     {
         $user = $this->getOrCreateUser();
         $this->ensureBillingAddress($user);

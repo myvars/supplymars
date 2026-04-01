@@ -3,6 +3,7 @@
 namespace App\Order\Infrastructure\Persistence\Doctrine;
 
 use App\Order\Application\Search\OrderSearchCriteria;
+use App\Order\Application\Service\DemoOrderCreator;
 use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Order\Domain\Model\Order\OrderId;
 use App\Order\Domain\Model\Order\OrderPublicId;
@@ -231,7 +232,7 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
         return (int) $this->createQueryBuilder('co')
             ->select('COUNT(co.id)')
             ->andWhere('co.customerOrderRef LIKE :refPrefix')
-            ->setParameter('refPrefix', 'DEMO-%')
+            ->setParameter('refPrefix', DemoOrderCreator::REF_PREFIX . '%')
             ->andWhere('co.createdAt >= :today')
             ->setParameter('today', new \DateTime('today'))
             ->getQuery()
@@ -254,6 +255,8 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
     public function findLatestOrders(\DateTime $startDate, int $limit = 10): array
     {
         return $this->createQueryBuilder('co')
+            ->leftJoin('co.customer', 'c')
+            ->addSelect('c')
             ->andWhere('co.createdAt >= :startDate')
             ->setParameter('startDate', $startDate)
             ->orderBy('co.createdAt', 'DESC')

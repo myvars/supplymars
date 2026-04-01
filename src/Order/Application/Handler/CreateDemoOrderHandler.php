@@ -25,7 +25,7 @@ final readonly class CreateDemoOrderHandler
         }
 
         try {
-            $result = $this->demoOrderCreator->create('DEMO-');
+            $result = $this->demoOrderCreator->create();
         } catch (\Throwable $throwable) {
             $this->logger->error('Failed to create demo order', [
                 'error' => $throwable->getMessage(),
