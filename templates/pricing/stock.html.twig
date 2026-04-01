@@ -9,17 +9,7 @@
     <div class="m-3 space-y-4 text-sm text-gray-500 dark:text-gray-400">
         <twig:Breadcrumb :href="path('app_catalog_product_index')" label="Products" :current="result.name"/>
         {{ include('pricing/_inventory_card.html.twig', {result: result, type: 'stock'}) }}
-        <p class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-500">Supplier Sources</p>
-        <div class="flex flex-wrap justify-center gap-3">
-            {% for supplierProduct in result.supplierProducts %}
-                {{ include('pricing/_supplier_product_stock_card.html.twig', {
-                    supplierProduct: supplierProduct,
-                    activeProductSource: result.activeProductSource,
-                }) }}
-            {% else %}
-                <p class="py-6 text-center text-base text-gray-400 dark:text-gray-500">No suppliers found</p>
-            {% endfor %}
-        </div>
+        {{ include('pricing/_supplier_sources_table.html.twig', {result: result}) }}
     </div>
 
 {% endblock %}
