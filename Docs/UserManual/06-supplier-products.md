@@ -114,7 +114,7 @@ This automatically:
 
 ### Toggle Status
 
-**Navigate to:** Product Stock page > Click status toggle on supplier product card
+**Navigate to:** Product Stock page > Click toggle icon on supplier row
 
 Quickly toggle a supplier product between Active and Inactive.
 

@@ -24,7 +24,7 @@ class HelpController extends AbstractController
         'app_catalog_product_sales' => 'catalog/products',
         'app_catalog_product_reviews' => 'catalog/products',
         'app_catalog_product_history' => 'catalog/products',
-        'app_catalog_product_image_show' => 'catalog/products',
+        'app_catalog_product_image_show' => 'catalog/product_images',
         'app_catalog_category_index' => 'catalog/categories',
         'app_catalog_category_show' => 'catalog/categories',
         'app_catalog_subcategory_index' => 'catalog/categories',

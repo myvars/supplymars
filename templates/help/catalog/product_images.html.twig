@@ -1,0 +1,34 @@
+{% extends 'help/_layout.html.twig' %}
+
+{% block title %}Product Images{% endblock %}
+
+{% block content %}
+    <p class="text-gray-500 dark:text-gray-400">
+        Each product can have up to 10 images. The first image in the list is used as the primary image across the site.
+    </p>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Uploading</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li>Drag and drop files onto the upload area, or click to browse</li>
+        <li>Multiple images can be uploaded at once</li>
+        <li>Maximum file size is 2 MB per image</li>
+    </ul>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Reordering</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li>Drag images to reorder them</li>
+        <li>The first image becomes the <strong class="text-gray-700 dark:text-gray-200">Primary</strong> image, shown on product cards and listings</li>
+        <li>Order is saved automatically when you drop</li>
+    </ul>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Deleting</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li>Hover over an image and click the <strong class="text-gray-700 dark:text-gray-200">&times;</strong> button to remove it</li>
+        <li>If the primary image is deleted, the next image takes its place</li>
+    </ul>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Related</h3>
+    <div class="flex flex-wrap gap-2">
+        <a href="{{ path('app_help_direct', { key: 'catalog/products', from: 'catalog/product_images' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Products</a>
+    </div>
+{% endblock %}

@@ -1,0 +1,103 @@
+{# Pricing cascade cards showing markup and price model inheritance.
+   Three levels: Category → Subcategory → Product. The most specific override wins.
+   Variables: result (Product) #}
+{% set markupTarget = result.activeMarkupTarget %}
+{% set priceModelTarget = result.activePriceModelTarget %}
+
+<div class="space-y-2">
+    <div class="flex items-baseline justify-between gap-2">
+        <p class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-500">Pricing Cascade</p>
+        <p class="text-xs text-gray-400 dark:text-gray-500">
+            <twig:ux:icon name="bi:info-circle" class="mr-0.5 inline h-3 w-3 align-[-1px]"/>
+            Mark-up and price model per level
+        </p>
+    </div>
+
+    <div class="mt-4 grid gap-3 sm:grid-cols-3">
+        {# === Category card (always the fallback — always has values) === #}
+        {% set catMarkupActive = markupTarget == 'CATEGORY' %}
+        {% set catModelActive = priceModelTarget == 'CATEGORY' %}
+        <twig:Card
+            editLink="{{ path('app_pricing_category_cost_edit', {'id': result.publicId.value }) }}"
+            title="Category"
+            statusHighlight="{{ result.category.isActive ? 'ACTIVE' : 'INACTIVE' }}"
+            padding="p-3"
+        >
+            <p class="text-sm font-medium text-gray-900 line-clamp-1 dark:text-white">{{ result.category.name }}</p>
+            <div class="mt-2 space-y-1">
+                <p class="flex items-center gap-1.5 text-xs {{ catMarkupActive ? 'font-medium text-green-700 dark:text-green-400' : 'text-gray-400 dark:text-gray-500' }}">
+                    {% if catMarkupActive %}<twig:ux:icon name="bi:check-circle-fill" class="h-3 w-3 shrink-0"/>{% endif %}
+                    {{ result.category.defaultMarkup|number_format(3) }}% mark-up
+                </p>
+                <p class="flex items-center gap-1.5 text-xs {{ catModelActive ? 'font-medium text-green-700 dark:text-green-400' : 'text-gray-400 dark:text-gray-500' }}">
+                    {% if catModelActive %}<twig:ux:icon name="bi:check-circle-fill" class="h-3 w-3 shrink-0"/>{% endif %}
+                    {{ result.category.priceModel.getName }}
+                </p>
+            </div>
+        </twig:Card>
+
+        {# === Subcategory card (optional override — inherits from category) === #}
+        {% set subMarkupActive = markupTarget == 'SUBCATEGORY' %}
+        {% set subModelActive = priceModelTarget == 'SUBCATEGORY' %}
+        {% set subHasMarkup = result.subcategory.hasDefaultMarkup %}
+        {% set subHasModel = result.subcategory.hasPriceModel %}
+        <twig:Card
+            editLink="{{ path('app_pricing_subcategory_cost_edit', {'id': result.publicId.value }) }}"
+            title="Subcategory"
+            statusHighlight="{{ result.subcategory.isActive ? 'ACTIVE' : 'INACTIVE' }}"
+            padding="p-3"
+        >
+            <p class="text-sm font-medium text-gray-900 line-clamp-1 dark:text-white">{{ result.subcategory.name }}</p>
+            <div class="mt-2 space-y-1">
+                <p class="flex items-center gap-1.5 text-xs {{ subMarkupActive ? 'font-medium text-green-700 dark:text-green-400' : 'text-gray-400 dark:text-gray-500' }}">
+                    {% if subHasMarkup %}
+                        {% if subMarkupActive %}<twig:ux:icon name="bi:check-circle-fill" class="h-3 w-3 shrink-0"/>{% endif %}
+                        {{ result.subcategory.defaultMarkup|number_format(3) }}% mark-up
+                    {% else %}
+                        <span class="text-gray-300 dark:text-gray-600">&mdash;</span> mark-up
+                    {% endif %}
+                </p>
+                <p class="flex items-center gap-1.5 text-xs {{ subModelActive ? 'font-medium text-green-700 dark:text-green-400' : 'text-gray-400 dark:text-gray-500' }}">
+                    {% if subHasModel %}
+                        {% if subModelActive %}<twig:ux:icon name="bi:check-circle-fill" class="h-3 w-3 shrink-0"/>{% endif %}
+                        {{ result.subcategory.priceModel.getName }}
+                    {% else %}
+                        <span class="text-gray-300 dark:text-gray-600">&mdash;</span> price model
+                    {% endif %}
+                </p>
+            </div>
+        </twig:Card>
+
+        {# === Product card (most specific override — inherits from cascade) === #}
+        {% set prodMarkupActive = markupTarget == 'PRODUCT' %}
+        {% set prodModelActive = priceModelTarget == 'PRODUCT' %}
+        {% set prodHasMarkup = result.hasDefaultMarkup %}
+        {% set prodHasModel = result.hasPriceModel %}
+        <twig:Card
+            editLink="{{ path('app_pricing_product_cost_edit', {id: result.publicId.value}) }}"
+            title="Product"
+            statusHighlight="{{ result.isActive ? 'ACTIVE' : 'INACTIVE' }}"
+            padding="p-3"
+        >
+            <p class="text-sm font-medium text-gray-900 line-clamp-1 dark:text-white">{{ result.name }}</p>
+            <div class="mt-2 space-y-1">
+                <p class="flex items-center gap-1.5 text-xs {{ prodMarkupActive ? 'font-medium text-green-700 dark:text-green-400' : 'text-gray-400 dark:text-gray-500' }}">
+                    {% if prodHasMarkup %}
+                        {% if prodMarkupActive %}<twig:ux:icon name="bi:check-circle-fill" class="h-3 w-3 shrink-0"/>{% endif %}
+                        {{ result.defaultMarkup|number_format(3) }}% mark-up
+                    {% else %}
+                        <span class="text-gray-300 dark:text-gray-600">&mdash;</span> mark-up
+                    {% endif %}
+                </p>
+                <p class="flex items-center gap-1.5 text-xs {{ prodModelActive ? 'font-medium text-green-700 dark:text-green-400' : 'text-gray-400 dark:text-gray-500' }}">
+                    {% if prodHasModel %}
+                        {% if prodModelActive %}<twig:ux:icon name="bi:check-circle-fill" class="h-3 w-3 shrink-0"/>{% endif %}
+                        {{ result.priceModel.getName }}
+                    {% else %}
+                        <span class="text-gray-300 dark:text-gray-600">&mdash;</span> price model
+                    {% endif %}
+                </p>
+            </div>
+        </twig:Card>
+    </div>
+</div>

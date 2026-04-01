@@ -14,17 +14,19 @@
                 :muted="type == 'cost'"/>
             <twig:KpiCard title="Sell Price"
                 value="{{ result.sellPrice|format_currency('GBP') }}" valueType="text"
+                subtitle="{{ result.activePriceModel.getName }}"
                 :muted="type == 'stock'"/>
             <twig:KpiCard title="Sell Inc VAT"
                 value="{{ result.sellPriceIncVat|format_currency('GBP') }}" valueType="text"
+                subtitle="{{ result.category.vatRate.name|title }} VAT"
                 :muted="type == 'stock'"/>
         </div>
 
-        {# Markup section — custom layout, not a KpiCard #}
-        <div class="border-t border-gray-900/5 px-5 py-3 text-center dark:border-white/5">
+        {# Markup section — prominent centered value with compact metadata #}
+        <div class="border-t border-gray-900/5 px-5 py-2 text-center dark:border-white/5">
             <p class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">Mark-up</p>
-            <p class="mt-0.5 text-xl font-semibold text-gray-800 dark:text-white">{{ result.markup|number_format(3) }}%</p>
-            <p class="mt-1 inline-flex text-xs text-gray-500 dark:text-gray-400 max-md:hidden">
+            <p class="mt-0.5 text-lg font-semibold text-gray-800 dark:text-white">{{ result.markup|number_format(3) }}%</p>
+            <p class="mt-0.5 inline-flex text-xs text-gray-500 dark:text-gray-400 max-md:hidden">
                 {{ result.category.vatRate.name|title }} VAT
                 <span class="mx-1 text-gray-300 dark:text-gray-600">&middot;</span>
                 {{ result.activePriceModelTarget|title }} price model

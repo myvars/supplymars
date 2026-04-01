@@ -34,15 +34,14 @@ This is the main stock management screen showing:
 - VAT rate and price model
 - Last update timestamp
 
-**Supplier Product Cards:**
-For each supplier offering this product:
-- Supplier name (with inactive indicator if applicable)
-- Product name and code
-- Cost price
+**Supplier Sources Table:**
+A compact table listing all suppliers for this product:
+- Supplier name, product description, code, and last update
 - Stock level or lead time
-- Active/Inactive status toggle
-- Remove button (X)
-- Green border on the active source
+- Cost price with variance from cheapest source
+- Toggle and remove actions per row
+- Active source highlighted with green accent and "Best price" badge
+- Explanation: lowest cost source with stock is selected automatically
 
 ### Update Stock Levels
 
@@ -58,7 +57,7 @@ Changes take effect immediately:
 
 ### Toggle Supplier Product Status
 
-**Navigate to:** Product Stock dashboard > Click status toggle on supplier card
+**Navigate to:** Product Stock dashboard > Click toggle icon on supplier row
 
 Quickly switch a supplier product between Active and Inactive:
 - **Active:** Can be selected for purchase orders
@@ -66,7 +65,7 @@ Quickly switch a supplier product between Active and Inactive:
 
 ### Remove Supplier Product
 
-**Navigate to:** Product Stock dashboard > Click **X** on supplier card
+**Navigate to:** Product Stock dashboard > Click trash icon on supplier row
 
 1. Confirm the removal
 2. Supplier product is unlinked (not deleted)
