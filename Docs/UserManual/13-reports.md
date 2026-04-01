@@ -6,21 +6,54 @@ The reporting system provides business intelligence through:
 
 - **Product Sales** - Sales performance by product, category, etc.
 - **Order Summary** - Order trends and status breakdown
+- **PO Performance** - Supplier fulfilment metrics
 - **Overdue Orders** - Action items requiring attention
 - **Customer Insights** - Customer analytics and segmentation
 
-The operational **Dashboard** (accessible from the sidebar) provides a quick at-a-glance overview with today's KPIs, items needing attention, and recent activity.
+The operational **Dashboard** (a separate menu item, visible to admins) provides a quick at-a-glance overview with today's KPIs, items needing attention, and recent activity.
 
 ## What You Can Do
 
 - View today's KPIs with week-over-week comparison
 - Analyse order trends over time
 - View product sales by various dimensions
+- Track supplier performance and PO metrics
 - Identify overdue orders
 - Filter reports by date range
 - Sort and drill down into data
 
 ## Screens and Actions
+
+### Dashboard
+
+**Navigate to:** Dashboard (top-level menu item, admin only)
+
+The operational dashboard provides a quick overview of today's activity and items needing attention.
+
+**Welcome Section:**
+- Personalised greeting based on time of day
+- Today's date
+- Total action items count
+
+**Quick Explore:** Shortcut links to Orders, Customers, Products, and Categories.
+
+**Today at a Glance (KPI Cards):**
+- **Orders** - Count of orders created today vs. same day last week
+- **Revenue** - Total order value today vs. last week
+- **Profit** - Sales profit today vs. last week
+- **Margin** - Gross margin percentage today vs. last week
+
+Each KPI card shows a green or red indicator for week-over-week change.
+
+**Needs Attention:** Action items that require follow-up (only shown when items exist):
+- Pending Orders (with link to filtered order list)
+- Overdue Orders (with link to overdue report)
+- Rejected POs (with link to filtered PO list)
+- Pending Reviews (with link to moderation queue)
+
+**Recent Activity:**
+- Latest 5 orders with customer name, status, and total
+- Top 5 products by sales quantity today
 
 ### Order Summary Report
 
@@ -79,6 +112,27 @@ Click metric headers to change the chart and table sorting.
 - Total Value
 
 Click column headers to sort.
+
+### PO Performance Report
+
+**Navigate to:** Reporting > PO Performance
+
+Analyses supplier performance across your purchase orders.
+
+**Filter Options:**
+- **Duration:** Today, Last 7 Days, Last 30 Days, Month to Date
+
+**Metrics Displayed:**
+- Purchase order count
+- Total PO value
+- Supplier delivery performance
+- Acceptance and rejection rates
+
+**Visualisations:**
+- **Bar Chart:** PO metrics over time
+- **Supplier breakdown:** Performance by supplier
+
+---
 
 ## Customer Insights
 

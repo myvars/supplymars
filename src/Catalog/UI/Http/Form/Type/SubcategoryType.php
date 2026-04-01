@@ -47,12 +47,14 @@ final class SubcategoryType extends AbstractType
                 'scale' => 3,
                 'type' => 'integer',
                 'label' => 'Subcategory Markup %',
+                'help' => 'Overrides the category markup when set.',
             ])
             ->add('priceModel', EnumType::class, [
                 'class' => PriceModel::class,
                 'choice_label' => fn (PriceModel $priceModel): string => $priceModel->getName(),
                 'label' => 'Price Model',
                 'placeholder' => 'Choose a Price Model',
+                'help' => 'Controls how sell prices are rounded. Use None to inherit from the category.',
             ])
             ->add('owner', EntityType::class, [
                 'class' => User::class,

@@ -1,0 +1,40 @@
+{% extends 'help/_layout.html.twig' %}
+
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+    <p class="text-gray-500 dark:text-gray-400">
+        Reports provide business intelligence with charts and metrics across orders, products, customers, and suppliers.
+    </p>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">What You Can Do</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li>Analyse order trends and product performance</li>
+        <li>Track customer segments and geographic distribution</li>
+        <li>Monitor supplier fulfilment rates</li>
+        <li>Identify overdue orders needing action</li>
+    </ul>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Available Reports</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li><strong class="text-gray-700 dark:text-gray-200">Order Summary</strong> - Order count, value, and average over time</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Product Sales</strong> - Quantity, cost, profit, and margin by product, category, or supplier</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Customer Insights</strong> - Top customers, segments, activity trends, and geography</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">PO Performance</strong> - Supplier fulfilment metrics and acceptance rates</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Overdue Orders</strong> - Orders past their due date</li>
+    </ul>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Date Ranges</h3>
+    <p>Filter by: Today, Last 7 Days, Last 30 Days, or Month to Date.</p>
+
+    <twig:Alert type="info">
+        Today's data updates hourly. Historical data is calculated overnight. Very recent changes may not appear immediately.
+    </twig:Alert>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Related</h3>
+    <div class="flex flex-wrap gap-2">
+        <a href="{{ path('app_help_direct', { key: 'reporting/dashboard', from: 'reporting/reports' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Dashboard</a>
+        <a href="{{ path('app_help_direct', { key: 'order/orders', from: 'reporting/reports' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Orders</a>
+        <a href="{{ path('app_help_direct', { key: 'catalog/products', from: 'reporting/reports' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Products</a>
+    </div>
+{% endblock %}

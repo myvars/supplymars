@@ -1,0 +1,45 @@
+{% extends 'help/_layout.html.twig' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+    <p class="text-gray-500 dark:text-gray-400">
+        The operational dashboard gives you a snapshot of today's activity, items needing attention, and recent orders.
+    </p>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">What You Can Do</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li>Monitor today's orders, revenue, profit, and margin</li>
+        <li>Spot items needing attention at a glance</li>
+        <li>View latest orders and top-selling products</li>
+        <li>Jump to detailed reports from the action items</li>
+    </ul>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">KPI Cards</h3>
+    <p>Four cards compare today's performance against the same day last week:</p>
+    <ul class="list-disc pl-5 space-y-1">
+        <li><strong class="text-gray-700 dark:text-gray-200">Orders</strong> - Count of orders created</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Revenue</strong> - Total order value</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Profit</strong> - Sales profit</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Margin</strong> - Gross margin percentage</li>
+    </ul>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Needs Attention</h3>
+    <p>Action items that require follow-up. Only shown when items exist:</p>
+    <ul class="list-disc pl-5 space-y-1">
+        <li>Pending Orders awaiting allocation</li>
+        <li>Overdue Orders past their due date</li>
+        <li>Rejected POs needing re-allocation</li>
+        <li>Pending Reviews awaiting moderation</li>
+    </ul>
+
+    <twig:Alert type="info">
+        KPI comparisons use the same day last week, so Monday compares to last Monday.
+    </twig:Alert>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Related</h3>
+    <div class="flex flex-wrap gap-2">
+        <a href="{{ path('app_help_direct', { key: 'reporting/reports', from: 'reporting/dashboard' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Reports</a>
+        <a href="{{ path('app_help_direct', { key: 'order/orders', from: 'reporting/dashboard' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Orders</a>
+    </div>
+{% endblock %}

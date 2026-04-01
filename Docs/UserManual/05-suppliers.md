@@ -72,7 +72,12 @@ You can update:
 | Field | Required | Default | Description |
 |-------|----------|---------|-------------|
 | Name | Yes | - | Supplier company name (max 255 characters) |
+| Colour Scheme | Yes | Violet | Visual colour used to identify this supplier (Violet, Amber, Teal, or Rose) |
 | Active | No | Inactive | Whether supplier can receive purchase orders |
+
+### Colour Scheme
+
+Each supplier is assigned a colour (Violet, Amber, Teal, or Rose) shown as a coloured dot on purchase order cards, order item supplier options, and pricing cards. This makes it easy to see at a glance which supplier is involved.
 
 ## Status and Lifecycle
 

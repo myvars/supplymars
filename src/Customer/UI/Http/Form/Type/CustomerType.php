@@ -23,7 +23,10 @@ final class CustomerType extends AbstractType
             ->add('fullName')
             ->add('email')
             ->add('isVerified', CheckboxType::class, ['label' => 'Verified'])
-            ->add('isStaff', CheckboxType::class, ['label' => 'Member of Staff'])
+            ->add('isStaff', CheckboxType::class, [
+                'label' => 'Member of Staff',
+                'help' => 'Grants full admin access.',
+            ])
         ;
     }
 

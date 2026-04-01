@@ -16,6 +16,7 @@ Orders progress through a lifecycle from creation to delivery, with items being 
 
 - View all orders with search and filtering
 - Create new orders
+- Create demo orders for testing
 - Add items to orders
 - Edit order item quantities and prices
 - Cancel orders (when pending)
@@ -145,6 +146,28 @@ This automatically:
 2. Creates purchase orders for each supplier
 3. Links order items to purchase order items
 4. Updates order status to PROCESSING
+
+### Create a Demo Order
+
+**Navigate to:** Orders > Click **Create Demo Order** (lightning icon)
+
+Demo orders let you quickly generate a test order without manually filling in customer and product details.
+
+1. Click the **Create Demo Order** button on the order list page
+2. A confirmation dialog shows your current usage and the daily limit
+3. Click **Confirm** to create the order
+
+**What it creates:**
+- An order for a randomly selected customer with 1-5 line items
+- Random products and quantities from the catalog
+- Order reference prefixed with `DEMO-`
+
+**Limits:**
+- Maximum 10 demo orders per day
+- The confirmation dialog shows how many you have used today
+- When the limit is reached, the button is disabled
+
+After creation, you are redirected to the order list with a success message showing the new order number. Newly created items are briefly highlighted.
 
 ### Lock/Unlock an Order
 

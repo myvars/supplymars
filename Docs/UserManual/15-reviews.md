@@ -24,7 +24,7 @@ Reviews go through a moderation workflow before being visible on the product pag
 
 ### Review List
 
-Navigate to **Reviews** in the main navigation to see all reviews.
+**Navigate to:** Reviews > Review Search
 
 The list displays reviews as cards showing:
 - Review title
@@ -40,7 +40,7 @@ The list displays reviews as cards showing:
 
 ### Create a Review
 
-Navigate to **Reviews > New** or click the **New Review** button on the review list.
+**Navigate to:** Reviews > Review Search > Click **New Review**
 
 **Required fields:**
 - **Customer ID** - The customer who wrote the review

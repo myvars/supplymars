@@ -1,0 +1,43 @@
+{% extends 'help/_layout.html.twig' %}
+
+{% block title %}Categories{% endblock %}
+
+{% block content %}
+    <p class="text-gray-500 dark:text-gray-400">
+        Categories and subcategories organise your product catalog into a two-level hierarchy. They also control VAT rates, markup percentages, and price rounding.
+    </p>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">What You Can Do</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li>Create, edit, and delete categories and subcategories</li>
+        <li>Set markup percentages and price models per level</li>
+        <li>Assign VAT rates to categories</li>
+        <li>View products within each category</li>
+    </ul>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Pricing Hierarchy</h3>
+    <p>Prices are calculated in layers:</p>
+    <ol class="list-decimal pl-5 space-y-1">
+        <li>Supplier cost (from active supplier product)</li>
+        <li>Category markup % applied</li>
+        <li>Subcategory markup % overrides category (if set)</li>
+        <li>Product markup % overrides subcategory (if set)</li>
+        <li>Price model rounding applied</li>
+        <li>VAT added (from category's VAT rate)</li>
+    </ol>
+
+    <twig:Alert type="warning">
+        Changing a category's VAT rate or markup recalculates prices for all products in that category immediately.
+    </twig:Alert>
+
+    <twig:Alert type="info">
+        Subcategories can set their price model to "None" to inherit from the parent category.
+    </twig:Alert>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Related</h3>
+    <div class="flex flex-wrap gap-2">
+        <a href="{{ path('app_help_direct', { key: 'catalog/products', from: 'catalog/categories' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Products</a>
+        <a href="{{ path('app_help_direct', { key: 'pricing/pricing', from: 'catalog/categories' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Pricing</a>
+        <a href="{{ path('app_help_direct', { key: 'pricing/vat_rates', from: 'catalog/categories' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">VAT Rates</a>
+    </div>
+{% endblock %}

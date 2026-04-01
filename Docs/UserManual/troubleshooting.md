@@ -262,6 +262,34 @@ This guide covers common problems and their solutions.
 3. Wait and check again later
 4. Historical data is calculated overnight
 
+## Ticket Issues
+
+### Cannot Reply to Ticket
+
+**Symptom:** Reply form is not visible or reply fails.
+
+**Solutions:**
+1. Check that the ticket is not in Closed status (reopen it first)
+2. Refresh the page
+3. Verify you have administrator access
+
+### Tickets Not Appearing in My Queue
+
+**Symptom:** My Queue shows no tickets despite open tickets existing.
+
+**Solutions:**
+1. Check that you are subscribed to the relevant pools
+2. Navigate to Notes > Pools and subscribe to pools you need
+3. The badge count is cached; wait a moment and refresh
+
+### Cannot Delete a Pool
+
+**Symptom:** Pool deletion fails.
+
+**Solutions:**
+1. Check for tickets still assigned to this pool
+2. Reassign or close tickets in the pool first
+
 ## General Issues
 
 ### Form Won't Submit

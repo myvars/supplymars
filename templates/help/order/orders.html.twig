@@ -1,0 +1,44 @@
+{% extends 'help/_layout.html.twig' %}
+
+{% block title %}Orders{% endblock %}
+
+{% block content %}
+    <p class="text-gray-500 dark:text-gray-400">
+        Orders represent customer purchases. Each order contains items that are fulfilled through purchase orders placed with suppliers.
+    </p>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">What You Can Do</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li>Create orders and add items</li>
+        <li>Create demo orders for testing (max 10/day)</li>
+        <li>Allocate orders to suppliers</li>
+        <li>Cancel pending orders</li>
+        <li>Lock orders to prevent concurrent editing</li>
+    </ul>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Order Status</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li><strong class="text-gray-700 dark:text-gray-200">Pending</strong> - Created, not yet allocated</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Processing</strong> - Allocated to suppliers</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Shipped</strong> - Items dispatched</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Delivered</strong> - All items received</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Cancelled</strong> - Order cancelled</li>
+    </ul>
+
+    <twig:Alert type="warning">
+        Orders can only be cancelled in Pending status. Once allocated, cancel individual purchase orders instead.
+    </twig:Alert>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Shipping Methods</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li><strong class="text-gray-700 dark:text-gray-200">Three Day</strong> - £3.99, due in 3 days</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Next Day</strong> - £9.99, due in 1 day</li>
+    </ul>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Related</h3>
+    <div class="flex flex-wrap gap-2">
+        <a href="{{ path('app_help_direct', { key: 'order/order_items', from: 'order/orders' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Order Items</a>
+        <a href="{{ path('app_help_direct', { key: 'purchasing/purchase_orders', from: 'order/orders' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Purchase Orders</a>
+        <a href="{{ path('app_help_direct', { key: 'customer/customers', from: 'order/orders' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Customers</a>
+    </div>
+{% endblock %}

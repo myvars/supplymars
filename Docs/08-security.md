@@ -251,6 +251,7 @@ access_control:
     - { path: ^/login, roles: PUBLIC_ACCESS }
     - { path: ^/playground/login, roles: PUBLIC_ACCESS }
     - { path: ^/reset-password, roles: PUBLIC_ACCESS }
+    - { path: ^/help, roles: PUBLIC_ACCESS }
 
     # Admin routes
     - { path: ^/, roles: ROLE_ADMIN }

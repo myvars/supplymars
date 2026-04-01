@@ -1,0 +1,31 @@
+{% extends 'help/_layout.html.twig' %}
+
+{% block title %}Supplier Products{% endblock %}
+
+{% block content %}
+    <p class="text-gray-500 dark:text-gray-400">
+        Supplier products link your catalog to specific suppliers, each with their own cost, stock level, and lead time. A single catalog product can have multiple supplier sources.
+    </p>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">What You Can Do</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li>Create, edit, and delete supplier product offerings</li>
+        <li>Map supplier products to catalog products</li>
+        <li>Toggle active/inactive status</li>
+        <li>Update cost and stock levels</li>
+    </ul>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Active Source</h3>
+    <p>The system automatically selects the best supplier for each product based on: stock > 0, lowest cost, active status. You cannot manually choose the active source.</p>
+
+    <twig:Alert type="info">
+        Mapped supplier products cannot be deleted. Unmap them first using the Remove action.
+    </twig:Alert>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Related</h3>
+    <div class="flex flex-wrap gap-2">
+        <a href="{{ path('app_help_direct', { key: 'catalog/products', from: 'purchasing/supplier_products' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Products</a>
+        <a href="{{ path('app_help_direct', { key: 'purchasing/suppliers', from: 'purchasing/supplier_products' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Suppliers</a>
+        <a href="{{ path('app_help_direct', { key: 'stock/stock', from: 'purchasing/supplier_products' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Stock</a>
+    </div>
+{% endblock %}

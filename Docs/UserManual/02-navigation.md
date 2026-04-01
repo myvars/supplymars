@@ -18,6 +18,7 @@ The menu is organised into sections:
 
 ```
 Home
+Dashboard (admin only)
 ├── Catalog
 │   ├── Products
 │   ├── Categories
@@ -35,7 +36,6 @@ Home
 │   ├── Review Search
 │   └── Moderation Queue ④
 ├── Reporting
-│   ├── Dashboard
 │   ├── Product Sales
 │   ├── Order Summary
 │   ├── Customer Insights
@@ -74,7 +74,6 @@ Some menu items have a **▼** arrow indicating they expand to show sub-items:
    - Moderation Queue
 
 5. Click on **Reporting** to expand and see:
-   - Dashboard
    - Product Sales
    - Order Summary
    - Customer Insights
@@ -176,6 +175,15 @@ Records show their status as coloured text:
 - **Red** - Inactive, Cancelled, Rejected
 - **Yellow/Orange** - Pending, Processing
 
+### Status History
+
+On orders and purchase orders, clicking a status badge opens the status change history. This audit log shows:
+- Each status transition
+- When the change occurred
+- Who made the change
+
+This is available for orders, order items, purchase orders, and purchase order items.
+
 ### Notifications (Toasts)
 
 After actions, notifications appear briefly:
@@ -222,6 +230,32 @@ For large result sets:
 - Page numbers appear at the bottom
 - Click a number to jump to that page
 - Use Previous/Next links to move one page at a time
+
+## Help
+
+Click the **Help** button in the header bar to open a contextual help panel on the right side of the screen. The content changes based on the page you are currently viewing, showing relevant guidance, tips, and links to related topics.
+
+**Using help:**
+- Click **Help** to open the panel, click it again or press **?** to close
+- Click a related topic to navigate within the help panel
+- Use the **←** back arrow to return to the previous help topic
+- Click the **X** button or click outside the panel to close it
+
+Help is available on all pages, including the login and registration screens.
+
+## Inline Editing
+
+Some fields can be edited directly on list and detail pages without opening a form. Inline-editable fields (such as names) appear with a subtle edit indicator when you hover over them.
+
+**How to use inline editing:**
+1. Click the editable text to activate edit mode
+2. Type the new value
+3. Press **Enter** or click away to save
+4. Press **Escape** to cancel without saving
+
+A success notification confirms the change. If the new value is the same as the old one, no save occurs.
+
+Inline editing is available for names on products, categories, subcategories, manufacturers, suppliers, customers, and VAT rates.
 
 ## Keyboard Shortcuts
 

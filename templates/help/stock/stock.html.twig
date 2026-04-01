@@ -1,0 +1,30 @@
+{% extends 'help/_layout.html.twig' %}
+
+{% block title %}Stock{% endblock %}
+
+{% block content %}
+    <p class="text-gray-500 dark:text-gray-400">
+        Stock is managed per supplier product, not per catalog product. Each supplier maintains their own inventory for the products they offer.
+    </p>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">What You Can Do</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li>View stock levels for all supplier sources</li>
+        <li>Toggle supplier products active/inactive</li>
+        <li>Remove supplier products from a catalog product</li>
+        <li>View stock change history</li>
+    </ul>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Active Source</h3>
+    <p>The system automatically selects the best supplier based on: stock available, lowest cost, and active status. The active source is highlighted with a green border.</p>
+
+    <twig:Alert type="warning">
+        Stock is not reserved when orders are created. Multiple orders may compete for the same stock, and allocation may fail if stock depletes.
+    </twig:Alert>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Related</h3>
+    <div class="flex flex-wrap gap-2">
+        <a href="{{ path('app_help_direct', { key: 'purchasing/supplier_products', from: 'stock/stock' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Supplier Products</a>
+        <a href="{{ path('app_help_direct', { key: 'catalog/products', from: 'stock/stock' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Products</a>
+    </div>
+{% endblock %}

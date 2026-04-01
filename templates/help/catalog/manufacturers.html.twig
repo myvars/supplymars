@@ -1,0 +1,29 @@
+{% extends 'help/_layout.html.twig' %}
+
+{% block title %}Manufacturers{% endblock %}
+
+{% block content %}
+    <p class="text-gray-500 dark:text-gray-400">
+        Manufacturers represent the companies that produce your products. Every product must be assigned to a manufacturer.
+    </p>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">What You Can Do</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li>Create, edit, and delete manufacturers</li>
+        <li>Edit names inline by clicking on them</li>
+        <li>View all products linked to a manufacturer</li>
+    </ul>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Part Number Matching</h3>
+    <p>Manufacturer part numbers are used to match supplier products to catalog products during mapping. Consistent part numbers across suppliers ensure accurate linking.</p>
+
+    <twig:Alert type="info">
+        Manufacturers with linked products cannot be deleted. Reassign or remove all products first.
+    </twig:Alert>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Related</h3>
+    <div class="flex flex-wrap gap-2">
+        <a href="{{ path('app_help_direct', { key: 'catalog/products', from: 'catalog/manufacturers' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Products</a>
+        <a href="{{ path('app_help_direct', { key: 'purchasing/supplier_products', from: 'catalog/manufacturers' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Supplier Products</a>
+    </div>
+{% endblock %}

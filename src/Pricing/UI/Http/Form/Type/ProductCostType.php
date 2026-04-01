@@ -27,12 +27,14 @@ final class ProductCostType extends AbstractType
                 'scale' => 3,
                 'type' => 'integer',
                 'label' => 'Product Markup %',
+                'help' => 'Overrides the subcategory markup when set.',
             ])
             ->add('priceModel', EnumType::class, [
                 'class' => PriceModel::class,
                 'choice_label' => fn (PriceModel $priceModel): string => $priceModel->getName(),
                 'label' => 'Price Model',
                 'placeholder' => 'Choose a Price Model',
+                'help' => 'Controls how sell prices are rounded. Use None to inherit from the subcategory.',
             ])
             ->add('isActive', CheckboxType::class, [
                 'label' => 'Active',

@@ -1,0 +1,46 @@
+{% extends 'help/_layout.html.twig' %}
+
+{% block title %}Pricing{% endblock %}
+
+{% block content %}
+    <p class="text-gray-500 dark:text-gray-400">
+        The pricing system calculates sell prices from supplier costs using markup percentages, price model rounding, and VAT rates.
+    </p>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">What You Can Do</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li>Set markup percentages at category, subcategory, or product level</li>
+        <li>Choose price models for rounding behaviour</li>
+        <li>View the full pricing breakdown on any product's Cost tab</li>
+    </ul>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Markup Hierarchy</h3>
+    <p>Markups override from top to bottom:</p>
+    <ol class="list-decimal pl-5 space-y-1">
+        <li>Category markup (base)</li>
+        <li>Subcategory markup (overrides category if set)</li>
+        <li>Product markup (overrides subcategory if set)</li>
+    </ol>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Price Models</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li><strong class="text-gray-700 dark:text-gray-200">Default (Cost+)</strong> - No rounding</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Pretty 00/10/49/95/99</strong> - Rounds to psychological price points</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">None</strong> - Inherit from parent level</li>
+    </ul>
+
+    <twig:Alert type="warning">
+        Pricing changes take effect immediately and recalculate all affected products.
+    </twig:Alert>
+
+    <twig:Alert type="info">
+        Historical order prices are not affected by pricing changes.
+    </twig:Alert>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Related</h3>
+    <div class="flex flex-wrap gap-2">
+        <a href="{{ path('app_help_direct', { key: 'catalog/categories', from: 'pricing/pricing' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Categories</a>
+        <a href="{{ path('app_help_direct', { key: 'catalog/products', from: 'pricing/pricing' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Products</a>
+        <a href="{{ path('app_help_direct', { key: 'pricing/vat_rates', from: 'pricing/pricing' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">VAT Rates</a>
+    </div>
+{% endblock %}

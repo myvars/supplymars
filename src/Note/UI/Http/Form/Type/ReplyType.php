@@ -29,6 +29,7 @@ final class ReplyType extends AbstractType
                     MessageVisibility::PUBLIC->getLabel() => MessageVisibility::PUBLIC->value,
                     MessageVisibility::INTERNAL->getLabel() => MessageVisibility::INTERNAL->value,
                 ],
+                'help' => 'Internal replies are only visible to staff.',
             ])
         ;
     }

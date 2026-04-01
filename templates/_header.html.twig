@@ -1,9 +1,12 @@
 <header class="mt-3">
     <nav class="rounded-t-lg border-b border-gray-700/50 bg-gray-900 shadow-lg dark:shadow-black/30"
-         data-controller="basic-drawer"
+         data-controller="basic-drawer help-drawer"
          data-basic-drawer-drawer-id-value="side-menu"
+         data-help-drawer-drawer-id-value="help-drawer"
+         data-help-drawer-frame-id-value="help"
+         data-action="keydown@window->help-drawer#keydown turbo:before-cache@window->help-drawer#close"
     >
-        <div class="mx-auto flex max-w-(--breakpoint-xl) flex-wrap items-center justify-between px-4 py-2.5">
+        <div class="mx-auto flex max-w-(--breakpoint-xl) items-center justify-between px-4 py-2.5">
 
             <div class="flex items-center justify-end">
                 <button id="navigationButton"
@@ -19,7 +22,14 @@
                     {{ include('_logo.html.twig', { 'logoHeight': 32 }) }}
                 </a>
             </div>
-            <div class="flex items-center gap-1 md:order-2">
+            <div class="flex items-center gap-1.5 md:order-2">
+                <button type="button"
+                        class="inline-flex h-9 items-center justify-center rounded-lg text-gray-400 transition-all duration-150 hover:bg-gray-700/70 hover:text-gray-200 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500 w-9 p-2 sm:w-auto sm:px-2.5 sm:text-xs sm:font-medium"
+                        data-action="click->help-drawer#toggle"
+                >
+                    <twig:ux:icon name="flowbite:question-circle-solid" class="h-5 w-5 sm:hidden"/>
+                    <span class="hidden sm:inline">Help</span>
+                </button>
                 <div data-controller="theme-toggle">
                     <button type="button"
                             class="inline-flex h-9 w-9 items-center justify-center rounded-lg p-2 text-sm text-gray-400 transition-all duration-150 hover:bg-gray-700/70 hover:text-gray-200 active:scale-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500"
@@ -82,5 +92,6 @@
             </div>
         </div>
         {{ include('_menu.html.twig') }}
+        {{ include('_help_drawer.html.twig') }}
     </nav>
 </header>

@@ -1,0 +1,35 @@
+{% extends 'help/_layout.html.twig' %}
+
+{% block title %}Reviews{% endblock %}
+
+{% block content %}
+    <p class="text-gray-500 dark:text-gray-400">
+        Product reviews are customer feedback on delivered orders. Reviews go through a moderation workflow before being published.
+    </p>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">What You Can Do</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li>Create reviews for delivered orders</li>
+        <li>Approve, reject, hide, or republish reviews</li>
+        <li>Edit rating, title, and body</li>
+        <li>Filter by status, product, customer, or rating</li>
+    </ul>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Moderation Status</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li><strong class="text-gray-700 dark:text-gray-200">Pending</strong> - Awaiting moderation</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Published</strong> - Visible on product page</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Rejected</strong> - Permanently rejected</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Hidden</strong> - Temporarily removed</li>
+    </ul>
+
+    <twig:Alert type="warning">
+        Rejected is terminal and cannot be undone. Only one review per customer and product combination is allowed.
+    </twig:Alert>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Related</h3>
+    <div class="flex flex-wrap gap-2">
+        <a href="{{ path('app_help_direct', { key: 'catalog/products', from: 'review/reviews' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Products</a>
+        <a href="{{ path('app_help_direct', { key: 'order/orders', from: 'review/reviews' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Orders</a>
+    </div>
+{% endblock %}

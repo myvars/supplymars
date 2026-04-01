@@ -1,0 +1,35 @@
+{% extends 'help/_layout.html.twig' %}
+
+{% block title %}Customers{% endblock %}
+
+{% block content %}
+    <p class="text-gray-500 dark:text-gray-400">
+        Customers are user accounts that place orders. Each has a profile, addresses, order history, and insight metrics.
+    </p>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">What You Can Do</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li>View and edit customer details</li>
+        <li>Grant or revoke administrator access</li>
+        <li>View order history and insights</li>
+        <li>Manually verify email addresses</li>
+    </ul>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Customer Segments</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li><strong class="text-gray-700 dark:text-gray-200">New</strong> - 0-1 orders</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Returning</strong> - 2-3 orders</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Loyal</strong> - 4+ orders</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Lapsed</strong> - 60+ days inactive</li>
+    </ul>
+
+    <twig:Alert type="warning">
+        Customers with order history or admin status cannot be deleted.
+    </twig:Alert>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Related</h3>
+    <div class="flex flex-wrap gap-2">
+        <a href="{{ path('app_help_direct', { key: 'order/orders', from: 'customer/customers' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Orders</a>
+        <a href="{{ path('app_help_direct', { key: 'review/reviews', from: 'customer/customers' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Reviews</a>
+    </div>
+{% endblock %}

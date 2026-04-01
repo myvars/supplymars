@@ -1,0 +1,32 @@
+{% extends 'help/_layout.html.twig' %}
+
+{% block title %}Suppliers{% endblock %}
+
+{% block content %}
+    <p class="text-gray-500 dark:text-gray-400">
+        Suppliers provide products to fulfil customer orders. Your warehouse holds internal stock; dropshippers ship directly to customers.
+    </p>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">What You Can Do</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li>Create, edit, and delete suppliers</li>
+        <li>View supplier product listings and sales</li>
+        <li>Set colour schemes for visual identification</li>
+    </ul>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Colour Scheme</h3>
+    <p>Each supplier is assigned a colour (Violet, Amber, Teal, or Rose) shown as a dot on PO cards and order items for quick visual identification.</p>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Supplier Selection</h3>
+    <p>When allocating orders, the system picks suppliers by: stock availability first, then lowest cost, then active status.</p>
+
+    <twig:Alert type="info">
+        Inactive suppliers won't receive new orders but existing purchase orders continue to be processed.
+    </twig:Alert>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Related</h3>
+    <div class="flex flex-wrap gap-2">
+        <a href="{{ path('app_help_direct', { key: 'purchasing/supplier_products', from: 'purchasing/suppliers' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Supplier Products</a>
+        <a href="{{ path('app_help_direct', { key: 'purchasing/purchase_orders', from: 'purchasing/suppliers' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Purchase Orders</a>
+    </div>
+{% endblock %}

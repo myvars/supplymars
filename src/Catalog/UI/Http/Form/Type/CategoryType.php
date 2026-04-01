@@ -54,6 +54,7 @@ final class CategoryType extends AbstractType
                 'choice_label' => fn (PriceModel $priceModel): string => $priceModel->getName(),
                 'label' => 'Price Model',
                 'placeholder' => 'Choose a Price Model',
+                'help' => 'Controls how sell prices are rounded, e.g. Pretty 99 rounds to £X.99.',
             ])
             ->add('owner', EntityType::class, [
                 'class' => User::class,

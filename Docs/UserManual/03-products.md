@@ -95,17 +95,28 @@ The detail page shows:
 - **Stock** - Current stock and supplier options
 - **Cost** - Pricing and markup settings
 - **Images** - Product image gallery
-- **Sales** - Sales analytics dashboard
+- **Sales** - Sales analytics for this product
+- **History** - Stock and cost change history with charts (filterable by time period)
+- **Reviews** - Review summary with average rating, distribution, and latest published reviews
 
 ### Manage Product Images
 
 **Navigate to:** Product detail > **Images** tab
 
-- **Upload images:** Click the upload button and select files
-- **Delete images:** Click the X on any image
-- **Reorder images:** Drag and drop to change order
+The Images tab shows all images for a product in a responsive grid with drag-and-drop management.
 
-The first image becomes the product thumbnail shown in lists.
+**Uploading images:**
+- Drag files onto the upload area, or click to browse
+- Upload up to 10 images at a time
+- Maximum file size: 2 MB per image
+- Accepted formats: all image types (JPG, PNG, GIF, WebP, etc.)
+
+**Managing images:**
+- **Reorder:** Drag and drop images to change their display order
+- **Delete:** Hover over an image and click the delete button
+- **Primary image:** The first image (position 1) is marked with a "Primary" badge and becomes the product thumbnail shown in lists and cards
+
+Each image card shows the filename, upload date, and file size.
 
 ## Fields and Options
 

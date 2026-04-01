@@ -1,0 +1,29 @@
+{% extends 'help/_layout.html.twig' %}
+
+{% block title %}VAT Rates{% endblock %}
+
+{% block content %}
+    <p class="text-gray-500 dark:text-gray-400">
+        VAT rates are tax percentages assigned to categories. All products in a category share that category's VAT rate.
+    </p>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">What You Can Do</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li>Create, edit, and delete VAT rates</li>
+        <li>Edit names inline by clicking on them</li>
+        <li>Assign VAT rates to categories</li>
+    </ul>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">How VAT Is Applied</h3>
+    <p>VAT is added after markup and price model rounding. The formula is: sell price &times; (1 + VAT rate). For example, £16.99 at 20% VAT = £20.39.</p>
+
+    <twig:Alert type="warning">
+        Changing a VAT rate recalculates sell prices for all products in categories using that rate. Rates in use cannot be deleted.
+    </twig:Alert>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Related</h3>
+    <div class="flex flex-wrap gap-2">
+        <a href="{{ path('app_help_direct', { key: 'catalog/categories', from: 'pricing/vat_rates' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Categories</a>
+        <a href="{{ path('app_help_direct', { key: 'pricing/pricing', from: 'pricing/vat_rates' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Pricing</a>
+    </div>
+{% endblock %}

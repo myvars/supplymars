@@ -42,6 +42,7 @@ Once you're familiar with the basics, refer to these guides based on what you ne
 |--------------|--------|
 | Add or edit products | [Products](03-products.md) |
 | Organise products into categories | [Categories & Subcategories](04-categories.md) |
+| Manage manufacturers | [Manufacturers](16-manufacturers.md) |
 | Manage suppliers | [Suppliers](05-suppliers.md) |
 | Link supplier products to the catalog | [Supplier Products](06-supplier-products.md) |
 | Manage customer accounts | [Customers](07-customers.md) |
@@ -53,6 +54,7 @@ Once you're familiar with the basics, refer to these guides based on what you ne
 | View reports and KPIs | [Reports & Dashboard](13-reports.md) |
 | Run simulations | [Simulations](14-simulations.md) |
 | Manage product reviews | [Product Reviews](15-reviews.md) |
+| Manage tickets and support | [Notes & Tickets](17-notes.md) |
 
 ### Reference
 
@@ -88,6 +90,10 @@ If you encounter issues not covered in this manual or the troubleshooting guide,
 | **Allocation** | The process of assigning customer order items to supplier purchase orders |
 | **Product Review** | Customer feedback on a delivered product, subject to moderation before publishing |
 | **Review Summary** | Aggregated review statistics for a product (average rating, distribution, counts) |
+| **Manufacturer** | The company that produces a product |
+| **Ticket** | A support case or conversation in the Notes module |
+| **Pool** | A shared inbox that groups tickets by topic or team |
+| **Dashboard** | Operational overview showing today's KPIs, action items, and recent activity |
 
 ### Status Meanings
 
@@ -119,3 +125,10 @@ If you encounter issues not covered in this manual or the troubleshooting guide,
 | Published | Approved and visible on product page |
 | Rejected | Rejected by moderator (terminal) |
 | Hidden | Temporarily removed from product page |
+
+**Ticket Status:**
+| Status | Meaning |
+|--------|---------|
+| Open | New or customer-replied, needs attention |
+| Replied | Staff has replied, awaiting customer |
+| Closed | Issue resolved |

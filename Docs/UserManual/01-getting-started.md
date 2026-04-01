@@ -58,6 +58,7 @@ Staff members have full access to:
 - ✅ VAT rate configuration
 - ✅ Pricing management
 - ✅ Reports and dashboard
+- ✅ Notes, tickets, and pools
 - ✅ User registration (creating new accounts)
 
 Most of this manual assumes you have staff access. If you cannot access certain features, contact your administrator to check your permissions.
@@ -68,7 +69,7 @@ After logging in for the first time, here's a suggested path to familiarise your
 
 ### 1. Explore the Dashboard
 
-Click **Reporting** > **Dashboard** in the menu to see an overview of:
+Click **Dashboard** in the menu to see an overview of:
 - Today's order count and value
 - Sales metrics (cost, profit, margin)
 - Recent orders
@@ -111,13 +112,15 @@ The SupplyMars interface consists of:
 
 A slide-out menu on the left containing all main sections:
 - Home
+- Dashboard (admin only)
 - Catalog (expandable)
-- Orders
+- Orders (expandable)
 - Purchasing (expandable)
 - Customers
 - Reviews (expandable)
 - Reporting (expandable)
 - Admin (expandable)
+- Notes (expandable)
 
 ### Main Content Area
 

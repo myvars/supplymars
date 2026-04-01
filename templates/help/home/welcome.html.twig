@@ -1,0 +1,48 @@
+{% extends 'help/_layout.html.twig' %}
+
+{% block title %}Welcome{% endblock %}
+
+{% block content %}
+    <p class="text-gray-500 dark:text-gray-400">
+        SupplyMars is an e-commerce and supply chain operations platform. It manages product sourcing from multiple suppliers, customer orders, purchase order fulfilment, pricing, and reporting.
+    </p>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Getting Started</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li>Open the <strong class="text-gray-700 dark:text-gray-200">Dashboard</strong> for today's KPIs and action items</li>
+        <li>Browse <strong class="text-gray-700 dark:text-gray-200">Catalog > Products</strong> to explore your inventory</li>
+        <li>Check <strong class="text-gray-700 dark:text-gray-200">Orders</strong> to see customer purchases</li>
+        <li>Visit <strong class="text-gray-700 dark:text-gray-200">Purchasing > Suppliers</strong> to understand your supply chain</li>
+    </ul>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">How It Works</h3>
+    <ol class="list-decimal pl-5 space-y-1">
+        <li>Products are sourced from multiple suppliers at different costs</li>
+        <li>Customers place orders for products</li>
+        <li>Orders are allocated to the best available suppliers</li>
+        <li>Purchase orders track fulfilment from supplier to delivery</li>
+        <li>Pricing, stock, and reporting update automatically</li>
+    </ol>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Key Areas</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li><strong class="text-gray-700 dark:text-gray-200">Catalog</strong> - Products, categories, subcategories, manufacturers</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Orders</strong> - Customer orders and line items</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Purchasing</strong> - Suppliers, supplier products, purchase orders</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Reporting</strong> - Sales, orders, customers, and supplier performance</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Reviews</strong> - Customer feedback and moderation</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Notes</strong> - Support tickets and team communication</li>
+    </ul>
+
+    <twig:Alert type="info">
+        Click any status badge on an order or purchase order to see its full status change history.
+    </twig:Alert>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Explore</h3>
+    <div class="flex flex-wrap gap-2">
+        <a href="{{ path('app_help_direct', { key: 'reporting/dashboard', from: 'home/welcome' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Dashboard</a>
+        <a href="{{ path('app_help_direct', { key: 'catalog/products', from: 'home/welcome' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Products</a>
+        <a href="{{ path('app_help_direct', { key: 'order/orders', from: 'home/welcome' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Orders</a>
+        <a href="{{ path('app_help_direct', { key: 'purchasing/suppliers', from: 'home/welcome' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Suppliers</a>
+    </div>
+{% endblock %}

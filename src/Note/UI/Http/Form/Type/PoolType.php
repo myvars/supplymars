@@ -36,6 +36,7 @@ final class PoolType extends AbstractType
             ->add('isCustomerVisible', CheckboxType::class, [
                 'label' => 'Customer Visible',
                 'required' => false,
+                'help' => 'Customers can see and submit tickets to this pool.',
             ])
         ;
     }

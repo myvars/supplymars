@@ -1,0 +1,34 @@
+{% extends 'help/_layout.html.twig' %}
+
+{% block title %}Tickets{% endblock %}
+
+{% block content %}
+    <p class="text-gray-500 dark:text-gray-400">
+        Tickets are support cases with threaded message histories. Each ticket belongs to a pool and has a status that transitions as staff and customers reply.
+    </p>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">What You Can Do</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li>Create tickets and assign to pools</li>
+        <li>Reply with public or internal messages</li>
+        <li>Close, reopen, reassign, and snooze tickets</li>
+        <li>Delete individual messages</li>
+    </ul>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Ticket Status</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li><strong class="text-gray-700 dark:text-gray-200">Open</strong> - Needs attention</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Replied</strong> - Staff has replied, awaiting customer</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Closed</strong> - Issue resolved</li>
+    </ul>
+
+    <twig:Alert type="info">
+        Internal replies are only visible to staff. Closed tickets cannot receive replies until reopened.
+    </twig:Alert>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Related</h3>
+    <div class="flex flex-wrap gap-2">
+        <a href="{{ path('app_help_direct', { key: 'notes/pools', from: 'notes/tickets' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Pools</a>
+        <a href="{{ path('app_help_direct', { key: 'customer/customers', from: 'notes/tickets' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Customers</a>
+    </div>
+{% endblock %}

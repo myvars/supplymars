@@ -2,7 +2,6 @@
 
 namespace App\Order\Application\Handler;
 
-use App\Order\Application\Command\CreateDemoOrder;
 use App\Order\Application\Service\DemoOrderCreator;
 use App\Order\Domain\Repository\OrderRepository;
 use App\Shared\Application\Result;
@@ -19,7 +18,7 @@ final readonly class CreateDemoOrderHandler
     ) {
     }
 
-    public function __invoke(CreateDemoOrder $command): Result
+    public function __invoke(): Result
     {
         if ($this->orders->countDemoOrdersCreatedToday() >= self::DAILY_LIMIT) {
             return Result::fail('Daily demo order limit reached.');

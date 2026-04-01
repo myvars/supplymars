@@ -1,0 +1,40 @@
+{% extends 'help/_layout.html.twig' %}
+
+{% block title %}Products{% endblock %}
+
+{% block content %}
+    <p class="text-gray-500 dark:text-gray-400">
+        Products are the items in your catalog that customers can order. Each product is linked to a category, subcategory, and manufacturer.
+    </p>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">What You Can Do</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li>Search, sort, and filter the product list</li>
+        <li>Create, edit, and delete products</li>
+        <li>Upload and reorder product images</li>
+        <li>View sales analytics and stock history</li>
+    </ul>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Product Detail Tabs</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li><strong class="text-gray-700 dark:text-gray-200">Details</strong> - Product information and status</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Stock</strong> - Supplier options and active source</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Cost</strong> - Markup and pricing hierarchy</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Images</strong> - Drag-and-drop upload (up to 10, max 2 MB each), reorder, and delete</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Sales</strong> - Sales performance analytics</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">History</strong> - Stock and cost charts per supplier (7, 30, 90 days, or all)</li>
+        <li><strong class="text-gray-700 dark:text-gray-200">Reviews</strong> - Rating summary and latest reviews</li>
+    </ul>
+
+    <twig:Alert type="info">
+        A product must be Active and have an active supplier product, category, and subcategory before it can be sold.
+    </twig:Alert>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Related</h3>
+    <div class="flex flex-wrap gap-2">
+        <a href="{{ path('app_help_direct', { key: 'catalog/categories', from: 'catalog/products' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Categories</a>
+        <a href="{{ path('app_help_direct', { key: 'purchasing/supplier_products', from: 'catalog/products' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Supplier Products</a>
+        <a href="{{ path('app_help_direct', { key: 'pricing/pricing', from: 'catalog/products' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Pricing</a>
+        <a href="{{ path('app_help_direct', { key: 'stock/stock', from: 'catalog/products' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Stock</a>
+    </div>
+{% endblock %}

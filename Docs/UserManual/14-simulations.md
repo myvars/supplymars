@@ -200,6 +200,18 @@ symfony console app:reset-supplier-stock 1
 
 Sets each product's stock to random 0-300 units.
 
+### Review Generation
+
+**Command:** `app:generate-reviews`
+
+Generates sample product reviews for testing.
+
+```bash
+symfony console app:generate-reviews 50
+```
+
+Creates reviews linked to delivered orders with random ratings, titles, and body text.
+
 ## Reporting Commands
 
 ### Calculate Product Sales
@@ -230,15 +242,30 @@ symfony console app:calculate-order-sales 30
 - `dayCount` (required) - Days to process
 - `dayOffset` (optional, default: 0) - Days back to start
 
+### Calculate Customer Sales
+
+**Command:** `app:calculate-customer-sales`
+
+Calculates customer sales data for customer insight reports.
+
+```bash
+symfony console app:calculate-customer-sales 30
+```
+
+**Arguments:**
+- `dayCount` (required) - Days to process
+- `dayOffset` (optional, default: 0) - Days back to start
+
 ### Calculate Summaries
 
 **Commands:**
 ```bash
 symfony console app:calculate-product-sales-summary
 symfony console app:calculate-order-sales-summary
+symfony console app:calculate-customer-sales-summary
 ```
 
-Pre-aggregates data for dashboard performance.
+Pre-aggregates data for dashboard and report performance.
 
 ## Typical Workflows
 

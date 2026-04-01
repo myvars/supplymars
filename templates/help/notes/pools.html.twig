@@ -1,0 +1,29 @@
+{% extends 'help/_layout.html.twig' %}
+
+{% block title %}Pools{% endblock %}
+
+{% block content %}
+    <p class="text-gray-500 dark:text-gray-400">
+        Pools are shared inboxes that group tickets by topic or team. Subscribe to pools to see their tickets in your My Queue.
+    </p>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">What You Can Do</h3>
+    <ul class="list-disc pl-5 space-y-1">
+        <li>Create, edit, and delete pools</li>
+        <li>Subscribe and unsubscribe from pools</li>
+        <li>Control whether customers can see each pool</li>
+        <li>View subscribed team members</li>
+    </ul>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">My Queue</h3>
+    <p>Your personal inbox. Shows open tickets from all pools you're subscribed to. The blue badge in the menu shows the count.</p>
+
+    <twig:Alert type="info">
+        Subscribing to a pool adds its open tickets to your My Queue count. Unsubscribing removes them.
+    </twig:Alert>
+
+    <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Related</h3>
+    <div class="flex flex-wrap gap-2">
+        <a href="{{ path('app_help_direct', { key: 'notes/tickets', from: 'notes/pools' }) }}" data-turbo-frame="help" class="rounded-full bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700">Tickets</a>
+    </div>
+{% endblock %}
