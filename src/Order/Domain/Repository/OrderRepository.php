@@ -26,4 +26,6 @@ interface OrderRepository extends FindByCriteriaInterface
     public function countOverdueOrders(): int;
 
     public function countPendingOrders(): int;
+
+    public function countDemoOrdersCreatedToday(): int;
 }

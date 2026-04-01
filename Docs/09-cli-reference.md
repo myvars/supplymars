@@ -53,10 +53,12 @@ symfony console app:create-customer-orders 5 -v
 **Side Effects:**
 - Creates User entities (if needed)
 - Creates Address entities (if needed)
-- Creates CustomerOrder entities
+- Creates CustomerOrder entities (with `TEST-XXXX` reference)
 - Creates CustomerOrderItem entities (1-5 per order)
 
-**Constants:**
+**Implementation:** Delegates to `DemoOrderCreator` service (`src/Order/Application/Service/DemoOrderCreator.php`), which is also used by the web-based "Create Demo Order" feature on the order index page (with `DEMO-XXXX` reference and a daily limit of 10).
+
+**Constants (on `DemoOrderCreator`):**
 - `MAX_ORDER_LINES = 5` - Maximum items per order
 - `MAX_LINE_QTY = 5` - Maximum quantity per line
 

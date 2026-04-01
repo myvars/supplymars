@@ -4,9 +4,11 @@ namespace App\Order\UI\Http\Controller;
 
 use App\Order\Application\Command\AllocateOrder;
 use App\Order\Application\Command\CancelOrder;
+use App\Order\Application\Command\CreateDemoOrder;
 use App\Order\Application\Command\LockOrder;
 use App\Order\Application\Handler\AllocateOrderHandler;
 use App\Order\Application\Handler\CancelOrderHandler;
+use App\Order\Application\Handler\CreateDemoOrderHandler;
 use App\Order\Application\Handler\CreateOrderHandler;
 use App\Order\Application\Handler\LockOrderHandler;
 use App\Order\Application\Handler\OrderFilterHandler;
@@ -73,6 +75,7 @@ class OrderController extends AbstractController
         );
     }
 
+    #[IsGranted('ROLE_SUPER_ADMIN')]
     #[Route(path: '/order/new', name: 'app_order_new', methods: ['GET', 'POST'])]
     public function new(
         Request $request,
@@ -143,6 +146,32 @@ class OrderController extends AbstractController
             context: FlowContext::forSuccess('app_order_show', [
                 'id' => $order->getPublicId()->value(),
             ]),
+        );
+    }
+
+    #[Route(path: '/order/demo/confirm', name: 'app_order_demo_confirm', methods: ['GET'])]
+    public function demoConfirm(OrderRepository $repository): Response
+    {
+        $used = $repository->countDemoOrdersCreatedToday();
+
+        return $this->render('/order/demo_confirm.html.twig', [
+            'used' => $used,
+            'limit' => CreateDemoOrderHandler::DAILY_LIMIT,
+            'limitReached' => $used >= CreateDemoOrderHandler::DAILY_LIMIT,
+        ]);
+    }
+
+    #[Route(path: '/order/demo', name: 'app_order_demo_create', methods: ['POST'])]
+    public function demoCreate(
+        Request $request,
+        CreateDemoOrderHandler $handler,
+        DeleteFlow $flow,
+    ): Response {
+        return $flow->delete(
+            request: $request,
+            command: new CreateDemoOrder(),
+            handler: $handler,
+            context: FlowContext::forSuccess('app_order_index'),
         );
     }
 

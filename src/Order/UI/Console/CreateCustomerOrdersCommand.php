@@ -2,23 +2,7 @@
 
 namespace App\Order\UI\Console;
 
-use App\Catalog\Domain\Model\Product\Product;
-use App\Catalog\Domain\Repository\ProductRepository;
-use App\Customer\Domain\Model\Address\Address;
-use App\Customer\Domain\Model\User\User;
-use App\Customer\Domain\Repository\AddressRepository;
-use App\Customer\Domain\Repository\UserRepository;
-use App\Customer\Infrastructure\Factory\RandomAddressFactory;
-use App\Customer\Infrastructure\Factory\RandomUserFactory;
-use App\Order\Application\Command\CreateOrder;
-use App\Order\Application\Command\CreateOrderItem;
-use App\Order\Application\Handler\CreateOrderHandler;
-use App\Order\Application\Handler\CreateOrderItemHandler;
-use App\Order\Domain\Model\Order\CustomerOrder;
-use App\Order\Domain\Model\Order\OrderPublicId;
-use App\Order\Domain\Repository\OrderRepository;
-use App\Shared\Application\FlusherInterface;
-use App\Shared\Domain\ValueObject\ShippingMethod;
+use App\Order\Application\Service\DemoOrderCreator;
 use App\Shared\Infrastructure\Security\DefaultUserAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -36,21 +20,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 readonly class CreateCustomerOrdersCommand
 {
-    public const int MAX_ORDER_LINES = 5;
-
-    public const int MAX_LINE_QTY = 5;
-
     public function __construct(
-        private ProductRepository $products,
-        private OrderRepository $orders,
-        private UserRepository $customers,
-        private AddressRepository $addresses,
-        private RandomUserFactory $randomUserFactory,
-        private RandomAddressFactory $randomAddressFactory,
-        private CreateOrderHandler $createOrderHandler,
-        private CreateOrderItemHandler $createOrderItemHandler,
+        private DemoOrderCreator $demoOrderCreator,
         private DefaultUserAuthenticator $defaultUserAuthenticator,
-        private FlusherInterface $flusher,
         private EntityManagerInterface $entityManager,
         private LoggerInterface $logger,
     ) {
@@ -111,13 +83,9 @@ readonly class CreateCustomerOrdersCommand
             }
 
             try {
-                $user = $this->getOrCreateUser();
-                $this->createBillingAddress($user);
+                $result = $this->demoOrderCreator->create('TEST-');
 
-                $order = $this->placeCustomerOrder($user);
-                $this->addCustomerOrderItems($order);
-
-                $processedIds[] = (string) $order->getId();
+                $processedIds[] = (string) $result->order->getId();
                 ++$processed;
             } catch (\Throwable $throwable) {
                 ++$failed;
@@ -150,86 +118,5 @@ readonly class CreateCustomerOrdersCommand
         }
 
         return $failed > 0 ? Command::FAILURE : Command::SUCCESS;
-    }
-
-    private function getOrCreateUser(): User
-    {
-        if (0 === random_int(0, 2)) {
-            return $this->customers->getRandomUser();
-        }
-
-        $user = $this->randomUserFactory->create();
-        $this->customers->add($user);
-
-        $this->flusher->flush();
-
-        return $user;
-    }
-
-    private function createBillingAddress(User $user): void
-    {
-        $address = $user->getBillingAddress();
-        if ($address instanceof Address) {
-            return;
-        }
-
-        $address = $this->randomAddressFactory->create($user, isShipping: true, isBilling: true);
-        $this->addresses->add($address);
-        $user->addAddress($address);
-
-        $this->flusher->flush();
-    }
-
-    private function placeCustomerOrder(User $user): CustomerOrder
-    {
-        $shippingMethods = ShippingMethod::cases();
-        $result = ($this->createOrderHandler)(
-            new CreateOrder(
-                $user->getId(),
-                $shippingMethods[array_rand($shippingMethods)],
-                'TEST-' . sprintf('%04d', $user->getId()),
-            )
-        );
-
-        if (!$result->payload instanceof OrderPublicId) {
-            throw new \RuntimeException('Failed to create customer order');
-        }
-
-        return $this->getCustomerOrder($result->payload);
-    }
-
-    private function addCustomerOrderItems(CustomerOrder $order): void
-    {
-        $products = $this->getRandomProducts(random_int(1, self::MAX_ORDER_LINES));
-        if ($products === []) {
-            return;
-        }
-
-        foreach ($products as $product) {
-            if (!$product instanceof Product) {
-                continue;
-            }
-
-            ($this->createOrderItemHandler)(
-                new CreateOrderItem(
-                    $order->getPublicId(),
-                    $product->getId(),
-                    random_int(1, self::MAX_LINE_QTY)
-                )
-            );
-        }
-    }
-
-    /**
-     * @return array<int, Product>
-     */
-    private function getRandomProducts(int $productCount): array
-    {
-        return $this->products->findRandomProducts($productCount);
-    }
-
-    private function getCustomerOrder(OrderPublicId $id): CustomerOrder
-    {
-        return $this->orders->getByPublicId($id);
     }
 }

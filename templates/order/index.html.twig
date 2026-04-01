@@ -8,6 +8,32 @@
         routes="{{ routes }}"
         results="{{ results }}"
     >
+        <twig:block name="add">
+            <div class="flex gap-2">
+                <twig:Button
+                    tag="a"
+                    variant="alternative"
+                    href="{{ path('app_order_demo_confirm') }}"
+                    data-turbo-frame="modal"
+                    data-turbo-prefetch="false"
+                >
+                    <twig:ux:icon name="bi:lightning" class="h-4 w-4"/>
+                    <span>Create Demo Order</span>
+                </twig:Button>
+                {% if routes.new and is_granted('ROLE_SUPER_ADMIN') %}
+                    <twig:Button
+                        tag="a"
+                        variant="alternative"
+                        href="{{ path(routes.new) }}"
+                        data-turbo-frame="modal"
+                    >
+                        <twig:ux:icon name="bi:plus-lg" class="h-4 w-4"/>
+                        <span>Create Order</span>
+                    </twig:Button>
+                {% endif %}
+            </div>
+        </twig:block>
+
         <twig:block name="sort">
             <twig:SortLink sortValue="id">Order</twig:SortLink>
             <twig:SortLink sortValue="createdAt">Created</twig:SortLink>
@@ -17,7 +43,10 @@
         </twig:block>
 
         <twig:block name="list_item">
-            <twig:Card showLink="{{ path('app_order_show', {'id': result.publicId.value }) }}" statusHighlight="{{ result.status.value }}">
+            <twig:Card showLink="{{ path('app_order_show', {'id': result.publicId.value }) }}" statusHighlight="{{ result.status.value }}"
+                data-controller="new-item-highlight"
+                data-new-item-highlight-created-at-value="{{ result.createdAt|date('c') }}"
+            >
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-lg font-semibold text-gray-900 dark:text-white">

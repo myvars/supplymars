@@ -26,7 +26,7 @@ class CreateOrderFlowTest extends WebTestCase
         VatRateFactory::new()->withStandardRate()->create();
 
         $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->actingAs(UserFactory::new()->asSuperAdmin()->create())
             ->get('/order/new')
             ->fillField('order[customerId]', (string) $customer->getId())
             ->fillField('order[shippingMethod]', ShippingMethod::THREE_DAY->value)
@@ -39,7 +39,7 @@ class CreateOrderFlowTest extends WebTestCase
     public function testValidationErrorsOnEmptySubmission(): void
     {
         $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->actingAs(UserFactory::new()->asSuperAdmin()->create())
             ->get('/order/new')
             ->click('Create Order')
             ->assertOn('/order/new')

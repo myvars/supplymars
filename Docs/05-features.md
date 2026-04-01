@@ -128,7 +128,14 @@ The Order context manages customer purchases from initial creation through fulfi
 
 ### Main Workflows
 
-**Creating an Order:**
+**Creating a Demo Order:**
+1. Click "Create Demo Order" on the order index page
+2. Confirm in the modal dialog
+3. A random customer, shipping method, and products are assigned automatically
+4. Order created in PENDING status with `DEMO-XXXX` reference
+5. Limited to 10 demo orders per day (global)
+
+**Creating an Order (ROLE_SUPER_ADMIN only):**
 1. Navigate to `/order/new`
 2. Select customer and shipping method
 3. Order created in PENDING status
@@ -151,16 +158,20 @@ PENDING → PROCESSING → SHIPPED → DELIVERED
 
 ### Entry Points
 
-| Action | Controller | Route |
-|--------|------------|-------|
-| List orders | `OrderController::index` | `app_order_order_index` |
-| Create order | `OrderController::new` | `app_order_order_new` |
-| View order | `OrderController::show` | `app_order_order_show` |
-| Cancel order | `OrderController::cancel` | `app_order_order_cancel` |
+| Action | Controller | Route | Role |
+|--------|------------|-------|------|
+| List orders | `OrderController::index` | `app_order_index` | `ROLE_ADMIN` |
+| Create demo order (confirm) | `OrderController::demoConfirm` | `app_order_demo_confirm` | `ROLE_ADMIN` |
+| Create demo order (execute) | `OrderController::demoCreate` | `app_order_demo_create` | `ROLE_ADMIN` |
+| Create order | `OrderController::new` | `app_order_new` | `ROLE_SUPER_ADMIN` |
+| View order | `OrderController::show` | `app_order_show` | `ROLE_ADMIN` |
+| Cancel order | `OrderController::cancel` | `app_order_cancel` | `ROLE_ADMIN` |
 
 **Key files:**
 - `src/Order/UI/Http/Controller/OrderController.php`
 - `src/Order/Application/Handler/CreateOrderHandler.php`
+- `src/Order/Application/Handler/CreateDemoOrderHandler.php`
+- `src/Order/Application/Service/DemoOrderCreator.php`
 - `src/Order/Domain/Model/Order/CustomerOrder.php`
 - `src/Order/Domain/Model/Order/CustomerOrderItem.php`
 
@@ -192,6 +203,7 @@ The Order context exposes **authenticated** API endpoints (requires `ROLE_ADMIN`
 3. **Cancel restrictions:** Can only cancel PENDING orders
 4. **Status derivation:** Order status = minimum item status
 5. **Locking:** Orders can be locked by user to prevent concurrent edits
+6. **Demo order limit:** Maximum 10 demo orders per day (global, counted by `DEMO-` ref prefix)
 
 ---
 

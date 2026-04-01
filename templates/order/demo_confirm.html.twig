@@ -1,0 +1,43 @@
+{% extends 'shared/turbo/modal_base.html.twig' %}
+
+{% block title %}Create Demo Order{% endblock %}
+
+{% block body %}
+
+    {% component Dialog with { title: 'Create Demo Order', size: 'sm' } %}
+        {% block content %}
+            {% if limitReached %}
+                <div class="mb-4 flex justify-center">
+                    <div class="flex h-12 w-12 items-center justify-center rounded-full bg-yellow-50 dark:bg-yellow-900/20">
+                        <twig:ux:icon name="bi:exclamation-triangle-fill" class="h-6 w-6 text-yellow-500 dark:text-yellow-400"/>
+                    </div>
+                </div>
+                <p class="mb-4 text-center text-sm text-gray-500 dark:text-gray-400">
+                    You have reached the daily limit of {{ limit }} demo orders.
+                </p>
+                <twig:Button type="button" variant="alternative" class="w-full" data-action="basic-modal#close">
+                    Close
+                </twig:Button>
+            {% else %}
+                <p class="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                    This will create a new order for a random customer.
+                </p>
+                <p class="mb-4 text-xs text-gray-400 dark:text-gray-500">
+                    {{ used }} of {{ limit }} demo orders created today.
+                </p>
+                <form method="post" action="{{ path('app_order_demo_create') }}">
+                    <input type="hidden" name="_token" value="{{ csrf_token('deletedemo') }}">
+                    <div class="flex gap-3">
+                        <twig:Button type="button" variant="alternative" class="w-full" data-action="basic-modal#close">
+                            Cancel
+                        </twig:Button>
+                        <twig:Button type="submit" variant="primary" class="w-full whitespace-nowrap">
+                            Create Order
+                        </twig:Button>
+                    </div>
+                </form>
+            {% endif %}
+        {% endblock %}
+    {% endcomponent %}
+
+{% endblock %}

@@ -248,6 +248,22 @@ this.countValue = 10;
 </div>
 ```
 
+**`new_item_highlight_controller`**
+- One-shot glow animation for recently created list items
+- Compares `createdAt` timestamp against current time
+- Applies `.new-item-highlight` CSS class if within threshold
+- Self-removes class after animation completes
+
+```html
+<div data-controller="new-item-highlight"
+     data-new-item-highlight-created-at-value="{{ result.createdAt|date('c') }}"
+     data-new-item-highlight-threshold-value="3000">
+```
+
+Values:
+- `createdAt` (String) — ISO 8601 timestamp of the item's creation
+- `threshold` (Number, default: 3000) — Age in ms below which the highlight triggers
+
 **`sidebar_active_controller`**
 - Highlights active nav item in sidebar based on current URL
 - Matches links by longest pathname prefix, with query param awareness

@@ -226,6 +226,18 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
         return $this->count(['status' => OrderStatus::PENDING]);
     }
 
+    public function countDemoOrdersCreatedToday(): int
+    {
+        return (int) $this->createQueryBuilder('co')
+            ->select('COUNT(co.id)')
+            ->andWhere('co.customerOrderRef LIKE :refPrefix')
+            ->setParameter('refPrefix', 'DEMO-%')
+            ->andWhere('co.createdAt >= :today')
+            ->setParameter('today', new \DateTime('today'))
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
     public function getOverdueOrders(\DateTime $startDate): QueryBuilder
     {
         return $this->createQueryBuilder('co')

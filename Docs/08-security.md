@@ -286,7 +286,7 @@ The playground uses role-based restrictions to protect the demo environment. The
 ### What ROLE_ADMIN Can Do
 
 - **Browse:** All pages, reports, and dashboards
-- **Create:** Products, orders, suppliers, and other entities via FormFlow
+- **Create:** Products, demo orders, suppliers, and other entities via FormFlow
 - **Edit:** Non-staff customer accounts and all other entities
 - **Confirmed actions:** Cancel orders, remove supplier product mappings, rewind purchase orders
 - **Forms:** Full form submissions (validation, flash messages, redirects)
@@ -297,6 +297,7 @@ The playground uses role-based restrictions to protect the demo environment. The
 |---|---|---|
 | **Delete entities** | Each delete handler individually | Error flash: "Deleting is disabled for this user." |
 | **Edit staff accounts** | Users with `isStaff = true` | Error flash: "Staff accounts cannot be modified in the playground." |
+| **Create orders manually** | `OrderController::new` (`#[IsGranted('ROLE_SUPER_ADMIN')]`) | HTTP 403 (button hidden for non-super-admins) |
 
 File uploads are additionally blocked by `PLAYGROUND_MODE` environment variable regardless of role.
 

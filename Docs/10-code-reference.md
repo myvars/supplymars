@@ -97,10 +97,17 @@ generateStatus()              // Derive from PO items
 
 | Handler | File | Operation |
 |---------|------|-----------|
-| CreateOrderHandler | `src/Order/Application/Handler/CreateOrderHandler.php` | Create order |
+| CreateOrderHandler | `src/Order/Application/Handler/CreateOrderHandler.php` | Create order (ROLE_SUPER_ADMIN) |
+| CreateDemoOrderHandler | `src/Order/Application/Handler/CreateDemoOrderHandler.php` | Create demo order (daily limit) |
 | CreateOrderItemHandler | `src/Order/Application/Handler/CreateOrderItemHandler.php` | Add item |
 | AllocateOrderHandler | `src/Order/Application/Handler/AllocateOrderHandler.php` | Trigger allocation |
 | CancelOrderHandler | `src/Order/Application/Handler/CancelOrderHandler.php` | Cancel order |
+
+### Services
+
+| Service | File | Purpose |
+|---------|------|---------|
+| DemoOrderCreator | `src/Order/Application/Service/DemoOrderCreator.php` | Shared logic for random order creation (used by CLI and web) |
 
 ---
 
