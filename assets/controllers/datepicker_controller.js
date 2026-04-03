@@ -1,8 +1,6 @@
 import { Controller } from '@hotwired/stimulus';
 import { Datepicker } from 'flowbite-datepicker';
-import 'flowbite-datepicker/dist/css/datepicker.min.css';
 
-/* stimulusFetch: 'lazy' */
 export default class extends Controller {
     datepicker;
 
@@ -12,7 +10,7 @@ export default class extends Controller {
         this.datepicker = new Datepicker(this.element, {
             format: 'yyyy-mm-dd',
             autohide: true,
-            container: document.querySelector('dialog[open]') ? 'dialog[open]' : 'body'
+            container: this.element.closest('dialog') ? 'dialog' : 'body',
         });
     }
 

@@ -6,9 +6,9 @@
          data-help-drawer-frame-id-value="help"
          data-action="keydown@window->help-drawer#keydown turbo:before-cache@window->help-drawer#close"
     >
-        <div class="mx-auto flex max-w-(--breakpoint-xl) items-center justify-between px-4 py-2.5">
+        <div class="mx-auto flex max-w-(--breakpoint-xl) items-center justify-between px-3 py-2.5 sm:px-4">
 
-            <div class="flex items-center justify-end">
+            <div class="flex min-w-0 items-center">
                 <button id="navigationButton"
                         type="button"
                         class="inline-flex h-9 w-9 items-center justify-center rounded-lg p-2 text-sm text-gray-400 transition-all duration-150 hover:bg-gray-700/70 hover:text-gray-200 active:scale-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500"
@@ -17,12 +17,14 @@
                     <span class="sr-only">Open side menu</span>
                     <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/></svg>
                 </button>
-                <a href="{{ path('app_homepage') }}" class="mx-4 flex items-center space-x-3 rtl:space-x-reverse"
+                <a href="{{ path('app_homepage') }}" class="mx-2 flex min-w-0 items-center sm:mx-4 rtl:space-x-reverse"
                    data-turbo-frame="body">
-                    {{ include('_logo.html.twig', { 'logoHeight': 32 }) }}
+                    <div class="shrink [&_svg]:h-auto [&_svg]:max-h-8 [&_svg]:w-full">
+                        {{ include('_logo.html.twig', { 'logoHeight': 32 }) }}
+                    </div>
                 </a>
             </div>
-            <div class="flex items-center gap-1.5 md:order-2">
+            <div class="flex shrink-0 items-center gap-1.5 md:order-2">
                 <button type="button"
                         class="inline-flex h-9 items-center justify-center rounded-lg text-gray-400 transition-all duration-150 hover:bg-gray-700/70 hover:text-gray-200 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500 w-9 p-2 sm:w-auto sm:px-2.5 sm:text-xs sm:font-medium"
                         data-action="click->help-drawer#toggle"
@@ -85,9 +87,12 @@
                 {% else %}
                     <a
                         href="{{ path('app_login') }}"
-                        class="ml-1 text-sm font-medium text-gray-400 transition-colors hover:text-white"
+                        class="inline-flex h-9 items-center justify-center rounded-lg text-gray-400 transition-all duration-150 hover:bg-gray-700/70 hover:text-gray-200 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500 w-9 p-2 sm:w-auto sm:px-2.5 sm:text-xs sm:font-medium"
                         data-turbo-frame="_top"
-                    >Sign In</a>
+                    >
+                        <twig:ux:icon name="flowbite:arrow-right-to-bracket-outline" class="h-5 w-5 sm:hidden"/>
+                        <span class="hidden sm:inline">Sign In</span>
+                    </a>
                 {% endif %}
             </div>
         </div>

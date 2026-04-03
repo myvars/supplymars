@@ -27,10 +27,16 @@ export default class extends Controller {
 
     open() {
         const frame = document.getElementById(this.frameIdValue);
-        const helpUrl = '/help?page=' + encodeURIComponent(window.location.pathname);
-
         if (frame) {
-            frame.src = helpUrl;
+            const helpUrl = '/help?page=' + encodeURIComponent(window.location.pathname);
+
+            // Only update src when the page has changed. The frame uses
+            // loading="lazy", so the fetch is deferred until the drawer
+            // slides into the viewport — no DOM mutations during animation.
+            // Compare pathname+search since frame.src resolves to an absolute URL.
+            if (!frame.src || new URL(frame.src).pathname + new URL(frame.src).search !== helpUrl) {
+                frame.src = helpUrl;
+            }
         }
 
         this.drawer.show();

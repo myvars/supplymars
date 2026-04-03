@@ -1,8 +1,10 @@
+@import '../vendor/flowbite-datepicker/dist/css/datepicker.min.css';
 @import 'tailwindcss';
 
 @source "../../templates/**/*.html.twig";
 @source "../../src/Shared/UI/Twig/Components/*.php";
 @source '../../vendor/tales-from-a-dev/flowbite-bundle/templates!**!*.html.twig';
+
 
 @custom-variant dark (&:is(.dark *));
 @custom-variant turbo-frame (turbo-frame[src] &);
@@ -205,6 +207,14 @@ html[data-turbo-visit-direction="back"] ::view-transition-new(root) {
 }
 .toast-enter {
     animation: slideInRight 250ms ease-out;
+}
+
+/* Help drawer — transition only the `translate` property.
+   Flowbite adds transition-transform (monitors transform, translate, scale,
+   rotate) but only translate changes; the extra properties cause a two-stage
+   stutter on re-opens. The ID selector overrides Flowbite's class. */
+#help-drawer {
+    transition: translate 300ms ease;
 }
 
 /* Modal scale entrance — composable with animate-fade-in */

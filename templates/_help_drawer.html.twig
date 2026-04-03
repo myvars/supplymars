@@ -4,6 +4,17 @@
      aria-hidden="true"
      aria-label="Contextual help"
 >
-    <turbo-frame id="help" class="flex flex-1 flex-col overflow-hidden">
+    <turbo-frame id="help" loading="lazy" class="flex flex-1 flex-col overflow-hidden">
+        {# Loading skeleton — replaced when help content loads #}
+        <div class="flex shrink-0 items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-white/[0.06]">
+            <div class="h-5 w-16 animate-pulse rounded bg-gray-200 dark:bg-gray-700"></div>
+            <div class="h-5 w-5 animate-pulse rounded bg-gray-200 dark:bg-gray-700"></div>
+        </div>
+        <div class="flex-1 space-y-3 px-5 py-4">
+            <div class="h-4 w-3/4 animate-pulse rounded bg-gray-200 dark:bg-gray-700"></div>
+            <div class="h-4 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-700"></div>
+            <div class="h-4 w-5/6 animate-pulse rounded bg-gray-200 dark:bg-gray-700"></div>
+            <div class="h-4 w-2/3 animate-pulse rounded bg-gray-200 dark:bg-gray-700"></div>
+        </div>
     </turbo-frame>
 </div>

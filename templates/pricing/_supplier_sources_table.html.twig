@@ -16,7 +16,7 @@
         {% endif %}
     </div>
 
-    <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm dark:border-white/[0.10] dark:bg-gray-800/70 dark:shadow-md dark:shadow-black/20">
+    <div class="overflow-hidden mt-4 rounded-xl border border-gray-200 bg-white shadow-sm dark:border-white/[0.10] dark:bg-gray-800/70 dark:shadow-md dark:shadow-black/20">
         {% for supplierProduct in result.supplierProducts %}
             {% set isActive = activeSource is same as supplierProduct %}
             {% set isLast = loop.last %}
