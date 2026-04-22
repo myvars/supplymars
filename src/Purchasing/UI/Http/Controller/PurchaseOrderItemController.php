@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Purchasing\UI\Http\Controller;
 
 use App\Purchasing\Application\Handler\PurchaseOrderItem\UpdatePurchaseOrderItemQuantityHandler;

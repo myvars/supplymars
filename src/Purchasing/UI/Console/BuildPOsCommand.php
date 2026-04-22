@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Purchasing\UI\Console;
 
 use App\Order\Domain\Model\Order\CustomerOrder;

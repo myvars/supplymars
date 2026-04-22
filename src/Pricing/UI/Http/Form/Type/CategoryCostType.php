@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Pricing\UI\Http\Form\Type;
 
 use App\Pricing\UI\Http\Form\Model\CategoryCostForm;

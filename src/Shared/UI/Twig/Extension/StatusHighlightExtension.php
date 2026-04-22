@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Shared\UI\Twig\Extension;
 
 use App\Shared\UI\Twig\Runtime\StatusHighlightExtensionRuntime;

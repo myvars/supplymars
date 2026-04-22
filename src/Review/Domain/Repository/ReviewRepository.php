@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Review\Domain\Repository;
 
 use App\Catalog\Domain\Model\Product\Product;

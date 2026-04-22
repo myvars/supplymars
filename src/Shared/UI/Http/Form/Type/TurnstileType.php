@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Shared\UI\Http\Form\Type;
 
 use App\Shared\UI\Http\Validation\Turnstile;

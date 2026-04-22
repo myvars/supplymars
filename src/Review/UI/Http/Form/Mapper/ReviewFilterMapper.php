@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Review\UI\Http\Form\Mapper;
 
 use App\Review\Application\Command\ReviewFilter;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Home\Service;
 
 use App\Catalog\Infrastructure\Persistence\Doctrine\CategoryDoctrineRepository;

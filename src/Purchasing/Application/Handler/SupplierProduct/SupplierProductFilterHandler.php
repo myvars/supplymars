@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Purchasing\Application\Handler\SupplierProduct;
 
 use App\Purchasing\Application\Command\SupplierProduct\SupplierProductFilter;

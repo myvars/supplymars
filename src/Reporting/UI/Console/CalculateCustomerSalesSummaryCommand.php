@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Reporting\UI\Console;
 
 use App\Reporting\Application\Handler\CalculateCustomerSalesSummaryHandler;

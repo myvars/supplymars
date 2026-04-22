@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Catalog\Domain\Model\Subcategory\Event;
 
 use App\Catalog\Domain\Model\Subcategory\SubcategoryPublicId;

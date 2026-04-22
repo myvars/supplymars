@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Order\UI\Http\Validation;
 
 use Symfony\Component\Validator\Constraint;

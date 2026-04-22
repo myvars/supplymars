@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Catalog\Domain;
 
 use App\Catalog\Domain\Model\Manufacturer\Manufacturer;

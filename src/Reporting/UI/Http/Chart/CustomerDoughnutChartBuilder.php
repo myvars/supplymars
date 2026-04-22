@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Reporting\UI\Http\Chart;
 
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;

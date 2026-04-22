@@ -13,9 +13,12 @@ use App\Tests\Shared\Factory\SupplierProductFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Zenstruck\Foundry\Test\Factories;
 
 final class SupplierProductStatusWasChangedListenerTest extends KernelTestCase
 {
+    use Factories;
+
     private EntityManagerInterface $em;
 
     private SupplierProductRepository $supplierProducts;

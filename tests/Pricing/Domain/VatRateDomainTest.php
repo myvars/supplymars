@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Pricing\Domain;
 
 use App\Pricing\Domain\Model\VatRate\Event\VatRateWasChangedEvent;

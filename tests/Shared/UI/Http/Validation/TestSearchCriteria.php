@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Shared\UI\Http\Validation;
 
 use App\Shared\Application\Search\DateRangeSearchCriteriaInterface;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Note\Application\Handler\Ticket;
 
 use App\Note\Application\Command\Ticket\CloseTicket;

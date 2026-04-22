@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\UI\Http\Form\Type;
 
 use App\Customer\UI\Http\Form\Model\RegistrationForm;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Catalog\UI\Api;
 
 use App\Tests\Shared\Factory\CategoryFactory;

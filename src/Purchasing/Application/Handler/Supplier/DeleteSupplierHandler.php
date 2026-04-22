@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Purchasing\Application\Handler\Supplier;
 
 use App\Purchasing\Application\Command\Supplier\DeleteSupplier;

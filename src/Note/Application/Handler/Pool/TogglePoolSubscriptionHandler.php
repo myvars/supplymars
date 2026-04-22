@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Note\Application\Handler\Pool;
 
 use App\Note\Application\Command\Pool\TogglePoolSubscription;

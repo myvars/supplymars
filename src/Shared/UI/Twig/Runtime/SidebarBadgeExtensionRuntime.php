@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Shared\UI\Twig\Runtime;
 
 use App\Shared\Application\Service\SidebarBadgeProvider;

@@ -13,9 +13,12 @@ use App\Tests\Shared\Factory\ProductFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Zenstruck\Foundry\Test\Factories;
 
 final class SubcategoryPricingWasChangedListenerTest extends KernelTestCase
 {
+    use Factories;
+
     private EntityManagerInterface $em;
 
     private SubcategoryRepository $subcategories;

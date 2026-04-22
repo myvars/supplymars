@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Catalog\Application\Command\Category;
 
 use App\Shared\Application\Search\FilterCommand;

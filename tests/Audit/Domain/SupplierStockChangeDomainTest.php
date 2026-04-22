@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Audit\Domain;
 
 use App\Audit\Domain\Model\StockChange\SupplierStockChangeLog;

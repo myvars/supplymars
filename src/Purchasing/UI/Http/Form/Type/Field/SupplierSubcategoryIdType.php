@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Purchasing\UI\Http\Form\Type\Field;
 
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierSubcategory;

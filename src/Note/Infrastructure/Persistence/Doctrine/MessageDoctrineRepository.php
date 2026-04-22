@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Note\Infrastructure\Persistence\Doctrine;
 
 use App\Note\Domain\Model\Message\Message;

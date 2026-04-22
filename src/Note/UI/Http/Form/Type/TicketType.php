@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Note\UI\Http\Form\Type;
 
 use App\Note\Domain\Model\Pool\Pool;

@@ -14,9 +14,12 @@ use App\Tests\Shared\Factory\VatRateFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Zenstruck\Foundry\Test\Factories;
 
 final class VatRateWasChangedListenerTest extends KernelTestCase
 {
+    use Factories;
+
     private EntityManagerInterface $em;
 
     private VatRateRepository $vatRates;

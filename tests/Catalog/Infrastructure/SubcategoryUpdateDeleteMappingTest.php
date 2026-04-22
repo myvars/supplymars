@@ -9,9 +9,12 @@ use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Factory\VatRateFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Zenstruck\Foundry\Test\Factories;
 
 final class SubcategoryUpdateDeleteMappingTest extends KernelTestCase
 {
+    use Factories;
+
     private EntityManagerInterface $em;
 
     protected function setUp(): void

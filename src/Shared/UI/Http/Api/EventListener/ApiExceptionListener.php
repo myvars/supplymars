@@ -35,7 +35,6 @@ final readonly class ApiExceptionListener
         $exception = $event->getThrowable();
 
         if ($exception instanceof HttpExceptionInterface && $exception->getPrevious() instanceof ValidationFailedException) {
-            /** @var ValidationFailedException $validationException */
             $validationException = $exception->getPrevious();
             $violations = [];
 

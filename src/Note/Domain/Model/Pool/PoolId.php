@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Note\Domain\Model\Pool;
 
 use App\Shared\Domain\ValueObject\AbstractIntId;

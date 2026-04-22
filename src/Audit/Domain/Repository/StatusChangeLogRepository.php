@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Audit\Domain\Repository;
 
 use App\Audit\Domain\Model\StatusChange\StatusChangeLog;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Audit\Domain\Model\StockChange;
 
 use App\Shared\Domain\ValueObject\AbstractUlidId;

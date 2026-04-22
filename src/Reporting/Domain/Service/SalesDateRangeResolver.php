@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Reporting\Domain\Service;
 
 use App\Reporting\Domain\Metric\SalesDuration;

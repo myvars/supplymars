@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Home\UI\Http\Controller;
 
 use App\Home\Service\DashboardDataProvider;

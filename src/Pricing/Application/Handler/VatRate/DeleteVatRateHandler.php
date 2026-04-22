@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Pricing\Application\Handler\VatRate;
 
 use App\Pricing\Application\Command\VatRate\DeleteVatRate;

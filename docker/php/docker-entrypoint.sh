@@ -35,6 +35,10 @@ if [ "$APP_ENV" = "prod" ]; then
         sed -i '/Preloader::preload/d' "$PRELOAD_FILE"
     fi
 else
+    # Nuke the cache dir before cache:clear so a stale compiled container (e.g.
+    # incompatible with newer vendor code after an upgrade) can't crash the kernel
+    # boot that cache:clear itself relies on.
+    rm -rf "var/cache/${APP_ENV:-dev}"/*
     php -d memory_limit=256M bin/console cache:clear --env="${APP_ENV:-dev}" || echo "Cache clear failed"
 fi
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Purchasing\UI\Http\ArgumentResolver;
 
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProductPublicId;

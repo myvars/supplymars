@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Catalog\UI\Http\Form\Type\Field;
 
 use App\Catalog\Domain\Model\Subcategory\Subcategory;

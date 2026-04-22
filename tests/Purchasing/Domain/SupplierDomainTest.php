@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Purchasing\Domain;
 
 use App\Purchasing\Domain\Model\Supplier\Event\SupplierStatusWasChangedEvent;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Pricing\Domain\Repository;
 
 use App\Pricing\Domain\Model\VatRate\VatRate;

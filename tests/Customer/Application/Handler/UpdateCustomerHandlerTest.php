@@ -119,10 +119,8 @@ final class UpdateCustomerHandlerTest extends KernelTestCase
 
     private function handlerWithSecurity(bool $isSuperAdmin): UpdateCustomerHandler
     {
-        $security = $this->createMock(Security::class);
-        $security->method('isGranted')
-            ->with('ROLE_SUPER_ADMIN')
-            ->willReturn($isSuperAdmin);
+        $security = $this->createStub(Security::class);
+        $security->method('isGranted')->willReturn($isSuperAdmin);
 
         return new UpdateCustomerHandler(
             self::getContainer()->get(UserRepository::class),

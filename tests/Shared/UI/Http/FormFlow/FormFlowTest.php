@@ -249,7 +249,7 @@ final class FormFlowTest extends TestCase
 
         // @phpstan-ignore method.unresolvableReturnType
         $autoUpdate = $this->createMock(AutoUpdateGuard::class);
-        $autoUpdate->method('is')->with($form)->willReturn(true);
+        $autoUpdate->method('is')->willReturn(true);
         $autoUpdate->expects($this->once())->method('clear')->with($form);
 
         $flow = new FormFlow($forms, new FlashMessenger(), $twig, $urls, $redirector, $autoUpdate);

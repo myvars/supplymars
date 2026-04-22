@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Order\UI\Http\Form\Mapper;
 
 use App\Order\Application\Command\OrderFilter;

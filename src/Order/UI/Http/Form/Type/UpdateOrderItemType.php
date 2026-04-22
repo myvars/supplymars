@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Order\UI\Http\Form\Type;
 
 use App\Order\UI\Http\Form\Model\UpdateOrderItemForm;

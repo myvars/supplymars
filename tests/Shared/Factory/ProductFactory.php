@@ -75,7 +75,7 @@ final class ProductFactory extends PersistentObjectFactory
     public function withActiveSource(?SupplierProduct $supplierProduct = null): self
     {
         return $this
-            ->afterInstantiate(function (Product $product) use ($supplierProduct): void {
+            ->afterPersist(function (Product $product) use ($supplierProduct): void {
                 if (!$supplierProduct instanceof SupplierProduct) {
                     $supplierProduct = SupplierProductFactory::createOne(['product' => null]);
                 }

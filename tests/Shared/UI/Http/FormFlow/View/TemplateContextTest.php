@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Shared\UI\Http\FormFlow\View;
 
 use App\Shared\UI\Http\FormFlow\View\FlowModel;
