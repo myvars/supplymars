@@ -119,6 +119,7 @@ services:
     environment:
       <<: *common-php-env
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    command: /bin/sh -c 'printenv | grep -v "no_proxy" > /etc/environment && cron -f'
     healthcheck:
       test: ["CMD-SHELL", "ps aux | grep -q '[c]ron -f'"]
       interval: 10s

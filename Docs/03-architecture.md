@@ -221,18 +221,18 @@ API endpoints follow a simpler flow than FormFlow. Controllers receive JSON inpu
                           ▼                    ▼
               ┌───────────────────┐  ┌──────────────────────────────────┐
               │   RESOURCE (DTO)  │  │           HANDLER                │
-              │  Entity → array   │  │  (same as web: domain logic,    │
+              │  Entity → array   │  │  (same as web: domain logic,     │
               │  for JSON output  │  │   returns Result ok/fail)        │
               └───────────────────┘  └──────────────────────────────────┘
                                                │
                                                ▼
               ┌────────────────────────────────────────────────────────────┐
               │                    JSON RESPONSE                           │
-              │  • 200 { "data": {...} }              (single item)       │
-              │  • 200 { "data": [...], "meta": {}, "links": {} }         │
+              │  • 200 { "data": {...} }              (single item)        │
+              │  • 200 { "data": [...], "meta": {}, "links": {} }          │
               │  • 201 { "data": {...} }              (created)            │
               │  • 204                                (no content)         │
-              │  • 4xx/5xx RFC 7807 problem+json      (errors)            │
+              │  • 4xx/5xx RFC 7807 problem+json      (errors)             │
               └────────────────────────────────────────────────────────────┘
 ```
 
