@@ -22,6 +22,9 @@ phpunit.cache/
 # Symfony local config
 .symfony.local.yaml
 
+# Auto-generated config array-shape reference (regenerated on cache warmup)
+/config/reference.php
+
 ###> symfony/asset-mapper ###
 /public/assets/
 /assets/vendor/
