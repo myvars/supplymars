@@ -15,12 +15,10 @@ class ProductSales
     final private function __construct(
         #[ORM\Id]
         #[ORM\ManyToOne]
-        #[ORM\JoinColumn(nullable: false)]
         private readonly Product $product,
 
         #[ORM\Id]
         #[ORM\ManyToOne]
-        #[ORM\JoinColumn(nullable: false)]
         private readonly Supplier $supplier,
 
         #[ORM\Id]
