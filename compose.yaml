@@ -25,7 +25,7 @@ services:
 
   # --- Redis Cache ---
   redis:
-    image: redis:8.4-alpine
+    image: redis:8.8-alpine
     volumes:
       - redis_data:/data  # Persist redis data between restarts
     healthcheck:
@@ -40,7 +40,7 @@ services:
 
   # --- RabbitMQ Message Broker ---
   rabbitmq:
-    image: rabbitmq:4.2-management-alpine
+    image: rabbitmq:4.3-management-alpine
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
       interval: 30s

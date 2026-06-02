@@ -1,5 +1,5 @@
 # ------------ Php Base Stage ------------
-FROM php:8.5.3-fpm AS php-base
+FROM php:8.5.6-fpm AS php-base
 
 # Install system dependencies for extensions
 RUN apt-get update && apt-get install -y \
@@ -25,7 +25,7 @@ RUN apt-get update && apt-get install -y \
  && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
-COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Set up PHP configuration directory
 ENV PHP_INI_SCAN_DIR="$PHP_INI_DIR/conf.d:$PHP_INI_DIR/app.conf.d"
@@ -158,11 +158,11 @@ CMD ["cron", "-f"]
 
 
 # ---- NGINX Dev Stage ----
-FROM nginx:alpine AS nginx-dev
+FROM nginx:1.31-alpine AS nginx-dev
 
 
 # ---- NGINX Production Stage (behind Caddy) ----
-FROM nginx:alpine AS nginx-prod
+FROM nginx:1.31-alpine AS nginx-prod
 
 COPY --link docker/nginx/conf.d/prod.conf /etc/nginx/conf.d/default.conf
 

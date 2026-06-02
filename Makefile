@@ -20,6 +20,11 @@ up-prod-playground:
 down-prod-playground:
 	docker compose --env-file ../supplymars-secrets/playground.env -p supplymars-playground --profile playground -f compose.yaml -f compose.prod.yaml down --remove-orphans
 
+certs:
+	@command -v mkcert >/dev/null || { echo "mkcert not found — install with: brew install mkcert"; exit 1; }
+	@rm -rf docker/nginx/certs/dev-fullchain.pem docker/nginx/certs/dev-privkey.pem
+	mkcert -cert-file docker/nginx/certs/dev-fullchain.pem -key-file docker/nginx/certs/dev-privkey.pem localhost 127.0.0.1 ::1
+
 up-dev-tools:
 	docker compose -f compose.dev-tools.yaml up -d --wait --build
 
@@ -53,4 +58,4 @@ k6:
 k6-dash:
 	./scripts/run-k6-script.sh $(SCRIPT) $(ENV) true
 
-.PHONY: up up-prod-local up-prod-live down-prod-live up-prod-playground down-prod-playground up-dev-tools down test test-% bash logs logs-% clean-build prune k6 k6-dash
+.PHONY: up up-prod-local up-prod-live down-prod-live up-prod-playground down-prod-playground certs up-dev-tools down test test-% bash logs logs-% clean-build prune k6 k6-dash
