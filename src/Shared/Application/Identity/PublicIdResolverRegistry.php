@@ -9,10 +9,10 @@ use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
 final class PublicIdResolverRegistry
 {
     /**
-     * @param ContainerInterface $resolvers keyed by supports() return
+     * @param ContainerInterface $resolvers keyed by each resolver's #[AsTaggedItem] index (the VO class)
      */
     public function __construct(
-        #[AutowireLocator('app.public_id_resolver', defaultIndexMethod: 'supports')]
+        #[AutowireLocator('app.public_id_resolver')]
         private readonly ContainerInterface $resolvers,
     ) {
     }

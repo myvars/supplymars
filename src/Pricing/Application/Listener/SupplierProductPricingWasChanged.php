@@ -54,8 +54,8 @@ final readonly class SupplierProductPricingWasChanged
             // Removed mapping
             $previousProduct->removeSupplierProduct($this->markupCalculator, $supplierProduct);
             $updated = true;
-        } elseif (!$previousProduct instanceof Product && $newProduct instanceof Product) {
-            // New mapping
+        } elseif (!$previousProduct instanceof Product) {
+            // New mapping (no previous product -> guard guarantees a new one)
             $newProduct->addSupplierProduct($this->markupCalculator, $supplierProduct);
             $updated = true;
         } elseif ($newProduct instanceof Product) {
@@ -64,8 +64,6 @@ final readonly class SupplierProductPricingWasChanged
             $updated = true;
         }
 
-        if ($updated) {
-            $this->flusher->flush();
-        }
+        $this->flusher->flush();
     }
 }

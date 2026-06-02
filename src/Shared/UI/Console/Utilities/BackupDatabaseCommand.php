@@ -9,6 +9,7 @@ use Symfony\Component\Console\Attribute\Option;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\Process\Process;
 
 #[AsCommand(
@@ -18,6 +19,7 @@ use Symfony\Component\Process\Process;
 final readonly class BackupDatabaseCommand
 {
     public function __construct(
+        #[Target('backups_fsFilesystem')]
         private FilesystemOperator $backupsFsFilesystem,
         private LoggerInterface $logger,
         #[Autowire('%env(DATABASE_URL)%')]
