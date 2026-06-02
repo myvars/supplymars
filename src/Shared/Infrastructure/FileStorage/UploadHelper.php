@@ -2,10 +2,11 @@
 
 namespace App\Shared\Infrastructure\FileStorage;
 
-use League\Flysystem\Filesystem;
 use League\Flysystem\FilesystemException;
+use League\Flysystem\FilesystemOperator;
 use League\Flysystem\Visibility;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\HttpFoundation\File\Exception\CannotWriteFileException;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -14,8 +15,8 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 final readonly class UploadHelper
 {
     public function __construct(
-        #[Autowire(service: 'oneup_flysystem.products_fs_filesystem')]
-        private Filesystem $uploadFilesystem,
+        #[Target('products_fsFilesystem')]
+        private FilesystemOperator $uploadFilesystem,
         private SluggerInterface $slugger,
         #[Autowire('%env(bool:PLAYGROUND_MODE)%')]
         private bool $playgroundMode = false,
