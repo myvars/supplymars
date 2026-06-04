@@ -152,7 +152,7 @@ class TicketController extends AbstractController
             request: $request,
             command: new CloseTicket($ticket->getPublicId()),
             handler: $handler,
-            context: FlowContext::forSuccess('app_note_ticket_show', ['id' => $ticket->getPublicId()->value()]),
+            context: FlowContext::forCommand('app_note_ticket_show', ['id' => $ticket->getPublicId()->value()]),
         );
     }
 
@@ -167,7 +167,7 @@ class TicketController extends AbstractController
             request: $request,
             command: new ReopenTicket($ticket->getPublicId()),
             handler: $handler,
-            context: FlowContext::forSuccess('app_note_ticket_show', ['id' => $ticket->getPublicId()->value()]),
+            context: FlowContext::forCommand('app_note_ticket_show', ['id' => $ticket->getPublicId()->value()]),
         );
     }
 
@@ -201,7 +201,7 @@ class TicketController extends AbstractController
             request: $request,
             command: new ToggleSnoozeTicket($ticket->getPublicId()),
             handler: $handler,
-            context: FlowContext::forSuccess('app_note_ticket_show', ['id' => $ticket->getPublicId()->value()]),
+            context: FlowContext::forCommand('app_note_ticket_show', ['id' => $ticket->getPublicId()->value()]),
         );
     }
 

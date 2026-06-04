@@ -41,7 +41,7 @@ class ProductImageController extends AbstractController
                 $request->files->get('imageFile') ?? []
             ),
             handler: $handler,
-            context: FlowContext::forSuccess('app_catalog_product_image_show', [
+            context: FlowContext::forCommand('app_catalog_product_image_show', [
                 'id' => $product->getPublicId()->value(),
             ]),
         );
@@ -64,7 +64,7 @@ class ProductImageController extends AbstractController
             request: $request,
             command: new DeleteProductImage($productImage->getPublicId()),
             handler: $handler,
-            context: FlowContext::forSuccess('app_catalog_product_image_show', [
+            context: FlowContext::forCommand('app_catalog_product_image_show', [
                 'id' => $productImage->getProduct()->getPublicId()->value(),
             ]),
         );
@@ -90,7 +90,7 @@ class ProductImageController extends AbstractController
             request: $request,
             command: new ReorderProductImage($product->getPublicId(), array_flip($imageIdOrder)),
             handler: $handler,
-            context: FlowContext::forSuccess('app_catalog_product_image_show', [
+            context: FlowContext::forCommand('app_catalog_product_image_show', [
                 'id' => $product->getPublicId()->value(),
             ]),
         );

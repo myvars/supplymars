@@ -30,21 +30,6 @@ final class FlowContext
 
     private int $redirectStatus = 303;
 
-    public static function new(): self
-    {
-        return new self();
-    }
-
-    /**
-     * Factory for successRoute convenience.
-     *
-     * @param array<string, mixed> $params
-     */
-    public static function forSuccess(string $route, array $params = []): self
-    {
-        return self::new()->successRoute($route, $params);
-    }
-
     /**
      * Factory for command operation (no model, just success route).
      *
@@ -112,13 +97,6 @@ final class FlowContext
         return $self;
     }
 
-    public function model(FlowModel $model): self
-    {
-        $this->flowModel = $model;
-
-        return $this;
-    }
-
     public function getFlowModel(): ?FlowModel
     {
         return $this->flowModel;
@@ -142,35 +120,9 @@ final class FlowContext
         return $this;
     }
 
-    /**
-     * @param array<string, mixed> $params
-     */
-    public function successParams(array $params): self
-    {
-        $this->successParams = $params;
-
-        return $this;
-    }
-
     public function allowDelete(bool $allowDelete): self
     {
         $this->allowDelete = $allowDelete;
-
-        return $this;
-    }
-
-    public function redirectOptions(bool $refresh = false, int $status = 303): self
-    {
-        $this->redirectRefresh = $refresh;
-        $this->redirectStatus = $status;
-
-        return $this;
-    }
-
-    /** Replace all routes from a new prefix (e.g. "app_catalog_product"). */
-    public function routePrefix(string $prefix): self
-    {
-        $this->routes = FlowRoutes::fromPrefix($prefix);
 
         return $this;
     }

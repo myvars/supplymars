@@ -20,11 +20,13 @@ final class TemplateContextTest extends TestCase
         self::assertSame('edit', $context->flowOperation);
         self::assertSame('catalog/manufacturer/edit.html.twig', $context->template);
         self::assertSame($model->routes, $context->routes);
+        self::assertSame('Manufacturers', $context->flowModelPlural);
         self::assertSame([
             'flowModel' => 'Manufacturer',
             'flowOperation' => 'edit',
             'template' => 'catalog/manufacturer/edit.html.twig',
             'routes' => $model->routes,
+            'flowModelPlural' => 'Manufacturers',
         ], $context->toArray());
     }
 

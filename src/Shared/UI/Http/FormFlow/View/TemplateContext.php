@@ -12,6 +12,7 @@ final readonly class TemplateContext
         public string $flowOperation,
         public string $template,
         public ?FlowRoutes $routes = null,
+        public ?string $flowModelPlural = null,
     ) {
     }
 
@@ -25,6 +26,7 @@ final readonly class TemplateContext
             flowOperation: $operation,
             template: $template ?? $model->template($operation),
             routes: $routes ?? $model->routes,
+            flowModelPlural: $model->plural(),
         );
     }
 
@@ -40,6 +42,7 @@ final readonly class TemplateContext
             'flowOperation' => $this->flowOperation,
             'template' => $this->template,
             'routes' => $this->routes,
+            'flowModelPlural' => $this->flowModelPlural,
         ];
     }
 }

@@ -140,7 +140,7 @@ class PoolController extends AbstractController
             request: $request,
             command: new TogglePoolSubscription($pool->getPublicId()),
             handler: $handler,
-            context: FlowContext::forSuccess('app_note_pool_show', ['id' => $pool->getPublicId()->value()]),
+            context: FlowContext::forCommand('app_note_pool_show', ['id' => $pool->getPublicId()->value()]),
         );
     }
 }

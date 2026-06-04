@@ -126,7 +126,7 @@ class OrderController extends AbstractController
             request: $request,
             command: new AllocateOrder($order->getPublicId()),
             handler: $handler,
-            context: FlowContext::forSuccess('app_order_show', [
+            context: FlowContext::forCommand('app_order_show', [
                 'id' => $order->getPublicId()->value(),
             ]),
         );
@@ -143,7 +143,7 @@ class OrderController extends AbstractController
             request: $request,
             command: new LockOrder($order->getPublicId()),
             handler: $handler,
-            context: FlowContext::forSuccess('app_order_show', [
+            context: FlowContext::forCommand('app_order_show', [
                 'id' => $order->getPublicId()->value(),
             ]),
         );
@@ -171,7 +171,7 @@ class OrderController extends AbstractController
             request: $request,
             command: new CreateDemoOrder(),
             handler: $handler,
-            context: FlowContext::forSuccess('app_order_index'),
+            context: FlowContext::forCommand('app_order_index'),
         );
     }
 

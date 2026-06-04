@@ -96,7 +96,7 @@ class OrderItemController extends AbstractController
             request: $request,
             command: new CancelOrderItem($orderItem->getPublicId()),
             handler: $handler,
-            context: FlowContext::forSuccess('app_order_show', [
+            context: FlowContext::forCommand('app_order_show', [
                 'id' => $orderItem->getCustomerOrder()->getPublicId()->value(),
             ]),
         );
@@ -121,7 +121,7 @@ class OrderItemController extends AbstractController
                 SupplierProductPublicId::fromString($supplierProductId)
             ),
             handler: $handler,
-            context: FlowContext::forSuccess('app_order_show', [
+            context: FlowContext::forCommand('app_order_show', [
                 'id' => $orderItem->getCustomerOrder()->getPublicId()->value(),
             ]),
         );

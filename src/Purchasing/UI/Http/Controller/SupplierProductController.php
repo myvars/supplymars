@@ -199,7 +199,7 @@ class SupplierProductController extends AbstractController
             request: $request,
             command: new ToggleSupplierProductStatus($supplierProduct->getPublicId()),
             handler: $handler,
-            context: FlowContext::forSuccess('app_pricing_stock', [
+            context: FlowContext::forCommand('app_pricing_stock', [
                 'id' => $supplierProduct->getProduct()?->getPublicId()->value(),
             ]),
         );
@@ -216,7 +216,7 @@ class SupplierProductController extends AbstractController
             request: $request,
             command: new MapSupplierProduct($supplierProduct->getPublicId()),
             handler: $handler,
-            context: FlowContext::forSuccess('app_purchasing_supplier_product_show', [
+            context: FlowContext::forCommand('app_purchasing_supplier_product_show', [
                 'id' => $supplierProduct->getPublicId()->value(),
             ]),
         );

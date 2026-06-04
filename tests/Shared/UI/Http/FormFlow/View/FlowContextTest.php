@@ -62,44 +62,10 @@ final class FlowContextTest extends TestCase
         self::assertSame('app_catalog_product_search_filter', $routes->filter);
     }
 
-    public function testRoutePrefixReplacesAllRoutes(): void
-    {
-        $model = FlowModel::simple('order_item');
-        $ctx = FlowContext::forCreate($model)->routePrefix('app_custom');
-
-        $routes = $ctx->getRoutes();
-        self::assertInstanceOf(FlowRoutes::class, $routes);
-        self::assertSame('app_custom_index', $routes->index);
-        self::assertSame('app_custom_new', $routes->new);
-        self::assertSame('app_custom_delete', $routes->delete);
-    }
-
-    public function testNewContextHasNoRoutes(): void
-    {
-        $ctx = FlowContext::new();
-        self::assertNull($ctx->getRoutes());
-    }
-
-    public function testValidateThrowsWhenModelMissing(): void
-    {
-        $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage('Model not configured.');
-        $ctx = FlowContext::new();
-        $ctx->validate();
-    }
-
-    public function testValidateThrowsWhenOperationMissing(): void
-    {
-        $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage('Form operation not configured.');
-        $ctx = FlowContext::new()->model(FlowModel::simple('order'));
-        $ctx->validate();
-    }
-
     public function testResolveSuccessUrlUsesConfiguredRoute(): void
     {
         $model = FlowModel::simple('order_item');
-        $ctx = FlowContext::forCreate($model)->successParams(['page' => 2]);
+        $ctx = FlowContext::forCreate($model)->successRoute('app_order_item_index', ['page' => 2]);
         $req = Request::create('/current');
         $url = $ctx->resolveSuccessUrl($req, $this->urlGenerator());
         self::assertSame('/gen/app_order_item_index?page=2', $url);
@@ -109,15 +75,15 @@ final class FlowContextTest extends TestCase
     {
         $req = Request::create('/current');
         $req->headers->set('referer', '/prev');
-        // No successRoute set on a bare context
-        $refCtx = FlowContext::new()->model(FlowModel::simple('order'));
+        // forSearch sets no successRoute, so resolution falls back to the referer
+        $refCtx = FlowContext::forSearch(FlowModel::simple('order'));
         $ref = $refCtx->resolveSuccessUrl($req, $this->urlGenerator());
         self::assertSame('/prev', $ref);
     }
 
     public function testResolveSuccessUrlFallsBackToCurrentWhenNoReferer(): void
     {
-        $ctx = FlowContext::new()->model(FlowModel::simple('order'));
+        $ctx = FlowContext::forSearch(FlowModel::simple('order'));
         $req = Request::create('/current');
         $url = $ctx->resolveSuccessUrl($req, $this->urlGenerator());
         self::assertSame('/current', $url);
@@ -125,7 +91,7 @@ final class FlowContextTest extends TestCase
 
     public function testResolveBackUrl(): void
     {
-        $ctx = FlowContext::new();
+        $ctx = FlowContext::forSearch(FlowModel::simple('order'));
         $req = Request::create('/x');
         self::assertNull($ctx->resolveBackUrl($req));
         $req->headers->set('referer', '/prev');
@@ -135,20 +101,16 @@ final class FlowContextTest extends TestCase
     public function testMutators(): void
     {
         $model = FlowModel::simple('order');
-        $ctx = FlowContext::new()
-            ->model($model)
+        $ctx = FlowContext::forCreate($model)
             ->template('custom.html.twig')
             ->successRoute('app_custom', ['id' => 10])
-            ->allowDelete(true)
-            ->redirectOptions(true, 302);
+            ->allowDelete(true);
 
         self::assertSame($model, $ctx->getFlowModel());
         self::assertSame('custom.html.twig', $ctx->getTemplate());
         self::assertSame('app_custom', $ctx->getSuccessRoute());
         self::assertSame(['id' => 10], $ctx->getSuccessParams());
         self::assertTrue($ctx->isAllowDelete());
-        self::assertTrue($ctx->isRedirectRefresh());
-        self::assertSame(302, $ctx->getRedirectStatus());
     }
 
     public function testForUpdateWithFlowModel(): void
@@ -191,11 +153,5 @@ final class FlowContextTest extends TestCase
         self::assertSame('Product Cost', $ctx->getFlowModel()->displayName);
         self::assertSame('pricing/update.html.twig', $ctx->getTemplate());
         self::assertSame('app_pricing_index', $ctx->getSuccessRoute());
-    }
-
-    public function testGetFlowModelIsNullForBareContext(): void
-    {
-        $ctx = FlowContext::new();
-        self::assertNull($ctx->getFlowModel());
     }
 }

@@ -17,6 +17,7 @@ final readonly class FlowModel
         public string $templateDir,
         public FlowRoutes $routes,
         public string $defaultSuccessRoute,
+        public ?string $displayNamePlural = null,
     ) {
     }
 
@@ -25,7 +26,7 @@ final readonly class FlowModel
      *
      * Example: FlowModel::create('catalog', 'manufacturer')
      */
-    public static function create(string $context, string $entity, ?string $displayName = null): self
+    public static function create(string $context, string $entity, ?string $displayName = null, ?string $displayNamePlural = null): self
     {
         $templateDir = $context . '/' . $entity;
         $routePrefix = 'app_' . $context . '_' . $entity;
@@ -35,6 +36,7 @@ final readonly class FlowModel
             templateDir: $templateDir,
             routes: FlowRoutes::fromPrefix($routePrefix),
             defaultSuccessRoute: $routePrefix . '_index',
+            displayNamePlural: $displayNamePlural,
         );
     }
 
@@ -43,7 +45,7 @@ final readonly class FlowModel
      *
      * Example: FlowModel::simple('customer')
      */
-    public static function simple(string $entity, ?string $displayName = null): self
+    public static function simple(string $entity, ?string $displayName = null, ?string $displayNamePlural = null): self
     {
         $routePrefix = 'app_' . $entity;
 
@@ -52,6 +54,7 @@ final readonly class FlowModel
             templateDir: $entity,
             routes: FlowRoutes::fromPrefix($routePrefix),
             defaultSuccessRoute: $routePrefix . '_index',
+            displayNamePlural: $displayNamePlural,
         );
     }
 
@@ -63,7 +66,17 @@ final readonly class FlowModel
             templateDir: $this->templateDir,
             routes: $this->routes,
             defaultSuccessRoute: $this->defaultSuccessRoute,
+            displayNamePlural: $this->displayNamePlural,
         );
+    }
+
+    /**
+     * Resolved plural form: explicit if provided, else `displayName . 's'`.
+     * Used for list headings, search placeholders, and empty-state copy.
+     */
+    public function plural(): string
+    {
+        return $this->displayNamePlural ?? $this->displayName . 's';
     }
 
     /**

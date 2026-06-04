@@ -125,31 +125,6 @@ final class CommandFlowTest extends TestCase
         self::assertSame(['Shown'], $this->getFlashBag($request)->get('success'));
     }
 
-    public function testProcessUsesContextRedirectOptions(): void
-    {
-        $request = $this->newRequest();
-        $context = FlowContext::forCreate(FlowModel::simple('order_item'))->redirectOptions(true, 307);
-
-        $urls = $this->createMock(UrlGeneratorInterface::class);
-        $urls->expects($this->once())
-            ->method('generate')
-            ->with('app_order_item_index', [])
-            ->willReturn('/gen/app_order_item_index');
-
-        $redirector = $this->createMock(RedirectorInterface::class);
-        $redirector->expects($this->once())
-            ->method('to')
-            ->with($request, '/gen/app_order_item_index', true, 307)
-            ->willReturn(new Response('', 307));
-
-        $flow = new CommandFlow(new FlashMessenger(), $redirector, $urls);
-
-        $response = $flow->process($request, new \stdClass(), $this->handlerOk('Updated'), $context);
-
-        self::assertSame(307, $response->getStatusCode());
-        self::assertSame(['Updated'], $this->getFlashBag($request)->get('success'));
-    }
-
     public function testProcessSuccessWithNullMessageDoesNotFlash(): void
     {
         $request = $this->newRequest();
@@ -174,21 +149,6 @@ final class CommandFlowTest extends TestCase
         self::assertSame(303, $response->getStatusCode());
         self::assertEmpty($this->getFlashBag($request)->get('success'));
         self::assertEmpty($this->getFlashBag($request)->get('danger'));
-    }
-
-    public function testProcessThrowsWhenSuccessRouteNotConfigured(): void
-    {
-        $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage('Success route not configured.');
-
-        $request = $this->newRequest();
-        $context = FlowContext::new(); // No success route
-
-        $urls = $this->createStub(UrlGeneratorInterface::class);
-        $redirector = $this->createStub(RedirectorInterface::class);
-
-        $flow = new CommandFlow(new FlashMessenger(), $redirector, $urls);
-        $flow->process($request, new \stdClass(), $this->handlerOk(), $context);
     }
 
     public function testProcessWithForCommandFactoryWorks(): void

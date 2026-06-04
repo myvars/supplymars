@@ -162,7 +162,7 @@ class ReviewController extends AbstractController
             request: $request,
             command: new ApproveReview($review->getPublicId()),
             handler: $handler,
-            context: FlowContext::forSuccess('app_review_show', ['id' => $review->getPublicId()->value()]),
+            context: FlowContext::forCommand('app_review_show', ['id' => $review->getPublicId()->value()]),
         );
     }
 
@@ -197,7 +197,7 @@ class ReviewController extends AbstractController
             request: $request,
             command: new HideReview($review->getPublicId()),
             handler: $handler,
-            context: FlowContext::forSuccess('app_review_show', ['id' => $review->getPublicId()->value()]),
+            context: FlowContext::forCommand('app_review_show', ['id' => $review->getPublicId()->value()]),
         );
     }
 
@@ -212,7 +212,7 @@ class ReviewController extends AbstractController
             request: $request,
             command: new RepublishReview($review->getPublicId()),
             handler: $handler,
-            context: FlowContext::forSuccess('app_review_show', ['id' => $review->getPublicId()->value()]),
+            context: FlowContext::forCommand('app_review_show', ['id' => $review->getPublicId()->value()]),
         );
     }
 }
