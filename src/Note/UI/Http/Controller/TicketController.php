@@ -33,7 +33,7 @@ use App\Note\UI\Http\Form\Type\TicketFilterType;
 use App\Note\UI\Http\Form\Type\TicketType;
 use App\Shared\Infrastructure\Security\CurrentUserProvider;
 use App\Shared\UI\Http\FormFlow\ActionFlow;
-use App\Shared\UI\Http\FormFlow\DeleteFlow;
+use App\Shared\UI\Http\FormFlow\ConfirmFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
@@ -230,12 +230,12 @@ class TicketController extends AbstractController
         string $ticketId,
         string $messageId,
         DeleteMessageHandler $handler,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
         $ticketPublicId = TicketPublicId::fromString($ticketId);
         $messagePublicId = MessagePublicId::fromString($messageId);
 
-        return $flow->delete(
+        return $flow->execute(
             request: $request,
             command: new DeleteMessage($ticketPublicId, $messagePublicId),
             handler: $handler,

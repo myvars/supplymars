@@ -13,7 +13,7 @@ use App\Purchasing\UI\Http\Form\Mapper\CreateSupplierMapper;
 use App\Purchasing\UI\Http\Form\Mapper\UpdateSupplierMapper;
 use App\Purchasing\UI\Http\Form\Model\SupplierForm;
 use App\Purchasing\UI\Http\Form\Type\SupplierType;
-use App\Shared\UI\Http\FormFlow\DeleteFlow;
+use App\Shared\UI\Http\FormFlow\ConfirmFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditContext;
 use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditFlow;
@@ -91,9 +91,9 @@ class SupplierController extends AbstractController
     #[Route(path: '/supplier/{id}/delete/confirm', name: 'app_purchasing_supplier_delete_confirm', methods: ['GET'])]
     public function deleteConfirm(
         #[ValueResolver('public_id')] Supplier $supplier,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->deleteConfirm(
+        return $flow->confirm(
             entity: $supplier,
             context: FlowContext::forDelete($this->model()),
         );
@@ -104,9 +104,9 @@ class SupplierController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] Supplier $supplier,
         DeleteSupplierHandler $handler,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->delete(
+        return $flow->execute(
             request: $request,
             command: new DeleteSupplier($supplier->getPublicId()),
             handler: $handler,

@@ -13,10 +13,14 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Twig\Environment;
 
 /**
- * Coordinates delete confirmation and delete POST for a model.
+ * Coordinates a confirmable action: a confirmation page (GET) and a
+ * CSRF‑validated execution (POST). Delete is the canonical case; other
+ * confirmable actions (cancel, rewind, archive, …) use a distinct CSRF key
+ * via FlowContext::forConfirm().
+ *
  * Handles CSRF validation, user feedback, and Turbo‑aware redirects.
  */
-final readonly class DeleteFlow
+final readonly class ConfirmFlow
 {
     public function __construct(
         private Environment $twig,
@@ -27,9 +31,12 @@ final readonly class DeleteFlow
     }
 
     /**
-     * Render the delete confirmation page.
+     * Render the confirmation page.
+     *
+     * The CSRF token key (from the context) is exposed to the template as
+     * `confirmKey` so the confirm dialog scopes its token to this action.
      */
-    public function deleteConfirm(object $entity, FlowContext $context): Response
+    public function confirm(object $entity, FlowContext $context): Response
     {
         $context->validate();
 
@@ -43,27 +50,31 @@ final readonly class DeleteFlow
 
         $html = $this->twig->render(FlowModel::BASE_TEMPLATE, array_merge(
             $templateContext->toArray(),
-            ['result' => $entity],
+            [
+                'result' => $entity,
+                'confirmKey' => $context->getConfirmKey(),
+            ]
         ));
 
         return new Response($html, Response::HTTP_OK);
     }
 
     /**
-     * Process the delete POST.
+     * Process the confirmed POST.
      *
-     * Validates CSRF then delegates to ActionFlow.
+     * Validates the CSRF token (scoped by the context's confirm key + the
+     * command id) then delegates to ActionFlow.
      *
      * @param object&object{id: int|string} $command
      */
-    public function delete(
+    public function execute(
         Request $request,
         object $command,
         callable $handler,
         FlowContext $context,
     ): Response {
         $submitted = (string) $request->request->get('_token', '');
-        $valid = $this->csrf->isTokenValid(new CsrfToken('delete' . $command->id, $submitted));
+        $valid = $this->csrf->isTokenValid(new CsrfToken($context->getConfirmKey() . $command->id, $submitted));
 
         if (!$valid) {
             $this->flashes->error($request, 'Invalid CSRF token.');

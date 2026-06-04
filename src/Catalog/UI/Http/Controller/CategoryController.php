@@ -16,7 +16,7 @@ use App\Catalog\UI\Http\Form\Mapper\UpdateCategoryMapper;
 use App\Catalog\UI\Http\Form\Model\CategoryForm;
 use App\Catalog\UI\Http\Form\Type\CategoryFilterType;
 use App\Catalog\UI\Http\Form\Type\CategoryType;
-use App\Shared\UI\Http\FormFlow\DeleteFlow;
+use App\Shared\UI\Http\FormFlow\ConfirmFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditContext;
 use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditFlow;
@@ -112,9 +112,9 @@ class CategoryController extends AbstractController
     #[Route(path: '/category/{id}/delete/confirm', name: 'app_catalog_category_delete_confirm', methods: ['GET'])]
     public function deleteConfirm(
         #[ValueResolver('public_id')] Category $category,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->deleteConfirm(
+        return $flow->confirm(
             entity: $category,
             context: FlowContext::forDelete($this->model()),
         );
@@ -125,9 +125,9 @@ class CategoryController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] Category $category,
         DeleteCategoryHandler $handler,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->delete(
+        return $flow->execute(
             request: $request,
             command: new DeleteCategory($category->getPublicId()),
             handler: $handler,

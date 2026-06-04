@@ -21,7 +21,7 @@ use App\Order\UI\Http\Form\Model\OrderForm;
 use App\Order\UI\Http\Form\Type\OrderFilterType;
 use App\Order\UI\Http\Form\Type\OrderType;
 use App\Shared\UI\Http\FormFlow\ActionFlow;
-use App\Shared\UI\Http\FormFlow\DeleteFlow;
+use App\Shared\UI\Http\FormFlow\ConfirmFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
@@ -105,9 +105,9 @@ class OrderController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] CustomerOrder $order,
         CancelOrderHandler $handler,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->delete(
+        return $flow->execute(
             request: $request,
             command: new CancelOrder($order->getPublicId()),
             handler: $handler,
@@ -165,9 +165,9 @@ class OrderController extends AbstractController
     public function demoCreate(
         Request $request,
         CreateDemoOrderHandler $handler,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->delete(
+        return $flow->execute(
             request: $request,
             command: new CreateDemoOrder(),
             handler: $handler,

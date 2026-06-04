@@ -12,7 +12,7 @@ use App\Customer\UI\Http\Form\Mapper\UpdateCustomerMapper;
 use App\Customer\UI\Http\Form\Model\CustomerForm;
 use App\Customer\UI\Http\Form\Type\CustomerType;
 use App\Reporting\Application\Handler\Report\CustomerProfileInsightsHandler;
-use App\Shared\UI\Http\FormFlow\DeleteFlow;
+use App\Shared\UI\Http\FormFlow\ConfirmFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditContext;
 use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditFlow;
@@ -73,9 +73,9 @@ class CustomerController extends AbstractController
     #[Route(path: '/customer/{id}/delete/confirm', name: 'app_customer_delete_confirm', methods: ['GET'])]
     public function deleteConfirm(
         #[ValueResolver('public_id')] User $customer,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->deleteConfirm(
+        return $flow->confirm(
             entity: $customer,
             context: FlowContext::forDelete($this->model()),
         );
@@ -86,9 +86,9 @@ class CustomerController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] User $customer,
         DeleteCustomerHandler $handler,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->delete(
+        return $flow->execute(
             request: $request,
             command: new DeleteCustomer($customer->getPublicId()),
             handler: $handler,

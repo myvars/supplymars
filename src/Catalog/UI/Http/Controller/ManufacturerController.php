@@ -13,7 +13,7 @@ use App\Catalog\UI\Http\Form\Mapper\CreateManufacturerMapper;
 use App\Catalog\UI\Http\Form\Mapper\UpdateManufacturerMapper;
 use App\Catalog\UI\Http\Form\Model\ManufacturerForm;
 use App\Catalog\UI\Http\Form\Type\ManufacturerType;
-use App\Shared\UI\Http\FormFlow\DeleteFlow;
+use App\Shared\UI\Http\FormFlow\ConfirmFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditContext;
 use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditFlow;
@@ -91,9 +91,9 @@ class ManufacturerController extends AbstractController
     #[Route(path: '/manufacturer/{id}/delete/confirm', name: 'app_catalog_manufacturer_delete_confirm', methods: ['GET'])]
     public function deleteConfirm(
         #[ValueResolver('public_id')] Manufacturer $manufacturer,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->deleteConfirm(
+        return $flow->confirm(
             entity: $manufacturer,
             context: FlowContext::forDelete($this->model()),
         );
@@ -104,9 +104,9 @@ class ManufacturerController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] Manufacturer $manufacturer,
         DeleteManufacturerHandler $handler,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->delete(
+        return $flow->execute(
             request: $request,
             command: new DeleteManufacturer($manufacturer->getPublicId()),
             handler: $handler,

@@ -18,7 +18,7 @@ use App\Catalog\UI\Http\Form\Type\ProductFilterType;
 use App\Catalog\UI\Http\Form\Type\ProductType;
 use App\Review\Domain\Repository\ReviewRepository;
 use App\Review\Domain\Repository\ReviewSummaryRepository;
-use App\Shared\UI\Http\FormFlow\DeleteFlow;
+use App\Shared\UI\Http\FormFlow\ConfirmFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditContext;
 use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditFlow;
@@ -114,9 +114,9 @@ class ProductController extends AbstractController
     #[Route(path: '/product/{id}/delete/confirm', name: 'app_catalog_product_delete_confirm', methods: ['GET'])]
     public function deleteConfirm(
         #[ValueResolver('public_id')] Product $product,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->deleteConfirm(
+        return $flow->confirm(
             entity: $product,
             context: FlowContext::forDelete($this->model()),
         );
@@ -127,9 +127,9 @@ class ProductController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] Product $product,
         DeleteProductHandler $handler,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->delete(
+        return $flow->execute(
             request: $request,
             command: new DeleteProduct($product->getPublicId()),
             handler: $handler,

@@ -23,7 +23,7 @@ use App\Purchasing\UI\Http\Form\Model\SupplierProductForm;
 use App\Purchasing\UI\Http\Form\Type\SupplierProductFilterType;
 use App\Purchasing\UI\Http\Form\Type\SupplierProductType;
 use App\Shared\UI\Http\FormFlow\ActionFlow;
-use App\Shared\UI\Http\FormFlow\DeleteFlow;
+use App\Shared\UI\Http\FormFlow\ConfirmFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
@@ -126,9 +126,9 @@ class SupplierProductController extends AbstractController
     )]
     public function deleteConfirm(
         #[ValueResolver('public_id')] SupplierProduct $supplierProduct,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->deleteConfirm(
+        return $flow->confirm(
             entity: $supplierProduct,
             context: FlowContext::forDelete($this->model()),
         );
@@ -139,9 +139,9 @@ class SupplierProductController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] SupplierProduct $supplierProduct,
         DeleteSupplierProductHandler $handler,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->delete(
+        return $flow->execute(
             request: $request,
             command: new DeleteSupplierProduct($supplierProduct->getPublicId()),
             handler: $handler,
@@ -171,9 +171,9 @@ class SupplierProductController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] SupplierProduct $supplierProduct,
         RemoveSupplierProductHandler $handler,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->delete(
+        return $flow->execute(
             request: $request,
             command: new RemoveSupplierProduct($supplierProduct->getPublicId()),
             handler: $handler,

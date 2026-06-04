@@ -5,7 +5,7 @@ namespace App\Tests\Shared\UI\Http\FormFlow;
 use App\Shared\Application\Result;
 use App\Shared\UI\Http\FlashMessenger;
 use App\Shared\UI\Http\FormFlow\ActionFlow;
-use App\Shared\UI\Http\FormFlow\DeleteFlow;
+use App\Shared\UI\Http\FormFlow\ConfirmFlow;
 use App\Shared\UI\Http\FormFlow\Redirect\RedirectorInterface;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
 use App\Shared\UI\Http\FormFlow\View\FlowModel;
@@ -22,7 +22,7 @@ use Symfony\Component\Security\Csrf\CsrfToken;
 use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Twig\Environment;
 
-final class DeleteFlowTest extends TestCase
+final class ConfirmFlowTest extends TestCase
 {
     private function newRequest(string $uri = '/order-item/5/delete', string $method = 'GET'): Request
     {
@@ -40,7 +40,7 @@ final class DeleteFlowTest extends TestCase
         return $session->getFlashBag();
     }
 
-    public function testDeleteConfirmRendersBaseTemplate(): void
+    public function testConfirmRendersBaseTemplate(): void
     {
         $entity = (object) ['id' => 5, 'name' => 'Test'];
         $model = FlowModel::simple('order_item');
@@ -54,7 +54,8 @@ final class DeleteFlowTest extends TestCase
                     && $vars['flowOperation'] === $context->getOperation()->value
                     && $vars['flowModel'] === 'Order Item'
                     && $vars['routes'] instanceof FlowRoutes
-                    && $vars['routes']->delete === 'app_order_item_delete')
+                    && $vars['routes']->delete === 'app_order_item_delete'
+                    && $vars['confirmKey'] === 'delete')
             )
             ->willReturn('<html>confirm</html>');
 
@@ -64,15 +65,16 @@ final class DeleteFlowTest extends TestCase
         $urls = $this->createStub(UrlGeneratorInterface::class);
         $actionFlow = new ActionFlow($flashes, $redirector, $urls);
 
-        $flow = new DeleteFlow($twig, $flashes, $csrf, $actionFlow);
+        $flow = new ConfirmFlow($twig, $flashes, $csrf, $actionFlow);
 
-        $response = $flow->deleteConfirm($entity, $context);
+        $response = $flow->confirm($entity, $context);
 
+        self::assertSame('delete', $context->getConfirmKey());
         self::assertSame(Response::HTTP_OK, $response->getStatusCode());
         self::assertSame('<html>confirm</html>', $response->getContent());
     }
 
-    public function testDeleteInvalidCsrfAddsErrorFlashAndRedirects(): void
+    public function testExecuteInvalidCsrfAddsErrorFlashAndRedirects(): void
     {
         $request = $this->newRequest(method: 'POST');
         $request->request->set('_token', 'bad-token');
@@ -100,16 +102,16 @@ final class DeleteFlowTest extends TestCase
             ->willReturn(new Response('', 303));
 
         $actionFlow = new ActionFlow($flashes, $redirector, $urls);
-        $flow = new DeleteFlow($twig, $flashes, $csrf, $actionFlow);
+        $flow = new ConfirmFlow($twig, $flashes, $csrf, $actionFlow);
 
-        $response = $flow->delete($request, $command, fn (): null => null, $context);
+        $response = $flow->execute($request, $command, fn (): null => null, $context);
 
         self::assertSame(303, $response->getStatusCode());
         self::assertSame(['Invalid CSRF token.'], $this->getFlashBag($request)->get('danger'));
         self::assertEmpty($this->getFlashBag($request)->get('success'));
     }
 
-    public function testDeleteValidCsrfDelegatesToActionFlowProcess(): void
+    public function testExecuteValidCsrfDelegatesToActionFlowProcess(): void
     {
         $request = $this->newRequest(method: 'POST');
         $request->request->set('_token', 'good-token');
@@ -139,12 +141,53 @@ final class DeleteFlowTest extends TestCase
         $handler = fn (object $cmd): Result => Result::ok('Deleted');
 
         $actionFlow = new ActionFlow($flashes, $redirector, $urls);
-        $flow = new DeleteFlow($twig, $flashes, $csrf, $actionFlow);
+        $flow = new ConfirmFlow($twig, $flashes, $csrf, $actionFlow);
 
-        $response = $flow->delete($request, $command, $handler, $context);
+        $response = $flow->execute($request, $command, $handler, $context);
 
         self::assertSame(303, $response->getStatusCode());
         self::assertSame(['Deleted'], $this->getFlashBag($request)->get('success'));
         self::assertEmpty($this->getFlashBag($request)->get('danger'));
+    }
+
+    public function testForConfirmScopesCsrfTokenToCustomKey(): void
+    {
+        $request = $this->newRequest(method: 'POST');
+        $request->request->set('_token', 'good-token');
+
+        $command = (object) ['id' => 7];
+        $model = FlowModel::simple('purchase_order');
+        // A non-delete confirmable action: token is namespaced 'rewind', not 'delete'.
+        $context = FlowContext::forConfirm($model, 'rewind')
+            ->successRoute('app_purchasing_purchase_order_show', ['id' => 7]);
+
+        $twig = $this->createStub(Environment::class);
+        $flashes = new FlashMessenger();
+
+        $csrf = $this->createMock(CsrfTokenManagerInterface::class);
+        $csrf->expects($this->once())->method('isTokenValid')
+            ->with($this->callback(fn (CsrfToken $t): bool => $t->getId() === 'rewind7' && $t->getValue() === 'good-token'))
+            ->willReturn(true);
+
+        $urls = $this->createMock(UrlGeneratorInterface::class);
+        $urls->expects($this->once())->method('generate')
+            ->with('app_purchasing_purchase_order_show', ['id' => 7])
+            ->willReturn('/gen/show?id=7');
+
+        $redirector = $this->createMock(RedirectorInterface::class);
+        $redirector->expects($this->once())->method('to')
+            ->with($request, '/gen/show?id=7', true, 303)
+            ->willReturn(new Response('', 303));
+
+        $handler = fn (object $cmd): Result => Result::ok('Rewound');
+
+        $actionFlow = new ActionFlow($flashes, $redirector, $urls);
+        $flow = new ConfirmFlow($twig, $flashes, $csrf, $actionFlow);
+
+        $response = $flow->execute($request, $command, $handler, $context);
+
+        self::assertSame('rewind', $context->getConfirmKey());
+        self::assertSame(303, $response->getStatusCode());
+        self::assertSame(['Rewound'], $this->getFlashBag($request)->get('success'));
     }
 }

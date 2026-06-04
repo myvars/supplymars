@@ -10,7 +10,7 @@ use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrder;
 use App\Purchasing\Domain\Repository\PurchaseOrderRepository;
 use App\Purchasing\UI\Http\Form\Mapper\PurchaseOrderFilterMapper;
 use App\Purchasing\UI\Http\Form\Type\PurchaseOrderFilterType;
-use App\Shared\UI\Http\FormFlow\DeleteFlow;
+use App\Shared\UI\Http\FormFlow\ConfirmFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
@@ -73,9 +73,9 @@ class PurchaseOrderController extends AbstractController
     #[Route(path: '/purchase/order/{id}/rewind/confirm', name: 'app_purchasing_purchase_order_rewind_confirm', methods: ['GET'])]
     public function rewindConfirm(
         #[ValueResolver('public_id')] PurchaseOrder $purchaseOrder,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->deleteConfirm(
+        return $flow->confirm(
             entity: $purchaseOrder,
             context: FlowContext::forDelete($this->model())
                 ->template('purchasing/purchase_order/rewind.html.twig'),
@@ -87,9 +87,9 @@ class PurchaseOrderController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] PurchaseOrder $purchaseOrder,
         RewindPurchaseOrderHandler $handler,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->delete(
+        return $flow->execute(
             request: $request,
             command: new RewindPurchaseOrder($purchaseOrder->getPublicId()),
             handler: $handler,

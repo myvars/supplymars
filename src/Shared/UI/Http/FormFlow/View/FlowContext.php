@@ -30,6 +30,8 @@ final class FlowContext
 
     private int $redirectStatus = 303;
 
+    private string $confirmKey = 'delete';
+
     /**
      * Factory for action operation (no model, just success route).
      *
@@ -57,11 +59,27 @@ final class FlowContext
         return self::fromOperation($model, FormOperation::Update);
     }
 
-    /** Factory for delete operation defaults. */
+    /** Factory for delete operation defaults (CSRF key "delete"). */
     public static function forDelete(FlowModel $model): self
     {
         $self = self::fromOperation($model, FormOperation::Delete);
         $self->redirectRefresh = true; // Enable smart navigation for deletes
+
+        return $self;
+    }
+
+    /**
+     * Factory for a confirmable non‑delete action (e.g. cancel, rewind, archive).
+     *
+     * The key namespaces the CSRF token so distinct actions on the same entity
+     * (e.g. delete vs remove) don't share a token. Provide a confirm template
+     * via ->template().
+     */
+    public static function forConfirm(FlowModel $model, string $key): self
+    {
+        $self = self::fromOperation($model, FormOperation::Action);
+        $self->redirectRefresh = true;
+        $self->confirmKey = $key;
 
         return $self;
     }
@@ -168,6 +186,12 @@ final class FlowContext
     public function getRedirectStatus(): int
     {
         return $this->redirectStatus;
+    }
+
+    /** CSRF token key for confirmable actions (defaults to "delete"). */
+    public function getConfirmKey(): string
+    {
+        return $this->confirmKey;
     }
 
     /**

@@ -28,7 +28,7 @@ use App\Review\UI\Http\Form\Type\RejectReviewType;
 use App\Review\UI\Http\Form\Type\ReviewFilterType;
 use App\Review\UI\Http\Form\Type\ReviewType;
 use App\Shared\UI\Http\FormFlow\ActionFlow;
-use App\Shared\UI\Http\FormFlow\DeleteFlow;
+use App\Shared\UI\Http\FormFlow\ConfirmFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
@@ -122,9 +122,9 @@ class ReviewController extends AbstractController
     #[Route(path: '/review/{id}/delete/confirm', name: 'app_review_delete_confirm', methods: ['GET'])]
     public function deleteConfirm(
         #[ValueResolver('public_id')] ProductReview $review,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->deleteConfirm(
+        return $flow->confirm(
             entity: $review,
             context: FlowContext::forDelete($this->model()),
         );
@@ -135,9 +135,9 @@ class ReviewController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] ProductReview $review,
         DeleteReviewHandler $handler,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->delete(
+        return $flow->execute(
             request: $request,
             command: new DeleteReview($review->getPublicId()),
             handler: $handler,

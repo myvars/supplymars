@@ -17,7 +17,7 @@ use App\Note\UI\Http\Form\Model\PoolForm;
 use App\Note\UI\Http\Form\Type\PoolType;
 use App\Shared\Infrastructure\Security\CurrentUserProvider;
 use App\Shared\UI\Http\FormFlow\ActionFlow;
-use App\Shared\UI\Http\FormFlow\DeleteFlow;
+use App\Shared\UI\Http\FormFlow\ConfirmFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
@@ -93,9 +93,9 @@ class PoolController extends AbstractController
     #[Route(path: '/note/pool/{id}/delete/confirm', name: 'app_note_pool_delete_confirm', methods: ['GET'])]
     public function deleteConfirm(
         #[ValueResolver('public_id')] Pool $pool,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->deleteConfirm(
+        return $flow->confirm(
             entity: $pool,
             context: FlowContext::forDelete($this->model()),
         );
@@ -106,9 +106,9 @@ class PoolController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] Pool $pool,
         DeletePoolHandler $handler,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->delete(
+        return $flow->execute(
             request: $request,
             command: new DeletePool($pool->getPublicId()),
             handler: $handler,

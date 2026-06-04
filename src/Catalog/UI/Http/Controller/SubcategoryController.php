@@ -16,7 +16,7 @@ use App\Catalog\UI\Http\Form\Mapper\UpdateSubcategoryMapper;
 use App\Catalog\UI\Http\Form\Model\SubcategoryForm;
 use App\Catalog\UI\Http\Form\Type\SubcategoryFilterType;
 use App\Catalog\UI\Http\Form\Type\SubcategoryType;
-use App\Shared\UI\Http\FormFlow\DeleteFlow;
+use App\Shared\UI\Http\FormFlow\ConfirmFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditContext;
 use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditFlow;
@@ -112,9 +112,9 @@ class SubcategoryController extends AbstractController
     #[Route(path: '/subcategory/{id}/delete/confirm', name: 'app_catalog_subcategory_delete_confirm', methods: ['GET'])]
     public function deleteConfirm(
         #[ValueResolver('public_id')] Subcategory $subcategory,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->deleteConfirm(
+        return $flow->confirm(
             entity: $subcategory,
             context: FlowContext::forDelete($this->model()),
         );
@@ -125,9 +125,9 @@ class SubcategoryController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] Subcategory $subcategory,
         DeleteSubcategoryHandler $handler,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->delete(
+        return $flow->execute(
             request: $request,
             command: new DeleteSubcategory($subcategory->getPublicId()),
             handler: $handler,

@@ -13,7 +13,7 @@ use App\Pricing\UI\Http\Form\Mapper\CreateVatRateMapper;
 use App\Pricing\UI\Http\Form\Mapper\UpdateVatRateMapper;
 use App\Pricing\UI\Http\Form\Model\VatRateForm;
 use App\Pricing\UI\Http\Form\Type\VatRateType;
-use App\Shared\UI\Http\FormFlow\DeleteFlow;
+use App\Shared\UI\Http\FormFlow\ConfirmFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditContext;
 use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditFlow;
@@ -91,9 +91,9 @@ class VatRateController extends AbstractController
     #[Route(path: '/vat-rate/{id}/delete/confirm', name: 'app_pricing_vat_rate_delete_confirm', methods: ['GET'])]
     public function deleteConfirm(
         #[ValueResolver('public_id')] VatRate $vatRate,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->deleteConfirm(
+        return $flow->confirm(
             entity: $vatRate,
             context: FlowContext::forDelete($this->model()),
         );
@@ -104,9 +104,9 @@ class VatRateController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] VatRate $vatRate,
         DeleteVatRateHandler $handler,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->delete(
+        return $flow->execute(
             request: $request,
             command: new DeleteVatRate($vatRate->getPublicId()),
             handler: $handler,

@@ -9,7 +9,7 @@
     <twig:ConfirmDialog
         title="Confirm Delete?"
         formAction="{{ path(routes.delete, {'id': result.publicId.value}) }}"
-        csrfId="delete{{ result.publicId.value }}"
+        csrfId="{{ confirmKey|default('delete') }}{{ result.publicId.value }}"
         confirmLabel="Delete {{ flowModel }}"
     >
         <twig:block name="message">
