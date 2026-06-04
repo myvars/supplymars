@@ -96,8 +96,13 @@ class OrderController extends AbstractController
     #[Route(path: '/order/{id}/cancel/confirm', name: 'app_order_cancel_confirm', methods: ['GET'])]
     public function cancelConfirm(
         #[ValueResolver('public_id')] CustomerOrder $order,
+        ConfirmFlow $flow,
     ): Response {
-        return $this->render('/order/cancel.html.twig', ['result' => $order]);
+        return $flow->confirm(
+            entity: $order,
+            context: FlowContext::forConfirm($this->model(), 'cancel')
+                ->template('order/cancel.html.twig'),
+        );
     }
 
     #[Route(path: '/order/{id}/cancel', name: 'app_order_cancel', methods: ['POST'])]
@@ -111,7 +116,7 @@ class OrderController extends AbstractController
             request: $request,
             command: new CancelOrder($order->getPublicId()),
             handler: $handler,
-            context: FlowContext::forDelete($this->model()),
+            context: FlowContext::forConfirm($this->model(), 'cancel'),
         );
     }
 

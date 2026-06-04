@@ -162,8 +162,13 @@ class SupplierProductController extends AbstractController
     )]
     public function removeConfirm(
         #[ValueResolver('public_id')] SupplierProduct $supplierProduct,
+        ConfirmFlow $flow,
     ): Response {
-        return $this->render('/purchasing/supplier_product/remove.html.twig', ['result' => $supplierProduct]);
+        return $flow->confirm(
+            entity: $supplierProduct,
+            context: FlowContext::forConfirm($this->model(), 'remove')
+                ->template('purchasing/supplier_product/remove.html.twig'),
+        );
     }
 
     #[Route(path: '/supplier-product/{id}/remove', name: 'app_purchasing_supplier_product_remove', methods: ['POST'])]
@@ -177,7 +182,7 @@ class SupplierProductController extends AbstractController
             request: $request,
             command: new RemoveSupplierProduct($supplierProduct->getPublicId()),
             handler: $handler,
-            context: FlowContext::forDelete($this->model())
+            context: FlowContext::forConfirm($this->model(), 'remove')
             ->successRoute('app_pricing_stock', [
                 'id' => $supplierProduct->getProduct()->getPublicId()->value(),
             ]),

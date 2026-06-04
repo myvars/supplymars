@@ -77,7 +77,7 @@ class PurchaseOrderController extends AbstractController
     ): Response {
         return $flow->confirm(
             entity: $purchaseOrder,
-            context: FlowContext::forDelete($this->model())
+            context: FlowContext::forConfirm($this->model(), 'rewind')
                 ->template('purchasing/purchase_order/rewind.html.twig'),
         );
     }
@@ -93,7 +93,7 @@ class PurchaseOrderController extends AbstractController
             request: $request,
             command: new RewindPurchaseOrder($purchaseOrder->getPublicId()),
             handler: $handler,
-            context: FlowContext::forDelete($this->model())
+            context: FlowContext::forConfirm($this->model(), 'rewind')
                 ->successRoute('app_purchasing_purchase_order_show', ['id' => $purchaseOrder->getPublicId()->value()]),
         );
     }
