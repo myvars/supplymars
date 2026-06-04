@@ -22,7 +22,7 @@ use App\Purchasing\UI\Http\Form\Mapper\UpdateSupplierProductMapper;
 use App\Purchasing\UI\Http\Form\Model\SupplierProductForm;
 use App\Purchasing\UI\Http\Form\Type\SupplierProductFilterType;
 use App\Purchasing\UI\Http\Form\Type\SupplierProductType;
-use App\Shared\UI\Http\FormFlow\CommandFlow;
+use App\Shared\UI\Http\FormFlow\ActionFlow;
 use App\Shared\UI\Http\FormFlow\DeleteFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
@@ -193,13 +193,13 @@ class SupplierProductController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] SupplierProduct $supplierProduct,
         ToggleSupplierProductStatusHandler $handler,
-        CommandFlow $flow,
+        ActionFlow $flow,
     ): Response {
         return $flow->process(
             request: $request,
             command: new ToggleSupplierProductStatus($supplierProduct->getPublicId()),
             handler: $handler,
-            context: FlowContext::forCommand('app_pricing_stock', [
+            context: FlowContext::forAction('app_pricing_stock', [
                 'id' => $supplierProduct->getProduct()?->getPublicId()->value(),
             ]),
         );
@@ -210,13 +210,13 @@ class SupplierProductController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] SupplierProduct $supplierProduct,
         MapSupplierProductHandler $handler,
-        CommandFlow $flow,
+        ActionFlow $flow,
     ): Response {
         return $flow->process(
             request: $request,
             command: new MapSupplierProduct($supplierProduct->getPublicId()),
             handler: $handler,
-            context: FlowContext::forCommand('app_purchasing_supplier_product_show', [
+            context: FlowContext::forAction('app_purchasing_supplier_product_show', [
                 'id' => $supplierProduct->getPublicId()->value(),
             ]),
         );

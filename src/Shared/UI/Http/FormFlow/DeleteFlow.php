@@ -22,7 +22,7 @@ final readonly class DeleteFlow
         private Environment $twig,
         private FlashMessenger $flashes,
         private CsrfTokenManagerInterface $csrf,
-        private CommandFlow $flow,
+        private ActionFlow $flow,
     ) {
     }
 
@@ -52,7 +52,7 @@ final readonly class DeleteFlow
     /**
      * Process the delete POST.
      *
-     * Validates CSRF then delegates to CommandFlow.
+     * Validates CSRF then delegates to ActionFlow.
      *
      * @param object&object{id: int|string} $command
      */

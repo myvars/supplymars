@@ -31,14 +31,14 @@ final class FlowContext
     private int $redirectStatus = 303;
 
     /**
-     * Factory for command operation (no model, just success route).
+     * Factory for action operation (no model, just success route).
      *
      * @param array<string, mixed> $params
      */
-    public static function forCommand(string $route, array $params = []): self
+    public static function forAction(string $route, array $params = []): self
     {
         $self = new self();
-        $self->operation = FormOperation::Command;
+        $self->operation = FormOperation::Action;
         $self->successRoute = $route;
         $self->successParams = $params;
 

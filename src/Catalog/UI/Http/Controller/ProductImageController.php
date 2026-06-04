@@ -10,7 +10,7 @@ use App\Catalog\Application\Handler\ProductImage\DeleteProductImageHandler;
 use App\Catalog\Application\Handler\ProductImage\ReorderProductImageHandler;
 use App\Catalog\Domain\Model\Product\Product;
 use App\Catalog\Domain\Model\ProductImage\ProductImage;
-use App\Shared\UI\Http\FormFlow\CommandFlow;
+use App\Shared\UI\Http\FormFlow\ActionFlow;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,7 +33,7 @@ class ProductImageController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] Product $product,
         CreateProductImageHandler $handler,
-        CommandFlow $flow,
+        ActionFlow $flow,
     ): Response {
         $response = $flow->process(
             request: $request,
@@ -41,7 +41,7 @@ class ProductImageController extends AbstractController
                 $request->files->get('imageFile') ?? []
             ),
             handler: $handler,
-            context: FlowContext::forCommand('app_catalog_product_image_show', [
+            context: FlowContext::forAction('app_catalog_product_image_show', [
                 'id' => $product->getPublicId()->value(),
             ]),
         );
@@ -58,13 +58,13 @@ class ProductImageController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] ProductImage $productImage,
         DeleteProductImageHandler $handler,
-        CommandFlow $flow,
+        ActionFlow $flow,
     ): Response {
         return $flow->process(
             request: $request,
             command: new DeleteProductImage($productImage->getPublicId()),
             handler: $handler,
-            context: FlowContext::forCommand('app_catalog_product_image_show', [
+            context: FlowContext::forAction('app_catalog_product_image_show', [
                 'id' => $productImage->getProduct()->getPublicId()->value(),
             ]),
         );
@@ -75,7 +75,7 @@ class ProductImageController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] Product $product,
         ReorderProductImageHandler $handler,
-        CommandFlow $flow,
+        ActionFlow $flow,
     ): Response {
         if (!$this->isCsrfTokenValid('product_image_reorder', $request->headers->get('X-CSRF-Token'))) {
             return $this->json(['detail' => 'Invalid CSRF token'], 403);
@@ -90,7 +90,7 @@ class ProductImageController extends AbstractController
             request: $request,
             command: new ReorderProductImage($product->getPublicId(), array_flip($imageIdOrder)),
             handler: $handler,
-            context: FlowContext::forCommand('app_catalog_product_image_show', [
+            context: FlowContext::forAction('app_catalog_product_image_show', [
                 'id' => $product->getPublicId()->value(),
             ]),
         );

@@ -16,7 +16,7 @@ use App\Note\UI\Http\Form\Mapper\UpdatePoolMapper;
 use App\Note\UI\Http\Form\Model\PoolForm;
 use App\Note\UI\Http\Form\Type\PoolType;
 use App\Shared\Infrastructure\Security\CurrentUserProvider;
-use App\Shared\UI\Http\FormFlow\CommandFlow;
+use App\Shared\UI\Http\FormFlow\ActionFlow;
 use App\Shared\UI\Http\FormFlow\DeleteFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
@@ -134,13 +134,13 @@ class PoolController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] Pool $pool,
         TogglePoolSubscriptionHandler $handler,
-        CommandFlow $flow,
+        ActionFlow $flow,
     ): Response {
         return $flow->process(
             request: $request,
             command: new TogglePoolSubscription($pool->getPublicId()),
             handler: $handler,
-            context: FlowContext::forCommand('app_note_pool_show', ['id' => $pool->getPublicId()->value()]),
+            context: FlowContext::forAction('app_note_pool_show', ['id' => $pool->getPublicId()->value()]),
         );
     }
 }

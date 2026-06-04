@@ -451,7 +451,7 @@ hasPositiveCost()             // cost > 0
 | Class | File | Purpose |
 |-------|------|---------|
 | FormFlow | `src/Shared/UI/Http/FormFlow/FormFlow.php` | Create/update flow |
-| CommandFlow | `src/Shared/UI/Http/FormFlow/CommandFlow.php` | Command execution flow |
+| ActionFlow | `src/Shared/UI/Http/FormFlow/ActionFlow.php` | Command execution flow |
 | DeleteFlow | `src/Shared/UI/Http/FormFlow/DeleteFlow.php` | Delete with confirmation |
 | SearchFlow | `src/Shared/UI/Http/FormFlow/SearchFlow.php` | Paginated index flow |
 | InlineEditFlow | `src/Shared/UI/Http/FormFlow/InlineEdit/InlineEditFlow.php` | Inline field editing |

@@ -10,7 +10,7 @@ enum FormOperation: string
     case Update = 'update';
     case Delete = 'delete';
     case Filter = 'filter';
-    case Command = 'process';
+    case Action = 'action';
     case Index = 'index';
 
     public function past(): string
@@ -20,7 +20,7 @@ enum FormOperation: string
             self::Update => 'updated',
             self::Delete => 'deleted',
             self::Filter => 'filtered',
-            self::Command => 'processed',
+            self::Action => 'actioned',
             self::Index => 'indexed',
         };
     }

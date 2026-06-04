@@ -109,13 +109,13 @@ public function allocate(
     Request $request,
     #[ValueResolver('public_id')] CustomerOrder $order,
     AllocateOrderHandler $handler,
-    CommandFlow $flow,
+    ActionFlow $flow,
 ): Response {
     return $flow->process(
         request: $request,
         command: new AllocateOrder($order->getPublicId()),
         handler: $handler,
-        context: FlowContext::forCommand('app_order_show', [
+        context: FlowContext::forAction('app_order_show', [
             'id' => $order->getPublicId()->value(),
         ]),
     );
@@ -124,7 +124,7 @@ public function allocate(
 
 Key points:
 - No form, immediate action
-- `FlowContext::forCommand()` — Explicit success route
+- `FlowContext::forAction()` — Explicit success route
 - Handler returns `Result` with message for flash
 
 ### Pattern 6: Paginated List

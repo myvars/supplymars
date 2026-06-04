@@ -19,7 +19,7 @@ use App\Order\UI\Http\Form\Type\UpdateOrderItemType;
 use App\Purchasing\Application\Command\PurchaseOrderItem\CreatePurchaseOrderItem;
 use App\Purchasing\Application\Handler\PurchaseOrderItem\CreatePurchaseOrderItemHandler;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProductPublicId;
-use App\Shared\UI\Http\FormFlow\CommandFlow;
+use App\Shared\UI\Http\FormFlow\ActionFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
 use App\Shared\UI\Http\FormFlow\View\FlowModel;
@@ -90,13 +90,13 @@ class OrderItemController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] CustomerOrderItem $orderItem,
         CancelOrderItemHandler $handler,
-        CommandFlow $flow,
+        ActionFlow $flow,
     ): Response {
         return $flow->process(
             request: $request,
             command: new CancelOrderItem($orderItem->getPublicId()),
             handler: $handler,
-            context: FlowContext::forCommand('app_order_show', [
+            context: FlowContext::forAction('app_order_show', [
                 'id' => $orderItem->getCustomerOrder()->getPublicId()->value(),
             ]),
         );
@@ -112,7 +112,7 @@ class OrderItemController extends AbstractController
         #[ValueResolver('public_id')] CustomerOrderItem $orderItem,
         string $supplierProductId,
         CreatePurchaseOrderItemHandler $handler,
-        CommandFlow $flow,
+        ActionFlow $flow,
     ): Response {
         return $flow->process(
             request: $request,
@@ -121,7 +121,7 @@ class OrderItemController extends AbstractController
                 SupplierProductPublicId::fromString($supplierProductId)
             ),
             handler: $handler,
-            context: FlowContext::forCommand('app_order_show', [
+            context: FlowContext::forAction('app_order_show', [
                 'id' => $orderItem->getCustomerOrder()->getPublicId()->value(),
             ]),
         );

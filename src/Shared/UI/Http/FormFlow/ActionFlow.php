@@ -15,7 +15,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
  * Executes commands directly without forms (state transitions, actions).
  * Handles user feedback and Turbo‑aware redirects.
  */
-final readonly class CommandFlow
+final readonly class ActionFlow
 {
     use RedirectsResponses;
 

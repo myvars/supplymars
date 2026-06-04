@@ -5,7 +5,7 @@ namespace App\Tests\Shared\UI\Http\FormFlow;
 use App\Shared\Application\RedirectTarget;
 use App\Shared\Application\Result;
 use App\Shared\UI\Http\FlashMessenger;
-use App\Shared\UI\Http\FormFlow\CommandFlow;
+use App\Shared\UI\Http\FormFlow\ActionFlow;
 use App\Shared\UI\Http\FormFlow\Redirect\RedirectorInterface;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
 use App\Shared\UI\Http\FormFlow\View\FlowModel;
@@ -18,7 +18,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-final class CommandFlowTest extends TestCase
+final class ActionFlowTest extends TestCase
 {
     private function newRequest(string $uri = '/order', string $method = 'POST'): Request
     {
@@ -63,7 +63,7 @@ final class CommandFlowTest extends TestCase
             ->with($request, '/gen/app_order_item_index', false, 303)
             ->willReturn(new Response('', 303));
 
-        $flow = new CommandFlow(new FlashMessenger(), $redirector, $urls);
+        $flow = new ActionFlow(new FlashMessenger(), $redirector, $urls);
 
         $response = $flow->process($request, new \stdClass(), $this->handlerOk('Saved'), $context);
 
@@ -89,7 +89,7 @@ final class CommandFlowTest extends TestCase
             ->with($request, '/gen/app_order_item_index', false, 303)
             ->willReturn(new Response('', 303));
 
-        $flow = new CommandFlow(new FlashMessenger(), $redirector, $urls);
+        $flow = new ActionFlow(new FlashMessenger(), $redirector, $urls);
 
         $response = $flow->process($request, new \stdClass(), $this->handlerFail('Failed'), $context);
 
@@ -117,7 +117,7 @@ final class CommandFlowTest extends TestCase
             ->with($request, '/gen/app_order_item_show?id=5', false, 302, true)
             ->willReturn(new Response('', 302));
 
-        $flow = new CommandFlow(new FlashMessenger(), $redirector, $urls);
+        $flow = new ActionFlow(new FlashMessenger(), $redirector, $urls);
 
         $response = $flow->process($request, new \stdClass(), $this->handlerOk('Shown', $target), $context);
 
@@ -142,7 +142,7 @@ final class CommandFlowTest extends TestCase
             ->with($request, '/gen/app_order_item_index', false, 303)
             ->willReturn(new Response('', 303));
 
-        $flow = new CommandFlow(new FlashMessenger(), $redirector, $urls);
+        $flow = new ActionFlow(new FlashMessenger(), $redirector, $urls);
 
         $response = $flow->process($request, new \stdClass(), $this->handlerOk(null), $context);
 
@@ -151,10 +151,10 @@ final class CommandFlowTest extends TestCase
         self::assertEmpty($this->getFlashBag($request)->get('danger'));
     }
 
-    public function testProcessWithForCommandFactoryWorks(): void
+    public function testProcessWithForActionFactoryWorks(): void
     {
         $request = $this->newRequest();
-        $context = FlowContext::forCommand('app_order_show', ['id' => 1]);
+        $context = FlowContext::forAction('app_order_show', ['id' => 1]);
 
         $urls = $this->createMock(UrlGeneratorInterface::class);
         $urls->expects($this->once())
@@ -168,7 +168,7 @@ final class CommandFlowTest extends TestCase
             ->with($request, '/gen/app_order_show?id=1', false, 303)
             ->willReturn(new Response('', 303));
 
-        $flow = new CommandFlow(new FlashMessenger(), $redirector, $urls);
+        $flow = new ActionFlow(new FlashMessenger(), $redirector, $urls);
 
         $response = $flow->process($request, new \stdClass(), $this->handlerOk('Processed'), $context);
 

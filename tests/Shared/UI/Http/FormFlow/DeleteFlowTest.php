@@ -4,7 +4,7 @@ namespace App\Tests\Shared\UI\Http\FormFlow;
 
 use App\Shared\Application\Result;
 use App\Shared\UI\Http\FlashMessenger;
-use App\Shared\UI\Http\FormFlow\CommandFlow;
+use App\Shared\UI\Http\FormFlow\ActionFlow;
 use App\Shared\UI\Http\FormFlow\DeleteFlow;
 use App\Shared\UI\Http\FormFlow\Redirect\RedirectorInterface;
 use App\Shared\UI\Http\FormFlow\View\FlowContext;
@@ -62,9 +62,9 @@ final class DeleteFlowTest extends TestCase
         $csrf = $this->createStub(CsrfTokenManagerInterface::class);
         $redirector = $this->createStub(RedirectorInterface::class);
         $urls = $this->createStub(UrlGeneratorInterface::class);
-        $commandFlow = new CommandFlow($flashes, $redirector, $urls);
+        $actionFlow = new ActionFlow($flashes, $redirector, $urls);
 
-        $flow = new DeleteFlow($twig, $flashes, $csrf, $commandFlow);
+        $flow = new DeleteFlow($twig, $flashes, $csrf, $actionFlow);
 
         $response = $flow->deleteConfirm($entity, $context);
 
@@ -99,8 +99,8 @@ final class DeleteFlowTest extends TestCase
             ->with($request, '/gen/app_order_item_index', true, 303)
             ->willReturn(new Response('', 303));
 
-        $commandFlow = new CommandFlow($flashes, $redirector, $urls);
-        $flow = new DeleteFlow($twig, $flashes, $csrf, $commandFlow);
+        $actionFlow = new ActionFlow($flashes, $redirector, $urls);
+        $flow = new DeleteFlow($twig, $flashes, $csrf, $actionFlow);
 
         $response = $flow->delete($request, $command, fn (): null => null, $context);
 
@@ -109,7 +109,7 @@ final class DeleteFlowTest extends TestCase
         self::assertEmpty($this->getFlashBag($request)->get('success'));
     }
 
-    public function testDeleteValidCsrfDelegatesToCommandFlowProcess(): void
+    public function testDeleteValidCsrfDelegatesToActionFlowProcess(): void
     {
         $request = $this->newRequest(method: 'POST');
         $request->request->set('_token', 'good-token');
@@ -138,8 +138,8 @@ final class DeleteFlowTest extends TestCase
 
         $handler = fn (object $cmd): Result => Result::ok('Deleted');
 
-        $commandFlow = new CommandFlow($flashes, $redirector, $urls);
-        $flow = new DeleteFlow($twig, $flashes, $csrf, $commandFlow);
+        $actionFlow = new ActionFlow($flashes, $redirector, $urls);
+        $flow = new DeleteFlow($twig, $flashes, $csrf, $actionFlow);
 
         $response = $flow->delete($request, $command, $handler, $context);
 

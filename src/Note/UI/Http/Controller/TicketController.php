@@ -32,7 +32,7 @@ use App\Note\UI\Http\Form\Type\ReplyType;
 use App\Note\UI\Http\Form\Type\TicketFilterType;
 use App\Note\UI\Http\Form\Type\TicketType;
 use App\Shared\Infrastructure\Security\CurrentUserProvider;
-use App\Shared\UI\Http\FormFlow\CommandFlow;
+use App\Shared\UI\Http\FormFlow\ActionFlow;
 use App\Shared\UI\Http\FormFlow\DeleteFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
@@ -146,13 +146,13 @@ class TicketController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] Ticket $ticket,
         CloseTicketHandler $handler,
-        CommandFlow $flow,
+        ActionFlow $flow,
     ): Response {
         return $flow->process(
             request: $request,
             command: new CloseTicket($ticket->getPublicId()),
             handler: $handler,
-            context: FlowContext::forCommand('app_note_ticket_show', ['id' => $ticket->getPublicId()->value()]),
+            context: FlowContext::forAction('app_note_ticket_show', ['id' => $ticket->getPublicId()->value()]),
         );
     }
 
@@ -161,13 +161,13 @@ class TicketController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] Ticket $ticket,
         ReopenTicketHandler $handler,
-        CommandFlow $flow,
+        ActionFlow $flow,
     ): Response {
         return $flow->process(
             request: $request,
             command: new ReopenTicket($ticket->getPublicId()),
             handler: $handler,
-            context: FlowContext::forCommand('app_note_ticket_show', ['id' => $ticket->getPublicId()->value()]),
+            context: FlowContext::forAction('app_note_ticket_show', ['id' => $ticket->getPublicId()->value()]),
         );
     }
 
@@ -195,13 +195,13 @@ class TicketController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] Ticket $ticket,
         ToggleSnoozeTicketHandler $handler,
-        CommandFlow $flow,
+        ActionFlow $flow,
     ): Response {
         return $flow->process(
             request: $request,
             command: new ToggleSnoozeTicket($ticket->getPublicId()),
             handler: $handler,
-            context: FlowContext::forCommand('app_note_ticket_show', ['id' => $ticket->getPublicId()->value()]),
+            context: FlowContext::forAction('app_note_ticket_show', ['id' => $ticket->getPublicId()->value()]),
         );
     }
 

@@ -20,7 +20,7 @@ use App\Order\UI\Http\Form\Mapper\OrderFilterMapper;
 use App\Order\UI\Http\Form\Model\OrderForm;
 use App\Order\UI\Http\Form\Type\OrderFilterType;
 use App\Order\UI\Http\Form\Type\OrderType;
-use App\Shared\UI\Http\FormFlow\CommandFlow;
+use App\Shared\UI\Http\FormFlow\ActionFlow;
 use App\Shared\UI\Http\FormFlow\DeleteFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
@@ -120,13 +120,13 @@ class OrderController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] CustomerOrder $order,
         AllocateOrderHandler $handler,
-        CommandFlow $flow,
+        ActionFlow $flow,
     ): Response {
         return $flow->process(
             request: $request,
             command: new AllocateOrder($order->getPublicId()),
             handler: $handler,
-            context: FlowContext::forCommand('app_order_show', [
+            context: FlowContext::forAction('app_order_show', [
                 'id' => $order->getPublicId()->value(),
             ]),
         );
@@ -137,13 +137,13 @@ class OrderController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] CustomerOrder $order,
         LockOrderHandler $handler,
-        CommandFlow $flow,
+        ActionFlow $flow,
     ): Response {
         return $flow->process(
             request: $request,
             command: new LockOrder($order->getPublicId()),
             handler: $handler,
-            context: FlowContext::forCommand('app_order_show', [
+            context: FlowContext::forAction('app_order_show', [
                 'id' => $order->getPublicId()->value(),
             ]),
         );
@@ -171,7 +171,7 @@ class OrderController extends AbstractController
             request: $request,
             command: new CreateDemoOrder(),
             handler: $handler,
-            context: FlowContext::forCommand('app_order_index'),
+            context: FlowContext::forAction('app_order_index'),
         );
     }
 

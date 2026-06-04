@@ -27,7 +27,7 @@ use App\Review\UI\Http\Form\Type\EditReviewType;
 use App\Review\UI\Http\Form\Type\RejectReviewType;
 use App\Review\UI\Http\Form\Type\ReviewFilterType;
 use App\Review\UI\Http\Form\Type\ReviewType;
-use App\Shared\UI\Http\FormFlow\CommandFlow;
+use App\Shared\UI\Http\FormFlow\ActionFlow;
 use App\Shared\UI\Http\FormFlow\DeleteFlow;
 use App\Shared\UI\Http\FormFlow\FormFlow;
 use App\Shared\UI\Http\FormFlow\SearchFlow;
@@ -156,13 +156,13 @@ class ReviewController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] ProductReview $review,
         ApproveReviewHandler $handler,
-        CommandFlow $flow,
+        ActionFlow $flow,
     ): Response {
         return $flow->process(
             request: $request,
             command: new ApproveReview($review->getPublicId()),
             handler: $handler,
-            context: FlowContext::forCommand('app_review_show', ['id' => $review->getPublicId()->value()]),
+            context: FlowContext::forAction('app_review_show', ['id' => $review->getPublicId()->value()]),
         );
     }
 
@@ -191,13 +191,13 @@ class ReviewController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] ProductReview $review,
         HideReviewHandler $handler,
-        CommandFlow $flow,
+        ActionFlow $flow,
     ): Response {
         return $flow->process(
             request: $request,
             command: new HideReview($review->getPublicId()),
             handler: $handler,
-            context: FlowContext::forCommand('app_review_show', ['id' => $review->getPublicId()->value()]),
+            context: FlowContext::forAction('app_review_show', ['id' => $review->getPublicId()->value()]),
         );
     }
 
@@ -206,13 +206,13 @@ class ReviewController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] ProductReview $review,
         RepublishReviewHandler $handler,
-        CommandFlow $flow,
+        ActionFlow $flow,
     ): Response {
         return $flow->process(
             request: $request,
             command: new RepublishReview($review->getPublicId()),
             handler: $handler,
-            context: FlowContext::forCommand('app_review_show', ['id' => $review->getPublicId()->value()]),
+            context: FlowContext::forAction('app_review_show', ['id' => $review->getPublicId()->value()]),
         );
     }
 }
