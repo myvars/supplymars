@@ -32,4 +32,5 @@ return [
     Snc\RedisBundle\SncRedisBundle::class => ['all' => true],
     Jwage\PhpAmqpLibMessengerBundle\PhpAmqpLibMessengerBundle::class => ['all' => true],
     Nelmio\ApiDocBundle\NelmioApiDocBundle::class => ['all' => true],
+    MyVars\FormFlow\FormFlowBundle::class => ['all' => true],
 ];

@@ -18,13 +18,14 @@ use App\Catalog\UI\Http\Form\Type\ProductFilterType;
 use App\Catalog\UI\Http\Form\Type\ProductType;
 use App\Review\Domain\Repository\ReviewRepository;
 use App\Review\Domain\Repository\ReviewSummaryRepository;
-use App\Shared\UI\Http\FormFlow\ConfirmFlow;
-use App\Shared\UI\Http\FormFlow\FormFlow;
-use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditContext;
-use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditFlow;
-use App\Shared\UI\Http\FormFlow\SearchFlow;
-use App\Shared\UI\Http\FormFlow\View\FlowContext;
-use App\Shared\UI\Http\FormFlow\View\FlowModel;
+use App\Shared\Application\FlusherInterface;
+use MyVars\FormFlow\ConfirmFlow;
+use MyVars\FormFlow\FormFlow;
+use MyVars\FormFlow\InlineEdit\InlineEditContext;
+use MyVars\FormFlow\InlineEdit\InlineEditFlow;
+use MyVars\FormFlow\SearchFlow;
+use MyVars\FormFlow\View\FlowContext;
+use MyVars\FormFlow\View\FlowModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -50,7 +51,7 @@ class ProductController extends AbstractController
     ): Response {
         return $flow->search(
             request: $request,
-            repository: $repository,
+            adapter: $repository->findByCriteria($criteria),
             criteria: $criteria,
             context: FlowContext::forSearch($this->model()),
         );
@@ -167,11 +168,16 @@ class ProductController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] Product $product,
         InlineEditFlow $flow,
+        FlusherInterface $flusher,
     ): Response {
         return $flow->handleField(
             request: $request,
             value: $product->getName(),
-            onSave: fn ($value) => $product->rename((string) $value),
+            onSave: function ($value) use ($product, $flusher): bool {
+                $product->rename((string) $value);
+
+                return $flusher->flush();
+            },
             context: InlineEditContext::create(
                 frameId: 'inline-edit-product-' . $product->getPublicId() . '-name',
                 displayTemplate: 'catalog/product/_inline_name.html.twig',

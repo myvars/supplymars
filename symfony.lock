@@ -93,6 +93,9 @@
             "config/routes/liip_imagine.yaml"
         ]
     },
+    "myvars/form-flow": {
+        "version": "v1.1.0"
+    },
     "nelmio/api-doc-bundle": {
         "version": "5.9",
         "recipe": {

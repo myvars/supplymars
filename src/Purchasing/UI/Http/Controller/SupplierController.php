@@ -13,13 +13,14 @@ use App\Purchasing\UI\Http\Form\Mapper\CreateSupplierMapper;
 use App\Purchasing\UI\Http\Form\Mapper\UpdateSupplierMapper;
 use App\Purchasing\UI\Http\Form\Model\SupplierForm;
 use App\Purchasing\UI\Http\Form\Type\SupplierType;
-use App\Shared\UI\Http\FormFlow\ConfirmFlow;
-use App\Shared\UI\Http\FormFlow\FormFlow;
-use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditContext;
-use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditFlow;
-use App\Shared\UI\Http\FormFlow\SearchFlow;
-use App\Shared\UI\Http\FormFlow\View\FlowContext;
-use App\Shared\UI\Http\FormFlow\View\FlowModel;
+use App\Shared\Application\FlusherInterface;
+use MyVars\FormFlow\ConfirmFlow;
+use MyVars\FormFlow\FormFlow;
+use MyVars\FormFlow\InlineEdit\InlineEditContext;
+use MyVars\FormFlow\InlineEdit\InlineEditFlow;
+use MyVars\FormFlow\SearchFlow;
+use MyVars\FormFlow\View\FlowContext;
+use MyVars\FormFlow\View\FlowModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -45,7 +46,7 @@ class SupplierController extends AbstractController
     ): Response {
         return $flow->search(
             request: $request,
-            repository: $repository,
+            adapter: $repository->findByCriteria($criteria),
             criteria: $criteria,
             context: FlowContext::forSearch($this->model()),
         );
@@ -125,11 +126,16 @@ class SupplierController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] Supplier $supplier,
         InlineEditFlow $flow,
+        FlusherInterface $flusher,
     ): Response {
         return $flow->handleField(
             request: $request,
             value: $supplier->getName(),
-            onSave: fn ($value) => $supplier->update((string) $value, $supplier->isActive()),
+            onSave: function ($value) use ($supplier, $flusher): bool {
+                $supplier->update((string) $value, $supplier->isActive());
+
+                return $flusher->flush();
+            },
             context: InlineEditContext::create(
                 frameId: 'inline-edit-supplier-' . $supplier->getPublicId() . '-name',
                 displayTemplate: 'purchasing/supplier/_inline_name.html.twig',

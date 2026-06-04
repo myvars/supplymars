@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\UI\Http;
 
+use MyVars\FormFlow\Contract\FlasherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\HttpFoundation\Session\FlashBagAwareSessionInterface;
@@ -16,7 +17,7 @@ use Symfony\Component\HttpFoundation\Session\FlashBagAwareSessionInterface;
  * - warning() → 'warning' (yellow alert)
  * - error()   → 'danger'  (red alert, Bootstrap uses 'danger' not 'error')
  */
-final class FlashMessenger
+final class FlashMessenger implements FlasherInterface
 {
     public const string SUCCESS_KEY = 'success';
 

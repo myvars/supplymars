@@ -73,7 +73,7 @@ These areas have non-obvious design. Read the corresponding ADR in `Docs/adr/` b
 - **Simulation-first** (ADR-003): Console commands drive the full order/purchasing/fulfilment lifecycle with realistic timing.
 - **Pricing cascades** (ADR-004): Three-level markup (Product → Subcategory → Category) with event-driven recalculation, 6 price models, `bcmath` precision.
 - **Two-layer reporting** (ADR-005): Daily granular records + pre-computed summaries for fast dashboards.
-- **FormFlow** (ADR-006): Standardized controller pattern. Full spec in `Docs/patterns/FormFlow/`.
+- **FormFlow** (ADR-006): Standardized controller pattern, now the external `myvars/form-flow` package (`MyVars\FormFlow\`). Full spec in the package `README.md` + `Docs/patterns/FormFlow/`.
 
 ## Patterns
 
@@ -98,18 +98,25 @@ These areas have non-obvious design. Read the corresponding ADR in `Docs/adr/` b
 
 ### FormFlow (Controller Pattern)
 
-Controllers are thin orchestrators. 4 flow types:
+The flow coordinators live in the external **`myvars/form-flow`** package (namespace `MyVars\FormFlow\`,
+required from Packagist as `^1.1`, enabled as `FormFlowBundle`) — **not** in `src/`; do not re-add an
+in-app `FormFlow` directory. The app provides the **adapters** — `Result`, `RedirectTarget`,
+`FlashMessenger` and `Application\Search\SearchCriteriaInterface` implement/extend the package's
+`Contract\` ports (autowired; `FlasherInterface` aliased in `services.yaml`). The package ships
+**design-neutral default templates**; this app's own `templates/shared/form_flow/*` override them. Controllers
+are thin orchestrators using 5 flow types:
 
 | Flow | Purpose |
 |------|---------|
 | `FormFlow` | Create/update with Symfony forms |
-| `CommandFlow` | State transitions (approve, reject, etc.) |
-| `DeleteFlow` | Delete with confirmation |
-| `SearchFlow` | Paginated index pages |
+| `ActionFlow` | State transitions (approve, reject, etc.) |
+| `ConfirmFlow` | Confirm-then-execute (delete, cancel, rewind, remove…) with per-action CSRF |
+| `SearchFlow` | Paginated index pages (takes a Pagerfanta adapter) |
+| `InlineEditFlow` | Inline field editing via Turbo Frames (the `onSave` callback owns persistence + flush) |
 
 - **Mappers** are `__invoke` callables: form DTO → command. Located in `{Context}/UI/Http/Form/Mapper/`, named `{Action}{Entity}Mapper`.
 - **Filter mappers**: `SearchCriteria` → `FilterCommand` (readonly DTO implementing `SearchCriteriaInterface`). Handler builds redirect via `FilterParamBuilder`.
-- `FlowContext` factories: `forCreate()`, `forUpdate()`, `forFilter()`, `forSearch()`, `forCommand()`.
+- `FlowContext` factories: `forCreate()`, `forUpdate()`, `forFilter()`, `forSearch()`, `forAction()`, `forConfirm()`, `forDelete()`.
 - Chainable: `->template()`, `->successRoute()`, `->allowDelete(true)`, `->redirectOptions(refresh: true)`.
 
 ### Route Naming

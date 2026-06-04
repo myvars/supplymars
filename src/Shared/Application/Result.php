@@ -2,7 +2,10 @@
 
 namespace App\Shared\Application;
 
-final readonly class Result
+use MyVars\FormFlow\Contract\RedirectTargetInterface;
+use MyVars\FormFlow\Contract\ResultInterface;
+
+final readonly class Result implements ResultInterface
 {
     public function __construct(
         public bool $ok,
@@ -20,5 +23,20 @@ final readonly class Result
     public static function fail(?string $message = null, mixed $payload = null): self
     {
         return new self(false, $message, $payload);
+    }
+
+    public function isOk(): bool
+    {
+        return $this->ok;
+    }
+
+    public function message(): ?string
+    {
+        return $this->message;
+    }
+
+    public function redirect(): ?RedirectTargetInterface
+    {
+        return $this->redirect;
     }
 }

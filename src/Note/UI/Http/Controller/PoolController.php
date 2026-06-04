@@ -16,12 +16,12 @@ use App\Note\UI\Http\Form\Mapper\UpdatePoolMapper;
 use App\Note\UI\Http\Form\Model\PoolForm;
 use App\Note\UI\Http\Form\Type\PoolType;
 use App\Shared\Infrastructure\Security\CurrentUserProvider;
-use App\Shared\UI\Http\FormFlow\ActionFlow;
-use App\Shared\UI\Http\FormFlow\ConfirmFlow;
-use App\Shared\UI\Http\FormFlow\FormFlow;
-use App\Shared\UI\Http\FormFlow\SearchFlow;
-use App\Shared\UI\Http\FormFlow\View\FlowContext;
-use App\Shared\UI\Http\FormFlow\View\FlowModel;
+use MyVars\FormFlow\ActionFlow;
+use MyVars\FormFlow\ConfirmFlow;
+use MyVars\FormFlow\FormFlow;
+use MyVars\FormFlow\SearchFlow;
+use MyVars\FormFlow\View\FlowContext;
+use MyVars\FormFlow\View\FlowModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -47,7 +47,7 @@ class PoolController extends AbstractController
     ): Response {
         return $flow->search(
             request: $request,
-            repository: $repository,
+            adapter: $repository->findByCriteria($criteria),
             criteria: $criteria,
             context: FlowContext::forSearch($this->model()),
         );

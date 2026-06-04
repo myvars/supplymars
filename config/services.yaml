@@ -24,6 +24,9 @@ services:
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
 
+    # FormFlow port -> app adapter (myvars/form-flow bundle)
+    MyVars\FormFlow\Contract\FlasherInterface: '@App\Shared\UI\Http\FlashMessenger'
+
     App\Customer\UI\Http\Controller\RegistrationController:
         bind:
             $registrationLimiter: '@limiter.registration'
