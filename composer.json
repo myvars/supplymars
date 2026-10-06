@@ -67,7 +67,7 @@
         "symfony/yaml": "8.1.*",
         "symfonycasts/dynamic-forms": "^0.2.0",
         "symfonycasts/reset-password-bundle": "^1.25.0",
-        "symfonycasts/tailwind-bundle": "^0.12.0",
+        "symfonycasts/tailwind-bundle": "^1.0",
         "symfonycasts/verify-email-bundle": "^1.18.0",
         "tales-from-a-dev/flowbite-bundle": "^0.9.2",
         "twig/cssinliner-extra": "^3.26",
