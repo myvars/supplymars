@@ -75,7 +75,7 @@ final class IdToEntityTransformerTest extends TestCase
         $transformer = new IdToEntityTransformer($em, \stdClass::class);
 
         $this->expectException(TransformationFailedException::class);
-        $this->expectExceptionMessage('stdClass with id "99" not found.');
+        $this->expectExceptionMessageIsOrContains('stdClass with id "99" not found.');
         // @phpstan-ignore argument.type (transform accepts numeric string from form)
         $transformer->transform('99');
     }
@@ -111,7 +111,7 @@ final class IdToEntityTransformerTest extends TestCase
         $transformer = new IdToEntityTransformer($em, \stdClass::class);
 
         $this->expectException(TransformationFailedException::class);
-        $this->expectExceptionMessage('Expected an entity with getId().');
+        $this->expectExceptionMessageIsOrContains('Expected an entity with getId().');
 
         $transformer->reverseTransform(new \stdClass());
     }

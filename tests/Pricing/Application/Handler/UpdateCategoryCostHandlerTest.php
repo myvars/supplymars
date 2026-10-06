@@ -68,7 +68,7 @@ final class UpdateCategoryCostHandlerTest extends KernelTestCase
     public function testFailsOnNegativeMarkup(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Markup cannot be negative');
+        $this->expectExceptionMessageIsOrContains('Markup cannot be negative');
 
         $category = CategoryFactory::createOne();
 
@@ -85,7 +85,7 @@ final class UpdateCategoryCostHandlerTest extends KernelTestCase
     public function testFailsOnMissingPriceModel(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('A category must have a price model');
+        $this->expectExceptionMessageIsOrContains('A category must have a price model');
 
         $category = CategoryFactory::createOne();
 

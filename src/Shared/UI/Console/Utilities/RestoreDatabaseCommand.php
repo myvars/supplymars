@@ -25,13 +25,13 @@ final readonly class RestoreDatabaseCommand
 
     public function __construct(
         private LoggerInterface $logger,
-        #[Autowire('%env(DATABASE_URL)%')]
+        #[Autowire(env: 'DATABASE_URL')]
         private string $databaseUrl,
-        #[Autowire('%env(AWS_S3_BUCKET)%')]
+        #[Autowire(env: 'AWS_S3_BUCKET')]
         private string $s3Bucket,
-        #[Autowire('%env(AWS_S3_REGION)%')]
+        #[Autowire(env: 'AWS_S3_REGION')]
         private string $s3Region,
-        #[Autowire('%kernel.project_dir%')]
+        #[Autowire(param: 'kernel.project_dir')]
         string $projectDir,
     ) {
         $this->backupsDir = $projectDir . '/var/backups';

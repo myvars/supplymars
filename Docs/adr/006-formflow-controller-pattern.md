@@ -28,7 +28,7 @@ We implemented a **FormFlow abstraction layer** that standardizes controller beh
 | Flow | Purpose | Key Method |
 |------|---------|------------|
 | `FormFlow` | Create/update with Symfony forms | `form()` |
-| `CommandFlow` | Direct command execution (no form) | `execute()` |
+| `ActionFlow` | Direct command execution (no form) | `execute()` |
 | `DeleteFlow` | Delete with CSRF confirmation | `deleteConfirm()`, `delete()` |
 | `SearchFlow` | Paginated index pages | `search()` |
 

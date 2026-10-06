@@ -13,13 +13,14 @@ use App\Pricing\UI\Http\Form\Mapper\CreateVatRateMapper;
 use App\Pricing\UI\Http\Form\Mapper\UpdateVatRateMapper;
 use App\Pricing\UI\Http\Form\Model\VatRateForm;
 use App\Pricing\UI\Http\Form\Type\VatRateType;
-use App\Shared\UI\Http\FormFlow\DeleteFlow;
-use App\Shared\UI\Http\FormFlow\FormFlow;
-use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditContext;
-use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditFlow;
-use App\Shared\UI\Http\FormFlow\SearchFlow;
-use App\Shared\UI\Http\FormFlow\View\FlowContext;
-use App\Shared\UI\Http\FormFlow\View\FlowModel;
+use App\Shared\Application\FlusherInterface;
+use MyVars\FormFlow\ConfirmFlow;
+use MyVars\FormFlow\FormFlow;
+use MyVars\FormFlow\InlineEdit\InlineEditContext;
+use MyVars\FormFlow\InlineEdit\InlineEditFlow;
+use MyVars\FormFlow\SearchFlow;
+use MyVars\FormFlow\View\FlowContext;
+use MyVars\FormFlow\View\FlowModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -45,7 +46,7 @@ class VatRateController extends AbstractController
     ): Response {
         return $flow->search(
             request: $request,
-            repository: $repository,
+            adapter: $repository->findByCriteria($criteria),
             criteria: $criteria,
             context: FlowContext::forSearch($this->model()),
         );
@@ -91,9 +92,9 @@ class VatRateController extends AbstractController
     #[Route(path: '/vat-rate/{id}/delete/confirm', name: 'app_pricing_vat_rate_delete_confirm', methods: ['GET'])]
     public function deleteConfirm(
         #[ValueResolver('public_id')] VatRate $vatRate,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->deleteConfirm(
+        return $flow->confirm(
             entity: $vatRate,
             context: FlowContext::forDelete($this->model()),
         );
@@ -104,9 +105,9 @@ class VatRateController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] VatRate $vatRate,
         DeleteVatRateHandler $handler,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->delete(
+        return $flow->execute(
             request: $request,
             command: new DeleteVatRate($vatRate->getPublicId()),
             handler: $handler,
@@ -125,11 +126,16 @@ class VatRateController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] VatRate $vatRate,
         InlineEditFlow $flow,
+        FlusherInterface $flusher,
     ): Response {
         return $flow->handleField(
             request: $request,
             value: $vatRate->getName(),
-            onSave: fn ($value) => $vatRate->update((string) $value, $vatRate->getRate()),
+            onSave: function ($value) use ($vatRate, $flusher): bool {
+                $vatRate->update((string) $value, $vatRate->getRate());
+
+                return $flusher->flush();
+            },
             context: InlineEditContext::create(
                 frameId: 'inline-edit-vat-rate-' . $vatRate->getPublicId() . '-name',
                 displayTemplate: 'pricing/vat_rate/_inline_name.html.twig',

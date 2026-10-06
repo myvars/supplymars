@@ -48,7 +48,7 @@ symfony serve -d           # Start PHP server at https://127.0.0.1:8000
 
 ## Tech Stack
 
-**Backend:** PHP 8.5+ • Symfony 8.0 • Doctrine ORM • MySQL 8.4 • RabbitMQ • Redis
+**Backend:** PHP 8.5+ • Symfony 8.1 • Doctrine ORM • MySQL 8.4 • RabbitMQ • Redis
 
 **Frontend:** Tailwind CSS • Hotwire (Turbo + Stimulus) • AssetMapper
 

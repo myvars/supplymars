@@ -183,7 +183,7 @@ class ProductDomainTest extends TestCase
     public function testInvalidNameThrows(): void
     {
         self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessage('Product name cannot be empty');
+        self::expectExceptionMessageIsOrContains('Product name cannot be empty');
 
         Product::create(
             name: '',
@@ -211,7 +211,7 @@ class ProductDomainTest extends TestCase
         );
 
         self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessage('Markup cannot be negative');
+        self::expectExceptionMessageIsOrContains('Markup cannot be negative');
 
         $product->changePricing(
             markupCalculator: $this->stubCalculator(),

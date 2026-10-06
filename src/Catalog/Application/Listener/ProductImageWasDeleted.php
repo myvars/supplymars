@@ -16,7 +16,7 @@ final readonly class ProductImageWasDeleted
     public function __construct(
         private UploadHelper $uploadHelper,
         private CacheManager $cacheManager,
-        #[Autowire('%app.product_uploads%')]
+        #[Autowire(param: 'app.product_uploads')]
         private string $uploadsDir,
     ) {
     }

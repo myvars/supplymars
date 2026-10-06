@@ -43,7 +43,7 @@ class CreateSupplierHandlerTest extends KernelTestCase
     public function testHandleThrowsWhenNameEmpty(): void
     {
         self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessage('Supplier name cannot be empty');
+        self::expectExceptionMessageIsOrContains('Supplier name cannot be empty');
 
         $command = new CreateSupplier(
             name: '',

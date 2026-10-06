@@ -174,9 +174,7 @@ class CustomerOrder implements DomainEventProviderInterface
             }
         }
 
-        if (null === $orderStatus) {
-            $orderStatus = OrderStatus::getDefault();
-        }
+        $orderStatus ??= OrderStatus::getDefault();
 
         $this->changeStatus($orderStatus);
         $this->recalculateTotal();

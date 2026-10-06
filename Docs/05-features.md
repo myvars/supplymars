@@ -800,7 +800,7 @@ FormFlow is a thin orchestration layer that standardizes controller behavior acr
 | Flow | Purpose | Key Method |
 |------|---------|------------|
 | `FormFlow` | Create/update with forms | `form()` |
-| `CommandFlow` | Direct command execution | `execute()` |
+| `ActionFlow` | Direct command execution | `execute()` |
 | `DeleteFlow` | Delete with confirmation | `deleteConfirm()`, `delete()` |
 | `SearchFlow` | Paginated index pages | `search()` |
 

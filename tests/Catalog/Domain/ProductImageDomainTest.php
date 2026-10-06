@@ -18,7 +18,6 @@ final class ProductImageDomainTest extends TestCase
             path: $path,
             originalName: $name,
             mimeType: 'image/png',
-            error: null,
             test: true,
         );
     }
@@ -86,7 +85,7 @@ final class ProductImageDomainTest extends TestCase
         );
 
         self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessage('Position must be greater than 0');
+        self::expectExceptionMessageIsOrContains('Position must be greater than 0');
         $productImage->changePosition(0);
     }
 }

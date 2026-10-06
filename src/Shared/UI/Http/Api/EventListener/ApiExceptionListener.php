@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Exception\ValidationFailedException;
 final readonly class ApiExceptionListener
 {
     public function __construct(
-        #[Autowire('%kernel.environment%')]
+        #[Autowire(param: 'kernel.environment')]
         private string $environment,
     ) {
     }

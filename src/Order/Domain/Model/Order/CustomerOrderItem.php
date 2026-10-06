@@ -402,9 +402,7 @@ class CustomerOrderItem implements DomainEventProviderInterface
         }
 
         // If all items are refunded, set the purchase order item status to default
-        if (null === $purchaseOrderItemStatus) {
-            $purchaseOrderItemStatus = PurchaseOrderStatus::getDefault();
-        }
+        $purchaseOrderItemStatus ??= PurchaseOrderStatus::getDefault();
 
         $orderItemStatus = OrderStatus::getMappedOrderStatusFromPurchaseOrder($purchaseOrderItemStatus);
         $this->changeStatus($orderItemStatus);

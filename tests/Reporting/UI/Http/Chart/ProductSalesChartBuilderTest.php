@@ -23,7 +23,7 @@ class ProductSalesChartBuilderTest extends TestCase
         $builder = new ProductSalesChartBuilder($chartBuilder, $dateRangeResolver, $clock);
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('SalesDuration is required for bar charts.');
+        $this->expectExceptionMessageIsOrContains('SalesDuration is required for bar charts.');
 
         $builder->create([], OrderSalesMetric::COUNT);
     }

@@ -29,7 +29,7 @@ final class stringToOrderStatusTransformerTest extends TestCase
     public function testTransformThrowsOnInvalidValue(): void
     {
         $this->expectException(TransformationFailedException::class);
-        $this->expectExceptionMessage('Invalid status value: invalid');
+        $this->expectExceptionMessageIsOrContains('Invalid status value: invalid');
 
         $this->transformer->transform('invalid');
     }
@@ -53,7 +53,7 @@ final class stringToOrderStatusTransformerTest extends TestCase
     public function testReverseTransformThrowsOnNonOrderStatus(): void
     {
         $this->expectException(TransformationFailedException::class);
-        $this->expectExceptionMessage('Expected an OrderStatus.');
+        $this->expectExceptionMessageIsOrContains('Expected an OrderStatus.');
 
         // @phpstan-ignore argument.type (intentionally testing wrong type handling)
         $this->transformer->reverseTransform(new \stdClass());

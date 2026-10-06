@@ -96,7 +96,7 @@ class CreateOrderItemHandlerTest extends KernelTestCase
         );
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('The quantity must be positive');
+        $this->expectExceptionMessageIsOrContains('The quantity must be positive');
 
         ($this->handler)($command);
     }

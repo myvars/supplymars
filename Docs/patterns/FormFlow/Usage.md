@@ -20,7 +20,7 @@ public function new(
         data: new ProductForm(),
         mapper: $mapper,
         handler: $handler,
-        context: FlowContext::forCreate(self::MODEL),
+        context: FlowContext::forCreate($this->model()),
     );
 }
 ```
@@ -49,7 +49,7 @@ public function edit(
         data: ProductForm::fromEntity($product),
         mapper: $mapper,
         handler: $handler,
-        context: FlowContext::forUpdate(self::MODEL)->allowDelete(true),
+        context: FlowContext::forUpdate($this->model())->allowDelete(true),
     );
 }
 ```
@@ -68,7 +68,7 @@ public function deleteConfirm(
 ): Response {
     return $flow->deleteConfirm(
         entity: $product,
-        context: FlowContext::forDelete(self::MODEL),
+        context: FlowContext::forDelete($this->model()),
     );
 }
 ```
@@ -91,7 +91,7 @@ public function delete(
         request: $request,
         command: new DeleteProduct($product->getPublicId()),
         handler: $handler,
-        context: FlowContext::forDelete(self::MODEL),
+        context: FlowContext::forDelete($this->model()),
     );
 }
 ```
@@ -109,13 +109,13 @@ public function allocate(
     Request $request,
     #[ValueResolver('public_id')] CustomerOrder $order,
     AllocateOrderHandler $handler,
-    CommandFlow $flow,
+    ActionFlow $flow,
 ): Response {
     return $flow->process(
         request: $request,
         command: new AllocateOrder($order->getPublicId()),
         handler: $handler,
-        context: FlowContext::forSuccess('app_order_show', [
+        context: FlowContext::forAction('app_order_show', [
             'id' => $order->getPublicId()->value(),
         ]),
     );
@@ -124,7 +124,7 @@ public function allocate(
 
 Key points:
 - No form, immediate action
-- `FlowContext::forSuccess()` — Explicit success route
+- `FlowContext::forAction()` — Explicit success route
 - Handler returns `Result` with message for flash
 
 ### Pattern 6: Paginated List
@@ -141,7 +141,7 @@ public function index(
         request: $request,
         repository: $repository,
         criteria: $criteria,
-        context: FlowContext::forSearch(self::MODEL),
+        context: FlowContext::forSearch($this->model()),
     );
 }
 ```
@@ -156,7 +156,7 @@ Key points:
 
 ```php
 #[Route(path: '/product/search/filter', name: 'app_catalog_product_search_filter', methods: ['GET', 'POST'])]
-public function searchFilter(
+public function filter(
     Request $request,
     ProductFilterMapper $mapper,
     ProductFilterHandler $handler,
@@ -169,7 +169,7 @@ public function searchFilter(
         data: $criteria,
         mapper: $mapper,
         handler: $handler,
-        context: FlowContext::forFilter(self::MODEL),
+        context: FlowContext::forFilter($this->model()),
     );
 }
 ```
@@ -212,14 +212,8 @@ return $flow->form(
 
 ### Refresh Behavior
 
-Use `redirectOptions(refresh: true)` when the entire page should refresh:
-
-```php
-context: FlowContext::forCreate(self::MODEL)
-    ->redirectOptions(refresh: true, status: 303),
-```
-
-This passes the URL to the Turbo stream template for a full page refresh.
+Delete flows refresh the page in place automatically — `FlowContext::forDelete()` enables smart
+Turbo navigation. Other flows redirect to their success route; no per-call refresh flag is needed.
 
 ### Auto-Update Forms
 
@@ -305,7 +299,7 @@ If CSRF invalid:
 - Inject dependencies via constructor or method parameters
 - Use named parameters for flow calls (improves readability)
 - Use `#[ValueResolver('public_id')]` for entity resolution
-- Define `private const MODEL = 'context/entity'` for reuse
+- Define a private `model(): FlowModel` method returning `FlowModel::create(...)` (a class constant cannot call a static factory)
 - Return the flow's response directly
 
 **Don't:**
@@ -336,13 +330,13 @@ If CSRF invalid:
 - Access repositories
 - Modify entities
 - Return `Result` objects
+- Optionally set `Result.redirect` (a `RedirectTarget` route + params) when the success destination depends on the command's outcome
 - Emit domain events
 
 **Don't:**
-- Access `Request` object
+- Access the `Request` object
 - Set flash messages
-- Build responses
-- Know about HTTP
+- Build `Response` objects or render templates
 
 ### Mappers
 

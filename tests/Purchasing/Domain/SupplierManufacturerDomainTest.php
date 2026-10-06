@@ -53,7 +53,7 @@ final class SupplierManufacturerDomainTest extends TestCase
     public function testEmptyNameThrows(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Manufacturer name cannot be empty');
+        $this->expectExceptionMessageIsOrContains('Manufacturer name cannot be empty');
 
         $supplier = $this->stubSupplier();
 

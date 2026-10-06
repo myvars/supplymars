@@ -13,13 +13,14 @@ use App\Catalog\UI\Http\Form\Mapper\CreateManufacturerMapper;
 use App\Catalog\UI\Http\Form\Mapper\UpdateManufacturerMapper;
 use App\Catalog\UI\Http\Form\Model\ManufacturerForm;
 use App\Catalog\UI\Http\Form\Type\ManufacturerType;
-use App\Shared\UI\Http\FormFlow\DeleteFlow;
-use App\Shared\UI\Http\FormFlow\FormFlow;
-use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditContext;
-use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditFlow;
-use App\Shared\UI\Http\FormFlow\SearchFlow;
-use App\Shared\UI\Http\FormFlow\View\FlowContext;
-use App\Shared\UI\Http\FormFlow\View\FlowModel;
+use App\Shared\Application\FlusherInterface;
+use MyVars\FormFlow\ConfirmFlow;
+use MyVars\FormFlow\FormFlow;
+use MyVars\FormFlow\InlineEdit\InlineEditContext;
+use MyVars\FormFlow\InlineEdit\InlineEditFlow;
+use MyVars\FormFlow\SearchFlow;
+use MyVars\FormFlow\View\FlowContext;
+use MyVars\FormFlow\View\FlowModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -45,7 +46,7 @@ class ManufacturerController extends AbstractController
     ): Response {
         return $flow->search(
             request: $request,
-            repository: $repository,
+            adapter: $repository->findByCriteria($criteria),
             criteria: $criteria,
             context: FlowContext::forSearch($this->model()),
         );
@@ -91,9 +92,9 @@ class ManufacturerController extends AbstractController
     #[Route(path: '/manufacturer/{id}/delete/confirm', name: 'app_catalog_manufacturer_delete_confirm', methods: ['GET'])]
     public function deleteConfirm(
         #[ValueResolver('public_id')] Manufacturer $manufacturer,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->deleteConfirm(
+        return $flow->confirm(
             entity: $manufacturer,
             context: FlowContext::forDelete($this->model()),
         );
@@ -104,9 +105,9 @@ class ManufacturerController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] Manufacturer $manufacturer,
         DeleteManufacturerHandler $handler,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->delete(
+        return $flow->execute(
             request: $request,
             command: new DeleteManufacturer($manufacturer->getPublicId()),
             handler: $handler,
@@ -125,11 +126,16 @@ class ManufacturerController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] Manufacturer $manufacturer,
         InlineEditFlow $flow,
+        FlusherInterface $flusher,
     ): Response {
         return $flow->handleField(
             request: $request,
             value: $manufacturer->getName(),
-            onSave: fn ($value) => $manufacturer->update((string) $value, $manufacturer->isActive()),
+            onSave: function ($value) use ($manufacturer, $flusher): bool {
+                $manufacturer->update((string) $value, $manufacturer->isActive());
+
+                return $flusher->flush();
+            },
             context: InlineEditContext::create(
                 frameId: 'inline-edit-manufacturer-' . $manufacturer->getPublicId() . '-name',
                 displayTemplate: 'catalog/manufacturer/_inline_name.html.twig',

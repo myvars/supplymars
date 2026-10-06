@@ -164,7 +164,7 @@ symfony console app:calculate-order-sales 7        # Last 7 days
 | Component | Technology | Purpose |
 |-----------|------------|---------|
 | Language | PHP 8.5+ | Application code |
-| Framework | Symfony 8.0 | HTTP, DI, console, forms |
+| Framework | Symfony 8.1 | HTTP, DI, console, forms |
 | Database | MySQL 8.4 | Primary data store |
 | ORM | Doctrine | Entity mapping, migrations |
 | Queue | RabbitMQ | Async event processing |

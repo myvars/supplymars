@@ -8,7 +8,7 @@ This review is an honest assessment of where the project stands today: what it d
 
 ## 1. What the Project Is
 
-SupplyMars is a full-stack supply chain management platform built with PHP 8.5 and Symfony 8.0. It models a Mars-themed e-commerce and operations business: products sourced from multiple suppliers, dynamic pricing with hierarchical markup cascades, customer orders that split across suppliers based on stock and cost, purchase order lifecycle management, reporting dashboards, a support ticket system, product reviews, and a REST API.
+SupplyMars is a full-stack supply chain management platform built with PHP 8.5 and Symfony 8.1. It models a Mars-themed e-commerce and operations business: products sourced from multiple suppliers, dynamic pricing with hierarchical markup cascades, customer orders that split across suppliers based on stock and cost, purchase order lifecycle management, reporting dashboards, a support ticket system, product reviews, and a REST API.
 
 It is a modular monolith, organised into eleven bounded contexts following domain-driven design principles. The frontend uses server-rendered Twig templates enhanced with Hotwire Turbo, Stimulus controllers, and Tailwind CSS. Infrastructure is Dockerised, deployed to AWS via GitHub Actions, and includes a separate "playground" environment for safe public demos.
 
@@ -30,7 +30,7 @@ It also reflects a bias toward building real things rather than talking about th
 
 The project appears to pursue several goals simultaneously:
 
-**Technical goals.** Demonstrate fluency with modern PHP and Symfony: strict typing, readonly properties, PHP 8.5 enums, attribute-based mapping, the latest Doctrine ORM, and Symfony 8.0 features. Show that PHP can be used to build well-architected, maintainable systems, not just quick scripts.
+**Technical goals.** Demonstrate fluency with modern PHP and Symfony: strict typing, readonly properties, PHP 8.5 enums, attribute-based mapping, the latest Doctrine ORM, and Symfony 8.1 features. Show that PHP can be used to build well-architected, maintainable systems, not just quick scripts.
 
 **Architectural goals.** Apply domain-driven design in a way that is practical rather than dogmatic. Bounded contexts with clear layering, but adapted to the actual complexity of each context rather than applied uniformly for its own sake. The Home context is a single controller; the Purchasing context has 131 files across four layers. This is the right kind of proportionality.
 
@@ -74,7 +74,7 @@ The scope of this project is unusually broad for a solo effort. It covers:
 
 **The architecture is coherent and well-reasoned.** The bounded context structure is not decorative. Each context genuinely encapsulates a distinct area of the domain, with cross-context communication happening through domain events rather than direct service calls. The layering within each context is consistent and serves a clear purpose. The shared kernel is well-scoped: large enough to prevent duplication, small enough to avoid becoming a dumping ground.
 
-**The FormFlow abstraction is a genuine contribution.** Rather than repeating the same form-handling boilerplate across dozens of controllers, the project extracts a reusable flow system with four variants (FormFlow, CommandFlow, DeleteFlow, SearchFlow) plus an inline editing extension. Controllers are reduced to 5-10 lines per action. This is the kind of abstraction that emerges from building enough of something to see the pattern, and it is well-executed: fluent context builders, Turbo-aware redirects, auto-update detection, and proper error handling.
+**The FormFlow abstraction is a genuine contribution.** Rather than repeating the same form-handling boilerplate across dozens of controllers, the project extracts a reusable flow system with four variants (FormFlow, ActionFlow, DeleteFlow, SearchFlow) plus an inline editing extension. Controllers are reduced to 5-10 lines per action. This is the kind of abstraction that emerges from building enough of something to see the pattern, and it is well-executed: fluent context builders, Turbo-aware redirects, auto-update detection, and proper error handling.
 
 **The domain models are rich and well-encapsulated.** Entities have private constructors with factory methods, status transitions are validated at the model level, invariants are enforced with exceptions, and derived state is recalculated through explicit methods. This is not an anemic domain model; the business logic lives where it belongs.
 

@@ -22,6 +22,7 @@ vendor/bin/rector process     # Dead code, type declarations, Doctrine/Symfony s
 # Migrations
 symfony console make:migration        # Generate migration from entity changes
 symfony console doctrine:migrations:migrate  # Run pending migrations
+# Schema changes go through migrations only — never doctrine:schema:update or hand-written SQL
 
 # Docker (alternative to symfony serve)
 make up / make down / make bash
@@ -32,7 +33,7 @@ symfony console messenger:consume async
 
 ## Project Overview
 
-SupplyMars is a Mars-themed e-commerce and operations platform — PHP 8.5+ / Symfony 8.0.x, Doctrine ORM (MySQL 8.4), RabbitMQ (async), Redis (cache), Tailwind CSS + Turbo (Hotwire), Symfony Asset Mapper (no Webpack/Vite), Zenstruck Foundry + DAMA Doctrine Test Bundle for testing.
+SupplyMars is a Mars-themed e-commerce and operations platform — PHP 8.5+ / Symfony 8.1.x, Doctrine ORM (MySQL 8.4), RabbitMQ (async), Redis (cache), Tailwind CSS + Turbo (Hotwire), Symfony Asset Mapper (no Webpack/Vite), Zenstruck Foundry + DAMA Doctrine Test Bundle for testing.
 
 Architecturally: a **modular monolith with strong DDD influences**.
 
@@ -73,7 +74,7 @@ These areas have non-obvious design. Read the corresponding ADR in `Docs/adr/` b
 - **Simulation-first** (ADR-003): Console commands drive the full order/purchasing/fulfilment lifecycle with realistic timing.
 - **Pricing cascades** (ADR-004): Three-level markup (Product → Subcategory → Category) with event-driven recalculation, 6 price models, `bcmath` precision.
 - **Two-layer reporting** (ADR-005): Daily granular records + pre-computed summaries for fast dashboards.
-- **FormFlow** (ADR-006): Standardized controller pattern. Full spec in `Docs/patterns/FormFlow/`.
+- **FormFlow** (ADR-006): Standardized controller pattern, now the external `myvars/form-flow` package (`MyVars\FormFlow\`). Full spec in the package `README.md` + `Docs/patterns/FormFlow/`.
 
 ## Patterns
 
@@ -98,18 +99,25 @@ These areas have non-obvious design. Read the corresponding ADR in `Docs/adr/` b
 
 ### FormFlow (Controller Pattern)
 
-Controllers are thin orchestrators. 4 flow types:
+The flow coordinators live in the external **`myvars/form-flow`** package (namespace `MyVars\FormFlow\`,
+required from Packagist as `^1.1`, enabled as `FormFlowBundle`) — **not** in `src/`; do not re-add an
+in-app `FormFlow` directory. The app provides the **adapters** — `Result`, `RedirectTarget`,
+`FlashMessenger` and `Application\Search\SearchCriteriaInterface` implement/extend the package's
+`Contract\` ports (autowired; `FlasherInterface` aliased in `services.yaml`). The package ships
+**design-neutral default templates**; this app's own `templates/shared/form_flow/*` override them. Controllers
+are thin orchestrators using 5 flow types:
 
 | Flow | Purpose |
 |------|---------|
 | `FormFlow` | Create/update with Symfony forms |
-| `CommandFlow` | State transitions (approve, reject, etc.) |
-| `DeleteFlow` | Delete with confirmation |
-| `SearchFlow` | Paginated index pages |
+| `ActionFlow` | State transitions (approve, reject, etc.) |
+| `ConfirmFlow` | Confirm-then-execute (delete, cancel, rewind, remove…) with per-action CSRF |
+| `SearchFlow` | Paginated index pages (takes a Pagerfanta adapter) |
+| `InlineEditFlow` | Inline field editing via Turbo Frames (the `onSave` callback owns persistence + flush) |
 
 - **Mappers** are `__invoke` callables: form DTO → command. Located in `{Context}/UI/Http/Form/Mapper/`, named `{Action}{Entity}Mapper`.
 - **Filter mappers**: `SearchCriteria` → `FilterCommand` (readonly DTO implementing `SearchCriteriaInterface`). Handler builds redirect via `FilterParamBuilder`.
-- `FlowContext` factories: `forCreate()`, `forUpdate()`, `forFilter()`, `forSearch()`, `forCommand()`.
+- `FlowContext` factories: `forCreate()`, `forUpdate()`, `forFilter()`, `forSearch()`, `forAction()`, `forConfirm()`, `forDelete()`.
 - Chainable: `->template()`, `->successRoute()`, `->allowDelete(true)`, `->redirectOptions(refresh: true)`.
 
 ### Route Naming
@@ -133,6 +141,7 @@ Controllers are thin orchestrators. 4 flow types:
 - Factories in `tests/Shared/Factory/` (Zenstruck Foundry). Use `Factories` trait in test classes.
 - Auth: `#[WithStory(StaffUserStory::class)]` or `UserFactory::new()->asStaff()->create()`. For delete handlers: `#[WithStory(SuperAdminUserStory::class)]` or `UserFactory::new()->asSuperAdmin()->create()`.
 - Flow tests use `HasBrowser` trait (Zenstruck Browser). Named `{Feature}FlowTest.php` in `tests/{Context}/UI/`.
+- A feature isn't done until a test exercises it the way a caller would — an HTTP request for a controller, a handler call for a handler — not just "it didn't throw".
 
 ## Code Style
 
@@ -143,6 +152,23 @@ Controllers are thin orchestrators. 4 flow types:
 - Rich entities with domain logic; thin controllers (delegate to Flow/handlers).
 - Use existing Form model / type / mapper patterns.
 - Use repositories for all queries.
+
+## Symfony Conventions
+
+- **Attributes and autowiring, not config**: follow the surrounding code (`#[Route]`, `#[AsCommand]`, `#[AsEventListener]`, `#[Autowire(param:/env:)]`, `#[Target]`). A YAML service or route definition is the last resort.
+- **Readonly services**: don't mark a service class `readonly` if it might become lazy — a lazy proxy can't extend a `readonly` class. DTOs, commands and value objects are fine.
+- **New capabilities via Flex**: `composer require <package>` and let the recipe register the bundle and base config. Don't hand-edit `config/bundles.php` or hand-write a bundle's base config.
+- **Use the framework before building or importing**: check for a Symfony component before hand-writing infrastructure (locks, caches, HTTP clients, schedulers) or adding a third-party library.
+- **Makers**: pass every argument up front with `--no-interaction` where supported; makers prompt by default, which hangs a non-interactive shell. If a maker still needs input, hand-write the code.
+
+### Discover, don't guess
+
+Framework APIs change between versions. Look things up in the project rather than relying on memory:
+
+- `symfony console debug:router`, `debug:container`, `debug:autowiring <name>`, `debug:config <bundle>`, `config:dump-reference <bundle>` — what exists and how it is configured.
+- `symfony console lint:container`, `lint:twig templates/`, `lint:yaml config/` — validate before running.
+- When something fails, read `var/log/dev.log` and the web profiler (`/_profiler`) before changing code.
+- Read the installed source under `vendor/`, and use docs matching the version in `composer.json`.
 
 ## New Feature Checklist
 

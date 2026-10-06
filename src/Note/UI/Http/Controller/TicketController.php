@@ -32,12 +32,12 @@ use App\Note\UI\Http\Form\Type\ReplyType;
 use App\Note\UI\Http\Form\Type\TicketFilterType;
 use App\Note\UI\Http\Form\Type\TicketType;
 use App\Shared\Infrastructure\Security\CurrentUserProvider;
-use App\Shared\UI\Http\FormFlow\CommandFlow;
-use App\Shared\UI\Http\FormFlow\DeleteFlow;
-use App\Shared\UI\Http\FormFlow\FormFlow;
-use App\Shared\UI\Http\FormFlow\SearchFlow;
-use App\Shared\UI\Http\FormFlow\View\FlowContext;
-use App\Shared\UI\Http\FormFlow\View\FlowModel;
+use MyVars\FormFlow\ActionFlow;
+use MyVars\FormFlow\ConfirmFlow;
+use MyVars\FormFlow\FormFlow;
+use MyVars\FormFlow\SearchFlow;
+use MyVars\FormFlow\View\FlowContext;
+use MyVars\FormFlow\View\FlowModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -64,7 +64,7 @@ class TicketController extends AbstractController
     ): Response {
         return $flow->search(
             request: $request,
-            repository: $repository,
+            adapter: $repository->findByCriteria($criteria),
             criteria: $criteria,
             context: FlowContext::forSearch($this->model()),
         );
@@ -146,13 +146,13 @@ class TicketController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] Ticket $ticket,
         CloseTicketHandler $handler,
-        CommandFlow $flow,
+        ActionFlow $flow,
     ): Response {
         return $flow->process(
             request: $request,
             command: new CloseTicket($ticket->getPublicId()),
             handler: $handler,
-            context: FlowContext::forSuccess('app_note_ticket_show', ['id' => $ticket->getPublicId()->value()]),
+            context: FlowContext::forAction('app_note_ticket_show', ['id' => $ticket->getPublicId()->value()]),
         );
     }
 
@@ -161,13 +161,13 @@ class TicketController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] Ticket $ticket,
         ReopenTicketHandler $handler,
-        CommandFlow $flow,
+        ActionFlow $flow,
     ): Response {
         return $flow->process(
             request: $request,
             command: new ReopenTicket($ticket->getPublicId()),
             handler: $handler,
-            context: FlowContext::forSuccess('app_note_ticket_show', ['id' => $ticket->getPublicId()->value()]),
+            context: FlowContext::forAction('app_note_ticket_show', ['id' => $ticket->getPublicId()->value()]),
         );
     }
 
@@ -195,13 +195,13 @@ class TicketController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] Ticket $ticket,
         ToggleSnoozeTicketHandler $handler,
-        CommandFlow $flow,
+        ActionFlow $flow,
     ): Response {
         return $flow->process(
             request: $request,
             command: new ToggleSnoozeTicket($ticket->getPublicId()),
             handler: $handler,
-            context: FlowContext::forSuccess('app_note_ticket_show', ['id' => $ticket->getPublicId()->value()]),
+            context: FlowContext::forAction('app_note_ticket_show', ['id' => $ticket->getPublicId()->value()]),
         );
     }
 
@@ -230,12 +230,12 @@ class TicketController extends AbstractController
         string $ticketId,
         string $messageId,
         DeleteMessageHandler $handler,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
         $ticketPublicId = TicketPublicId::fromString($ticketId);
         $messagePublicId = MessagePublicId::fromString($messageId);
 
-        return $flow->delete(
+        return $flow->execute(
             request: $request,
             command: new DeleteMessage($ticketPublicId, $messagePublicId),
             handler: $handler,

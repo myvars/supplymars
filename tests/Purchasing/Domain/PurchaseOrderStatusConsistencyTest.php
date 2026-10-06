@@ -136,7 +136,7 @@ class PurchaseOrderStatusConsistencyTest extends TestCase
 
         // SHIPPED -> REFUNDED should throw
         $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage('Cannot transition from "SHIPPED" to "REFUNDED"');
+        $this->expectExceptionMessageIsOrContains('Cannot transition from "SHIPPED" to "REFUNDED"');
 
         $item->updateItemStatus(PurchaseOrderStatus::REFUNDED);
     }
@@ -154,7 +154,7 @@ class PurchaseOrderStatusConsistencyTest extends TestCase
 
         // ACCEPTED -> REFUNDED should throw
         $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage('Cannot transition from "ACCEPTED" to "REFUNDED"');
+        $this->expectExceptionMessageIsOrContains('Cannot transition from "ACCEPTED" to "REFUNDED"');
 
         $item->updateItemStatus(PurchaseOrderStatus::REFUNDED);
     }

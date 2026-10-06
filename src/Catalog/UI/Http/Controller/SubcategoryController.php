@@ -16,13 +16,14 @@ use App\Catalog\UI\Http\Form\Mapper\UpdateSubcategoryMapper;
 use App\Catalog\UI\Http\Form\Model\SubcategoryForm;
 use App\Catalog\UI\Http\Form\Type\SubcategoryFilterType;
 use App\Catalog\UI\Http\Form\Type\SubcategoryType;
-use App\Shared\UI\Http\FormFlow\DeleteFlow;
-use App\Shared\UI\Http\FormFlow\FormFlow;
-use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditContext;
-use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditFlow;
-use App\Shared\UI\Http\FormFlow\SearchFlow;
-use App\Shared\UI\Http\FormFlow\View\FlowContext;
-use App\Shared\UI\Http\FormFlow\View\FlowModel;
+use App\Shared\Application\FlusherInterface;
+use MyVars\FormFlow\ConfirmFlow;
+use MyVars\FormFlow\FormFlow;
+use MyVars\FormFlow\InlineEdit\InlineEditContext;
+use MyVars\FormFlow\InlineEdit\InlineEditFlow;
+use MyVars\FormFlow\SearchFlow;
+use MyVars\FormFlow\View\FlowContext;
+use MyVars\FormFlow\View\FlowModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -48,7 +49,7 @@ class SubcategoryController extends AbstractController
     ): Response {
         return $flow->search(
             request: $request,
-            repository: $repository,
+            adapter: $repository->findByCriteria($criteria),
             criteria: $criteria,
             context: FlowContext::forSearch($this->model()),
         );
@@ -112,9 +113,9 @@ class SubcategoryController extends AbstractController
     #[Route(path: '/subcategory/{id}/delete/confirm', name: 'app_catalog_subcategory_delete_confirm', methods: ['GET'])]
     public function deleteConfirm(
         #[ValueResolver('public_id')] Subcategory $subcategory,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->deleteConfirm(
+        return $flow->confirm(
             entity: $subcategory,
             context: FlowContext::forDelete($this->model()),
         );
@@ -125,9 +126,9 @@ class SubcategoryController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] Subcategory $subcategory,
         DeleteSubcategoryHandler $handler,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->delete(
+        return $flow->execute(
             request: $request,
             command: new DeleteSubcategory($subcategory->getPublicId()),
             handler: $handler,
@@ -146,11 +147,16 @@ class SubcategoryController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] Subcategory $subcategory,
         InlineEditFlow $flow,
+        FlusherInterface $flusher,
     ): Response {
         return $flow->handleField(
             request: $request,
             value: $subcategory->getName(),
-            onSave: fn ($value) => $subcategory->rename((string) $value),
+            onSave: function ($value) use ($subcategory, $flusher): bool {
+                $subcategory->rename((string) $value);
+
+                return $flusher->flush();
+            },
             context: InlineEditContext::create(
                 frameId: 'inline-edit-subcategory-' . $subcategory->getPublicId() . '-name',
                 displayTemplate: 'catalog/subcategory/_inline_name.html.twig',

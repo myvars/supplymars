@@ -64,7 +64,7 @@ final class VatRateDomainTest extends TestCase
     public function testEmptyNameThrows(): void
     {
         self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessage('Rate name cannot be empty');
+        self::expectExceptionMessageIsOrContains('Rate name cannot be empty');
 
         VatRate::create(
             name: '   ',
@@ -75,7 +75,7 @@ final class VatRateDomainTest extends TestCase
     public function testNegativeRateThrows(): void
     {
         self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessage('Rate cannot be negative');
+        self::expectExceptionMessageIsOrContains('Rate cannot be negative');
 
         VatRate::create(
             name: 'Bad',

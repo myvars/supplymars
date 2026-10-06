@@ -183,7 +183,7 @@ Each bounded context follows a consistent internal structure:
 | Step | Class | Location |
 |------|-------|----------|
 | ValueResolver | `PublicIdResolver` | `src/Shared/UI/Http/ValueResolver/` |
-| FormFlow | `FormFlow`, `CommandFlow`, `DeleteFlow`, `SearchFlow` | `src/Shared/UI/Http/FormFlow/` |
+| FormFlow | `FormFlow`, `ActionFlow`, `DeleteFlow`, `SearchFlow` | `src/Shared/UI/Http/FormFlow/` |
 | Mapper | Context-specific mappers | `src/{Context}/UI/Http/Form/Mapper/` |
 | Handler | Context-specific handlers | `src/{Context}/Application/Handler/` |
 | Repository | Domain interfaces + Doctrine impl | `src/{Context}/Domain/Repository/` + `Infrastructure/Persistence/` |

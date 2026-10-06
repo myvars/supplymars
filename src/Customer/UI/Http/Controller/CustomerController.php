@@ -12,13 +12,14 @@ use App\Customer\UI\Http\Form\Mapper\UpdateCustomerMapper;
 use App\Customer\UI\Http\Form\Model\CustomerForm;
 use App\Customer\UI\Http\Form\Type\CustomerType;
 use App\Reporting\Application\Handler\Report\CustomerProfileInsightsHandler;
-use App\Shared\UI\Http\FormFlow\DeleteFlow;
-use App\Shared\UI\Http\FormFlow\FormFlow;
-use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditContext;
-use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditFlow;
-use App\Shared\UI\Http\FormFlow\SearchFlow;
-use App\Shared\UI\Http\FormFlow\View\FlowContext;
-use App\Shared\UI\Http\FormFlow\View\FlowModel;
+use App\Shared\Application\FlusherInterface;
+use MyVars\FormFlow\ConfirmFlow;
+use MyVars\FormFlow\FormFlow;
+use MyVars\FormFlow\InlineEdit\InlineEditContext;
+use MyVars\FormFlow\InlineEdit\InlineEditFlow;
+use MyVars\FormFlow\SearchFlow;
+use MyVars\FormFlow\View\FlowContext;
+use MyVars\FormFlow\View\FlowModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -44,7 +45,7 @@ class CustomerController extends AbstractController
     ): Response {
         return $flow->search(
             request: $request,
-            repository: $repository,
+            adapter: $repository->findByCriteria($criteria),
             criteria: $criteria,
             context: FlowContext::forSearch($this->model()),
         );
@@ -73,9 +74,9 @@ class CustomerController extends AbstractController
     #[Route(path: '/customer/{id}/delete/confirm', name: 'app_customer_delete_confirm', methods: ['GET'])]
     public function deleteConfirm(
         #[ValueResolver('public_id')] User $customer,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->deleteConfirm(
+        return $flow->confirm(
             entity: $customer,
             context: FlowContext::forDelete($this->model()),
         );
@@ -86,9 +87,9 @@ class CustomerController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] User $customer,
         DeleteCustomerHandler $handler,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->delete(
+        return $flow->execute(
             request: $request,
             command: new DeleteCustomer($customer->getPublicId()),
             handler: $handler,
@@ -114,11 +115,16 @@ class CustomerController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] User $customer,
         InlineEditFlow $flow,
+        FlusherInterface $flusher,
     ): Response {
         return $flow->handleField(
             request: $request,
             value: $customer->getFullName(),
-            onSave: function ($value) use ($customer): void { $customer->setFullName((string) $value); },
+            onSave: function ($value) use ($customer, $flusher): bool {
+                $customer->setFullName((string) $value);
+
+                return $flusher->flush();
+            },
             context: InlineEditContext::create(
                 frameId: 'inline-edit-customer-' . $customer->getPublicId() . '-fullname',
                 displayTemplate: 'customer/_inline_fullname.html.twig',

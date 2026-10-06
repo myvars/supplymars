@@ -23,7 +23,7 @@ final class ManufacturerDomainTest extends TestCase
     public function testInvalidNameThrows(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Manufacturer name cannot be empty');
+        $this->expectExceptionMessageIsOrContains('Manufacturer name cannot be empty');
 
         Manufacturer::create(
             name: '',

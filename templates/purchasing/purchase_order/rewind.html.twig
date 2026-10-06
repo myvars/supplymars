@@ -7,7 +7,7 @@
     <twig:ConfirmDialog
         title="Rewind Purchase Order"
         formAction="{{ path('app_purchasing_purchase_order_rewind', {'id': result.publicId.value}) }}"
-        csrfId="delete{{ result.publicId.value }}"
+        csrfId="{{ confirmKey|default('delete') }}{{ result.publicId.value }}"
         confirmLabel="Rewind to Pending"
         confirmVariant="warning"
     >

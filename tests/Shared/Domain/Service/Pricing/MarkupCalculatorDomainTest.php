@@ -89,49 +89,49 @@ final class MarkupCalculatorDomainTest extends TestCase
     public function testInvalidCostForSellPrice(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Cost must be greater than 0.');
+        $this->expectExceptionMessageIsOrContains('Cost must be greater than 0.');
         $this->calculator->calculateSellPrice('-1', '20');
     }
 
     public function testInvalidMarkupForSellPrice(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Markup must not be negative.');
+        $this->expectExceptionMessageIsOrContains('Markup must not be negative.');
         $this->calculator->calculateSellPrice('100', '-1');
     }
 
     public function testInvalidCostForMarkupFromSellPrice(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Cost must be greater than 0.');
+        $this->expectExceptionMessageIsOrContains('Cost must be greater than 0.');
         $this->calculator->calculateMarkupFromSellPrice('0', '120');
     }
 
     public function testInvalidSellPriceForMarkupFromSellPrice(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Sell price must be greater than cost.');
+        $this->expectExceptionMessageIsOrContains('Sell price must be greater than cost.');
         $this->calculator->calculateMarkupFromSellPrice('100', '0');
     }
 
     public function testInvalidVatForSellPriceIncVat(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('VAT rate must not be negative.');
+        $this->expectExceptionMessageIsOrContains('VAT rate must not be negative.');
         $this->calculator->calculateSellPriceIncVat('100', '20', '-1');
     }
 
     public function testInvalidSellPriceIncVatForBeforeVat(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Sell price (inc VAT) must be greater than 0.');
+        $this->expectExceptionMessageIsOrContains('Sell price (inc VAT) must be greater than 0.');
         $this->calculator->calculateSellPriceBeforeVat('0', '20');
     }
 
     public function testInvalidVatForBeforeVat(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('VAT rate must not be negative.');
+        $this->expectExceptionMessageIsOrContains('VAT rate must not be negative.');
         $this->calculator->calculateSellPriceBeforeVat('100', '-1');
     }
 }

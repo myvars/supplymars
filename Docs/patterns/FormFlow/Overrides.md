@@ -15,7 +15,7 @@ If a context provides its own template (e.g. `catalog/product/create.html.twig`)
 You can also force a specific template via `FlowContext::template()`:
 
 ```php
-context: FlowContext::forCreate(self::MODEL)
+context: FlowContext::forCreate($this->model())
     ->template('catalog/product/my_custom.html.twig'),
 ```
 
@@ -105,7 +105,7 @@ When deletion should be blocked based on entity state, use a fully custom delete
 Set `allowDelete(true)` on the `FlowContext` in the controller:
 
 ```php
-context: FlowContext::forUpdate(self::MODEL)->allowDelete(true),
+context: FlowContext::forUpdate($this->model())->allowDelete(true),
 ```
 
 The base `update.html.twig` checks `flowAllowDelete` and renders a delete link automatically:

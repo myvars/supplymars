@@ -16,13 +16,14 @@ use App\Catalog\UI\Http\Form\Mapper\UpdateCategoryMapper;
 use App\Catalog\UI\Http\Form\Model\CategoryForm;
 use App\Catalog\UI\Http\Form\Type\CategoryFilterType;
 use App\Catalog\UI\Http\Form\Type\CategoryType;
-use App\Shared\UI\Http\FormFlow\DeleteFlow;
-use App\Shared\UI\Http\FormFlow\FormFlow;
-use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditContext;
-use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditFlow;
-use App\Shared\UI\Http\FormFlow\SearchFlow;
-use App\Shared\UI\Http\FormFlow\View\FlowContext;
-use App\Shared\UI\Http\FormFlow\View\FlowModel;
+use App\Shared\Application\FlusherInterface;
+use MyVars\FormFlow\ConfirmFlow;
+use MyVars\FormFlow\FormFlow;
+use MyVars\FormFlow\InlineEdit\InlineEditContext;
+use MyVars\FormFlow\InlineEdit\InlineEditFlow;
+use MyVars\FormFlow\SearchFlow;
+use MyVars\FormFlow\View\FlowContext;
+use MyVars\FormFlow\View\FlowModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -48,7 +49,7 @@ class CategoryController extends AbstractController
     ): Response {
         return $flow->search(
             request: $request,
-            repository: $repository,
+            adapter: $repository->findByCriteria($criteria),
             criteria: $criteria,
             context: FlowContext::forSearch($this->model()),
         );
@@ -112,9 +113,9 @@ class CategoryController extends AbstractController
     #[Route(path: '/category/{id}/delete/confirm', name: 'app_catalog_category_delete_confirm', methods: ['GET'])]
     public function deleteConfirm(
         #[ValueResolver('public_id')] Category $category,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->deleteConfirm(
+        return $flow->confirm(
             entity: $category,
             context: FlowContext::forDelete($this->model()),
         );
@@ -125,9 +126,9 @@ class CategoryController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] Category $category,
         DeleteCategoryHandler $handler,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->delete(
+        return $flow->execute(
             request: $request,
             command: new DeleteCategory($category->getPublicId()),
             handler: $handler,
@@ -146,11 +147,16 @@ class CategoryController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] Category $category,
         InlineEditFlow $flow,
+        FlusherInterface $flusher,
     ): Response {
         return $flow->handleField(
             request: $request,
             value: $category->getName(),
-            onSave: fn ($value) => $category->rename((string) $value),
+            onSave: function ($value) use ($category, $flusher): bool {
+                $category->rename((string) $value);
+
+                return $flusher->flush();
+            },
             context: InlineEditContext::create(
                 frameId: 'inline-edit-category-' . $category->getPublicId() . '-name',
                 displayTemplate: 'catalog/category/_inline_name.html.twig',

@@ -7,7 +7,7 @@
     <twig:ConfirmDialog
         title="Cancel Order"
         formAction="{{ path('app_order_cancel', {'id': result.publicId.value}) }}"
-        csrfId="delete{{ result.publicId.value }}"
+        csrfId="{{ confirmKey|default('delete') }}{{ result.publicId.value }}"
         confirmLabel="Cancel Order"
         confirmVariant="warning"
         cancelLabel="Go Back"

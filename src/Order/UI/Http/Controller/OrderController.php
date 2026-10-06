@@ -20,12 +20,12 @@ use App\Order\UI\Http\Form\Mapper\OrderFilterMapper;
 use App\Order\UI\Http\Form\Model\OrderForm;
 use App\Order\UI\Http\Form\Type\OrderFilterType;
 use App\Order\UI\Http\Form\Type\OrderType;
-use App\Shared\UI\Http\FormFlow\CommandFlow;
-use App\Shared\UI\Http\FormFlow\DeleteFlow;
-use App\Shared\UI\Http\FormFlow\FormFlow;
-use App\Shared\UI\Http\FormFlow\SearchFlow;
-use App\Shared\UI\Http\FormFlow\View\FlowContext;
-use App\Shared\UI\Http\FormFlow\View\FlowModel;
+use MyVars\FormFlow\ActionFlow;
+use MyVars\FormFlow\ConfirmFlow;
+use MyVars\FormFlow\FormFlow;
+use MyVars\FormFlow\SearchFlow;
+use MyVars\FormFlow\View\FlowContext;
+use MyVars\FormFlow\View\FlowModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -51,7 +51,7 @@ class OrderController extends AbstractController
     ): Response {
         return $flow->search(
             request: $request,
-            repository: $repository,
+            adapter: $repository->findByCriteria($criteria),
             criteria: $criteria,
             context: FlowContext::forSearch($this->model()),
         );
@@ -96,8 +96,13 @@ class OrderController extends AbstractController
     #[Route(path: '/order/{id}/cancel/confirm', name: 'app_order_cancel_confirm', methods: ['GET'])]
     public function cancelConfirm(
         #[ValueResolver('public_id')] CustomerOrder $order,
+        ConfirmFlow $flow,
     ): Response {
-        return $this->render('/order/cancel.html.twig', ['result' => $order]);
+        return $flow->confirm(
+            entity: $order,
+            context: FlowContext::forConfirm($this->model(), 'cancel')
+                ->template('order/cancel.html.twig'),
+        );
     }
 
     #[Route(path: '/order/{id}/cancel', name: 'app_order_cancel', methods: ['POST'])]
@@ -105,13 +110,13 @@ class OrderController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] CustomerOrder $order,
         CancelOrderHandler $handler,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->delete(
+        return $flow->execute(
             request: $request,
             command: new CancelOrder($order->getPublicId()),
             handler: $handler,
-            context: FlowContext::forDelete($this->model()),
+            context: FlowContext::forConfirm($this->model(), 'cancel'),
         );
     }
 
@@ -120,13 +125,13 @@ class OrderController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] CustomerOrder $order,
         AllocateOrderHandler $handler,
-        CommandFlow $flow,
+        ActionFlow $flow,
     ): Response {
         return $flow->process(
             request: $request,
             command: new AllocateOrder($order->getPublicId()),
             handler: $handler,
-            context: FlowContext::forSuccess('app_order_show', [
+            context: FlowContext::forAction('app_order_show', [
                 'id' => $order->getPublicId()->value(),
             ]),
         );
@@ -137,13 +142,13 @@ class OrderController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] CustomerOrder $order,
         LockOrderHandler $handler,
-        CommandFlow $flow,
+        ActionFlow $flow,
     ): Response {
         return $flow->process(
             request: $request,
             command: new LockOrder($order->getPublicId()),
             handler: $handler,
-            context: FlowContext::forSuccess('app_order_show', [
+            context: FlowContext::forAction('app_order_show', [
                 'id' => $order->getPublicId()->value(),
             ]),
         );
@@ -165,13 +170,13 @@ class OrderController extends AbstractController
     public function demoCreate(
         Request $request,
         CreateDemoOrderHandler $handler,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->delete(
+        return $flow->execute(
             request: $request,
             command: new CreateDemoOrder(),
             handler: $handler,
-            context: FlowContext::forSuccess('app_order_index'),
+            context: FlowContext::forAction('app_order_index'),
         );
     }
 

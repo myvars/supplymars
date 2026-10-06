@@ -28,9 +28,10 @@ This achieves:
 | Class | Purpose | HTTP Methods |
 |-------|---------|--------------|
 | `FormFlow` | Create/update forms with validation | GET, POST |
-| `CommandFlow` | Direct command execution (state changes) | GET or POST |
+| `ActionFlow` | Direct command execution (state changes) | GET or POST |
 | `DeleteFlow` | Delete confirmation + CSRF-validated delete | GET, POST |
 | `SearchFlow` | Paginated index/list pages | GET |
+| `InlineEditFlow` | Single-field inline editing via Turbo Frames | GET, POST |
 
 All flows are located in `src/Shared/UI/Http/FormFlow/`.
 
@@ -59,7 +60,7 @@ POST /product/new (invalid data)
   → Returns 422
 ```
 
-### CommandFlow (State Transitions)
+### ActionFlow (State Transitions)
 
 ```
 GET /order/{id}/allocate
@@ -79,7 +80,7 @@ GET /product/{id}/delete/confirm
 POST /product/{id}/delete
   → Validates CSRF token ('delete' + entity.publicId)
   → If invalid: flash error, redirect 303
-  → If valid: delegates to CommandFlow.process()
+  → If valid: delegates to ActionFlow.process()
 ```
 
 ### SearchFlow (Index/List)
@@ -127,16 +128,13 @@ FlowContext::forUpdate($model)
 FlowContext::forDelete($model)
 FlowContext::forFilter($model)
 FlowContext::forSearch($model)
-FlowContext::forSuccess('app_order_show', ['id' => $id])
+FlowContext::forAction('app_order_show', ['id' => $id])
 ```
 
 Fluent methods:
-- `successRoute(string $route, array $params = [])` — Override redirect target
-- `successParams(array $params)` — Set route parameters
+- `successRoute(string $route, array $params = [])` — Override redirect target (route + params)
 - `template(string $template)` — Override template path
 - `allowDelete(bool $allow)` — Show delete button on update forms
-- `redirectOptions(bool $refresh, int $status)` — Configure redirect behavior
-- `routePrefix(string $prefix)` — Replace all derived route names from a new prefix
 
 ### Result
 
@@ -204,7 +202,7 @@ Additional variables per flow:
 ```
 src/Shared/UI/Http/FormFlow/
 ├── FormFlow.php              # Create/update forms
-├── CommandFlow.php           # Direct command execution
+├── ActionFlow.php           # Direct command execution
 ├── DeleteFlow.php            # Delete confirmation
 ├── SearchFlow.php            # Paginated lists
 ├── Guard/
@@ -212,7 +210,7 @@ src/Shared/UI/Http/FormFlow/
 ├── Redirect/
 │   └── TurboAwareRedirector.php  # Turbo stream redirects
 └── View/
-    ├── FlowContext.php       # Flow configuration (forCreate, forUpdate, forDelete, forFilter, forSearch, forSuccess)
+    ├── FlowContext.php       # Flow configuration (forCreate, forUpdate, forDelete, forFilter, forSearch, forAction)
     ├── FlowModel.php         # Typed model value object (create, simple, withDisplayName, template)
     ├── FlowRoutes.php        # Typed route name bag (fromPrefix, with)
     ├── FormOperation.php     # Operation enum (Create, Update, Delete, Filter, Command, Index)

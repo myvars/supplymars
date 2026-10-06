@@ -22,12 +22,12 @@ use App\Purchasing\UI\Http\Form\Mapper\UpdateSupplierProductMapper;
 use App\Purchasing\UI\Http\Form\Model\SupplierProductForm;
 use App\Purchasing\UI\Http\Form\Type\SupplierProductFilterType;
 use App\Purchasing\UI\Http\Form\Type\SupplierProductType;
-use App\Shared\UI\Http\FormFlow\CommandFlow;
-use App\Shared\UI\Http\FormFlow\DeleteFlow;
-use App\Shared\UI\Http\FormFlow\FormFlow;
-use App\Shared\UI\Http\FormFlow\SearchFlow;
-use App\Shared\UI\Http\FormFlow\View\FlowContext;
-use App\Shared\UI\Http\FormFlow\View\FlowModel;
+use MyVars\FormFlow\ActionFlow;
+use MyVars\FormFlow\ConfirmFlow;
+use MyVars\FormFlow\FormFlow;
+use MyVars\FormFlow\SearchFlow;
+use MyVars\FormFlow\View\FlowContext;
+use MyVars\FormFlow\View\FlowModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -53,7 +53,7 @@ class SupplierProductController extends AbstractController
     ): Response {
         return $flow->search(
             request: $request,
-            repository: $repository,
+            adapter: $repository->findByCriteria($criteria),
             criteria: $criteria,
             context: FlowContext::forSearch($this->model()),
         );
@@ -126,9 +126,9 @@ class SupplierProductController extends AbstractController
     )]
     public function deleteConfirm(
         #[ValueResolver('public_id')] SupplierProduct $supplierProduct,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->deleteConfirm(
+        return $flow->confirm(
             entity: $supplierProduct,
             context: FlowContext::forDelete($this->model()),
         );
@@ -139,9 +139,9 @@ class SupplierProductController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] SupplierProduct $supplierProduct,
         DeleteSupplierProductHandler $handler,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->delete(
+        return $flow->execute(
             request: $request,
             command: new DeleteSupplierProduct($supplierProduct->getPublicId()),
             handler: $handler,
@@ -162,8 +162,13 @@ class SupplierProductController extends AbstractController
     )]
     public function removeConfirm(
         #[ValueResolver('public_id')] SupplierProduct $supplierProduct,
+        ConfirmFlow $flow,
     ): Response {
-        return $this->render('/purchasing/supplier_product/remove.html.twig', ['result' => $supplierProduct]);
+        return $flow->confirm(
+            entity: $supplierProduct,
+            context: FlowContext::forConfirm($this->model(), 'remove')
+                ->template('purchasing/supplier_product/remove.html.twig'),
+        );
     }
 
     #[Route(path: '/supplier-product/{id}/remove', name: 'app_purchasing_supplier_product_remove', methods: ['POST'])]
@@ -171,13 +176,13 @@ class SupplierProductController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] SupplierProduct $supplierProduct,
         RemoveSupplierProductHandler $handler,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->delete(
+        return $flow->execute(
             request: $request,
             command: new RemoveSupplierProduct($supplierProduct->getPublicId()),
             handler: $handler,
-            context: FlowContext::forDelete($this->model())
+            context: FlowContext::forConfirm($this->model(), 'remove')
             ->successRoute('app_pricing_stock', [
                 'id' => $supplierProduct->getProduct()->getPublicId()->value(),
             ]),
@@ -193,13 +198,13 @@ class SupplierProductController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] SupplierProduct $supplierProduct,
         ToggleSupplierProductStatusHandler $handler,
-        CommandFlow $flow,
+        ActionFlow $flow,
     ): Response {
         return $flow->process(
             request: $request,
             command: new ToggleSupplierProductStatus($supplierProduct->getPublicId()),
             handler: $handler,
-            context: FlowContext::forSuccess('app_pricing_stock', [
+            context: FlowContext::forAction('app_pricing_stock', [
                 'id' => $supplierProduct->getProduct()?->getPublicId()->value(),
             ]),
         );
@@ -210,13 +215,13 @@ class SupplierProductController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] SupplierProduct $supplierProduct,
         MapSupplierProductHandler $handler,
-        CommandFlow $flow,
+        ActionFlow $flow,
     ): Response {
         return $flow->process(
             request: $request,
             command: new MapSupplierProduct($supplierProduct->getPublicId()),
             handler: $handler,
-            context: FlowContext::forSuccess('app_purchasing_supplier_product_show', [
+            context: FlowContext::forAction('app_purchasing_supplier_product_show', [
                 'id' => $supplierProduct->getPublicId()->value(),
             ]),
         );

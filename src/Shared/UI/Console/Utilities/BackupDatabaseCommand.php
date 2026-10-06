@@ -22,7 +22,7 @@ final readonly class BackupDatabaseCommand
         #[Target('backups_fsFilesystem')]
         private FilesystemOperator $backupsFsFilesystem,
         private LoggerInterface $logger,
-        #[Autowire('%env(DATABASE_URL)%')]
+        #[Autowire(env: 'DATABASE_URL')]
         private string $databaseUrl,
     ) {
     }

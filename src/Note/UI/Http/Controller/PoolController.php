@@ -16,12 +16,12 @@ use App\Note\UI\Http\Form\Mapper\UpdatePoolMapper;
 use App\Note\UI\Http\Form\Model\PoolForm;
 use App\Note\UI\Http\Form\Type\PoolType;
 use App\Shared\Infrastructure\Security\CurrentUserProvider;
-use App\Shared\UI\Http\FormFlow\CommandFlow;
-use App\Shared\UI\Http\FormFlow\DeleteFlow;
-use App\Shared\UI\Http\FormFlow\FormFlow;
-use App\Shared\UI\Http\FormFlow\SearchFlow;
-use App\Shared\UI\Http\FormFlow\View\FlowContext;
-use App\Shared\UI\Http\FormFlow\View\FlowModel;
+use MyVars\FormFlow\ActionFlow;
+use MyVars\FormFlow\ConfirmFlow;
+use MyVars\FormFlow\FormFlow;
+use MyVars\FormFlow\SearchFlow;
+use MyVars\FormFlow\View\FlowContext;
+use MyVars\FormFlow\View\FlowModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -47,7 +47,7 @@ class PoolController extends AbstractController
     ): Response {
         return $flow->search(
             request: $request,
-            repository: $repository,
+            adapter: $repository->findByCriteria($criteria),
             criteria: $criteria,
             context: FlowContext::forSearch($this->model()),
         );
@@ -93,9 +93,9 @@ class PoolController extends AbstractController
     #[Route(path: '/note/pool/{id}/delete/confirm', name: 'app_note_pool_delete_confirm', methods: ['GET'])]
     public function deleteConfirm(
         #[ValueResolver('public_id')] Pool $pool,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->deleteConfirm(
+        return $flow->confirm(
             entity: $pool,
             context: FlowContext::forDelete($this->model()),
         );
@@ -106,9 +106,9 @@ class PoolController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] Pool $pool,
         DeletePoolHandler $handler,
-        DeleteFlow $flow,
+        ConfirmFlow $flow,
     ): Response {
-        return $flow->delete(
+        return $flow->execute(
             request: $request,
             command: new DeletePool($pool->getPublicId()),
             handler: $handler,
@@ -134,13 +134,13 @@ class PoolController extends AbstractController
         Request $request,
         #[ValueResolver('public_id')] Pool $pool,
         TogglePoolSubscriptionHandler $handler,
-        CommandFlow $flow,
+        ActionFlow $flow,
     ): Response {
         return $flow->process(
             request: $request,
             command: new TogglePoolSubscription($pool->getPublicId()),
             handler: $handler,
-            context: FlowContext::forSuccess('app_note_pool_show', ['id' => $pool->getPublicId()->value()]),
+            context: FlowContext::forAction('app_note_pool_show', ['id' => $pool->getPublicId()->value()]),
         );
     }
 }
