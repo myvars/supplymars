@@ -32,7 +32,7 @@ symfony console messenger:consume async
 
 ## Project Overview
 
-SupplyMars is a Mars-themed e-commerce and operations platform — PHP 8.5+ / Symfony 8.0.x, Doctrine ORM (MySQL 8.4), RabbitMQ (async), Redis (cache), Tailwind CSS + Turbo (Hotwire), Symfony Asset Mapper (no Webpack/Vite), Zenstruck Foundry + DAMA Doctrine Test Bundle for testing.
+SupplyMars is a Mars-themed e-commerce and operations platform — PHP 8.5+ / Symfony 8.1.x, Doctrine ORM (MySQL 8.4), RabbitMQ (async), Redis (cache), Tailwind CSS + Turbo (Hotwire), Symfony Asset Mapper (no Webpack/Vite), Zenstruck Foundry + DAMA Doctrine Test Bundle for testing.
 
 Architecturally: a **modular monolith with strong DDD influences**.
 
