@@ -19,7 +19,7 @@ abstract readonly class AbstractUlidId implements \Stringable, \JsonSerializable
 
     public static function fromString(string $value): static
     {
-        if (!Ulid::isValid($value)) {
+        if (!Ulid::isValid($value, Ulid::FORMAT_BASE_32)) {
             throw new \InvalidArgumentException(static::class . ' must be a valid ULID string');
         }
 

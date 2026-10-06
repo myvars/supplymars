@@ -68,7 +68,7 @@ final class UpdateSubcategoryCostHandlerTest extends KernelTestCase
     public function testFailsOnNegativeMarkup(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Markup cannot be negative');
+        $this->expectExceptionMessageIsOrContains('Markup cannot be negative');
 
         $subcategory = SubcategoryFactory::createOne();
 

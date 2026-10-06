@@ -39,7 +39,7 @@ final class CreateManufacturerHandlerTest extends KernelTestCase
     public function testHandleFailsOnInvalidName(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Manufacturer name cannot be empty');
+        $this->expectExceptionMessageIsOrContains('Manufacturer name cannot be empty');
 
         $command = new CreateManufacturer(
             name: '   ',

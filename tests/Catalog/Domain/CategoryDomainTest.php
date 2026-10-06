@@ -112,7 +112,7 @@ class CategoryDomainTest extends TestCase
     public function testInvalidNameThrows(): void
     {
         self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessage('Category name cannot be empty');
+        self::expectExceptionMessageIsOrContains('Category name cannot be empty');
 
         Category::create(
             name: '',
@@ -127,7 +127,7 @@ class CategoryDomainTest extends TestCase
     public function testNegativeMarkupThrows(): void
     {
         self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessage('Markup cannot be negative');
+        self::expectExceptionMessageIsOrContains('Markup cannot be negative');
 
         Category::create(
             name: 'Electronics',
@@ -142,7 +142,7 @@ class CategoryDomainTest extends TestCase
     public function testPriceModelNoneThrows(): void
     {
         self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessage('A category must have a price model');
+        self::expectExceptionMessageIsOrContains('A category must have a price model');
 
         Category::create(
             name: 'Electronics',

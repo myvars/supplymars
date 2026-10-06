@@ -133,7 +133,7 @@ class OrderItemAllocatorTest extends KernelTestCase
         ]);
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('No quantity to allocate');
+        $this->expectExceptionMessageIsOrContains('No quantity to allocate');
 
         $this->allocator->forOrderItem($newPurchaseOrder, $orderItem, $supplierProduct);
     }

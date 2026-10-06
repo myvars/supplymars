@@ -24,7 +24,7 @@ final readonly class CreateProductImageHandler
         private FlusherInterface $flusher,
         private ValidatorInterface $validator,
         private UploadHelper $uploadHelper,
-        #[Autowire('%app.product_uploads%')]
+        #[Autowire(param: 'app.product_uploads')]
         private string $appProductUploads,
     ) {
     }

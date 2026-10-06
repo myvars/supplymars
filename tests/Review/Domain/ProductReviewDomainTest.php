@@ -86,7 +86,7 @@ class ProductReviewDomainTest extends KernelTestCase
     public function testInvalidRatingThrowsException(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Rating must be between 1 and 5.');
+        $this->expectExceptionMessageIsOrContains('Rating must be between 1 and 5.');
 
         ProductReviewFactory::createOne(['rating' => 0]);
     }
@@ -94,7 +94,7 @@ class ProductReviewDomainTest extends KernelTestCase
     public function testRatingAboveFiveThrowsException(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Rating must be between 1 and 5.');
+        $this->expectExceptionMessageIsOrContains('Rating must be between 1 and 5.');
 
         ProductReviewFactory::createOne(['rating' => 6]);
     }

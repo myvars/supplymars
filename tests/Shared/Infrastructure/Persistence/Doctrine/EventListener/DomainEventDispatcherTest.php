@@ -16,8 +16,14 @@ use Symfony\Component\Messenger\MessageBusInterface;
 
 final class DomainEventDispatcherTest extends TestCase
 {
+    /**
+     * @var MockObject&EventDispatcherInterface
+     */
     private MockObject $eventDispatcher;
 
+    /**
+     * @var MockObject&MessageBusInterface
+     */
     private MockObject $messageBus;
 
     private DomainEventDispatcher $listener;

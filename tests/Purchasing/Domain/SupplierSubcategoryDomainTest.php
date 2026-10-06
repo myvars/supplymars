@@ -72,7 +72,7 @@ final class SupplierSubcategoryDomainTest extends TestCase
     public function testEmptyNameThrows(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Subcategory name cannot be empty');
+        $this->expectExceptionMessageIsOrContains('Subcategory name cannot be empty');
 
         $supplier = $this->stubSupplier();
         $category = $this->stubCategory();

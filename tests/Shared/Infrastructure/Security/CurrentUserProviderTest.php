@@ -29,7 +29,7 @@ final class CurrentUserProviderTest extends TestCase
         $provider = new CurrentUserProvider($security);
 
         self::expectException(\RuntimeException::class);
-        self::expectExceptionMessage('No authenticated user found.');
+        self::expectExceptionMessageIsOrContains('No authenticated user found.');
         $provider->get();
     }
 

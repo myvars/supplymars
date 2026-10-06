@@ -41,7 +41,6 @@ final readonly class SalesDateRangeResolver
 
         $dateRange = [];
         $interval = \DateInterval::createFromDateString($granularity);
-        \assert($interval instanceof \DateInterval);
         $period = new \DatePeriod($startDate, $interval, $endDate);
         foreach ($period as $date) {
             $dateRange[$date->format($labelFormat)] = 0;

@@ -75,7 +75,7 @@ class SupplierDomainTest extends TestCase
     public function testInvalidNameThrows(): void
     {
         self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessage('Supplier name cannot be empty');
+        self::expectExceptionMessageIsOrContains('Supplier name cannot be empty');
 
         Supplier::create(
             name: '',

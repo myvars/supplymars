@@ -151,7 +151,7 @@ class PurchaseOrderItemDomainTest extends TestCase
         $purchaseOrderItem->updateItemStatus(PurchaseOrderStatus::PROCESSING);
 
         $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage('Purchase order item cannot be edited');
+        $this->expectExceptionMessageIsOrContains('Purchase order item cannot be edited');
 
         $purchaseOrderItem->updateItemQuantity(5);
     }
@@ -228,7 +228,7 @@ class PurchaseOrderItemDomainTest extends TestCase
     public function testChangeQuantityThrowsOnNonPositiveValue(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('The quantity must be greater than 0');
+        $this->expectExceptionMessageIsOrContains('The quantity must be greater than 0');
 
         PurchaseOrderItem::createFromCustomerOrderItem(
             customerOrderItem: $this->stubCustomerOrderItem(10),
@@ -241,7 +241,7 @@ class PurchaseOrderItemDomainTest extends TestCase
     public function testChangeQuantityThrowsWhenExceedingMaxQuantity(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Quantity cannot be greater than 5');
+        $this->expectExceptionMessageIsOrContains('Quantity cannot be greater than 5');
 
         // Customer order item has only 5 outstanding qty
         PurchaseOrderItem::createFromCustomerOrderItem(

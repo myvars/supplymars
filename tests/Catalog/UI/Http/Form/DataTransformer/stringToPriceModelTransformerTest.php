@@ -29,7 +29,7 @@ final class stringToPriceModelTransformerTest extends TestCase
     public function testTransformThrowsOnInvalidValue(): void
     {
         $this->expectException(TransformationFailedException::class);
-        $this->expectExceptionMessage('Invalid price model value: invalid');
+        $this->expectExceptionMessageIsOrContains('Invalid price model value: invalid');
 
         $this->transformer->transform('invalid');
     }
@@ -53,7 +53,7 @@ final class stringToPriceModelTransformerTest extends TestCase
     public function testReverseTransformThrowsOnNonPriceModel(): void
     {
         $this->expectException(TransformationFailedException::class);
-        $this->expectExceptionMessage('Expected a PriceModel.');
+        $this->expectExceptionMessageIsOrContains('Expected a PriceModel.');
 
         // @phpstan-ignore argument.type (intentionally testing wrong type handling)
         $this->transformer->reverseTransform(new \stdClass());

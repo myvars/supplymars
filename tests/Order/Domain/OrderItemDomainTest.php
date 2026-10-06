@@ -159,7 +159,7 @@ class OrderItemDomainTest extends TestCase
     public function testChangeQuantityThrowsOnNonPositiveValue(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('The quantity must be positive');
+        $this->expectExceptionMessageIsOrContains('The quantity must be positive');
 
         CustomerOrderItem::createFromProduct(
             customerOrder: $this->stubCustomerOrder(),

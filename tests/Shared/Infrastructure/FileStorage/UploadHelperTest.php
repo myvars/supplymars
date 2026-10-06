@@ -16,6 +16,9 @@ use Symfony\Component\String\UnicodeString;
 #[AllowMockObjectsWithoutExpectations]
 final class UploadHelperTest extends TestCase
 {
+    /**
+     * @var MockObject&Filesystem
+     */
     private MockObject $filesystem;
 
     private UploadHelper $helper;
@@ -161,7 +164,7 @@ final class UploadHelperTest extends TestCase
         $file = $this->createStub(File::class);
 
         $this->expectException(CannotWriteFileException::class);
-        $this->expectExceptionMessage('playground mode');
+        $this->expectExceptionMessageIsOrContains('playground mode');
 
         $playgroundHelper->uploadFile($file, 'images');
     }

@@ -120,7 +120,7 @@ class CustomerOrderItemDomainTest extends TestCase
         $poItems->add($poItem);
 
         $this->expectException(\LogicException::class);
-        $this->expectExceptionMessage('Cannot edit this allocated qty below 5');
+        $this->expectExceptionMessageIsOrContains('Cannot edit this allocated qty below 5');
 
         // Try to reduce qty below allocated amount
         $item->updateItem(

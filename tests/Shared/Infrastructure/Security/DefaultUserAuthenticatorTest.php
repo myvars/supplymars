@@ -82,8 +82,7 @@ final class DefaultUserAuthenticatorTest extends TestCase
         $tokenStorage = $this->createMock(TokenStorageInterface::class);
         $tokenStorage->expects(self::never())->method('setToken');
 
-        $requestStack = new RequestStack();
-        $requestStack->push(new Request());
+        $requestStack = new RequestStack([new Request()]);
 
         $security->expects(self::once())
             ->method('login')
@@ -122,7 +121,7 @@ final class DefaultUserAuthenticatorTest extends TestCase
         );
 
         self::expectException(\RuntimeException::class);
-        self::expectExceptionMessage('Default user is not a valid user.');
+        self::expectExceptionMessageIsOrContains('Default user is not a valid user.');
         $authenticator->login();
     }
 

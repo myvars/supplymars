@@ -102,7 +102,7 @@ final class PublicIdResolverTest extends TestCase
         $resolver = new PublicIdResolver($registry);
 
         $this->expectException(NotFoundHttpException::class);
-        $this->expectExceptionMessage('stdClass "xyz" not found.');
+        $this->expectExceptionMessageIsOrContains('stdClass "xyz" not found.');
 
         iterator_to_array($resolver->resolve($request, $this->makeArgument(\stdClass::class)));
     }

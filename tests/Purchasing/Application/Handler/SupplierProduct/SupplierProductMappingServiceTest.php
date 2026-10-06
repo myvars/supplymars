@@ -100,7 +100,7 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
         $sp->assignSupplierManufacturer(null);
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Supplier manufacturer is missing');
+        $this->expectExceptionMessageIsOrContains('Supplier manufacturer is missing');
         $this->service->map($sp);
     }
 
@@ -110,7 +110,7 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
         $sp->assignSupplierCategory(null);
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Supplier category is missing');
+        $this->expectExceptionMessageIsOrContains('Supplier category is missing');
         $this->service->map($sp);
     }
 
@@ -120,7 +120,7 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
         $sp->assignSupplierSubcategory(null);
 
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Supplier subcategory is missing');
+        $this->expectExceptionMessageIsOrContains('Supplier subcategory is missing');
         $this->service->map($sp);
     }
 

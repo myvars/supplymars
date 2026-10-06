@@ -147,16 +147,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
         $this->password = $password;
     }
 
-    /**
-     * @see UserInterface
-     */
-    #[\Deprecated]
-    public function eraseCredentials(): void
-    {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
-    }
-
     public function setVerified(bool $isVerified): static
     {
         $this->isVerified = $isVerified;

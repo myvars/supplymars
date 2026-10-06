@@ -105,7 +105,7 @@ final class SubcategoryDomainTest extends TestCase
     public function testInvalidNameThrows(): void
     {
         self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessage('Subcategory name cannot be empty');
+        self::expectExceptionMessageIsOrContains('Subcategory name cannot be empty');
 
         Subcategory::create(
             name: '',
@@ -120,7 +120,7 @@ final class SubcategoryDomainTest extends TestCase
     public function testNegativeMarkupThrows(): void
     {
         self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessage('Markup cannot be negative');
+        self::expectExceptionMessageIsOrContains('Markup cannot be negative');
 
         Subcategory::create(
             name: 'Parts',

@@ -18,18 +18,14 @@ trait HasPublicUlid
     /** Call from your entity constructor. */
     public function initializePublicId(): void
     {
-        if (null === $this->publicId) {
-            $this->publicId = (string) new Ulid();
-        }
+        $this->publicId ??= (string) new Ulid();
     }
 
     /** Ensures a value exists for new rows even if constructor initialization was skipped. */
     // #[ORM\PrePersist]
     public function ensurePublicId(): void
     {
-        if (null === $this->publicId) {
-            $this->publicId = (string) new Ulid();
-        }
+        $this->publicId ??= (string) new Ulid();
     }
 
     /** Internal helper for entity-specific VO getter. */

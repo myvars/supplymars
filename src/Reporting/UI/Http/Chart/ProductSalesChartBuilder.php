@@ -59,7 +59,6 @@ final readonly class ProductSalesChartBuilder
     {
         $params = [];
         $interval = \DateInterval::createFromDateString($granularity);
-        \assert($interval instanceof \DateInterval);
         $period = new \DatePeriod($startDate, $interval, $endDate);
         foreach ($period as $date) {
             $start = $date->format('Y-m-d');
