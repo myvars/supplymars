@@ -38,10 +38,10 @@ final class SupplierStatusWasChangedListenerTest extends KernelTestCase
 
     public function testRecalculatesAllMappedProductsWhenSupplierIsActivated(): void
     {
-        $supplier = SupplierFactory::CreateOne(['isActive' => false]);
+        $supplier = SupplierFactory::createOne(['isActive' => false]);
 
         $productA = ProductFactory::createOne();
-        $productB = ProductFactory::CreateOne();
+        $productB = ProductFactory::createOne();
 
         SupplierProductFactory::createOne(['supplier' => $supplier, 'product' => $productA, 'cost' => '10.00']);
         SupplierProductFactory::createOne(['supplier' => $supplier, 'product' => $productB, 'cost' => '20.00']);

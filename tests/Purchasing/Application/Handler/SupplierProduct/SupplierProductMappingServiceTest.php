@@ -67,7 +67,7 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
 
         $existingManufacturer = ManufacturerFactory::createOne(['name' => $sm->getName()]);
         $existingCategory = CategoryFactory::createOne(['name' => $sc->getName()]);
-        $existingSubcategory = SubcategoryFactory::CreateOne([
+        $existingSubcategory = SubcategoryFactory::createOne([
             'name' => $ss->getName(),
             'category' => $existingCategory,
         ]);
