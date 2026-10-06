@@ -22,6 +22,7 @@ vendor/bin/rector process     # Dead code, type declarations, Doctrine/Symfony s
 # Migrations
 symfony console make:migration        # Generate migration from entity changes
 symfony console doctrine:migrations:migrate  # Run pending migrations
+# Schema changes go through migrations only — never doctrine:schema:update or hand-written SQL
 
 # Docker (alternative to symfony serve)
 make up / make down / make bash
@@ -140,6 +141,7 @@ are thin orchestrators using 5 flow types:
 - Factories in `tests/Shared/Factory/` (Zenstruck Foundry). Use `Factories` trait in test classes.
 - Auth: `#[WithStory(StaffUserStory::class)]` or `UserFactory::new()->asStaff()->create()`. For delete handlers: `#[WithStory(SuperAdminUserStory::class)]` or `UserFactory::new()->asSuperAdmin()->create()`.
 - Flow tests use `HasBrowser` trait (Zenstruck Browser). Named `{Feature}FlowTest.php` in `tests/{Context}/UI/`.
+- A feature isn't done until a test exercises it the way a caller would — an HTTP request for a controller, a handler call for a handler — not just "it didn't throw".
 
 ## Code Style
 
@@ -150,6 +152,23 @@ are thin orchestrators using 5 flow types:
 - Rich entities with domain logic; thin controllers (delegate to Flow/handlers).
 - Use existing Form model / type / mapper patterns.
 - Use repositories for all queries.
+
+## Symfony Conventions
+
+- **Attributes and autowiring, not config**: follow the surrounding code (`#[Route]`, `#[AsCommand]`, `#[AsEventListener]`, `#[Autowire(param:/env:)]`, `#[Target]`). A YAML service or route definition is the last resort.
+- **Readonly services**: don't mark a service class `readonly` if it might become lazy — a lazy proxy can't extend a `readonly` class. DTOs, commands and value objects are fine.
+- **New capabilities via Flex**: `composer require <package>` and let the recipe register the bundle and base config. Don't hand-edit `config/bundles.php` or hand-write a bundle's base config.
+- **Use the framework before building or importing**: check for a Symfony component before hand-writing infrastructure (locks, caches, HTTP clients, schedulers) or adding a third-party library.
+- **Makers**: pass every argument up front with `--no-interaction` where supported; makers prompt by default, which hangs a non-interactive shell. If a maker still needs input, hand-write the code.
+
+### Discover, don't guess
+
+Framework APIs change between versions. Look things up in the project rather than relying on memory:
+
+- `symfony console debug:router`, `debug:container`, `debug:autowiring <name>`, `debug:config <bundle>`, `config:dump-reference <bundle>` — what exists and how it is configured.
+- `symfony console lint:container`, `lint:twig templates/`, `lint:yaml config/` — validate before running.
+- When something fails, read `var/log/dev.log` and the web profiler (`/_profiler`) before changing code.
+- Read the installed source under `vendor/`, and use docs matching the version in `composer.json`.
 
 ## New Feature Checklist
 
