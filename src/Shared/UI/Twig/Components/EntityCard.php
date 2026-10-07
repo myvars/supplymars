@@ -33,7 +33,7 @@ final class EntityCard
     public function getBackgroundClasses(): string
     {
         return match ($this->colour) {
-            'gray' => 'bg-white dark:bg-gray-800/70',
+            'gray' => 'bg-card',
             'green' => 'bg-linear-to-tr from-green-50 to-emerald-50 dark:from-green-950 dark:to-emerald-950',
             'supplier1' => 'bg-supplier1-50 dark:bg-supplier1-400/[0.14]',
             'supplier2' => 'bg-supplier2-50 dark:bg-supplier2-400/[0.14]',
@@ -46,9 +46,9 @@ final class EntityCard
     public function getBorderClasses(): string
     {
         return match ($this->borderColour) {
-            'gray', 'supplier1', 'supplier2', 'supplier3', 'supplier4', null => 'border border-gray-200 dark:border-white/[0.10]',
-            'green' => 'border border-2 border-green-200 dark:border-green-500/30',
-            'red' => 'border border-2 border-red-200 dark:border-red-500/30',
+            'gray', 'supplier1', 'supplier2', 'supplier3', 'supplier4', null => 'border border-border',
+            'green' => 'border-2 border-green-200 dark:border-green-500/30',
+            'red' => 'border-2 border-red-200 dark:border-red-500/30',
             default => throw new \LogicException(sprintf('Unknown colourScheme "%s"', $this->borderColour)),
         };
     }
@@ -68,17 +68,6 @@ final class EntityCard
             return '';
         }
 
-        $color = StatusColor::resolve($this->statusHighlight);
-
-        return match ($color) {
-            'green' => 'border-l-4 border-l-green-500 dark:border-l-green-400',
-            'blue' => 'border-l-4 border-l-blue-500 dark:border-l-blue-400',
-            'emerald' => 'border-l-4 border-l-emerald-500 dark:border-l-emerald-400',
-            'yellow' => 'border-l-4 border-l-yellow-500 dark:border-l-yellow-400',
-            'orange' => 'border-l-4 border-l-orange-500 dark:border-l-orange-400',
-            'purple' => 'border-l-4 border-l-purple-500 dark:border-l-purple-400',
-            'red' => 'border-l-4 border-l-red-500 dark:border-l-red-400',
-            default => 'border-l-4 border-l-gray-400 dark:border-l-gray-500',
-        };
+        return StatusColor::stripeClasses(StatusColor::resolve($this->statusHighlight));
     }
 }

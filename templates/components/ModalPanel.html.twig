@@ -1,4 +1,5 @@
 {# Simple dialog wrapper with header bar and content area. Used inside modals.
+   Its heading has id="modal-title", which names the singleton <dialog> for assistive technology.
    - title: Heading displayed in the top bar
    - padding: Tailwind padding for the content area (default: p-3)
    - size: Modal width variant — sm|md|lg|xl (default: md). Communicated to
@@ -15,8 +16,8 @@
     'data-modal-size': size,
 }) }}
 >
-    <div class="flex items-center justify-between border-b border-gray-200 px-5 py-3.5 dark:border-white/[0.10]">
-        <h3 class="text-base font-semibold text-gray-900 dark:text-gray-100">
+    <div class="flex items-center justify-between border-b border-border px-5 py-3.5">
+        <h3 id="modal-title" class="text-base font-semibold text-foreground">
             {{ title }}
         </h3>
         <twig:Button variant="ghost" size="icon-xs" class="text-muted-foreground" data-action="basic-modal#close" aria-label="Close dialog">
