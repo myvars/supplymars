@@ -1,22 +1,10 @@
 <header class="mt-3">
-    <nav class="rounded-t-lg border-b border-gray-700/50 bg-gray-900 shadow-lg dark:shadow-black/30"
-         data-controller="basic-drawer help-drawer"
-         data-basic-drawer-drawer-id-value="side-menu"
-         data-help-drawer-drawer-id-value="help-drawer"
-         data-help-drawer-frame-id-value="help"
-         data-action="keydown@window->help-drawer#keydown turbo:before-cache@window->help-drawer#close"
-    >
+    {# A <div>, not a <nav>: it contains the sidebar's own <nav>. #}
+    <div class="rounded-t-lg border-b border-gray-700/50 bg-gray-900 shadow-lg dark:shadow-black/30">
         <div class="mx-auto flex max-w-(--breakpoint-xl) items-center justify-between px-3 py-2.5 sm:px-4">
 
             <div class="flex min-w-0 items-center">
-                <button id="navigationButton"
-                        type="button"
-                        class="inline-flex h-9 w-9 items-center justify-center rounded-lg p-2 text-sm text-gray-400 transition-all duration-150 hover:bg-gray-700/70 hover:text-gray-200 active:scale-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500"
-                        data-action="click->basic-drawer#open"
-                >
-                    <span class="sr-only">Open side menu</span>
-                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/></svg>
-                </button>
+                {{ include('_menu.html.twig') }}
                 <a href="{{ path('app_homepage') }}" class="mx-2 flex min-w-0 items-center sm:mx-4 rtl:space-x-reverse"
                    data-turbo-frame="body">
                     <div class="shrink [&_svg]:h-auto [&_svg]:max-h-8 [&_svg]:w-full">
@@ -25,78 +13,52 @@
                 </a>
             </div>
             <div class="flex shrink-0 items-center gap-1.5 md:order-2">
-                <button type="button"
-                        class="inline-flex h-9 items-center justify-center rounded-lg text-gray-400 transition-all duration-150 hover:bg-gray-700/70 hover:text-gray-200 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500 w-9 p-2 sm:w-auto sm:px-2.5 sm:text-xs sm:font-medium"
-                        data-action="click->help-drawer#toggle"
-                >
-                    <twig:ux:icon name="flowbite:question-circle-solid" class="h-5 w-5 sm:hidden"/>
-                    <span class="hidden sm:inline">Help</span>
-                </button>
+                {{ include('_help_drawer.html.twig') }}
                 <div data-controller="theme-toggle">
-                    <button type="button"
-                            class="inline-flex h-9 w-9 items-center justify-center rounded-lg p-2 text-sm text-gray-400 transition-all duration-150 hover:bg-gray-700/70 hover:text-gray-200 active:scale-90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500"
-                            data-action="theme-toggle#toggle"
-                    >
+                    <twig:Button variant="ghost" size="icon" class="size-9 text-gray-400 hover:bg-gray-700/70 hover:text-gray-200 aria-expanded:bg-gray-700/70 aria-expanded:text-gray-200 dark:hover:bg-gray-700/70" data-action="theme-toggle#toggle">
                         <span class="sr-only">Toggle dark mode</span>
                         <span data-theme-toggle-target="sunIcon" class="hidden">
-                            <twig:ux:icon name="flowbite:sun-solid" class="h-5 w-5"/>
+                            <twig:ux:icon name="flowbite:sun-solid" class="size-5"/>
                         </span>
                         <span data-theme-toggle-target="moonIcon" class="hidden">
-                            <twig:ux:icon name="flowbite:moon-solid" class="h-5 w-5"/>
+                            <twig:ux:icon name="flowbite:moon-solid" class="size-5"/>
                         </span>
-                    </button>
+                    </twig:Button>
                 </div>
                 {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-                    <div class="relative" data-controller="toggle" data-toggle-close-on-click-outside-value="true">
-                        <button type="button"
-                                class="flex items-center rounded-full p-1 transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500"
-                                data-action="click->toggle#toggle">
-                            <span class="sr-only">Open user menu</span>
-                            <img class="h-7 w-7 rounded-full ring-2 ring-gray-600" src="{{ asset('images/avatar.png') }}" alt="user photo">
-                        </button>
-                        <div
-                            class="absolute right-0 top-full z-50 mt-2 hidden w-52 list-none overflow-hidden rounded-lg bg-gray-800/95 backdrop-blur-xl text-base shadow-2xl shadow-black/40 ring-1 ring-white/[0.1] divide-y divide-white/[0.06]"
-                            data-toggle-target="toggleable">
-                            <div class="px-4 py-3">
-                                <p class="text-sm font-medium text-white">{{ app.user.fullName }}</p>
-                                <p class="mt-0.5 truncate text-xs text-gray-400">{{ app.user.userIdentifier }}</p>
-                            </div>
-                            <ul class="py-1.5">
-                                <li>
-                                    <a href="{{ path('app_customer_show', { id: app.user.publicId  }) }}"
-                                       class="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 transition-colors hover:bg-gray-700 hover:text-white"
-                                       data-turbo-frame="body"
-                                    >
-                                        <twig:ux:icon name="flowbite:cog-solid" class="h-4 w-4 text-gray-500"/>
-                                        Settings
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ path('app_logout') }}"
-                                       class="flex items-center gap-2 px-4 py-2 text-sm text-gray-300 transition-colors hover:bg-gray-700 hover:text-white"
-                                       data-turbo-prefetch="false"
-                                       data-turbo-frame="_top"
-                                    >
-                                        <twig:ux:icon name="flowbite:arrow-right-to-bracket-outline" class="h-4 w-4 text-gray-500"/>
-                                        Sign Out
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+                    <twig:DropdownMenu id="user" align="end">
+                        <twig:DropdownMenu:Trigger>
+                            <twig:Button variant="ghost" size="icon-sm" class="rounded-full hover:bg-gray-700/70 aria-expanded:bg-gray-700/70 dark:hover:bg-gray-700/70" {{ ...dropdown_menu_trigger_attrs }}>
+                                <span class="sr-only">Open user menu</span>
+                                <twig:Avatar class="size-7 ring-2 ring-gray-600">
+                                    <twig:Avatar:Image src="{{ asset('images/avatar.png') }}"/>
+                                    <twig:Avatar:Fallback class="text-xs">{{ app.user.fullName|default('?')|first|upper }}</twig:Avatar:Fallback>
+                                </twig:Avatar>
+                            </twig:Button>
+                        </twig:DropdownMenu:Trigger>
+                        <twig:DropdownMenu:Content class="w-52">
+                            <twig:DropdownMenu:Label>
+                                <p class="text-sm font-medium text-foreground">{{ app.user.fullName }}</p>
+                                <p class="mt-0.5 truncate text-xs font-normal text-muted-foreground">{{ app.user.userIdentifier }}</p>
+                            </twig:DropdownMenu:Label>
+                            <twig:DropdownMenu:Separator />
+                            <twig:DropdownMenu:Item as="a" href="{{ path('app_customer_show', { id: app.user.publicId }) }}" data-turbo-frame="body">
+                                <twig:ux:icon name="flowbite:cog-solid" class="text-muted-foreground"/>
+                                Settings
+                            </twig:DropdownMenu:Item>
+                            <twig:DropdownMenu:Item as="a" href="{{ path('app_logout') }}" data-turbo-prefetch="false" data-turbo-frame="_top">
+                                <twig:ux:icon name="flowbite:arrow-right-to-bracket-outline" class="text-muted-foreground"/>
+                                Sign Out
+                            </twig:DropdownMenu:Item>
+                        </twig:DropdownMenu:Content>
+                    </twig:DropdownMenu>
                 {% else %}
-                    <a
-                        href="{{ path('app_login') }}"
-                        class="inline-flex h-9 items-center justify-center rounded-lg text-gray-400 transition-all duration-150 hover:bg-gray-700/70 hover:text-gray-200 active:scale-95 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-gray-500 w-9 p-2 sm:w-auto sm:px-2.5 sm:text-xs sm:font-medium"
-                        data-turbo-frame="_top"
-                    >
-                        <twig:ux:icon name="flowbite:arrow-right-to-bracket-outline" class="h-5 w-5 sm:hidden"/>
-                        <span class="hidden sm:inline">Sign In</span>
-                    </a>
+                    <twig:Button as="a" href="{{ path('app_login') }}" variant="ghost" class="size-9 px-0 font-medium text-gray-400 hover:bg-gray-700/70 hover:text-gray-200 aria-expanded:bg-gray-700/70 aria-expanded:text-gray-200 dark:hover:bg-gray-700/70 sm:w-auto sm:px-2.5 sm:text-xs" data-turbo-frame="_top">
+                        <twig:ux:icon name="flowbite:arrow-right-to-bracket-outline" class="size-5 sm:hidden"/>
+                        <span class="sr-only sm:not-sr-only">Sign In</span>
+                    </twig:Button>
                 {% endif %}
             </div>
         </div>
-        {{ include('_menu.html.twig') }}
-        {{ include('_help_drawer.html.twig') }}
-    </nav>
+    </div>
 </header>

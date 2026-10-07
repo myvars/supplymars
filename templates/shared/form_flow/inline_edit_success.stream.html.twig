@@ -4,9 +4,12 @@
     Returns Turbo Streams to:
     1. Replace the InlineEdit component with updated display value
     2. Append flash message to the flash container
+    3. Update copies of the value shown elsewhere on the page (opt-in)
 
     Variables:
     - context: InlineEditContext with frameId, displayTemplate, entity, entityVarName, etc.
+    - value: the stored value read back after saving, when the controller passed a Closure
+    - mirrorText: that value as text, or null when there is nothing to mirror
 #}
 
 {# Stream 1: Replace the entire InlineEdit component with updated display #}
@@ -24,3 +27,12 @@
         {{ include('_flashes.html.twig') }}
     </template>
 </turbo-stream>
+
+{# Stream 3: The frame above only covers the field itself. When the controller passes the value
+   as a Closure, any element outside the frame marked data-inline-edit-mirror="<frameId>"
+   (a breadcrumb, a heading) gets the stored value too. #}
+{% if mirrorText is defined and mirrorText is not null %}
+    <turbo-stream action="update" targets="[data-inline-edit-mirror='{{ context.frameId }}']">
+        <template>{{ mirrorText }}</template>
+    </turbo-stream>
+{% endif %}

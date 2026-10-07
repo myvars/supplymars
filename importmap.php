@@ -32,7 +32,6 @@ return [
     'lodash.throttle' => ['version' => '4.1.1'],
     'lodash.debounce' => ['version' => '4.0.8'],
     'aos/dist/aos.css' => ['version' => '2.3.4', 'type' => 'css'],
-    'stimulus-popover' => ['version' => '6.2.0'],
     'debounce' => ['version' => '3.0.0'],
     'dropzone/dist/dropzone.css' => ['version' => '6.3.5', 'type' => 'css'],
     'dropzone' => ['version' => '6.3.5'],
