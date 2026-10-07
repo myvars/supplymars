@@ -11,7 +11,8 @@ final class StatusIcon
 {
     public string $type = 'created';
 
-    public function getIconName(): string
+    /** Null when the type has no icon, so a status without one renders nothing. */
+    public function getIconName(): ?string
     {
         return match ($this->type) {
             'created' => 'bi:bag-check',
@@ -23,7 +24,7 @@ final class StatusIcon
             'shipped' => 'bi:truck',
             'delivered' => 'bi:box-seam-fill',
             'cancelled' => 'bi:x-circle',
-            default => throw new \LogicException(sprintf('Unknown icon "%s"', $this->type)),
+            default => null,
         };
     }
 }

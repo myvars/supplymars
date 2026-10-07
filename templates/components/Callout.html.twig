@@ -1,9 +1,10 @@
-{# Inline alert box with contextual icon and colour.
+{# One-line coloured message with a matching icon, built on the kit's Alert.
+   For a title + description or an action button, use <twig:Alert> directly.
    Props (PHP): type (info|danger|warning|success, default: info) #}
-<div {{ attributes.defaults({
-    'class': 'flex items-start gap-3 rounded-lg border px-4 py-3 text-sm ' ~ this.colorClasses,
-    'role': 'alert',
-}) }}>
-    <twig:ux:icon name="{{ this.iconName }}" class="mt-0.5 h-4 w-4 shrink-0"/>
-    <span class="font-medium">{% block content %}{% endblock %}</span>
-</div>
+{%- set variant = this.variant -%}
+{%- set iconName = this.iconName -%}
+{%- set message %}{% block content %}{% endblock %}{% endset -%}
+<twig:Alert variant="{{ variant }}" {{ ...attributes }}>
+    <twig:ux:icon name="{{ iconName }}" />
+    <twig:Alert:Title>{{ message }}</twig:Alert:Title>
+</twig:Alert>

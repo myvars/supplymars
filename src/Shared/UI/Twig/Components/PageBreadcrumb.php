@@ -14,4 +14,7 @@ final class PageBreadcrumb
     public string $label;
 
     public string $current;
+
+    /** Frame id of an inline edit whose saved value should replace the current page text. */
+    public ?string $mirrors = null;
 }
