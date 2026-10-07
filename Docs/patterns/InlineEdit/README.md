@@ -63,11 +63,11 @@ For additional form-level constraints, pass `formOptions: ['constraints' => [...
 
 ```twig
 {# templates/catalog/manufacturer/_manufacturer_card.html.twig #}
-<twig:Card title="Manufacturer">
+<twig:EntityCard title="Manufacturer">
     <p class="mb-3">
         {{ include('catalog/manufacturer/_inline_name.html.twig', {manufacturer: manufacturer}) }}
     </p>
-</twig:Card>
+</twig:EntityCard>
 ```
 
 ## How It Works

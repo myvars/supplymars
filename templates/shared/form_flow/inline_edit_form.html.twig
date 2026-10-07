@@ -36,19 +36,12 @@
         {% endfor %}
 
         {# Compact action buttons #}
-        <button type="submit"
-                class="p-1 rounded-md text-primary-500 hover:text-primary-700 hover:bg-primary-50 dark:text-primary-400 dark:hover:text-primary-300 dark:hover:bg-primary-500/15 transition-all hover:scale-110 active:scale-95 shrink-0"
-                title="Save (Enter)"
-                aria-label="Save">
-            <twig:ux:icon name="bi:check-lg" class="h-4 w-4"/>
-        </button>
-        <a href="{{ cancelUrl }}"
-           data-inline-edit-target="cancel"
-           class="p-1 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:text-gray-500 dark:hover:text-gray-300 dark:hover:bg-white/[0.08] transition-all hover:scale-110 active:scale-95 shrink-0"
-           title="Cancel (Escape)"
-           aria-label="Cancel">
-            <twig:ux:icon name="bi:x-lg" class="h-4 w-4"/>
-        </a>
+        <twig:Button type="submit" variant="ghost" size="icon-xs" class="rounded-full text-green-500 hover:bg-green-200 hover:text-green-700 dark:text-green-400 dark:hover:bg-green-800/50 dark:hover:text-green-300" title="Save (Enter)" aria-label="Save">
+            <twig:ux:icon name="bi:check-lg" class="size-4"/>
+        </twig:Button>
+        <twig:Button as="a" href="{{ cancelUrl }}" variant="ghost" size="icon-xs" class="rounded-full text-muted-foreground" data-inline-edit-target="cancel" title="Cancel (Escape)" aria-label="Cancel">
+            <twig:ux:icon name="bi:x-lg" class="size-4"/>
+        </twig:Button>
 
         {{ form_rest(form) }}
     {{ form_end(form) }}

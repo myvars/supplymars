@@ -1,7 +1,7 @@
 {# Draggable product image card with thumbnail and delete action.
    Used on: product image show page (sortable list). Variable: productImage (ProductImage) #}
 <div data-id="{{ productImage.id }}" class="group cursor-grab active:cursor-grabbing">
-    <twig:Card padding="p-0">
+    <twig:EntityCard padding="p-0">
         <twig:block name="cardImage">
             <twig:ProductImage
                 imageName="{{ productImage.imageName }}"
@@ -29,5 +29,5 @@
                 <p>{{ (productImage.imageSize/1000)|number_format(1) }} KB</p>
             </div>
         </div>
-    </twig:Card>
+    </twig:EntityCard>
 </div>

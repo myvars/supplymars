@@ -1,6 +1,6 @@
 {# Product pricing card — cost, sell price, markup strategy, and margin.
    Used on: pricing cost page. Variable: product (Product) #}
-<twig:Card editLink="{{ path('app_pricing_product_cost_edit', {id: product.publicId.value}) }}" title="Product" statusHighlight="{{ product.isActive ? 'ACTIVE' : 'INACTIVE' }}">
+<twig:EntityCard editLink="{{ path('app_pricing_product_cost_edit', {id: product.publicId.value}) }}" title="Product" statusHighlight="{{ product.isActive ? 'ACTIVE' : 'INACTIVE' }}">
     <p class="mb-3 text-xl font-semibold text-gray-900 line-clamp-1 dark:text-white">{{ product.name }}</p>
     <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
         <p class="flex items-center gap-2">
@@ -26,7 +26,7 @@
             {% endif %}
         </p>
     </div>
-    <twig:CardFooter :updatedAt="product.updatedAt">
+    <twig:EntityCardFooter :updatedAt="product.updatedAt">
         <twig:StatusBadge status="{{ product.isActive ? 'ACTIVE' : 'INACTIVE' }}"/>
-    </twig:CardFooter>
-</twig:Card>
+    </twig:EntityCardFooter>
+</twig:EntityCard>

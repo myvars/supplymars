@@ -168,7 +168,7 @@ Flashes render as Toast components with auto-dismiss:
 {# _flashes.html.twig #}
 {% for type, messages in app.flashes %}
     {% for message in messages %}
-        <twig:Toast :type="type">{{ message }}</twig:Toast>
+        <twig:FlashToast :type="type">{{ message }}</twig:FlashToast>
     {% endfor %}
 {% endfor %}
 ```

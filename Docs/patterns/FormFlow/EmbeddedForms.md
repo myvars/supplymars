@@ -32,7 +32,7 @@ Embedded forms render a FormFlow form inline within another page, as opposed to 
 
 ### 1. Create an Embedded Template
 
-Extends `modal_base.html.twig` but does **not** use `<twig:Dialog>`. This handles POST responses (validation errors):
+Extends `modal_base.html.twig` but does **not** use `<twig:ModalPanel>`. This handles POST responses (validation errors):
 
 ```twig
 {% extends 'shared/turbo/modal_base.html.twig' %}
@@ -93,7 +93,7 @@ return Result::ok(message: 'Saved');
 
 | Aspect | Modal | Embedded |
 |--------|-------|----------|
-| Uses `<twig:Dialog>` | Yes | No |
+| Uses `<twig:ModalPanel>` | Yes | No |
 | Host page markup | `<a data-turbo-frame="modal">` | `<turbo-frame>` with inline form |
 | Frame ID | `modal` | Custom (e.g., `ticket-reply`) |
 | On success | Modal closes + page refreshes | Page morphs in place |

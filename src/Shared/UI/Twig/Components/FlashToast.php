@@ -7,7 +7,7 @@ namespace App\Shared\UI\Twig\Components;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 
 #[AsTwigComponent]
-final class Toast
+final class FlashToast
 {
     public string $type = 'success';
 

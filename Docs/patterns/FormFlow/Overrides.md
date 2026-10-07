@@ -74,7 +74,7 @@ When deletion should be blocked based on entity state, use a fully custom delete
 {% block title %}Delete {{ flowModel }}{% endblock %}
 
 {% block body %}
-    <twig:Dialog title="Delete Customer">
+    <twig:ModalPanel title="Delete Customer">
         {% if result.customerOrders.count > 0 %}
             <p class="mb-4 text-sm font-light text-red-500 dark:text-red-400">
                 You cannot delete a customer with order history.
@@ -96,7 +96,7 @@ When deletion should be blocked based on entity state, use a fully custom delete
                 </div>
             </form>
         {% endif %}
-    </twig:Dialog>
+    </twig:ModalPanel>
 {% endblock %}
 ```
 
@@ -221,20 +221,20 @@ Every index template overrides at least `sort` and `list_item` blocks. This is t
         results="{{ results }}"
     >
         <twig:block name="sort">
-            <twig:Card>
+            <twig:EntityCard>
                 <div class="flex justify-between overflow-auto">
                     <twig:SortLink sortValue="id">Id</twig:SortLink>
                     <twig:SortLink sortValue="name">Name</twig:SortLink>
                     <twig:SortLink sortValue="createdAt">Created</twig:SortLink>
                 </div>
-            </twig:Card>
+            </twig:EntityCard>
         </twig:block>
 
         <twig:block name="list_item">
-            <twig:Card showLink="{{ path(routes.show, {'id': result.publicId.value}) }}">
+            <twig:EntityCard showLink="{{ path(routes.show, {'id': result.publicId.value}) }}">
                 <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ result.name }}</p>
                 <p class="text-sm text-gray-500 dark:text-gray-400">{{ result.createdAt|date('jS M Y') }}</p>
-            </twig:Card>
+            </twig:EntityCard>
         </twig:block>
     </twig:Search>
 {% endblock %}
@@ -257,8 +257,8 @@ Every index template overrides at least `sort` and `list_item` blocks. This is t
 | `FlowForm` | `templates/components/FlowForm.html.twig` | Form rendering (fields + submit button) |
 | `Search` | `templates/components/Search.html.twig` | Index page layout (search, sort, pagination) |
 | `ConfirmDialog` | `templates/components/ConfirmDialog.html.twig` | Confirmation modal with CSRF form |
-| `Dialog` | `templates/components/Dialog.html.twig` | Generic modal dialog shell |
-| `Card` | `templates/components/Card.html.twig` | Card with optional edit/show links |
+| `ModalPanel` | `templates/components/ModalPanel.html.twig` | Generic modal dialog shell |
+| `EntityCard` | `templates/components/EntityCard.html.twig` | Card with optional edit/show links |
 | `Button` | `templates/components/Button.html.twig` | Button or link-styled-as-button |
 | `SortLink` | `templates/components/SortLink.html.twig` | Column sort header |
-| `Pagination` | `templates/components/Pagination.html.twig` | Page navigation |
+| `ResultsPagination` | `templates/components/ResultsPagination.html.twig` | Page navigation |

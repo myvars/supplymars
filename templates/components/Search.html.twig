@@ -63,8 +63,8 @@
             {% block add %}
                 {% if showAdd and routes.new %}
                     <twig:Button
-                        tag="a"
-                        variant="alternative"
+                        as="a"
+                        variant="outline"
                         href="{{ path(routes.new) }}"
                         data-turbo-frame="modal"
                     >
@@ -91,7 +91,7 @@
                 </li>
             {% endfor %}
         </ul>
-        <twig:Pagination pager="{{ results }}"></twig:Pagination>
+        <twig:ResultsPagination pager="{{ results }}"></twig:ResultsPagination>
 
         <turbo-stream action="replace" target="{{ flowModel|slug }}-result-count">
             <template>

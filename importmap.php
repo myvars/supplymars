@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Returns the importmap for this application.
  *
@@ -47,4 +45,6 @@ return [
     'chart.js' => ['version' => '4.5.1'],
     '@kurkle/color' => ['version' => '0.6.4'],
     'flowbite-datepicker/dist/css/datepicker.min.css' => ['version' => '2.0.0', 'type' => 'css'],
+    'shadcn/dist/tailwind.css' => ['version' => '4.21.4', 'type' => 'css'],
+    'tw-animate-css/dist/tw-animate.css' => ['version' => '1.4.0', 'type' => 'css'],
 ];

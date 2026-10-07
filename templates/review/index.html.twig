@@ -16,7 +16,7 @@
         </twig:block>
 
         <twig:block name="list_item">
-            <twig:Card
+            <twig:EntityCard
                 showLink="{{ path('app_review_show', {'id': result.publicId.value }) }}"
                 padding="p-0"
                 statusHighlight="{{ result.status.value }}"
@@ -42,7 +42,7 @@
                         </p>
                     </div>
                 </div>
-            </twig:Card>
+            </twig:EntityCard>
         </twig:block>
     </twig:Search>
 

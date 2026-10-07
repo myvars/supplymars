@@ -1,24 +1,9 @@
-{# Pagination controls showing "Showing X-Y of Z" with page links.
-   - pager: Pagerfanta instance #}
-{% props pager %}
-
-{% if pager.count > 0 %}
-    <nav
-        class="flex flex-col items-start justify-between gap-3 pt-5 pb-2 md:flex-row md:items-center"
-        aria-label="Table pagination"
-    >
-        <p class="text-sm text-gray-500 dark:text-gray-400">
-            Showing
-            <span class="tabular-nums font-medium text-gray-700 dark:text-gray-200">
-                {{ pager.currentPageOffsetStart }}&ndash;{{ pager.currentPageOffsetEnd }}
-            </span>
-            of
-            <span class="tabular-nums font-medium text-gray-700 dark:text-gray-200">
-                {{ pager.count }}
-            </span>
-        </p>
-        <div class="max-w-full overflow-x-auto">
-            {{ pagerfanta(pager) }}
-        </div>
-    </nav>
-{% endif %}
+<nav
+    data-slot="pagination"
+    aria-label="pagination"
+    role="navigation"
+    {{ attributes.defaults({class: 'mx-auto flex w-full justify-center'|tailwind_classes}) }}
+>
+    {##- The pagination structure, typically a `Pagination:Content`. -#}
+    {%- block content %}{% endblock -%}
+</nav>

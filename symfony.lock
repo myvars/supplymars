@@ -424,6 +424,9 @@
             "config/packages/ux_icons.yaml"
         ]
     },
+    "symfony/ux-toolkit": {
+        "version": "v3.5.1"
+    },
     "symfony/ux-turbo": {
         "version": "2.30",
         "recipe": {

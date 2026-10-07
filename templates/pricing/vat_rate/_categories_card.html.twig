@@ -1,6 +1,6 @@
 {# Categories count link for a VAT rate — navigates to filtered category index.
    Used on: VAT rate show page. Variable: result (VatRate) #}
-<twig:Card title="Categories">
+<twig:EntityCard title="Categories">
     <a href="{{ path('app_catalog_category_index', {vatRateId: result.id}) }}"
        class="group flex items-center justify-between text-sm text-gray-600 dark:text-gray-400"
        data-turbo-frame="body"
@@ -12,4 +12,4 @@
         </span>
         <twig:ux:icon name="bi:arrow-right" class="h-4 w-4 text-gray-400 transition-transform duration-150 group-hover:translate-x-0.5 group-hover:text-primary-500 dark:text-gray-500"/>
     </a>
-</twig:Card>
+</twig:EntityCard>

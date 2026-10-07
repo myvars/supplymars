@@ -8,7 +8,7 @@ use App\Shared\UI\Twig\StatusColor;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 
 #[AsTwigComponent]
-final class Card
+final class EntityCard
 {
     public ?string $title = null;
 

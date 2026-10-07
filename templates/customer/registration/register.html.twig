@@ -14,10 +14,10 @@
                 </h1>
             </div>
             {% for flash_error in app.flashes('verify_email_error') %}
-                <twig:Alert type="danger">{{ flash_error }}</twig:Alert>
+                <twig:Callout type="danger">{{ flash_error }}</twig:Callout>
             {% endfor %}
             {% for flash_error in app.flashes('danger') %}
-                <twig:Alert type="danger">{{ flash_error }}</twig:Alert>
+                <twig:Callout type="danger">{{ flash_error }}</twig:Callout>
             {% endfor %}
             {{ form_start(form, {
                 'attr': {

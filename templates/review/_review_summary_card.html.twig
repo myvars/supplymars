@@ -1,6 +1,6 @@
 {# Review aggregate summary — average rating, star distribution, and pending count.
    Used on: product reviews page. Variable: summary (ReviewSummary) #}
-<twig:Card title="Review Summary">
+<twig:EntityCard title="Review Summary">
     {% if summary is not null and summary.hasReviews %}
         <div class="space-y-4">
             <div class="flex items-center gap-3">
@@ -57,4 +57,4 @@
     {% else %}
         <twig:EmptyState icon="flowbite:star-solid" message="No reviews yet"/>
     {% endif %}
-</twig:Card>
+</twig:EntityCard>

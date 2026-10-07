@@ -1,5 +1,6 @@
 @import '../vendor/flowbite-datepicker/dist/css/datepicker.min.css';
 @import 'tailwindcss';
+@import "./shadcn.css";
 
 @source "../../templates/**/*.html.twig";
 @source "../../src/Shared/UI/Twig/Components/*.php";

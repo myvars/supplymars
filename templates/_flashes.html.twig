@@ -1,5 +1,5 @@
 {% for label, messages in app.flashes(['success','info','warning','danger']) %}
     {% for message in messages %}
-        <twig:Toast type="{{ label }}">{{ message }}</twig:Toast>
+        <twig:FlashToast type="{{ label }}">{{ message }}</twig:FlashToast>
     {% endfor %}
 {% endfor %}

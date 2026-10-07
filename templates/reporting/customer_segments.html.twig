@@ -6,7 +6,7 @@
 
     <div class="m-3">
     <turbo-frame id="reports" refresh="morph">
-        <twig:Card>
+        <twig:EntityCard>
             {{ include('reporting/_customer_insights_nav.html.twig') }}
 
             <div class="grid grid-cols-2 gap-px overflow-hidden rounded-lg bg-gray-900/5 dark:bg-white/5 md:grid-cols-4">
@@ -86,7 +86,7 @@
                     </table>
                 </div>
             {% endif %}
-        </twig:Card>
+        </twig:EntityCard>
     </turbo-frame>
     </div>
 

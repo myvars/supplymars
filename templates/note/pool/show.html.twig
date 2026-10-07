@@ -7,10 +7,10 @@
 {% block body %}
 
     <div class="m-3 space-y-4">
-        <twig:Breadcrumb :href="path('app_note_pool_index')" label="Pools" :current="result.name"/>
+        <twig:PageBreadcrumb :href="path('app_note_pool_index')" label="Pools" :current="result.name"/>
         {{ include('note/pool/_pool_card.html.twig', {pool: result}) }}
 
-        <twig:Card title="Subscription">
+        <twig:EntityCard title="Subscription">
             <div class="flex items-center justify-between">
                 <p class="text-sm text-gray-600 dark:text-gray-400">
                     {{ is_subscribed ? 'You are subscribed to this pool.' : 'You are not subscribed to this pool.' }}
@@ -23,7 +23,7 @@
                     {{ is_subscribed ? 'Unsubscribe' : 'Subscribe' }}
                 </a>
             </div>
-        </twig:Card>
+        </twig:EntityCard>
 
     </div>
 

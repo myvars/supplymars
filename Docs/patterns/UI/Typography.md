@@ -7,7 +7,7 @@ Standardized typography classes used across SupplyMars. All text uses Tailwind's
 | Role | Classes | Used In |
 |------|---------|---------|
 | Page / entity heading | `text-xl font-semibold` | Search `<h1>`, show page entity names, inline-edit display |
-| Dialog title | `text-base font-semibold` | `Dialog.html.twig` |
+| Dialog title | `text-base font-semibold` | `ModalPanel.html.twig` |
 | Section label | `text-xs font-medium uppercase tracking-wide text-gray-500` | Section headers in cards and detail pages |
 | Body text | `text-sm text-gray-600 dark:text-gray-400` | Card content, description paragraphs |
 | Metadata | `text-xs text-gray-500 dark:text-gray-500` | Timestamps, reference codes, secondary info |

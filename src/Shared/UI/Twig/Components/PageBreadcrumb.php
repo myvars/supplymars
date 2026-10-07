@@ -7,7 +7,7 @@ namespace App\Shared\UI\Twig\Components;
 use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
 
 #[AsTwigComponent]
-final class Breadcrumb
+final class PageBreadcrumb
 {
     public string $href;
 

@@ -169,9 +169,9 @@ close() {
    {% extends 'shared/turbo/modal_base.html.twig' %}
 
    {% block body %}
-       <twig:Dialog title="Edit Product">
+       <twig:ModalPanel title="Edit Product">
            {{ form(form) }}
-       </twig:Dialog>
+       </twig:ModalPanel>
    {% endblock %}
    ```
 
@@ -216,7 +216,7 @@ Submit buttons auto-detect modal context:
 
 ### Dialog Sizes
 
-Size is controlled by a `data-modal-size` attribute on the `<dialog>`, driven by the loaded content. `Dialog.html.twig` exposes a `size` prop; `ConfirmDialog` defaults to `sm`.
+Size is controlled by a `data-modal-size` attribute on the `<dialog>`, driven by the loaded content. `ModalPanel.html.twig` exposes a `size` prop; `ConfirmDialog` defaults to `sm`.
 
 | Size | CSS Class | Width | Use Case |
 |------|-----------|-------|----------|
@@ -282,11 +282,11 @@ turbo-frame[data-loading] {
    {% extends 'shared/turbo/modal_base.html.twig' %}
    ```
 
-2. **Use `<twig:Dialog>` component** for consistent styling:
+2. **Use `<twig:ModalPanel>` component** for consistent styling:
    ```twig
-   <twig:Dialog title="Delete Order" size="sm">
+   <twig:ModalPanel title="Delete Order" size="sm">
        {# content #}
-   </twig:Dialog>
+   </twig:ModalPanel>
    ```
 
 3. **Disable prefetch on state-changing links**:
@@ -312,7 +312,7 @@ Native `<dialog>` provides:
 Additional considerations:
 
 ```twig
-<twig:Dialog title="Edit Product">
+<twig:ModalPanel title="Edit Product">
     {# title becomes aria-labelledby automatically #}
-</twig:Dialog>
+</twig:ModalPanel>
 ```

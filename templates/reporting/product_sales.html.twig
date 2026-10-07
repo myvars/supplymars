@@ -6,7 +6,7 @@
 
     <div class="m-3">
     <turbo-frame id="reports" refresh="morph">
-        <twig:Card>
+        <twig:EntityCard>
             {% if report.summary is not null %}
                 {% if report.type == 'all' %}
                     {{ include('reporting/_reports_header.html.twig', {title: 'Product Sales'}) }}
@@ -102,7 +102,7 @@
                     </table>
                 </div>
             {% endif %}
-        </twig:Card>
+        </twig:EntityCard>
     </turbo-frame>
     </div>
 

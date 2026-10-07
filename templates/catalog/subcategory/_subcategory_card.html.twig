@@ -1,6 +1,6 @@
 {# Subcategory detail card with inline-editable name, parent category, and markup.
    Used on: subcategory show page. Variable: subcategory (Subcategory) #}
-<twig:Card editLink="{{ path('app_catalog_subcategory_edit', { id: subcategory.publicId.value }) }}" title="Subcategory" statusHighlight="{{ subcategory.isActive ? 'ACTIVE' : 'INACTIVE' }}">
+<twig:EntityCard editLink="{{ path('app_catalog_subcategory_edit', { id: subcategory.publicId.value }) }}" title="Subcategory" statusHighlight="{{ subcategory.isActive ? 'ACTIVE' : 'INACTIVE' }}">
     <p class="mb-1">{{ include('catalog/subcategory/_inline_name.html.twig', {subcategory: subcategory}) }}</p>
     <p class="mb-3 text-sm text-gray-500 line-clamp-1 dark:text-gray-400">
         in
@@ -36,9 +36,9 @@
             {% endif %}
         </p>
     </div>
-    <twig:CardFooter :updatedAt="subcategory.updatedAt">
+    <twig:EntityCardFooter :updatedAt="subcategory.updatedAt">
         <twig:StatusBadge status="{{ subcategory.isActive ? 'ACTIVE' : 'INACTIVE' }}"/>
-    </twig:CardFooter>
+    </twig:EntityCardFooter>
     {% if subcategory.products.count > 0 %}
         <div class="-mx-3 -mb-3 mt-3 border-t border-gray-200 dark:border-white/[0.06]">
             <a href="{{ path('app_catalog_product_index', {subcategoryId: subcategory.id}) }}"
@@ -54,4 +54,4 @@
             </a>
         </div>
     {% endif %}
-</twig:Card>
+</twig:EntityCard>

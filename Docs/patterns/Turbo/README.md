@@ -76,9 +76,9 @@ Templates that can be rendered as modals extend `modal_base.html.twig`:
 {% extends 'shared/turbo/modal_base.html.twig' %}
 
 {% block body %}
-    <twig:Dialog title="Edit Order">
+    <twig:ModalPanel title="Edit Order">
         {{ form(form) }}
-    </twig:Dialog>
+    </twig:ModalPanel>
 {% endblock %}
 ```
 

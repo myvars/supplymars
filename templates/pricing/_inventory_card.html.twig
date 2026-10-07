@@ -1,6 +1,6 @@
 {# Inventory card showing stock levels across all supplier sources.
    Used on: pricing stock page. Variable: result (Product) #}
-<twig:Card padding="p-0" statusHighlight="{{ result.hasActiveProductSource ? 'ACTIVE' : 'INACTIVE' }}">
+<twig:EntityCard padding="p-0" statusHighlight="{{ result.hasActiveProductSource ? 'ACTIVE' : 'INACTIVE' }}">
     {% if result.isValidProduct %}
         {# KPI metrics grid #}
         <div class="grid grid-cols-2 gap-px overflow-hidden rounded-t-xl bg-gray-900/5 dark:bg-white/5 md:grid-cols-4">
@@ -47,4 +47,4 @@
             </p>
         </div>
     {% endif %}
-</twig:Card>
+</twig:EntityCard>

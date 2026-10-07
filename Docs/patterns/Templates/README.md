@@ -12,7 +12,7 @@ templates/
 ├── _flashes.html.twig                     Flash message rendering (Toast)
 │
 ├── components/                            Twig Components (PascalCase)
-│   ├── Card.html.twig
+│   ├── EntityCard.html.twig
 │   ├── Search.html.twig
 │   └── ...
 │
@@ -58,7 +58,7 @@ templates/
 | `show.html.twig` | Detail page | `order/show.html.twig` |
 | `_*_card.html.twig` | Card partial (underscore = partial) | `_product_card.html.twig` |
 | `_inline_*.html.twig` | Inline edit display partial | `_inline_name.html.twig` |
-| `PascalCase.html.twig` | Twig Component | `Card.html.twig`, `Search.html.twig` |
+| `PascalCase.html.twig` | Twig Component | `EntityCard.html.twig`, `Search.html.twig` |
 | `*.stream.html.twig` | Turbo Stream template | `inline_edit_success.stream.html.twig` |
 | Action templates | State transitions (modals) | `cancel.html.twig`, `reassign.html.twig` |
 

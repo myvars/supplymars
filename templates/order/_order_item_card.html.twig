@@ -1,7 +1,7 @@
 {# Single order item card with product image, price, quantity, and supplier toggle.
    Used on: order show page (inside _order_items_card). Variable: orderItem (CustomerOrderItem) #}
 <li class="first:mt-3">
-    <twig:Card
+    <twig:EntityCard
         editLink="{{ orderItem.allowEdit ? path('app_order_item_edit', {'id': orderItem.publicId.value }) : null }}"
         padding="p-0"
     >
@@ -44,5 +44,5 @@
                 {{ include('order/_order_item_supplier_card.html.twig', {orderItem: orderItem}) }}
             {% endif %}
         </div>
-    </twig:Card>
+    </twig:EntityCard>
 </li>

@@ -18,7 +18,7 @@
         </twig:block>
 
         <twig:block name="list_item">
-            <twig:Card
+            <twig:EntityCard
                 editLink="{{ path('app_customer_edit', {'id': result.publicId.value }) }}"
                 showLink="{{ path('app_customer_show', {'id': result.publicId.value }) }}"
                 statusHighlight="{{ result.isVerified ? 'VERIFIED' : 'UNVERIFIED' }}"
@@ -37,7 +37,7 @@
                         <twig:StatusBadge status="{{ result.isVerified ? 'VERIFIED' : 'UNVERIFIED' }}"/>
                     </div>
                 </div>
-            </twig:Card>
+            </twig:EntityCard>
         </twig:block>
     </twig:Search>
 

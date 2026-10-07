@@ -1,6 +1,6 @@
 {# Supplier product detail card with category breadcrumb, cost, stock, and product mapping.
    Used on: supplier product show page. Variable: supplierProduct (SupplierProduct) #}
-<twig:Card editLink="{{ path('app_purchasing_supplier_product_edit', {id: supplierProduct.publicId.value}) }}" title="Supplier Product" statusHighlight="{{ supplierProduct.isActive ? 'ACTIVE' : 'INACTIVE' }}">
+<twig:EntityCard editLink="{{ path('app_purchasing_supplier_product_edit', {id: supplierProduct.publicId.value}) }}" title="Supplier Product" statusHighlight="{{ supplierProduct.isActive ? 'ACTIVE' : 'INACTIVE' }}">
 
     <div class="space-y-4">
         <div>
@@ -76,8 +76,8 @@
         </div>
     </div>
 
-    <twig:CardFooter :updatedAt="supplierProduct.updatedAt">
+    <twig:EntityCardFooter :updatedAt="supplierProduct.updatedAt">
         <twig:StatusBadge status="{{ supplierProduct.isActive ? 'ACTIVE' : 'INACTIVE' }}"/>
-    </twig:CardFooter>
+    </twig:EntityCardFooter>
 
-</twig:Card>
+</twig:EntityCard>

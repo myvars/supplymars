@@ -7,9 +7,9 @@
 {% block body %}
 
     <div class="m-3 space-y-4">
-        <twig:Breadcrumb :href="path('app_order_index')" label="Orders" current="Order #{{ '%06d'|format(result.id) }}"/>
+        <twig:PageBreadcrumb :href="path('app_order_index')" label="Orders" current="Order #{{ '%06d'|format(result.id) }}"/>
 
-        <twig:Card editLink="{{ result.allowEdit ? path('app_order_cancel_confirm', {id: result.publicId.value}) : null }}"
+        <twig:EntityCard editLink="{{ result.allowEdit ? path('app_order_cancel_confirm', {id: result.publicId.value}) : null }}"
                    editIcon="bi:x-lg"
                    statusHighlight="{{ result.status.value }}"
                    data-customer-id="{{ result.customer.id }}">
@@ -119,8 +119,8 @@
                     </p>
                     {% if result.allowEdit %}
                         <twig:Button
-                            tag="a"
-                            variant="alternative"
+                            as="a"
+                            variant="outline"
                             href="{{ path('app_order_item_new', {id: result.publicId.value}) }}"
                             data-turbo-frame="modal"
                         >
@@ -137,7 +137,7 @@
                     {% endfor %}
                 </ul>
             </div>
-        </twig:Card>
+        </twig:EntityCard>
 
         {% if result.purchaseOrders|length > 0 %}
             <p class="px-1 text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-500">Purchase Orders</p>
