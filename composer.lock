@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "88675d41df5e227febce3899e5c735b4",
+    "content-hash": "35f0dd7cf91f8b2ef378ecca57f9ebf1",
     "packages": [
         {
             "name": "async-aws/core",
@@ -11632,65 +11632,6 @@
                 "source": "https://github.com/SymfonyCasts/verify-email-bundle/tree/v1.18.0"
             },
             "time": "2025-11-29T11:53:37+00:00"
-        },
-        {
-            "name": "tales-from-a-dev/flowbite-bundle",
-            "version": "v1.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/tales-from-a-dev/flowbite-bundle.git",
-                "reference": "164ca3eda53779b1e4ef92340c88d4b7d7bb0f16"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/tales-from-a-dev/flowbite-bundle/zipball/164ca3eda53779b1e4ef92340c88d4b7d7bb0f16",
-                "reference": "164ca3eda53779b1e4ef92340c88d4b7d7bb0f16",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=8.1",
-                "symfony/http-kernel": "^6.4 || ^7.0 || ^8.0",
-                "symfony/twig-bridge": "^6.4 || ^7.0 || ^8.0",
-                "tales-from-a-dev/twig-tailwind-extra": "^1.0"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "^3.15",
-                "phpunit/phpunit": "^10.5",
-                "symfony/form": "^6.4 || ^7.0 || ^8.0",
-                "symfony/intl": "^6.4 || ^7.0 || ^8.0",
-                "symfony/security-csrf": "^6.4 || ^7.0 || ^8.0",
-                "symfony/translation": "^6.4 || ^7.0 || ^8.0"
-            },
-            "type": "symfony-bundle",
-            "autoload": {
-                "psr-4": {
-                    "TalesFromADev\\FlowbiteBundle\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Romain Monteil",
-                    "email": "monteil.romain@gmail.com"
-                }
-            ],
-            "description": "A Symfony form theme for Flowbite",
-            "homepage": "https://github.com/tales-from-a-dev/flowbite-bundle",
-            "keywords": [
-                "bundle",
-                "flowbite",
-                "form",
-                "symfony",
-                "theme"
-            ],
-            "support": {
-                "issues": "https://github.com/tales-from-a-dev/flowbite-bundle/issues",
-                "source": "https://github.com/tales-from-a-dev/flowbite-bundle/tree/v1.0.1"
-            },
-            "time": "2025-12-03T15:04:52+00:00"
         },
         {
             "name": "tales-from-a-dev/tailwind-merge-php",
