@@ -46,6 +46,7 @@ final class OrderFilterType extends AbstractType
             ->add('startDate', DatePickerType::class, [
                 'label' => 'Start Date',
                 'required' => false,
+                'side' => 'top',
                 'attr' => [
                     'placeholder' => 'Any date',
                 ],
@@ -53,6 +54,7 @@ final class OrderFilterType extends AbstractType
             ->add('endDate', DatePickerType::class, [
                 'label' => 'End Date',
                 'required' => false,
+                'side' => 'top',
                 'attr' => [
                     'placeholder' => 'Any date',
                 ],

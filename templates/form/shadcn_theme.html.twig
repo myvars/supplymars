@@ -261,13 +261,15 @@
 {%- endblock percent_widget %}
 
 {# DatePickerType: the kit DatePicker. The Calendar's hidden input carries the field's name and
-   submits a `Y-m-d` string; picking the selected day again clears it. #}
+   submits a `Y-m-d` string; picking the selected day again clears it. The type's `side` option
+   chooses which edge of the field the calendar opens on. #}
 {% block date_picker_widget -%}
     {%- set pickerId = id -%}
     {%- set pickerName = full_name -%}
     {%- set pickerDate = value is empty ? null : value -%}
     {%- set pickerPlaceholder = attr.placeholder|default('Pick a date') -%}
     {%- set pickerInvalid = not valid -%}
+    {%- set pickerSide = side|default('bottom') -%}
     <twig:DatePicker :selected="pickerDate" dateStyle="medium" class="block w-full">
         <twig:DatePicker:Trigger>
             <twig:Button
@@ -281,7 +283,7 @@
                 <twig:ux:icon name="lucide:calendar" class="size-4 text-muted-foreground" />
             </twig:Button>
         </twig:DatePicker:Trigger>
-        <twig:DatePicker:Content>
+        <twig:DatePicker:Content side="{{ pickerSide }}">
             <twig:Calendar mode="single" name="{{ pickerName }}" :selected="pickerDate" :weekStartsOn="1" />
         </twig:DatePicker:Content>
     </twig:DatePicker>

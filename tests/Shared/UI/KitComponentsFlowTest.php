@@ -150,7 +150,9 @@ final class KitComponentsFlowTest extends WebTestCase
             ->assertSeeIn('[data-slot="date-picker"][data-empty="false"] button#order_filter_startDate[data-slot="date-picker-trigger"] [data-slot="date-picker-value"]', '2025')
             ->assertSeeElement('[data-slot="date-picker"] [data-slot="calendar"] input[type="hidden"][name="order_filter[startDate]"][value="2025-01-01"]')
             ->assertSeeIn('[data-slot="date-picker"][data-empty="true"] button#order_filter_endDate [data-slot="date-picker-value"]', 'Any date')
-            ->assertSeeElement('[data-slot="date-picker"] [data-slot="calendar"] input[type="hidden"][name="order_filter[endDate]"][value=""]');
+            ->assertSeeElement('[data-slot="date-picker"] [data-slot="calendar"] input[type="hidden"][name="order_filter[endDate]"][value=""]')
+            // These fields sit at the bottom of the filter modal, so their calendars open upwards.
+            ->assertElementCount('[data-slot="date-picker"] [data-slot="popover-content"][data-side="top"]', 2);
     }
 
     public function testSidebarMenuIsAKitSheetWithCollapsibleSections(): void
