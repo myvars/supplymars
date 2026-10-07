@@ -201,15 +201,6 @@ html[data-turbo-visit-direction="back"] ::view-transition-new(root) {
 
 /* ── Motion system ── */
 
-/* Toast slide-in from right */
-@keyframes slideInRight {
-    from { opacity: 0; transform: translateX(16px); }
-    to   { opacity: 1; transform: translateX(0); }
-}
-.toast-enter {
-    animation: slideInRight 250ms ease-out;
-}
-
 /* Help drawer — transition only the `translate` property.
    Flowbite adds transition-transform (monitors transform, translate, scale,
    rotate) but only translate changes; the extra properties cause a two-stage
@@ -254,7 +245,6 @@ html[data-turbo-visit-direction="back"] ::view-transition-new(root) {
 
 /* Respect reduced-motion for all custom animations */
 @media (prefers-reduced-motion: reduce) {
-    .toast-enter,
     .animate-scale-in,
     .new-item-highlight {
         animation: none;

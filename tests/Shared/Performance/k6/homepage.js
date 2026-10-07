@@ -25,7 +25,6 @@ const assetNames = [
     'vendor/@hotwired/stimulus/stimulus.index.js',
     'vendor/flowbite-datepicker/flowbite-datepicker.index.js',
     'vendor/debounce/debounce.index.js',
-    'vendor/stimulus-use/stimulus-use.index.js',
     'vendor/@popperjs/core/core.index.js',
     'vendor/just-extend/just-extend.index.js',
     'vendor/lodash.throttle/lodash.throttle.index.js',

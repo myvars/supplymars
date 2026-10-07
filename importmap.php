@@ -27,7 +27,6 @@ return [
     '@symfony/stimulus-bundle' => ['path' => './vendor/symfony/stimulus-bundle/assets/dist/loader.js'],
     '@hotwired/stimulus' => ['version' => '3.2.2'],
     '@hotwired/turbo' => ['version' => '8.0.23'],
-    'stimulus-use' => ['version' => '0.53.1'],
     '@popperjs/core' => ['version' => '2.11.8'],
     'aos' => ['version' => '2.3.4'],
     'lodash.throttle' => ['version' => '4.1.1'],
