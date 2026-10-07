@@ -46,8 +46,7 @@ templates/
 │   └── ...
 │
 └── bundles/                               Third-party template overrides
-    ├── TwigBundle/Exception/              Error pages
-    └── TalesFromADevFlowbiteBundle/       Form theme
+    └── TwigBundle/Exception/              Error pages
 ```
 
 ## Naming Conventions

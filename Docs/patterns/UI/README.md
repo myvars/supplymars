@@ -17,7 +17,7 @@ This document describes the server-driven UI architecture used in SupplyMars. In
 │  With JavaScript:                                            │
 │  • Turbo: Instant navigation, no full reload                 │
 │  • Stimulus: Modals, dropdowns, toasts, charts               │
-│  • Flowbite: Datepickers, popovers                           │
+│  • Shadcn kit: Menus, side panels, date pickers              │
 │  • Better UX, same functionality                             │
 └──────────────────────────────────────────────────────────────┘
 ```

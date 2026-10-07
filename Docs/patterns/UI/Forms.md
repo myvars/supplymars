@@ -293,27 +293,52 @@ $builder->add('search', SearchType::class, [
 
 ## Form Themes
 
-Forms use the Flowbite theme with custom overrides:
+Forms use an in-app theme that renders every field through the Shadcn kit components in
+`templates/components/` (`Field`, `Input`, `Textarea`, `NativeSelect`, `Checkbox`,
+`RadioGroup:Item`, `InputGroup`, `DatePicker`, `Button`):
 
 ```yaml
 # config/packages/twig.yaml
 twig:
     form_themes:
-        - '@TalesFromADevFlowbite/form/default.html.twig'
-        - 'bundles/TalesFromADevFlowbiteBundle/form/custom_form_theme.html.twig'
+        - 'form/shadcn_theme.html.twig'
+        - 'form/turnstile.html.twig'
 ```
 
-Custom theme for minor adjustments:
+The theme is an ordinary project file: adjust a field kind by editing its block in
+`templates/form/shadcn_theme.html.twig`, or change how a control looks in its component template.
+
+A field that should not look like a standard control opts out for that form (the inline edit
+form does this to blend into the surrounding text):
 
 ```twig
-{# templates/bundles/TalesFromADevFlowbiteBundle/form/custom_form_theme.html.twig #}
-{% use '@TalesFromADevFlowbite/form/default.html.twig' %}
-
-{% block choice_widget_collapsed %}
-    {% set attr = attr|merge({class: (attr.class|default('') ~ ' h-10')|trim}) %}
-    {{ parent() }}
-{% endblock %}
+{% form_theme form with ['form_div_layout.html.twig'] only %}
 ```
+
+`MoneyType` and `PercentType` show their symbol inside the input as an `InputGroup` addon. A date
+that should be picked from a calendar uses `DatePickerType`
+(`src/Shared/UI/Http/Form/Type/DatePickerType.php`): it renders the kit's `DatePicker` and submits a
+`Y-m-d` string through the calendar's hidden input, so a browser test sets it with
+`submitForm()` rather than `fillField()`.
+
+### Known gaps
+
+The theme hands attributes to components rather than printing them through Symfony's `attributes`
+block, so a few field options that Symfony's own themes support are not honoured. None is used in
+this codebase; add support in the theme when one is needed.
+
+| Option | Behaviour |
+|--------|-----------|
+| `row_attr` | Ignored. |
+| `attr.placeholder`, `attr.title` | Printed as given, not translated. |
+| `placeholder_attr` | Ignored on a select's empty option. |
+| `attr.size` on a select | Taken as the kit select's styling prop, so it does not produce a list. |
+| `attr.class` on a single select | Lands on the select's wrapper, not the `<select>`. `data-*` attributes do reach the `<select>`. |
+
+More generally, an `attr` key that matches a component prop sets that prop. That is useful on buttons
+(`attr: ['variant' => 'outline']`).
+
+Also not covered yet: range and colour inputs, and collections.
 
 ## Data Transformers
 

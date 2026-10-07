@@ -406,7 +406,7 @@ add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsaf
 The CSP header includes `'unsafe-inline'` for both `script-src` and `style-src`:
 
 - **`script-src 'unsafe-inline'`** — Required for the dark-mode FOUC-prevention script in `templates/base.html.twig` (lines 4-8), which must run before page paint to avoid a flash of unstyled content.
-- **`style-src 'unsafe-inline'`** — Required for Tailwind CSS runtime style injection and Flowbite component styles.
+- **`style-src 'unsafe-inline'`** — Required for Tailwind CSS runtime style injection and inline styles set by UI components.
 
 Removing `unsafe-inline` would require nonce-based CSP, which Symfony's Asset Mapper does not currently support. If Asset Mapper adds nonce support in a future release, the inline script should be migrated and `unsafe-inline` removed.
 

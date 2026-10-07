@@ -204,20 +204,9 @@ this.countValue = 10;
 
 ### UI Interaction
 
-**`closeable_controller`**
-- Auto-closing elements (toasts)
-- Optional timer bar animation
-
-```html
-<div data-controller="closeable"
-     data-closeable-auto-close-value="5000">
-    <div data-closeable-target="timerbar"></div>
-</div>
-```
-
 **`toggle_controller`**
 - Show/hide elements
-- Optional click-outside-to-close behavior (replaces `user_menu_controller`)
+- Optional click-outside-to-close behavior
 
 ```html
 <!-- Simple toggle -->
@@ -315,8 +304,15 @@ Values:
 **`dropzone_controller`**
 - File upload with drag-and-drop
 
-**`datepicker_controller`**
-- Flowbite datepicker integration
+### Kit controllers
+
+These come from the Shadcn kit (`symfony/ux-toolkit`, see ADR 012) and are attached by its components, not by hand:
+
+- **`dialog_controller`** — `Dialog` and `Sheet` (the sidebar menu and help panel)
+- **`alert_dialog_controller`** — `AlertDialog`
+- **`dropdown_menu_controller`**, **`dropdown_menu_sub_controller`** — `DropdownMenu` (the header user menu)
+- **`sonner_controller`** — the flash toaster in `base.html.twig`
+- **`popover_controller`**, **`calendar_controller`**, **`calendar_display_controller`**, **`date_picker_controller`** — `DatePicker` (see `DatePickerType`)
 
 ## Patterns
 
