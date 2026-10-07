@@ -8,6 +8,9 @@
     - form: The Symfony form view
     - context: InlineEditContext with frameId, entity, cancelUrl, etc.
 #}
+{# The field is styled to disappear into the surrounding text, so it opts out of the global
+   form theme (which would add input chrome) and uses Symfony's bare markup instead. #}
+{% form_theme form with ['form_div_layout.html.twig'] only %}
 <turbo-frame id="{{ context.frameId }}" class="animate-scale-in relative inline-flex items-center gap-1 rounded-md bg-gray-50 p-0.5 ring-1 ring-gray-200/60 shadow-sm dark:bg-white/[0.04] dark:ring-white/[0.06] dark:shadow-none">
     {{ form_start(form, {
         'attr': {

@@ -7,11 +7,11 @@ use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use App\Purchasing\Domain\Model\Supplier\Supplier;
 use App\Purchasing\UI\Http\Form\DataTransformer\stringToPurchaseOrderStatusTransformer;
 use App\Shared\UI\Form\DataTransformer\IdToEntityTransformerFactory;
+use App\Shared\UI\Http\Form\Type\DatePickerType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -55,20 +55,18 @@ final class PurchaseOrderFilterType extends AbstractType
                 'label' => 'Purchase Order Status',
                 'placeholder' => 'Any Purchase Order Status',
             ])
-            ->add('startDate', TextType::class, [
+            ->add('startDate', DatePickerType::class, [
                 'label' => 'Start Date',
                 'required' => false,
                 'attr' => [
-                    'data-controller' => 'datepicker',
-                    'placeholder' => 'yyyy-mm-dd',
+                    'placeholder' => 'Any date',
                 ],
             ])
-            ->add('endDate', TextType::class, [
+            ->add('endDate', DatePickerType::class, [
                 'label' => 'End Date',
                 'required' => false,
                 'attr' => [
-                    'data-controller' => 'datepicker',
-                    'placeholder' => 'yyyy-mm-dd',
+                    'placeholder' => 'Any date',
                 ],
             ])
             ->add('query', HiddenType::class)
