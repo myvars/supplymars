@@ -1,33 +1,23 @@
-{# Simple dialog wrapper with header bar and content area. Used inside modals.
-   - title: Heading displayed in the top bar
-   - padding: Tailwind padding for the content area (default: p-3)
-   - size: Modal width variant — sm|md|lg|xl (default: md). Communicated to
-     the singleton <dialog> via data-modal-size attribute, read by Stimulus.
-   Block: content (implicit) #}
-{% props
-    title = null,
-    padding = 'p-4',
-    size = 'md'
-%}
+{%- props
+    ## string Unique identifier used to generate internal Dialog IDs.
+    id,
+    ## boolean Whether the dialog is open on initial render.
+    open = false
+-%}
 
-<div {{ attributes.defaults({
-    'class': 'relative',
-    'data-modal-size': size,
-}) }}
+{%- set _dialog_id = 'dialog-' ~ id -%}
+{%- set _dialog_title_id = _dialog_id ~ '-title' -%}
+{%- set _dialog_description_id = _dialog_id ~ '-description' -%}
+{%- do provide('dialog.id', _dialog_id) -%}
+{%- do provide('dialog.titleId', _dialog_title_id) -%}
+{%- do provide('dialog.descriptionId', _dialog_description_id) -%}
+<div
+    data-slot="dialog"
+    data-dialog-open-value="{{ open ? 'true' : 'false' }}"
+    {{ attributes.defaults({
+        'data-controller': 'dialog',
+    }) }}
 >
-    <div class="flex items-center justify-between border-b border-gray-200 px-5 py-3.5 dark:border-white/[0.10]">
-        <h3 class="text-base font-semibold text-gray-900 dark:text-gray-100">
-            {{ title }}
-        </h3>
-        <button type="button"
-                class="flex h-7 w-7 items-center justify-center rounded-md text-gray-400 transition-all duration-150 hover:bg-gray-100 hover:text-gray-600 hover:scale-110 active:scale-90 dark:hover:bg-gray-700 dark:hover:text-white"
-                data-action="basic-modal#close"
-                aria-label="Close dialog">
-            <twig:ux:icon name="flowbite:close-outline" class="h-3.5 w-3.5"/>
-        </button>
-    </div>
-
-    <div class="{{ padding }} text-sm text-gray-600 dark:text-gray-400">
-        {% block content %}{% endblock %}
-    </div>
+    {## The dialog structure, typically includes `Dialog:Trigger` and `Dialog:Content`. -#}
+    {% block content %}{% endblock %}
 </div>

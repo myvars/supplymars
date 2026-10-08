@@ -1,11 +1,11 @@
 {# VAT rate detail card with inline-editable name and rate percentage.
    Used on: VAT rate show page. Variable: vatRate (VatRate) #}
-<twig:Card editLink="{{ path('app_pricing_vat_rate_edit', { id: vatRate.publicId.value }) }}" title="VAT Rate">
+<twig:EntityCard editLink="{{ path('app_pricing_vat_rate_edit', { id: vatRate.publicId.value }) }}" title="VAT Rate">
     <p class="mb-3">{{ include('pricing/vat_rate/_inline_name.html.twig', {vatRate: vatRate}) }}</p>
     <div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
         <twig:ux:icon name="bi:receipt" class="h-4 w-4 text-gray-400 dark:text-gray-500"/>
         <span class="text-2xl font-bold text-gray-900 dark:text-white">{{ vatRate.rate|number_format(2) }}%</span>
         <span class="text-gray-500 dark:text-gray-400">rate</span>
     </div>
-    <twig:CardFooter :updatedAt="vatRate.updatedAt"/>
-</twig:Card>
+    <twig:EntityCardFooter :updatedAt="vatRate.updatedAt"/>
+</twig:EntityCard>

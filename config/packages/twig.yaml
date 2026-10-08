@@ -1,8 +1,7 @@
 twig:
     file_name_pattern: '*.twig'
     form_themes: [
-        '@TalesFromADevFlowbite/form/default.html.twig',
-        'bundles/TalesFromADevFlowbiteBundle/form/custom_form_theme.html.twig',
+        'form/shadcn_theme.html.twig',
         'form/turnstile.html.twig'
     ]
     paths:

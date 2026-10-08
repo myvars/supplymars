@@ -7,8 +7,8 @@
     {{ include('catalog/product/_navigation.html.twig', {product: result}) }}
 
     <div class="mx-3 mb-6 mt-3 space-y-5 text-sm text-gray-500 dark:text-gray-400">
-        <twig:Breadcrumb :href="path('app_catalog_product_index')" label="Products" :current="result.name"/>
-        <twig:Card padding="p-0">
+        <twig:PageBreadcrumb :href="path('app_catalog_product_index')" label="Products" :current="result.name"/>
+        <twig:EntityCard padding="p-0">
             <div class="rounded-xl bg-white dark:bg-gray-800/50">
                 <form action="{{ path('app_catalog_product_image_create', {id: result.publicId.value}) }}"
                       method="post"
@@ -24,7 +24,7 @@
                     </div>
                 </form>
             </div>
-        </twig:Card>
+        </twig:EntityCard>
 
         <div class="flex items-center justify-between">
             <p class="text-sm font-medium text-gray-700 dark:text-gray-400">

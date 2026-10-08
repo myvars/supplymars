@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /**
  * Returns the importmap for this application.
  *
@@ -29,22 +27,17 @@ return [
     '@symfony/stimulus-bundle' => ['path' => './vendor/symfony/stimulus-bundle/assets/dist/loader.js'],
     '@hotwired/stimulus' => ['version' => '3.2.2'],
     '@hotwired/turbo' => ['version' => '8.0.23'],
-    'stimulus-use' => ['version' => '0.53.1'],
-    '@popperjs/core' => ['version' => '2.11.8'],
     'aos' => ['version' => '2.3.4'],
     'lodash.throttle' => ['version' => '4.1.1'],
     'lodash.debounce' => ['version' => '4.0.8'],
     'aos/dist/aos.css' => ['version' => '2.3.4', 'type' => 'css'],
-    'stimulus-popover' => ['version' => '6.2.0'],
     'debounce' => ['version' => '3.0.0'],
     'dropzone/dist/dropzone.css' => ['version' => '6.3.5', 'type' => 'css'],
     'dropzone' => ['version' => '6.3.5'],
     'just-extend' => ['version' => '6.2.0'],
     'sortablejs' => ['version' => '1.15.7'],
-    'flowbite/dist/flowbite.min.css' => ['version' => '4.0.2', 'type' => 'css'],
-    'flowbite' => ['version' => '4.0.2'],
-    'flowbite-datepicker' => ['version' => '2.0.0'],
     'chart.js' => ['version' => '4.5.1'],
     '@kurkle/color' => ['version' => '0.6.4'],
-    'flowbite-datepicker/dist/css/datepicker.min.css' => ['version' => '2.0.0', 'type' => 'css'],
+    'shadcn/dist/tailwind.css' => ['version' => '4.21.4', 'type' => 'css'],
+    'tw-animate-css/dist/tw-animate.css' => ['version' => '1.4.0', 'type' => 'css'],
 ];

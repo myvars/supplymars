@@ -17,7 +17,7 @@
         </twig:block>
 
         <twig:block name="list_item">
-            <twig:Card
+            <twig:EntityCard
                 editLink="{{ path('app_catalog_subcategory_edit', {'id': result.publicId.value }) }}"
                 showLink="{{ path('app_catalog_subcategory_show', {'id': result.publicId.value }) }}"
                 statusHighlight="{{ result.isActive ? 'ACTIVE' : 'INACTIVE' }}"
@@ -39,7 +39,7 @@
                     </p>
                     <p class="text-sm text-gray-700 dark:text-gray-400">{{ result.defaultMarkup|number_format(3) }}% mark-up</p>
                 </div>
-            </twig:Card>
+            </twig:EntityCard>
         </twig:block>
     </twig:Search>
 

@@ -18,7 +18,7 @@
         </twig:block>
 
         <twig:block name="list_item">
-            <twig:Card
+            <twig:EntityCard
                 editLink="{{ path('app_purchasing_supplier_product_edit', {'id': result.publicId.value }) }}"
                 showLink="{{ path('app_purchasing_supplier_product_show', {'id': result.publicId.value }) }}"
                 statusHighlight="{{ result.isActive ? 'ACTIVE' : 'INACTIVE' }}"
@@ -37,13 +37,13 @@
                     <p class="text-xs text-gray-500 dark:text-gray-500">{{ result.stock }} in stock</p>
                     <twig:StatusBadge status="{{ result.isActive ? 'ACTIVE' : 'INACTIVE' }}"/>
                 </div>
-            </twig:Card>
+            </twig:EntityCard>
         </twig:block>
 
         <twig:block name="add">
             <twig:Button
-                tag="a"
-                variant="alternative"
+                as="a"
+                variant="outline"
                 href="{{ path('app_purchasing_supplier_product_new') }}"
                 data-turbo-frame="modal"
             >

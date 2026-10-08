@@ -18,7 +18,7 @@
         </twig:block>
 
         <twig:block name="list_item">
-            <twig:Card showLink="{{ path('app_purchasing_purchase_order_show', {'id': result.publicId.value }) }}" colour="{{ result.supplier.colourScheme }}" statusHighlight="{{ result.status.value }}">
+            <twig:EntityCard showLink="{{ path('app_purchasing_purchase_order_show', {'id': result.publicId.value }) }}" colour="{{ result.supplier.colourScheme }}" statusHighlight="{{ result.status.value }}">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="flex items-center gap-2 text-lg font-semibold text-gray-900 dark:text-white">
@@ -41,7 +41,7 @@
                     </div>
                     <twig:StatusBadge status="{{ result.status.value }}"/>
                 </div>
-            </twig:Card>
+            </twig:EntityCard>
         </twig:block>
 
     </twig:Search>

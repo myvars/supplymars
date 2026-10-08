@@ -11,17 +11,17 @@
         results="{{ results }}"
     >
         <twig:block name="sort">
-            <twig:Card>
+            <twig:EntityCard>
                 <div class="flex justify-between overflow-auto">
                     <twig:SortLink sortValue="id">Id</twig:SortLink>
                 </div>
-            </twig:Card>
+            </twig:EntityCard>
         </twig:block>
 
         <twig:block name="list_item">
-            <twig:Card>
+            <twig:EntityCard>
                 <p class="mb-1 items-center text-base text-gray-900 dark:text-white">{{ result.publicId.value }}</p>
-            </twig:Card>
+            </twig:EntityCard>
         </twig:block>
     </twig:Search>
 

@@ -35,6 +35,16 @@ export default class extends Controller {
         this.#activate();
     }
 
+    // Opens or closes the section list named by the clicked button's aria-controls.
+    toggle(event) {
+        const btn = event.currentTarget;
+        const dropdown = document.getElementById(btn.getAttribute('aria-controls'));
+        if (!dropdown) return;
+
+        const hidden = dropdown.classList.toggle('hidden');
+        btn.setAttribute('aria-expanded', String(!hidden));
+    }
+
     #resetAll() {
         for (const a of this.element.querySelectorAll('a[data-nav="top"]')) {
             swap(a, TOP_LINK.active, TOP_LINK.inactive);
@@ -45,6 +55,7 @@ export default class extends Controller {
 
         for (const btn of this.element.querySelectorAll('button[data-nav="section"]')) {
             swap(btn, TOP_LINK.active, TOP_LINK.inactive);
+            btn.setAttribute('aria-expanded', 'false');
             const icon = btn.querySelector('[data-nav="icon"]');
             if (icon) swap(icon, ICON.active, ICON.inactive);
             const chevron = btn.querySelector('[data-nav="chevron"]');
@@ -109,6 +120,7 @@ export default class extends Controller {
                 const btn = this.element.querySelector(`button[aria-controls="${dropdown.id}"]`);
                 if (btn) {
                     swap(btn, TOP_LINK.inactive, TOP_LINK.active);
+                    btn.setAttribute('aria-expanded', 'true');
                     const icon = btn.querySelector('[data-nav="icon"]');
                     if (icon) swap(icon, ICON.inactive, ICON.active);
                     const chevron = btn.querySelector('[data-nav="chevron"]');

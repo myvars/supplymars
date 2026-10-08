@@ -1,10 +1,10 @@
 {# Manufacturer detail card with inline-editable name and status.
    Used on: manufacturer show page. Variable: manufacturer (Manufacturer) #}
-<twig:Card editLink="{{ path('app_catalog_manufacturer_edit', {'id': manufacturer.publicId.value }) }}" title="Manufacturer" statusHighlight="{{ manufacturer.isActive ? 'ACTIVE' : 'INACTIVE' }}">
+<twig:EntityCard editLink="{{ path('app_catalog_manufacturer_edit', {'id': manufacturer.publicId.value }) }}" title="Manufacturer" statusHighlight="{{ manufacturer.isActive ? 'ACTIVE' : 'INACTIVE' }}">
     <p class="mb-3">{{ include('catalog/manufacturer/_inline_name.html.twig', {manufacturer: manufacturer}) }}</p>
-    <twig:CardFooter :updatedAt="manufacturer.updatedAt">
+    <twig:EntityCardFooter :updatedAt="manufacturer.updatedAt">
         <twig:StatusBadge status="{{ manufacturer.isActive ? 'ACTIVE' : 'INACTIVE' }}"/>
-    </twig:CardFooter>
+    </twig:EntityCardFooter>
     {% if manufacturer.products.count > 0 %}
         <div class="-mx-3 -mb-3 mt-3 border-t border-gray-200 dark:border-white/[0.06]">
             <a href="{{ path('app_catalog_product_index', {manufacturerId: manufacturer.id}) }}"
@@ -20,4 +20,4 @@
             </a>
         </div>
     {% endif %}
-</twig:Card>
+</twig:EntityCard>

@@ -1,9 +1,8 @@
-@import '../vendor/flowbite-datepicker/dist/css/datepicker.min.css';
 @import 'tailwindcss';
+@import "./shadcn.css";
 
 @source "../../templates/**/*.html.twig";
 @source "../../src/Shared/UI/Twig/Components/*.php";
-@source '../../vendor/tales-from-a-dev/flowbite-bundle/templates!**!*.html.twig';
 
 
 @custom-variant dark (&:is(.dark *));
@@ -188,34 +187,14 @@ html[data-turbo-visit-direction="back"] ::view-transition-new(root) {
     display: none;
 }
 
+/* A side panel (kit Sheet) is modal: stop the page behind it from scrolling while it is open. */
+html:has(dialog[data-slot="sheet-content"][open]) {
+    overflow: hidden;
+}
+
 /* ── Shared surface & depth utilities ── */
 
-/* Subtle focus glow for inputs */
-.input-focus-glow:focus {
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.12);
-}
-.dark .input-focus-glow:focus {
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
-}
-
 /* ── Motion system ── */
-
-/* Toast slide-in from right */
-@keyframes slideInRight {
-    from { opacity: 0; transform: translateX(16px); }
-    to   { opacity: 1; transform: translateX(0); }
-}
-.toast-enter {
-    animation: slideInRight 250ms ease-out;
-}
-
-/* Help drawer — transition only the `translate` property.
-   Flowbite adds transition-transform (monitors transform, translate, scale,
-   rotate) but only translate changes; the extra properties cause a two-stage
-   stutter on re-opens. The ID selector overrides Flowbite's class. */
-#help-drawer {
-    transition: translate 300ms ease;
-}
 
 /* Modal scale entrance — composable with animate-fade-in */
 @keyframes scaleIn {
@@ -253,7 +232,6 @@ html[data-turbo-visit-direction="back"] ::view-transition-new(root) {
 
 /* Respect reduced-motion for all custom animations */
 @media (prefers-reduced-motion: reduce) {
-    .toast-enter,
     .animate-scale-in,
     .new-item-highlight {
         animation: none;

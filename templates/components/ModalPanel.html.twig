@@ -1,0 +1,31 @@
+{# Simple dialog wrapper with header bar and content area. Used inside modals.
+   Its heading has id="modal-title", which names the singleton <dialog> for assistive technology.
+   - title: Heading displayed in the top bar
+   - padding: Tailwind padding for the content area (default: p-3)
+   - size: Modal width variant — sm|md|lg|xl (default: md). Communicated to
+     the singleton <dialog> via data-modal-size attribute, read by Stimulus.
+   Block: content (implicit) #}
+{% props
+    title = null,
+    padding = 'p-4',
+    size = 'md'
+%}
+
+<div {{ attributes.defaults({
+    'class': 'relative',
+    'data-modal-size': size,
+}) }}
+>
+    <div class="flex items-center justify-between border-b border-border px-5 py-3.5">
+        <h3 id="modal-title" class="text-base font-semibold text-foreground">
+            {{ title }}
+        </h3>
+        <twig:Button variant="ghost" size="icon-xs" class="text-muted-foreground" data-action="basic-modal#close" aria-label="Close dialog">
+            <twig:ux:icon name="flowbite:close-outline" class="size-3.5"/>
+        </twig:Button>
+    </div>
+
+    <div class="{{ padding }} text-sm text-gray-600 dark:text-gray-400">
+        {% block content %}{% endblock %}
+    </div>
+</div>

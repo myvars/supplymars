@@ -1,10 +1,9 @@
-{# Coloured status pill. Colour resolved via StatusColor utility.
+{# Coloured status pill, built on the kit's Badge. Colour resolved via StatusColor utility.
    Props (PHP): status (string, e.g., "ACTIVE"), showIcon (bool, default: false), interactive (bool, default: false — adds hover opacity) #}
-<span {{ attributes.defaults({
-    'class': 'inline-flex items-center rounded-md px-2.5 py-1 text-xs font-medium '~this.getColorClasses~(interactive ? ' transition-all duration-150 hover:opacity-80 active:scale-95' : ''),
-}) }}>
+{%- set classes = 'h-auto rounded-md px-2.5 py-1 ' ~ this.colorClasses ~ (interactive ? ' duration-150 hover:opacity-80 active:scale-95' : '') -%}
+<twig:Badge class="{{ classes }}" {{ ...attributes }}>
     {% if showIcon %}
-        <twig:StatusIcon type="{{ status|lower }}" class="me-1"/>
+        <twig:StatusIcon type="{{ status|lower }}"/>
     {% endif %}
     {{ status|replace({'_': ' '})|title }}
-</span>
+</twig:Badge>

@@ -6,9 +6,9 @@
 
 {% block body %}
 
-    <twig:Dialog title="{{ flowModel }} Filter">
+    <twig:ModalPanel title="{{ flowModel }} Filter">
         <twig:FlowForm :form="form" buttonLabel="Apply Filter"/>
-    </twig:Dialog>
+    </twig:ModalPanel>
 
 {% endblock %}
 

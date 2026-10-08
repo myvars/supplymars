@@ -1,6 +1,6 @@
 {# Customer spending insights — total spent, order count, average order value.
    Used on: customer show page. Variable: customer (User), insights (CustomerInsights) #}
-<twig:Card>
+<twig:EntityCard>
     <div class="mb-3 flex items-center justify-between">
         <div class="flex items-center gap-2 text-lg font-medium text-gray-900 dark:text-white">
             <twig:ux:icon name="bi:bar-chart-line-fill" class="h-5 w-5"/>
@@ -24,4 +24,4 @@
             <twig:KpiCard title="Published Reviews" value="{{ insights.reviewCount }}"/>
         </div>
     {% endif %}
-</twig:Card>
+</twig:EntityCard>

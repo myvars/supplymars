@@ -16,7 +16,7 @@
         </twig:block>
 
         <twig:block name="list_item">
-            <twig:Card
+            <twig:EntityCard
                 editLink="{{ path('app_pricing_vat_rate_edit', {'id': result.publicId.value }) }}"
                 showLink="{{ path('app_pricing_vat_rate_show', {'id': result.publicId.value }) }}"
             >
@@ -24,7 +24,7 @@
                     <p class="text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">{{ result.name }}</p>
                     <p class="text-lg font-light text-gray-700 dark:text-gray-400">{{ result.rate|number_format(2) }}%</p>
                 </div>
-            </twig:Card>
+            </twig:EntityCard>
         </twig:block>
     </twig:Search>
 

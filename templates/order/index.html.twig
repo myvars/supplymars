@@ -11,8 +11,8 @@
         <twig:block name="add">
             <div class="flex gap-2">
                 <twig:Button
-                    tag="a"
-                    variant="alternative"
+                    as="a"
+                    variant="outline"
                     href="{{ path('app_order_demo_confirm') }}"
                     data-turbo-frame="modal"
                     data-turbo-prefetch="false"
@@ -22,8 +22,8 @@
                 </twig:Button>
                 {% if routes.new and is_granted('ROLE_SUPER_ADMIN') %}
                     <twig:Button
-                        tag="a"
-                        variant="alternative"
+                        as="a"
+                        variant="outline"
                         href="{{ path(routes.new) }}"
                         data-turbo-frame="modal"
                     >
@@ -43,7 +43,7 @@
         </twig:block>
 
         <twig:block name="list_item">
-            <twig:Card showLink="{{ path('app_order_show', {'id': result.publicId.value }) }}" statusHighlight="{{ result.status.value }}"
+            <twig:EntityCard showLink="{{ path('app_order_show', {'id': result.publicId.value }) }}" statusHighlight="{{ result.status.value }}"
                 data-controller="new-item-highlight"
                 data-new-item-highlight-created-at-value="{{ result.createdAt|date('c') }}"
             >
@@ -69,7 +69,7 @@
                     </div>
                     <twig:StatusBadge status="{{ result.status.value }}"/>
                 </div>
-            </twig:Card>
+            </twig:EntityCard>
         </twig:block>
     </twig:Search>
 

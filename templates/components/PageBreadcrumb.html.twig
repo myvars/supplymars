@@ -1,0 +1,16 @@
+{# Two-level breadcrumb: a link back to the parent page, then the current page.
+   Built on the kit's Breadcrumb; for more levels, compose <twig:Breadcrumb> directly.
+   Props (PHP): href, label (parent link), current (this page's title),
+   mirrors (optional: frame id of an inline edit of that title, to stay in step with it) #}
+{%- set mirrorAttr = mirrors ? {'data-inline-edit-mirror': mirrors} : {} -%}
+<twig:Breadcrumb {{ ...attributes }}>
+    <twig:Breadcrumb:List class="flex-nowrap">
+        <twig:Breadcrumb:Item class="shrink-0">
+            <twig:Breadcrumb:Link href="{{ href }}" data-turbo-frame="body">{{ label }}</twig:Breadcrumb:Link>
+        </twig:Breadcrumb:Item>
+        <twig:Breadcrumb:Separator />
+        <twig:Breadcrumb:Item class="min-w-0">
+            <twig:Breadcrumb:Page class="truncate font-medium" {{ ...mirrorAttr }}>{{ current }}</twig:Breadcrumb:Page>
+        </twig:Breadcrumb:Item>
+    </twig:Breadcrumb:List>
+</twig:Breadcrumb>

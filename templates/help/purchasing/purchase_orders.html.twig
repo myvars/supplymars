@@ -21,13 +21,13 @@
     <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Rejection Flow</h3>
     <p>If a supplier rejects, the item moves to Rejected → Refunded, and the system re-allocates to an alternative supplier.</p>
 
-    <twig:Alert type="warning">
+    <twig:Callout type="warning">
         Delivered and Cancelled are terminal states. Rewind clears the status history permanently.
-    </twig:Alert>
+    </twig:Callout>
 
-    <twig:Alert type="info">
+    <twig:Callout type="info">
         Item quantities can only be edited when the PO is in Pending status. Setting quantity to 0 removes the item.
-    </twig:Alert>
+    </twig:Callout>
 
     <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Related</h3>
     <div class="flex flex-wrap gap-2">

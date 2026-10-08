@@ -7,7 +7,7 @@
 {% block body %}
 
     <div class="m-3 space-y-4">
-        <twig:Breadcrumb :href="path('app_review_index')" label="Reviews" :current="result.title"/>
+        <twig:PageBreadcrumb :href="path('app_review_index')" label="Reviews" :current="result.title"/>
         {{ include('review/_review_detail_card.html.twig', {review: result}) }}
 
         {% if result.status.value == 'PUBLISHED' or result.status.value == 'REJECTED' %}

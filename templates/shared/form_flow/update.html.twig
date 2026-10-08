@@ -6,22 +6,21 @@
 
 {% block body %}
 
-    <twig:Dialog title="Edit {{ flowModel }}">
+    <twig:ModalPanel title="Edit {{ flowModel }}">
         <twig:FlowForm :form="form" buttonLabel="Update {{ flowModel }}"/>
         {% if flowAllowDelete %}
             <div class="mt-6 border-t border-gray-200 pt-4 dark:border-white/[0.10]">
                 <twig:Button
-                    tag="a"
+                    as="a"
                     href="{{ path(routes.deleteConfirm, {'id': result.id}) }}"
-                    type="submit"
-                    variant="danger-outline"
+                    variant="destructive-outline"
                     class="w-full"
                     data-turbo-prefetch="false">
                     Delete {{ flowModel }}
                 </twig:Button>
             </div>
         {% endif %}
-    </twig:Dialog>
+    </twig:ModalPanel>
 
 {% endblock %}
 

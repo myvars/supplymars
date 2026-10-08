@@ -13,26 +13,6 @@ document.addEventListener('turbo:before-frame-render', (event) => {
     }
 });
 
-let flowbitePromise;
-function initFlowbiteLazy() {
-    if (!flowbitePromise) {
-        flowbitePromise = import('flowbite').then(m => m.initFlowbite);
-    }
-    flowbitePromise.then(init => init());
-}
-
-document.addEventListener('turbo:load', () => {
-    initFlowbiteLazy();
-});
-
-document.addEventListener('turbo:render', () => {
-    initFlowbiteLazy();
-});
-
-document.addEventListener('turbo:frame-render', () => {
-    initFlowbiteLazy();
-});
-
 // iOS Safari swipe gesture handling
 // Safari 18+ has built-in swipe animations that cannot be disabled.
 // We disable Turbo's view transitions for restore visits (back/forward)
