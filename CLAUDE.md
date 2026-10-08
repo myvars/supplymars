@@ -118,7 +118,7 @@ are thin orchestrators using 5 flow types:
 - **Mappers** are `__invoke` callables: form DTO → command. Located in `{Context}/UI/Http/Form/Mapper/`, named `{Action}{Entity}Mapper`.
 - **Filter mappers**: `SearchCriteria` → `FilterCommand` (readonly DTO implementing `SearchCriteriaInterface`). Handler builds redirect via `FilterParamBuilder`.
 - `FlowContext` factories: `forCreate()`, `forUpdate()`, `forFilter()`, `forSearch()`, `forAction()`, `forConfirm()`, `forDelete()`.
-- Chainable: `->template()`, `->successRoute()`, `->allowDelete(true)`, `->redirectOptions(refresh: true)`.
+- Chainable: `->template()`, `->successRoute()`, `->allowDelete(true)`.
 
 ### Route Naming
 

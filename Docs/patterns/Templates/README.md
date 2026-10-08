@@ -9,7 +9,12 @@ templates/
 ├── _footer.html.twig                      Footer
 ├── _logo.html.twig                        Logo partial
 ├── _menu.html.twig                        Sidebar navigation drawer
-├── _flashes.html.twig                     Flash message rendering (Toast)
+├── _flashes.html.twig                     Flash message rendering (FlashToast)
+├── _help_drawer.html.twig                 Contextual help panel
+│
+├── form/                                  Global form theme (shadcn_theme.html.twig), Turnstile field
+├── help/                                  Contextual help topics
+├── home/                                  Homepage
 │
 ├── components/                            Twig Components (PascalCase)
 │   ├── EntityCard.html.twig
@@ -17,7 +22,7 @@ templates/
 │   └── ...
 │
 ├── shared/
-│   ├── form_flow/                         FormFlow framework templates
+│   ├── form_flow/                         App overrides of the myvars/form-flow default templates
 │   │   ├── base.html.twig                 Router — resolves operation to template
 │   │   ├── create.html.twig               Default create form (modal)
 │   │   ├── update.html.twig               Default update form (modal)
@@ -29,7 +34,7 @@ templates/
 │   │   ├── inline_edit_form.html.twig     Inline edit: form mode
 │   │   └── inline_edit_success.stream.html.twig
 │   ├── turbo/                             Turbo integration
-│   │   ├── modal_base.html.twig           Layout selector (modal vs full page)
+│   │   ├── modal_base.html.twig           Layout selector (modal frame / other frame / full page)
 │   │   ├── modal_frame.html.twig          Minimal modal wrapper
 │   │   ├── embedded_frame.html.twig       Embedded turbo-frame layout
 │   │   ├── _modal.html.twig               Dialog component in base layout
@@ -74,14 +79,16 @@ Templates rendered by FormFlow receive these variables automatically:
 | Variable | Type | Available in | Description |
 |---|---|---|---|
 | `flowModel` | `string` | All | Entity name (e.g., "Product", "Supplier") |
-| `flowOperation` | `string` | All | Operation: create, update, delete, filter, search |
-| `routes` | `FlowRoutes` | All | Typed route names (`.index`, `.new`, `.edit`, `.delete`, `.filter`, `.show`) |
+| `flowOperation` | `string` | All | Operation: create, update, delete, filter, action, index |
+| `routes` | `FlowRoutes` | All | Typed route names (`.index`, `.new`, `.show`, `.delete`, `.deleteConfirm`, `.filter`) |
 | `template` | `string` | All | Resolved template path |
 | `form` | `FormView` | create, update, filter | Symfony form view |
-| `result` | Entity | update, delete, show | The entity being operated on |
-| `results` | `Pagerfanta` | search (index) | Paginated result set |
-| `flowBackLink` | `?string` | create, update | Optional back-to-list link URL |
+| `result` | object | create, update, filter, delete | The form data object passed to the flow (create, update, filter); the entity (delete and other confirmations) |
+| `results` | `Pagerfanta` | index | Paginated result set |
+| `flowBackLink` | `?string` | create, update, filter | The Referer URL, or null |
 | `flowAllowDelete` | `bool` | update | Whether to show delete button |
+| `flowModelPlural` | `string` | All | Plural display name (e.g., "Orders") |
+| `confirmKey` | `string` | delete and other confirmations | CSRF token key (`delete` by default) |
 
 ### Template Resolution Order
 
@@ -104,7 +111,7 @@ To override the default create modal for products, create `catalog/product/creat
 | `filter` | Filter icon/link | No (has default) |
 | `add` | Create button | No (has default) |
 
-### Card
+### EntityCard
 
 | Block | Purpose |
 |---|---|
@@ -117,11 +124,11 @@ To override the default create modal for products, create `catalog/product/creat
 |---|---|
 | `before_submit` | Content before the submit button (e.g., delete link) |
 
-### Dialog / ConfirmDialog
+### ModalPanel / ConfirmDialog
 
 | Block | Purpose |
 |---|---|
-| `content` | Dialog body content (implicit for Dialog) |
+| `content` | Modal body content (implicit for ModalPanel) |
 | `message` | Confirmation message text (ConfirmDialog) |
 
 ## Comment Header Style
@@ -134,15 +141,16 @@ Card partials and show pages should include a brief header comment:
    Variable: supplierProduct (SupplierProduct entity) #}
 ```
 
-Twig Components should document props above the `{% props %}` declaration:
+Anonymous Twig Components document props above the `{% props %}` declaration. PHP-backed components (such as `EntityCard`) have no `{% props %}`; they list their props in the same header comment.
 
 ```twig
-{# Reusable card container with optional edit/show links and status highlight.
-   - title: Optional heading above content
-   - editLink: URL for floating edit button (opens modal)
-   - showLink: URL wrapping content as clickable link
-   - statusHighlight: Status string for left border colour #}
-{% props title, editLink = null, showLink = null, statusHighlight = null %}
+{# CSRF-protected confirmation dialog, built on ModalPanel.
+   - title: Dialog heading
+   - formAction: POST URL for the form submission
+   - csrfId: CSRF token identifier
+   - confirmLabel: Text on the confirm button
+   Block: message (confirmation text shown above buttons) #}
+{% props title, formAction, csrfId, confirmLabel, confirmVariant = 'destructive-solid', cancelLabel = 'Cancel' %}
 ```
 
 Keep headers minimal: entity name, where it's used, and variable contract. Don't repeat what's obvious from the template name.

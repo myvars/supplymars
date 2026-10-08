@@ -1,72 +1,58 @@
 # Surface Hierarchy
 
-SupplyMars uses a 7-layer surface system to create consistent depth perception across light and dark modes. Each layer serves a specific role in the visual hierarchy.
+Surfaces and borders use the kit's role tokens, defined in `assets/styles/shadcn.css` and mapped to the app's gray scale. A token carries both its light and dark value, so a surface built on one needs no `dark:` class. Literal Tailwind classes are used only where no token is an exact match.
 
 ## Layers
 
-| Layer | Purpose | Light | Dark |
-|-------|---------|-------|------|
-| 1. Page background | Base canvas | `bg-gray-100` | `dark:bg-gray-950` |
-| 2. Primary surface | Cards, panels | `bg-white` | `dark:bg-gray-700/50` |
-| 3. Elevated surface | Modals, dialogs | `bg-white` | `dark:bg-gray-800` |
-| 4. Inset / well | KPI panels, subordinate content | `bg-gray-50` | `dark:bg-gray-900/60` |
-| 5. Header / footer accent | Card footers, section accents | `bg-gray-50` | `dark:bg-gray-700/50` |
-| 6. Control surface | Sort bars, toolbars | `bg-gray-50` | `dark:bg-gray-800` |
-| 7. Hover state | Interactive row/card hover | `hover:bg-gray-50` | `dark:hover:bg-gray-800/50` |
+| Layer | Purpose | Classes | Light | Dark |
+|-------|---------|---------|-------|------|
+| 1. Page background | Base canvas | `bg-gray-100 dark:bg-gray-950` on `<body>`; `bg-gray-100 dark:bg-gray-900` on `<main>` | gray-100 | gray-950 / gray-900 |
+| 2. Primary surface | Cards, panels, tables | `bg-card` | white | gray-800 mixed 70% into gray-900 |
+| 3. Elevated surface | Modals, dialogs, menus | `bg-popover` | white | gray-800 |
+| 4. Accent | Table title bars and header rows | `bg-muted/50` | gray-100 at 50% | gray-700 at 50% |
+| 5. Control surface | The sort bar on index pages | `bg-gray-50 dark:bg-gray-800/80` (with its own `border-gray-200 dark:border-white/[0.06]`) | gray-50 | gray-800 at 80% |
+| 6. Hover state | Table rows | `hover:bg-muted/50` | gray-100 at 50% | gray-700 at 50% |
+
+Other hover treatments: sidebar links use `hover:bg-gray-100 dark:hover:bg-gray-800`; a clickable `EntityCard` uses `hover:shadow-md hover:brightness-[0.97] dark:hover:brightness-125`.
+
+`KpiCard` is the one card that does not use `bg-card`: it is `bg-white dark:bg-gray-800/40` with `dark:ring-1 dark:ring-white/[0.06]`.
 
 ## Border Conventions
 
+`border-border` is gray-200 in light mode and white at 10% in dark mode.
+
 | Context | Classes |
 |---------|---------|
-| Card border | `border border-gray-200 dark:border-gray-600` |
-| Section divider (within card) | `border-t border-gray-200 dark:border-gray-600` |
-| Dialog / modal border | `border border-gray-200 dark:border-gray-700` |
-| Header nav border | `border-b border-gray-700/50` |
-| Sidebar border | `border-r border-gray-200 dark:border-gray-700/50` |
-| Footer border | `border-t border-gray-200 dark:border-gray-700` |
-| Table row border | `border-b border-gray-100 dark:border-gray-700` |
+| Card border | `border border-border` |
+| Section divider (within card) | `border-t border-border` |
+| Dialog / modal border | `border border-border` |
+| Table row border | `border-b` (kit components take the `border-border` colour by default) |
+| Sidebar border | `border-r` (the kit `Sheet`, same default colour) |
+| Header nav border | `border-b border-gray-700/50` (the header is dark in both modes) |
+| Footer border | `border-t border-gray-200 dark:border-white/[0.06]` |
 
-## Card Wells
+## Recessed Areas
 
-Use the **well** pattern for secondary or subordinate content nested inside a card. This creates a visually recessed area that separates it from the card's primary content.
-
-```html
-<div class="rounded-lg bg-gray-50 p-4 dark:bg-gray-900/50">
-    <!-- Subordinate content: addresses, metadata blocks, embedded lists -->
-</div>
-```
-
-Wells are appropriate for:
-- KPI metric panels within dashboard cards
-- Delivery addresses within order cards
-- Quoted text (e.g., review body, ticket message)
-- Nested metadata or configuration details
-- Collapsed/expandable section content
-
-Wells are **not** appropriate for:
-- Primary card content (use the card surface itself)
-- Interactive elements that need prominence (use the card surface or a bordered section)
+There is no dedicated "well" token. Where content needs to sit back from its card, use `bg-gray-50` with a literal dark class such as `dark:bg-gray-800/50`. Use it sparingly; overuse flattens the hierarchy.
 
 ## Dark Mode Tinted Backgrounds
 
-For color-tinted surfaces (alerts, badges), use opacity on a mid-tone base rather than shade-based colors:
+Colour-tinted surfaces use opacity on a mid-tone base rather than a darker shade, which keeps the intensity uniform across colours:
 
-| Pattern | Example |
-|---------|---------|
-| Tinted background | `bg-{color}-500/10` |
-| Tinted border | `inset-ring-{color}-500/20` |
-| Tinted text | `text-{color}-400` |
-
-This creates uniform visual intensity across all colors in dark mode.
+| Component | Dark classes | Source |
+|-----------|--------------|--------|
+| Badges | `dark:bg-{color}-400/10 dark:text-{color}-400 dark:inset-ring-{color}-400/20` | `src/Shared/UI/Twig/StatusColor.php` |
+| Alerts / `Callout` | `dark:border-{color}-500/20 dark:bg-{color}-500/10 dark:text-{color}-400` | `templates/components/Alert.html.twig` |
 
 ## Guidelines
 
-- Modals use Layer 3 (`bg-white` / `dark:bg-gray-800`) with `rounded-xl`, `shadow-2xl`, and a blurred backdrop (`backdrop-blur-[2px]`). Cards use Layer 2 (`bg-white` / `dark:bg-gray-700/50`).
-- Wells (Layer 4) should be used sparingly. Overuse flattens the hierarchy.
-- The page background (Layer 1) is set in the base layout and should not be overridden in content templates.
-- Always include both light and dark mode classes for surfaces and borders.
+- Modals use `bg-popover` with `rounded-xl`, `shadow-2xl` and a blurred backdrop (`backdrop-blur-[2px]`). Cards use `bg-card`.
+- Prefer a role token over a literal gray wherever one is an exact match. It is what keeps in-house components consistent with the kit's.
+- The page background is set in the base layout. A page that needs a different one overrides the `main_class` block, not the body.
+- A surface built on literal classes needs both its light and dark class.
 
 ## Related
 
 - [Typography](Typography.md) — Text scale and color conventions
 - [UI README](README.md) — Server-driven UI overview
+- [ADR 012](../../adr/012-shadcn-ui-kit.md) — The kit and its colour tokens

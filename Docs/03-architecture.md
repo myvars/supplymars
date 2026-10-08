@@ -183,7 +183,7 @@ Each bounded context follows a consistent internal structure:
 | Step | Class | Location |
 |------|-------|----------|
 | ValueResolver | `PublicIdResolver` | `src/Shared/UI/Http/ValueResolver/` |
-| FormFlow | `FormFlow`, `ActionFlow`, `DeleteFlow`, `SearchFlow` | `src/Shared/UI/Http/FormFlow/` |
+| FormFlow | `FormFlow`, `ActionFlow`, `ConfirmFlow`, `SearchFlow` | `vendor/myvars/form-flow/src/` |
 | Mapper | Context-specific mappers | `src/{Context}/UI/Http/Form/Mapper/` |
 | Handler | Context-specific handlers | `src/{Context}/Application/Handler/` |
 | Repository | Domain interfaces + Doctrine impl | `src/{Context}/Domain/Repository/` + `Infrastructure/Persistence/` |
@@ -595,6 +595,6 @@ The `TurboAwareRedirector` in FormFlow handles this automatically.
 |------|---------|
 | `assets/controllers/basic_modal_controller.js` | Modal lifecycle |
 | `templates/shared/turbo/modal_base.html.twig` | Layout decision |
-| `src/Shared/UI/Http/FormFlow/Redirect/TurboAwareRedirector.php` | Stream generation |
+| `vendor/myvars/form-flow/src/Redirect/TurboAwareRedirector.php` | Stream generation |
 
 See [Turbo Patterns](patterns/Turbo/README.md) and [UI Patterns](patterns/UI/README.md) for detailed documentation

@@ -801,7 +801,7 @@ FormFlow is a thin orchestration layer that standardizes controller behavior acr
 |------|---------|------------|
 | `FormFlow` | Create/update with forms | `form()` |
 | `ActionFlow` | Direct command execution | `execute()` |
-| `DeleteFlow` | Delete with confirmation | `deleteConfirm()`, `delete()` |
+| `ConfirmFlow` | Confirm-then-act (delete and other confirmable actions) | `confirm()`, `execute()` |
 | `SearchFlow` | Paginated index pages | `search()` |
 
 ### Usage Example
@@ -828,9 +828,9 @@ public function new(
 ```
 
 **Key files:**
-- `src/Shared/UI/Http/FormFlow/FormFlow.php`
-- `src/Shared/UI/Http/FormFlow/View/FlowContext.php`
-- `src/Shared/UI/Http/FormFlow/Redirect/TurboAwareRedirector.php`
+- `vendor/myvars/form-flow/src/FormFlow.php`
+- `vendor/myvars/form-flow/src/View/FlowContext.php`
+- `vendor/myvars/form-flow/src/Redirect/TurboAwareRedirector.php`
 
 ### Benefits
 
@@ -869,8 +869,8 @@ Inline editing allows staff to edit entity names directly on show pages without 
 
 ### Key Files
 
-- `src/Shared/UI/Http/FormFlow/InlineEdit/InlineEditFlow.php` — flow handler
-- `src/Shared/UI/Http/FormFlow/InlineEdit/InlineEditContext.php` — configuration
+- `vendor/myvars/form-flow/src/InlineEdit/InlineEditFlow.php` — flow handler
+- `vendor/myvars/form-flow/src/InlineEdit/InlineEditContext.php` — configuration
 - `templates/components/InlineEdit.html.twig` — Twig component
 - `assets/controllers/inline_edit_controller.js` — Stimulus controller
 

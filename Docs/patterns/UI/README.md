@@ -118,7 +118,7 @@ export default class extends Controller {
 // Form type with Stimulus data attributes
 $builder->add('category', EntityType::class, [
     'attr' => [
-        'data-action' => 'change->dependent-field#update',
+        'data-action' => 'change->dependent-field#updateDependent',
     ],
 ]);
 ```

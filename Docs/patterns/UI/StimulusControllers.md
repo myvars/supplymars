@@ -153,11 +153,17 @@ this.countValue = 10;
 - Handles click-outside and escape key
 
 ```html
-<dialog data-controller="basic-modal"
-        data-action="turbo:frame-load->basic-modal#frameLoaded
-                     turbo:submit-end->basic-modal#submitEnd">
-    <turbo-frame data-basic-modal-target="frame"></turbo-frame>
-</dialog>
+<div data-controller="basic-modal"
+     data-action="turbo:before-cache@window->basic-modal#close
+                  turbo:submit-end->basic-modal#submitEnd
+                  turbo:frame-load->basic-modal#frameLoaded">
+    <dialog data-basic-modal-target="dialog"
+            data-action="close->basic-modal#close
+                         mousedown->basic-modal#onMouseDown
+                         click->basic-modal#clickOutside">
+        <turbo-frame id="modal" data-basic-modal-target="frame"></turbo-frame>
+    </dialog>
+</div>
 ```
 
 ### Search & Filtering
@@ -176,8 +182,8 @@ this.countValue = 10;
 ```
 
 **`autosubmit_controller`**
-- Auto-submits form on any input change
-- Debounced (300ms)
+- `submit` submits the form at once; `debouncedSubmit` waits 300ms. Bind either with `data-action`
+- Available, not currently used
 
 ```html
 <form data-controller="autosubmit">
@@ -187,20 +193,28 @@ this.countValue = 10;
 
 ### Form Enhancement
 
+**`inline_edit_controller`**
+- On the `InlineEdit` frame: focuses the field, Enter submits (Cmd/Ctrl+Enter in a textarea), Escape cancels, a click outside submits
+- The input grows to fit its text via the `sizer` target
+
 **`dependent_field_controller`**
-- Cascading select fields
-- Fetches options based on parent selection
+- Cascading select fields: fetches HTML for the chosen value and puts it in the dependent element
+- `dependent` is the DOM id of the element to fill; the URL's `%id%` placeholder (URL-encoded by `path()`) is replaced with the selected value
+- Available, not currently used
 
 ```html
 <select data-controller="dependent-field"
         data-dependent-field-dependent-value="subcategory"
-        data-dependent-field-url-value="/api/subcategories/%id%"
-        data-action="change->dependent-field#update">
+        data-dependent-field-url-value="{{ path('app_subcategory_options', {id: '%id%'}) }}"
+        data-action="change->dependent-field#updateDependent">
 ```
 
 **`submit_form_controller`**
-- Programmatic form submission
+- `submitForm()` clicks the element marked `data-submit-form-target="submit"`
 - Used with dependent fields
+
+**`turnstile_controller`**
+- Renders the Cloudflare Turnstile widget for `TurnstileType` (value `sitekey`; targets `container`, `response`)
 
 ### UI Interaction
 
@@ -281,16 +295,18 @@ Values:
 - Shared formatting via `assets/lib/chart_format.js` (currency, percentage, integer)
 - Click-to-navigate support (bar, doughnut)
 
-```html
-<canvas data-controller="bar-chart"
-        data-bar-chart-link-url-value="/reports/product/{label}">
+A click on a bar visits the link URL plus `?` and that bar's entry in `options.linkParams`. A click on a doughnut segment replaces `{label}` in the link URL with the segment's label, and `{LABEL}` with its upper-case, underscored form. `templates/reporting/order_summary.html.twig` uses both:
+
+```twig
+'data-bar-chart-link-url-value': path('app_order_index'),
+'data-doughnut-chart-link-url-value': path('app_order_index') ~ '?orderStatus={label}&…',
 ```
 
 ### Utilities
 
 **`auto_url_updater_controller`**
 - Updates browser URL without navigation
-- For filter/search state
+- Available, not used by any template (the search box syncs the URL itself)
 
 **`csrf_protection_controller`** *(not a Stimulus controller — Symfony CSRF side-effect module)*
 - Manages CSRF tokens via global event listeners

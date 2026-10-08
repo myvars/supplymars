@@ -277,7 +277,8 @@ Add Stimulus attributes for enhanced behavior:
 $builder->add('category', EntityType::class, [
     'class' => Category::class,
     'attr' => [
-        // Trigger form resubmit on change (for dependent fields)
+        // Trigger form resubmit on change (for dependent fields). submitForm() clicks the element
+        // marked data-submit-form-target="submit": a hidden 'auto-update' SubmitType, as in ProductType.
         'data-action' => 'change->submit-form#submitForm',
     ],
 ]);
@@ -295,7 +296,7 @@ $builder->add('search', SearchType::class, [
 
 Forms use an in-app theme that renders every field through the Shadcn kit components in
 `templates/components/` (`Field`, `Input`, `Textarea`, `NativeSelect`, `Checkbox`,
-`RadioGroup:Item`, `InputGroup`, `DatePicker`, `Button`):
+`RadioGroup:Item`, `Switch`, `InputGroup`, `DatePicker`, `Calendar`, `Button`):
 
 ```yaml
 # config/packages/twig.yaml

@@ -27,7 +27,9 @@ SupplyMars uses all three, with a structured frame hierarchy for consistent beha
 | `modal` | Form dialogs | No | `_modal.html.twig` |
 | `{model}-table` | Search/list results | Yes (`advance`) | `Search.html.twig` |
 | `reports` | Dashboard widgets | No | Various dashboard templates |
-| `url-refresh` | Hidden refresh trigger | No | `base.html.twig` |
+| `help` | Contextual help panel | No | `_help_drawer.html.twig`, `help/_layout.html.twig` |
+| `inline-edit-{entity}-{id}-{field}` | Inline field editing | No | `components/InlineEdit.html.twig` |
+| `url-refresh` | Empty frame, currently unused | No | `base.html.twig` |
 
 ## Quick Reference
 
@@ -88,17 +90,20 @@ Templates that can be rendered as modals extend `modal_base.html.twig`:
 templates/
 ├── base.html.twig                    # Body frame, meta tags
 └── shared/turbo/
-    ├── modal_base.html.twig          # Layout decision (modal vs full)
+    ├── modal_base.html.twig          # Layout decision (modal frame / other frame / full page)
     ├── modal_frame.html.twig         # Minimal modal layout
+    ├── embedded_frame.html.twig      # Layout for a request from any other frame
     ├── _modal.html.twig              # Modal component with <dialog>
     └── _frame_success_stream.html.twig  # Flash message stream
 
-assets/controllers/
-├── basic_modal_controller.js         # Modal lifecycle
-├── searchbox_controller.js           # Live search
-└── auto_url_updater_controller.js    # URL sync
+assets/
+├── app.js                            # Registers the custom "redirect" Turbo Stream action
+└── controllers/
+    ├── basic_modal_controller.js     # Modal lifecycle
+    ├── searchbox_controller.js       # Live search (also syncs the URL)
+    └── auto_url_updater_controller.js  # URL sync (not used by any template)
 
-src/Shared/UI/Http/FormFlow/Redirect/
+vendor/myvars/form-flow/src/Redirect/
 └── TurboAwareRedirector.php          # Stream response generation (inline)
 ```
 

@@ -29,11 +29,11 @@ This achieves:
 |-------|---------|--------------|
 | `FormFlow` | Create/update forms with validation | GET, POST |
 | `ActionFlow` | Direct command execution (state changes) | GET or POST |
-| `DeleteFlow` | Delete confirmation + CSRF-validated delete | GET, POST |
+| `ConfirmFlow` | Confirm-then-act: delete & other confirmable actions (CSRF) | GET, POST |
 | `SearchFlow` | Paginated index/list pages | GET |
 | `InlineEditFlow` | Single-field inline editing via Turbo Frames | GET, POST |
 
-All flows are located in `src/Shared/UI/Http/FormFlow/`.
+All flows live in the external `myvars/form-flow` package (namespace `MyVars\FormFlow\`), installed at `vendor/myvars/form-flow/src/`. The app supplies the adapters (`Result`, `RedirectTarget`, `FlashMessenger`, `SearchCriteriaInterface`) and may override any of the package's default templates at `templates/shared/form_flow/*`.
 
 ## HTTP Lifecycle
 
@@ -70,24 +70,28 @@ GET /order/{id}/allocate
   → If Result.redirect: redirect to forced target
 ```
 
-### DeleteFlow
+### ConfirmFlow (delete & confirmable actions)
 
 ```
-GET /product/{id}/delete/confirm
+GET /product/{id}/delete/confirm     (confirm())
   → Renders confirmation template
   → Returns 200
 
-POST /product/{id}/delete
-  → Validates CSRF token ('delete' + entity.publicId)
+POST /product/{id}/delete            (execute())
+  → Validates CSRF token (confirmKey + the command's id; confirmKey defaults to 'delete')
   → If invalid: flash error, redirect 303
   → If valid: delegates to ActionFlow.process()
 ```
+
+Non-delete confirmable actions use the same flow via `FlowContext::forConfirm($model, key)`, which
+namespaces the CSRF token to `key` so distinct actions on the same entity don't share a token. This
+application has three: `cancel` (orders), `rewind` (purchase orders) and `remove` (supplier products).
 
 ### SearchFlow (Index/List)
 
 ```
 GET /product/?page=1
-  → Calls repository.findByCriteria(criteria)
+  → Paginates the Pagerfanta adapter the controller passes in ($repository->findByCriteria($criteria))
   → Returns 200 with paginated results
 
 GET /product/?page=999 (out of range)
@@ -107,6 +111,9 @@ Typed value object that replaces the raw `MODEL` string constant in controllers.
 FlowModel::create('catalog', 'product')
 FlowModel::create('purchasing', 'supplier_product')
 FlowModel::create('pricing', 'vat_rate', displayName: 'VAT Rate')
+
+// Irregular plural (the default plural is the display name + 's'):
+FlowModel::create('demo', 'category', displayNamePlural: 'Categories')
 
 // Entity without bounded context:
 FlowModel::simple('customer')
@@ -159,7 +166,6 @@ Used when a handler needs to override the default success URL:
 new RedirectTarget(
     route: 'app_order_show',
     params: ['id' => $order->getPublicId()->value()],
-    redirectRefresh: false,
     redirectStatus: 303,
 )
 ```
@@ -174,6 +180,7 @@ All templates receive these variables from `TemplateContext`:
 | `flowOperation` | `'create'` | Operation name |
 | `template` | `'catalog/product/create.html.twig'` | Full template path |
 | `routes` | `FlowRoutes` object | Typed route names (see below) |
+| `flowModelPlural` | `'Tasks'` | Plural display name (`FlowModel::plural()`) |
 
 The `routes` object (`FlowRoutes`) exposes named route properties instead of string concatenation:
 
@@ -195,30 +202,38 @@ Usage in Twig:
 Additional variables per flow:
 - `FormFlow`: `form`, `result`, `flowBackLink`, `flowAllowDelete`
 - `SearchFlow`: `results` (pagination object)
-- `DeleteFlow`: `result` (entity to delete)
+- `ConfirmFlow`: `result` (entity to confirm), `confirmKey` (CSRF token key)
 
 ## File Locations
 
 ```
-src/Shared/UI/Http/FormFlow/
-├── FormFlow.php              # Create/update forms
-├── ActionFlow.php           # Direct command execution
-├── DeleteFlow.php            # Delete confirmation
-├── SearchFlow.php            # Paginated lists
-├── Guard/
-│   └── AutoUpdateGuard.php   # Auto-update submit detection
-├── Redirect/
-│   └── TurboAwareRedirector.php  # Turbo stream redirects
-└── View/
-    ├── FlowContext.php       # Flow configuration (forCreate, forUpdate, forDelete, forFilter, forSearch, forAction)
-    ├── FlowModel.php         # Typed model value object (create, simple, withDisplayName, template)
-    ├── FlowRoutes.php        # Typed route name bag (fromPrefix, with)
-    ├── FormOperation.php     # Operation enum (Create, Update, Delete, Filter, Command, Index)
-    └── TemplateContext.php   # Template variable bag
+vendor/myvars/form-flow/
+├── config/services.php
+├── templates/shared/form_flow/   # Design-neutral defaults (the app overrides at the same path)
+└── src/
+    ├── FormFlowBundle.php
+    ├── FormFlow.php              # Create/update forms
+    ├── ActionFlow.php            # Direct command execution (state transitions, actions)
+    ├── ConfirmFlow.php           # Confirm-then-act (delete & confirmable actions)
+    ├── SearchFlow.php            # Paginated lists
+    ├── Concerns/RedirectsResponses.php
+    ├── Contract/                 # ResultInterface, RedirectTargetInterface, FlasherInterface, SearchCriteriaInterface
+    ├── Guard/AutoUpdateGuard.php # Auto-update submit detection
+    ├── InlineEdit/               # InlineEditFlow, InlineEditContext, InlineFieldForm, InlineFieldType
+    ├── Mapper/ObjectMapper.php
+    ├── Redirect/                 # RedirectorInterface, TurboAwareRedirector (Turbo stream redirects)
+    └── View/
+        ├── FlowContext.php       # Flow configuration (forCreate, forUpdate, forDelete, forConfirm, forFilter, forSearch, forAction)
+        ├── FlowModel.php         # Typed model value object (create, simple, withDisplayName, plural, template)
+        ├── FlowRoutes.php        # Typed route name bag (fromPrefix, with)
+        ├── FormOperation.php     # Operation enum (Create, Update, Delete, Filter, Action, Index)
+        └── TemplateContext.php   # Template variable bag
 
-src/Shared/Application/
-├── Result.php                # Handler result object
-└── RedirectTarget.php        # Forced redirect target
+src/Shared/                       # The app's adapters for the package's Contract/ ports
+├── Application/Result.php                          # Handler result object
+├── Application/RedirectTarget.php                  # Forced redirect target
+├── Application/Search/SearchCriteriaInterface.php
+└── UI/Http/FlashMessenger.php
 ```
 
 ## Related Documentation

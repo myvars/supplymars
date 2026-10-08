@@ -12,10 +12,10 @@ use Symfony\Component\HttpFoundation\Session\FlashBagAwareSessionInterface;
 /**
  * Thin wrapper around Symfony flash bag for consistent success/error/warning messages.
  *
- * Flash keys are aligned with Bootstrap alert classes:
- * - success() → 'success' (green alert)
- * - warning() → 'warning' (yellow alert)
- * - error()   → 'danger'  (red alert, Bootstrap uses 'danger' not 'error')
+ * Flash keys match the types FlashToast accepts (see templates/_flashes.html.twig):
+ * - success() → 'success'
+ * - warning() → 'warning'
+ * - error()   → 'danger' (the key is 'danger', not 'error')
  */
 final class FlashMessenger implements FlasherInterface
 {
@@ -46,7 +46,7 @@ final class FlashMessenger implements FlasherInterface
     /**
      * Add error flash message.
      *
-     * Note: Uses 'danger' key to align with Bootstrap alert-danger class.
+     * Note: Uses the 'danger' key, the type FlashToast renders as an error.
      */
     public function error(Request $request, ?string $message): void
     {

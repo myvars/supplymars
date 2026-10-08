@@ -61,7 +61,7 @@ In the host template, wrap it in a `<turbo-frame>` and pass `formFrame`:
 </turbo-frame>
 ```
 
-The form must be rendered server-side (not lazy-loaded via `src`) so that Turbo morph can patch it in place after submission.
+The form must be rendered server-side (not lazy-loaded via `src`) so that it is part of the page Turbo re-renders after submission.
 
 ### 3. Configure the Handler Controller
 
@@ -75,7 +75,7 @@ context: FlowContext::forCreate($this->model())
 
 ### 4. Avoid RedirectTarget in the Handler
 
-Return `Result::ok()` without a `RedirectTarget`. This lets `TurboAwareRedirector` use `<turbo-stream action="refresh">`, which morphs the page smoothly.
+Return `Result::ok()` without a `RedirectTarget`. This lets `TurboAwareRedirector` use `<turbo-stream action="refresh">`, which re-renders the current page in place with the scroll position kept (`base.html.twig` sets `turbo-refresh-method` to `replace` and `turbo-refresh-scroll` to `preserve`).
 
 ```php
 return Result::ok(message: 'Saved');
@@ -96,6 +96,6 @@ return Result::ok(message: 'Saved');
 | Uses `<twig:ModalPanel>` | Yes | No |
 | Host page markup | `<a data-turbo-frame="modal">` | `<turbo-frame>` with inline form |
 | Frame ID | `modal` | Custom (e.g., `ticket-reply`) |
-| On success | Modal closes + page refreshes | Page morphs in place |
+| On success | Modal closes + page refreshes | Page refreshes in place, scroll kept |
 | Handler redirect | Either works | Avoid `RedirectTarget` |
 | Form creation | FormFlow only | Host controller + FormFlow |
