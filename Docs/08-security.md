@@ -542,6 +542,8 @@ $constraint = new Image(
     maxSize: self::MAX_SIZE,
     filenameMaxLength: 255,
     extensions: self::ALLOWED_EXTENSIONS,
+    maxSizeMessage: 'The image is larger than 2 MB.',
+    // ...and short messages for the other cases
 );
 ```
 
@@ -549,9 +551,13 @@ $constraint = new Image(
   content type belongs to it. An `.svg` file is rejected, and so is HTML renamed to `photo.jpg`.
 - **Size:** 2 MiB per file, which is PHP's default `upload_max_filesize`. To allow more, raise that
   setting and nginx's `client_max_body_size` (4 MB per request in `docker/nginx/conf.d/`) as well as the
-  constant; otherwise the request is refused before it reaches the handler.
-- **Validate first:** if one file in a request fails validation, none are stored and the error flash
-  names the file and the reason.
+  constant and its messages; otherwise the request is refused before it reaches the handler. Dropzone
+  sends up to two files per request (its `parallelUploads` default), so two files close to the limit
+  can together exceed nginx's 4 MB and be refused with a `413`.
+- **Validate first:** if one file in a request fails validation, none of that request's files are
+  stored. Dropzone sends files two at a time, so other requests in the same drop can still succeed.
+  The response is `422` with the reason in `error`, which Dropzone shows on the file, and the error
+  flash names the file and the reason.
 - **Stored name:** `UploadHelper` takes the extension from the detected content, never from the client's
   filename, because the extension decides which content type the file is served with. It also passes
   the detected type as `mimetype`, which the S3 adapter sends as the object's `Content-Type`. This is not

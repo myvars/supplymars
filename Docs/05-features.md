@@ -573,7 +573,7 @@ Product images are managed via the Catalog context with storage adapters for loc
 
 1. **Position ordering:** Images sorted by position (1-based)
 2. **Size limits:** Max 2 MiB per image, checked on the server
-3. **Type validation:** JPG, PNG, GIF and WebP only, by extension and detected content; a rejected file stops the whole upload (see `Docs/08-security.md`)
+3. **Type validation:** JPG, PNG, GIF and WebP only, by extension and detected content; a rejected file stops the files sent with it, two at a time (see `Docs/08-security.md`)
 4. **Cascade delete:** Images deleted with product
 5. **Thumbnail generation:** Via Imagine bundle (inferred)
 
