@@ -2,9 +2,6 @@
     "babdev/pagerfanta-bundle": {
         "version": "v4.4.0"
     },
-    "checkthiscloud/phpamqplib-messenger": {
-        "version": "0.11.1"
-    },
     "dama/doctrine-test-bundle": {
         "version": "8.3",
         "recipe": {

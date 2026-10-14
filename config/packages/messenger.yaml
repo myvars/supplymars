@@ -4,10 +4,11 @@ framework:
 
         transports:
             # https://symfony.com/doc/current/messenger.html#transport-configuration
+            # A database table by default. RabbitMQ is an opt-in: see Docs/adr/013-database-queue-by-default.md
             async:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
                 options:
-                    auto_setup: true  # Queues are auto-created on first use (any container can dispatch)
+                    auto_setup: true  # The queue is created on first use if it is missing
                 retry_strategy:
                     max_retries: 3
                     multiplier: 2
@@ -21,9 +22,14 @@ framework:
 
         routing:
             Symfony\Component\Mailer\Messenger\SendEmailMessage: async
-            Symfony\Component\Notifier\Message\ChatMessage: async
-            Symfony\Component\Notifier\Message\SmsMessage: async
 
             # Route your messages to the transports
             # 'App\Message\YourMessage': async
             'App\Shared\Domain\Event\AsyncDomainEventInterface': async
+
+when@test:
+    framework:
+        messenger:
+            transports:
+                # Messages are kept in memory, so tests need no queue and can assert on what was sent
+                async: 'in-memory://'

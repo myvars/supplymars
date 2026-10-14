@@ -10,7 +10,6 @@
         "ext-iconv": "*",
         "babdev/pagerfanta-bundle": "^4.6",
         "beberlei/doctrineextensions": "^1.5",
-        "checkthiscloud/phpamqplib-messenger": "^0.11.2",
         "doctrine/dbal": "^4.5.0",
         "doctrine/doctrine-bundle": "^3.3.2",
         "doctrine/doctrine-migrations-bundle": "^4.0.1",
