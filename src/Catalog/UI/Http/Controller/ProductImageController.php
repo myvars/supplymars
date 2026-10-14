@@ -67,7 +67,7 @@ class ProductImageController extends AbstractController
         return $response;
     }
 
-    #[Route(path: '/product/images/{id}/remove', name: 'app_catalog_product_image_remove', methods: ['GET'])]
+    #[Route(path: '/product/images/{id}/remove', name: 'app_catalog_product_image_remove', methods: ['POST'])]
     public function delete(
         Request $request,
         #[ValueResolver('public_id')] ProductImage $productImage,
@@ -80,7 +80,7 @@ class ProductImageController extends AbstractController
             handler: $handler,
             context: FlowContext::forAction('app_catalog_product_image_show', [
                 'id' => $productImage->getProduct()->getPublicId()->value(),
-            ]),
+            ])->csrf('remove_image' . $productImage->getPublicId()->value()),
         );
     }
 

@@ -141,7 +141,7 @@ class TicketController extends AbstractController
         );
     }
 
-    #[Route(path: '/note/ticket/{id}/close', name: 'app_note_ticket_close', methods: ['GET'])]
+    #[Route(path: '/note/ticket/{id}/close', name: 'app_note_ticket_close', methods: ['POST'])]
     public function close(
         Request $request,
         #[ValueResolver('public_id')] Ticket $ticket,
@@ -152,11 +152,12 @@ class TicketController extends AbstractController
             request: $request,
             command: new CloseTicket($ticket->getPublicId()),
             handler: $handler,
-            context: FlowContext::forAction('app_note_ticket_show', ['id' => $ticket->getPublicId()->value()]),
+            context: FlowContext::forAction('app_note_ticket_show', ['id' => $ticket->getPublicId()->value()])
+                ->csrf('close' . $ticket->getPublicId()->value()),
         );
     }
 
-    #[Route(path: '/note/ticket/{id}/reopen', name: 'app_note_ticket_reopen', methods: ['GET'])]
+    #[Route(path: '/note/ticket/{id}/reopen', name: 'app_note_ticket_reopen', methods: ['POST'])]
     public function reopen(
         Request $request,
         #[ValueResolver('public_id')] Ticket $ticket,
@@ -167,7 +168,8 @@ class TicketController extends AbstractController
             request: $request,
             command: new ReopenTicket($ticket->getPublicId()),
             handler: $handler,
-            context: FlowContext::forAction('app_note_ticket_show', ['id' => $ticket->getPublicId()->value()]),
+            context: FlowContext::forAction('app_note_ticket_show', ['id' => $ticket->getPublicId()->value()])
+                ->csrf('reopen' . $ticket->getPublicId()->value()),
         );
     }
 
@@ -190,7 +192,7 @@ class TicketController extends AbstractController
         );
     }
 
-    #[Route(path: '/note/ticket/{id}/snooze', name: 'app_note_ticket_toggle_snooze', methods: ['GET'])]
+    #[Route(path: '/note/ticket/{id}/snooze', name: 'app_note_ticket_toggle_snooze', methods: ['POST'])]
     public function toggleSnooze(
         Request $request,
         #[ValueResolver('public_id')] Ticket $ticket,
@@ -201,7 +203,8 @@ class TicketController extends AbstractController
             request: $request,
             command: new ToggleSnoozeTicket($ticket->getPublicId()),
             handler: $handler,
-            context: FlowContext::forAction('app_note_ticket_show', ['id' => $ticket->getPublicId()->value()]),
+            context: FlowContext::forAction('app_note_ticket_show', ['id' => $ticket->getPublicId()->value()])
+                ->csrf('snooze' . $ticket->getPublicId()->value()),
         );
     }
 

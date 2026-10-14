@@ -145,7 +145,7 @@ Key points:
 ### Pattern 5: Command Execution (State Transition)
 
 ```php
-#[Route(path: '/order/{id}/allocate', name: 'app_order_allocate', methods: ['GET'])]
+#[Route(path: '/order/{id}/allocate', name: 'app_order_allocate', methods: ['POST'])]
 public function allocate(
     Request $request,
     #[ValueResolver('public_id')] CustomerOrder $order,
@@ -158,13 +158,30 @@ public function allocate(
         handler: $handler,
         context: FlowContext::forAction('app_order_show', [
             'id' => $order->getPublicId()->value(),
-        ]),
+        ])->csrf('allocate' . $order->getPublicId()->value()),
     );
 }
 ```
 
+An action changes state, so it is a `POST` with a CSRF token, never a `GET` link. `->csrf($tokenId)`
+makes `ActionFlow` check the posted `_token` before calling the handler; a wrong or missing token gives
+an "Invalid CSRF token." flash and a redirect, and the action does not run. The trigger is a one-button
+form carrying the same token id:
+
+```twig
+{# templates/order/show.html.twig #}
+<form method="post" action="{{ path('app_order_allocate', {id: result.publicId.value}) }}" data-turbo-frame="body">
+    <input type="hidden" name="_token" value="{{ csrf_token('allocate' ~ result.publicId.value) }}">
+    <button type="submit" class="... focus-ring">Allocate</button>
+</form>
+```
+
+Use `<twig:Button type="submit">` when the trigger looks like a button, and a plain `<button>` with the
+link's classes plus `focus-ring` when it looks like a link or an icon. Use `ConfirmFlow` (Pattern 4b)
+instead when the action should ask first.
+
 Key points:
-- No form, immediate action
+- No Symfony form type: a one-button form posts straight to the action
 - `FlowContext::forAction()` — Explicit success route
 - Handler returns `Result` with message for flash
 

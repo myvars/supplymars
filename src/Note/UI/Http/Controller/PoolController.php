@@ -129,7 +129,7 @@ class PoolController extends AbstractController
         ]);
     }
 
-    #[Route(path: '/note/pool/{id}/subscribe', name: 'app_note_pool_toggle_subscription', methods: ['GET'])]
+    #[Route(path: '/note/pool/{id}/subscribe', name: 'app_note_pool_toggle_subscription', methods: ['POST'])]
     public function toggleSubscription(
         Request $request,
         #[ValueResolver('public_id')] Pool $pool,
@@ -140,7 +140,8 @@ class PoolController extends AbstractController
             request: $request,
             command: new TogglePoolSubscription($pool->getPublicId()),
             handler: $handler,
-            context: FlowContext::forAction('app_note_pool_show', ['id' => $pool->getPublicId()->value()]),
+            context: FlowContext::forAction('app_note_pool_show', ['id' => $pool->getPublicId()->value()])
+                ->csrf('subscribe' . $pool->getPublicId()->value()),
         );
     }
 }

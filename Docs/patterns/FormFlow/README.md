@@ -28,7 +28,7 @@ This achieves:
 | Class | Purpose | HTTP Methods |
 |-------|---------|--------------|
 | `FormFlow` | Create/update forms with validation | GET, POST |
-| `ActionFlow` | Direct command execution (state changes) | GET or POST |
+| `ActionFlow` | Direct command execution (state changes); CSRF-checked when the context calls `->csrf()` | POST |
 | `ConfirmFlow` | Confirm-then-act: delete & other confirmable actions (CSRF) | GET, POST |
 | `SearchFlow` | Paginated index/list pages | GET |
 | `InlineEditFlow` | Single-field inline editing via Turbo Frames | GET, POST |
@@ -63,7 +63,9 @@ POST /product/new (invalid data)
 ### ActionFlow (State Transitions)
 
 ```
-GET /order/{id}/allocate
+POST /order/{id}/allocate
+  → Validates CSRF token when the context sets one with ->csrf('allocate' . id)
+  → If invalid: flash error, redirect 303 (handler not called)
   → Calls handler(Command) → Result
   → If Result.ok: flash success, redirect 303
   → If Result.fail: flash error, redirect 303
@@ -78,9 +80,9 @@ GET /product/{id}/delete/confirm     (confirm())
   → Returns 200
 
 POST /product/{id}/delete            (execute())
-  → Validates CSRF token (confirmKey + the command's id; confirmKey defaults to 'delete')
+  → Delegates to ActionFlow.process() with the CSRF token id set to
+    confirmKey + the command's id (confirmKey defaults to 'delete')
   → If invalid: flash error, redirect 303
-  → If valid: delegates to ActionFlow.process()
 ```
 
 Non-delete confirmable actions use the same flow via `FlowContext::forConfirm($model, key)`, which

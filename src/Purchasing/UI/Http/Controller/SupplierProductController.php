@@ -192,7 +192,7 @@ class SupplierProductController extends AbstractController
     #[Route(
         path: '/supplier-product/{id}/status/toggle',
         name: 'app_purchasing_supplier_product_toggle_status',
-        methods: ['GET']
+        methods: ['POST']
     )]
     public function toggleStatus(
         Request $request,
@@ -206,11 +206,11 @@ class SupplierProductController extends AbstractController
             handler: $handler,
             context: FlowContext::forAction('app_pricing_stock', [
                 'id' => $supplierProduct->getProduct()?->getPublicId()->value(),
-            ]),
+            ])->csrf('toggle_status' . $supplierProduct->getPublicId()->value()),
         );
     }
 
-    #[Route(path: '/supplier-product/{id}/map', name: 'app_purchasing_supplier_product_map', methods: ['GET'])]
+    #[Route(path: '/supplier-product/{id}/map', name: 'app_purchasing_supplier_product_map', methods: ['POST'])]
     public function map(
         Request $request,
         #[ValueResolver('public_id')] SupplierProduct $supplierProduct,
@@ -223,7 +223,7 @@ class SupplierProductController extends AbstractController
             handler: $handler,
             context: FlowContext::forAction('app_purchasing_supplier_product_show', [
                 'id' => $supplierProduct->getPublicId()->value(),
-            ]),
+            ])->csrf('map' . $supplierProduct->getPublicId()->value()),
         );
     }
 }

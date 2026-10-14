@@ -120,7 +120,7 @@ class OrderController extends AbstractController
         );
     }
 
-    #[Route(path: '/order/{id}/allocate', name: 'app_order_allocate', methods: ['GET'])]
+    #[Route(path: '/order/{id}/allocate', name: 'app_order_allocate', methods: ['POST'])]
     public function process(
         Request $request,
         #[ValueResolver('public_id')] CustomerOrder $order,
@@ -133,11 +133,11 @@ class OrderController extends AbstractController
             handler: $handler,
             context: FlowContext::forAction('app_order_show', [
                 'id' => $order->getPublicId()->value(),
-            ]),
+            ])->csrf('allocate' . $order->getPublicId()->value()),
         );
     }
 
-    #[Route(path: '/order/{id}/lock/toggle', name: 'app_order_lock_toggle_status', methods: ['GET'])]
+    #[Route(path: '/order/{id}/lock/toggle', name: 'app_order_lock_toggle_status', methods: ['POST'])]
     public function cancel(
         Request $request,
         #[ValueResolver('public_id')] CustomerOrder $order,
@@ -150,7 +150,7 @@ class OrderController extends AbstractController
             handler: $handler,
             context: FlowContext::forAction('app_order_show', [
                 'id' => $order->getPublicId()->value(),
-            ]),
+            ])->csrf('lock' . $order->getPublicId()->value()),
         );
     }
 

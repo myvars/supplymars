@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "35f0dd7cf91f8b2ef378ecca57f9ebf1",
+    "content-hash": "b4b470bb9f7adbbefb2efaf667e63dd2",
     "packages": [
         {
             "name": "async-aws/core",
@@ -3141,16 +3141,16 @@
         },
         {
             "name": "myvars/form-flow",
-            "version": "v1.2.0",
+            "version": "v1.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myvars/form-flow.git",
-                "reference": "7b494f845d13ac7f50aa752b7211643af8441cd6"
+                "reference": "c039cf9454ee4870baead705380a5b367a734fb0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myvars/form-flow/zipball/7b494f845d13ac7f50aa752b7211643af8441cd6",
-                "reference": "7b494f845d13ac7f50aa752b7211643af8441cd6",
+                "url": "https://api.github.com/repos/myvars/form-flow/zipball/c039cf9454ee4870baead705380a5b367a734fb0",
+                "reference": "c039cf9454ee4870baead705380a5b367a734fb0",
                 "shasum": ""
             },
             "require": {
@@ -3177,7 +3177,7 @@
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "1.2.x-dev"
+                    "dev-main": "1.3.x-dev"
                 }
             },
             "autoload": {
@@ -3207,9 +3207,9 @@
             ],
             "support": {
                 "issues": "https://github.com/myvars/form-flow/issues",
-                "source": "https://github.com/myvars/form-flow/tree/v1.2.0"
+                "source": "https://github.com/myvars/form-flow/tree/v1.3.0"
             },
-            "time": "2026-10-07T10:31:51+00:00"
+            "time": "2026-10-13T11:07:25+00:00"
         },
         {
             "name": "nelmio/api-doc-bundle",
