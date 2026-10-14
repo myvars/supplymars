@@ -16,7 +16,7 @@
         </twig:block>
 
         <twig:block name="list_item">
-            <twig:Card
+            <twig:EntityCard
                 editLink="{{ path('app_catalog_manufacturer_edit', {'id': result.publicId.value }) }}"
                 showLink="{{ path('app_catalog_manufacturer_show', {'id': result.publicId.value }) }}"
                 statusHighlight="{{ result.isActive ? 'ACTIVE' : 'INACTIVE' }}"
@@ -25,7 +25,7 @@
                     <p class="text-lg font-semibold text-gray-900 line-clamp-1 dark:text-white">{{ result.name }}</p>
                     <twig:StatusBadge status="{{ result.isActive ? 'ACTIVE' : 'INACTIVE' }}"/>
                 </div>
-            </twig:Card>
+            </twig:EntityCard>
         </twig:block>
     </twig:Search>
 

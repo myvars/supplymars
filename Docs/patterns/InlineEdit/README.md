@@ -14,7 +14,7 @@ To make a field inline-editable, you need:
 2. **Controller action** - handles display/edit/submit
 3. **Include in parent template**
 
-That's it! No custom form types or models needed.
+No custom form types or models are needed.
 
 ## Usage
 
@@ -34,19 +34,25 @@ That's it! No custom form types or models needed.
 ### 2. Add Controller Action
 
 ```php
-use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditContext;
-use App\Shared\UI\Http\FormFlow\InlineEdit\InlineEditFlow;
+use App\Shared\Application\FlusherInterface;
+use MyVars\FormFlow\InlineEdit\InlineEditContext;
+use MyVars\FormFlow\InlineEdit\InlineEditFlow;
 
 #[Route('/manufacturer/{id}/inline/name', name: 'app_catalog_manufacturer_inline_name', methods: ['GET', 'POST'])]
 public function inlineName(
     Request $request,
     #[ValueResolver('public_id')] Manufacturer $manufacturer,
     InlineEditFlow $flow,
+    FlusherInterface $flusher,
 ): Response {
     return $flow->handleField(
         request: $request,
         value: $manufacturer->getName(),
-        onSave: fn($value) => $manufacturer->update((string) $value, $manufacturer->isActive()),
+        onSave: function ($value) use ($manufacturer, $flusher): bool {
+            $manufacturer->update((string) $value, $manufacturer->isActive());
+
+            return $flusher->flush();
+        },
         context: InlineEditContext::create(
             frameId: 'inline-edit-manufacturer-' . $manufacturer->getPublicId() . '-name',
             displayTemplate: 'catalog/manufacturer/_inline_name.html.twig',
@@ -56,18 +62,18 @@ public function inlineName(
 }
 ```
 
-Entity-level validation (e.g., `#[Assert\NotBlank]` on the property) is used automatically.
-For additional form-level constraints, pass `formOptions: ['constraints' => [...]]`.
+The flow does not persist anything: the `onSave` callback applies the value and flushes. Validation comes only
+from `formOptions['constraints']`; nothing on the entity is validated automatically.
 
 ### 3. Include in Parent Template
 
 ```twig
 {# templates/catalog/manufacturer/_manufacturer_card.html.twig #}
-<twig:Card title="Manufacturer">
+<twig:EntityCard title="Manufacturer">
     <p class="mb-3">
         {{ include('catalog/manufacturer/_inline_name.html.twig', {manufacturer: manufacturer}) }}
     </p>
-</twig:Card>
+</twig:EntityCard>
 ```
 
 ## How It Works
@@ -117,8 +123,8 @@ The single method for inline editing:
 ```php
 $flow->handleField(
     request: $request,
-    value: $currentValue,           // Current field value
-    onSave: fn($value) => ...,      // Callback to save new value
+    value: $currentValue,           // Current value, or a Closure returning it
+    onSave: fn($value) => ...,      // Applies the value and flushes; return false if nothing changed
     context: InlineEditContext::create(...),
     formOptions: [                   // Optional
         'constraints' => [...],      // Symfony validation constraints
@@ -129,9 +135,10 @@ $flow->handleField(
 ```
 
 **Behavior:**
-- Flash message only appears when the value actually changes (uses Doctrine change detection)
+- The flow does not flush; `onSave` owns persistence
+- The flash appears unless `onSave` returns `false`. Return `$flusher->flush()` (`App\Shared\Application\FlusherInterface`, true only when Doctrine had changes) to suppress it for no-op saves
 - Exceptions from `onSave` are caught and displayed as form errors
-- Entity-level validation (`#[Assert\...]` on properties) applies automatically
+- Validation comes only from `formOptions['constraints']`; the entity is not validated automatically
 
 ### `InlineEditContext::create()`
 
@@ -153,26 +160,25 @@ $flow->handleField(
 | `frameId` | string | required | Unique turbo-frame ID |
 | `showEditIcon` | bool | `true` | Show edit icon on hover |
 | `displayClass` | string | `''` | CSS classes for styling |
-| `editIcon` | string | `'mynaui:edit-one'` | Icon name |
+| `editIcon` | string | `'bi:pencil-square'` | Icon name |
 | `editIconSize` | string | `'h-4 w-4'` | Icon size classes |
 
 ## Form Options
 
-The `formOptions` parameter is optional. Entity-level validation is used automatically
-(exceptions from `onSave` are caught and displayed as form errors).
+The `formOptions` parameter is optional. Without `constraints`, the value is not validated
+(exceptions from `onSave` are still caught and displayed as form errors).
 
 ```php
 'formOptions' => [
-    // Additional validation (optional - entity validation is used by default)
+    // Validation constraints for the value
     'constraints' => [
         new Assert\Email(),
         new Assert\Regex('/^[A-Z]/'),
     ],
 
-    // Field type (default: TextType)
-    'field_type' => NumberType::class,
+    // Field type (default: TextType). Field-specific options such as `choices`
+    // cannot be passed through, so use a text-like type.
     'field_type' => TextareaType::class,
-    'field_type' => ChoiceType::class,
 
     // Field attributes
     'field_attr' => [
@@ -191,15 +197,23 @@ Prefer dedicated public methods over generic `update()` methods for inline edits
 
 ```php
 // Avoid - passing unrelated fields just to change one
-onSave: fn($value) => $product->update(
-    (string) $value,           // name (the one we're changing)
-    $product->getDescription(), // unchanged
-    $product->getPrice(),       // unchanged
-    $product->getCategory(),    // unchanged
-),
+onSave: function ($value) use ($product, $flusher): bool {
+    $product->update(
+        (string) $value,            // name (the one we're changing)
+        $product->getDescription(), // unchanged
+        $product->getPrice(),       // unchanged
+        $product->getCategory(),    // unchanged
+    );
+
+    return $flusher->flush();
+},
 
 // Prefer - dedicated method with clear intent
-onSave: fn($value) => $product->rename((string) $value),
+onSave: function ($value) use ($product, $flusher): bool {
+    $product->rename((string) $value);
+
+    return $flusher->flush();
+},
 ```
 
 **Rule of thumb:** If inline editing requires passing 3+ unrelated values to satisfy an `update()` method, add a dedicated public method (`rename()`, `updatePrice()`, `assignCategory()`, etc.).
@@ -208,7 +222,7 @@ This keeps the `onSave` callback clean and makes the domain intent explicit.
 
 ## Success Toast
 
-On save, a success toast ("Updated successfully") is delivered via a second Turbo Stream in the success response (`inline_edit_success.stream.html.twig`). It appends a `Toast` component to `#flash-container` (defined in `base.html.twig`). The toast auto-closes after 3500ms (success) or 6000ms (warning/danger) via the `closeable` Stimulus controller (`closeable_controller.js`, uses `stimulus-use` transitions). Duration is type-dependent, set by `Toast::getDuration()`. The toast only appears when the value actually changed (Doctrine change detection).
+On save, a success toast ("Updated successfully") is delivered via a second Turbo Stream in the success response (`inline_edit_success.stream.html.twig`). It appends a `Toast` component to `#flash-container` (defined in `base.html.twig`). The toast auto-closes after 3500ms (success) or 6000ms (warning/danger) via the `closeable` Stimulus controller (`closeable_controller.js`, uses `stimulus-use` transitions). Duration is type-dependent, set by `Toast::getDuration()`. The toast appears unless `onSave` returns `false`.
 
 To disable the toast, pass `successMessage: null` to `InlineEditContext::create()`.
 
@@ -230,17 +244,17 @@ To disable the toast, pass `successMessage: null` to `InlineEditContext::create(
 
 ```
 assets/controllers/
-└── inline_edit_controller.js      # ~80 lines
+└── inline_edit_controller.js
 
-src/Shared/UI/
-├── Http/FormFlow/InlineEdit/
-│   ├── InlineEditContext.php
-│   └── InlineEditFlow.php
-├── Http/Form/
-│   ├── Model/InlineFieldForm.php  # Generic single-field model
-│   └── Type/InlineFieldType.php   # Generic single-field type
-└── Twig/Components/
-    └── InlineEdit.php
+vendor/myvars/form-flow/src/InlineEdit/
+├── InlineEditContext.php
+├── InlineEditFlow.php
+├── InlineFieldForm.php            # Generic single-field model
+└── InlineFieldType.php            # Generic single-field type
+
+src/Shared/
+├── Application/FlusherInterface.php   # Used by onSave callbacks
+└── UI/Twig/Components/InlineEdit.php
 
 templates/
 ├── components/

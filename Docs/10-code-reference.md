@@ -450,14 +450,14 @@ hasPositiveCost()             // cost > 0
 
 | Class | File | Purpose |
 |-------|------|---------|
-| FormFlow | `src/Shared/UI/Http/FormFlow/FormFlow.php` | Create/update flow |
-| ActionFlow | `src/Shared/UI/Http/FormFlow/ActionFlow.php` | Command execution flow |
-| DeleteFlow | `src/Shared/UI/Http/FormFlow/DeleteFlow.php` | Delete with confirmation |
-| SearchFlow | `src/Shared/UI/Http/FormFlow/SearchFlow.php` | Paginated index flow |
-| InlineEditFlow | `src/Shared/UI/Http/FormFlow/InlineEdit/InlineEditFlow.php` | Inline field editing |
-| InlineEditContext | `src/Shared/UI/Http/FormFlow/InlineEdit/InlineEditContext.php` | Inline edit configuration |
-| FlowContext | `src/Shared/UI/Http/FormFlow/View/FlowContext.php` | Flow configuration |
-| TurboAwareRedirector | `src/Shared/UI/Http/FormFlow/Redirect/TurboAwareRedirector.php` | Turbo-compatible redirects |
+| FormFlow | `vendor/myvars/form-flow/src/FormFlow.php` | Create/update flow |
+| ActionFlow | `vendor/myvars/form-flow/src/ActionFlow.php` | Command execution flow |
+| ConfirmFlow | `vendor/myvars/form-flow/src/ConfirmFlow.php` | Confirm-then-act (delete and other confirmable actions) |
+| SearchFlow | `vendor/myvars/form-flow/src/SearchFlow.php` | Paginated index flow |
+| InlineEditFlow | `vendor/myvars/form-flow/src/InlineEdit/InlineEditFlow.php` | Inline field editing |
+| InlineEditContext | `vendor/myvars/form-flow/src/InlineEdit/InlineEditContext.php` | Inline edit configuration |
+| FlowContext | `vendor/myvars/form-flow/src/View/FlowContext.php` | Flow configuration |
+| TurboAwareRedirector | `vendor/myvars/form-flow/src/Redirect/TurboAwareRedirector.php` | Turbo-compatible redirects |
 
 ### Twig Components
 

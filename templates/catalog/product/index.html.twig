@@ -16,7 +16,7 @@
             <twig:SortLink sortValue="isActive">Status</twig:SortLink>
         </twig:block>
         <twig:block name="list_item">
-            <twig:Card
+            <twig:EntityCard
                 editLink="{{ path('app_catalog_product_edit', {'id': result.publicId.value }) }}"
                 showLink="{{ path('app_catalog_product_show', {'id': result.publicId.value }) }}"
                 padding="p-0"
@@ -50,7 +50,7 @@
                         </div>
                     </div>
                 </div>
-            </twig:Card>
+            </twig:EntityCard>
         </twig:block>
     </twig:Search>
 

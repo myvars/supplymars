@@ -29,14 +29,16 @@ Turbo Frames scope page updates to specific regions. When a link or form targets
 
 ### Modal Frame
 
-**Location:** `templates/shared/turbo/_modal.html.twig`
+**Location:** `templates/shared/turbo/_modal.html.twig` (inside `templates/components/Modal.html.twig`)
 
 ```html
-<dialog data-controller="basic-modal" ...>
-    <turbo-frame id="modal" data-basic-modal-target="frame">
-        {# Content loaded here #}
-    </turbo-frame>
-</dialog>
+<div data-controller="basic-modal" ...>
+    <dialog data-basic-modal-target="dialog" ...>
+        <turbo-frame id="modal" data-basic-modal-target="frame">
+            {# Content loaded here #}
+        </turbo-frame>
+    </dialog>
+</div>
 ```
 
 **Purpose:** Overlay dialogs for forms, confirmations, and actions.
@@ -78,7 +80,7 @@ Turbo Frames scope page updates to specific regions. When a link or form targets
 **Usage:**
 - Automatically targeted by searchbox controller on input
 - Pagination links target this frame
-- Filter form submissions target this frame
+- The filter form submits in the modal; the page is then updated by the stream response
 
 ### Reports Frame
 
@@ -96,6 +98,24 @@ Turbo Frames scope page updates to specific regions. When a link or form targets
 - Does not update URL
 - Used for duration selectors (7d, 30d, etc.)
 - Morphs content without full page reload
+
+### Help Frame
+
+**Location:** `templates/_help_drawer.html.twig`
+
+```html
+<turbo-frame id="help" loading="lazy" data-help-drawer-target="frame">
+    {# Help topic loaded here #}
+</turbo-frame>
+```
+
+**Purpose:** The contextual help panel. Help templates extend `help/_layout.html.twig`, which renders the matching frame.
+
+### Inline Edit Frames
+
+**Location:** `templates/components/InlineEdit.html.twig`
+
+Each inline-editable field is its own frame (`inline-edit-{entity}-{id}-{field}`) that swaps between display and form mode. See [InlineEdit](../InlineEdit/README.md).
 
 ## Frame Targeting
 
@@ -115,7 +135,7 @@ Links and forms specify their target frame:
 
 | Target | Behavior |
 |--------|----------|
-| `_top` | Full page navigation (bypass Turbo) |
+| `_top` | Navigate the whole page (break out of the frame) |
 | `_self` | Target the frame containing the element |
 | (none) | Inherits from nearest ancestor frame |
 
@@ -129,12 +149,11 @@ Links and forms specify their target frame:
 
 ### Busy Attribute
 
-Frames receive `[busy]` attribute during fetch:
+Frames receive a `[busy]` attribute during fetch. The app has no global style for it; you can target it where needed:
 
 ```css
 turbo-frame[busy] {
     opacity: 0.5;
-    pointer-events: none;
 }
 ```
 
@@ -145,7 +164,7 @@ The modal uses a custom `data-loading` attribute:
 ```javascript
 // basic_modal_controller.js
 frameBusy() {
-    this.frameTarget.dataset.loading = true;
+    this.frameTarget.dataset.loading = '';
 }
 
 frameIdle() {
@@ -153,9 +172,10 @@ frameIdle() {
 }
 ```
 
-```css
-/* Styling based on loading state */
-.peer-data-[loading]:opacity-30 { ... }
+```twig
+{# _modal.html.twig: the frame dims, and a spinner overlay appears #}
+<turbo-frame id="modal" class="peer block data-[loading]:opacity-30" ...>
+<div class="pointer-events-none hidden peer-data-[loading]:flex ...">
 ```
 
 ## Frame Events
@@ -188,12 +208,18 @@ Example bindings:
 
 ### Manual URL Update
 
-For search results that need URL sync without frame navigation:
+`auto_url_updater_controller.js` rewrites the address bar when it connects. No template uses it today; the search box syncs the URL itself (`searchbox_controller.js`).
 
 ```javascript
 // auto_url_updater_controller.js
-updateUrl(url) {
-    history.replaceState({}, '', url);
+static values = { url: String }
+
+connect() {
+    const newUrl = encodeURI(this.urlValue);
+
+    if (newUrl) {
+        history.replaceState(history.state, '', newUrl);
+    }
 }
 ```
 
@@ -201,7 +227,7 @@ updateUrl(url) {
 
 1. **Always specify frame target** for links that should not navigate the full page
 
-2. **Use `_top` for auth flows** - Login/logout should bypass Turbo:
+2. **Use `_top` for auth flows** - Login/logout should break out of any frame:
    ```twig
    <a href="{{ path('app_logout') }}" data-turbo-frame="_top">Logout</a>
    ```

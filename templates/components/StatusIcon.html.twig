@@ -1,5 +1,8 @@
 {# Status icon resolved by type. Used inside StatusBadge when showIcon is true.
+   Renders nothing for a type that has no icon.
    Props (PHP): type (string, e.g., "created", "pending", "delivered") #}
-<div {{ attributes.defaults({'type': 'created'}) }}>
-    <twig:ux:icon name="{{ this.iconName|raw }}" class="h-4 w-4" />
-</div>
+{% if this.iconName %}
+    <div {{ attributes }}>
+        <twig:ux:icon name="{{ this.iconName }}" class="h-4 w-4" />
+    </div>
+{% endif %}

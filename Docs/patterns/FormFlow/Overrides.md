@@ -19,6 +19,8 @@ context: FlowContext::forCreate($this->model())
     ->template('catalog/product/my_custom.html.twig'),
 ```
 
+`->template()` applies to `FormFlow` and `ConfirmFlow`. `SearchFlow` always uses `{context}/{entity}/index.html.twig`.
+
 ## Recipes
 
 ### 1. Customize Delete Confirmation Text
@@ -35,9 +37,8 @@ Override `shared/form_flow/delete.html.twig` by creating a context-specific temp
     <twig:ConfirmDialog
         title="Remove Product?"
         formAction="{{ path(routes.delete, {'id': result.publicId.value}) }}"
-        csrfId="delete{{ result.publicId.value }}"
+        csrfId="{{ confirmKey|default('delete') }}{{ result.publicId.value }}"
         confirmLabel="Yes, remove it"
-        confirmVariant="danger"
         cancelLabel="Keep it"
     >
         <twig:block name="message">
@@ -56,9 +57,9 @@ Override `shared/form_flow/delete.html.twig` by creating a context-specific temp
 |------|---------|-------------|
 | `title` | — | Dialog header text |
 | `formAction` | — | POST target URL |
-| `csrfId` | — | CSRF token ID (must match `DeleteFlow` convention: `'delete' . $command->id`) |
+| `csrfId` | — | CSRF token ID (must match `ConfirmFlow`: `confirmKey . $command->id`; `confirmKey` defaults to `'delete'`) |
 | `confirmLabel` | — | Submit button text |
-| `confirmVariant` | `'danger'` | Button variant (`danger`, `warning`, `alternative`) |
+| `confirmVariant` | `'destructive-solid'` | `Button` variant (`destructive-solid`, `destructive-outline`, `warning`, `outline`, `default`) |
 | `cancelLabel` | `'Cancel'` | Cancel button text |
 
 The `message` block accepts arbitrary HTML between the header and button row.
@@ -74,7 +75,7 @@ When deletion should be blocked based on entity state, use a fully custom delete
 {% block title %}Delete {{ flowModel }}{% endblock %}
 
 {% block body %}
-    <twig:Dialog title="Delete Customer">
+    <twig:ModalPanel title="Delete Customer">
         {% if result.customerOrders.count > 0 %}
             <p class="mb-4 text-sm font-light text-red-500 dark:text-red-400">
                 You cannot delete a customer with order history.
@@ -96,7 +97,7 @@ When deletion should be blocked based on entity state, use a fully custom delete
                 </div>
             </form>
         {% endif %}
-    </twig:Dialog>
+    </twig:ModalPanel>
 {% endblock %}
 ```
 
@@ -108,20 +109,20 @@ Set `allowDelete(true)` on the `FlowContext` in the controller:
 context: FlowContext::forUpdate($this->model())->allowDelete(true),
 ```
 
-The base `update.html.twig` checks `flowAllowDelete` and renders a delete link automatically:
+The app's `templates/shared/form_flow/update.html.twig` checks `flowAllowDelete` and renders a delete link automatically (the package's default template has no delete link):
 
 ```twig
 {% if flowAllowDelete %}
-    <hr class="my-6 h-px border-0 bg-gray-200 dark:bg-gray-700">
-    <twig:Button
-        tag="a"
-        href="{{ path(routes.deleteConfirm, {'id': result.id}) }}"
-        type="submit"
-        variant="danger"
-        class="w-full"
-        data-turbo-prefetch="false">
-        Delete
-    </twig:Button>
+    <div class="mt-6 border-t border-gray-200 pt-4 dark:border-white/[0.10]">
+        <twig:Button
+            as="a"
+            href="{{ path(routes.deleteConfirm, {'id': result.id}) }}"
+            variant="destructive-outline"
+            class="w-full"
+            data-turbo-prefetch="false">
+            Delete {{ flowModel }}
+        </twig:Button>
+    </div>
 {% endif %}
 ```
 
@@ -179,7 +180,7 @@ Override the `add` block in your index template:
 
 ### 7. ConfirmDialog for Custom Confirmation Flows
 
-Use `ConfirmDialog` for any state-transition that needs a confirmation step (not just deletes):
+Use `ConfirmDialog` for any state transition that needs a confirmation step, not just deletes. Drive it with `ConfirmFlow`: a GET route calls `confirm()` and a POST route calls `execute()`, both with `FlowContext::forConfirm($this->model(), 'rewind')` (see Pattern 4b in [Usage](Usage.md)). The key namespaces the CSRF token, so the action does not share a token with delete:
 
 ```twig
 {# templates/purchasing/purchase_order/rewind.html.twig #}
@@ -191,7 +192,7 @@ Use `ConfirmDialog` for any state-transition that needs a confirmation step (not
     <twig:ConfirmDialog
         title="Rewind Purchase Order"
         formAction="{{ path('app_purchasing_purchase_order_rewind', {'id': result.publicId.value}) }}"
-        csrfId="delete{{ result.publicId.value }}"
+        csrfId="{{ confirmKey|default('delete') }}{{ result.publicId.value }}"
         confirmLabel="Rewind to Pending"
         confirmVariant="warning"
     >
@@ -207,7 +208,7 @@ Use `ConfirmDialog` for any state-transition that needs a confirmation step (not
 
 ### 8. Custom Index Page
 
-Every index template overrides at least `sort` and `list_item` blocks. This is the standard pattern:
+An index template built on `<twig:Search>` overrides at least the `sort` and `list_item` blocks. This is the standard pattern:
 
 ```twig
 {% extends 'base.html.twig' %}
@@ -221,20 +222,16 @@ Every index template overrides at least `sort` and `list_item` blocks. This is t
         results="{{ results }}"
     >
         <twig:block name="sort">
-            <twig:Card>
-                <div class="flex justify-between overflow-auto">
-                    <twig:SortLink sortValue="id">Id</twig:SortLink>
-                    <twig:SortLink sortValue="name">Name</twig:SortLink>
-                    <twig:SortLink sortValue="createdAt">Created</twig:SortLink>
-                </div>
-            </twig:Card>
+            <twig:SortLink sortValue="id">Id</twig:SortLink>
+            <twig:SortLink sortValue="name">Name</twig:SortLink>
+            <twig:SortLink sortValue="createdAt">Created</twig:SortLink>
         </twig:block>
 
         <twig:block name="list_item">
-            <twig:Card showLink="{{ path(routes.show, {'id': result.publicId.value}) }}">
+            <twig:EntityCard showLink="{{ path(routes.show, {'id': result.publicId.value}) }}">
                 <p class="text-lg font-semibold text-gray-900 dark:text-white">{{ result.name }}</p>
                 <p class="text-sm text-gray-500 dark:text-gray-400">{{ result.createdAt|date('jS M Y') }}</p>
-            </twig:Card>
+            </twig:EntityCard>
         </twig:block>
     </twig:Search>
 {% endblock %}
@@ -257,8 +254,8 @@ Every index template overrides at least `sort` and `list_item` blocks. This is t
 | `FlowForm` | `templates/components/FlowForm.html.twig` | Form rendering (fields + submit button) |
 | `Search` | `templates/components/Search.html.twig` | Index page layout (search, sort, pagination) |
 | `ConfirmDialog` | `templates/components/ConfirmDialog.html.twig` | Confirmation modal with CSRF form |
-| `Dialog` | `templates/components/Dialog.html.twig` | Generic modal dialog shell |
-| `Card` | `templates/components/Card.html.twig` | Card with optional edit/show links |
-| `Button` | `templates/components/Button.html.twig` | Button or link-styled-as-button |
+| `ModalPanel` | `templates/components/ModalPanel.html.twig` | Generic modal dialog shell |
+| `EntityCard` | `templates/components/EntityCard.html.twig` | Card with optional edit/show links |
+| `Button` | `templates/components/Button.html.twig` | Button or link-styled-as-button (`as="a"`); see the variant list at the top of the template |
 | `SortLink` | `templates/components/SortLink.html.twig` | Column sort header |
-| `Pagination` | `templates/components/Pagination.html.twig` | Page navigation |
+| `ResultsPagination` | `templates/components/ResultsPagination.html.twig` | Result count plus page links for a Pagerfanta pager (wrapper on the kit's `Pagination`) |

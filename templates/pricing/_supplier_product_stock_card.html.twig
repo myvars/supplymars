@@ -1,6 +1,6 @@
 {# Individual supplier product stock entry with cost and removal action.
    Used on: pricing stock page (inside _inventory_card). Variable: supplierProduct (SupplierProduct) #}
-<twig:Card
+<twig:EntityCard
     editLink="{{ path('app_purchasing_supplier_product_remove_confirm', {'id': supplierProduct.publicId.value }) }}"
     editIcon="bi:x-lg"
     colour="{{ activeProductSource is same as supplierProduct ? 'green' : 'gray' }}"
@@ -47,4 +47,4 @@
             <twig:StatusBadge status="{{ supplierProduct.isActive ? 'ACTIVE' : 'INACTIVE' }}"/>
         </div>
     </div>
-</twig:Card>
+</twig:EntityCard>

@@ -17,7 +17,7 @@ This document describes the server-driven UI architecture used in SupplyMars. In
 │  With JavaScript:                                            │
 │  • Turbo: Instant navigation, no full reload                 │
 │  • Stimulus: Modals, dropdowns, toasts, charts               │
-│  • Flowbite: Datepickers, popovers                           │
+│  • Shadcn kit: Menus, side panels, date pickers              │
 │  • Better UX, same functionality                             │
 └──────────────────────────────────────────────────────────────┘
 ```
@@ -118,7 +118,7 @@ export default class extends Controller {
 // Form type with Stimulus data attributes
 $builder->add('category', EntityType::class, [
     'attr' => [
-        'data-action' => 'change->dependent-field#update',
+        'data-action' => 'change->dependent-field#updateDependent',
     ],
 ]);
 ```

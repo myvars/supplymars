@@ -5,10 +5,10 @@ namespace App\Order\UI\Http\Form\Type;
 use App\Order\Application\Search\OrderSearchCriteria;
 use App\Order\Domain\Model\Order\OrderStatus;
 use App\Order\UI\Http\Form\DataTransformer\stringToOrderStatusTransformer;
+use App\Shared\UI\Http\Form\Type\DatePickerType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -43,20 +43,20 @@ final class OrderFilterType extends AbstractType
                 'label' => 'Order Status',
                 'placeholder' => 'Any Order Status',
             ])
-            ->add('startDate', TextType::class, [
+            ->add('startDate', DatePickerType::class, [
                 'label' => 'Start Date',
                 'required' => false,
+                'side' => 'top',
                 'attr' => [
-                    'data-controller' => 'datepicker',
-                    'placeholder' => 'yyyy-mm-dd',
+                    'placeholder' => 'Any date',
                 ],
             ])
-            ->add('endDate', TextType::class, [
+            ->add('endDate', DatePickerType::class, [
                 'label' => 'End Date',
                 'required' => false,
+                'side' => 'top',
                 'attr' => [
-                    'data-controller' => 'datepicker',
-                    'placeholder' => 'yyyy-mm-dd',
+                    'placeholder' => 'Any date',
                 ],
             ])
             ->add('query', HiddenType::class)

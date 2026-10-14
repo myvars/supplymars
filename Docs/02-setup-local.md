@@ -8,7 +8,7 @@ Before setting up SupplyMars locally, ensure you have:
 
 | Requirement | Version | Notes |
 |-------------|---------|-------|
-| PHP | 8.5+ | With extensions: intl, pdo_mysql, bcmath, gd, redis |
+| PHP | 8.5+ | With extensions: intl, pdo_mysql, bcmath, gd, redis, sockets, xsl, zip |
 | Composer | 2.x | Dependency management |
 | Symfony CLI | Latest | For `symfony serve` command |
 | Docker | Latest | For infrastructure services |
@@ -247,10 +247,10 @@ open http://localhost:15672
 
 **Fixes:**
 ```bash
-# Rebuild assets
-symfony console tailwind:build
+# Rebuild assets (importmap first: the Tailwind build imports CSS from assets/vendor/)
+rm -rf public/assets            # a compiled asset map (left by make up / make test) hides live changes
 symfony console importmap:install
-symfony console asset-map:compile
+symfony console tailwind:build
 
 # Clear cache
 symfony console cache:clear

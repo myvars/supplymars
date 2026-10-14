@@ -1,12 +1,24 @@
-{# Placeholder shown when a list or section has no content.
-   Props (PHP): icon (UX icon name), message (main text), subtitle (?string) #}
-<div class="flex flex-col items-center justify-center rounded-lg border border-dashed border-gray-300 px-6 py-14 dark:border-white/[0.10]">
-    <div class="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800/80">
-        <twig:ux:icon name="{{ icon }}" class="h-7 w-7 text-gray-400 dark:text-gray-500"/>
-    </div>
-    <p class="text-sm font-medium text-gray-500 dark:text-gray-400">{{ message }}</p>
-    {% if subtitle %}
-        <p class="mt-1.5 text-xs text-gray-400 dark:text-gray-500">{{ subtitle }}</p>
+{# Placeholder shown when a list or section has no content, built on the kit's Empty.
+   For anything else (an illustration, several actions), compose <twig:Empty> directly.
+   - icon: UX icon name (optional)
+   - message: main text
+   - subtitle: secondary text (optional)
+   Blocks: action (optional, e.g. a button) #}
+{% props message, icon = null, subtitle = null %}
+{%- set action %}{% block action %}{% endblock %}{% endset -%}
+<twig:Empty class="border px-6 py-14" {{ ...attributes }}>
+    <twig:Empty:Header>
+        {% if icon %}
+            <twig:Empty:Media variant="icon" class="size-14 rounded-full text-muted-foreground">
+                <twig:ux:icon name="{{ icon }}" class="size-7"/>
+            </twig:Empty:Media>
+        {% endif %}
+        <twig:Empty:Title class="text-muted-foreground">{{ message }}</twig:Empty:Title>
+        {% if subtitle %}
+            <twig:Empty:Description class="text-xs">{{ subtitle }}</twig:Empty:Description>
+        {% endif %}
+    </twig:Empty:Header>
+    {% if action|trim %}
+        <twig:Empty:Content>{{ action }}</twig:Empty:Content>
     {% endif %}
-    {% block action %}{% endblock %}
-</div>
+</twig:Empty>

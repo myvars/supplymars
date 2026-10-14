@@ -1,6 +1,6 @@
 {# Category detail card with inline-editable name, VAT rate, and markup info.
    Used on: category show page. Variable: category (Category) #}
-<twig:Card editLink="{{ path('app_catalog_category_edit', {id: category.publicId.value}) }}" title="Category" statusHighlight="{{ category.isActive ? 'ACTIVE' : 'INACTIVE' }}">
+<twig:EntityCard editLink="{{ path('app_catalog_category_edit', {id: category.publicId.value}) }}" title="Category" statusHighlight="{{ category.isActive ? 'ACTIVE' : 'INACTIVE' }}">
     <p class="mb-3">{{ include('catalog/category/_inline_name.html.twig', {category: category}) }}</p>
     <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
         <p class="flex items-center gap-2">
@@ -20,9 +20,9 @@
             {{ category.owner.fullName }}
         </p>
     </div>
-    <twig:CardFooter :updatedAt="category.updatedAt">
+    <twig:EntityCardFooter :updatedAt="category.updatedAt">
         <twig:StatusBadge status="{{ category.isActive ? 'ACTIVE' : 'INACTIVE' }}"/>
-    </twig:CardFooter>
+    </twig:EntityCardFooter>
     {% if category.products.count > 0 %}
         <div class="-mx-3 -mb-3 mt-3 border-t border-gray-200 dark:border-white/[0.06]">
             <a href="{{ path('app_catalog_product_index', {categoryId: category.id}) }}"
@@ -38,4 +38,4 @@
             </a>
         </div>
     {% endif %}
-</twig:Card>
+</twig:EntityCard>

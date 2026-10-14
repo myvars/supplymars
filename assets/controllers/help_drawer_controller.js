@@ -1,49 +1,37 @@
 import { Controller } from '@hotwired/stimulus';
-import { Drawer } from 'flowbite';
 
+/**
+ * Contextual help for the kit Sheet in _help_drawer.html.twig. The kit's dialog controller on the
+ * same element opens and closes the panel; this adds the `?` shortcut and loads the current
+ * page's help into the Turbo Frame.
+ */
 export default class extends Controller {
-    static values = {
-        drawerId: String,
-        frameId: String,
-    };
+    static targets = ['frame'];
 
-    connect() {
-        const $targetEl = document.getElementById(this.drawerIdValue);
+    get dialog() {
+        return this.application.getControllerForElementAndIdentifier(this.element, 'dialog');
+    }
 
-        const options = {
-            placement: 'right',
-            backdrop: true,
-            bodyScrolling: false,
-            backdropClasses: 'bg-gray-900/50 dark:bg-gray-900/80 fixed inset-0 z-30',
-            onHide: () => { this.isOpen = false; },
-            onShow: () => { this.isOpen = true; },
-        };
-
-        if (!this.drawer) {
-            this.drawer = new Drawer($targetEl, options);
-            this.isOpen = false;
-        }
+    get isOpen() {
+        return this.dialog.dialogTarget.open;
     }
 
     open() {
-        const frame = document.getElementById(this.frameIdValue);
-        if (frame) {
-            const helpUrl = '/help?page=' + encodeURIComponent(window.location.pathname);
+        const helpUrl = '/help?page=' + encodeURIComponent(window.location.pathname);
+        const frame = this.frameTarget;
 
-            // Only update src when the page has changed. The frame uses
-            // loading="lazy", so the fetch is deferred until the drawer
-            // slides into the viewport — no DOM mutations during animation.
-            // Compare pathname+search since frame.src resolves to an absolute URL.
-            if (!frame.src || new URL(frame.src).pathname + new URL(frame.src).search !== helpUrl) {
-                frame.src = helpUrl;
-            }
+        // Only update src when the page has changed. The frame uses loading="lazy", so the
+        // fetch waits until the panel is shown. Compare pathname+search since frame.src
+        // resolves to an absolute URL.
+        if (!frame.src || new URL(frame.src).pathname + new URL(frame.src).search !== helpUrl) {
+            frame.src = helpUrl;
         }
 
-        this.drawer.show();
+        this.dialog.open();
     }
 
     close() {
-        this.drawer.hide();
+        this.dialog.close();
     }
 
     toggle() {

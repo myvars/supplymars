@@ -1,86 +1,52 @@
+{# Pagerfanta view rendered with the kit's Pagination components.
+   Page links use the small button sizes to stay compact under result lists. #}
 {%- extends '@Pagerfanta/default.html.twig' -%}
 
 {%- block pager_widget -%}
-    <nav role="navigation" class="flex items-center">
-        <span class="isolate inline-flex gap-1">{{- block('pager') -}}</span>
-    </nav>
+    {%- set pagerHtml %}{{ block('pager') }}{% endset -%}
+    <twig:Pagination class="mx-0 w-auto justify-start">
+        <twig:Pagination:Content>{{ pagerHtml }}</twig:Pagination:Content>
+    </twig:Pagination>
 {%- endblock pager_widget -%}
 
 {%- block page_link -%}
-    <a
-        href="{{- path -}}"
-        class="inline-flex h-8 min-w-8 items-center justify-center rounded-md px-2.5 text-sm font-medium
-        text-gray-600 hover:bg-gray-100 hover:text-gray-900
-        dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white
-        transition-all duration-150 active:scale-90"
-    >{{- page -}}</a>
+    <twig:Pagination:Item>
+        <twig:Pagination:Link href="{{ path }}" size="icon-sm">{{ page }}</twig:Pagination:Link>
+    </twig:Pagination:Item>
 {%- endblock page_link -%}
 
 {%- block current_page_link -%}
-    <span aria-current="page">
-        <span class="inline-flex h-8 min-w-8 items-center justify-center rounded-md bg-gray-200 px-2.5 text-sm font-medium
-            text-gray-900 cursor-default dark:bg-gray-700 dark:text-white"
-        >{{- page -}}</span>
-    </span>
+    <twig:Pagination:Item>
+        <twig:Pagination:Link href="{{ path }}" size="icon-sm" active>{{ page }}</twig:Pagination:Link>
+    </twig:Pagination:Item>
 {%- endblock current_page_link -%}
 
 {%- block previous_page_link -%}
-    <a
-        href="{{- path -}}"
-        rel="prev"
-        class="inline-flex h-8 items-center justify-center rounded-md px-2.5 text-sm font-medium
-        text-gray-600 hover:bg-gray-100 hover:text-gray-900
-        dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white
-        transition-all duration-150 active:scale-90"
-    >
-        <span class="inline-flex max-md:hidden">Previous</span>
-        <span class="inline-flex md:hidden">&lt;</span>
-    </a>
+    <twig:Pagination:Item>
+        <twig:Pagination:Previous href="{{ path }}" rel="prev" size="sm" />
+    </twig:Pagination:Item>
 {%- endblock previous_page_link -%}
 
 {%- block previous_page_link_disabled -%}
-    <span aria-disabled="true">
-        <span class="inline-flex h-8 items-center justify-center rounded-md px-2.5 text-sm font-medium
-            text-gray-300 dark:text-gray-600
-            cursor-default"
-        >
-            <span class="inline-flex max-md:hidden">Previous</span>
-            <span class="inline-flex md:hidden">&lt;</span>
-        </span>
-    </span>
+    <twig:Pagination:Item>
+        <twig:Pagination:Previous size="sm" aria-disabled="true" class="pointer-events-none opacity-50" />
+    </twig:Pagination:Item>
 {%- endblock previous_page_link_disabled -%}
 
 {%- block next_page_link -%}
-    <a
-        href="{{- path -}}"
-        rel="next"
-        class="inline-flex h-8 items-center justify-center rounded-md px-2.5 text-sm font-medium
-        text-gray-600 hover:bg-gray-100 hover:text-gray-900
-        dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white
-        transition-all duration-150 active:scale-90"
-    >
-        <span class="inline-flex max-md:hidden">Next</span>
-        <span class="inline-flex md:hidden">&gt;</span>
-    </a>
+    <twig:Pagination:Item>
+        <twig:Pagination:Next href="{{ path }}" rel="next" size="sm" />
+    </twig:Pagination:Item>
 {%- endblock next_page_link -%}
 
 {%- block next_page_link_disabled -%}
-    <span aria-disabled="true">
-        <span class="inline-flex h-8 items-center justify-center rounded-md px-2.5 text-sm font-medium
-            text-gray-300 dark:text-gray-600
-            cursor-default"
-        >
-            <span class="inline-flex max-md:hidden">Next</span>
-            <span class="inline-flex md:hidden">&gt;</span>
-        </span>
-    </span>
+    <twig:Pagination:Item>
+        <twig:Pagination:Next size="sm" aria-disabled="true" class="pointer-events-none opacity-50" />
+    </twig:Pagination:Item>
 {%- endblock next_page_link_disabled -%}
 
 {%- block ellipsis -%}
-    <span aria-disabled="true">
-        <span class="inline-flex h-8 min-w-8 items-center justify-center rounded-md px-1 text-sm
-            text-gray-400 dark:text-gray-500
-            cursor-default"
-        >&hellip;</span>
-    </span>
+    <twig:Pagination:Item>
+        <twig:Pagination:Ellipsis />
+    </twig:Pagination:Item>
 {%- endblock ellipsis -%}

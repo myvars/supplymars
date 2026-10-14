@@ -582,7 +582,7 @@ class PriceCascadeTest extends KernelTestCase
 
 ## Code Quality Tools
 
-SupplyMars enforces code quality through three complementary tools, all run as part of CI.
+SupplyMars enforces code quality through three complementary tools. CI runs PHP-CS-Fixer (dry run), PHPStan, a Doctrine schema validation and the test suite; Rector is run locally.
 
 ### PHPStan (Static Analysis)
 

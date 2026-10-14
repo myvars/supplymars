@@ -1,3 +1,6 @@
-{# Profit/loss currency badge. Green for positive, red for negative.
+{# Profit/loss currency amount, built on the kit's Badge. Green for positive, red for negative.
+   Shown as plain coloured text rather than a pill, so it sits quietly on dense cards.
    Props (PHP): value (string|float, default: 0) #}
-<span {{ attributes.defaults({'class': 'text-xs tabular-nums ' ~ this.colorClasses}) }}>{{ this.isPositive ? '+' : '-' }}{{ this.formattedValue|format_currency('GBP') }}</span>
+{%- set classes = 'h-auto rounded-none border-0 bg-transparent p-0 font-normal tabular-nums ' ~ this.colorClasses -%}
+{%- set amount = (this.isPositive ? '+' : '-') ~ this.formattedValue|format_currency('GBP') -%}
+<twig:Badge class="{{ classes }}" {{ ...attributes }}>{{ amount }}</twig:Badge>

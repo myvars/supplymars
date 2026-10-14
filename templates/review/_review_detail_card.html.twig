@@ -1,6 +1,6 @@
 {# Full review detail card with body, product link, customer, and moderation actions.
    Used on: review show page. Variable: review (Review) #}
-<twig:Card editLink="{{ review.status.allowEdit ? path('app_review_edit', {'id': review.publicId.value }) : null }}" title="Review" statusHighlight="{{ review.status.value }}">
+<twig:EntityCard editLink="{{ review.status.allowEdit ? path('app_review_edit', {'id': review.publicId.value }) : null }}" title="Review" statusHighlight="{{ review.status.value }}">
     <div class="space-y-4">
         <div class="flex items-start justify-between gap-3">
             <div class="space-y-1.5">
@@ -57,30 +57,29 @@
         <div class="flex items-center gap-2 border-t border-gray-200 pt-4 dark:border-white/[0.06]">
             {% if review.status.value == 'PENDING' %}
                 <twig:Button
-                    tag="a"
+                    as="a"
                     variant="success"
                     href="{{ path('app_review_approve', {'id': review.publicId.value }) }}"
                     data-turbo-frame="body"
                     data-turbo-prefetch="false"
                 >Approve</twig:Button>
                 <twig:Button
-                    tag="a"
-                    variant="danger"
+                    as="a"
+                    variant="destructive-solid"
                     href="{{ path('app_review_reject', {'id': review.publicId.value }) }}"
                     data-turbo-frame="modal"
                 >Reject</twig:Button>
             {% elseif review.status.value == 'PUBLISHED' %}
                 <twig:Button
-                    tag="a"
-                    variant="secondary"
+                    as="a"
+                    variant="secondary-solid"
                     href="{{ path('app_review_hide', {'id': review.publicId.value }) }}"
                     data-turbo-frame="body"
                     data-turbo-prefetch="false"
                 >Hide</twig:Button>
             {% elseif review.status.value == 'HIDDEN' %}
                 <twig:Button
-                    tag="a"
-                    variant="primary"
+                    as="a"
                     href="{{ path('app_review_republish', {'id': review.publicId.value }) }}"
                     data-turbo-frame="body"
                     data-turbo-prefetch="false"
@@ -88,4 +87,4 @@
             {% endif %}
         </div>
     </div>
-</twig:Card>
+</twig:EntityCard>

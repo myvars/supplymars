@@ -4,7 +4,7 @@
 
 {% block body %}
 
-    <twig:Dialog title="Delete Message?">
+    <twig:ModalPanel title="Delete Message?">
         <div class="mb-3 rounded-md bg-gray-50 p-3 text-sm text-gray-600 dark:bg-gray-700 dark:text-gray-400">
             {{ message.body|length > 120 ? message.body|slice(0, 120) ~ '...' : message.body }}
         </div>
@@ -14,12 +14,12 @@
         <form method="post" action="{{ path('app_note_ticket_message_delete', {'ticketId': ticket.publicId.value, 'messageId': message.publicId.value}) }}">
             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ message.publicId.value) }}">
             <div class="flex gap-3">
-                <twig:Button type="button" variant="alternative" class="w-full" data-action="basic-modal#close">
+                <twig:Button type="button" variant="outline" class="flex-1" data-action="basic-modal#close">
                     Cancel
                 </twig:Button>
-                <twig:Button type="submit" variant="danger" class="w-full">Delete</twig:Button>
+                <twig:Button type="submit" variant="destructive-solid" class="flex-1">Delete</twig:Button>
             </div>
         </form>
-    </twig:Dialog>
+    </twig:ModalPanel>
 
 {% endblock %}

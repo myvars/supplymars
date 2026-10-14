@@ -6,7 +6,7 @@
 {% set isAsc = isActive and app.request.query.get('sortDirection') == 'ASC' %}
 
 <a {{ attributes.defaults({
-    class: 'group inline-flex items-center gap-1 text-xs font-medium whitespace-nowrap transition-colors ' ~ (isActive ? 'text-gray-900 dark:text-white' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'),
+    class: 'group inline-flex items-center gap-1 rounded-sm focus-ring text-xs font-medium whitespace-nowrap transition-colors ' ~ (isActive ? 'text-gray-900 dark:text-white' : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'),
 }) }}
     href="{{ path(app.current_route, {
         ...app.request.query.all(),
@@ -20,6 +20,6 @@
         <twig:ux:icon name="{{ isAsc ? 'flowbite:caret-up-solid' : 'flowbite:caret-down-solid' }}" class="h-3.5 w-3.5" aria-hidden="true" />
         <span class="sr-only">, sorted {{ isAsc ? 'ascending' : 'descending' }}</span>
     {% else %}
-        <twig:ux:icon name="bi:arrow-down-up" class="h-3.5 w-3.5 opacity-0 group-hover:opacity-50" aria-hidden="true" />
+        <twig:ux:icon name="bi:arrow-down-up" class="h-3.5 w-3.5 opacity-0 group-hover:opacity-50 group-focus-visible:opacity-50" aria-hidden="true" />
     {% endif %}
 </a>

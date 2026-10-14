@@ -48,6 +48,10 @@ We adopted **Hotwire Turbo** with a structured frame hierarchy and native `<dial
 │  <turbo-frame id="reports">                                     │
 │  ├── Dashboard widgets                                          │
 │  └── refresh="morph" (isolated refresh capability)              │
+├─────────────────────────────────────────────────────────────────┤
+│  <turbo-frame id="help">                                        │
+│  ├── Contextual help panel (lazy-loaded)                        │
+│  └── Other named frames render via embedded_frame.html.twig     │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -63,11 +67,12 @@ Rather than a JavaScript modal library, we use native `<dialog>` with Turbo:
 
 ```twig
 {# modal_base.html.twig - intelligent layout selection #}
-{% extends app.request.headers.get('turbo-frame') == 'modal' ?
-    'shared/turbo/modal_frame.html.twig' : 'base.html.twig' %}
+{% set _turbo_frame = app.request.headers.get('turbo-frame') %}
+{% extends _turbo_frame == 'modal' ? 'shared/turbo/modal_frame.html.twig'
+    : (_turbo_frame ? 'shared/turbo/embedded_frame.html.twig' : 'base.html.twig') %}
 ```
 
-This allows the same template to work both as a modal (when requested via Turbo) and as a full page (direct navigation or JS disabled).
+This allows the same template to work both as a modal (when requested via Turbo) and as a full page (direct navigation or JS disabled). A request from any other named frame renders through `embedded_frame.html.twig`.
 
 ### Turbo Stream Responses
 
@@ -135,9 +140,11 @@ Key files:
 | `assets/controllers/basic_modal_controller.js` | Modal lifecycle management |
 | `templates/base.html.twig` | Body frame and Turbo meta tags |
 | `templates/shared/turbo/modal_base.html.twig` | Layout decision logic |
+| `templates/shared/turbo/modal_frame.html.twig`, `embedded_frame.html.twig` | Layouts for the modal frame and for other named frames |
+| `assets/app.js` | Registers the custom `redirect` stream action |
 | `templates/shared/turbo/_modal.html.twig` | Modal component with dialog |
 | `templates/shared/turbo/_frame_success_stream.html.twig` | Flash message streams |
-| `src/Shared/UI/Http/FormFlow/Redirect/TurboAwareRedirector.php` | Stream response generation (inline) |
+| `vendor/myvars/form-flow/src/Redirect/TurboAwareRedirector.php` | Stream response generation (inline) |
 
 Turbo configuration in `base.html.twig`:
 

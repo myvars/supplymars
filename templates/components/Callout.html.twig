@@ -1,0 +1,10 @@
+{# One-line coloured message with a matching icon, built on the kit's Alert.
+   For a title + description or an action button, use <twig:Alert> directly.
+   Props (PHP): type (info|danger|warning|success, default: info) #}
+{%- set variant = this.variant -%}
+{%- set iconName = this.iconName -%}
+{%- set message %}{% block content %}{% endblock %}{% endset -%}
+<twig:Alert variant="{{ variant }}" {{ ...attributes }}>
+    <twig:ux:icon name="{{ iconName }}" />
+    <twig:Alert:Title>{{ message }}</twig:Alert:Title>
+</twig:Alert>

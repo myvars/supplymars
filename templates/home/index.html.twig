@@ -44,12 +44,12 @@
                 <a href="https://github.com/myvars/supplymars"
                    target="_blank"
                    class="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-7 py-3 text-sm sm:text-base font-semibold text-gray-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg ring-1 ring-white/[0.1] hover:ring-white/[0.18] backdrop-blur-sm transition-all duration-200 active:scale-[0.98]">
-                    <twig:ux:icon name="bi:github" class="h-5 w-5" />
+                    <twig:ux:icon name="bi:github" class="size-5" />
                     View on GitHub
                 </a>
                 <a href="{{ path('app_about_page') }}"
                    class="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-7 py-3 text-sm sm:text-base font-semibold text-gray-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg ring-1 ring-white/[0.1] hover:ring-white/[0.18] backdrop-blur-sm transition-all duration-200 active:scale-[0.98]">
-                    <twig:ux:icon name="bi:person-fill" class="h-5 w-5" />
+                    <twig:ux:icon name="bi:person-fill" class="size-5" />
                     About the Developer
                 </a>
             </div>
@@ -461,29 +461,28 @@
             </p>
             <div class="flex flex-wrap items-center justify-center gap-4" data-aos="fade-up" data-aos-delay="200">
                 <twig:Button
-                    tag="a"
+                    as="a"
                     href="https://github.com/myvars/supplymars"
                     target="_blank"
-                    class="flex items-center space-x-2 text-lg px-8 py-3 font-bold"
-                    variant="primary"
+                    class="h-auto gap-2 px-8 py-3 text-lg font-bold"
                 >
-                    <twig:ux:icon name="bi:github" class="h-5 w-5" />
+                    <twig:ux:icon name="bi:github" class="size-5" />
                     <span>View on GitHub</span>
                 </twig:Button>
                 <twig:Button
-                    tag="a"
+                    as="a"
                     href="{{ path('app_about_page') }}"
-                    class="flex items-center space-x-2 text-lg px-8 py-3 font-bold"
-                    variant="secondary"
+                    class="h-auto gap-2 px-8 py-3 text-lg font-bold"
+                    variant="secondary-solid"
                 >
-                    <twig:ux:icon name="bi:person-fill" class="h-5 w-5" />
+                    <twig:ux:icon name="bi:person-fill" class="size-5" />
                     <span>About the Developer</span>
                 </twig:Button>
                 <twig:Button
-                    tag="a"
+                    as="a"
                     href="mailto:contact@supplymars.com"
-                    class="flex items-center space-x-2 text-lg px-8 py-3 font-bold"
-                    variant="secondary"
+                    class="h-auto gap-2 px-8 py-3 text-lg font-bold"
+                    variant="secondary-solid"
                 >
                     <span>Get in Touch</span>
                 </twig:Button>

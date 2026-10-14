@@ -64,9 +64,9 @@ Key points:
 #[Route(path: '/product/{id}/delete/confirm', name: 'app_catalog_product_delete_confirm', methods: ['GET'])]
 public function deleteConfirm(
     #[ValueResolver('public_id')] Product $product,
-    DeleteFlow $flow,
+    ConfirmFlow $flow,
 ): Response {
-    return $flow->deleteConfirm(
+    return $flow->confirm(
         entity: $product,
         context: FlowContext::forDelete($this->model()),
     );
@@ -85,9 +85,9 @@ public function delete(
     Request $request,
     #[ValueResolver('public_id')] Product $product,
     DeleteProductHandler $handler,
-    DeleteFlow $flow,
+    ConfirmFlow $flow,
 ): Response {
-    return $flow->delete(
+    return $flow->execute(
         request: $request,
         command: new DeleteProduct($product->getPublicId()),
         handler: $handler,
@@ -98,8 +98,49 @@ public function delete(
 
 Key points:
 - POST-only route
-- CSRF token validated automatically using `'delete' . $command->id`
+- CSRF token validated automatically using `confirmKey . $command->id` (key `'delete'` by default)
 - Command contains public ID, not entity reference
+
+### Pattern 4b: Confirmable Action (non-delete)
+
+Same confirm-then-act shape as delete, but for a different action. `forConfirm`
+namespaces the CSRF token to a custom key so it can't collide with delete:
+
+```php
+#[Route(path: '/purchase/order/{id}/rewind/confirm', name: 'app_purchasing_purchase_order_rewind_confirm', methods: ['GET'])]
+public function rewindConfirm(
+    #[ValueResolver('public_id')] PurchaseOrder $purchaseOrder,
+    ConfirmFlow $flow,
+): Response {
+    return $flow->confirm(
+        entity: $purchaseOrder,
+        context: FlowContext::forConfirm($this->model(), 'rewind')
+            ->template('purchasing/purchase_order/rewind.html.twig'),
+    );
+}
+
+#[Route(path: '/purchase/order/{id}/rewind', name: 'app_purchasing_purchase_order_rewind', methods: ['POST'])]
+public function rewind(
+    Request $request,
+    #[ValueResolver('public_id')] PurchaseOrder $purchaseOrder,
+    RewindPurchaseOrderHandler $handler,
+    ConfirmFlow $flow,
+): Response {
+    return $flow->execute(
+        request: $request,
+        command: new RewindPurchaseOrder($purchaseOrder->getPublicId()),
+        handler: $handler,
+        context: FlowContext::forConfirm($this->model(), 'rewind')
+            ->successRoute('app_purchasing_purchase_order_show', ['id' => $purchaseOrder->getPublicId()->value()]),
+    );
+}
+```
+
+Key points:
+- `forConfirm($model, key)` — token id becomes `key . $command->id` (e.g. `'rewind' . id`)
+- The confirm template receives `confirmKey`; use `csrfId="{{ confirmKey }}{{ result.publicId.value }}"`
+- Provide the confirm page via `->template()` (delete styling is not assumed)
+- The other confirmable actions here are `cancel` (`OrderController`) and `remove` (`SupplierProductController`)
 
 ### Pattern 5: Command Execution (State Transition)
 
@@ -139,7 +180,7 @@ public function index(
 ): Response {
     return $flow->search(
         request: $request,
-        repository: $repository,
+        adapter: $repository->findByCriteria($criteria),
         criteria: $criteria,
         context: FlowContext::forSearch($this->model()),
     );
@@ -148,7 +189,7 @@ public function index(
 
 Key points:
 - `#[MapQueryString]` — Binds query params to criteria DTO
-- `$repository` must implement `FindByCriteriaInterface`
+- `adapter` is any Pagerfanta `AdapterInterface`; the app's repositories return one from `findByCriteria()`
 - `FlowContext::forSearch()` — Sets operation to `Index`, derives template path
 - Out-of-range pages redirect to page 1 automatically
 
@@ -182,19 +223,16 @@ Key points:
 
 ### How It Works
 
-The `TurboAwareRedirector` (`src/Shared/UI/Http/FormFlow/Redirect/TurboAwareRedirector.php`) detects Turbo requests and returns appropriate responses.
+The `TurboAwareRedirector` (`vendor/myvars/form-flow/src/Redirect/TurboAwareRedirector.php`) detects Turbo requests and returns appropriate responses.
 
-Detection criteria:
-1. `turbo-frame` header present
-2. Request format is Turbo stream
-3. Accept header contains `text/vnd.turbo-stream.html`
+Detection: the request carries a `Turbo-Frame` header. A Turbo request made outside a frame gets a normal redirect.
 
-When Turbo is detected:
+When a Turbo Frame request is detected:
 - Instead of HTTP redirect, returns 200 with Turbo stream content
 - Generates stream inline (`<turbo-stream action="refresh">` or `<turbo-stream action="redirect">`)
 - Sets content-type to `text/vnd.turbo-stream.html`
 
-When Turbo is not detected:
+Otherwise:
 - Standard `RedirectResponse` with configured status (default 303)
 
 ### Controller Implications
@@ -212,22 +250,30 @@ return $flow->form(
 
 ### Refresh Behavior
 
-Delete flows refresh the page in place automatically — `FlowContext::forDelete()` enables smart
-Turbo navigation. Other flows redirect to their success route; no per-call refresh flag is needed.
+Inside a Turbo Frame, a successful flow refreshes the current page in place. `FlowContext::forDelete()` and
+`forConfirm()` navigate to the success route when its path differs from the page the request came from (for
+example, deleting from a show page), and refresh otherwise. A handler `RedirectTarget` always navigates.
+Without a Turbo Frame, every flow issues a 303 to the success route. There is no per-call refresh flag.
 
 ### Auto-Update Forms
 
-The `AutoUpdateGuard` (`src/Shared/UI/Http/FormFlow/Guard/AutoUpdateGuard.php`) supports forms that submit automatically (e.g., on select change).
+The `AutoUpdateGuard` (`vendor/myvars/form-flow/src/Guard/AutoUpdateGuard.php`) supports forms that submit automatically (e.g., on select change).
 
 When a form has a button named `auto-update` and it was clicked:
 - Form errors are cleared (for responsive UX)
 - Form is not processed through handler
-- Returns 200 (not 422) even with validation issues
+- The form is re-rendered with status 422 (so Turbo renders the response), with its errors cleared
 
-Template usage:
-```twig
-<button type="submit" name="auto-update" hidden>Auto Update</button>
+The button must be a form field, because the guard looks for a clickable form child named `auto-update`. A raw
+HTML `<button>` in the template is not detected:
+
+```php
+$builder->add('auto-update', SubmitType::class, [
+    'attr' => ['class' => 'hidden-submit-button', 'data-submit-form-target' => 'submit'],
+]);
 ```
+
+`ProductType`, `ProductFilterType`, `SupplierProductType` and `SupplierProductFilterType` use it: a field's `change->submit-form#submitForm` action clicks that hidden button.
 
 ## Error Handling
 
@@ -264,22 +310,22 @@ return Result::fail('Could not create product: SKU already exists');
 
 ### Flash Messages
 
-Flash types map to Bootstrap alert classes:
+Flash keys, rendered as `FlashToast` toasts:
 
 ```php
 // In FlashMessenger
-success() → 'success'   // Green alert
-warning() → 'warning'   // Yellow alert
-error()   → 'danger'    // Red alert
+success() → 'success'
+warning() → 'warning'
+error()   → 'danger'
 ```
 
-Messages come from:
-1. `Result::$message` — Handler's explicit message
-2. Default messages — Generated from operation and model name
+Messages come only from `Result::$message`; a null message means no flash. Two flows add their own:
+ConfirmFlow flashes `Invalid CSRF token.` and SearchFlow flashes `Page N not found.`
 
-### CSRF Validation (DeleteFlow)
+### CSRF Validation (ConfirmFlow)
 
-DeleteFlow validates CSRF tokens with ID `'delete' . $command->id`:
+ConfirmFlow validates the token with id `confirmKey . $command->id`. The key defaults to
+`'delete'` (via `forDelete`) and is overridable via `FlowContext::forConfirm($model, key)`:
 
 ```php
 // In delete template
@@ -357,18 +403,23 @@ If CSRF invalid:
 Test routing, authentication, and authorization only:
 
 ```php
-public function test_new_requires_authentication(): void
+// uses HasBrowser and Factories — see the *FlowTest classes under tests/*/UI/
+
+public function testNewRequiresAuthentication(): void
 {
-    $this->client->request('GET', '/product/new');
-    $this->assertResponseRedirects('/login');
+    $this->browser()
+        ->interceptRedirects()
+        ->visit('/product/new')
+        ->assertRedirectedTo('/login');
 }
 
-public function test_new_renders_form(): void
+public function testNewRendersForm(): void
 {
-    $this->loginAsStaff();
-    $this->client->request('GET', '/product/new');
-    $this->assertResponseIsSuccessful();
-    $this->assertSelectorExists('form');
+    $this->browser()
+        ->actingAs(UserFactory::new()->asStaff()->create())
+        ->visit('/product/new')
+        ->assertSuccessful()
+        ->assertSeeElement('form');
 }
 ```
 
@@ -385,13 +436,12 @@ public function test_creates_product(): void
         // ...
     );
 
-    $result = $this->handler->__invoke($command);
+    $result = ($this->handler)($command);
 
-    $this->assertTrue($result->ok);
-    $this->assertNotNull($this->repository->findBySku('TEST-001'));
+    self::assertTrue($result->ok);
 }
 ```
 
 ### Flow Tests
 
-Flows are tested once in the Shared module. Individual bounded contexts do not need to re-test flow behavior.
+Flows are tested in the `myvars/form-flow` package's own suite. Individual bounded contexts do not need to re-test flow behavior; each context's own flow tests exercise the app's template overrides.

@@ -324,7 +324,7 @@ The playground database resets nightly at 02:15 UTC via cron, restoring a clean 
 ### What Is Protected
 
 1. **Passwords:** Hashed with strong algorithms
-2. **Sessions:** Stored in Redis with encryption
+2. **Sessions:** PHP's native handler (`handler_id: null`). In the Docker images PHP stores them in Redis (`docker/php/conf.d/10-app.ini`, `REDIS_SESSION_DSN` in prod); with `symfony serve` they use PHP's local default
 3. **CSRF tokens:** Required for all form submissions
 4. **Remember-me tokens:** Signed with kernel secret
 
@@ -398,7 +398,7 @@ add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; prelo
 add_header X-Content-Type-Options "nosniff" always;
 add_header X-Frame-Options "SAMEORIGIN" always;
 add_header Referrer-Policy "strict-origin-when-cross-origin" always;
-add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; form-action 'self'; base-uri 'self'" always;
+add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' data: https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://unicorn-bucket-two.s3.eu-west-2.amazonaws.com; font-src 'self'; connect-src 'self' https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com; form-action 'self'; base-uri 'self'" always;
 ```
 
 ### Content Security Policy
@@ -406,7 +406,10 @@ add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsaf
 The CSP header includes `'unsafe-inline'` for both `script-src` and `style-src`:
 
 - **`script-src 'unsafe-inline'`** — Required for the dark-mode FOUC-prevention script in `templates/base.html.twig` (lines 4-8), which must run before page paint to avoid a flash of unstyled content.
-- **`style-src 'unsafe-inline'`** — Required for Tailwind CSS runtime style injection and Flowbite component styles.
+- **`style-src 'unsafe-inline'`** — Required for Tailwind CSS runtime style injection and inline styles set by UI components.
+- **`script-src data:`** — Required for Asset Mapper's CSS importmap shims.
+- **`challenges.cloudflare.com`** (script, connect, frame) — Cloudflare Turnstile.
+- **The S3 bucket host in `img-src`** — product images.
 
 Removing `unsafe-inline` would require nonce-based CSP, which Symfony's Asset Mapper does not currently support. If Asset Mapper adds nonce support in a future release, the inline script should be migrated and `unsafe-inline` removed.
 
@@ -435,7 +438,7 @@ login_throttling:
 
 - Tracks failed attempts per **IP + username** combination
 - After 5 failed attempts within 15 minutes, further login attempts are blocked
-- Returns a `TooManyLoginAttemptsAuthenticationException` with a `Retry-After` header
+- Throws a `TooManyLoginAttemptsAuthenticationException`, which the login form shows as an authentication error
 - State stored in the cache pool (Redis in production)
 - Resets automatically after the interval expires
 
@@ -552,17 +555,17 @@ form_login:
 
 ### Delete Operations
 
-DeleteFlow validates CSRF for destructive operations:
+ConfirmFlow validates CSRF for destructive / confirmable operations. The token is namespaced by the
+action's confirm key (defaults to `'delete'`), so distinct actions on the same entity don't share one:
 
 ```php
-// src/Shared/UI/Http/FormFlow/DeleteFlow.php
+// vendor/myvars/form-flow/src/ConfirmFlow.php
 
-public function delete(...): Response
+public function execute(...): Response
 {
-    if (!$this->csrfTokenManager->isTokenValid(
-        new CsrfToken($context->tokenId(), $request->get('_token'))
-    )) {
-        throw new BadRequestHttpException('Invalid CSRF token');
-    }
+    $valid = $this->csrf->isTokenValid(
+        new CsrfToken($context->getConfirmKey() . $command->id, $submitted)
+    );
+    // invalid → flash error + redirect (no exception thrown)
 }
 ```

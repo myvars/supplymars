@@ -1,0 +1,21 @@
+{# A flash message as a toast, built on the kit's Toast and shown by the page's <twig:Sonner>
+   (base.html.twig). Works on page load and when appended by a Turbo Stream.
+   The coloured icon chip is ours; the kit's Toast only provides the slot for it.
+   Props (PHP): type (success|info|warning|danger, default: success), message #}
+{%- set iconName = this.iconName -%}
+{%- set iconClasses = this.iconClasses -%}
+<twig:Toast
+    type="{{ this.toastType }}"
+    title="{{ message }}"
+    :duration="this.duration"
+    class="items-center"
+    data-sonner-target="toast"
+    data-turbo-temporary
+    {{ ...attributes }}
+>
+    <twig:block name="icon">
+        <div data-slot="toast-icon" class="inline-flex size-8 shrink-0 items-center justify-center rounded-lg {{ iconClasses }}">
+            <twig:ux:icon name="{{ iconName }}" class="size-5"/>
+        </div>
+    </twig:block>
+</twig:Toast>

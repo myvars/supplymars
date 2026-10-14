@@ -28,21 +28,22 @@ We implemented a **FormFlow abstraction layer** that standardizes controller beh
 | Flow | Purpose | Key Method |
 |------|---------|------------|
 | `FormFlow` | Create/update with Symfony forms | `form()` |
-| `ActionFlow` | Direct command execution (no form) | `execute()` |
-| `DeleteFlow` | Delete with CSRF confirmation | `deleteConfirm()`, `delete()` |
+| `ActionFlow` | Direct command execution (no form) | `process()` |
+| `ConfirmFlow` | Confirm-then-act (delete & other confirmable actions) | `confirm()`, `execute()` |
 | `SearchFlow` | Paginated index pages | `search()` |
+| `InlineEditFlow` | Inline field editing via Turbo Frames | `handleField()` |
 
 ### Controller Usage
 
-Each controller defines a typed `FlowModel` via a static method:
+Each controller defines a typed `FlowModel` via a private method:
 
 ```php
-private static function model(): FlowModel
+private function model(): FlowModel
 {
     return FlowModel::create('catalog', 'manufacturer');
 }
 
-#[Route('/catalog/manufacturer/new', methods: ['GET', 'POST'])]
+#[Route(path: '/manufacturer/new', name: 'app_catalog_manufacturer_new', methods: ['GET', 'POST'])]
 public function new(
     Request $request,
     CreateManufacturerMapper $mapper,
@@ -55,7 +56,7 @@ public function new(
         data: new ManufacturerForm(),
         mapper: $mapper,
         handler: $handler,
-        context: FlowContext::forCreate(self::model()),
+        context: FlowContext::forCreate($this->model()),
     );
 }
 ```
@@ -83,7 +84,7 @@ $model = FlowModel::create('catalog', 'manufacturer');
 
 FlowContext::forCreate($model)
     ->successRoute('app_catalog_manufacturer_index')
-    ->template('manufacturer/new.html.twig')
+    ->template('catalog/manufacturer/create.html.twig')
 ```
 
 ### Turbo Integration
@@ -112,9 +113,9 @@ The `TurboAwareRedirector` detects Turbo requests and returns appropriate respon
 ### Implementation Notes
 
 Key files:
-- `src/Shared/UI/Http/FormFlow/FormFlow.php` - Main form handling
-- `src/Shared/UI/Http/FormFlow/View/FlowContext.php` - Configuration
-- `src/Shared/UI/Http/FormFlow/Redirect/TurboAwareRedirector.php` - Response handling
+- `vendor/myvars/form-flow/src/FormFlow.php` - Main form handling
+- `vendor/myvars/form-flow/src/View/FlowContext.php` - Configuration
+- `vendor/myvars/form-flow/src/Redirect/TurboAwareRedirector.php` - Response handling
 
 The pattern separates concerns:
 - **Controller**: Wires dependencies, delegates to Flow
@@ -128,7 +129,7 @@ This allows each component to be tested independently and reused across differen
 ### Naming Convention
 
 Routes follow: `app_{context}_{entity}_{action}`
-Templates follow: `{context}/{entity}/{action}.html.twig`
+Templates follow: `{context}/{entity}/{operation}.html.twig` (operation = `create`, `update`, `delete`, `filter`, `index`), falling back to `shared/form_flow/{operation}.html.twig`
 
 Route names are exposed to templates via a typed `FlowRoutes` object (derived automatically from the `FlowModel`):
 
@@ -139,10 +140,7 @@ $model->routes->index;   // 'app_catalog_manufacturer_index'
 $model->routes->new;     // 'app_catalog_manufacturer_new'
 $model->routes->delete;  // 'app_catalog_manufacturer_delete'
 $model->displayName;     // 'Manufacturer'
-$model->template('new'); // 'catalog/manufacturer/new.html.twig'
-
-// Override individual routes:
-$context->getRoutes()->with(index: 'app_custom_index');
+$model->template('create'); // 'catalog/manufacturer/create.html.twig'
 ```
 
 ```twig

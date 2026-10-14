@@ -1,20 +1,23 @@
+{# Bordered table with an optional title bar, built on the kit's Table.
+   For a bare table, compose <twig:Table> directly.
+   - title: Heading shown above the table (optional)
+   - caption: Screen-reader caption (default: the title)
+   Blocks: head (header rows), body (body rows) — <twig:Table:Row>/<twig:Table:Head>/<twig:Table:Cell>,
+   or plain <tr>/<th>/<td> with their own classes #}
 {% props title = null, caption = null %}
-
-<div class="relative overflow-x-auto rounded-lg border border-gray-200 dark:border-white/[0.10]">
+{%- set head %}{% block head %}{% endblock %}{% endset -%}
+{%- set body %}{% block body %}{% endblock %}{% endset -%}
+<div {{ attributes.defaults({class: 'overflow-hidden rounded-lg border border-border bg-card'}) }}>
     {% if title %}
-        <div class="border-b border-gray-200 bg-gray-50/50 px-4 py-2.5 dark:border-white/[0.06] dark:bg-gray-800/50">
-            <span class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ title }}</span>
+        <div class="border-b border-border bg-muted/50 px-4 py-2.5">
+            <span class="text-xs font-medium uppercase tracking-wide text-muted-foreground">{{ title }}</span>
         </div>
     {% endif %}
-    <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
+    <twig:Table class="text-left text-muted-foreground">
         {% if caption or title %}
-            <caption class="sr-only">{{ caption ?? title }}</caption>
+            <twig:Table:Caption class="sr-only">{{ caption ?? title }}</twig:Table:Caption>
         {% endif %}
-        <thead class="bg-gray-50 text-xs font-medium uppercase tracking-wide text-gray-500 dark:bg-gray-800 dark:text-gray-400">
-            {% block head %}{% endblock %}
-        </thead>
-        <tbody class="[&>tr]:border-b [&>tr]:border-gray-100 [&>tr]:transition-colors [&>tr]:bg-white [&>tr:hover]:bg-gray-50 dark:[&>tr]:border-white/[0.04] dark:[&>tr]:bg-gray-900 dark:[&>tr:hover]:bg-gray-800/50">
-            {% block body %}{% endblock %}
-        </tbody>
-    </table>
+        <twig:Table:Header class="bg-muted/50 text-xs font-medium uppercase tracking-wide">{{ head }}</twig:Table:Header>
+        <twig:Table:Body class="[&>tr]:border-b [&>tr]:transition-colors [&>tr:hover]:bg-muted/50">{{ body }}</twig:Table:Body>
+    </twig:Table>
 </div>

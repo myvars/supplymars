@@ -50,7 +50,7 @@ final class SupplierProductFactory extends PersistentObjectFactory
             'supplier' => LazyValue::memoize(fn (): Supplier => SupplierFactory::createOne()),
             'stock' => self::faker()->numberBetween(1, 1000),
             'leadTimeDays' => self::faker()->numberBetween(1, 99),
-            'cost' => (string) self::faker()->numberBetween(1, 100000) / 100,
+            'cost' => (string) self::faker()->numberBetween(10, 100000) / 100,
             'product' => LazyValue::memoize(fn (): Product => ProductFactory::createOne()),
             'isActive' => true,
         ];

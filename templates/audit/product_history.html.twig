@@ -6,9 +6,9 @@
     {{ include('catalog/product/_navigation.html.twig', {result: result}) }}
 
     <div class="m-3 space-y-4">
-        <twig:Breadcrumb :href="path('app_catalog_product_index')" label="Products" :current="result.name"/>
+        <twig:PageBreadcrumb :href="path('app_catalog_product_index')" label="Products" :current="result.name"/>
         {% if hasData %}
-            <twig:Card>
+            <twig:EntityCard>
                 <div class="mb-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <p class="font-medium text-gray-600 dark:text-gray-500">Stock History</p>
                     {{ include('audit/_history_durations.html.twig') }}
@@ -16,16 +16,16 @@
                 <div class="flex h-80 md:h-96 flex-wrap justify-around rounded-lg border border-gray-200/80 bg-white text-center font-light dark:border-white/[0.06] dark:bg-gray-800">
                     {{ render_chart(stockChart, {'data-controller': 'line_chart', 'class': 'w-full h-full'}) }}
                 </div>
-            </twig:Card>
+            </twig:EntityCard>
 
-            <twig:Card>
+            <twig:EntityCard>
                 <div class="mb-3 flex items-center justify-between">
                     <p class="font-medium text-gray-600 dark:text-gray-500">Cost History</p>
                 </div>
                 <div class="flex h-80 md:h-96 flex-wrap justify-around rounded-lg border border-gray-200/80 bg-white text-center font-light dark:border-white/[0.06] dark:bg-gray-800">
                     {{ render_chart(costChart, {'data-controller': 'line_chart', 'class': 'w-full h-full'}) }}
                 </div>
-            </twig:Card>
+            </twig:EntityCard>
         {% else %}
             <twig:EmptyState icon="bi:clock-history" message="No stock or cost history yet"/>
         {% endif %}

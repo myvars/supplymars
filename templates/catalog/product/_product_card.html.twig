@@ -1,4 +1,4 @@
-<twig:Card editLink="{{ path('app_catalog_product_edit', {id: product.publicId.value}) }}" title="Product" width="w-full" layout="horizontal">
+<twig:EntityCard editLink="{{ path('app_catalog_product_edit', {id: product.publicId.value}) }}" title="Product" width="w-full" layout="horizontal">
     <twig:block name="cardImage">
         <div class="p-3 flex items-center">
             <twig:ProductImage
@@ -56,7 +56,7 @@
             {% endif %}
         </p>
     </div>
-    <twig:CardFooter :updatedAt="product.updatedAt">
+    <twig:EntityCardFooter :updatedAt="product.updatedAt">
         <twig:StatusBadge status="{{ product.isActive ? 'ACTIVE' : 'INACTIVE' }}"/>
-    </twig:CardFooter>
-</twig:Card>
+    </twig:EntityCardFooter>
+</twig:EntityCard>

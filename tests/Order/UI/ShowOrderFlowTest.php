@@ -26,7 +26,7 @@ final class ShowOrderFlowTest extends WebTestCase
             ->assertSuccessful()
             ->assertSee('Orders')
             ->assertSee('Order #')
-            ->assertSeeElement('nav[aria-label="Breadcrumb"]')
+            ->assertSeeElement('nav[aria-label="breadcrumb"]')
             ->assertSeeElement('dl');
     }
 }

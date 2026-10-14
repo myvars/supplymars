@@ -1,20 +1,33 @@
-<div id="help-drawer"
-     class="fixed top-0 right-0 z-40 flex h-screen w-96 translate-x-full flex-col border-l border-gray-200 bg-white dark:border-white/[0.06] dark:bg-gray-900/95 dark:backdrop-blur-xl"
-     tabindex="-1"
-     aria-hidden="true"
-     aria-label="Contextual help"
+{# Contextual help: the header's Help button and the panel it opens, as a kit Sheet (a modal
+   <dialog> sliding in from the right). The help-drawer controller adds the `?` shortcut and
+   loads the page's help into the Turbo Frame when the panel opens. #}
+<twig:Sheet
+    id="help"
+    side="right"
+    data-controller="help-drawer"
+    data-action="keydown@window->help-drawer#keydown turbo:before-cache@window->dialog#close"
 >
-    <turbo-frame id="help" loading="lazy" class="flex flex-1 flex-col overflow-hidden">
-        {# Loading skeleton — replaced when help content loads #}
-        <div class="flex shrink-0 items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-white/[0.06]">
-            <div class="h-5 w-16 animate-pulse rounded bg-gray-200 dark:bg-gray-700"></div>
-            <div class="h-5 w-5 animate-pulse rounded bg-gray-200 dark:bg-gray-700"></div>
-        </div>
-        <div class="flex-1 space-y-3 px-5 py-4">
-            <div class="h-4 w-3/4 animate-pulse rounded bg-gray-200 dark:bg-gray-700"></div>
-            <div class="h-4 w-full animate-pulse rounded bg-gray-200 dark:bg-gray-700"></div>
-            <div class="h-4 w-5/6 animate-pulse rounded bg-gray-200 dark:bg-gray-700"></div>
-            <div class="h-4 w-2/3 animate-pulse rounded bg-gray-200 dark:bg-gray-700"></div>
-        </div>
-    </turbo-frame>
-</div>
+    <twig:Sheet:Trigger>
+        {# The header bar is dark in both modes, so the ghost button's colours are pinned. #}
+        <twig:Button variant="ghost" class="size-9 px-0 font-medium text-gray-400 hover:bg-gray-700/70 hover:text-gray-200 aria-expanded:bg-gray-700/70 aria-expanded:text-gray-200 dark:hover:bg-gray-700/70 sm:w-auto sm:px-2.5 sm:text-xs" data-action="click->help-drawer#toggle" data-dialog-target="trigger" aria-haspopup="dialog">
+            <twig:ux:icon name="flowbite:question-circle-solid" class="size-5 sm:hidden"/>
+            <span class="sr-only sm:not-sr-only">Help</span>
+        </twig:Button>
+    </twig:Sheet:Trigger>
+    <twig:Sheet:Content class="w-96 max-w-full gap-0" :showCloseButton="false">
+        <twig:Sheet:Title class="sr-only">Help</twig:Sheet:Title>
+        <turbo-frame id="help" loading="lazy" data-help-drawer-target="frame" class="flex min-h-0 flex-1 flex-col overflow-hidden">
+            {# Loading skeleton — replaced when help content loads #}
+            <div class="flex shrink-0 items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-white/[0.06]">
+                <twig:Skeleton class="h-5 w-16"/>
+                <twig:Skeleton class="h-5 w-5"/>
+            </div>
+            <div class="flex-1 space-y-3 px-5 py-4">
+                <twig:Skeleton class="h-4 w-3/4"/>
+                <twig:Skeleton class="h-4 w-full"/>
+                <twig:Skeleton class="h-4 w-5/6"/>
+                <twig:Skeleton class="h-4 w-2/3"/>
+            </div>
+        </turbo-frame>
+    </twig:Sheet:Content>
+</twig:Sheet>

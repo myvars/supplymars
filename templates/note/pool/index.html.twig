@@ -16,7 +16,7 @@
         </twig:block>
 
         <twig:block name="list_item">
-            <twig:Card
+            <twig:EntityCard
                 editLink="{{ path('app_note_pool_edit', {'id': result.publicId.value }) }}"
                 showLink="{{ path('app_note_pool_show', {'id': result.publicId.value }) }}"
                 statusHighlight="{{ result.isActive ? 'ACTIVE' : 'INACTIVE' }}"
@@ -35,7 +35,7 @@
                         <twig:StatusBadge status="{{ result.isActive ? 'ACTIVE' : 'INACTIVE' }}"/>
                     </div>
                 </div>
-            </twig:Card>
+            </twig:EntityCard>
         </twig:block>
     </twig:Search>
 

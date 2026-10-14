@@ -4,7 +4,7 @@
 
 {% block body %}
 
-    {% component Dialog with { title: 'Create Demo Order', size: 'sm' } %}
+    {% component ModalPanel with { title: 'Create Demo Order', size: 'sm' } %}
         {% block content %}
             {% if limitReached %}
                 <div class="mb-4 flex justify-center">
@@ -15,7 +15,7 @@
                 <p class="mb-4 text-center text-sm text-gray-500 dark:text-gray-400">
                     You have reached the daily limit of {{ limit }} demo orders.
                 </p>
-                <twig:Button type="button" variant="alternative" class="w-full" data-action="basic-modal#close">
+                <twig:Button type="button" variant="outline" class="w-full" data-action="basic-modal#close">
                     Close
                 </twig:Button>
             {% else %}
@@ -28,10 +28,10 @@
                 <form method="post" action="{{ path('app_order_demo_create') }}">
                     <input type="hidden" name="_token" value="{{ csrf_token('deletedemo') }}">
                     <div class="flex gap-3">
-                        <twig:Button type="button" variant="alternative" class="w-full" data-action="basic-modal#close">
+                        <twig:Button type="button" variant="outline" class="flex-1" data-action="basic-modal#close">
                             Cancel
                         </twig:Button>
-                        <twig:Button type="submit" variant="primary" class="w-full whitespace-nowrap">
+                        <twig:Button type="submit" class="flex-1">
                             Create Order
                         </twig:Button>
                     </div>

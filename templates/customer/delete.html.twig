@@ -4,7 +4,7 @@
 
 {% block body %}
 
-    <twig:Dialog title="Delete Customer">
+    <twig:ModalPanel title="Delete Customer">
         <p class="mb-2 text-base text-gray-500 dark:text-white">
             {{ result.fullName }}
             {% if result.isAdmin %}
@@ -20,14 +20,14 @@
             <p class="mb-4 text-sm font-light text-red-500 dark:text-red-400">
                 You cannot delete an admin user.
             </p>
-            <twig:Button type="button" variant="alternative" class="w-full" data-action="basic-modal#close">
+            <twig:Button type="button" variant="outline" class="w-full" data-action="basic-modal#close">
                 Close
             </twig:Button>
         {% elseif result.customerOrders.count > 0 %}
             <p class="mb-4 text-sm font-light text-red-500 dark:text-red-400">
                 You cannot delete a customer with order history.
             </p>
-            <twig:Button type="button" variant="alternative" class="w-full" data-action="basic-modal#close">
+            <twig:Button type="button" variant="outline" class="w-full" data-action="basic-modal#close">
                 Close
             </twig:Button>
         {% else %}
@@ -37,13 +37,13 @@
             <form method="post" action="{{ path('app_customer_delete', {'id': result.publicId.value}) }}">
                 <input type="hidden" name="_token" value="{{ csrf_token('delete'~result.publicId.value) }}">
                 <div class="flex gap-3">
-                    <twig:Button type="button" variant="alternative" class="w-full" data-action="basic-modal#close">
+                    <twig:Button type="button" variant="outline" class="flex-1" data-action="basic-modal#close">
                         Cancel
                     </twig:Button>
-                    <twig:Button type="submit" variant="danger" class="w-full">Delete Customer</twig:Button>
+                    <twig:Button type="submit" variant="destructive-solid" class="flex-1">Delete Customer</twig:Button>
                 </div>
             </form>
         {% endif %}
-    </twig:Dialog>
+    </twig:ModalPanel>
 
 {% endblock %}

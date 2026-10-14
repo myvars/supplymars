@@ -14,10 +14,10 @@
                 </h1>
             </div>
             {% for flash_error in app.flashes('verify_email_error') %}
-                <twig:Alert type="danger">{{ flash_error }}</twig:Alert>
+                <twig:Callout type="danger">{{ flash_error }}</twig:Callout>
             {% endfor %}
             {% for flash_error in app.flashes('danger') %}
-                <twig:Alert type="danger">{{ flash_error }}</twig:Alert>
+                <twig:Callout type="danger">{{ flash_error }}</twig:Callout>
             {% endfor %}
             {{ form_start(form, {
                 'attr': {
@@ -30,11 +30,10 @@
             {{ form_row(form.plainPassword) }}
             <div>
                 <div class="flex items-center">
-                    <input type="checkbox" id="registration_form_agreeTerms"
-                           name="{{ field_name(form.agreeTerms) }}"
-                           required="required"
-                           class="h-4 w-4 rounded-sm border-gray-300 bg-gray-100 text-primary-600 focus:ring-2 focus:ring-primary-500 dark:border-white/[0.06] dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-primary-600"
-                           value="{{ field_value(form.agreeTerms) }}">
+                    <twig:Checkbox id="registration_form_agreeTerms"
+                                   name="{{ field_name(form.agreeTerms) }}"
+                                   value="{{ field_value(form.agreeTerms) }}"
+                                   required />
                     <label class="ml-2 text-sm font-light text-gray-500 dark:text-gray-400"
                            for="registration_form_agreeTerms">
                         I accept the

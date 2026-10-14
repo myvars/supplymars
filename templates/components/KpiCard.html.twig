@@ -3,7 +3,6 @@
    - value: The primary numeric value
    - compare: Previous-period value for comparison (shows arrow + percentage change)
    - valueType: Formatting type (count|currency|percentage|text, default: count)
-   - format: Currency format (default: GBP)
    - maxFractionDigits: Decimal places for formatting (default: 0)
    - href: Optional link URL (makes entire card clickable)
    - turboFrame: Turbo frame target when href is set
@@ -14,7 +13,6 @@
     value,
     compare = null,
     valueType = 'count',
-    format = 'GBP',
     maxFractionDigits = 0,
     href = null,
     turboFrame = null,
@@ -22,7 +20,7 @@
     muted = false
     %}
 
-{% macro formatValue(value, valueType, format, maxFractionDigits) %}
+{% macro formatValue(value, valueType, maxFractionDigits) %}
     {% if valueType == 'currency' %}
         {{ value|price_rounded(maxFractionDigits) }}
     {% elseif valueType == 'percentage' %}
@@ -35,7 +33,7 @@
 {% endmacro %}
 
 {% set baseClasses = 'flex flex-col items-center justify-center gap-1.5 overflow-hidden bg-white px-4 py-4 dark:bg-gray-800/40 dark:ring-1 dark:ring-white/[0.06] sm:px-5' %}
-{% set hoverClasses = href ? ' transition-all duration-150 hover:bg-primary-50/50 dark:hover:bg-primary-900/20 hover:scale-[1.01] active:scale-[0.99]' : '' %}
+{% set hoverClasses = href ? ' transition-all duration-150 hover:bg-primary-50/50 dark:hover:bg-primary-900/20 hover:scale-[1.01] active:scale-[0.99] focus-ring' : '' %}
 
 {% if href %}
 <a href="{{ href }}" class="{{ baseClasses }}{{ hoverClasses }}"{% if turboFrame %} data-turbo-frame="{{ turboFrame }}"{% endif %}>
@@ -43,11 +41,11 @@
 <div class="{{ baseClasses }}">
 {% endif %}
 
-    <p class="text-xs font-medium uppercase tracking-wide text-gray-500 dark:text-gray-400">{{ title }}</p>
+    <p class="text-xs font-medium uppercase tracking-wide text-muted-foreground">{{ title }}</p>
 
     <div class="flex max-w-full items-baseline gap-1.5">
         <span class="truncate text-xl font-semibold tabular-nums sm:text-2xl {{ muted ? 'text-gray-400 dark:text-gray-500' : 'text-gray-900 dark:text-gray-100' }}">
-            {{ _self.formatValue(value, valueType, format, maxFractionDigits) }}
+            {{ _self.formatValue(value, valueType, maxFractionDigits) }}
         </span>
         {% if compare is not null %}
             {% set difference = value - compare %}
@@ -67,7 +65,7 @@
         {% if difference != 0 %}
             {% set positive = difference > 0 %}
             <div class="flex items-center gap-3 text-xs">
-                <span class="text-gray-500 dark:text-gray-400">
+                <span class="text-muted-foreground">
                     {% if valueType == 'currency' %}{{ positive ? '+' : '-' }}{{ difference|abs|price_rounded(maxFractionDigits) }}{% elseif valueType == 'percentage' %}{{ positive ? '+' : '' }}{{ difference|number_format(2) }}pp{% else %}{{ positive ? '+' : '' }}{{ difference|number_format(0) }}{% endif %}
                 </span>
                 <span class="font-medium {{ positive ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
@@ -75,14 +73,12 @@
                 </span>
             </div>
         {% else %}
-            <span class="inline-flex rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-500 dark:bg-gray-700 dark:text-gray-400">
-                0%
-            </span>
+            <twig:Badge variant="secondary" class="text-muted-foreground">0%</twig:Badge>
         {% endif %}
     {% endif %}
 
     {% if subtitle %}
-        <p class="max-w-full truncate text-xs text-gray-500 dark:text-gray-400">{{ subtitle }}</p>
+        <p class="max-w-full truncate text-xs text-muted-foreground">{{ subtitle }}</p>
     {% endif %}
 {% if href %}
 </a>

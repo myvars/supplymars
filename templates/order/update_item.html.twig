@@ -3,7 +3,7 @@
 {% block title %}Edit Order Item{% endblock %}
 
 {% block body %}
-<twig:Dialog title="Edit Order Item">
+<twig:ModalPanel title="Edit Order Item">
         <twig:FlowForm :form="form" buttonLabel="Update Order Item"/>
         {% if form.vars.value.allowCancel %}
             <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">
@@ -14,7 +14,7 @@
                 >Cancel Order Item</a>
             </p>
         {% endif %}
-</twig:Dialog>
+</twig:ModalPanel>
 
 {% endblock %}
 
