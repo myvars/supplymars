@@ -220,6 +220,8 @@ docker compose $LIVE up -d php messenger cron
 docker compose $LIVE ps
 ```
 
+The queue is a table in the same database, so the restore brings back the emails that were waiting when the backup was taken, and the worker sends them when it starts. If they were already sent, delete them before step 4: `DELETE FROM messenger_messages WHERE queue_name = 'default';` (`messenger:stats` shows how many there are).
+
 ### 4.5 Verify a Backup
 
 Periodically verify backups are valid (download and check, or test-restore on dev):

@@ -14,7 +14,7 @@ echo "$(date '+%Y-%m-%d %H:%M:%S') Starting playground reset..."
 # 1. Restore database from backup file (produced by live stack's app:backup-database --local-copy)
 #    The rows of messenger_messages are left out: they are live's queue, and the playground worker
 #    would otherwise send live's pending emails. The table is still recreated, so it starts empty.
-#    LC_ALL=C: the dump holds binary columns, which sed would otherwise reject as invalid text.
+#    LC_ALL=C: the dump holds binary columns, so sed must read bytes rather than text.
 BACKUP_FILE="/backups/latest.sql.gz"
 if [ ! -f "$BACKUP_FILE" ]; then
     echo "ERROR: Backup file not found at $BACKUP_FILE"

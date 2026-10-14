@@ -12,13 +12,13 @@ up-prod-live:
 	docker compose --env-file ../supplymars-secrets/live.env -p supplymars-live -f compose.yaml -f compose.prod.yaml up -d --build --remove-orphans --wait
 
 down-prod-live:
-	docker compose --env-file ../supplymars-secrets/live.env -p supplymars-live -f compose.yaml -f compose.prod.yaml down --remove-orphans
+	docker compose --env-file ../supplymars-secrets/live.env -p supplymars-live --profile '*' -f compose.yaml -f compose.prod.yaml down --remove-orphans
 
 up-prod-playground:
 	docker compose --env-file ../supplymars-secrets/playground.env -p supplymars-playground --profile playground -f compose.yaml -f compose.prod.yaml up -d --build --remove-orphans --wait
 
 down-prod-playground:
-	docker compose --env-file ../supplymars-secrets/playground.env -p supplymars-playground --profile playground -f compose.yaml -f compose.prod.yaml down --remove-orphans
+	docker compose --env-file ../supplymars-secrets/playground.env -p supplymars-playground --profile '*' -f compose.yaml -f compose.prod.yaml down --remove-orphans
 
 certs:
 	@command -v mkcert >/dev/null || { echo "mkcert not found — install with: brew install mkcert"; exit 1; }
