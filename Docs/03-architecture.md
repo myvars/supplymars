@@ -477,7 +477,8 @@ class Product implements DomainEventProviderInterface
                                    ▼
 ┌────────────────────────────────────────────────────────────────────────┐
 │              DomainEventDispatcher (postFlush listener)                │
-│  • Collects events from flushed entities                               │
+│  • Collects events from flushed entities, and from entities the        │
+│    flush deleted                                                       │
 │  • Dispatches sync events via EventDispatcher                          │
 │  • Dispatches async events via MessageBus                              │
 └────────────────────────────────────────────────────────────────────────┘
@@ -485,12 +486,22 @@ class Product implements DomainEventProviderInterface
                     ▼                              ▼
         ┌─────────────────────┐      ┌─────────────────────────────────┐
         │   SYNC LISTENERS    │      │        ASYNC (RABBITMQ)         │
-        │  (same transaction) │      │  • AsyncDomainEventInterface    │
+        │  (after the commit) │      │  • AsyncDomainEventInterface    │
         │                     │      │  • Processed by messenger:      │
         │  • Pricing cascade  │      │    consume async                │
         │  • Audit logging    │      │  • Email notifications          │
         └─────────────────────┘      └─────────────────────────────────┘
 ```
+
+An entity that is deleted can raise an event too: the dispatcher notes the entities scheduled for deletion in `onFlush`, before the flush takes them out of the identity map, and dispatches their events with the rest. Raise the event in a domain method, and always follow it with `remove()` and a flush. An entity that raises a deletion event but is never removed still dispatches it on the next flush, and its listeners act on a row that still exists:
+
+```php
+$productImage->delete();                 // raises ProductImageWasDeletedEvent
+$this->productImages->remove($productImage);
+$this->flusher->flush();                 // the event is dispatched after the delete
+```
+
+Events are dispatched for every flush, whether it goes through the `Flusher`, a direct `EntityManager::flush()`, fixtures or Foundry factories. They are dispatched after the flush commits. A sync listener that throws does not undo the change, unless the flush runs inside an outer transaction, but the exception still reaches the caller: the change is saved even though the request fails.
 
 ### Event Types
 
@@ -507,6 +518,7 @@ class Product implements DomainEventProviderInterface
 - `ReviewWasCreatedEvent` → Recalculates product review summary
 - `ReviewStatusWasChangedEvent` → Recalculates product review summary
 - `ReviewRatingWasChangedEvent` → Recalculates product review summary
+- `ProductImageWasDeletedEvent` → Removes the image file from storage and its cached thumbnails
 
 ## Simulation Boundaries
 
