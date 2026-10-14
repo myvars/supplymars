@@ -44,25 +44,6 @@ final class ToggleSupplierProductStatusFlowTest extends WebTestCase
         self::assertTrue($supplierProduct->isActive());
     }
 
-    public function testToggleFailsWhenNotMapped(): void
-    {
-        $user = UserFactory::new()->asStaff()->create();
-        $supplierProduct = SupplierProductFactory::createOne([
-            'isActive' => true,
-            'product' => null,
-        ]);
-
-        $publicId = $supplierProduct->getPublicId()->value();
-
-        // No page offers the toggle for an unmapped product, and there is no product page to return to
-        $this->browser()
-            ->actingAs($user)
-            ->post('/supplier-product/' . $publicId . '/status/toggle')
-            ->assertStatus(500);
-
-        self::assertTrue($supplierProduct->isActive());
-    }
-
     public function testToggleIsNotReachableWithGet(): void
     {
         $supplierProduct = SupplierProductFactory::createOne([

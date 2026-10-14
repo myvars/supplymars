@@ -6,12 +6,12 @@
 <twig:ModalPanel title="Edit Order Item">
         <twig:FlowForm :form="form" buttonLabel="Update Order Item"/>
         {% if form.vars.value.allowCancel %}
-            <p class="mt-4 text-sm text-gray-500 dark:text-gray-400">
+            <div class="mt-4 text-sm text-gray-500 dark:text-gray-400">
                 <form method="post" action="{{ path('app_order_item_cancel', {'id': result.orderItemId}) }}" data-turbo-frame="_top">
                     <input type="hidden" name="_token" value="{{ csrf_token('cancel_item' ~ result.orderItemId) }}">
                     <button type="submit" class="hover:text-yellow-600 focus-ring dark:hover:text-yellow-300">Cancel Order Item</button>
                 </form>
-            </p>
+            </div>
         {% endif %}
 </twig:ModalPanel>
 
