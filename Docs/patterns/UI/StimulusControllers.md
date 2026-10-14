@@ -319,6 +319,7 @@ A click on a bar visits the link URL plus `?` and that bar's entry in `options.l
 
 **`dropzone_controller`**
 - File upload with drag-and-drop
+- Posts the form's other fields (its CSRF `_token`) with the files; `acceptedFiles` and `maxFilesize` are a convenience only, the server validates again (see `Docs/08-security.md`)
 
 ### Kit controllers
 

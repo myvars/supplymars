@@ -109,7 +109,8 @@ The Images tab shows all images for a product in a responsive grid with drag-and
 - Drag files onto the upload area, or click to browse
 - Upload up to 10 images at a time
 - Maximum file size: 2 MB per image
-- Accepted formats: all image types (JPG, PNG, GIF, WebP, etc.)
+- Accepted formats: JPG, PNG, GIF and WebP
+- If any file is rejected, none of the batch is uploaded and a message names the file
 
 **Managing images:**
 - **Reorder:** Drag and drop images to change their display order
