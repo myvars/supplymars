@@ -582,7 +582,7 @@ class PriceCascadeTest extends KernelTestCase
 
 ## Code Quality Tools
 
-SupplyMars enforces code quality through three complementary tools. CI runs PHP-CS-Fixer (dry run), PHPStan, a Doctrine schema validation and the test suite; Rector is run locally.
+SupplyMars enforces code quality through three complementary tools: PHPStan, PHP-CS-Fixer and Rector. CI runs all three (as dry runs where they would change code), along with the other checks under [Running All Checks](#running-all-checks).
 
 ### PHPStan (Static Analysis)
 
@@ -646,14 +646,28 @@ Active rule sets:
 - Doctrine-specific rules
 - Symfony-specific rules
 
-### Running All Tools
+### Running All Checks
+
+`make check` runs every check CI runs, with the same commands. Both call `scripts/check.sh` in the `php` container, after `prod-config`, which runs on the host (`make check-prod-config`; it is not a `scripts/check.sh` step). Locally, keep `vendor/` in step with `composer.lock`: CI installs it fresh, and the container only installs when `vendor/` is missing. Run it before opening a pull request.
 
 ```bash
-# Run all quality checks (typical pre-commit workflow)
-vendor/bin/php-cs-fixer fix
-vendor/bin/rector process
-vendor/bin/phpstan analyse
-vendor/bin/phpunit
+make check               # every step
+make check-phpstan       # one step: prod-config, cs, rector, phpstan, lint, audit, migrations or tests
 ```
 
-These tools run automatically in GitHub Actions CI on every push and pull request.
+| Step | What it runs |
+|------|--------------|
+| `prod-config` | `docker compose config` on the production compose files, for the live stack and the `playground` profile, and `nginx -t` on `docker/nginx/conf.d/prod.conf`. These are otherwise used only by the deploy, so a mistake in them would first show there. Runs on the host, with Docker |
+| `cs` | `php-cs-fixer fix --dry-run --diff` |
+| `rector` | `rector process --dry-run` |
+| `phpstan` | `phpstan analyse` (after warming the dev container it reads) |
+| `lint` | `lint:container` (test and dev), `lint:twig templates/`, `lint:yaml config/` |
+| `audit` | `composer audit`: known vulnerabilities and abandoned packages. A new advisory fails the next run whatever it changes |
+| `migrations` | Runs every migration on an empty database (`app_test_migrations`), then `doctrine:schema:validate`. Fails when the migrations do not produce the schema the entities describe, e.g. an entity change with no migration |
+| `tests` | `scripts/run-tests.sh`: resets the test database and runs PHPUnit |
+
+The tests build their schema with `doctrine:schema:create`, not the migrations, so the `migrations` step is what proves the migration files work. The first migration creates the whole schema; on a database that already has it (live and playground) it adds no SQL and is only recorded.
+
+When a step fails, fix the code rather than the check: `php-cs-fixer fix` and `rector process` (without `--dry-run`) apply their own changes, and `make:migration` generates a missing migration.
+
+CI (`.github/workflows/ci.yml`) runs each step as its own `make check-<step>`, so a failure names the step. It keeps the `php` image's layers in the GitHub Actions cache (`compose.ci.yaml`), so a run rebuilds only the layers that changed: after an edit to `docker/Dockerfile` or a file it copies, or when GitHub has evicted the cache (unused for 7 days).

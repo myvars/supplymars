@@ -37,6 +37,25 @@ test:
 test-%:
 	docker compose run --rm -e APP_ENV=test php ./scripts/run-tests.sh --filter $*
 
+# Every check CI runs. check-<step> runs one: prod-config, cs, rector, phpstan, lint, audit, migrations, tests
+check: check-prod-config
+	docker compose run --rm -e APP_ENV=test php ./scripts/check.sh
+
+# Runs on the host (scripts/check.sh runs in the php container, which has no Docker). Checks the
+# production compose files, for the live stack and the playground profile, and the nginx config,
+# which otherwise only the deploy uses. Compose warns about every unset production variable, so its
+# output is shown only on failure.
+check-prod-config:
+	@docker compose -f compose.yaml -f compose.prod.yaml config -q 2>/dev/null \
+		|| docker compose -f compose.yaml -f compose.prod.yaml config -q
+	@docker compose --profile playground -f compose.yaml -f compose.prod.yaml config -q 2>/dev/null \
+		|| docker compose --profile playground -f compose.yaml -f compose.prod.yaml config -q
+	docker run --rm --add-host php:127.0.0.1 --entrypoint nginx -v $(CURDIR)/docker/nginx/conf.d/prod.conf:/etc/nginx/conf.d/default.conf:ro \
+		$$(docker build -q --load --target nginx-dev -f docker/Dockerfile .) -t
+
+check-%:
+	docker compose run --rm -e APP_ENV=test php ./scripts/check.sh $*
+
 bash:
 	docker compose exec php bash
 
@@ -58,4 +77,4 @@ k6:
 k6-dash:
 	./scripts/run-k6-script.sh $(SCRIPT) $(ENV) true
 
-.PHONY: up up-prod-local up-prod-live down-prod-live up-prod-playground down-prod-playground certs up-dev-tools down test test-% bash logs logs-% clean-build prune k6 k6-dash
+.PHONY: up up-prod-local up-prod-live down-prod-live up-prod-playground down-prod-playground certs up-dev-tools down test test-% check check-prod-config check-% bash logs logs-% clean-build prune k6 k6-dash

@@ -248,7 +248,7 @@ open http://localhost:15672
 **Fixes:**
 ```bash
 # Rebuild assets (importmap first: the Tailwind build imports CSS from assets/vendor/)
-rm -rf public/assets            # a compiled asset map (left by make up / make test) hides live changes
+rm -rf public/assets            # a compiled asset map (left by make up / make test / make check) hides live changes
 symfony console importmap:install
 symfony console tailwind:build
 

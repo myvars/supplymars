@@ -16,29 +16,48 @@ jobs:
             group: ci-test-${{ github.ref }}
             cancel-in-progress: true
 
+        env:
+            # compose.ci.yaml adds the build cache; the make targets pick these files up
+            COMPOSE_FILE: compose.yaml:compose.override.yaml:compose.ci.yaml
+
+        # Each step is one step of `make check`, the same commands it runs
         steps:
             - name: Checkout code
               uses: actions/checkout@v7
 
+            - name: Check production config
+              run: make check-prod-config
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v4
+
+            # Gives `docker compose build` the credentials for the GitHub Actions cache
+            - name: Expose GitHub runtime
+              uses: crazy-max/ghaction-github-runtime@04d248b84655b509d8c44dc1d6f990c879747487 # v4.0.0
+
             - name: Build containers
-              run: |
-                  docker compose -f compose.yaml -f compose.override.yaml build --progress=plain
+              run: docker compose --progress=plain build php
 
             - name: Check code style
-              run: |
-                  docker compose -f compose.yaml -f compose.override.yaml run --rm -e APP_ENV=test php vendor/bin/php-cs-fixer fix --dry-run --diff
+              run: make check-cs
+
+            - name: Check Rector
+              run: make check-rector
 
             - name: Run static analysis
-              run: |
-                  docker compose -f compose.yaml -f compose.override.yaml run --rm -e RUN_MIGRATIONS=false php vendor/bin/phpstan analyse --no-progress --memory-limit=512M
+              run: make check-phpstan
 
-            - name: Validate Doctrine schema
-              run: |
-                  docker compose -f compose.yaml -f compose.override.yaml run --rm -e APP_ENV=test php bin/console doctrine:schema:validate --skip-sync
+            - name: Lint container, Twig and YAML
+              run: make check-lint
+
+            - name: Audit dependencies
+              run: make check-audit
+
+            - name: Check migrations match the entities
+              run: make check-migrations
 
             - name: Run tests
-              run: |
-                  docker compose -f compose.yaml -f compose.override.yaml run --rm -e APP_ENV=test php ./scripts/run-tests.sh
+              run: make check-tests
 
     deploy:
         needs: test

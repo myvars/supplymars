@@ -15,6 +15,7 @@ make test-SomeTest            # Run filtered tests
 vendor/bin/phpunit            # Run tests locally (ensure test DB exists)
 
 # Code Quality
+make check                    # Every check CI runs, same commands (Docker); make check-<step> for one
 vendor/bin/php-cs-fixer fix   # @Symfony rules, yoda_style: false
 vendor/bin/phpstan analyse    # Level 7
 vendor/bin/rector process     # Dead code, type declarations, Doctrine/Symfony sets

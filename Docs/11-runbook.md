@@ -57,7 +57,7 @@ docker compose $PLAYGROUND ps
 
 Merging to `main` triggers the GitHub Actions pipeline (`.github/workflows/ci.yml`):
 
-1. Runs code quality checks (PHP-CS-Fixer, PHPStan, Doctrine schema validation)
+1. Runs each step of `make check`: the production config check, code style, Rector, PHPStan, the Symfony linters, `composer audit`, and migrations from an empty database (see [07-testing.md](07-testing.md#running-all-checks))
 2. Runs the full test suite
 3. SSHs to the Lightsail instance
 4. `git fetch origin && git reset --hard origin/main && git clean -fd`

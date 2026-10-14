@@ -1,0 +1,13 @@
+# ===============================
+# Docker Compose: CI overrides
+# ===============================
+# Used by .github/workflows/ci.yml only. Keeps the php image's layers in the GitHub Actions
+# cache, so a run rebuilds only what changed in docker/Dockerfile.
+
+services:
+  php:
+    build:
+      cache_from:
+        - type=gha,scope=php-dev
+      cache_to:
+        - type=gha,scope=php-dev,mode=max
