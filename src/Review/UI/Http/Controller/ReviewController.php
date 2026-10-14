@@ -151,7 +151,7 @@ class ReviewController extends AbstractController
         return $this->render('review/show.html.twig', ['result' => $review]);
     }
 
-    #[Route(path: '/review/{id}/approve', name: 'app_review_approve', methods: ['GET'])]
+    #[Route(path: '/review/{id}/approve', name: 'app_review_approve', methods: ['POST'])]
     public function approve(
         Request $request,
         #[ValueResolver('public_id')] ProductReview $review,
@@ -162,7 +162,8 @@ class ReviewController extends AbstractController
             request: $request,
             command: new ApproveReview($review->getPublicId()),
             handler: $handler,
-            context: FlowContext::forAction('app_review_show', ['id' => $review->getPublicId()->value()]),
+            context: FlowContext::forAction('app_review_show', ['id' => $review->getPublicId()->value()])
+                ->csrf('approve' . $review->getPublicId()->value()),
         );
     }
 
@@ -186,7 +187,7 @@ class ReviewController extends AbstractController
         );
     }
 
-    #[Route(path: '/review/{id}/hide', name: 'app_review_hide', methods: ['GET'])]
+    #[Route(path: '/review/{id}/hide', name: 'app_review_hide', methods: ['POST'])]
     public function hide(
         Request $request,
         #[ValueResolver('public_id')] ProductReview $review,
@@ -197,11 +198,12 @@ class ReviewController extends AbstractController
             request: $request,
             command: new HideReview($review->getPublicId()),
             handler: $handler,
-            context: FlowContext::forAction('app_review_show', ['id' => $review->getPublicId()->value()]),
+            context: FlowContext::forAction('app_review_show', ['id' => $review->getPublicId()->value()])
+                ->csrf('hide' . $review->getPublicId()->value()),
         );
     }
 
-    #[Route(path: '/review/{id}/republish', name: 'app_review_republish', methods: ['GET'])]
+    #[Route(path: '/review/{id}/republish', name: 'app_review_republish', methods: ['POST'])]
     public function republish(
         Request $request,
         #[ValueResolver('public_id')] ProductReview $review,
@@ -212,7 +214,8 @@ class ReviewController extends AbstractController
             request: $request,
             command: new RepublishReview($review->getPublicId()),
             handler: $handler,
-            context: FlowContext::forAction('app_review_show', ['id' => $review->getPublicId()->value()]),
+            context: FlowContext::forAction('app_review_show', ['id' => $review->getPublicId()->value()])
+                ->csrf('republish' . $review->getPublicId()->value()),
         );
     }
 }

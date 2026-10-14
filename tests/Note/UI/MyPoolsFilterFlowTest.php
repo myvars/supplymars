@@ -27,7 +27,8 @@ final class MyPoolsFilterFlowTest extends WebTestCase
         // Subscribe to Billing pool, then check My Pools filter
         $this->browser()
             ->actingAs($staff)
-            ->get('/note/pool/' . $subscribedPool->getPublicId()->value() . '/subscribe')
+            ->get('/note/pool/' . $subscribedPool->getPublicId()->value())
+            ->click('Subscribe')
             ->assertSee('Subscribed to Billing')
             ->get('/note/ticket/?myPools=1')
             ->assertSuccessful()

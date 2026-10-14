@@ -52,14 +52,16 @@
                             {% endif %}
                         </div>
                         <div class="flex shrink-0 items-center gap-0.5">
-                            <a href="{{ path('app_purchasing_supplier_product_toggle_status', {'id': supplierProduct.publicId.value }) }}"
-                               data-turbo-prefetch="false"
-                               data-turbo-frame="body"
-                               class="rounded-md p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/[0.06] dark:hover:text-gray-300"
-                               title="{{ supplierProduct.isActive ? 'Deactivate source' : 'Activate source' }}"
-                            >
-                                <twig:ux:icon name="{{ supplierProduct.isActive ? 'bi:toggle-on' : 'bi:toggle-off' }}" class="h-4 w-4"/>
-                            </a>
+                            <form method="post" action="{{ path('app_purchasing_supplier_product_toggle_status', {'id': supplierProduct.publicId.value }) }}" data-turbo-frame="body" class="flex">
+                                <input type="hidden" name="_token" value="{{ csrf_token('toggle_status' ~ supplierProduct.publicId.value) }}">
+                                <button type="submit"
+                                        class="rounded-md p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 focus-ring dark:hover:bg-white/[0.06] dark:hover:text-gray-300"
+                                        title="{{ supplierProduct.isActive ? 'Deactivate source' : 'Activate source' }}"
+                                        aria-label="{{ supplierProduct.isActive ? 'Deactivate source' : 'Activate source' }}"
+                                >
+                                    <twig:ux:icon name="{{ supplierProduct.isActive ? 'bi:toggle-on' : 'bi:toggle-off' }}" class="h-4 w-4"/>
+                                </button>
+                            </form>
                             <a href="{{ path('app_purchasing_supplier_product_remove_confirm', {'id': supplierProduct.publicId.value }) }}"
                                data-turbo-frame="modal"
                                data-turbo-prefetch="false"

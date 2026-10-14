@@ -13,33 +13,36 @@
                 {% endif %}
                 <twig:StatusBadge status="{{ ticket.status.value }}"/>
                 {% if not ticket.status.isClosed or ticket.snoozed %}
-                    <a href="{{ path('app_note_ticket_toggle_snooze', {'id': ticket.publicId.value}) }}"
-                       class="inline-flex items-center rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                       data-turbo-frame="body"
-                       data-turbo-prefetch="false"
-                       title="{{ ticket.snoozed ? 'Unsnooze' : 'Snooze' }}"
-                       aria-label="{{ ticket.snoozed ? 'Unsnooze' : 'Snooze' }}">
-                        <twig:ux:icon name="{{ ticket.snoozed ? 'bi:bell-slash' : 'bi:bell' }}" class="h-3.5 w-3.5"/>
-                    </a>
+                    <form method="post" action="{{ path('app_note_ticket_toggle_snooze', {'id': ticket.publicId.value}) }}" data-turbo-frame="body" class="flex">
+                        <input type="hidden" name="_token" value="{{ csrf_token('snooze' ~ ticket.publicId.value) }}">
+                        <button type="submit"
+                                class="inline-flex items-center rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 focus-ring dark:hover:bg-gray-700 dark:hover:text-gray-300"
+                                title="{{ ticket.snoozed ? 'Unsnooze' : 'Snooze' }}"
+                                aria-label="{{ ticket.snoozed ? 'Unsnooze' : 'Snooze' }}">
+                            <twig:ux:icon name="{{ ticket.snoozed ? 'bi:bell-slash' : 'bi:bell' }}" class="h-3.5 w-3.5"/>
+                        </button>
+                    </form>
                 {% endif %}
                 {% if not ticket.status.isClosed %}
-                    <a href="{{ path('app_note_ticket_close', {'id': ticket.publicId.value}) }}"
-                       class="inline-flex items-center rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                       data-turbo-frame="body"
-                       data-turbo-prefetch="false"
-                       title="Close"
-                       aria-label="Close ticket">
-                        <twig:ux:icon name="bi:x-circle" class="h-3.5 w-3.5"/>
-                    </a>
+                    <form method="post" action="{{ path('app_note_ticket_close', {'id': ticket.publicId.value}) }}" data-turbo-frame="body" class="flex">
+                        <input type="hidden" name="_token" value="{{ csrf_token('close' ~ ticket.publicId.value) }}">
+                        <button type="submit"
+                                class="inline-flex items-center rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 focus-ring dark:hover:bg-gray-700 dark:hover:text-gray-300"
+                                title="Close"
+                                aria-label="Close ticket">
+                            <twig:ux:icon name="bi:x-circle" class="h-3.5 w-3.5"/>
+                        </button>
+                    </form>
                 {% else %}
-                    <a href="{{ path('app_note_ticket_reopen', {'id': ticket.publicId.value}) }}"
-                       class="inline-flex items-center rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-700 dark:hover:text-gray-300"
-                       data-turbo-frame="body"
-                       data-turbo-prefetch="false"
-                       title="Reopen"
-                       aria-label="Reopen ticket">
-                        <twig:ux:icon name="bi:arrow-counterclockwise" class="h-3.5 w-3.5"/>
-                    </a>
+                    <form method="post" action="{{ path('app_note_ticket_reopen', {'id': ticket.publicId.value}) }}" data-turbo-frame="body" class="flex">
+                        <input type="hidden" name="_token" value="{{ csrf_token('reopen' ~ ticket.publicId.value) }}">
+                        <button type="submit"
+                                class="inline-flex items-center rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 focus-ring dark:hover:bg-gray-700 dark:hover:text-gray-300"
+                                title="Reopen"
+                                aria-label="Reopen ticket">
+                            <twig:ux:icon name="bi:arrow-counterclockwise" class="h-3.5 w-3.5"/>
+                        </button>
+                    </form>
                 {% endif %}
             </div>
         </div>

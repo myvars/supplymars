@@ -56,13 +56,10 @@
 
         <div class="flex items-center gap-2 border-t border-gray-200 pt-4 dark:border-white/[0.06]">
             {% if review.status.value == 'PENDING' %}
-                <twig:Button
-                    as="a"
-                    variant="success"
-                    href="{{ path('app_review_approve', {'id': review.publicId.value }) }}"
-                    data-turbo-frame="body"
-                    data-turbo-prefetch="false"
-                >Approve</twig:Button>
+                <form method="post" action="{{ path('app_review_approve', {'id': review.publicId.value }) }}" data-turbo-frame="body">
+                    <input type="hidden" name="_token" value="{{ csrf_token('approve' ~ review.publicId.value) }}">
+                    <twig:Button type="submit" variant="success">Approve</twig:Button>
+                </form>
                 <twig:Button
                     as="a"
                     variant="destructive-solid"
@@ -70,20 +67,15 @@
                     data-turbo-frame="modal"
                 >Reject</twig:Button>
             {% elseif review.status.value == 'PUBLISHED' %}
-                <twig:Button
-                    as="a"
-                    variant="secondary-solid"
-                    href="{{ path('app_review_hide', {'id': review.publicId.value }) }}"
-                    data-turbo-frame="body"
-                    data-turbo-prefetch="false"
-                >Hide</twig:Button>
+                <form method="post" action="{{ path('app_review_hide', {'id': review.publicId.value }) }}" data-turbo-frame="body">
+                    <input type="hidden" name="_token" value="{{ csrf_token('hide' ~ review.publicId.value) }}">
+                    <twig:Button type="submit" variant="secondary-solid">Hide</twig:Button>
+                </form>
             {% elseif review.status.value == 'HIDDEN' %}
-                <twig:Button
-                    as="a"
-                    href="{{ path('app_review_republish', {'id': review.publicId.value }) }}"
-                    data-turbo-frame="body"
-                    data-turbo-prefetch="false"
-                >Republish</twig:Button>
+                <form method="post" action="{{ path('app_review_republish', {'id': review.publicId.value }) }}" data-turbo-frame="body">
+                    <input type="hidden" name="_token" value="{{ csrf_token('republish' ~ review.publicId.value) }}">
+                    <twig:Button type="submit">Republish</twig:Button>
+                </form>
             {% endif %}
         </div>
     </div>

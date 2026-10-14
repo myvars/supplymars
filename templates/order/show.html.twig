@@ -17,20 +17,25 @@
             {# Header — status, lock, dates, cancel action #}
             <h1 class="flex items-center text-xl font-semibold text-gray-900 dark:text-white">
                 Order #{{ '%06d'|format(result.id) }}
-                <a href="{{ path('app_order_lock_toggle_status', {id: result.publicId.value}) }}"
-                   data-turbo-frame="body"
-                   data-turbo-prefetch="false"
-                   data-order-lock="{{ result.orderLock ? 'locked' : 'unlocked' }}"
-                   class="flex items-center text-base ms-3 {{ result.orderLock ? 'text-yellow-600 hover:text-yellow-500 dark:text-yellow-500 dark:hover:text-yellow-300' : 'text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300' }}"
+                <form method="post" action="{{ path('app_order_lock_toggle_status', {id: result.publicId.value}) }}"
+                      data-turbo-frame="body"
+                      class="flex ms-3"
                 >
-                    {% if result.orderLock is not null %}
-                        <twig:ux:icon name="flowbite:lock-solid" class="w-4 me-1"/>
-                        <span class="text-sm me-1 max-md:hidden">Locked by</span>
-                        <span class="text-sm">{{ result.orderLock.fullName }}</span>
-                    {% else %}
-                        <twig:ux:icon name="flowbite:lock-open-solid" class="w-4 me-1.5"/>
-                    {% endif %}
-                </a>
+                    <input type="hidden" name="_token" value="{{ csrf_token('lock' ~ result.publicId.value) }}">
+                    <button type="submit"
+                            data-order-lock="{{ result.orderLock ? 'locked' : 'unlocked' }}"
+                            aria-label="{{ result.orderLock ? 'Unlock order' : 'Lock order' }}"
+                            class="flex items-center text-base focus-ring {{ result.orderLock ? 'text-yellow-600 hover:text-yellow-500 dark:text-yellow-500 dark:hover:text-yellow-300' : 'text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300' }}"
+                    >
+                        {% if result.orderLock is not null %}
+                            <twig:ux:icon name="flowbite:lock-solid" class="w-4 me-1"/>
+                            <span class="text-sm me-1 max-md:hidden">Locked by</span>
+                            <span class="text-sm">{{ result.orderLock.fullName }}</span>
+                        {% else %}
+                            <twig:ux:icon name="flowbite:lock-open-solid" class="w-4 me-1.5"/>
+                        {% endif %}
+                    </button>
+                </form>
             </h1>
             <div class="mt-1.5 flex items-center justify-between">
                 <p class="text-sm text-gray-500 dark:text-gray-400">
@@ -42,14 +47,15 @@
                 </p>
                 <div class="flex items-center gap-2">
                     {% if result.allowEdit %}
-                        <a href="{{ path('app_order_allocate', {id: result.publicId.value}) }}"
-                           data-turbo-frame="body"
-                           data-turbo-prefetch="false"
-                           class="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300"
-                        >
-                            <twig:ux:icon name="bi:lightning-fill" class="h-4 w-4"/>
-                            <span>Allocate</span>
-                        </a>
+                        <form method="post" action="{{ path('app_order_allocate', {id: result.publicId.value}) }}" data-turbo-frame="body">
+                            <input type="hidden" name="_token" value="{{ csrf_token('allocate' ~ result.publicId.value) }}">
+                            <button type="submit"
+                                    class="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-500 focus-ring dark:text-blue-400 dark:hover:text-blue-300"
+                            >
+                                <twig:ux:icon name="bi:lightning-fill" class="h-4 w-4"/>
+                                <span>Allocate</span>
+                            </button>
+                        </form>
                     {% endif %}
                     <a href="{{ path('app_order_status_log', {'id': result.publicId.value }) }}"
                        data-turbo-frame="modal"

@@ -2,6 +2,7 @@
 
 namespace App\Tests\Order\UI;
 
+use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Tests\Shared\Factory\CustomerOrderFactory;
 use App\Tests\Shared\Factory\CustomerOrderItemFactory;
 use App\Tests\Shared\Factory\ProductFactory;
@@ -9,6 +10,7 @@ use App\Tests\Shared\Factory\PurchaseOrderItemFactory;
 use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Factory\UserFactory;
+use App\Tests\Shared\UI\ActionFormToken;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
@@ -17,29 +19,16 @@ class AllocateOrderFlowTest extends WebTestCase
 {
     use HasBrowser;
     use Factories;
+    use ActionFormToken;
 
     public function testAllocateOrderSuccessRedirectsToShow(): void
     {
-        $supplier = SupplierFactory::createOne(['isActive' => true]);
-        $product = ProductFactory::createOne(['isActive' => true]);
-        SupplierProductFactory::createOne([
-            'supplier' => $supplier,
-            'product' => $product,
-            'stock' => 100,
-        ]);
-
-        $order = CustomerOrderFactory::createOne();
-        CustomerOrderItemFactory::createOne([
-            'customerOrder' => $order,
-            'product' => $product,
-            'quantity' => 5,
-        ]);
-
-        $publicId = $order->getPublicId()->value();
+        $publicId = $this->allocatableOrder()->getPublicId()->value();
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/order/' . $publicId . '/allocate')
+            ->get('/order/' . $publicId)
+            ->click('Allocate')
             ->assertOn('/order/' . $publicId)
             ->assertSee('Order processed.');
     }
@@ -74,7 +63,8 @@ class AllocateOrderFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/order/' . $publicId . '/allocate')
+            ->get('/order/' . $publicId)
+            ->click('Allocate')
             ->assertOn('/order/' . $publicId)
             ->assertSee('No items to allocate.');
     }
@@ -95,8 +85,59 @@ class AllocateOrderFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/order/' . $publicId . '/allocate')
+            ->get('/order/' . $publicId)
+            ->click('Allocate')
             ->assertOn('/order/' . $publicId)
             ->assertSee('Cannot allocate all items');
+    }
+
+    public function testAllocateIsNotReachableWithGet(): void
+    {
+        $publicId = $this->allocatableOrder()->getPublicId()->value();
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/order/' . $publicId . '/allocate')
+            ->assertStatus(405);
+
+        PurchaseOrderItemFactory::assert()->empty();
+    }
+
+    public function testAllocateRejectsAMissingTokenOrAnotherOrdersToken(): void
+    {
+        $other = CustomerOrderFactory::createOne()->getPublicId()->value();
+        $publicId = $this->allocatableOrder()->getPublicId()->value();
+
+        $browser = $this->browser()->actingAs(UserFactory::new()->asStaff()->create());
+        $otherToken = $this->actionToken($browser, '/order/' . $other, '/order/' . $other . '/allocate');
+
+        $browser
+            ->post('/order/' . $publicId . '/allocate')
+            ->assertOn('/order/' . $publicId)
+            ->assertSee('Invalid CSRF token.')
+            ->post('/order/' . $publicId . '/allocate', ['body' => ['_token' => $otherToken]])
+            ->assertOn('/order/' . $publicId)
+            ->assertSee('Invalid CSRF token.');
+
+        PurchaseOrderItemFactory::assert()->empty();
+    }
+
+    private function allocatableOrder(): CustomerOrder
+    {
+        $product = ProductFactory::createOne(['isActive' => true]);
+        SupplierProductFactory::createOne([
+            'supplier' => SupplierFactory::createOne(['isActive' => true]),
+            'product' => $product,
+            'stock' => 100,
+        ]);
+
+        $order = CustomerOrderFactory::createOne();
+        CustomerOrderItemFactory::createOne([
+            'customerOrder' => $order,
+            'product' => $product,
+            'quantity' => 5,
+        ]);
+
+        return $order;
     }
 }

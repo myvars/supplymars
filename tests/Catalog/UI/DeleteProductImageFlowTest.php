@@ -6,6 +6,7 @@ use App\Catalog\Domain\Model\ProductImage\ProductImagePublicId;
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\ProductImageFactory;
 use App\Tests\Shared\Factory\UserFactory;
+use App\Tests\Shared\UI\ActionFormToken;
 use League\Flysystem\FilesystemOperator;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
@@ -15,6 +16,7 @@ final class DeleteProductImageFlowTest extends WebTestCase
 {
     use HasBrowser;
     use Factories;
+    use ActionFormToken;
 
     public function testDeleteViaFlow(): void
     {
@@ -24,8 +26,8 @@ final class DeleteProductImageFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/product/images/' . $publicId . '/remove')
-            ->followRedirect()
+            ->get('/product_image/' . $product->getPublicId()->value() . '/images')
+            ->click('form[action="/product/images/' . $publicId . '/remove"] button')
             ->assertOn('/product_image/' . $product->getPublicId()->value() . '/images')
             ->assertSee('Product image deleted')
             ->assertSee('0 Product Images');
@@ -54,7 +56,7 @@ final class DeleteProductImageFlowTest extends WebTestCase
             self::assertTrue($this->uploads()->fileExists($path));
 
             $browser
-                ->get('/product/images/' . $productImage->getPublicId()->value() . '/remove')
+                ->click('form[action="/product/images/' . $productImage->getPublicId()->value() . '/remove"] button')
                 ->assertOn('/product_image/' . $productId . '/images')
                 ->assertSee('Product image deleted')
                 ->assertSee('0 Product Images');
@@ -74,8 +76,42 @@ final class DeleteProductImageFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/product/images/' . $nonExistentId . '/remove')
+            ->post('/product/images/' . $nonExistentId . '/remove')
             ->assertStatus(404);
+    }
+
+    public function testRemoveIsNotReachableWithGet(): void
+    {
+        $publicId = ProductImageFactory::createOne()->getPublicId()->value();
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/product/images/' . $publicId . '/remove')
+            ->assertStatus(405);
+
+        ProductImageFactory::assert()->count(1);
+    }
+
+    public function testRemoveRejectsAMissingTokenOrAnotherImagesToken(): void
+    {
+        $product = ProductFactory::createOne();
+        $other = ProductImageFactory::createOne(['product' => $product])->getPublicId()->value();
+        $productImage = ProductImageFactory::createOne(['product' => $product]);
+        $imagesUrl = '/product_image/' . $product->getPublicId()->value() . '/images';
+        $url = '/product/images/' . $productImage->getPublicId()->value() . '/remove';
+
+        $browser = $this->browser()->actingAs(UserFactory::new()->asStaff()->create());
+        $otherToken = $this->actionToken($browser, $imagesUrl, '/product/images/' . $other . '/remove');
+
+        $browser
+            ->post($url)
+            ->assertOn($imagesUrl)
+            ->assertSee('Invalid CSRF token.')
+            ->post($url, ['body' => ['_token' => $otherToken]])
+            ->assertOn($imagesUrl)
+            ->assertSee('Invalid CSRF token.');
+
+        ProductImageFactory::assert()->count(2);
     }
 
     /**

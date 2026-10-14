@@ -5,6 +5,7 @@ namespace App\Tests\Purchasing\UI;
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Factory\UserFactory;
+use App\Tests\Shared\UI\ActionFormToken;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
@@ -13,27 +14,31 @@ final class ToggleSupplierProductStatusFlowTest extends WebTestCase
 {
     use HasBrowser;
     use Factories;
+    use ActionFormToken;
 
     public function testSuccessfulToggle(): void
     {
-        $user = UserFactory::new()->asStaff()->create();
+        $product = ProductFactory::createOne();
         $supplierProduct = SupplierProductFactory::createOne([
             'isActive' => true,
-            'product' => ProductFactory::createOne(),
+            'product' => $product,
         ]);
 
-        $publicId = $supplierProduct->getPublicId()->value();
+        $stockUrl = '/pricing/' . $product->getPublicId()->value() . '/stock';
+        $button = 'form[action="/supplier-product/' . $supplierProduct->getPublicId()->value() . '/status/toggle"] button';
 
-        $this->browser()
-            ->actingAs($user)
-            ->get('/supplier-product/' . $publicId . '/status/toggle')
+        $browser = $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get($stockUrl)
+            ->click($button)
+            ->assertOn($stockUrl)
             ->assertStatus(200);
 
         self::assertFalse($supplierProduct->isActive());
 
-        $this->browser()
-            ->actingAs($user)
-            ->get('/supplier-product/' . $publicId . '/status/toggle')
+        $browser
+            ->click($button)
+            ->assertOn($stockUrl)
             ->assertStatus(200);
 
         self::assertTrue($supplierProduct->isActive());
@@ -49,9 +54,49 @@ final class ToggleSupplierProductStatusFlowTest extends WebTestCase
 
         $publicId = $supplierProduct->getPublicId()->value();
 
+        // No page offers the toggle for an unmapped product, and there is no product page to return to
         $this->browser()
             ->actingAs($user)
-            ->get('/supplier-product/' . $publicId . '/status/toggle')
+            ->post('/supplier-product/' . $publicId . '/status/toggle')
             ->assertStatus(500);
+
+        self::assertTrue($supplierProduct->isActive());
+    }
+
+    public function testToggleIsNotReachableWithGet(): void
+    {
+        $supplierProduct = SupplierProductFactory::createOne([
+            'isActive' => true,
+            'product' => ProductFactory::createOne(),
+        ]);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/supplier-product/' . $supplierProduct->getPublicId()->value() . '/status/toggle')
+            ->assertStatus(405);
+
+        self::assertTrue($supplierProduct->isActive());
+    }
+
+    public function testToggleRejectsAMissingTokenOrAnotherSourcesToken(): void
+    {
+        $product = ProductFactory::createOne();
+        $other = SupplierProductFactory::createOne(['isActive' => true, 'product' => $product]);
+        $supplierProduct = SupplierProductFactory::createOne(['isActive' => true, 'product' => $product]);
+        $stockUrl = '/pricing/' . $product->getPublicId()->value() . '/stock';
+        $url = '/supplier-product/' . $supplierProduct->getPublicId()->value() . '/status/toggle';
+
+        $browser = $this->browser()->actingAs(UserFactory::new()->asStaff()->create());
+        $otherToken = $this->actionToken($browser, $stockUrl, '/supplier-product/' . $other->getPublicId()->value() . '/status/toggle');
+
+        $browser
+            ->post($url)
+            ->assertOn($stockUrl)
+            ->assertSee('Invalid CSRF token.')
+            ->post($url, ['body' => ['_token' => $otherToken]])
+            ->assertOn($stockUrl)
+            ->assertSee('Invalid CSRF token.');
+
+        self::assertTrue($supplierProduct->isActive());
     }
 }

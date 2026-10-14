@@ -72,7 +72,8 @@ final class ReplyToTicketFlowTest extends WebTestCase
 
         $this->browser()
             ->actingAs($staff)
-            ->get('/note/ticket/' . $ticket->getPublicId()->value() . '/close')
+            ->get('/note/ticket/' . $ticket->getPublicId()->value())
+            ->click('form[action="/note/ticket/' . $ticket->getPublicId()->value() . '/close"] button')
             ->assertSee('Ticket closed')
             ->assertNotContains('ticket-reply');
     }

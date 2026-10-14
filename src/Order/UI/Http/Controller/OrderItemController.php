@@ -85,7 +85,7 @@ class OrderItemController extends AbstractController
         );
     }
 
-    #[Route(path: '/order/item/{id}/cancel', name: 'app_order_item_cancel', methods: ['GET'])]
+    #[Route(path: '/order/item/{id}/cancel', name: 'app_order_item_cancel', methods: ['POST'])]
     public function cancel(
         Request $request,
         #[ValueResolver('public_id')] CustomerOrderItem $orderItem,
@@ -98,14 +98,14 @@ class OrderItemController extends AbstractController
             handler: $handler,
             context: FlowContext::forAction('app_order_show', [
                 'id' => $orderItem->getCustomerOrder()->getPublicId()->value(),
-            ]),
+            ])->csrf('cancel_item' . $orderItem->getPublicId()->value()),
         );
     }
 
     #[Route(
         path: '/order/item/{id}/supplier/product/{supplierProductId}/po/add',
         name: 'app_purchase_order_item_add',
-        methods: ['GET']
+        methods: ['POST']
     )]
     public function addToPurchaseOrder(
         Request $request,
@@ -123,7 +123,7 @@ class OrderItemController extends AbstractController
             handler: $handler,
             context: FlowContext::forAction('app_order_show', [
                 'id' => $orderItem->getCustomerOrder()->getPublicId()->value(),
-            ]),
+            ])->csrf('po_add' . $orderItem->getPublicId()->value()),
         );
     }
 
