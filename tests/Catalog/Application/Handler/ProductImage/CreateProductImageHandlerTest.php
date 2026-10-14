@@ -4,9 +4,11 @@ namespace App\Tests\Catalog\Application\Handler\ProductImage;
 
 use App\Catalog\Application\Command\ProductImage\CreateProductImage;
 use App\Catalog\Application\Handler\ProductImage\CreateProductImageHandler;
+use App\Catalog\Domain\Model\Product\ProductPublicId;
+use App\Catalog\Domain\Model\ProductImage\ProductImage;
 use App\Catalog\Domain\Repository\ProductRepository;
-use App\Shared\Infrastructure\FileStorage\UploadHelper;
 use App\Tests\Shared\Factory\ProductFactory;
+use League\Flysystem\FilesystemOperator;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Zenstruck\Foundry\Test\Factories;
@@ -19,27 +21,25 @@ final class CreateProductImageHandlerTest extends KernelTestCase
 
     private ProductRepository $products;
 
-    private UploadHelper $uploadHelper;
+    private FilesystemOperator $uploads;
+
+    /** @var list<string> */
+    private array $tempFiles = [];
 
     protected function setUp(): void
     {
         self::bootKernel();
         $this->handler = self::getContainer()->get(CreateProductImageHandler::class);
         $this->products = self::getContainer()->get(ProductRepository::class);
-        $this->uploadHelper = self::getContainer()->get(UploadHelper::class);
+        $this->uploads = self::getContainer()->get('oneup_flysystem.products_fs_filesystem');
     }
 
-    private function validImage(string $name = 'dummy-image.jpg'): UploadedFile
+    protected function tearDown(): void
     {
-        $path = __DIR__ . '/../../../../Shared/Resources/' . $name;
+        array_map(unlink(...), $this->tempFiles);
+        $this->tempFiles = [];
 
-        return new UploadedFile(
-            $path,
-            $name,
-            'image/jpeg',
-            null,
-            true
-        );
+        parent::tearDown();
     }
 
     public function testHandleFailsWhenNoFilesProvided(): void
@@ -53,7 +53,7 @@ final class CreateProductImageHandlerTest extends KernelTestCase
         self::assertStringContainsString('No image files provided', $result->message);
     }
 
-    public function testHandleSkipsNonUploadedFileEntries(): void
+    public function testHandleFailsOnNonUploadedFileEntry(): void
     {
         $product = ProductFactory::new()->create();
 
@@ -61,13 +61,9 @@ final class CreateProductImageHandlerTest extends KernelTestCase
         $command = new CreateProductImage($product->getPublicId(), ['not-a-file', $this->validImage()]);
         $result = ($this->handler)($command);
 
-        self::assertTrue($result->ok);
-        self::assertStringContainsString('1 image', $result->message);
-
-        $reloaded = $this->products->getByPublicId($product->getPublicId());
-        foreach ($reloaded->getProductImages() as $image) {
-            $this->uploadHelper->deleteFile('uploads/products/' . $image->getImageName());
-        }
+        self::assertFalse($result->ok);
+        self::assertSame('One of the uploads is not a file.', $result->message);
+        self::assertCount(0, $this->reloadedImages($product->getPublicId()));
     }
 
     public function testHandleAddsImageAndPersists(): void
@@ -80,14 +76,123 @@ final class CreateProductImageHandlerTest extends KernelTestCase
 
         self::assertTrue($result->ok);
 
-        $reloaded = $this->products->getByPublicId($product->getPublicId());
-        $productImages = $reloaded->getProductImages();
+        $productImages = $this->reloadedImages($product->getPublicId());
         self::assertCount(1, $productImages);
 
         $first = $productImages[0];
-        self::assertSame($file->getMimeType(), $first->getImageMimeType());
+        self::assertSame('image/jpeg', $first->getImageMimeType());
         self::assertNotSame($file->getClientOriginalName(), $first->getImageName());
+        self::assertStringEndsWith('.jpg', $first->getImageName());
 
-        $this->uploadHelper->deleteFile('uploads/products/' . $first->getImageName());
+        $this->assertStoredAndDelete($first->getImageName());
+    }
+
+    public function testHandleNamesStoredFileFromItsContent(): void
+    {
+        $product = ProductFactory::createOne();
+
+        $result = ($this->handler)(new CreateProductImage($product->getPublicId(), [$this->validImage('photo.jpeg')]));
+
+        self::assertTrue($result->ok);
+        $image = $this->reloadedImages($product->getPublicId())[0];
+        self::assertSame('photo.jpeg', $image->getImageOriginalName());
+        self::assertStringEndsWith('.jpg', $image->getImageName());
+
+        $this->assertStoredAndDelete($image->getImageName());
+    }
+
+    public function testHandleRejectsDisallowedType(): void
+    {
+        $product = ProductFactory::createOne();
+        $svg = $this->tempFile('<svg xmlns="http://www.w3.org/2000/svg"><script>alert(document.domain)</script></svg>');
+
+        $result = ($this->handler)(new CreateProductImage($product->getPublicId(), [
+            new UploadedFile($svg, 'logo.svg', test: true),
+        ]));
+
+        self::assertFalse($result->ok);
+        self::assertStringContainsString('Only JPG, PNG, GIF and WebP images are allowed', $result->message);
+        self::assertCount(0, $this->reloadedImages($product->getPublicId()));
+    }
+
+    public function testHandleRejectsScriptRenamedAsImage(): void
+    {
+        $product = ProductFactory::createOne();
+        $html = $this->tempFile('<html><body><script>alert(document.domain)</script></body></html>');
+
+        $result = ($this->handler)(new CreateProductImage($product->getPublicId(), [
+            new UploadedFile($html, 'photo.jpg', test: true),
+        ]));
+
+        self::assertFalse($result->ok);
+        self::assertStringContainsString('Only JPG, PNG, GIF and WebP images are allowed', $result->message);
+        self::assertCount(0, $this->reloadedImages($product->getPublicId()));
+    }
+
+    public function testHandleRejectsOversizeFile(): void
+    {
+        $product = ProductFactory::createOne();
+        // A sparse file one byte over the 2 MiB limit
+        $path = $this->tempFile('');
+        $handle = fopen($path, 'w');
+        self::assertIsResource($handle);
+        ftruncate($handle, 2 * 1024 * 1024 + 1);
+        fclose($handle);
+
+        $result = ($this->handler)(new CreateProductImage($product->getPublicId(), [
+            new UploadedFile($path, 'huge.jpg', test: true),
+        ]));
+
+        self::assertFalse($result->ok);
+        self::assertStringContainsString('The image is larger than 2 MB.', $result->message);
+        self::assertCount(0, $this->reloadedImages($product->getPublicId()));
+    }
+
+    public function testHandleStoresNothingWhenOneFileIsRejected(): void
+    {
+        $product = ProductFactory::createOne();
+        $html = $this->tempFile('<html><body><script>alert(document.domain)</script></body></html>');
+
+        $result = ($this->handler)(new CreateProductImage($product->getPublicId(), [
+            $this->validImage(),
+            new UploadedFile($html, 'evil.html', test: true),
+        ]));
+
+        self::assertFalse($result->ok);
+        self::assertStringContainsString('evil.html', $result->message);
+        self::assertCount(0, $this->reloadedImages($product->getPublicId()));
+    }
+
+    private function validImage(string $name = 'dummy-image.jpg'): UploadedFile
+    {
+        return new UploadedFile(__DIR__ . '/../../../../Shared/Resources/dummy-image.jpg', $name, test: true);
+    }
+
+    private function tempFile(string $contents): string
+    {
+        $path = tempnam(sys_get_temp_dir(), 'upload');
+        self::assertIsString($path);
+        file_put_contents($path, $contents);
+
+        return $this->tempFiles[] = $path;
+    }
+
+    /**
+     * @return list<ProductImage>
+     */
+    private function reloadedImages(ProductPublicId $id): array
+    {
+        return array_values($this->products->getByPublicId($id)->getProductImages()->toArray());
+    }
+
+    private function assertStoredAndDelete(string $imageName): void
+    {
+        $path = self::getContainer()->getParameter('app.product_uploads') . $imageName;
+
+        try {
+            self::assertTrue($this->uploads->fileExists($path));
+        } finally {
+            $this->uploads->delete($path);
+        }
     }
 }

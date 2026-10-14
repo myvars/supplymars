@@ -325,7 +325,7 @@ The playground database resets nightly at 02:15 UTC via cron, restoring a clean 
 
 1. **Passwords:** Hashed with strong algorithms
 2. **Sessions:** PHP's native handler (`handler_id: null`). In the Docker images PHP stores them in Redis (`docker/php/conf.d/10-app.ini`, `REDIS_SESSION_DSN` in prod); with `symfony serve` they use PHP's local default
-3. **CSRF tokens:** Required for all form submissions
+3. **CSRF tokens:** Required for Symfony forms, login, ConfirmFlow actions and the requests sent from JavaScript (product image upload and reorder, see [CSRF Protection](#csrf-protection)). The REST API is stateless and uses bearer tokens instead
 4. **Remember-me tokens:** Signed with kernel secret
 
 ### What Is Not Protected
@@ -526,6 +526,49 @@ private int $stock;
 private string $cost;
 ```
 
+### File Uploads
+
+Product images are uploaded through a Dropzone control. Its limits run in the browser, so a hand-written
+request skips them. The server checks every upload again; its rules are the ones that count, and the
+Dropzone values (`assets/controllers/dropzone_controller.js`) only mirror them:
+
+```php
+// src/Catalog/Application/Handler/ProductImage/CreateProductImageHandler.php
+
+public const array ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
+public const string MAX_SIZE = '2Mi';
+
+$constraint = new Image(
+    maxSize: self::MAX_SIZE,
+    filenameMaxLength: 255,
+    extensions: self::ALLOWED_EXTENSIONS,
+    maxSizeMessage: 'The image is larger than 2 MB.',
+    // ...and short messages for the other cases
+);
+```
+
+- **Type:** the constraint's `extensions` option checks the filename's extension *and* that the detected
+  content type belongs to it. An `.svg` file is rejected, and so is HTML renamed to `photo.jpg`.
+- **Size:** 2 MiB per file, which is PHP's default `upload_max_filesize`. To allow more, raise that
+  setting and nginx's `client_max_body_size` (4 MB per request in `docker/nginx/conf.d/`) as well as the
+  constant and its messages; otherwise the request is refused before it reaches the handler. Dropzone
+  sends up to two files per request (its `parallelUploads` default), so two files close to the limit
+  can together exceed nginx's 4 MB and be refused with a `413`.
+- **Validate first:** if one file in a request fails validation, none of that request's files are
+  stored. Dropzone sends files two at a time, so other requests in the same drop can still succeed.
+  The response is `422` with the reason in `error`, which Dropzone shows on the file, and the error
+  flash names the file and the reason.
+- **Stored name:** `UploadHelper` takes the extension from the detected content, never from the client's
+  filename, because the extension decides which content type the file is served with. It also passes
+  the detected type as `mimetype`, which the S3 adapter sends as the object's `Content-Type`. This is not
+  a check in itself: `UploadHelper` stores whatever it is given, so every caller must validate with an
+  `extensions` allowlist first. Images stored before this rule keep their names.
+- **Serving:** uploads are public files (`public/uploads/` locally, the S3 bucket in production) and are
+  served directly. This is safe only because every allowed type is one a browser never runs as script.
+  **Never add `svg`, `html` or `xml` to the list.** Files that need those types, or that only some users
+  may read, must be stored outside the public bucket and sent through a controller with
+  `Content-Disposition: attachment`.
+
 ### SQL Injection Prevention
 
 - All queries use Doctrine ORM
@@ -567,5 +610,24 @@ public function execute(...): Response
         new CsrfToken($context->getConfirmKey() . $command->id, $submitted)
     );
     // invalid → flash error + redirect (no exception thrown)
+}
+```
+
+### Requests Sent from JavaScript
+
+A request sent from JavaScript carries its token too, and the endpoint checks it before doing anything
+else:
+
+- **Image upload:** the upload form renders a hidden `_token` field. Dropzone posts a form's other fields
+  with the files, so the same field serves Dropzone and the plain form it falls back to. An invalid
+  token is a `403`.
+- **Image reorder:** the page renders the token into a Stimulus value, and the `sortable` controller
+  sends it in the `X-CSRF-Token` header.
+
+```php
+// src/Catalog/UI/Http/Controller/ProductImageController.php
+
+if (!$this->isCsrfTokenValid('product_image_upload', $request->request->getString('_token'))) {
+    throw $this->createAccessDeniedException('Invalid CSRF token.');
 }
 ```

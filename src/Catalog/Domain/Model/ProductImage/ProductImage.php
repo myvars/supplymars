@@ -50,9 +50,6 @@ class ProductImage implements DomainEventProviderInterface
         #[Assert\NotBlank(message: 'Please enter an image original name')]
         private readonly string $imageOriginalName,
 
-        #[Assert\NotNull(message: 'Please upload an image')]
-        #[Assert\Image(maxSize: '2M', maxSizeMessage: 'The image is too large. Allowed maximum size is 2MB')]
-        #[Assert\File(mimeTypes: ['image/*'], mimeTypesMessage: 'Please upload a valid file type')]
         private readonly UploadedFile $imageFile,
     ) {
         $this->initializePublicId();

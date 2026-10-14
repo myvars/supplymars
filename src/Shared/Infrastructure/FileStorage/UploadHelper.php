@@ -23,6 +23,10 @@ final readonly class UploadHelper
     ) {
     }
 
+    /**
+     * Stores the file as it is. Validate it first with a File or Image constraint that has an extensions
+     * allowlist: the stored extension follows the detected content, so unchecked HTML is stored as .html.
+     */
     public function uploadFile(File $file, ?string $directory, ?string $existingFilename = null): string
     {
         if ($this->playgroundMode) {
@@ -71,7 +75,8 @@ final readonly class UploadHelper
         try {
             $this->uploadFilesystem->writeStream($path, $stream, [
                 'visibility' => $isPublic ? Visibility::PUBLIC : Visibility::PRIVATE,
-                'mime-type' => $file->getMimeType(),
+                // The key Flysystem's S3 adapter sends as the object's Content-Type
+                'mimetype' => $file->getMimeType(),
             ]);
         } catch (FilesystemException $filesystemException) {
             throw new CannotWriteFileException($filesystemException->getMessage(), $filesystemException->getCode(), $filesystemException);
@@ -94,10 +99,8 @@ final readonly class UploadHelper
         $base = pathinfo($originalName, PATHINFO_FILENAME) ?: 'file';
         $slug = (string) $this->slugger->slug($base)->lower();
 
-        $ext = pathinfo($originalName, PATHINFO_EXTENSION);
-        if ($ext === '') {
-            $ext = $file->guessExtension() ?: 'bin';
-        }
+        // From the detected content, never the client's filename: the extension decides how the file is served.
+        $ext = $file->guessExtension() ?: 'bin';
 
         $random = bin2hex(random_bytes(8));
 

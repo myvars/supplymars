@@ -28,3 +28,11 @@ when@prod:
                     client: Aws\S3\S3Client
                     bucket: '%env(AWS_S3_BUCKET)%'
                     prefix: backups
+
+# Tests write uploads to the cache dir, not public/, so they never mix with the dev app's files
+when@test:
+    oneup_flysystem:
+        adapters:
+            products_adapter:
+                local:
+                    location: '%kernel.cache_dir%/storage'

@@ -10,6 +10,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\Exception\CannotWriteFileException;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\String\UnicodeString;
 
@@ -57,12 +58,29 @@ final class UploadHelperTest extends TestCase
                 self::anything(),
                 self::equalTo([
                     'visibility' => Visibility::PUBLIC,
-                    'mime-type' => 'image/jpeg',
+                    'mimetype' => 'image/jpeg',
                 ])
             );
 
         $newFileName = $this->helper->uploadFile($file, $directory);
         self::assertStringStartsWith('dummy-image-', $newFileName);
+        self::assertStringEndsWith('.jpg', $newFileName);
+    }
+
+    public function testUploadFileTakesExtensionFromContentNotClientName(): void
+    {
+        $file = new UploadedFile(__DIR__ . '/../../../Shared/Resources/dummy-image.jpg', 'evil.html', test: true);
+
+        $this->filesystem
+            ->expects(self::once())
+            ->method('writeStream')
+            ->with(self::stringEndsWith('.jpg'), self::anything(), self::equalTo([
+                'visibility' => Visibility::PUBLIC,
+                'mimetype' => 'image/jpeg',
+            ]));
+
+        $newFileName = $this->helper->uploadFile($file, 'images');
+
         self::assertStringEndsWith('.jpg', $newFileName);
     }
 
