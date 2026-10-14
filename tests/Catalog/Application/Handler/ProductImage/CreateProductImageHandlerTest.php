@@ -62,6 +62,7 @@ final class CreateProductImageHandlerTest extends KernelTestCase
         $result = ($this->handler)($command);
 
         self::assertFalse($result->ok);
+        self::assertSame('One of the uploads is not a file.', $result->message);
         self::assertCount(0, $this->reloadedImages($product->getPublicId()));
     }
 

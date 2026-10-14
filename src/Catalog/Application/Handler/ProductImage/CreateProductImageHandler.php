@@ -27,7 +27,8 @@ final readonly class CreateProductImageHandler
 
     /**
      * PHP's default upload_max_filesize. Raising it means raising that setting and nginx's
-     * client_max_body_size too, or the request never reaches this check, and the size messages below.
+     * client_max_body_size too, or the request never reaches this check. Change the size messages
+     * below with it.
      */
     public const string MAX_SIZE = '2Mi';
 
@@ -66,7 +67,7 @@ final readonly class CreateProductImageHandler
         // Check every file before storing any, so a rejected file never leaves half a batch behind
         foreach ($command->imageFiles as $imageFile) {
             if (!$imageFile instanceof UploadedFile) {
-                return Result::fail('No valid images were added.');
+                return Result::fail('One of the uploads is not a file.');
             }
 
             $errors = $this->validator->validate($imageFile, $constraint);

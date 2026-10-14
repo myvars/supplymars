@@ -33,19 +33,23 @@ final class CreateProductImageFlowTest extends WebTestCase
         $product = ProductFactory::createOne();
         $user = UserFactory::new()->asStaff()->create();
 
-        $this->browser()
+        $browser = $this->browser()
             ->actingAs($user)
             ->get('/product_image/' . $product->getPublicId()->value() . '/images')
             ->assertSuccessful()
             ->assertSee('0 Product Images')
-            ->attachFile('imageFile[]', [$this->imagePath(), $this->imagePath()])
-            ->click('Upload')
-            ->followRedirects()
-            ->assertOn('/product_image/' . $product->getPublicId()->value() . '/images')
-            ->assertSee('2 images added')
-            ->assertSee('2 Product Images');
+            ->attachFile('imageFile[]', [$this->imagePath(), $this->imagePath()]);
 
-        $this->deleteStoredImages($product);
+        try {
+            $browser
+                ->click('Upload')
+                ->followRedirects()
+                ->assertOn('/product_image/' . $product->getPublicId()->value() . '/images')
+                ->assertSee('2 images added')
+                ->assertSee('2 Product Images');
+        } finally {
+            $this->deleteStoredImages($product);
+        }
     }
 
     public function testUploadInvalidType(): void
@@ -82,15 +86,31 @@ final class CreateProductImageFlowTest extends WebTestCase
         $product = ProductFactory::createOne();
 
         $browser = $this->uploadBrowser($product, $token);
-        $this->upload($browser, $product, $token, [new UploadedFile($this->imagePath(), 'photo.jpeg', test: true)], xhr: true)
-            ->assertStatus(200)
-            ->assertJson();
 
-        $image = ProductFactory::repository()->find($product->getId())->getProductImages()->first();
-        self::assertNotFalse($image);
-        self::assertStringEndsWith('.jpg', $image->getImageName());
+        try {
+            $this->upload($browser, $product, $token, [new UploadedFile($this->imagePath(), 'photo.jpeg', test: true)], xhr: true)
+                ->assertStatus(200)
+                ->assertJson();
 
-        $this->deleteStoredImages($product);
+            $image = ProductFactory::repository()->find($product->getId())->getProductImages()->first();
+            self::assertNotFalse($image);
+            self::assertStringEndsWith('.jpg', $image->getImageName());
+        } finally {
+            $this->deleteStoredImages($product);
+        }
+    }
+
+    public function testDropzoneUploadReportsRejectedFileAsError(): void
+    {
+        $product = ProductFactory::createOne();
+
+        // A JPEG named .png passes Dropzone's own check, so only the server can refuse it
+        $browser = $this->uploadBrowser($product, $token);
+        $this->upload($browser, $product, $token, [new UploadedFile($this->imagePath(), 'photo.png', test: true)], xhr: true)
+            ->assertStatus(422)
+            ->assertJsonMatches('error', 'photo.png: Only JPG, PNG, GIF and WebP images are allowed.');
+
+        self::assertCount(0, ProductFactory::repository()->find($product->getId())->getProductImages());
     }
 
     public function testUploadRequiresCsrfToken(): void
@@ -104,7 +124,7 @@ final class CreateProductImageFlowTest extends WebTestCase
         self::assertCount(0, ProductFactory::repository()->find($product->getId())->getProductImages());
     }
 
-    public function testUploadRejectsTokenIssuedForAnotherAction(): void
+    public function testUploadRejectsReorderToken(): void
     {
         // The reorder control, and so its token, is only rendered when there is an image to reorder
         $product = ProductFactory::createOne();
@@ -164,7 +184,7 @@ final class CreateProductImageFlowTest extends WebTestCase
         $uploadHelper = self::getContainer()->get(UploadHelper::class);
         $reloaded = ProductFactory::repository()->find($product->getId());
         foreach ($reloaded->getProductImages() as $image) {
-            $uploadHelper->deleteFile('uploads/products/' . $image->getImageName());
+            $uploadHelper->deleteFile(self::getContainer()->getParameter('app.product_uploads') . $image->getImageName());
         }
     }
 }

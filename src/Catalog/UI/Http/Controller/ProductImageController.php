@@ -10,6 +10,7 @@ use App\Catalog\Application\Handler\ProductImage\DeleteProductImageHandler;
 use App\Catalog\Application\Handler\ProductImage\ReorderProductImageHandler;
 use App\Catalog\Domain\Model\Product\Product;
 use App\Catalog\Domain\Model\ProductImage\ProductImage;
+use App\Shared\Application\Result;
 use MyVars\FormFlow\ActionFlow;
 use MyVars\FormFlow\View\FlowContext;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -40,18 +41,26 @@ class ProductImageController extends AbstractController
             throw $this->createAccessDeniedException('Invalid CSRF token.');
         }
 
+        $result = null;
         $response = $flow->process(
             request: $request,
             command: new CreateProductImage($product->getPublicId(),
                 $request->files->get('imageFile') ?? []
             ),
-            handler: $handler,
+            handler: static function (CreateProductImage $command) use ($handler, &$result): Result {
+                return $result = $handler($command);
+            },
             context: FlowContext::forAction('app_catalog_product_image_show', [
                 'id' => $product->getPublicId()->value(),
             ]),
         );
 
         if ($request->isXmlHttpRequest()) {
+            // Dropzone marks the files as failed on an error status and shows the body's `error`
+            if ($result instanceof Result && !$result->isOk()) {
+                return $this->json(['error' => $result->message()], Response::HTTP_UNPROCESSABLE_ENTITY);
+            }
+
             return $this->json($product->getProductImages(), 200, [], ['groups' => ['main']]);
         }
 
