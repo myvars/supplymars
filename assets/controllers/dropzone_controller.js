@@ -18,7 +18,8 @@ export default class extends Controller {
             maxFilesize: 2, // MB
             uploadMultiple: true,
             addRemoveLinks: true,
-            acceptedFiles: "image/*",
+            // A convenience only: CreateProductImageHandler validates again on the server
+            acceptedFiles: ".jpg,.jpeg,.png,.gif,.webp",
         });
 
         dropzone.on("error", (file, message) => {

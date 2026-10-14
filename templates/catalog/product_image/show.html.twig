@@ -18,8 +18,9 @@
                       data-dropzone-url-value="{{ path('app_catalog_product_image_create', {id: result.publicId.value}) }}"
                       data-dropzone-param-name-value="imageFile"
                 >
+                    <input type="hidden" name="_token" value="{{ csrf_token('product_image_upload') }}">
                     <div class="fallback">
-                        <input type="file" name="imageFile[]" multiple>
+                        <input type="file" name="imageFile[]" accept=".jpg,.jpeg,.png,.gif,.webp" multiple>
                         <twig:Button type="submit">Upload</twig:Button>
                     </div>
                 </form>

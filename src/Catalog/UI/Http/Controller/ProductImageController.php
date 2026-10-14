@@ -35,6 +35,11 @@ class ProductImageController extends AbstractController
         CreateProductImageHandler $handler,
         ActionFlow $flow,
     ): Response {
+        // Dropzone posts the form's hidden _token alongside the files, as the plain form does
+        if (!$this->isCsrfTokenValid('product_image_upload', $request->request->getString('_token'))) {
+            throw $this->createAccessDeniedException('Invalid CSRF token.');
+        }
+
         $response = $flow->process(
             request: $request,
             command: new CreateProductImage($product->getPublicId(),
