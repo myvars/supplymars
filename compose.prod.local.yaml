@@ -8,7 +8,7 @@ x-mailer-env: &mailer-env
   MAILER_DSN: smtp://mailer:1025
 
 services:
-  # --- RabbitMQ Message Broker (Prod local) ---
+  # --- RabbitMQ Message Broker (Prod local, only with the rabbitmq profile) ---
   rabbitmq:
     ports:
       - "15672:15672"    # RabbitMQ Management UI (dev)

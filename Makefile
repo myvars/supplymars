@@ -28,8 +28,9 @@ certs:
 up-dev-tools:
 	docker compose -f compose.dev-tools.yaml up -d --wait --build
 
+# --profile '*' also removes opt-in services (RabbitMQ) whether or not their profile is on
 down:
-	docker compose -f compose.yaml -f compose.dev-tools.yaml down --remove-orphans
+	docker compose --profile '*' -f compose.yaml -f compose.dev-tools.yaml down --remove-orphans
 
 test:
 	docker compose run --rm -e APP_ENV=test php ./scripts/run-tests.sh
