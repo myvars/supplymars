@@ -401,6 +401,8 @@ add_header Referrer-Policy "strict-origin-when-cross-origin" always;
 add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' data: https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://unicorn-bucket-two.s3.eu-west-2.amazonaws.com; font-src 'self'; connect-src 'self' https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com; form-action 'self'; base-uri 'self'" always;
 ```
 
+nginx sets these once, at server level. A `location` block with any `add_header` of its own inherits none of them, so `prod.conf` keeps `add_header` out of its location blocks. Asset Mapper files under `/assets/` are served by a `^~ /assets/` prefix location with a one-year expiry and these same headers.
+
 ### Content Security Policy
 
 The CSP header includes `'unsafe-inline'` for both `script-src` and `style-src`:
