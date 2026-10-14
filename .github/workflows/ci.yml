@@ -33,7 +33,7 @@ jobs:
 
             # Gives `docker compose build` the credentials for the GitHub Actions cache
             - name: Expose GitHub runtime
-              uses: crazy-max/ghaction-github-runtime@v4
+              uses: crazy-max/ghaction-github-runtime@04d248b84655b509d8c44dc1d6f990c879747487 # v4.0.0
 
             - name: Build containers
               run: docker compose --progress=plain build php
