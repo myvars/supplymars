@@ -276,7 +276,6 @@ Development/operations tools with restricted access:
 |------|-----|--------|
 | PHPMyAdmin | http://localhost:8080 | Local network only |
 | Mailpit | http://localhost:8025 | Local network only |
-| RabbitMQ | http://localhost:15672 | Credentials required |
 
 **Production:** These tools are not exposed publicly. Use SSH tunneling if needed.
 

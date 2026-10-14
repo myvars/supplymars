@@ -2,7 +2,7 @@
 
 A fully operational backend e-commerce platform, built as a portfolio project to demonstrate real-world architectural complexity beyond the checkout.
 
-PHP 8.5+ • Symfony 8 • Doctrine ORM • MySQL 8.4 • RabbitMQ • Redis • Tailwind CSS • Hotwire
+PHP 8.5+ • Symfony 8 • Doctrine ORM • MySQL 8.4 • Redis • Tailwind CSS • Hotwire
 
 **[Live Demo →](https://www.supplymars.com)** · **[About the Developer →](https://www.supplymars.com/about)**
 
@@ -34,7 +34,7 @@ This is not a commercial product. It is a working demonstration of how I approac
 
 ```bash
 # Quick start (Symfony server + Docker services)
-make up-dev-tools          # Start MySQL, Redis, RabbitMQ, Mailpit
+make up-dev-tools          # Start MySQL, Redis, Mailpit
 symfony serve -d           # Start PHP server at https://127.0.0.1:8000
 ```
 
@@ -48,7 +48,7 @@ symfony serve -d           # Start PHP server at https://127.0.0.1:8000
 
 ## Tech Stack
 
-**Backend:** PHP 8.5+ • Symfony 8.1 • Doctrine ORM • MySQL 8.4 • RabbitMQ • Redis
+**Backend:** PHP 8.5+ • Symfony 8.1 • Doctrine ORM • MySQL 8.4 • Symfony Messenger (database queue) • Redis
 
 **Frontend:** Tailwind CSS • Hotwire (Turbo + Stimulus) • AssetMapper
 

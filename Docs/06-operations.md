@@ -50,7 +50,6 @@ DEFAULT_DOMAIN=supplymars.com
 DEFAULT_URI=https://supplymars.com
 DATABASE_URL=mysql://app:password@localhost:3306/supplymars
 REDIS_URL=redis://user:password@localhost:6379
-MESSENGER_TRANSPORT_DSN=amqp://user:password@localhost:5672/%2f/messages
 MAILER_DSN=smtp://user:password@smtp.provider.com:587
 AWS_S3_REGION=<region>
 AWS_S3_BUCKET=<bucket-name>
@@ -72,7 +71,6 @@ The production Docker stack includes:
 | cron | Custom (cron-prod) | Scheduled tasks |
 | database | mysql:8.4 | Primary data store |
 | redis | redis:8.4-alpine | Cache, sessions |
-| rabbitmq | rabbitmq:4.2-management | Message queue |
 
 **Deployment command:**
 ```bash
@@ -192,6 +190,7 @@ php bin/console messenger:consume async --time-limit=3600 --sleep=5
 - **Time limit:** 3600 seconds (1 hour) before restart
 - **Sleep:** 5 seconds between batches
 - **Retry:** 3 attempts with exponential backoff
+- **Transport:** Doctrine (`doctrine://default`), a table in the application database
 - **Failure transport:** Doctrine (`doctrine://default?queue_name=failed`)
 
 **Routed messages:**
@@ -214,12 +213,7 @@ symfony console messenger:failed:retry
 symfony console messenger:failed:retry <id>
 ```
 
-### RabbitMQ Management
-
-Access management UI at `http://localhost:15672`:
-- View queue depths
-- Monitor message rates
-- Purge queues if needed
+Messages wait in the `messenger_messages` table (`queue_name` `default` for the queue, `failed` for failures), so they can also be inspected in phpMyAdmin. RabbitMQ is an opt-in: see [Switching to RabbitMQ](02-setup-local.md#switching-to-rabbitmq).
 
 ## Processing Simulator
 
@@ -341,7 +335,7 @@ This avoids expensive aggregations on every dashboard load.
 | Component | Risk | Mitigation |
 |-----------|------|------------|
 | MySQL | Data loss | Regular backups, replication |
-| RabbitMQ | Message loss | Durable queues, clustering |
+| Messenger worker | Email delayed while it is down | Messages wait in the database until it restarts |
 | Redis | Session loss | Persistence, sentinel |
 
 ### Race Conditions
@@ -363,7 +357,7 @@ This avoids expensive aggregations on every dashboard load.
 ### Monitoring Recommendations
 
 1. **Cron exit codes:** Alert on non-zero exit codes from simulation/reporting commands (indicates partial failures — see [Error Handling](#error-handling) above)
-2. **Queue depth:** Alert if RabbitMQ queue exceeds threshold
+2. **Queue depth:** Alert if `messenger:stats` shows the `async` queue growing
 3. **Failed messages:** Alert on any failed messenger messages
 4. **Database size:** Monitor growth from simulation data
 5. **Response times:** Track slow queries and API latency

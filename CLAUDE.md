@@ -7,7 +7,7 @@ This file provides guidance to Claude Code when working with this repository.
 ```bash
 # Development (preferred)
 symfony serve -d              # Start local dev server (https://127.0.0.1:8000)
-make up-dev-tools             # Start DB, Redis, RabbitMQ, Mailpit
+make up-dev-tools             # Start DB, Redis, Mailpit
 
 # Tests
 make test                     # Run all tests (Docker, handles DB setup)
@@ -34,7 +34,7 @@ symfony console messenger:consume async
 
 ## Project Overview
 
-SupplyMars is a Mars-themed e-commerce and operations platform — PHP 8.5+ / Symfony 8.1.x, Doctrine ORM (MySQL 8.4), RabbitMQ (async), Redis (cache), Tailwind CSS + Turbo (Hotwire), Symfony Asset Mapper (no Webpack/Vite), Zenstruck Foundry + DAMA Doctrine Test Bundle for testing.
+SupplyMars is a Mars-themed e-commerce and operations platform — PHP 8.5+ / Symfony 8.1.x, Doctrine ORM (MySQL 8.4), Symfony Messenger on a database queue (async; RabbitMQ is an opt-in), Redis (cache), Tailwind CSS + Turbo (Hotwire), Symfony Asset Mapper (no Webpack/Vite), Zenstruck Foundry + DAMA Doctrine Test Bundle for testing.
 
 Architecturally: a **modular monolith with strong DDD influences**.
 
@@ -94,7 +94,7 @@ These areas have non-obvious design. Read the corresponding ADR in `Docs/adr/` b
 
 ### Domain Events
 
-- `DomainEventInterface` (sync) / `AsyncDomainEventInterface` (RabbitMQ).
+- `DomainEventInterface` (sync) / `AsyncDomainEventInterface` (queued on the `async` Messenger transport).
 - Use `DomainEventProviderTrait` in aggregates.
 - Rule: must succeed immediately → sync. Can fail/retry/lag → async.
 
@@ -153,6 +153,7 @@ are thin orchestrators using 5 flow types:
 - Factories in `tests/Shared/Factory/` (Zenstruck Foundry). Use `Factories` trait in test classes.
 - Auth: `#[WithStory(StaffUserStory::class)]` or `UserFactory::new()->asStaff()->create()`. For delete handlers: `#[WithStory(SuperAdminUserStory::class)]` or `UserFactory::new()->asSuperAdmin()->create()`.
 - Flow tests use `HasBrowser` trait (Zenstruck Browser). Named `{Feature}FlowTest.php` in `tests/{Context}/UI/`.
+- The `async` Messenger transport is `in-memory://` in tests, so no worker or broker is needed. To check that a message was queued, read `getSent()` on `messenger.transport.async` from the test container, without following the redirect first (see `ResetPasswordFlowTest`).
 - A feature isn't done until a test exercises it the way a caller would — an HTTP request for a controller, a handler call for a handler — not just "it didn't throw".
 
 ## Code Style

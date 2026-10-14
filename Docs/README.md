@@ -48,8 +48,8 @@ SupplyMars is a **modular monolith** - bounded contexts are self-contained modul
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │                           INFRASTRUCTURE LAYER                              │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐ │
-│  │  Doctrine   │  │  RabbitMQ   │  │   Redis     │  │  S3 / Local FS      │ │
-│  │  MySQL 8.4  │  │  Messenger  │  │   Cache     │  │  File Storage       │ │
+│  │  Doctrine   │  │  Messenger  │  │   Redis     │  │  S3 / Local FS      │ │
+│  │  MySQL 8.4  │  │  DB queue   │  │   Cache     │  │  File Storage       │ │
 │  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────────────┘ │
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
@@ -97,6 +97,7 @@ SupplyMars is a **modular monolith** - bounded contexts are self-contained modul
 - **[adr/009-support-ticket-system.md](adr/009-support-ticket-system.md)** - Pool-based support ticket system with conversation threads
 - **[adr/010-customer-insights-reporting.md](adr/010-customer-insights-reporting.md)** - Customer segmentation, geographic, and insights reporting
 - **[adr/011-rest-api-layer.md](adr/011-rest-api-layer.md)** - REST API alongside server-rendered UI
+- **[adr/013-database-queue-by-default.md](adr/013-database-queue-by-default.md)** - Messenger on a database queue by default; RabbitMQ as an opt-in
 
 ---
 
@@ -107,7 +108,7 @@ SupplyMars is a **modular monolith** - bounded contexts are self-contained modul
 ```bash
 # Start local development (preferred)
 symfony serve -d                    # PHP server at https://127.0.0.1:8000
-make up-dev-tools                   # MySQL, Redis, RabbitMQ, Mailpit, PHPMyAdmin
+make up-dev-tools                   # MySQL, Redis, Mailpit, PHPMyAdmin
 
 # Or use full Docker stack
 make up                             # All services containerized
@@ -156,7 +157,6 @@ symfony console app:calculate-order-sales 7        # Last 7 days
 | API Docs (Swagger) | https://localhost:8000/api/doc |
 | PHPMyAdmin | http://localhost:8080 |
 | Mailpit | http://localhost:8025 |
-| RabbitMQ Management | http://localhost:15672 |
 
 ---
 
@@ -168,7 +168,7 @@ symfony console app:calculate-order-sales 7        # Last 7 days
 | Framework | Symfony 8.1 | HTTP, DI, console, forms |
 | Database | MySQL 8.4 | Primary data store |
 | ORM | Doctrine | Entity mapping, migrations |
-| Queue | RabbitMQ | Async event processing |
+| Queue | Symfony Messenger, database transport | Outgoing email, async events. RabbitMQ is an opt-in ([ADR 013](adr/013-database-queue-by-default.md)) |
 | Cache | Redis | Sessions, query cache |
 | Frontend | Tailwind CSS + Turbo | Styling, SPA-like UX |
 | API Docs | NelmioApiDoc (Swagger) | OpenAPI documentation |

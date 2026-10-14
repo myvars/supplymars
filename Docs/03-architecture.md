@@ -166,7 +166,7 @@ Each bounded context follows a consistent internal structure:
 │  • EntityManager flush()                                               │
 │  • DomainEventDispatcher (postFlush listener)                          │
 │    ├── Sync events → EventDispatcher                                   │
-│    └── Async events → MessageBus (RabbitMQ)                            │
+│    └── Async events → MessageBus (database queue)                      │
 └────────────────────────────────────────────────────────────────────────┘
                                             │
                                             ▼
@@ -485,7 +485,7 @@ class Product implements DomainEventProviderInterface
                     │                              │
                     ▼                              ▼
         ┌─────────────────────┐      ┌─────────────────────────────────┐
-        │   SYNC LISTENERS    │      │        ASYNC (RABBITMQ)         │
+        │   SYNC LISTENERS    │      │     ASYNC (DATABASE QUEUE)      │
         │  (after the commit) │      │  • AsyncDomainEventInterface    │
         │                     │      │  • Processed by messenger:      │
         │  • Pricing cascade  │      │    consume async                │
@@ -508,7 +508,7 @@ Events are dispatched for every flush, whether it goes through the `Flusher`, a 
 | Event Interface | Dispatch | Use Case |
 |-----------------|----------|----------|
 | `DomainEventInterface` | Synchronous | Pricing cascades, audit logging |
-| `AsyncDomainEventInterface` | RabbitMQ | Email, external notifications |
+| `AsyncDomainEventInterface` | Queued on the `async` Messenger transport | Email, external notifications |
 
 **Key events:**
 - `SupplierProductPricingWasChangedEvent` → Recalculates product pricing
@@ -519,6 +519,14 @@ Events are dispatched for every flush, whether it goes through the `Flusher`, a 
 - `ReviewStatusWasChangedEvent` → Recalculates product review summary
 - `ReviewRatingWasChangedEvent` → Recalculates product review summary
 - `ProductImageWasDeletedEvent` → Removes the image file from storage and its cached thumbnails
+
+### The Queue
+
+Outgoing email and async events are routed to the `async` Messenger transport (`config/packages/messenger.yaml`). By default that is the Doctrine transport: messages are rows in the `messenger_messages` table, in the application's own database, and the `messenger` container (or `symfony console messenger:consume async`) works through them. Failed messages go to the `failed` transport, which uses the same table. No domain event is async today, so the queue carries email only.
+
+In the `test` environment the transport is `in-memory://`: nothing is stored, no worker runs, and a test can read what was sent.
+
+RabbitMQ is kept as an opt-in for when the database queue is outgrown. See [ADR 013](adr/013-database-queue-by-default.md) for the decision and [Switching to RabbitMQ](02-setup-local.md#switching-to-rabbitmq) for the steps.
 
 ## Simulation Boundaries
 
