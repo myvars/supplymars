@@ -57,10 +57,10 @@ final readonly class CreateProductImageHandler
         $constraint = new Image(
             maxSize: self::MAX_SIZE,
             filenameMaxLength: 255,
-            extensions: self::ALLOWED_EXTENSIONS,
             maxSizeMessage: 'The image is larger than 2 MB.',
-            uploadIniSizeErrorMessage: 'The image is larger than 2 MB.',
             mimeTypesMessage: 'Only JPG, PNG, GIF and WebP images are allowed.',
+            uploadIniSizeErrorMessage: 'The image is larger than 2 MB.',
+            extensions: self::ALLOWED_EXTENSIONS,
             extensionsMessage: 'Only JPG, PNG, GIF and WebP images are allowed.',
         );
 
