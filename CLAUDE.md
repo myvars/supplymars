@@ -101,7 +101,7 @@ These areas have non-obvious design. Read the corresponding ADR in `Docs/adr/` b
 ### FormFlow (Controller Pattern)
 
 The flow coordinators live in the external **`myvars/form-flow`** package (namespace `MyVars\FormFlow\`,
-required from Packagist as `^1.2`, enabled as `FormFlowBundle`) — **not** in `src/`; do not re-add an
+required from Packagist as `^1.3`, enabled as `FormFlowBundle`) — **not** in `src/`; do not re-add an
 in-app `FormFlow` directory. The app provides the **adapters** — `Result`, `RedirectTarget`,
 `FlashMessenger` and `Application\Search\SearchCriteriaInterface` implement/extend the package's
 `Contract\` ports (autowired; `FlasherInterface` aliased in `services.yaml`). The package ships
@@ -111,7 +111,7 @@ are thin orchestrators using 5 flow types:
 | Flow | Purpose |
 |------|---------|
 | `FormFlow` | Create/update with Symfony forms |
-| `ActionFlow` | State transitions (approve, reject, etc.) |
+| `ActionFlow` | State transitions (approve, close, etc.): POST-only, CSRF-checked via `->csrf()` |
 | `ConfirmFlow` | Confirm-then-execute (delete, cancel, rewind, remove…) with per-action CSRF |
 | `SearchFlow` | Paginated index pages (takes a Pagerfanta adapter) |
 | `InlineEditFlow` | Inline field editing via Turbo Frames (the `onSave` callback owns persistence + flush) |
@@ -129,7 +129,7 @@ are thin orchestrators using 5 flow types:
 
 - **Turbo Frames**: `<turbo-frame id="body">` for main content, `<turbo-frame id="modal">` for dialogs.
 - **Modals**: Native `<dialog>` + `basic_modal` Stimulus controller. Links use `data-turbo-frame="modal"`. Layout decision in `modal_base.html.twig`.
-- **State-changing links/actions** MUST have `data-turbo-prefetch="false"`.
+- **State-changing actions** are a one-button POST form with a CSRF token, never a GET link (see Pattern 5 in `Docs/patterns/FormFlow/Usage.md`). Links that open a confirm page or modal MUST have `data-turbo-prefetch="false"`.
 - **Twig Components** in `src/Shared/UI/Twig/Components/` and `templates/components/` — check existing components before creating new ones.
 - **Stimulus Controllers** in `assets/controllers/` — check existing controllers before creating new ones.
 - **UI kit** (`Docs/adr/012-shadcn-ui-kit.md`): general-purpose primitives come from the Shadcn kit of `symfony/ux-toolkit`, copied into `templates/components/` under the kit's own names — `<twig:Button>`, `<twig:Field>`, `<twig:Input>`, `<twig:Card>`, `<twig:Dialog>`, etc. They are project files — edit them directly.

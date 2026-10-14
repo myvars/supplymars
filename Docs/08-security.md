@@ -325,7 +325,7 @@ The playground database resets nightly at 02:15 UTC via cron, restoring a clean 
 
 1. **Passwords:** Hashed with strong algorithms
 2. **Sessions:** PHP's native handler (`handler_id: null`). In the Docker images PHP stores them in Redis (`docker/php/conf.d/10-app.ini`, `REDIS_SESSION_DSN` in prod); with `symfony serve` they use PHP's local default
-3. **CSRF tokens:** Required for Symfony forms, login, ConfirmFlow actions and the requests sent from JavaScript (product image upload and reorder, see [CSRF Protection](#csrf-protection)). The REST API is stateless and uses bearer tokens instead
+3. **CSRF tokens:** Required for Symfony forms, login, ActionFlow actions that call `->csrf()`, ConfirmFlow actions and the requests sent from JavaScript (product image upload and reorder, see [CSRF Protection](#csrf-protection)). The REST API is stateless and uses bearer tokens instead
 4. **Remember-me tokens:** Signed with kernel secret
 
 ### What Is Not Protected
@@ -597,22 +597,25 @@ form_login:
     enable_csrf: true
 ```
 
-### Delete Operations
+### Actions and Delete Operations
 
-ConfirmFlow validates CSRF for destructive / confirmable operations. The token is namespaced by the
-action's confirm key (defaults to `'delete'`), so distinct actions on the same entity don't share one:
+A flow action that changes state is a `POST` with a token, never a `GET` link: a link can be followed
+from an email or another page, or re-run by the browser when it restores a tab.
+
+`ActionFlow` checks the token only when the context names one with `->csrf()`; an action without that
+call is not protected. The id is given in full, so each action on each entity has its own:
 
 ```php
-// vendor/myvars/form-flow/src/ConfirmFlow.php
+// src/Review/UI/Http/Controller/ReviewController.php
 
-public function execute(...): Response
-{
-    $valid = $this->csrf->isTokenValid(
-        new CsrfToken($context->getConfirmKey() . $command->id, $submitted)
-    );
-    // invalid → flash error + redirect (no exception thrown)
-}
+context: FlowContext::forAction('app_review_show', ['id' => $review->getPublicId()->value()])
+    ->csrf('approve' . $review->getPublicId()->value()),
 ```
+
+`ConfirmFlow` (delete and other confirm-then-act operations) uses the same check. Its token id is the
+action's confirm key (defaults to `'delete'`) followed by the command id.
+
+A wrong or missing token gives an "Invalid CSRF token." flash and a redirect; the handler is not called.
 
 ### Requests Sent from JavaScript
 
