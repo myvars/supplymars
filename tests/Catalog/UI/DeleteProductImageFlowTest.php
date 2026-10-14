@@ -36,20 +36,23 @@ final class DeleteProductImageFlowTest extends WebTestCase
         $product = ProductFactory::createOne();
         $productId = $product->getPublicId()->value();
 
-        $browser = $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/product_image/' . $productId . '/images')
-            ->attachFile('imageFile[]', [__DIR__ . '/../../Shared/Resources/dummy-image.jpg'])
-            ->click('Upload')
-            ->followRedirects()
-            ->assertSee('1 image added.');
-
-        $productImage = ProductImageFactory::repository()->findOneBy(['product' => $product->getId()]);
-        self::assertNotNull($productImage);
-        $path = self::getContainer()->getParameter('app.product_uploads') . $productImage->getImageName();
-        self::assertTrue($this->uploads()->fileExists($path));
+        $uploadsDir = self::getContainer()->getParameter('app.product_uploads');
+        $storedBefore = $this->storedFiles($uploadsDir);
 
         try {
+            $browser = $this->browser()
+                ->actingAs(UserFactory::new()->asStaff()->create())
+                ->get('/product_image/' . $productId . '/images')
+                ->attachFile('imageFile[]', [__DIR__ . '/../../Shared/Resources/dummy-image.jpg'])
+                ->click('Upload')
+                ->followRedirects()
+                ->assertSee('1 image added.');
+
+            $productImage = ProductImageFactory::repository()->findOneBy(['product' => $product->getId()]);
+            self::assertNotNull($productImage);
+            $path = $uploadsDir . $productImage->getImageName();
+            self::assertTrue($this->uploads()->fileExists($path));
+
             $browser
                 ->get('/product/images/' . $productImage->getPublicId()->value() . '/remove')
                 ->assertOn('/product_image/' . $productId . '/images')
@@ -59,8 +62,8 @@ final class DeleteProductImageFlowTest extends WebTestCase
             ProductImageFactory::assert()->empty();
             self::assertFalse($this->uploads()->fileExists($path));
         } finally {
-            if ($this->uploads()->fileExists($path)) {
-                $this->uploads()->delete($path);
+            foreach (array_diff($this->storedFiles($uploadsDir), $storedBefore) as $leftover) {
+                $this->uploads()->delete($leftover);
             }
         }
     }
@@ -73,6 +76,14 @@ final class DeleteProductImageFlowTest extends WebTestCase
             ->actingAs(UserFactory::new()->asStaff()->create())
             ->get('/product/images/' . $nonExistentId . '/remove')
             ->assertStatus(404);
+    }
+
+    /**
+     * @return array<string>
+     */
+    private function storedFiles(string $directory): array
+    {
+        return $this->uploads()->listContents($directory)->map(fn ($item): string => $item->path())->toArray();
     }
 
     private function uploads(): FilesystemOperator

@@ -58,7 +58,8 @@ final class DomainEventDispatcher
         $unitOfWork = $args->getObjectManager()->getUnitOfWork();
         foreach ($unitOfWork->getIdentityMap() as $entities) {
             foreach ($entities as $entity) {
-                // Removed since this flush began: its events wait for the flush that deletes it.
+                // Removed since this flush began, so its row still exists: hold its events. A listener
+                // that removes an entity here must flush; Doctrine drops a removal left unflushed.
                 if ($entity instanceof DomainEventProviderInterface && !$unitOfWork->isScheduledForDelete($entity)) {
                     $this->dispatchDomainEvents($entity);
                 }
