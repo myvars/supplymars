@@ -7,6 +7,7 @@ use App\Shared\Domain\Event\DomainEventInterface;
 use App\Shared\Domain\Event\DomainEventProviderInterface;
 use App\Shared\Infrastructure\Persistence\Doctrine\EventListener\DomainEventDispatcher;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
 use Doctrine\ORM\UnitOfWork;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -114,17 +115,85 @@ final class DomainEventDispatcherTest extends TestCase
         $this->listener->postFlush($args);
     }
 
+    public function testPostFlushDispatchesEventsFromEntitiesDeletedByTheFlush(): void
+    {
+        $event = $this->createStub(DomainEventInterface::class);
+        $deleted = $this->createStub(DomainEventProviderInterface::class);
+        $deleted->method('releaseDomainEvents')->willReturn([$event]);
+
+        // The flush takes the deleted entity out of the identity map before postFlush.
+        $em = $this->makeEntityManager(identityMap: [], scheduledDeletions: [$deleted, new \stdClass()]);
+
+        $this->eventDispatcher->expects(self::once())
+            ->method('dispatch')
+            ->with($event, $event::class)
+            ->willReturn($event);
+
+        $this->messageBus->expects(self::never())->method('dispatch');
+
+        $this->listener->onFlush(new OnFlushEventArgs($em));
+        $this->listener->postFlush(new PostFlushEventArgs($em));
+    }
+
+    public function testPostFlushHoldsEventsFromEntitiesRemovedButNotYetFlushed(): void
+    {
+        // A listener removed the entity during this postFlush; a later flush deletes it.
+        $pending = $this->createMock(DomainEventProviderInterface::class);
+        $pending->expects(self::never())->method('releaseDomainEvents');
+
+        $em = $this->makeEntityManager(
+            identityMap: ['App\Entity\Anything' => ['id1' => $pending]],
+            pendingDeletions: [$pending],
+        );
+
+        $this->eventDispatcher->expects(self::never())->method('dispatch');
+        $this->messageBus->expects(self::never())->method('dispatch');
+
+        $this->listener->postFlush(new PostFlushEventArgs($em));
+    }
+
+    public function testDeletedEntitiesFromAFailedFlushAreNotCarriedIntoTheNext(): void
+    {
+        $deleted = $this->createMock(DomainEventProviderInterface::class);
+        $deleted->expects(self::never())->method('releaseDomainEvents');
+
+        $failed = $this->makeEntityManager(identityMap: [], scheduledDeletions: [$deleted]);
+        $next = $this->makeEntityManager(identityMap: []);
+
+        $this->eventDispatcher->expects(self::never())->method('dispatch');
+        $this->messageBus->expects(self::never())->method('dispatch');
+
+        // The first flush fails after onFlush, so its postFlush never runs.
+        $this->listener->onFlush(new OnFlushEventArgs($failed));
+        $this->listener->onFlush(new OnFlushEventArgs($next));
+        $this->listener->postFlush(new PostFlushEventArgs($next));
+    }
+
     /**
      * @param array<string, array<string, object>> $identityMap
      */
     private function makeArgs(array $identityMap): PostFlushEventArgs
     {
+        return new PostFlushEventArgs($this->makeEntityManager($identityMap));
+    }
+
+    /**
+     * @param array<string, array<string, object>> $identityMap
+     * @param list<object>                         $scheduledDeletions entities onFlush finds scheduled for deletion
+     * @param list<object>                         $pendingDeletions   entities still scheduled for deletion in postFlush
+     */
+    private function makeEntityManager(array $identityMap, array $scheduledDeletions = [], array $pendingDeletions = []): EntityManagerInterface
+    {
         $uow = $this->createStub(UnitOfWork::class);
         $uow->method('getIdentityMap')->willReturn($identityMap);
+        $uow->method('getScheduledEntityDeletions')->willReturn($scheduledDeletions);
+        $uow->method('isScheduledForDelete')->willReturnCallback(
+            static fn (object $entity): bool => \in_array($entity, $pendingDeletions, true),
+        );
 
         $em = $this->createStub(EntityManagerInterface::class);
         $em->method('getUnitOfWork')->willReturn($uow);
 
-        return new PostFlushEventArgs($em);
+        return $em;
     }
 }
