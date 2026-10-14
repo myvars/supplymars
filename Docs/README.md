@@ -119,6 +119,7 @@ make test-SomeTest                  # Filtered tests
 vendor/bin/phpunit                  # Local (ensure test DB exists)
 
 # Code quality (see 07-testing.md for configuration details)
+make check                          # Every check CI runs (Docker); make check-<step> for one
 vendor/bin/php-cs-fixer fix         # Fix code style (@Symfony rules)
 vendor/bin/phpstan analyse          # Static analysis (level 7)
 vendor/bin/rector process           # Automated refactoring
