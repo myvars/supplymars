@@ -62,7 +62,7 @@ final class CreateProductImageFlowTest extends WebTestCase
             ->click('Upload')
             ->followRedirects()
             ->assertOn('/product_image/' . $product->getPublicId()->value() . '/images')
-            ->assertSee('extension of the file is invalid')
+            ->assertSee('Only JPG, PNG, GIF and WebP images are allowed')
             ->assertSee('0 Product Images');
     }
 

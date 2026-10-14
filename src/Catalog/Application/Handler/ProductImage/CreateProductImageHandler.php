@@ -27,7 +27,7 @@ final readonly class CreateProductImageHandler
 
     /**
      * PHP's default upload_max_filesize. Raising it means raising that setting and nginx's
-     * client_max_body_size too, or the request never reaches this check.
+     * client_max_body_size too, or the request never reaches this check, and the size messages below.
      */
     public const string MAX_SIZE = '2Mi';
 
@@ -57,6 +57,10 @@ final readonly class CreateProductImageHandler
             maxSize: self::MAX_SIZE,
             filenameMaxLength: 255,
             extensions: self::ALLOWED_EXTENSIONS,
+            maxSizeMessage: 'The image is larger than 2 MB.',
+            uploadIniSizeErrorMessage: 'The image is larger than 2 MB.',
+            mimeTypesMessage: 'Only JPG, PNG, GIF and WebP images are allowed.',
+            extensionsMessage: 'Only JPG, PNG, GIF and WebP images are allowed.',
         );
 
         // Check every file before storing any, so a rejected file never leaves half a batch behind

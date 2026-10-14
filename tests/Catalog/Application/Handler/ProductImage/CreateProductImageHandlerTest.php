@@ -110,7 +110,7 @@ final class CreateProductImageHandlerTest extends KernelTestCase
         ]));
 
         self::assertFalse($result->ok);
-        self::assertStringContainsString('extension of the file is invalid', $result->message);
+        self::assertStringContainsString('Only JPG, PNG, GIF and WebP images are allowed', $result->message);
         self::assertCount(0, $this->reloadedImages($product->getPublicId()));
     }
 
@@ -124,7 +124,7 @@ final class CreateProductImageHandlerTest extends KernelTestCase
         ]));
 
         self::assertFalse($result->ok);
-        self::assertStringContainsString('mime type of the file is invalid', $result->message);
+        self::assertStringContainsString('Only JPG, PNG, GIF and WebP images are allowed', $result->message);
         self::assertCount(0, $this->reloadedImages($product->getPublicId()));
     }
 
@@ -143,7 +143,7 @@ final class CreateProductImageHandlerTest extends KernelTestCase
         ]));
 
         self::assertFalse($result->ok);
-        self::assertStringContainsString('too large', $result->message);
+        self::assertStringContainsString('The image is larger than 2 MB.', $result->message);
         self::assertCount(0, $this->reloadedImages($product->getPublicId()));
     }
 
