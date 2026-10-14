@@ -3,7 +3,10 @@
 namespace App\Catalog\Domain\Model\ProductImage;
 
 use App\Catalog\Domain\Model\Product\Product;
+use App\Catalog\Domain\Model\ProductImage\Event\ProductImageWasDeletedEvent;
 use App\Catalog\Infrastructure\Persistence\Doctrine\ProductImageDoctrineRepository;
+use App\Shared\Domain\Event\DomainEventProviderInterface;
+use App\Shared\Domain\Event\DomainEventProviderTrait;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapping\HasPublicUlid;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
@@ -11,10 +14,11 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProductImageDoctrineRepository::class)]
-class ProductImage
+class ProductImage implements DomainEventProviderInterface
 {
     use TimestampableEntity;
     use HasPublicUlid;
+    use DomainEventProviderTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -74,6 +78,15 @@ class ProductImage
         $this->product = $product;
 
         return $this;
+    }
+
+    /**
+     * Call before removing it from the repository. The event is dispatched once the removal is
+     * flushed, and its listener deletes the stored file.
+     */
+    public function delete(): void
+    {
+        $this->raiseDomainEvent(new ProductImageWasDeletedEvent($this->product->getPublicId(), $this->imageName));
     }
 
     public function changeImageName(string $imageName): void
