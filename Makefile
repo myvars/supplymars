@@ -5,8 +5,9 @@ PROJECT_NAME = symfony-app
 LIVE = --env-file ../supplymars-secrets/live.env -p supplymars-live -f compose.yaml -f compose.prod.yaml
 PLAYGROUND = --env-file ../supplymars-secrets/playground.env -p supplymars-playground --profile playground -f compose.yaml -f compose.prod.yaml
 
-# The production stacks run the images of the checked-out commit
-IMAGE_TAG ?= $(shell git rev-parse HEAD)
+# The production stacks run the images of the checked-out commit. := so a stale IMAGE_TAG in the
+# shell cannot pick other images (a rollback would otherwise restart the bad version)
+IMAGE_TAG := $(shell git rev-parse HEAD)
 
 up:
 	docker compose up --wait --build

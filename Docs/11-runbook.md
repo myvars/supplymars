@@ -41,13 +41,9 @@ LIVE="--env-file ../supplymars-secrets/live.env -p supplymars-live -f compose.ya
 
 # Playground stack
 PLAYGROUND="--env-file ../supplymars-secrets/playground.env -p supplymars-playground --profile playground -f compose.yaml -f compose.prod.yaml"
-
-# The images of the checked-out commit. Without it, a `docker compose ... up` that recreates a
-# container looks for images tagged `local` and builds them on the server
-export IMAGE_TAG=$(git rev-parse HEAD)
 ```
 
-The Makefile's `LIVE` and `PLAYGROUND` variables are the same flags, and its `up-prod-*` targets set `IMAGE_TAG` themselves.
+The Makefile's `LIVE` and `PLAYGROUND` variables are the same flags. Start or recreate containers only with `make up-prod-live` and `make up-prod-playground`, which run the images of the checked-out commit. A bare `docker compose $LIVE up` does not know the commit: it looks for images tagged `local` and builds them on the server. `ps`, `logs`, `exec`, `stop` and `restart` are safe to run directly.
 
 ### Where Secrets Live
 
@@ -126,12 +122,13 @@ Check out the previous commit and start its images:
 git reset --hard <previous-sha> && make up-prod-live && make up-prod-playground
 ```
 
-Then run `make verify-prod-live` and `make verify-prod-playground`. Every published commit's images stay in GHCR. A run's SHA is shown on its page in the Actions tab, and `git log --oneline -10` on the server lists recent ones. The checkout decides which images run, so a later `make up-prod-live` (after an env file change or a restore) keeps running the rolled-back images.
+Then run `make verify-prod-live` and `make verify-prod-playground`. Every published commit's images stay in GHCR. Take `<previous-sha>` from the last successful deploy run in the Actions tab: only commits that went through a full CI run on `main` have images (a pull of any other fails and changes nothing), and a commit from before the image pipeline brings back the old Makefile, which builds on the server. The checkout decides which images run, so a later `make up-prod-live` (after an env file change or a restore) keeps running the rolled-back images.
 
 **If the bad commit added a migration**, rolling back the code does not roll back the schema. Take a backup (section 4.2), then revert the migration with the current images, before checking out the previous commit:
 
 ```bash
 docker compose $LIVE exec php php bin/console doctrine:migrations:migrate prev --no-interaction
+docker compose $PLAYGROUND exec php php bin/console doctrine:migrations:migrate prev --no-interaction
 ```
 
 The next push to `main` deploys as normal. To stay on the old version until a fix is ready, revert the bad commit on `main` instead, which deploys through CI.
@@ -150,7 +147,7 @@ docker compose $LIVE up -d --build --remove-orphans --wait
 docker compose $PLAYGROUND up -d --build --remove-orphans --wait
 ```
 
-Leave `IMAGE_TAG` unset for these commands (`unset IMAGE_TAG`). The next `make up-prod-*` returns to the published images.
+The next `make up-prod-*` returns to the published images.
 
 ---
 
@@ -307,17 +304,9 @@ docker compose $LIVE stop php
 ### 5.2 Bringing the App Back Online
 
 ```bash
-# 1. Start PHP (runs migrations if pending)
-docker compose $LIVE up -d php
-
-# 2. Wait for PHP to become healthy
-docker compose $LIVE ps php
-
-# 3. Start Messenger and Cron
-docker compose $LIVE up -d messenger cron
-
-# 4. Verify all services
-docker compose $LIVE ps
+# Starts PHP first (it runs pending migrations), then Messenger and Cron once PHP is healthy
+make up-prod-live
+make verify-prod-live
 ```
 
 ---

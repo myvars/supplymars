@@ -212,7 +212,6 @@ docker compose --env-file ../supplymars-secrets/playground.env \
 make verify-prod-live
 make verify-prod-playground
 
-
 curl -sf -o /dev/null -w "%{http_code}" https://supplymars.com       # 200
 curl -sf -o /dev/null -w "%{http_code}" https://live.supplymars.com   # 200
 

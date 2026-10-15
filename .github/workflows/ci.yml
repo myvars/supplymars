@@ -117,6 +117,11 @@ jobs:
                       # The checkout supplies the compose files and Makefile, and its commit picks
                       # the image tag; the code is in the images
                       git fetch origin
+                      # A newer commit's run may have deployed first; never go back to an older one
+                      if [ "$(git rev-parse HEAD)" != "${{ github.sha }}" ] && git merge-base --is-ancestor ${{ github.sha }} HEAD; then
+                          echo "A newer commit is already deployed; skipping."
+                          exit 0
+                      fi
                       git reset --hard ${{ github.sha }}
                       git clean -fd
 
