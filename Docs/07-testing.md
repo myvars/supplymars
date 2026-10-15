@@ -657,7 +657,7 @@ make check-phpstan       # one step: prod-config, cs, rector, phpstan, lint, aud
 
 | Step | What it runs |
 |------|--------------|
-| `prod-config` | `docker compose config` on the production compose files, for the live stack and the `playground` profile, and `nginx -t` on `docker/nginx/conf.d/prod.conf`. These are otherwise used only by the deploy, so a mistake in them would first show there. Runs on the host, with Docker |
+| `prod-config` | `docker compose config` on the production compose files (`compose.prod.yaml` and `compose.publish.yaml`), for the live stack and the `playground` profile, and `nginx -t` on `docker/nginx/conf.d/prod.conf`. These are otherwise used only by the publish and deploy jobs, so a mistake in them would first show there. Runs on the host, with Docker |
 | `cs` | `php-cs-fixer fix --dry-run --diff` |
 | `rector` | `rector process --dry-run` |
 | `phpstan` | `phpstan analyse` (after warming the dev container it reads) |

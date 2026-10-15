@@ -17,13 +17,15 @@ Each stack runs 6 containers (7 for playground, which includes `reset`). The que
 
 | Service | Image | Purpose |
 |---------|-------|---------|
-| nginx | nginx-prod | Reverse proxy (HTTP only — Caddy handles TLS) |
-| php | php-prod | PHP-FPM application server |
-| messenger | php-prod | Async message consumer |
-| cron | cron-prod | Scheduled tasks |
+| nginx | `ghcr.io/myvars/supplymars/nginx` | Reverse proxy (HTTP only — Caddy handles TLS) |
+| php | `ghcr.io/myvars/supplymars/php` | PHP-FPM application server |
+| messenger | `ghcr.io/myvars/supplymars/php` | Async message consumer |
+| cron | `ghcr.io/myvars/supplymars/cron` | Scheduled tasks. The image holds both schedules; `CRONTAB_FILE` in the env file picks the stack's when the container starts |
 | database | mysql:8.4 | Primary data store |
-| redis | redis:8.4-alpine | Cache, sessions |
-| reset | playground-reset | Nightly DB reset (playground only) |
+| redis | redis:8.8-alpine | Cache, sessions |
+| reset | `ghcr.io/myvars/supplymars/reset` | Nightly DB reset (playground only) |
+
+**CI builds, the server runs.** The four application images are built by GitHub Actions from a commit on `main`, tagged with its SHA and pushed to the GitHub Container Registry (GHCR). The server pulls the images of the commit it has checked out and starts them; it never builds. The checkout supplies only the compose files and the Makefile: the code is inside the images.
 
 **Deploy path:** `/home/ubuntu/supplymars`
 **Env files:** `/home/ubuntu/supplymars-secrets/{live,playground}.env`
@@ -39,7 +41,30 @@ LIVE="--env-file ../supplymars-secrets/live.env -p supplymars-live -f compose.ya
 
 # Playground stack
 PLAYGROUND="--env-file ../supplymars-secrets/playground.env -p supplymars-playground --profile playground -f compose.yaml -f compose.prod.yaml"
+
+# The images of the checked-out commit. Without it, a `docker compose ... up` that recreates a
+# container looks for images tagged `local` and builds them on the server
+export IMAGE_TAG=$(git rev-parse HEAD)
 ```
+
+The Makefile's `LIVE` and `PLAYGROUND` variables are the same flags, and its `up-prod-*` targets set `IMAGE_TAG` themselves.
+
+### Where Secrets Live
+
+| Secret | Lives in | Used by |
+|--------|----------|---------|
+| Application configuration: `APP_SECRET`, database, Redis, mailer, S3, Sentry, Turnstile | `/home/ubuntu/supplymars-secrets/{live,playground}.env` on the server. The master copies are in `../supplymars-secrets/` on the maintainer's machine and are copied up with `scp` | `make up-prod-live`, `make up-prod-playground` |
+| Registry read token | `~/.docker/config.json` on the server, written once by `docker login ghcr.io` ([playground.md](infrastructure/playground.md#fresh-server-setup)) | Pulling the images |
+| Deploy SSH key, server address and user | GitHub repository secrets `SERVER_SSH_KEY`, `SERVER_HOST`, `SERVER_USER` | The deploy job |
+
+Application secrets are never GitHub secrets: the deploy job does not see them, and changing one does not need a deploy. After editing an env file:
+
+```bash
+scp ../supplymars-secrets/live.env ubuntu@<server-ip>:/home/ubuntu/supplymars-secrets/live.env
+ssh ubuntu@<server-ip> 'cd /home/ubuntu/supplymars && make up-prod-live'
+```
+
+`make up-prod-live` recreates the containers whose environment changed.
 
 **Quick status:**
 ```bash
@@ -56,19 +81,27 @@ docker compose $PLAYGROUND ps
 
 Merging to `main` triggers the GitHub Actions pipeline (`.github/workflows/ci.yml`):
 
-1. Runs each step of `make check`: the production config check, code style, Rector, PHPStan, the Symfony linters, `composer audit`, and migrations from an empty database (see [07-testing.md](07-testing.md#running-all-checks))
-2. Runs the full test suite
-3. SSHs to the Lightsail instance
-4. `git fetch origin && git reset --hard origin/main && git clean -fd`
-5. Creates `/home/ubuntu/supplymars-backups` if missing
-6. Builds and starts both stacks
-7. Runs smoke tests (HTTP 200 check + migration status)
+1. **test**: each step of `make check`: the production config check, code style, Rector, PHPStan, the Symfony linters, `composer audit`, migrations from an empty database, and the full test suite (see [07-testing.md](07-testing.md#running-all-checks))
+2. **publish**, once the tests pass: builds the `php`, `cron`, `nginx` and `reset` production images from that commit and pushes them to `ghcr.io/myvars/supplymars/`, tagged with its SHA. The tests ran against the development image of the same commit; the production images are built from the same code but are not tested separately
+3. **deploy**, once they are pushed, over SSH:
 
-The PHP container runs migrations automatically on startup (`RUN_MIGRATIONS=true` in `docker-entrypoint.sh`).
+    ```bash
+    cd /home/ubuntu/supplymars
+    git fetch origin
+    git reset --hard <sha>              # the compose files and Makefile of that commit
+    git clean -fd
+    mkdir -p /home/ubuntu/supplymars-backups
+    make up-prod-live                   # pull that commit's images and start them; waits until healthy
+    make up-prod-playground
+    make verify-prod-live               # /health answers 200 on the port Caddy uses; no migration is pending
+    make verify-prod-playground
+    ```
+
+The PHP container runs migrations automatically on startup (`RUN_MIGRATIONS=true` in `docker-entrypoint.sh`). If any step fails, the job stops and fails, and its log in the Actions tab shows which step. Deploys are queued, never cancelled part-way (`concurrency: ci-deploy`).
 
 ### 2.2 Manual Deployment
 
-Use when CI is down or for emergency hotfixes:
+Use when the deploy job failed after the images were published, or to redeploy:
 
 ```bash
 ssh ubuntu@<server-ip>
@@ -76,33 +109,48 @@ cd /home/ubuntu/supplymars
 
 git fetch origin
 git reset --hard origin/main
-git clean -fd
 
-mkdir -p /home/ubuntu/supplymars-backups
-
-docker compose $LIVE up -d --build --remove-orphans --wait
-docker compose $PLAYGROUND up -d --build --remove-orphans --wait
+make up-prod-live           # runs the images of the checked-out commit
+make up-prod-playground
+make verify-prod-live
+make verify-prod-playground
 ```
+
+This only works for a commit whose images CI has published. If they are missing, the pull fails and nothing is restarted.
 
 ### 2.3 Rollback
 
-There is no blue-green or canary deployment. Rollback means deploying a previous commit:
+Check out the previous commit and start its images:
 
 ```bash
-ssh ubuntu@<server-ip>
-cd /home/ubuntu/supplymars
+git reset --hard <previous-sha> && make up-prod-live && make up-prod-playground
+```
 
-git log --oneline -10
-git reset --hard <commit-sha>
+Then run `make verify-prod-live` and `make verify-prod-playground`. Every published commit's images stay in GHCR. A run's SHA is shown on its page in the Actions tab, and `git log --oneline -10` on the server lists recent ones. The checkout decides which images run, so a later `make up-prod-live` (after an env file change or a restore) keeps running the rolled-back images.
+
+**If the bad commit added a migration**, rolling back the code does not roll back the schema. Take a backup (section 4.2), then revert the migration with the current images, before checking out the previous commit:
+
+```bash
+docker compose $LIVE exec php php bin/console doctrine:migrations:migrate prev --no-interaction
+```
+
+The next push to `main` deploys as normal. To stay on the old version until a fix is ready, revert the bad commit on `main` instead, which deploys through CI.
+
+### 2.4 Fallback: Build on the Server
+
+The old deploy path, kept until the image pipeline has deployed cleanly twice. Use it only if GHCR or the publish job is unavailable. It builds images tagged `local` on the server, which competes with the running sites for CPU for several minutes:
+
+```bash
+cd /home/ubuntu/supplymars
+git fetch origin
+git reset --hard origin/main
+git clean -fd
 
 docker compose $LIVE up -d --build --remove-orphans --wait
 docker compose $PLAYGROUND up -d --build --remove-orphans --wait
 ```
 
-**If the rollback involves a migration reversal**, you must manually revert the migration:
-```bash
-docker compose $LIVE exec php php bin/console doctrine:migrations:migrate prev --no-interaction
-```
+Leave `IMAGE_TAG` unset for these commands (`unset IMAGE_TAG`). The next `make up-prod-*` returns to the published images.
 
 ---
 
@@ -215,11 +263,9 @@ docker compose $LIVE stop php messenger cron
 gunzip < /tmp/supplymars-2026-02-13-020001.sql.gz | \
     docker compose $LIVE exec -T database mysql -u root -p app
 
-# 4. Restart services
-docker compose $LIVE up -d php messenger cron
-
-# 5. Verify
-docker compose $LIVE ps
+# 4. Start the app again (php runs any migrations newer than the backup), then check it
+make up-prod-live
+make verify-prod-live
 ```
 
 The queue is a table in the same database, so the restore brings back the emails that were waiting when the backup was taken, and the worker sends them when it starts. If they were already sent, delete them before step 4: `DELETE FROM messenger_messages WHERE queue_name = 'default';` (`messenger:stats` shows how many there are).
@@ -380,10 +426,15 @@ docker system df
 ```
 
 **Fix:**
+
+Every deploy leaves its images on the server, so a rollback can start without a download. Remove images not used by a container and older than 30 days:
+
 ```bash
 docker system prune -f
-docker image prune -a -f
+docker image prune -a -f --filter "until=720h"
 ```
+
+A pruned version can still be rolled back to: `make up-prod-live` pulls it again from GHCR.
 
 ---
 

@@ -72,14 +72,11 @@ The production Docker stack includes:
 | database | mysql:8.4 | Primary data store |
 | redis | redis:8.4-alpine | Cache, sessions |
 
-**Deployment command:**
-```bash
-make up-prod
-```
+**Deployment:** CI builds the production images, tags them with the commit SHA and pushes them to GHCR. The server pulls the images of its checked-out commit and starts them with `make up-prod-live` and `make up-prod-playground`; it never builds. See [11-runbook.md](11-runbook.md#2-deployment).
 
 ### Build Process
 
-Production images are built in stages:
+Production images are built in stages, in CI (or locally with `make up-prod-local`):
 
 ```dockerfile
 # Stage 1: php-prod-builder
