@@ -7,7 +7,7 @@
 # Shared may use nothing outside Shared.
 # Named exceptions are layers of their own, open only to the contexts listed in the ruleset: Current user, Order
 # sourcing and Demo customers. See the table in Docs/03-architecture.md.
-# A new context needs its two layers here, its Domain layer added to every list in the ruleset, and its name
+# A new context needs its two layers here, its two ruleset entries, its Domain layer added to Public's list, and its name
 # added to the Unregistered pattern. Until then its classes are Unregistered and every import to or from them fails.
 deptrac:
   cache_file: var/cache/.deptrac.cache
@@ -100,6 +100,12 @@ deptrac:
       collectors:
         - { type: classLike, value: ^App\\Home\\ }
 
+    # Holds no classes. It names, once, what every context may use: Shared, every Domain layer and Current user.
+    # A ruleset entry "+Public" means "Public and everything Public may use".
+    - name: Public
+      collectors:
+        - { type: classLike, value: ^$ }
+
     # Any class in a context not listed above. It has no ruleset entry, so it may use nothing and nothing may use it.
     - name: Unregistered
       collectors:
@@ -107,35 +113,36 @@ deptrac:
 
   ruleset:
     Shared: ~
+    Public: [Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Order Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Review Domain, Current user]
 
-    Audit Domain: [Audit internals, Shared, Catalog Domain, Customer Domain, Note Domain, Order Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Review Domain, Current user]
-    Audit internals: [Audit Domain, Shared, Catalog Domain, Customer Domain, Note Domain, Order Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Review Domain, Current user]
+    Audit Domain: [+Public, Audit internals]
+    Audit internals: [+Public]
 
-    Catalog Domain: [Catalog internals, Shared, Audit Domain, Customer Domain, Note Domain, Order Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Review Domain, Current user]
-    Catalog internals: [Catalog Domain, Shared, Audit Domain, Customer Domain, Note Domain, Order Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Review Domain, Current user]
+    Catalog Domain: [+Public, Catalog internals]
+    Catalog internals: [+Public]
 
-    Customer Domain: [Customer internals, Shared, Current user, Audit Domain, Catalog Domain, Note Domain, Order Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Review Domain]
-    Customer internals: [Customer Domain, Shared, Current user, Demo customers, Audit Domain, Catalog Domain, Note Domain, Order Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Review Domain]
-    Demo customers: [Customer Domain, Shared, Current user, Customer internals, Audit Domain, Catalog Domain, Note Domain, Order Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Review Domain]
+    Customer Domain: [+Public, Customer internals]
+    Customer internals: [+Public, Demo customers]
     Current user: [Customer Domain, Shared]
+    Demo customers: [+Public, Customer internals]
 
-    Note Domain: [Note internals, Shared, Audit Domain, Catalog Domain, Customer Domain, Order Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Review Domain, Current user]
-    Note internals: [Note Domain, Shared, Audit Domain, Catalog Domain, Customer Domain, Order Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Review Domain, Current user]
+    Note Domain: [+Public, Note internals]
+    Note internals: [+Public]
 
-    Order Domain: [Order internals, Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Review Domain, Current user]
-    Order internals: [Order Domain, Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Review Domain, Current user, Order sourcing, Demo customers]
+    Order Domain: [+Public, Order internals]
+    Order internals: [+Public, Order sourcing, Demo customers]
 
-    Pricing Domain: [Pricing internals, Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Order Domain, Purchasing Domain, Reporting Domain, Review Domain, Current user]
-    Pricing internals: [Pricing Domain, Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Order Domain, Purchasing Domain, Reporting Domain, Review Domain, Current user]
+    Pricing Domain: [+Public, Pricing internals]
+    Pricing internals: [+Public]
 
-    Purchasing Domain: [Purchasing internals, Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Order Domain, Pricing Domain, Reporting Domain, Review Domain, Current user]
-    Purchasing internals: [Purchasing Domain, Order sourcing, Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Order Domain, Pricing Domain, Reporting Domain, Review Domain, Current user]
-    Order sourcing: [Purchasing Domain, Purchasing internals, Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Order Domain, Pricing Domain, Reporting Domain, Review Domain, Current user]
+    Purchasing Domain: [+Public, Purchasing internals]
+    Purchasing internals: [+Public, Order sourcing]
+    Order sourcing: [+Public, Purchasing internals]
 
-    Reporting Domain: [Reporting internals, Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Order Domain, Pricing Domain, Purchasing Domain, Review Domain, Current user]
-    Reporting internals: [Reporting Domain, Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Order Domain, Pricing Domain, Purchasing Domain, Review Domain, Current user]
+    Reporting Domain: [+Public, Reporting internals]
+    Reporting internals: [+Public]
 
-    Review Domain: [Review internals, Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Order Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Current user]
-    Review internals: [Review Domain, Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Order Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Current user]
+    Review Domain: [+Public, Review internals]
+    Review internals: [+Public]
 
-    Home internals: [Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Order Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Review Domain, Current user]
+    Home internals: [+Public]

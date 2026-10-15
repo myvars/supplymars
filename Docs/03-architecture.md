@@ -143,7 +143,7 @@ Examples from this codebase:
 
 There is no `skip_violations` list. When an import fails the check, fix it: use the other context's `Domain/`, add the query to its repository interface, or move the class to the context that owns it. Add a named exception only for a deliberate dependency on another context's behaviour, as its own layer in `deptrac.yaml`, open only to the contexts that need it, and add it to the table above.
 
-A new context must be added to `deptrac.yaml`: its two layers, its ruleset entries, its `Domain` layer in the lists of the other contexts, and its name in the `Unregistered` pattern. Until then its classes fall into the `Unregistered` layer, which may use nothing and which nothing may use, so the first import to or from the new context fails the build. See [ADR 014](adr/014-architecture-rules.md) for the decision.
+A new context must be added to `deptrac.yaml`: its two layers, its two ruleset entries (`[+Public, …]`), its `Domain` layer in the list of the `Public` entry, and its name in the `Unregistered` pattern. Until then its classes fall into the `Unregistered` layer, which may use nothing and which nothing may use, so the first import to or from the new context fails the build. See [ADR 014](adr/014-architecture-rules.md) for the decision.
 
 ## Request Flow
 
