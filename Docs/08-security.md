@@ -479,12 +479,12 @@ location = /verify/resend {
 |----------|------|--------|-------|-------|-----------|
 | `/login` | `login` | All requests | 10/min per IP | 5 | Moderate — legitimate users may retry |
 | `/register` | `register` | POSTs only | 2/min per IP | 2 | Tight — registration also gated by app-level limiter |
-| `/reset-password/*` | `register` | POSTs only | 2/min per IP | 2 | Tight — prevents email-sending abuse |
+| `/reset-password*` | `register` | POSTs only | 2/min per IP | 2 | Tight — prevents email-sending abuse |
 | `/verify/resend` | `register` | POSTs only | 2/min per IP | 2 | Tight — prevents verification email abuse |
 
-- The `register` zone counts only form submissions. Nginx does not count a request whose key is empty, and the key is empty for every method except POST, so loading a form, a Turbo prefetch of it, or the page a submit redirects to uses none of the allowance. When every request counted, loading the form and submitting it within half a minute was refused.
+- The `register` zone counts only form submissions. Nginx does not count a request whose key is empty, and the key is empty for every method except POST, so loading a form, a Turbo prefetch of it, or the page a submit redirects to uses none of the allowance. When every request counted, Turbo's hover prefetch and the form load used up the allowance, so a submit within half a minute was refused.
 - A burst of 2 with `nodelay` lets three POSTs through at once (a submit and two resubmissions after validation errors), then one every 30 seconds. The three endpoints share the zone, so the allowance is per IP across all of them.
-- Returns `429 Too Many Requests` when exceeded, so a rate limit is not mistaken for an outage
+- Returns `429 Too Many Requests` when exceeded, so a rate limit is not mistaken for an outage.
 - Not applied in development (dev Nginx config has no rate limiting)
 
 ### Defence in Depth
