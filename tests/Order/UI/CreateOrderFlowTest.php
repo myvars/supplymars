@@ -2,7 +2,7 @@
 
 namespace App\Tests\Order\UI;
 
-use App\Shared\Domain\ValueObject\ShippingMethod;
+use App\Order\Domain\Model\Order\ShippingMethod;
 use App\Tests\Shared\Factory\AddressFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Factory\VatRateFactory;

@@ -10,7 +10,6 @@ use App\Pricing\Domain\Model\VatRate\VatRate;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrder;
 use App\Shared\Domain\Event\DomainEventProviderInterface;
 use App\Shared\Domain\Event\DomainEventProviderTrait;
-use App\Shared\Domain\ValueObject\ShippingMethod;
 use App\Shared\Domain\ValueObject\StatusChange;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapping\HasPublicUlid;
 use Doctrine\Common\Collections\ArrayCollection;

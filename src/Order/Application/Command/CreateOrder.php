@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Order\Application\Command;
 
-use App\Shared\Domain\ValueObject\ShippingMethod;
+use App\Order\Domain\Model\Order\ShippingMethod;
 
 final readonly class CreateOrder
 {

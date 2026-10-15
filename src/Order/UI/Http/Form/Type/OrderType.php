@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Order\UI\Http\Form\Type;
 
+use App\Order\Domain\Model\Order\ShippingMethod;
 use App\Order\UI\Http\Form\Model\OrderForm;
-use App\Shared\Domain\ValueObject\ShippingMethod;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;

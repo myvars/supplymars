@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Order\UI\Http\Form\Model;
 
+use App\Order\Domain\Model\Order\ShippingMethod;
 use App\Order\UI\Http\Validation\ValidCustomerId;
-use App\Shared\Domain\ValueObject\ShippingMethod;
 use Symfony\Component\Validator\Constraints as Assert;
 
 final class OrderForm

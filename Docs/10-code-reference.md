@@ -416,7 +416,7 @@ hasPositiveCost()             // cost > 0
 | AbstractUlidId | `src/Shared/Domain/ValueObject/AbstractUlidId.php` | Base ULID value object |
 | AbstractIntId | `src/Shared/Domain/ValueObject/AbstractIntId.php` | Base int ID value object |
 | PriceModel | `src/Shared/Domain/ValueObject/PriceModel.php` | Pretty-price rounding enum |
-| ShippingMethod | `src/Shared/Domain/ValueObject/ShippingMethod.php` | Shipping options enum |
+| ShippingMethod | `src/Order/Domain/Model/Order/ShippingMethod.php` | Shipping options enum |
 | StatusChange | `src/Shared/Domain/ValueObject/StatusChange.php` | Status transition VO |
 | StockChange | `src/Shared/Domain/ValueObject/StockChange.php` | Stock change VO |
 | CostChange | `src/Shared/Domain/ValueObject/CostChange.php` | Cost change VO |

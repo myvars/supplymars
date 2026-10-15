@@ -174,7 +174,3 @@ deptrac:
       - App\Order\Domain\Repository\OrderRepository
       - App\Purchasing\Domain\Repository\PurchaseOrderRepository
       - App\Review\Domain\Repository\ReviewRepository
-
-    # A shipping method carries a VAT rate, so it belongs in Pricing or Order, not in Shared.
-    App\Shared\Domain\ValueObject\ShippingMethod:
-      - App\Pricing\Domain\Model\VatRate\VatRate
