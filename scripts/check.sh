@@ -7,7 +7,7 @@
 set -e
 cd "$(dirname "$0")/.."
 
-STEPS=(cs rector phpstan lint audit migrations tests)
+STEPS=(cs rector phpstan deptrac lint audit migrations tests)
 
 if [ "$APP_ENV" != "test" ]; then
   echo "[check] Refusing to run: APP_ENV is not 'test' (got '$APP_ENV')"
@@ -26,6 +26,10 @@ step_phpstan() {
   # PHPStan reads the dev container (phpstan.dist.neon)
   php bin/console cache:warmup --env=dev --quiet
   vendor/bin/phpstan analyse --no-progress --memory-limit=512M
+}
+
+step_deptrac() {
+  vendor/bin/deptrac analyse --no-progress
 }
 
 step_lint() {
