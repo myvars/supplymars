@@ -28,6 +28,8 @@ x-common-php-env: &common-php-env
   TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY}           # Turnstile secret
   REDIS_PASSWORD: ${REDIS_PASSWORD}                       # Redis auth password
   PLAYGROUND_MODE: ${PLAYGROUND_MODE:-false}               # Show playground banner and behavior
+  SENTRY_DSN: ${SENTRY_DSN:-}                             # Sentry error tracking (optional: empty sends nothing)
+  SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-live}         # Sentry environment: "live" or "playground"
 
 services:
   # --- MySQL Database (Prod) ---
@@ -138,7 +140,8 @@ services:
     ports:
       - "127.0.0.1:${NGINX_HOST_PORT:-8080}:80"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost"]
+      # Passes when nginx, PHP, the database, Redis and the queue all respond
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
       interval: 30s
       timeout: 10s
       retries: 10

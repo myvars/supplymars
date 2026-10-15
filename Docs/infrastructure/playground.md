@@ -75,6 +75,7 @@ TURNSTILE_SECRET_KEY=<key>
 MYSQL_PASSWORD=<password>
 MYSQL_ROOT_PASSWORD=<password>
 PLAYGROUND_MODE=false
+SENTRY_DSN=<dsn>
 NGINX_HOST_PORT=8001
 DB_HOST_PORT=3307
 CRONTAB_FILE=docker/php/cron/live-crontab
@@ -90,12 +91,15 @@ DEFAULT_URI=https://www.supplymars.com
 AWS_S3_PRODUCTS_PREFIX=playground
 UPLOADS_BASE_URL=https://unicorn-bucket-two.s3.eu-west-2.amazonaws.com/playground
 PLAYGROUND_MODE=true
+SENTRY_ENVIRONMENT=playground
 NGINX_HOST_PORT=8002
 DB_HOST_PORT=3308
 CRONTAB_FILE=docker/php/cron/playground-crontab
 ```
 
 `MESSENGER_TRANSPORT_DSN` is not set: the queue defaults to the database (`compose.prod.yaml`). An env file must not keep an old AMQP DSN, which would override the default and stop the worker, since the AMQP transport is no longer installed.
+
+Both stacks use the same `SENTRY_DSN`; `SENTRY_ENVIRONMENT` (`live` unless set) separates their events in Sentry. Leave `SENTRY_DSN` empty to send nothing. See [13-monitoring.md](../13-monitoring.md).
 
 Generate passwords: `openssl rand -base64 24`
 Generate APP_SECRET: `openssl rand -hex 16`

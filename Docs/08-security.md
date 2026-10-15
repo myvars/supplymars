@@ -252,10 +252,13 @@ access_control:
     - { path: ^/playground/login, roles: PUBLIC_ACCESS }
     - { path: ^/reset-password, roles: PUBLIC_ACCESS }
     - { path: ^/help, roles: PUBLIC_ACCESS }
+    - { path: ^/health$, roles: PUBLIC_ACCESS }
 
     # Admin routes
     - { path: ^/, roles: ROLE_ADMIN }
 ```
+
+`/health` is public so an uptime monitor and the Docker healthcheck can call it. It reports only `ok` or `fail` per check, never the reason, and production nginx lets two outside requests run at once (see [13-monitoring.md](13-monitoring.md)).
 
 ## Admin Surface vs. Internal Tools
 

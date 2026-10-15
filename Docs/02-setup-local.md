@@ -269,6 +269,10 @@ symfony server:stop
 symfony serve -d
 ```
 
+### Nginx Container Unhealthy
+
+The nginx healthcheck calls `/health`, so nginx is also reported unhealthy when the database, Redis or the queue is down. `curl -k https://localhost/health` shows which check failed, and `docker compose exec php tail var/log/dev.log` shows why.
+
 ### Test Database Not Found
 
 **Symptom:** Tests fail with database errors
