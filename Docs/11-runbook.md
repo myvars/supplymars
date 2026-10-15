@@ -119,9 +119,9 @@ cd /home/ubuntu/supplymars
 docker compose $LIVE ps
 docker compose $PLAYGROUND ps
 
-# 2. Apps respond (via Caddy)
-curl -sf -o /dev/null -w "%{http_code}" https://supplymars.com          # 200 (playground)
-curl -sf -o /dev/null -w "%{http_code}" https://live.supplymars.com     # 200 (live)
+# 2. Apps and their dependencies respond (via Caddy); a 503 names the failed check
+curl -s -w " %{http_code}\n" https://supplymars.com/health            # 200 (playground)
+curl -s -w " %{http_code}\n" https://live.supplymars.com/health       # 200 (live)
 
 # 3. Migrations up to date
 docker compose $LIVE exec -T php php bin/console doctrine:migrations:up-to-date
@@ -135,6 +135,8 @@ docker compose $LIVE logs --tail=50 php
 ```
 
 ### 3.2 Ongoing Monitoring
+
+Errors are reported to Sentry and an external uptime monitor calls `/health` on both stacks ([13-monitoring.md](13-monitoring.md)). By hand:
 
 ```bash
 # Container resource usage

@@ -70,6 +70,7 @@ SupplyMars is a **modular monolith** - bounded contexts are self-contained modul
 - **[07-testing.md](07-testing.md)** - Test strategy, factories, running tests
 - **[08-security.md](08-security.md)** - Authentication, authorization, safety assumptions
 - **[11-runbook.md](11-runbook.md)** - Production runbook: deployment, backup/restore, troubleshooting
+- **[13-monitoring.md](13-monitoring.md)** - Error tracking (Sentry), the `/health` endpoint, uptime monitoring
 
 ### Reference
 - **[09-cli-reference.md](09-cli-reference.md)** - All console commands with examples

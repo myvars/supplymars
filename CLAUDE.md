@@ -98,6 +98,12 @@ These areas have non-obvious design. Read the corresponding ADR in `Docs/adr/` b
 - Use `DomainEventProviderTrait` in aggregates.
 - Rule: must succeed immediately → sync. Can fail/retry/lag → async.
 
+### Monitoring
+
+- **Error tracking**: `sentry/sentry-symfony`, registered for `prod` only. It reports uncaught exceptions from web requests, console commands and Messenger workers when `SENTRY_DSN` is set, and sends nothing when it is empty. `SENTRY_ENVIRONMENT` (`live` or `playground`) separates the two stacks.
+- **`/health`**: public JSON endpoint, 200 or 503, listing each check as `ok` or `fail`. To check another dependency, add a class implementing `HealthCheckInterface` in `src/Shared/Infrastructure/Health/`; it is picked up automatically.
+- See `Docs/13-monitoring.md`.
+
 ### FormFlow (Controller Pattern)
 
 The flow coordinators live in the external **`myvars/form-flow`** package (namespace `MyVars\FormFlow\`,
@@ -206,3 +212,4 @@ Framework APIs change between versions. Look things up in the project rather tha
 - `Docs/` — Authoritative technical and user documentation. Consult before proposing new designs.
 - `Docs/adr/` — Architecture Decision Records explaining key design choices.
 - `Docs/patterns/` — Detailed pattern specifications (FormFlow, etc.).
+- `Docs/13-monitoring.md` — Error tracking (Sentry), the `/health` endpoint, uptime monitoring.
