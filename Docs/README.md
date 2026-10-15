@@ -6,7 +6,7 @@ For a high-level introduction, see the [main README](../README.md). For domain c
 
 ## High-Level Architecture
 
-SupplyMars is a **modular monolith** - bounded contexts are self-contained modules that use each other only through their domain models (entities, events, repository interfaces), never each other's handlers, Doctrine repositories or controllers. Deptrac checks this in CI, and the imports still waiting for a fix are listed as exceptions. This keeps the benefits of a single deployable unit while keeping the boundaries visible, so the work needed to extract a context into a separate service stays bounded.
+SupplyMars is a **modular monolith** - bounded contexts are self-contained modules that use each other only through their domain models (entities, events, repository interfaces), never each other's handlers, Doctrine repositories or controllers. Deptrac checks this in CI, with a few named exceptions. This keeps the benefits of a single deployable unit while keeping the boundaries visible, so the work needed to extract a context into a separate service stays bounded.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐

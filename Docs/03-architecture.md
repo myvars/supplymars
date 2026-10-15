@@ -129,13 +129,19 @@ Examples from this codebase:
 - Type-hinting `ProductDoctrineRepository` there instead would fail the build. The Doctrine class is Catalog's `Infrastructure/`.
 - `StatusChangeLogger` (Audit) listens to `OrderStatusWasChangedEvent` (Order). Allowed: events are in `Domain/`.
 
-**One named exception:** the signed-in user. `CurrentUserProvider` returns it, and `DefaultUserAuthenticator` signs in the default staff user for the simulation commands. Both are in `src/Customer/Infrastructure/Security/`. Every context needs them, so Deptrac gives them a layer of their own (`Current user`) that any context may use.
+**Named exceptions.** A few classes are published by their context on purpose. Each has a Deptrac layer of its own, and only the contexts listed may use it:
+
+| Layer | Classes | Owner | Used by | Why |
+|-------|---------|-------|---------|-----|
+| `Current user` | `CurrentUserProvider`, `DefaultUserAuthenticator` (`src/Customer/Infrastructure/Security/`) | Customer | Every context | Every context needs the signed-in user; the simulation commands sign in the default staff user |
+| `Order sourcing` | `OrderAllocator`, `CreatePurchaseOrderItem` and its handler (`src/Purchasing/Application/`) | Purchasing | Order | Sourcing an order from suppliers is Purchasing's job, started from Order: allocating a whole order, or adding a purchase order item from the order screen |
+| `Demo customers` | `RandomUserFactory`, `RandomAddressFactory` (`src/Customer/Infrastructure/Factory/`) | Customer | Order | Demo orders are placed by simulated customers |
 
 ### Enforcement
 
 `deptrac.yaml` splits each context into two layers, `{Context} Domain` and `{Context} internals`, and lists which layers each may use. `vendor/bin/deptrac analyse` fails on any import the table above does not allow. It runs in CI and in `make check` (`make check-deptrac`).
 
-Imports that break the rules but are waiting for a design decision are listed under `skip_violations` in `deptrac.yaml`, grouped, each with the reason it is still there. Deptrac fails on an entry that no longer matches an import, so when one is fixed its entry must go: the list only gets shorter. Do not add to it to get a new import past the check; fix the import instead.
+There is no `skip_violations` list. When an import fails the check, fix it: use the other context's `Domain/`, add the query to its repository interface, or move the class to the context that owns it. Add a named exception only for a deliberate dependency on another context's behaviour, as its own layer in `deptrac.yaml`, open only to the contexts that need it, and add it to the table above.
 
 A new context must be added to `deptrac.yaml`: its two layers, its ruleset entries, its `Domain` layer in the lists of the other contexts, and its name in the `Unregistered` pattern. Until then its classes fall into the `Unregistered` layer, which may use nothing and which nothing may use, so the first import to or from the new context fails the build. See [ADR 014](adr/014-architecture-rules.md) for the decision.
 

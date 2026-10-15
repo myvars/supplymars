@@ -5,6 +5,8 @@
 #   "{Context} internals" – everything else: Application, Infrastructure, UI
 # A context may use its own layers, Shared, and the Domain layer of any other context.
 # Shared may use nothing outside Shared.
+# Named exceptions are layers of their own, open only to the contexts listed in the ruleset: Current user, Order
+# sourcing and Demo customers. See the table in Docs/03-architecture.md.
 # A new context needs its two layers here, its Domain layer added to every list in the ruleset, and its name
 # added to the Unregistered pattern. Until then its classes are Unregistered and every import to or from them fails.
 deptrac:
@@ -35,12 +37,16 @@ deptrac:
         - { type: classLike, value: ^App\\Customer\\Domain\\ }
     - name: Customer internals
       collectors:
-        - { type: classLike, value: ^App\\Customer\\(?!Domain\\|Infrastructure\\Security\\(CurrentUserProvider|DefaultUserAuthenticator)$) }
+        - { type: classLike, value: ^App\\Customer\\(?!Domain\\|Infrastructure\\Security\\(CurrentUserProvider|DefaultUserAuthenticator)$|Infrastructure\\Factory\\Random(User|Address)Factory$) }
     # Exception: every context needs the signed-in user, so Customer publishes the service that reads it, and the
     # one the simulation commands use to sign in the default staff user.
     - name: Current user
       collectors:
         - { type: classLike, value: ^App\\Customer\\Infrastructure\\Security\\(CurrentUserProvider|DefaultUserAuthenticator)$ }
+    # Exception: Order's demo orders are placed by simulated customers, built by Customer's random factories.
+    - name: Demo customers
+      collectors:
+        - { type: classLike, value: ^App\\Customer\\Infrastructure\\Factory\\Random(User|Address)Factory$ }
 
     - name: Note Domain
       collectors:
@@ -68,7 +74,12 @@ deptrac:
         - { type: classLike, value: ^App\\Purchasing\\Domain\\ }
     - name: Purchasing internals
       collectors:
-        - { type: classLike, value: ^App\\Purchasing\\(?!Domain\\) }
+        - { type: classLike, value: ^App\\Purchasing\\(?!Domain\\|Application\\Service\\OrderAllocator$|Application\\(Command|Handler)\\PurchaseOrderItem\\CreatePurchaseOrderItem(Handler)?$) }
+    # Exception: sourcing an order from suppliers is Purchasing's job, started from Order. Order allocates a whole
+    # order, and staff add a purchase order item to an order item from the order screen.
+    - name: Order sourcing
+      collectors:
+        - { type: classLike, value: ^App\\Purchasing\\Application\\(Service\\OrderAllocator$|(Command|Handler)\\PurchaseOrderItem\\CreatePurchaseOrderItem(Handler)?$) }
 
     - name: Reporting Domain
       collectors:
@@ -104,20 +115,22 @@ deptrac:
     Catalog internals: [Catalog Domain, Shared, Audit Domain, Customer Domain, Note Domain, Order Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Review Domain, Current user]
 
     Customer Domain: [Customer internals, Shared, Current user, Audit Domain, Catalog Domain, Note Domain, Order Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Review Domain]
-    Customer internals: [Customer Domain, Shared, Current user, Audit Domain, Catalog Domain, Note Domain, Order Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Review Domain]
+    Customer internals: [Customer Domain, Shared, Current user, Demo customers, Audit Domain, Catalog Domain, Note Domain, Order Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Review Domain]
+    Demo customers: [Customer Domain, Shared, Current user, Customer internals, Audit Domain, Catalog Domain, Note Domain, Order Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Review Domain]
     Current user: [Customer Domain, Shared]
 
     Note Domain: [Note internals, Shared, Audit Domain, Catalog Domain, Customer Domain, Order Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Review Domain, Current user]
     Note internals: [Note Domain, Shared, Audit Domain, Catalog Domain, Customer Domain, Order Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Review Domain, Current user]
 
     Order Domain: [Order internals, Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Review Domain, Current user]
-    Order internals: [Order Domain, Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Review Domain, Current user]
+    Order internals: [Order Domain, Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Review Domain, Current user, Order sourcing, Demo customers]
 
     Pricing Domain: [Pricing internals, Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Order Domain, Purchasing Domain, Reporting Domain, Review Domain, Current user]
     Pricing internals: [Pricing Domain, Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Order Domain, Purchasing Domain, Reporting Domain, Review Domain, Current user]
 
     Purchasing Domain: [Purchasing internals, Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Order Domain, Pricing Domain, Reporting Domain, Review Domain, Current user]
-    Purchasing internals: [Purchasing Domain, Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Order Domain, Pricing Domain, Reporting Domain, Review Domain, Current user]
+    Purchasing internals: [Purchasing Domain, Order sourcing, Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Order Domain, Pricing Domain, Reporting Domain, Review Domain, Current user]
+    Order sourcing: [Purchasing Domain, Purchasing internals, Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Order Domain, Pricing Domain, Reporting Domain, Review Domain, Current user]
 
     Reporting Domain: [Reporting internals, Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Order Domain, Pricing Domain, Purchasing Domain, Review Domain, Current user]
     Reporting internals: [Reporting Domain, Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Order Domain, Pricing Domain, Purchasing Domain, Review Domain, Current user]
@@ -126,19 +139,3 @@ deptrac:
     Review internals: [Review Domain, Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Order Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Current user]
 
     Home internals: [Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Order Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Review Domain, Current user]
-
-  # Imports that break the rules and are waiting for a decision (issue #36). Each entry says why it is still here.
-  # Remove an entry when its import is fixed: this list must only get shorter.
-  skip_violations:
-    # A controller or handler calls another context's handler or service. Decide per case: move the orchestration
-    # into the owning context, trigger it through a domain event, or record a named exception.
-    App\Order\Application\Handler\AllocateOrderHandler:
-      - App\Purchasing\Application\Service\OrderAllocator
-    App\Order\UI\Http\Controller\OrderItemController:
-      - App\Purchasing\Application\Command\PurchaseOrderItem\CreatePurchaseOrderItem
-      - App\Purchasing\Application\Handler\PurchaseOrderItem\CreatePurchaseOrderItemHandler
-
-    # Demo orders are built with Customer's random user and address factories, which are infrastructure.
-    App\Order\Application\Service\DemoOrderCreator:
-      - App\Customer\Infrastructure\Factory\RandomUserFactory
-      - App\Customer\Infrastructure\Factory\RandomAddressFactory

@@ -652,7 +652,7 @@ Active rule sets:
 vendor/bin/deptrac analyse
 ```
 
-**Configuration:** `deptrac.yaml`. Fails when a class imports something the [rules between contexts](03-architecture.md#rules-between-contexts) do not allow, or when an entry in its `skip_violations` list no longer matches an import.
+**Configuration:** `deptrac.yaml`. Fails when a class imports something the [rules between contexts](03-architecture.md#rules-between-contexts) do not allow.
 
 ### Running All Checks
 
