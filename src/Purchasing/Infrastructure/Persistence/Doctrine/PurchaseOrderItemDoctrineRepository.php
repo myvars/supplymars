@@ -8,7 +8,6 @@ use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItemPublicId;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use App\Purchasing\Domain\Model\Supplier\Supplier;
 use App\Purchasing\Domain\Repository\PurchaseOrderItemRepository;
-use App\Reporting\Application\Report\PoItemPerformanceReportCriteria;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -96,15 +95,13 @@ class PurchaseOrderItemDoctrineRepository extends ServiceEntityRepository implem
     /**
      * @return AdapterInterface<PurchaseOrderItem>
      */
-    public function findForPerformanceReport(PoItemPerformanceReportCriteria $criteria): AdapterInterface
-    {
-        $sort = $criteria->getSort();
-        $sortDirection = $criteria->getSortDirection();
-
-        $qb = $this->getPerformanceReportQueryBuilder(
-            new \DateTime($criteria->getDuration()->getStartDate()),
-            new \DateTime($criteria->getDuration()->getEndDate())
-        );
+    public function findForPerformanceReport(
+        \DateTime $startDate,
+        \DateTime $endDate,
+        string $sort,
+        string $sortDirection,
+    ): AdapterInterface {
+        $qb = $this->getPerformanceReportQueryBuilder($startDate, $endDate);
 
         // Always select profit for secondary sorting
         $qb->addSelect('(poi.quantity * coi.price) - poi.totalPrice AS HIDDEN profit');

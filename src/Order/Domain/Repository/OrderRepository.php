@@ -9,6 +9,7 @@ use App\Order\Domain\Model\Order\OrderId;
 use App\Order\Domain\Model\Order\OrderPublicId;
 use App\Order\Infrastructure\Persistence\Doctrine\CustomerOrderDoctrineRepository;
 use App\Shared\Infrastructure\Persistence\Search\FindByCriteriaInterface;
+use Pagerfanta\Adapter\AdapterInterface;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 
 #[AsAlias(CustomerOrderDoctrineRepository::class)]
@@ -37,6 +38,13 @@ interface OrderRepository extends FindByCriteriaInterface
      * @return array<int, CustomerOrder>
      */
     public function findLatestOrders(\DateTime $startDate, int $limit = 10): array;
+
+    /**
+     * The caller checks $sort against its allowed fields.
+     *
+     * @return AdapterInterface<CustomerOrder>
+     */
+    public function findOverdueOrders(\DateTime $startDate, string $sort, string $sortDirection): AdapterInterface;
 
     /**
      * @return array<string, mixed>|null

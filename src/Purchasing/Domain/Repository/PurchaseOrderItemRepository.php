@@ -10,6 +10,7 @@ use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItemPublicId;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use App\Purchasing\Domain\Model\Supplier\Supplier;
 use App\Purchasing\Infrastructure\Persistence\Doctrine\PurchaseOrderItemDoctrineRepository;
+use Pagerfanta\Adapter\AdapterInterface;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 
 #[AsAlias(PurchaseOrderItemDoctrineRepository::class)]
@@ -34,6 +35,18 @@ interface PurchaseOrderItemRepository
      * @return array<int, array<string, mixed>>
      */
     public function calculateProductSales(\DateTime $startDate, \DateTime $endDate): array;
+
+    /**
+     * The caller checks $sort against its allowed fields.
+     *
+     * @return AdapterInterface<PurchaseOrderItem>
+     */
+    public function findForPerformanceReport(
+        \DateTime $startDate,
+        \DateTime $endDate,
+        string $sort,
+        string $sortDirection,
+    ): AdapterInterface;
 
     /**
      * @return array<string, mixed>|null

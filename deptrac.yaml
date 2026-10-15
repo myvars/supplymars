@@ -142,15 +142,3 @@ deptrac:
     App\Order\Application\Service\DemoOrderCreator:
       - App\Customer\Infrastructure\Factory\RandomUserFactory
       - App\Customer\Infrastructure\Factory\RandomAddressFactory
-
-    # Order and Purchasing repositories take Reporting's report criteria, so the dependency runs backwards, and the
-    # Reporting handlers call those methods on the Doctrine class because the interface cannot name Reporting's
-    # criteria. Both sides are fixed together once the criteria or the query has a home.
-    App\Order\Infrastructure\Persistence\Doctrine\CustomerOrderDoctrineRepository:
-      - App\Reporting\Application\Report\OverdueOrderReportCriteria
-    App\Reporting\Application\Handler\Report\OverdueOrdersReportHandler:
-      - App\Order\Infrastructure\Persistence\Doctrine\CustomerOrderDoctrineRepository
-    App\Purchasing\Infrastructure\Persistence\Doctrine\PurchaseOrderItemDoctrineRepository:
-      - App\Reporting\Application\Report\PoItemPerformanceReportCriteria
-    App\Reporting\Application\Handler\Report\PoItemPerformanceReportHandler:
-      - App\Purchasing\Infrastructure\Persistence\Doctrine\PurchaseOrderItemDoctrineRepository
