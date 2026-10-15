@@ -132,8 +132,6 @@ deptrac:
   skip_violations:
     # A controller or handler calls another context's handler or service. Decide per case: move the orchestration
     # into the owning context, trigger it through a domain event, or record a named exception.
-    App\Customer\UI\Http\Controller\CustomerController:
-      - App\Reporting\Application\Handler\Report\CustomerProfileInsightsHandler
     App\Order\Application\Handler\AllocateOrderHandler:
       - App\Purchasing\Application\Service\OrderAllocator
     App\Order\UI\Http\Controller\OrderItemController:

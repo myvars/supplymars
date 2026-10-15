@@ -395,7 +395,7 @@ The Customer Insights feature provides analytics on customer behavior, geographi
 - `src/Reporting/Application/Handler/CustomerInsightsReportHandler.php`
 - `src/Reporting/Application/Handler/CustomerGeographicReportHandler.php`
 - `src/Reporting/Application/Handler/CustomerSegmentReportHandler.php`
-- `src/Customer/Application/Handler/CustomerProfileInsightsHandler.php`
+- `UserRepository::findCustomerInsights()` (`src/Customer/Infrastructure/Persistence/Doctrine/UserDoctrineRepository.php`)
 
 ### Business Rules
 
