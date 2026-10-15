@@ -60,8 +60,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
     #[ORM\Column(type: Types::BOOLEAN)]
     private bool $isSimulated = false;
 
+    /** SHA-256 hash of the API token; the token itself is never stored. */
     #[ORM\Column(type: Types::STRING, length: 64, unique: true, nullable: true)]
-    private ?string $apiToken = null;
+    private ?string $apiTokenHash = null;
 
     /** @var Collection<int, Category> */
     #[ORM\OneToMany(targetEntity: Category::class, mappedBy: 'owner')]
@@ -293,21 +294,33 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
         return in_array('ROLE_ADMIN', $this->getRoles(), true);
     }
 
-    public function getApiToken(): ?string
+    public static function hashApiToken(#[\SensitiveParameter] string $apiToken): string
     {
-        return $this->apiToken;
+        return hash('sha256', $apiToken);
     }
 
-    public function setApiToken(?string $apiToken): void
+    public function hasApiToken(): bool
     {
-        $this->apiToken = $apiToken;
+        return $this->apiTokenHash !== null;
     }
 
+    /**
+     * Stores the hash of the given token; null revokes it.
+     */
+    public function setApiToken(#[\SensitiveParameter] ?string $apiToken): void
+    {
+        $this->apiTokenHash = $apiToken === null ? null : self::hashApiToken($apiToken);
+    }
+
+    /**
+     * Issues a new token and returns it. It cannot be read back afterwards.
+     */
     public function regenerateApiToken(): string
     {
-        $this->apiToken = bin2hex(random_bytes(32));
+        $apiToken = bin2hex(random_bytes(32));
+        $this->setApiToken($apiToken);
 
-        return $this->apiToken;
+        return $apiToken;
     }
 
     /**

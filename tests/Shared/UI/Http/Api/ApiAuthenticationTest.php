@@ -3,6 +3,7 @@
 namespace App\Tests\Shared\UI\Http\Api;
 
 use App\Tests\Shared\Factory\UserFactory;
+use Doctrine\DBAL\Connection;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\HttpOptions;
 use Zenstruck\Browser\Test\HasBrowser;
@@ -40,9 +41,7 @@ final class ApiAuthenticationTest extends WebTestCase
     public function testValidBearerTokenAllowsAccess(): void
     {
         $token = bin2hex(random_bytes(32));
-        UserFactory::new()->asStaff()->afterInstantiate(function ($user) use ($token): void {
-            $user->setApiToken($token);
-        })->create();
+        UserFactory::new()->asStaff()->withApiToken($token)->create();
 
         $this->browser()
             ->get('/api/v1/orders', [
@@ -51,6 +50,28 @@ final class ApiAuthenticationTest extends WebTestCase
             ->assertSuccessful()
             ->assertJson()
             ->assertJsonMatches('length(data)', 0);
+    }
+
+    public function testTokenIsCheckedAgainstItsStoredHash(): void
+    {
+        $token = bin2hex(random_bytes(32));
+        $user = UserFactory::new()->asStaff()->create();
+        /** @var Connection $connection */
+        $connection = self::getContainer()->get(Connection::class);
+        $connection->update('user', ['api_token_hash' => hash('sha256', $token)], ['id' => $user->getId()]);
+
+        $this->browser()
+            ->get('/api/v1/orders', [
+                'headers' => ['Authorization' => 'Bearer ' . $token],
+            ])
+            ->assertSuccessful();
+
+        $this->browser()
+            ->get('/api/v1/orders', [
+                'headers' => ['Authorization' => 'Bearer ' . hash('sha256', $token)],
+            ])
+            ->assertStatus(401)
+            ->assertJsonMatches('detail', 'Invalid API token.');
     }
 
     public function testNotFoundReturnsRfc7807(): void
