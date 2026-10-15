@@ -29,7 +29,7 @@ Repository interfaces are allowed because the stricter version, entities only, w
 
 The security classes that need `User` (`ApiTokenHandler`, `CurrentUserProvider`, `DefaultUserAuthenticator`) moved to `src/Customer/Infrastructure/Security/`.
 
-The signed-in user is the one named exception to the rule above. `CurrentUserProvider` returns it, and `DefaultUserAuthenticator` signs in the default staff user for the simulation commands (ADR 003) in Order, Purchasing and Review. Every context needs one or the other, so they share a layer of their own that any context may use.
+The signed-in user is the one named exception to the rule above. `CurrentUserProvider` returns it, and `DefaultUserAuthenticator` signs in the default staff user for the simulation commands (ADR 003) in Order, Purchasing and Review. Every context needs one or the other, so they share a layer of their own that any context may use. The skeleton's exception is `CurrentUserProvider` alone; it has no simulation commands. `DefaultUserAuthenticator` is only meant for console commands, and today only they use it.
 
 ### Deptrac enforces the rules between contexts
 
@@ -50,5 +50,5 @@ Deptrac fails on a `skip_violations` entry that no longer matches an import, so 
 
 - A forbidden import fails the build with the class, the file and the layer it may not use.
 - A new context must be added to `deptrac.yaml`. Until it is, a catch-all `Unregistered` layer makes every import to or from it fail, so the step cannot be forgotten.
-- Repository interfaces grow the query methods other contexts use, mostly Reporting's reads of Order, Customer and Purchasing. They are the visible list of what each context provides to the others.
+- Repository interfaces grow the query methods other contexts use, mostly Reporting's reads of Order, Customer and Purchasing. They are the visible list of what each context provides to the others. If Reporting's queries keep growing on `OrderRepository`, a query interface of its own in Order's `Domain/` is the next step.
 - Extracting a context into its own service still means replacing relations and repository calls with an API. The rule keeps that list short and visible; it does not make extraction free.
