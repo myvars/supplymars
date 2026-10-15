@@ -114,6 +114,8 @@ make verify-prod-playground
 
 This only works for a commit whose images CI has published. If they are missing, the pull fails and nothing is restarted.
 
+The server does not build. If the publish job or GHCR is unavailable, a new commit waits until it is back; the running version, and any earlier published one (section 2.3), keeps working.
+
 ### 2.3 Rollback
 
 Check out the previous commit and start its images:
@@ -132,22 +134,6 @@ docker compose $PLAYGROUND exec php php bin/console doctrine:migrations:migrate 
 ```
 
 The next push to `main` deploys as normal. To stay on the old version until a fix is ready, revert the bad commit on `main` instead, which deploys through CI.
-
-### 2.4 Fallback: Build on the Server
-
-The old deploy path, kept until the image pipeline has deployed cleanly twice. Use it only if GHCR or the publish job is unavailable. It builds images tagged `local` on the server, which competes with the running sites for CPU for several minutes:
-
-```bash
-cd /home/ubuntu/supplymars
-git fetch origin
-git reset --hard origin/main
-git clean -fd
-
-docker compose $LIVE up -d --build --remove-orphans --wait
-docker compose $PLAYGROUND up -d --build --remove-orphans --wait
-```
-
-The next `make up-prod-*` returns to the published images.
 
 ---
 
