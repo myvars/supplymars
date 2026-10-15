@@ -10,8 +10,8 @@ Two Docker Compose stacks run on the same Lightsail instance, fronted by Caddy (
 
 | Stack | Project Name | Nginx Port | Domain |
 |-------|-------------|------------|--------|
-| Live | `supplymars-live` | 8001 | `supplymars.com`, `www.supplymars.com` |
-| Playground | `supplymars-playground` | 8002 | `live.supplymars.com` |
+| Live | `supplymars-live` | 8001 | `live.supplymars.com` |
+| Playground | `supplymars-playground` | 8002 | `supplymars.com`, `www.supplymars.com` (the public demo) |
 
 Each stack runs 6 containers (7 for playground, which includes `reset`). The queue is a table in the stack's own database; RabbitMQ is an opt-in and does not run ([ADR 013](adr/013-database-queue-by-default.md)):
 
@@ -120,8 +120,8 @@ docker compose $LIVE ps
 docker compose $PLAYGROUND ps
 
 # 2. Apps respond (via Caddy)
-curl -sf -o /dev/null -w "%{http_code}" https://supplymars.com          # 200
-curl -sf -o /dev/null -w "%{http_code}" https://live.supplymars.com     # 200
+curl -sf -o /dev/null -w "%{http_code}" https://supplymars.com          # 200 (playground)
+curl -sf -o /dev/null -w "%{http_code}" https://live.supplymars.com     # 200 (live)
 
 # 3. Migrations up to date
 docker compose $LIVE exec -T php php bin/console doctrine:migrations:up-to-date

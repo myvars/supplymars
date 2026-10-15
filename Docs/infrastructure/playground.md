@@ -13,10 +13,12 @@ The playground is a full copy of the live site where users can experiment freely
         localhost:8001            localhost:8002
    ┌─────────────────────┐  ┌───────────────────────┐
    │   supplymars-live   │  │ supplymars-playground │
-   │ (www.supplymars.com │  │ (live.supplymars.com) │
-   │   supplymars.com)   │  │                       │
+   │       (live.        │  │ (www.supplymars.com,  │
+   │   supplymars.com)   │  │  supplymars.com)      │
    └─────────────────────┘  └───────────────────────┘
 ```
+
+The names read the wrong way round: `www.supplymars.com` is the public playground, the address visitors are given, and `live.supplymars.com` is the live site, the source of truth that the playground is reset from each night.
 
 Each stack has its own database, Redis, and PHP containers, and its own queue (a table in its database). They share nothing at the Docker level — no shared networks.
 
@@ -56,7 +58,7 @@ Both stacks use env files stored at `/home/ubuntu/supplymars-secrets/` on the se
 ```env
 APP_SECRET=<secret>
 DEFAULT_DOMAIN=supplymars
-DEFAULT_URI=https://www.supplymars.com
+DEFAULT_URI=https://live.supplymars.com
 DATABASE_URL=mysql://app:<password>@database:3306/app
 REDIS_URL=redis://default:<password>@redis:6379
 REDIS_SESSION_DSN=redis://default:<password>@redis:6379/1
@@ -84,6 +86,7 @@ Same structure with **different passwords** for all services, plus playground-sp
 
 ```env
 # ... same keys as live.env, with different passwords ...
+DEFAULT_URI=https://www.supplymars.com
 AWS_S3_PRODUCTS_PREFIX=playground
 UPLOADS_BASE_URL=https://unicorn-bucket-two.s3.eu-west-2.amazonaws.com/playground
 PLAYGROUND_MODE=true
@@ -123,11 +126,11 @@ Write the Caddyfile:
 ```bash
 sudo tee /etc/caddy/Caddyfile > /dev/null << 'EOF'
 supplymars.com, www.supplymars.com {
-    reverse_proxy localhost:8001
+    reverse_proxy localhost:8002
 }
 
 live.supplymars.com {
-    reverse_proxy localhost:8002
+    reverse_proxy localhost:8001
 }
 EOF
 
@@ -199,6 +202,10 @@ docker compose --env-file ../supplymars-secrets/playground.env \
 ```bash
 curl -sf -o /dev/null -w "%{http_code}" https://supplymars.com       # 200
 curl -sf -o /dev/null -w "%{http_code}" https://live.supplymars.com   # 200
+
+# The playground banner shows on www only
+curl -s https://www.supplymars.com/login | grep -c "Welcome to the Playground"    # 1
+curl -s https://live.supplymars.com/login | grep -c "Welcome to the Playground"   # 0
 ```
 
 ---
