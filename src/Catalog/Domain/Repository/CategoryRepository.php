@@ -21,4 +21,6 @@ interface CategoryRepository extends FindByCriteriaInterface
     public function get(CategoryId $id): ?Category;
 
     public function getByPublicId(CategoryPublicId $publicId): ?Category;
+
+    public function count(): int;
 }

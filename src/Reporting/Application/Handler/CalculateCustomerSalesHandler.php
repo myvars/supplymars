@@ -2,8 +2,8 @@
 
 namespace App\Reporting\Application\Handler;
 
-use App\Customer\Infrastructure\Persistence\Doctrine\UserDoctrineRepository;
-use App\Order\Infrastructure\Persistence\Doctrine\CustomerOrderDoctrineRepository;
+use App\Customer\Domain\Repository\UserRepository;
+use App\Order\Domain\Repository\OrderRepository;
 use App\Reporting\Domain\Model\SalesType\CustomerActivitySales;
 use App\Reporting\Domain\Model\SalesType\CustomerSales;
 use App\Reporting\Domain\Repository\CustomerActivitySalesRepository;
@@ -16,8 +16,8 @@ final readonly class CalculateCustomerSalesHandler
     public function __construct(
         private CustomerSalesRepository $customerSalesRepository,
         private CustomerActivitySalesRepository $customerActivitySalesRepository,
-        private CustomerOrderDoctrineRepository $orderRepository,
-        private UserDoctrineRepository $userRepository,
+        private OrderRepository $orderRepository,
+        private UserRepository $userRepository,
         private FlusherInterface $flusher,
         private ValidatorInterface $validator,
     ) {

@@ -4,28 +4,28 @@ declare(strict_types=1);
 
 namespace App\Home\Service;
 
-use App\Catalog\Infrastructure\Persistence\Doctrine\CategoryDoctrineRepository;
-use App\Catalog\Infrastructure\Persistence\Doctrine\ProductDoctrineRepository;
-use App\Customer\Infrastructure\Persistence\Doctrine\UserDoctrineRepository;
-use App\Order\Infrastructure\Persistence\Doctrine\CustomerOrderDoctrineRepository;
+use App\Catalog\Domain\Repository\CategoryRepository;
+use App\Catalog\Domain\Repository\ProductRepository;
+use App\Customer\Domain\Repository\UserRepository;
+use App\Order\Domain\Repository\OrderRepository;
 use App\Reporting\Domain\Metric\SalesDuration;
 use App\Reporting\Domain\Metric\SalesType;
 use App\Reporting\Domain\Model\SalesType\ProductSalesType;
-use App\Reporting\Infrastructure\Persistence\Doctrine\OrderSalesSummaryDoctrineRepository;
-use App\Reporting\Infrastructure\Persistence\Doctrine\ProductSalesDoctrineRepository;
-use App\Reporting\Infrastructure\Persistence\Doctrine\ProductSalesSummaryDoctrineRepository;
+use App\Reporting\Domain\Repository\OrderSalesSummaryRepository;
+use App\Reporting\Domain\Repository\ProductSalesRepository;
+use App\Reporting\Domain\Repository\ProductSalesSummaryRepository;
 use App\Shared\Application\Service\SidebarBadgeProvider;
 
 final readonly class DashboardDataProvider
 {
     public function __construct(
-        private OrderSalesSummaryDoctrineRepository $orderSummaryRepository,
-        private ProductSalesSummaryDoctrineRepository $productSummaryRepository,
-        private CustomerOrderDoctrineRepository $orderRepository,
-        private ProductDoctrineRepository $productRepository,
-        private CategoryDoctrineRepository $categoryRepository,
-        private UserDoctrineRepository $userRepository,
-        private ProductSalesDoctrineRepository $productSalesRepository,
+        private OrderSalesSummaryRepository $orderSummaryRepository,
+        private ProductSalesSummaryRepository $productSummaryRepository,
+        private OrderRepository $orderRepository,
+        private ProductRepository $productRepository,
+        private CategoryRepository $categoryRepository,
+        private UserRepository $userRepository,
+        private ProductSalesRepository $productSalesRepository,
         private SidebarBadgeProvider $badgeProvider,
     ) {
     }

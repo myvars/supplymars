@@ -26,4 +26,6 @@ interface ProductRepository extends FindByCriteriaInterface
     public function findRandomProducts(int $limit = 10): array;
 
     public function findByMfrPartNumber(string $mfrPartNumber): ?Product;
+
+    public function count(): int;
 }

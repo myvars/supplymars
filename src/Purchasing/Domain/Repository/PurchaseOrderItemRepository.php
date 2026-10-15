@@ -29,4 +29,14 @@ interface PurchaseOrderItemRepository
         PurchaseOrderStatus $status,
         int $limit = 10,
     ): array;
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function calculateProductSales(\DateTime $startDate, \DateTime $endDate): array;
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function findPerformanceReportSummary(\DateTime $startDate, \DateTime $endDate): ?array;
 }

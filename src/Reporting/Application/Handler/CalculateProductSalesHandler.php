@@ -2,9 +2,12 @@
 
 namespace App\Reporting\Application\Handler;
 
-use App\Catalog\Infrastructure\Persistence\Doctrine\ProductDoctrineRepository;
-use App\Purchasing\Infrastructure\Persistence\Doctrine\PurchaseOrderItemDoctrineRepository;
-use App\Purchasing\Infrastructure\Persistence\Doctrine\SupplierDoctrineRepository;
+use App\Catalog\Domain\Model\Product\Product;
+use App\Catalog\Domain\Model\Product\ProductId;
+use App\Catalog\Domain\Repository\ProductRepository;
+use App\Purchasing\Domain\Model\Supplier\SupplierId;
+use App\Purchasing\Domain\Repository\PurchaseOrderItemRepository;
+use App\Purchasing\Domain\Repository\SupplierRepository;
 use App\Reporting\Domain\Model\SalesType\ProductSales;
 use App\Reporting\Domain\Repository\ProductSalesRepository;
 use App\Shared\Application\FlusherInterface;
@@ -14,9 +17,9 @@ final readonly class CalculateProductSalesHandler
 {
     public function __construct(
         private ProductSalesRepository $productSalesRepository,
-        private PurchaseOrderItemDoctrineRepository $purchaseOrderItemRepository,
-        private ProductDoctrineRepository $productRepository,
-        private SupplierDoctrineRepository $supplierRepository,
+        private PurchaseOrderItemRepository $purchaseOrderItemRepository,
+        private ProductRepository $productRepository,
+        private SupplierRepository $supplierRepository,
         private FlusherInterface $flusher,
         private ValidatorInterface $validator,
     ) {
@@ -32,10 +35,10 @@ final readonly class CalculateProductSalesHandler
 
         $processed = 0;
         foreach ($sales as $sale) {
-            $product = $this->productRepository->find($sale['productId']);
-            $supplier = $this->supplierRepository->find($sale['supplierId']);
+            $product = $this->productRepository->get(ProductId::fromInt((int) $sale['productId']));
+            $supplier = $this->supplierRepository->get(SupplierId::fromInt((int) $sale['supplierId']));
 
-            if ($product !== null) {
+            if ($product instanceof Product) {
                 $productSales = ProductSales::create(
                     $product,
                     $supplier,

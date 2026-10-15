@@ -29,4 +29,13 @@ interface UserRepository extends FindByCriteriaInterface
     public function findByApiTokenHash(string $apiTokenHash): ?User;
 
     public function getByEmail(string $email): ?User;
+
+    public function count(): int;
+
+    public function countNonStaffCustomers(): int;
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function findCustomerInsights(User $user): array;
 }

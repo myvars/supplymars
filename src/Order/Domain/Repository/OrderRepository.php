@@ -30,4 +30,60 @@ interface OrderRepository extends FindByCriteriaInterface
     public function countPendingOrders(): int;
 
     public function countDemoOrdersCreatedToday(): int;
+
+    public function count(): int;
+
+    /**
+     * @return array<int, CustomerOrder>
+     */
+    public function findLatestOrders(\DateTime $startDate, int $limit = 10): array;
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function findOverdueOrdersSummary(\DateTime $startDate): ?array;
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function findOrderSalesByDate(\DateTime $startDate, \DateTime $endDate): array;
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function findOrderSalesByStatus(\DateTime $startDate, \DateTime $endDate): array;
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function findCustomerSalesByDate(\DateTime $startDate, \DateTime $endDate): array;
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function findCustomerActivityByDate(\DateTime $startDate, \DateTime $endDate): array;
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function findCustomerGeographicSales(\DateTime $startDate, \DateTime $endDate): array;
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function findCustomerSegmentSales(\DateTime $startDate, \DateTime $endDate): array;
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function findRevenueMetrics(\DateTime $startDate, \DateTime $endDate): array;
+
+    public function findLifetimeRevenue(): string;
+
+    public function findReviewRate(\DateTime $startDate, \DateTime $endDate, int $activeCustomers): string;
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function findTopCustomersByRevenue(\DateTime $startDate, \DateTime $endDate, int $limit = 10): array;
 }

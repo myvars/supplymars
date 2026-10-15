@@ -55,4 +55,19 @@ class CreateOrderItemFlowTest extends WebTestCase
             ->assertOn('/order/' . $order->getPublicId()->value() . '/item/new')
             ->assertSee('Product with Id "999999" not found');
     }
+
+    public function testValidationErrorsOnNegativeProductId(): void
+    {
+        $order = CustomerOrderFactory::createOne();
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/order/' . $order->getPublicId()->value() . '/item/new')
+            ->fillField('order_item[productId]', '-1')
+            ->fillField('order_item[quantity]', '5')
+            ->click('Create Order Item')
+            ->assertOn('/order/' . $order->getPublicId()->value() . '/item/new')
+            ->assertSee('Please enter a valid product Id')
+            ->assertSee('Product with Id "-1" not found');
+    }
 }

@@ -46,4 +46,29 @@ class CreateOrderFlowTest extends WebTestCase
             ->assertSee('Please enter a customer Id')
             ->assertSee('Please choose a shipping method');
     }
+
+    public function testValidationErrorsOnUnknownCustomerId(): void
+    {
+        $this->browser()
+            ->actingAs(UserFactory::new()->asSuperAdmin()->create())
+            ->get('/order/new')
+            ->fillField('order[customerId]', '99999')
+            ->fillField('order[shippingMethod]', ShippingMethod::THREE_DAY->value)
+            ->click('Create Order')
+            ->assertOn('/order/new')
+            ->assertSee('Customer with Id "99999" not found');
+    }
+
+    public function testValidationErrorsOnNegativeCustomerId(): void
+    {
+        $this->browser()
+            ->actingAs(UserFactory::new()->asSuperAdmin()->create())
+            ->get('/order/new')
+            ->fillField('order[customerId]', '-1')
+            ->fillField('order[shippingMethod]', ShippingMethod::THREE_DAY->value)
+            ->click('Create Order')
+            ->assertOn('/order/new')
+            ->assertSee('Please enter a valid customer Id')
+            ->assertSee('Customer with Id "-1" not found');
+    }
 }

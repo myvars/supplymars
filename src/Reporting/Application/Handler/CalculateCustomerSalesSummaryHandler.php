@@ -2,8 +2,8 @@
 
 namespace App\Reporting\Application\Handler;
 
-use App\Customer\Infrastructure\Persistence\Doctrine\UserDoctrineRepository;
-use App\Order\Infrastructure\Persistence\Doctrine\CustomerOrderDoctrineRepository;
+use App\Customer\Domain\Repository\UserRepository;
+use App\Order\Domain\Repository\OrderRepository;
 use App\Reporting\Domain\Metric\CustomerSegment;
 use App\Reporting\Domain\Metric\SalesDuration;
 use App\Reporting\Domain\Model\SalesType\CustomerGeographicSummary;
@@ -22,8 +22,8 @@ final readonly class CalculateCustomerSalesSummaryHandler
         private CustomerSalesSummaryRepository $customerSalesSummaryRepository,
         private CustomerGeographicSummaryRepository $customerGeographicSummaryRepository,
         private CustomerSegmentSummaryRepository $customerSegmentSummaryRepository,
-        private CustomerOrderDoctrineRepository $orderRepository,
-        private UserDoctrineRepository $userRepository,
+        private OrderRepository $orderRepository,
+        private UserRepository $userRepository,
         private FlusherInterface $flusher,
         private ValidatorInterface $validator,
     ) {

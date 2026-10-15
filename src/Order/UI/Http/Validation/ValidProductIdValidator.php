@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace App\Order\UI\Http\Validation;
 
-use App\Catalog\Infrastructure\Persistence\Doctrine\ProductDoctrineRepository;
+use App\Catalog\Domain\Model\Product\Product;
+use App\Catalog\Domain\Model\Product\ProductId;
+use App\Catalog\Domain\Repository\ProductRepository;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
 final class ValidProductIdValidator extends ConstraintValidator
 {
-    public function __construct(private readonly ProductDoctrineRepository $productRepository)
+    public function __construct(private readonly ProductRepository $productRepository)
     {
     }
 
@@ -24,7 +26,7 @@ final class ValidProductIdValidator extends ConstraintValidator
             return;
         }
 
-        if ($product = $this->productRepository->find($value)) {
+        if ((int) $value > 0 && $this->productRepository->get(ProductId::fromInt((int) $value)) instanceof Product) {
             return;
         }
 

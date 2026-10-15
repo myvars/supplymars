@@ -2,7 +2,7 @@
 
 namespace App\Reporting\Application\Handler;
 
-use App\Order\Infrastructure\Persistence\Doctrine\CustomerOrderDoctrineRepository;
+use App\Order\Domain\Repository\OrderRepository;
 use App\Reporting\Domain\Model\SalesType\OrderSales;
 use App\Reporting\Domain\Repository\OrderSalesRepository;
 use App\Shared\Application\FlusherInterface;
@@ -12,7 +12,7 @@ final readonly class CalculateOrderSalesHandler
 {
     public function __construct(
         private OrderSalesRepository $orderSalesRepository,
-        private CustomerOrderDoctrineRepository $orderRepository,
+        private OrderRepository $orderRepository,
         private FlusherInterface $flusher,
         private ValidatorInterface $validator,
     ) {
