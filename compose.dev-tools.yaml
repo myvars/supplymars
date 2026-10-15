@@ -45,9 +45,10 @@ services:
     restart: unless-stopped
 
 
-  # --- RabbitMQ Message Broker (Dev local) ---
+  # --- RabbitMQ Message Broker (Dev local, only with the rabbitmq profile) ---
   rabbitmq:
     image: rabbitmq:4.3-management-alpine
+    profiles: [ rabbitmq ]
     ports:
       - "127.0.0.1:5672:5672"      # AMQP protocol (localhost only)
       - "127.0.0.1:15672:15672"    # RabbitMQ Management UI (localhost only)

@@ -12,13 +12,13 @@ up-prod-live:
 	docker compose --env-file ../supplymars-secrets/live.env -p supplymars-live -f compose.yaml -f compose.prod.yaml up -d --build --remove-orphans --wait
 
 down-prod-live:
-	docker compose --env-file ../supplymars-secrets/live.env -p supplymars-live -f compose.yaml -f compose.prod.yaml down --remove-orphans
+	docker compose --env-file ../supplymars-secrets/live.env -p supplymars-live --profile '*' -f compose.yaml -f compose.prod.yaml down --remove-orphans
 
 up-prod-playground:
 	docker compose --env-file ../supplymars-secrets/playground.env -p supplymars-playground --profile playground -f compose.yaml -f compose.prod.yaml up -d --build --remove-orphans --wait
 
 down-prod-playground:
-	docker compose --env-file ../supplymars-secrets/playground.env -p supplymars-playground --profile playground -f compose.yaml -f compose.prod.yaml down --remove-orphans
+	docker compose --env-file ../supplymars-secrets/playground.env -p supplymars-playground --profile '*' -f compose.yaml -f compose.prod.yaml down --remove-orphans
 
 certs:
 	@command -v mkcert >/dev/null || { echo "mkcert not found — install with: brew install mkcert"; exit 1; }
@@ -28,8 +28,9 @@ certs:
 up-dev-tools:
 	docker compose -f compose.dev-tools.yaml up -d --wait --build
 
+# --profile '*' also removes opt-in services (RabbitMQ) whether or not their profile is on
 down:
-	docker compose -f compose.yaml -f compose.dev-tools.yaml down --remove-orphans
+	docker compose --profile '*' -f compose.yaml -f compose.dev-tools.yaml down --remove-orphans
 
 test:
 	docker compose run --rm -e APP_ENV=test php ./scripts/run-tests.sh

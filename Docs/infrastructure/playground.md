@@ -18,7 +18,7 @@ The playground is a full copy of the live site where users can experiment freely
    └─────────────────────┘  └───────────────────────┘
 ```
 
-Each stack has its own database, Redis, RabbitMQ, and PHP containers. They share nothing at the Docker level — no shared networks.
+Each stack has its own database, Redis, and PHP containers, and its own queue (a table in its database). They share nothing at the Docker level — no shared networks.
 
 ### Nightly Reset
 
@@ -26,11 +26,10 @@ At **02:00 UTC**, the live cron container runs `app:backup-database --local-copy
 
 At **02:15 UTC**, the playground reset container runs `playground-reset.sh`, which:
 
-1. Restores the database from `/backups/latest.sql.gz` (read-only volume mount)
+1. Restores the database from `/backups/latest.sql.gz` (read-only volume mount), leaving out the rows of `messenger_messages`: they are live's queue, and the playground worker would send live's pending emails. The table is recreated empty, which also clears the playground's own queue
 2. Redacts staff credentials and creates the demo user (via `playground-redact-staff.sql`, immediately after restore — no window where real credentials are exposed)
 3. Syncs S3 uploads/media from the live prefix to the playground prefix
 4. Flushes playground Redis
-5. Purges the playground RabbitMQ queue
 
 The credential redaction runs as raw SQL in the reset container (which has no PHP) for zero-gap security. See `scripts/playground-redact-staff.sql` for details.
 
@@ -62,8 +61,6 @@ DATABASE_URL=mysql://app:<password>@database:3306/app
 REDIS_URL=redis://default:<password>@redis:6379
 REDIS_SESSION_DSN=redis://default:<password>@redis:6379/1
 REDIS_PASSWORD=<password>
-MESSENGER_TRANSPORT_DSN=phpamqplib://app:<password>@rabbitmq:5672/%2f/messages
-RABBITMQ_PASSWORD=<password>
 MAILER_DSN=<mailer-dsn>
 AWS_S3_REGION=eu-west-2
 AWS_S3_BUCKET=unicorn-bucket-two
@@ -94,6 +91,8 @@ NGINX_HOST_PORT=8002
 DB_HOST_PORT=3308
 CRONTAB_FILE=docker/php/cron/playground-crontab
 ```
+
+`MESSENGER_TRANSPORT_DSN` is not set: the queue defaults to the database (`compose.prod.yaml`). An env file must not keep an old AMQP DSN, which would override the default and stop the worker, since the AMQP transport is no longer installed.
 
 Generate passwords: `openssl rand -base64 24`
 Generate APP_SECRET: `openssl rand -hex 16`

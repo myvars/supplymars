@@ -39,8 +39,11 @@ services:
 
 
   # --- RabbitMQ Message Broker ---
+  # Opt-in: the queue is a database table by default. Starts only with the rabbitmq profile
+  # (COMPOSE_PROFILES=rabbitmq). See "Switching to RabbitMQ" in Docs/02-setup-local.md.
   rabbitmq:
     image: rabbitmq:4.3-management-alpine
+    profiles: [ rabbitmq ]
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "ping"]
       interval: 30s
@@ -63,6 +66,7 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+        required: false   # Only waited for when the rabbitmq profile is on
     environment:
       RUN_MIGRATIONS: "true"  # Only php container runs migrations/messenger-setup
     command: php-fpm

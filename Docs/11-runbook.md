@@ -13,7 +13,7 @@ Two Docker Compose stacks run on the same Lightsail instance, fronted by Caddy (
 | Live | `supplymars-live` | 8001 | `supplymars.com`, `www.supplymars.com` |
 | Playground | `supplymars-playground` | 8002 | `live.supplymars.com` |
 
-Each stack runs 7 containers (8 for playground, which includes `reset`):
+Each stack runs 6 containers (7 for playground, which includes `reset`). The queue is a table in the stack's own database; RabbitMQ is an opt-in and does not run ([ADR 013](adr/013-database-queue-by-default.md)):
 
 | Service | Image | Purpose |
 |---------|-------|---------|
@@ -23,7 +23,6 @@ Each stack runs 7 containers (8 for playground, which includes `reset`):
 | cron | cron-prod | Scheduled tasks |
 | database | mysql:8.4 | Primary data store |
 | redis | redis:8.4-alpine | Cache, sessions |
-| rabbitmq | rabbitmq:4.2-management | Message queue |
 | reset | playground-reset | Nightly DB reset (playground only) |
 
 **Deploy path:** `/home/ubuntu/supplymars`
@@ -221,6 +220,8 @@ docker compose $LIVE up -d php messenger cron
 docker compose $LIVE ps
 ```
 
+The queue is a table in the same database, so the restore brings back the emails that were waiting when the backup was taken, and the worker sends them when it starts. If they were already sent, delete them before step 4: `DELETE FROM messenger_messages WHERE queue_name = 'default';` (`messenger:stats` shows how many there are).
+
 ### 4.5 Verify a Backup
 
 Periodically verify backups are valid (download and check, or test-restore on dev):
@@ -303,7 +304,7 @@ docker compose $LIVE restart php
 
 ### 6.2 Queue Backlog Growing
 
-**Symptoms:** RabbitMQ queue depth increasing, async operations delayed.
+**Symptoms:** `async` count in `messenger:stats` increasing, emails delayed.
 
 **Diagnosis:**
 ```bash

@@ -9,7 +9,7 @@ x-common-php-env: &common-php-env
   REDIS_URL: "redis://default:password@redis:6379"
   REDIS_SESSION_DSN: "tcp://redis:6379"
   MAILER_DSN: "smtp://mailer:1025"
-  MESSENGER_TRANSPORT_DSN: "phpamqplib://guest:guest@rabbitmq:5672/%2f/messages"
+  MESSENGER_TRANSPORT_DSN: "doctrine://default"
 
 services:
   # --- MySQL Database (Dev) ---
@@ -26,7 +26,7 @@ services:
       REDIS_PASSWORD: password    # Dev pw (never use in prod!)
 
 
-  # --- RabbitMQ (Dev) ---
+  # --- RabbitMQ (Dev, only with the rabbitmq profile) ---
   rabbitmq:
     ports:
       - "127.0.0.1:5672:5672"      # AMQP protocol (localhost only)

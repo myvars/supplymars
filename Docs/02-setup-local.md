@@ -8,7 +8,7 @@ Before setting up SupplyMars locally, ensure you have:
 
 | Requirement | Version | Notes |
 |-------------|---------|-------|
-| PHP | 8.5+ | With extensions: intl, pdo_mysql, bcmath, gd, redis, sockets, xsl, zip |
+| PHP | 8.5+ | With extensions: intl, pdo_mysql, bcmath, gd, redis, xsl, zip |
 | Composer | 2.x | Dependency management |
 | Symfony CLI | Latest | For `symfony serve` command |
 | Docker | Latest | For infrastructure services |
@@ -63,8 +63,8 @@ DATABASE_URL=mysql://root:password@127.0.0.1:3306/app?serverVersion=8.4&charset=
 # Redis
 REDIS_URL=redis://default:password@127.0.0.1:6379
 
-# Message Queue
-MESSENGER_TRANSPORT_DSN="phpamqplib://guest:guest@127.0.0.1:5672/%2f/messages"
+# Message queue (a table in the database)
+MESSENGER_TRANSPORT_DSN=doctrine://default
 
 # Mail (Mailpit in dev)
 MAILER_DSN=smtp://127.0.0.1:1025
@@ -227,18 +227,17 @@ docker compose exec redis redis-cli ping
 # Should return: PONG
 ```
 
-### RabbitMQ Connection Failed
+### Queued Messages Not Processed
 
-**Symptom:** `The connection was refused`
+**Symptom:** An email never arrives
+
+With `symfony serve` no worker runs unless you start one. With `make up` the `messenger` container is the worker.
 
 **Fixes:**
 ```bash
-# Check RabbitMQ health
-docker compose ps rabbitmq
-
-# Access management UI
-open http://localhost:15672
-# Credentials: guest/guest
+symfony console messenger:stats             # How many messages are waiting
+symfony console messenger:consume async -vv # Work through them
+symfony console messenger:failed:show       # Messages that failed after their retries
 ```
 
 ### Assets Not Loading
@@ -281,6 +280,43 @@ symfony console doctrine:database:create --env=test
 symfony console doctrine:schema:create --env=test
 ```
 
+## Switching to RabbitMQ
+
+The queue is a database table by default ([ADR 013](adr/013-database-queue-by-default.md)). RabbitMQ is still defined in the compose files, behind the `rabbitmq` profile, so it does not start unless asked for. To use it:
+
+1. **Require the transport package**, and add the PHP `sockets` extension it needs: to `docker-php-ext-install` in `docker/Dockerfile`, and to your local PHP if you use `symfony serve`.
+
+   ```bash
+   composer require checkthiscloud/phpamqplib-messenger
+   ```
+
+2. **Turn the profile on and change the DSN in `.env`.** Docker Compose reads `COMPOSE_PROFILES` from the same file.
+
+   ```bash
+   COMPOSE_PROFILES=rabbitmq
+   MESSENGER_TRANSPORT_DSN="phpamqplib://guest:guest@127.0.0.1:5672/%2f/messages"
+   ```
+
+3. **Change the DSN the containers use**, in `compose.override.yaml`:
+
+   ```yaml
+   MESSENGER_TRANSPORT_DSN: "phpamqplib://guest:guest@rabbitmq:5672/%2f/messages"
+   ```
+
+4. **Add three lines to each production env file** (`live.env`, `playground.env`, `prod-local.env` in `../supplymars-secrets/`):
+
+   ```bash
+   COMPOSE_PROFILES=rabbitmq
+   RABBITMQ_PASSWORD=<a strong password>
+   MESSENGER_TRANSPORT_DSN="phpamqplib://app:<the same password>@rabbitmq:5672/%2f/messages"
+   ```
+
+   The playground commands pass `--profile playground`, which replaces `COMPOSE_PROFILES`. Add `--profile rabbitmq` to them as well, in the `Makefile` and in the deploy job of `.github/workflows/ci.yml`.
+
+`make up-dev-tools`, `make up` and the production targets then start RabbitMQ, and `php` waits for it to be healthy. The management UI is at http://localhost:15672 (guest / guest) in development. Tests are unaffected: the `test` environment always uses `in-memory://`.
+
+Messages already waiting in the database queue are not moved. Let the worker empty it before switching (`symfony console messenger:stats`).
+
 ## Development URLs
 
 | Service | URL | Credentials |
@@ -288,7 +324,6 @@ symfony console doctrine:schema:create --env=test
 | Application | https://localhost:8000 (Symfony) or https://localhost (Docker) | - |
 | PHPMyAdmin | http://localhost:8080 | root / password |
 | Mailpit | http://localhost:8025 | - |
-| RabbitMQ | http://localhost:15672 | guest / guest |
 
 ## Useful Commands
 

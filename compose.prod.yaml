@@ -16,7 +16,7 @@ x-common-php-env: &common-php-env
   DATABASE_URL: ${DATABASE_URL}                           # Full DB connection string (use app user)
   REDIS_URL: ${REDIS_URL}                                 # Redis connection for cache
   REDIS_SESSION_DSN: ${REDIS_SESSION_DSN}                 # Redis for PHP sessions
-  MESSENGER_TRANSPORT_DSN: ${MESSENGER_TRANSPORT_DSN}     # RabbitMQ DSN for Messenger
+  MESSENGER_TRANSPORT_DSN: ${MESSENGER_TRANSPORT_DSN:-doctrine://default}   # Queue: a database table unless set
   MAILER_DSN: ${MAILER_DSN}                               # Mailer DSN (e.g., SMTP for real mail delivery)
   AWS_S3_REGION: ${AWS_S3_REGION}                         # AWS S3 region for uploads
   AWS_S3_BUCKET: ${AWS_S3_BUCKET}                         # S3 bucket name
@@ -27,7 +27,6 @@ x-common-php-env: &common-php-env
   TURNSTILE_SITE_KEY: ${TURNSTILE_SITE_KEY}               # Turnstile key
   TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY}           # Turnstile secret
   REDIS_PASSWORD: ${REDIS_PASSWORD}                       # Redis auth password
-  RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}                 # RabbitMQ auth password
   PLAYGROUND_MODE: ${PLAYGROUND_MODE:-false}               # Show playground banner and behavior
 
 services:
@@ -49,14 +48,14 @@ services:
       REDIS_PASSWORD: ${REDIS_PASSWORD}    # Protect Redis in prod (set strong pw)
 
 
-  # --- RabbitMQ Message Broker ---
+  # --- RabbitMQ Message Broker (only with the rabbitmq profile) ---
   rabbitmq:
     logging: *common-logging
     expose:
       - "5672"  # Expose RabbitMQ AMQP port internally (not to host)
     environment:
       RABBITMQ_DEFAULT_USER: app
-      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-}
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
 
@@ -148,4 +147,4 @@ services:
 
 # --- Prod Volumes ---
 volumes:
-  rabbitmq_data:    # Dedicated to main php container
+  rabbitmq_data:    # RabbitMQ data (only created with the rabbitmq profile)
