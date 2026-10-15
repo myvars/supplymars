@@ -39,8 +39,9 @@ The credential redaction runs as raw SQL in the reset container (which has no PH
 
 | File | Purpose |
 |------|---------|
-| `compose.prod.yaml` | Production overrides (both stacks) |
-| `docker/php/cron/live-crontab` | Live cron schedule (includes backup) |
+| `compose.prod.yaml` | Production overrides (both stacks), naming the images CI publishes to GHCR |
+| `compose.publish.yaml` | Build cache for the CI job that publishes the images |
+| `docker/php/cron/live-crontab` | Live cron schedule (includes backup). The cron image holds both schedules; `CRONTAB_FILE` in the env file picks one when the container starts |
 | `docker/php/cron/playground-crontab` | Playground cron schedule |
 | `docker/php/cron/reset-crontab` | Reset container cron (02:15 UTC) |
 | `scripts/playground-reset.sh` | Reset script (DB restore, credential redaction, S3 sync, cache flush) |
@@ -113,7 +114,7 @@ Generate APP_SECRET: `openssl rand -hex 16`
 - Ubuntu on AWS Lightsail
 - Ports 80, 443 open in Lightsail firewall
 - DNS A records for `supplymars.com`, `www.supplymars.com`, `live.supplymars.com` pointing to the instance IP
-- Docker and Docker Compose installed
+- Docker Engine with the Compose plugin, `git` and `make` installed (`sudo apt install -y git make`), and the `ubuntu` user in the `docker` group
 
 ### 1. Install Caddy
 
@@ -157,7 +158,17 @@ chmod 600 /home/ubuntu/supplymars-secrets/*.env
 mkdir -p /home/ubuntu/supplymars-backups
 ```
 
-### 4. Clone and deploy
+### 4. Log in to the registry
+
+CI publishes the images to GHCR as private packages, so the server needs a read token: a classic personal access token with only the `read:packages` scope. Note its expiry date: pulls, and so deploys, fail once it expires.
+
+```bash
+echo <token> | docker login ghcr.io -u <github-user> --password-stdin
+```
+
+The token is stored in `~/.docker/config.json`.
+
+### 5. Clone and deploy
 
 ```bash
 cd /home/ubuntu
@@ -165,13 +176,10 @@ git clone <repo-url> supplymars
 cd supplymars
 ```
 
-Start the live stack:
+Start the live stack (it pulls the images CI published for the checked-out commit):
 
 ```bash
-docker compose --env-file ../supplymars-secrets/live.env \
-    -p supplymars-live \
-    -f compose.yaml -f compose.prod.yaml \
-    up -d --build --remove-orphans --wait
+make up-prod-live
 ```
 
 Seed the backup file (required before playground can start):
@@ -186,10 +194,7 @@ docker compose --env-file ../supplymars-secrets/live.env \
 Start the playground stack:
 
 ```bash
-docker compose --env-file ../supplymars-secrets/playground.env \
-    -p supplymars-playground --profile playground \
-    -f compose.yaml -f compose.prod.yaml \
-    up -d --build --remove-orphans --wait
+make up-prod-playground
 ```
 
 Trigger the initial playground reset:
@@ -201,9 +206,12 @@ docker compose --env-file ../supplymars-secrets/playground.env \
     exec -T reset /usr/local/bin/playground-reset.sh
 ```
 
-### 5. Verify
+### 6. Verify
 
 ```bash
+make verify-prod-live
+make verify-prod-playground
+
 curl -sf -o /dev/null -w "%{http_code}" https://supplymars.com       # 200
 curl -sf -o /dev/null -w "%{http_code}" https://live.supplymars.com   # 200
 

@@ -2,6 +2,9 @@
 # Docker Compose: Production configuration
 # ========================================
 # Used by both Live and Playground stacks. Differences controlled via env vars.
+# CI builds the php, cron, nginx and reset images, tagged with the commit SHA, and pushes them to
+# GHCR; the server pulls and starts them (make up-prod-live, make up-prod-playground) and never
+# builds. IMAGE_TAG is the commit SHA to run ("local" for a build on your own machine).
 
 x-common-logging: &common-logging
   driver: json-file
@@ -65,6 +68,7 @@ services:
   # --- PHP Application (Prod) ---
   php:
     logging: *common-logging
+    image: ghcr.io/myvars/supplymars/php:${IMAGE_TAG:-local}
     build:
       context: .
       dockerfile: docker/Dockerfile
@@ -72,12 +76,13 @@ services:
     environment:
       <<: *common-php-env
       RUN_MIGRATIONS: "true"  # Only php container runs migrations/messenger-setup
-    # No code mounts—built artifacts only; code changes require a new build.
+    # No code mounts—built artifacts only; code changes require a new image.
 
 
   # --- Messenger Worker (Prod) ---
   messenger:
     logging: *common-logging
+    image: ghcr.io/myvars/supplymars/php:${IMAGE_TAG:-local}   # Same image as php
     build:
       context: .
       dockerfile: docker/Dockerfile
@@ -90,14 +95,15 @@ services:
   # --- Cron Jobs (Prod) ---
   cron:
     logging: *common-logging
+    image: ghcr.io/myvars/supplymars/cron:${IMAGE_TAG:-local}
     build:
       context: .
       dockerfile: docker/Dockerfile
       target: cron-prod
-      args:
-        CRONTAB_FILE: ${CRONTAB_FILE:-docker/php/cron/live-crontab}
     environment:
       <<: *common-php-env
+    # The image holds both stacks' schedules; CRONTAB_FILE (in the env file) picks this stack's
+    command: /bin/sh -c 'install -m 0644 ${CRONTAB_FILE:-docker/php/cron/live-crontab} /etc/cron.d/app-cron && printenv | grep -v "no_proxy" > /etc/environment && cron -f'
     volumes:
       - /home/ubuntu/supplymars-backups:/backups
 
@@ -106,6 +112,7 @@ services:
   reset:
     profiles: ["playground"]
     logging: *common-logging
+    image: ghcr.io/myvars/supplymars/reset:${IMAGE_TAG:-local}
     build:
       context: .
       dockerfile: docker/Dockerfile
@@ -133,6 +140,7 @@ services:
   # --- Nginx Webserver (Prod) ---
   nginx:
     logging: *common-logging
+    image: ghcr.io/myvars/supplymars/nginx:${IMAGE_TAG:-local}
     build:
       context: .
       dockerfile: docker/Dockerfile

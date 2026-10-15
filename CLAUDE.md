@@ -104,6 +104,12 @@ These areas have non-obvious design. Read the corresponding ADR in `Docs/adr/` b
 - **`/health`**: public JSON endpoint, 200 or 503, listing each check as `ok` or `fail`. To check another dependency, add a class implementing `HealthCheckInterface` in `src/Shared/Infrastructure/Health/`; it is picked up automatically.
 - See `Docs/13-monitoring.md`.
 
+### Deployment
+
+- CI builds the production images (`php`, `cron`, `nginx`, `reset`) and pushes them to GHCR, tagged with the commit SHA. The server pulls the images of its checked-out commit and starts them with `make up-prod-live` / `make up-prod-playground`; it never builds. Rollback is `git reset --hard <previous-sha> && make up-prod-live && make up-prod-playground`.
+- Application secrets are in the env files outside the repository (`../supplymars-secrets/`), never GitHub secrets.
+- See `Docs/11-runbook.md`.
+
 ### FormFlow (Controller Pattern)
 
 The flow coordinators live in the external **`myvars/form-flow`** package (namespace `MyVars\FormFlow\`,
@@ -213,3 +219,4 @@ Framework APIs change between versions. Look things up in the project rather tha
 - `Docs/adr/` — Architecture Decision Records explaining key design choices.
 - `Docs/patterns/` — Detailed pattern specifications (FormFlow, etc.).
 - `Docs/13-monitoring.md` — Error tracking (Sentry), the `/health` endpoint, uptime monitoring.
+- `Docs/11-runbook.md` — Deploy pipeline (images built in CI, pulled by the server), rollback, restore, where secrets live.
