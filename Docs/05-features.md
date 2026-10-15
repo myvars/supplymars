@@ -793,23 +793,24 @@ The Customer context sends transactional emails for key account lifecycle events
 
 ### Purpose
 
-FormFlow is a thin orchestration layer that standardizes controller behavior across create, update, delete, and search operations.
+FormFlow is a thin orchestration layer that standardizes controller behavior across create, update, state-change, delete, search and inline-edit operations.
 
 ### Flow Types
 
 | Flow | Purpose | Key Method |
 |------|---------|------------|
 | `FormFlow` | Create/update with forms | `form()` |
-| `ActionFlow` | Direct command execution | `execute()` |
+| `ActionFlow` | Direct command execution (state changes): POST-only, CSRF-checked via `->csrf()` | `process()` |
 | `ConfirmFlow` | Confirm-then-act (delete and other confirmable actions) | `confirm()`, `execute()` |
 | `SearchFlow` | Paginated index pages | `search()` |
+| `InlineEditFlow` | Single-field inline editing via Turbo Frames | `handleField()` |
 
 ### Usage Example
 
 ```php
 // src/Catalog/UI/Http/Controller/ManufacturerController.php
 
-#[Route('/catalog/manufacturer/new', methods: ['GET', 'POST'])]
+#[Route(path: '/manufacturer/new', name: 'app_catalog_manufacturer_new', methods: ['GET', 'POST'])]
 public function new(
     Request $request,
     CreateManufacturerMapper $mapper,
@@ -822,7 +823,7 @@ public function new(
         data: new ManufacturerForm(),
         mapper: $mapper,
         handler: $handler,
-        context: FlowContext::forCreate(self::MODEL),
+        context: FlowContext::forCreate($this->model()),
     );
 }
 ```
