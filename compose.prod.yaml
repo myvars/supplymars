@@ -28,6 +28,8 @@ x-common-php-env: &common-php-env
   TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY}           # Turnstile secret
   REDIS_PASSWORD: ${REDIS_PASSWORD}                       # Redis auth password
   PLAYGROUND_MODE: ${PLAYGROUND_MODE:-false}               # Show playground banner and behavior
+  SENTRY_DSN: ${SENTRY_DSN:-}                             # Sentry error tracking (optional: empty sends nothing)
+  SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-live}         # Sentry environment: "live" or "playground"
 
 services:
   # --- MySQL Database (Prod) ---
