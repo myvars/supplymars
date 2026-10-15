@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Shared\Application\Listener;
+namespace App\Home\Listener;
 
+use App\Home\Service\SidebarBadgeProvider;
 use App\Order\Domain\Model\Order\Event\OrderStatusWasChangedEvent;
 use App\Order\Domain\Model\Order\Event\OrderWasCreatedEvent;
 use App\Order\Domain\Model\Order\OrderStatus;
@@ -12,7 +13,6 @@ use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use App\Review\Domain\Model\Review\Event\ReviewStatusWasChangedEvent;
 use App\Review\Domain\Model\Review\Event\ReviewWasCreatedEvent;
 use App\Review\Domain\Model\Review\ReviewStatus;
-use App\Shared\Application\Service\SidebarBadgeProvider;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Contracts\Cache\CacheInterface;
 

@@ -14,7 +14,6 @@ use App\Reporting\Domain\Model\SalesType\ProductSalesType;
 use App\Reporting\Domain\Repository\OrderSalesSummaryRepository;
 use App\Reporting\Domain\Repository\ProductSalesRepository;
 use App\Reporting\Domain\Repository\ProductSalesSummaryRepository;
-use App\Shared\Application\Service\SidebarBadgeProvider;
 
 final readonly class DashboardDataProvider
 {

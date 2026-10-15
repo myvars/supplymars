@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Shared\Application\Service;
+namespace App\Home\Service;
 
 use App\Customer\Infrastructure\Security\CurrentUserProvider;
 use App\Note\Domain\Repository\TicketRepository;
