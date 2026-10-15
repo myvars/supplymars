@@ -27,7 +27,7 @@ Repository interfaces are allowed because the stricter version, entities only, w
 
 ### Shared depends on no business context
 
-The security classes that need `User` (`ApiTokenHandler`, `CurrentUserProvider`, `DefaultUserAuthenticator`) moved to `src/Customer/Infrastructure/Security/`.
+The security classes that need `User` (`ApiTokenHandler`, `CurrentUserProvider`, `DefaultUserAuthenticator`) moved to `src/Customer/Infrastructure/Security/`. The sidebar badges, which count records in four contexts, moved to Home, which already shows the same counts on the dashboard. `ShippingMethod` moved to the Order domain: the customer order owns it, and it takes a Pricing `VatRate`. The chart colour interface moved from Reporting's UI to `Shared/UI`.
 
 The signed-in user is the one named exception to the rule above. `CurrentUserProvider` returns it, and `DefaultUserAuthenticator` signs in the default staff user for the simulation commands (ADR 003) in Order, Purchasing and Review. Every context needs one or the other, so they share a layer of their own that any context may use. The skeleton's exception is `CurrentUserProvider` alone; it has no simulation commands. `DefaultUserAuthenticator` is only meant for console commands, and today only they use it.
 
@@ -37,12 +37,12 @@ The signed-in user is the one named exception to the rule above. `CurrentUserPro
 
 ### Existing violations are listed, not hidden
 
-Code that used another context's Doctrine repository class where the interface existed now uses the interface. The rest need a design decision each, and are listed under `skip_violations` in `deptrac.yaml`, grouped, with the reason each is still there:
+Of the 50 imports that broke the rules, most were fixed by a move or a simplification: code that used another context's Doctrine repository class now uses the interface; Order and Purchasing report queries take plain dates and sort fields instead of Reporting's criteria classes; Audit takes its supplier colours and ID lookup from its own code and Shared; the customer page loads its insights from Customer's own repository.
 
-- controllers and handlers that call another context's handler or service (Order → Purchasing allocation and PO items, Customer → Reporting insights);
-- imports of another context's UI classes (Audit → Purchasing chart colours and public-ID resolver);
-- infrastructure reaching into another context (Order demo orders → Customer factories; Order and Purchasing repositories taking Reporting's report criteria);
-- the sidebar badges in Shared, which count records in four contexts, and `ShippingMethod` in Shared, which carries a Pricing `VatRate`.
+The rest are real dependencies and need a decision each. They are listed under `skip_violations` in `deptrac.yaml`, grouped, with the reason each is still there:
+
+- Order triggering Purchasing's work: allocating an order (`AllocateOrderHandler` → `OrderAllocator`) and creating a purchase order item from the order screen (`OrderItemController` → `CreatePurchaseOrderItemHandler`);
+- demo orders built with Customer's random user and address factories (`DemoOrderCreator`).
 
 Deptrac fails on a `skip_violations` entry that no longer matches an import, so the list can only shrink.
 
