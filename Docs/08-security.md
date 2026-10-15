@@ -20,7 +20,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private bool $isStaff;           // Admin flag
     private bool $isSimulated;       // Created by simulator (not a real registration)
     private array $roles;            // Symfony roles
-    private ?string $apiToken;       // API Bearer token (64-char hex)
+    private ?string $apiTokenHash;   // SHA-256 hash of the API Bearer token
 }
 ```
 
@@ -118,9 +118,9 @@ The REST API uses **stateless Bearer token authentication**, separate from the s
 
 ### How It Works
 
-1. Each user has an optional `api_token` field (64-character hex string)
+1. Each user can have one API token (64-character hex string). Only its SHA-256 hash is stored, in the `api_token_hash` column, so a database dump or backup holds no working token
 2. Clients send the token in the `Authorization` header: `Authorization: Bearer <token>`
-3. `ApiTokenHandler` looks up the user by token via `UserRepository::findByApiToken()`
+3. `ApiTokenHandler` hashes the token and looks up the user via `UserRepository::findByApiTokenHash()`
 4. If the token is invalid or missing, `ApiAuthenticationFailureHandler` returns a 401 RFC 7807 JSON response
 
 ### Security Configuration
@@ -153,12 +153,20 @@ access_control:
 
 ### Token Management
 
-Tokens are managed via the `User` entity:
+Issue a token with the console command (see [CLI Reference](09-cli-reference.md#appuserissue-token)):
+
+```bash
+symfony console app:user:issue-token admin@example.com   # prints a new token once
+```
+
+The token cannot be read back once issued. Running the command again replaces it, and the old token stops working. The user must be staff (`ROLE_ADMIN`) to reach the order endpoints.
+
+In code, via the `User` entity:
 
 ```php
-$user->regenerateApiToken();  // Generates new 64-char hex token
-$user->getApiToken();         // Returns current token (or null)
+$user->regenerateApiToken();  // Stores the hash of a new token and returns the token
 $user->setApiToken(null);     // Revokes API access
+$user->hasApiToken();         // Whether a token is set
 ```
 
 ### Error Responses
@@ -177,7 +185,8 @@ All API authentication errors return RFC 7807 `application/problem+json`:
 **Key files:**
 - `src/Shared/Infrastructure/Security/ApiTokenHandler.php`
 - `src/Shared/Infrastructure/Security/ApiAuthenticationFailureHandler.php`
-- `src/Customer/Domain/Model/User/User.php` (`api_token` field)
+- `src/Customer/Domain/Model/User/User.php` (`api_token_hash` field)
+- `src/Customer/UI/Console/IssueApiTokenCommand.php`
 
 ## Authorization Model
 

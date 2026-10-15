@@ -279,6 +279,7 @@ API routes follow the pattern `api_{context}_{entity}_{action}`:
 - **Public endpoints** (e.g., Catalog): Controlled via `access_control` in `security.yaml`, no token needed
 - **Authenticated endpoints** (e.g., Orders): Require `ROLE_ADMIN`, enforced via `#[IsGranted('ROLE_ADMIN')]` on the controller class and `access_control` rules
 - **Token format**: `Authorization: Bearer <64-char-hex-token>`
+- **Issuing a token**: `symfony console app:user:issue-token <email>` prints it once; only its hash is stored
 
 See [Security Documentation](../../08-security.md#api-authentication) for full details.
 

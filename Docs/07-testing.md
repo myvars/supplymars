@@ -295,7 +295,7 @@ All factories are in `tests/Shared/Factory/`.
 
 | Factory | Entity | Notable Methods |
 |---------|--------|-----------------|
-| `UserFactory` | User | `asStaff()` - creates admin user |
+| `UserFactory` | User | `asStaff()` - creates admin user; `withApiToken()` - stores the hash of a Bearer token for API tests (send the plain token) |
 | `VatRateFactory` | VatRate | `withStandardRate()` - 20% VAT |
 | `CategoryFactory` | Category | Auto-creates VAT rate |
 | `SubcategoryFactory` | Subcategory | Auto-creates Category |

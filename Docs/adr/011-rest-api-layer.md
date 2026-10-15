@@ -62,6 +62,8 @@ We added a **lightweight REST API layer** alongside the existing server-rendered
 
 **Separate firewall:** The `api` firewall is stateless and uses `access_token` authentication. It sits before the `main` firewall in the config so `/api/` routes never hit session handling.
 
+**Tokens stored hashed:** Each user has at most one token, a random 256-bit value issued with `app:user:issue-token <email>` and printed once. Only its SHA-256 hash is stored (`User.apiTokenHash`, unique index); `ApiTokenHandler` hashes the presented token and looks the user up by the hash. A fast unsalted hash is enough: the token cannot be guessed from its hash, and an unsalted hash can be found through the index. A password hasher (bcrypt, argon2) is for low-entropy secrets and would rule out the indexed lookup. The migration to hashed storage revoked every existing token rather than hashing it, because backups taken before it hold those tokens in plain text.
+
 **NelmioApiDoc for Swagger:** OpenAPI documentation is generated from `#[OA\...]` attributes on controllers and Resource classes. The Swagger UI is available at `/api/doc` in development.
 
 **Selective public access:** Catalog endpoints are public (read-only product browsing). Order endpoints require `ROLE_ADMIN` via Bearer token. This is controlled via `access_control` rules, not per-controller logic.
@@ -133,7 +135,8 @@ src/{Context}/UI/Http/Api/
 - `src/Shared/UI/Http/Api/ApiResourceInterface.php` — Resource contract (`toArray()`)
 - `src/Shared/UI/Http/Api/ApiResponse.php` — Response factory
 - `src/Shared/UI/Http/Api/EventListener/ApiExceptionListener.php` — Error handling
-- `src/Shared/Infrastructure/Security/ApiTokenHandler.php` — Token authentication
+- `src/Shared/Infrastructure/Security/ApiTokenHandler.php` — Token authentication (hashes the token, looks up by hash)
+- `src/Customer/UI/Console/IssueApiTokenCommand.php` — Issues a token
 - `src/Shared/Infrastructure/Security/ApiAuthenticationFailureHandler.php` — Auth error responses
 - `config/packages/nelmio_api_doc.yaml` — Swagger configuration
 - `config/packages/security.yaml` — API firewall and access control
