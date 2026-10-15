@@ -65,11 +65,14 @@ FROM php-base AS php-prod-builder
 # Prod-builder stage defaults
 ENV APP_ENV=prod
 
-# Copy only composer files
-COPY --link composer.* symfony.* ./
+# Copy only composer files. Named one by one so the build fails if the lock file is missing,
+# rather than installing the newest allowed versions instead of the tested ones
+COPY --link composer.json composer.lock symfony.lock ./
 
-# Install dependencies (caches unless composer files change)
-RUN composer install --no-cache --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress --no-interaction
+# Install dependencies (caches unless composer files change). validate fails on a lock file that no
+# longer matches composer.json, which install would only warn about
+RUN composer validate --no-check-all --no-check-publish && \
+    composer install --no-cache --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress --no-interaction
 
 # Now copy everything else
 COPY --link . /app

@@ -168,15 +168,11 @@ final class CreateProductImageFlowTest extends WebTestCase
      */
     private function upload(KernelBrowser $browser, Product $product, ?string $token, array $files = [], bool $xhr = false): KernelBrowser
     {
-        $browser->client()->request(
-            'POST',
-            '/product/' . $product->getPublicId()->value() . '/images/create',
-            parameters: $token === null ? [] : ['_token' => $token],
-            files: ['imageFile' => $files],
-            server: $xhr ? ['HTTP_X_REQUESTED_WITH' => 'XMLHttpRequest'] : [],
-        );
-
-        return $browser;
+        return $browser->post('/product/' . $product->getPublicId()->value() . '/images/create', [
+            'body' => $token === null ? [] : ['_token' => $token],
+            'files' => ['imageFile' => $files],
+            'ajax' => $xhr,
+        ]);
     }
 
     private function deleteStoredImages(Product $product): void

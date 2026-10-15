@@ -45,7 +45,6 @@ Thumbs.db
 # Composer, PHPUnit, PHP caches
 /.phpunit.result.cache
 /.composer
-composer.lock
 
 # Docker & tooling
 docker-compose.override.yaml
