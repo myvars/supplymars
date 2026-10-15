@@ -3,6 +3,7 @@
 namespace App\Reporting\UI\Http\Chart;
 
 use App\Reporting\Domain\Metric\CustomerSegment;
+use App\Shared\UI\Http\Chart\ChartColorProviderInterface;
 
 final readonly class CustomerSegmentColorProvider implements ChartColorProviderInterface
 {

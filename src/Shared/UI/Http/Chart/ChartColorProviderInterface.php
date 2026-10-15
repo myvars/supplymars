@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Reporting\UI\Http\Chart;
+namespace App\Shared\UI\Http\Chart;
 
 interface ChartColorProviderInterface
 {

@@ -8,8 +8,8 @@ use App\Audit\Domain\Repository\SupplierStockChangeLogRepository;
 use App\Audit\Infrastructure\Logging\SupplierStockChangeLogWriter;
 use App\Purchasing\Domain\Model\SupplierProduct\Event\SupplierProductStockWasChangedEvent;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProductPublicId;
-use App\Purchasing\UI\Http\ArgumentResolver\SupplierProductPublicIdResolver;
 use App\Shared\Application\FlusherInterface;
+use App\Shared\Application\Identity\PublicIdResolverRegistry;
 use App\Shared\Domain\ValueObject\CostChange;
 use App\Shared\Domain\ValueObject\StockChange;
 use App\Tests\Shared\Factory\SupplierProductFactory;
@@ -48,8 +48,8 @@ final class SupplierStockChangeLoggerTest extends KernelTestCase
             flusher: $flusher
         );
 
-        /** @var SupplierProductPublicIdResolver $resolver */
-        $resolver = self::getContainer()->get(SupplierProductPublicIdResolver::class);
+        /** @var PublicIdResolverRegistry $resolver */
+        $resolver = self::getContainer()->get(PublicIdResolverRegistry::class);
 
         /** @var MockObject&LoggerInterface $logger */
         $logger = $this->createMock(LoggerInterface::class);
@@ -57,7 +57,7 @@ final class SupplierStockChangeLoggerTest extends KernelTestCase
 
         $listener = new SupplierStockChangeLogger(
             changeLogWriter: $writer,
-            publicIdResolver: $resolver,
+            publicIdResolverRegistry: $resolver,
             logger: $logger
         );
 
@@ -102,8 +102,8 @@ final class SupplierStockChangeLoggerTest extends KernelTestCase
             flusher: $flusher
         );
 
-        /** @var SupplierProductPublicIdResolver $resolver */
-        $resolver = self::getContainer()->get(SupplierProductPublicIdResolver::class);
+        /** @var PublicIdResolverRegistry $resolver */
+        $resolver = self::getContainer()->get(PublicIdResolverRegistry::class);
 
         /** @var MockObject&LoggerInterface $logger */
         $logger = $this->createMock(LoggerInterface::class);
@@ -111,7 +111,7 @@ final class SupplierStockChangeLoggerTest extends KernelTestCase
 
         $listener = new SupplierStockChangeLogger(
             changeLogWriter: $writer,
-            publicIdResolver: $resolver,
+            publicIdResolverRegistry: $resolver,
             logger: $logger
         );
 

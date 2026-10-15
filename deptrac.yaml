@@ -140,15 +140,6 @@ deptrac:
       - App\Purchasing\Application\Command\PurchaseOrderItem\CreatePurchaseOrderItem
       - App\Purchasing\Application\Handler\PurchaseOrderItem\CreatePurchaseOrderItemHandler
 
-    # Another context's UI class. The public-ID resolver is UI code used from an event listener; the chart colour
-    # interface probably belongs in Shared/UI.
-    App\Audit\Application\EventListener\SupplierStockChangeLogger:
-      - App\Purchasing\UI\Http\ArgumentResolver\SupplierProductPublicIdResolver
-    App\Audit\UI\Http\Chart\StockHistoryChartBuilder:
-      - App\Purchasing\UI\Http\Chart\SupplierColorProvider
-    App\Purchasing\UI\Http\Chart\SupplierColorProvider:
-      - App\Reporting\UI\Http\Chart\ChartColorProviderInterface
-
     # Demo orders are built with Customer's random user and address factories, which are infrastructure.
     App\Order\Application\Service\DemoOrderCreator:
       - App\Customer\Infrastructure\Factory\RandomUserFactory

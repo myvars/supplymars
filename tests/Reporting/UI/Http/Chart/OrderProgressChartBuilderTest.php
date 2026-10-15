@@ -4,8 +4,8 @@ namespace App\Tests\Reporting\UI\Http\Chart;
 
 use App\Order\Domain\Model\Order\OrderStatus;
 use App\Reporting\Domain\Metric\OrderSalesMetric;
-use App\Reporting\UI\Http\Chart\ChartColorProviderInterface;
 use App\Reporting\UI\Http\Chart\OrderProgressChartBuilder;
+use App\Shared\UI\Http\Chart\ChartColorProviderInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
