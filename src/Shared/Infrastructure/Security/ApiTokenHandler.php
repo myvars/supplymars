@@ -16,7 +16,7 @@ final readonly class ApiTokenHandler implements AccessTokenHandlerInterface
 
     public function getUserBadgeFrom(#[\SensitiveParameter] string $accessToken): UserBadge
     {
-        $user = $this->users->findByApiToken($accessToken);
+        $user = $this->users->findByApiTokenHash(User::hashApiToken($accessToken));
 
         if (!$user instanceof User) {
             throw new BadCredentialsException('Invalid API token.');

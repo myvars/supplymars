@@ -257,6 +257,7 @@ hasPositiveCost()             // cost > 0
 
 | Command | File | Description |
 |---------|------|-------------|
+| `app:user:issue-token` | `src/Customer/UI/Console/IssueApiTokenCommand.php` | Issue an API token for a user (shown once, stored hashed) |
 | `app:send-test-emails` | `src/Customer/UI/Console/SendTestEmailsCommand.php` | Send all email templates to Mailpit (dev only) |
 
 ---

@@ -729,6 +729,31 @@ symfony console app:backfill-ulids --limit=1000
 
 ## Customer Context
 
+### app:user:issue-token
+
+**Purpose:** Issue a new API token for a user, replacing any existing one.
+
+**File:** `src/Customer/UI/Console/IssueApiTokenCommand.php`
+
+**Arguments:**
+| Argument | Required | Description |
+|----------|----------|-------------|
+| `email` | Yes | Email of the user |
+
+**Example:**
+```bash
+symfony console app:user:issue-token admin@example.com
+symfony console app:user:issue-token admin@example.com --quiet | pbcopy
+```
+
+**Side Effects:**
+- Generates a random 64-character hex token and stores only its SHA-256 hash
+- Prints the token once, as the only line on stdout (messages go to stderr), also with `--quiet`. It cannot be shown again
+- Replaces the user's existing token: the old one stops working
+- Exits `1` if no user has that email
+
+The order endpoints need `ROLE_ADMIN`, so issue tokens to staff users. See [Security: API Authentication](08-security.md#api-authentication).
+
 ### app:send-test-emails
 
 **Purpose:** Send all customer email templates to Mailpit for visual preview. Dev environment only.

@@ -77,4 +77,14 @@ final class UserFactory extends PersistentObjectFactory
                 $user->setRoles(['ROLE_SUPER_ADMIN']);
             });
     }
+
+    /**
+     * Stores the hash of $token; send the plain $token as the Bearer token.
+     */
+    public function withApiToken(string $token = 'test-api-token'): self
+    {
+        return $this->afterInstantiate(function (User $user) use ($token): void {
+            $user->setApiToken($token);
+        });
+    }
 }
