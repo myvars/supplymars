@@ -120,11 +120,9 @@ ENTRYPOINT ["docker-entrypoint.sh"]
 # Note: cron-dev uses php-dev directly (no separate stage needed)
 FROM php-prod AS cron-prod
 
-ARG CRONTAB_FILE=docker/php/cron/live-crontab
-COPY --link ${CRONTAB_FILE} /etc/cron.d/app-cron
-
-# Ensure the crontab file has the correct permissions
-RUN chmod 0644 /etc/cron.d/app-cron;
+# One image for both stacks: the cron service's command in compose.prod.yaml installs the schedule
+# that CRONTAB_FILE names when the container starts
+COPY --link docker/php/cron/live-crontab docker/php/cron/playground-crontab /app/docker/php/cron/
 
 
 # ---- Playground Reset Stage ----

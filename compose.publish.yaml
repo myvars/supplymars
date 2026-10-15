@@ -1,0 +1,40 @@
+# ===============================
+# Docker Compose: CI overrides for publishing the production images
+# ===============================
+# Used by the publish job in .github/workflows/ci.yml only, on top of compose.prod.yaml. Keeps each
+# production image's layers in the GitHub Actions cache, and reuses the base layers the test job
+# cached (php-dev), so a run rebuilds only what changed.
+
+services:
+  php:
+    build:
+      cache_from:
+        - type=gha,scope=php-dev
+        - type=gha,scope=php-prod
+      cache_to:
+        - type=gha,scope=php-prod,mode=max
+
+  cron:
+    build:
+      cache_from:
+        - type=gha,scope=php-dev
+        - type=gha,scope=php-prod
+        - type=gha,scope=cron-prod
+      cache_to:
+        - type=gha,scope=cron-prod,mode=max
+
+  nginx:
+    build:
+      cache_from:
+        - type=gha,scope=php-dev
+        - type=gha,scope=php-prod
+        - type=gha,scope=nginx-prod
+      cache_to:
+        - type=gha,scope=nginx-prod,mode=max
+
+  reset:
+    build:
+      cache_from:
+        - type=gha,scope=playground-reset
+      cache_to:
+        - type=gha,scope=playground-reset,mode=max
