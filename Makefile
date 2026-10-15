@@ -60,7 +60,7 @@ test:
 test-%:
 	docker compose run --rm -e APP_ENV=test php ./scripts/run-tests.sh --filter $*
 
-# Every check CI runs. check-<step> runs one: prod-config, cs, rector, phpstan, lint, audit, migrations, tests
+# Every check CI runs. check-<step> runs one: prod-config, cs, rector, phpstan, deptrac, lint, audit, migrations, tests
 check: check-prod-config
 	docker compose run --rm -e APP_ENV=test php ./scripts/check.sh
 

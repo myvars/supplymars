@@ -2,7 +2,7 @@
 
 namespace App\Reporting\Application\Handler\Report;
 
-use App\Order\Infrastructure\Persistence\Doctrine\CustomerOrderDoctrineRepository;
+use App\Order\Domain\Repository\OrderRepository;
 use App\Reporting\Application\Report\OrderSummaryReportCriteria;
 use App\Reporting\Domain\Metric\OrderSalesMetric;
 use App\Reporting\Domain\Service\SalesDateRangeResolver;
@@ -14,7 +14,7 @@ use App\Shared\Application\Result;
 final readonly class OrderSummaryReportHandler
 {
     public function __construct(
-        private CustomerOrderDoctrineRepository $orderRepository,
+        private OrderRepository $orderRepository,
         private OrderSalesSummaryDoctrineRepository $summaryRepository,
         private ProductSalesChartBuilder $productSalesChartBuilder,
         private OrderProgressChartBuilder $orderProgressChartBuilder,

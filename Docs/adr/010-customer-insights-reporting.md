@@ -100,7 +100,7 @@ Customer Insights lives in the Reporting context, not Customer, because:
 - **Consistent architecture**: Follows the exact two-layer pattern from ADR-005 (ProductSales, OrderSales)
 - **Fast dashboards**: All three dashboard views read from pre-computed summaries
 - **Actionable segmentation**: Lifetime-based segments are stable and meaningful for marketing
-- **Profile integration**: CustomerProfileInsightsHandler provides per-customer metrics on detail pages
+- **Profile integration**: `UserRepository::findCustomerInsights()` provides per-customer metrics on detail pages
 - **Idempotent refresh**: Delete-then-insert pattern allows safe re-runs
 
 ### Negative
@@ -121,7 +121,6 @@ Key files:
 - `src/Reporting/Application/Handler/CalculateCustomerSalesHandler.php` - Daily ETL
 - `src/Reporting/Application/Handler/CalculateCustomerSalesSummaryHandler.php` - Summary ETL
 - `src/Reporting/Application/Handler/Report/CustomerInsightsReportHandler.php` - Dashboard handler
-- `src/Reporting/Application/Handler/Report/CustomerProfileInsightsHandler.php` - Profile card handler
 
 ## Related Documentation
 

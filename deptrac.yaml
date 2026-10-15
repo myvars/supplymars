@@ -1,0 +1,148 @@
+# Dependency rules between bounded contexts. See Docs/03-architecture.md and Docs/adr/014-architecture-rules.md.
+#
+# Each context is split into two layers:
+#   "{Context} Domain"    – src/{Context}/Domain: entities, enums, value objects, events, repository interfaces
+#   "{Context} internals" – everything else: Application, Infrastructure, UI
+# A context may use its own layers, Shared, and the Domain layer of any other context.
+# Shared may use nothing outside Shared.
+# Named exceptions are layers of their own, open only to the contexts listed in the ruleset: Current user, Order
+# sourcing and Demo customers. See the table in Docs/03-architecture.md.
+# A new context needs its two layers here, its two ruleset entries, its Domain layer added to Public's list, and its name
+# added to the Unregistered pattern. Until then its classes are Unregistered and every import to or from them fails.
+deptrac:
+  cache_file: var/cache/.deptrac.cache
+  paths:
+    - ./src
+  layers:
+    - name: Shared
+      collectors:
+        - { type: classLike, value: ^App\\Shared\\ }
+
+    - name: Audit Domain
+      collectors:
+        - { type: classLike, value: ^App\\Audit\\Domain\\ }
+    - name: Audit internals
+      collectors:
+        - { type: classLike, value: ^App\\Audit\\(?!Domain\\) }
+
+    - name: Catalog Domain
+      collectors:
+        - { type: classLike, value: ^App\\Catalog\\Domain\\ }
+    - name: Catalog internals
+      collectors:
+        - { type: classLike, value: ^App\\Catalog\\(?!Domain\\) }
+
+    - name: Customer Domain
+      collectors:
+        - { type: classLike, value: ^App\\Customer\\Domain\\ }
+    - name: Customer internals
+      collectors:
+        - { type: classLike, value: ^App\\Customer\\(?!Domain\\|Infrastructure\\Security\\(CurrentUserProvider|DefaultUserAuthenticator)$|Infrastructure\\Factory\\Random(User|Address)Factory$) }
+    # Exception: every context needs the signed-in user, so Customer publishes the service that reads it, and the
+    # one the simulation commands use to sign in the default staff user.
+    - name: Current user
+      collectors:
+        - { type: classLike, value: ^App\\Customer\\Infrastructure\\Security\\(CurrentUserProvider|DefaultUserAuthenticator)$ }
+    # Exception: Order's demo orders are placed by simulated customers, built by Customer's random factories.
+    - name: Demo customers
+      collectors:
+        - { type: classLike, value: ^App\\Customer\\Infrastructure\\Factory\\Random(User|Address)Factory$ }
+
+    - name: Note Domain
+      collectors:
+        - { type: classLike, value: ^App\\Note\\Domain\\ }
+    - name: Note internals
+      collectors:
+        - { type: classLike, value: ^App\\Note\\(?!Domain\\) }
+
+    - name: Order Domain
+      collectors:
+        - { type: classLike, value: ^App\\Order\\Domain\\ }
+    - name: Order internals
+      collectors:
+        - { type: classLike, value: ^App\\Order\\(?!Domain\\) }
+
+    - name: Pricing Domain
+      collectors:
+        - { type: classLike, value: ^App\\Pricing\\Domain\\ }
+    - name: Pricing internals
+      collectors:
+        - { type: classLike, value: ^App\\Pricing\\(?!Domain\\) }
+
+    - name: Purchasing Domain
+      collectors:
+        - { type: classLike, value: ^App\\Purchasing\\Domain\\ }
+    - name: Purchasing internals
+      collectors:
+        - { type: classLike, value: ^App\\Purchasing\\(?!Domain\\|Application\\Service\\OrderAllocator$|Application\\(Command|Handler)\\PurchaseOrderItem\\CreatePurchaseOrderItem(Handler)?$) }
+    # Exception: sourcing an order from suppliers is Purchasing's job, started from Order. Order allocates a whole
+    # order, and staff add a purchase order item to an order item from the order screen.
+    - name: Order sourcing
+      collectors:
+        - { type: classLike, value: ^App\\Purchasing\\Application\\(Service\\OrderAllocator$|(Command|Handler)\\PurchaseOrderItem\\CreatePurchaseOrderItem(Handler)?$) }
+
+    - name: Reporting Domain
+      collectors:
+        - { type: classLike, value: ^App\\Reporting\\Domain\\ }
+    - name: Reporting internals
+      collectors:
+        - { type: classLike, value: ^App\\Reporting\\(?!Domain\\) }
+
+    - name: Review Domain
+      collectors:
+        - { type: classLike, value: ^App\\Review\\Domain\\ }
+    - name: Review internals
+      collectors:
+        - { type: classLike, value: ^App\\Review\\(?!Domain\\) }
+
+    # Home has no Domain/, so it has one layer and nothing else may use it.
+    - name: Home internals
+      collectors:
+        - { type: classLike, value: ^App\\Home\\ }
+
+    # Holds no classes. It names, once, what every context may use: Shared, every Domain layer and Current user.
+    # A ruleset entry "+Public" means "Public and everything Public may use".
+    - name: Public
+      collectors:
+        - { type: classLike, value: ^$ }
+
+    # Any class in a context not listed above. It has no ruleset entry, so it may use nothing and nothing may use it.
+    - name: Unregistered
+      collectors:
+        - { type: classLike, value: ^App\\(?!Shared\\|Audit\\|Catalog\\|Customer\\|Note\\|Order\\|Pricing\\|Purchasing\\|Reporting\\|Review\\|Home\\|Kernel$) }
+
+  ruleset:
+    Shared: ~
+    Public: [Shared, Audit Domain, Catalog Domain, Customer Domain, Note Domain, Order Domain, Pricing Domain, Purchasing Domain, Reporting Domain, Review Domain, Current user]
+
+    Audit Domain: [+Public, Audit internals]
+    Audit internals: [+Public]
+
+    Catalog Domain: [+Public, Catalog internals]
+    Catalog internals: [+Public]
+
+    Customer Domain: [+Public, Customer internals]
+    Customer internals: [+Public, Demo customers]
+    Current user: [Customer Domain, Shared]
+    Demo customers: [+Public, Customer internals]
+
+    Note Domain: [+Public, Note internals]
+    Note internals: [+Public]
+
+    Order Domain: [+Public, Order internals]
+    Order internals: [+Public, Order sourcing, Demo customers]
+
+    Pricing Domain: [+Public, Pricing internals]
+    Pricing internals: [+Public]
+
+    Purchasing Domain: [+Public, Purchasing internals]
+    Purchasing internals: [+Public, Order sourcing]
+    Order sourcing: [+Public, Purchasing internals]
+
+    Reporting Domain: [+Public, Reporting internals]
+    Reporting internals: [+Public]
+
+    Review Domain: [+Public, Review internals]
+    Review internals: [+Public]
+
+    Home internals: [+Public]

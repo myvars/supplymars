@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Shared\UI\Twig\Runtime;
+namespace App\Home\UI\Twig\Runtime;
 
-use App\Shared\Application\Service\SidebarBadgeProvider;
+use App\Home\Service\SidebarBadgeProvider;
 use Twig\Extension\RuntimeExtensionInterface;
 
 class SidebarBadgeExtensionRuntime implements RuntimeExtensionInterface

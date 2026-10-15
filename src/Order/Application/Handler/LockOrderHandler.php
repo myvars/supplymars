@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace App\Order\Application\Handler;
 
 use App\Customer\Domain\Model\User\User;
+use App\Customer\Infrastructure\Security\CurrentUserProvider;
 use App\Order\Application\Command\LockOrder;
 use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Order\Domain\Repository\OrderRepository;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Application\Result;
-use App\Shared\Infrastructure\Security\CurrentUserProvider;
 
 final readonly class LockOrderHandler
 {

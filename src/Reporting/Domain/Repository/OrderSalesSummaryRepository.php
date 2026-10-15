@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Reporting\Domain\Repository;
 
+use App\Reporting\Domain\Metric\SalesDuration;
 use App\Reporting\Domain\Model\SalesType\OrderSalesSummary;
 use App\Reporting\Domain\Model\SalesType\OrderSalesType;
 use App\Reporting\Infrastructure\Persistence\Doctrine\OrderSalesSummaryDoctrineRepository;
@@ -15,4 +16,9 @@ interface OrderSalesSummaryRepository
     public function add(OrderSalesSummary $orderSalesSummary): void;
 
     public function deleteByOrderSalesType(OrderSalesType $orderSalesType): void;
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    public function findOrderSalesSummary(SalesDuration $duration): ?array;
 }

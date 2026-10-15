@@ -135,7 +135,7 @@ src/{Context}/UI/Http/Api/
 - `src/Shared/UI/Http/Api/ApiResourceInterface.php` — Resource contract (`toArray()`)
 - `src/Shared/UI/Http/Api/ApiResponse.php` — Response factory
 - `src/Shared/UI/Http/Api/EventListener/ApiExceptionListener.php` — Error handling
-- `src/Shared/Infrastructure/Security/ApiTokenHandler.php` — Token authentication (hashes the token, looks up by hash)
+- `src/Customer/Infrastructure/Security/ApiTokenHandler.php` — Token authentication (hashes the token, looks up by hash)
 - `src/Customer/UI/Console/IssueApiTokenCommand.php` — Issues a token
 - `src/Shared/Infrastructure/Security/ApiAuthenticationFailureHandler.php` — Auth error responses
 - `config/packages/nelmio_api_doc.yaml` — Swagger configuration

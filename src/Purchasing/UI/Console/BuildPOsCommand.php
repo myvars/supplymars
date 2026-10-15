@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Purchasing\UI\Console;
 
+use App\Customer\Infrastructure\Security\DefaultUserAuthenticator;
 use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Order\Domain\Repository\OrderRepository;
 use App\Purchasing\Application\Service\OrderAllocator;
 use App\Shared\Application\FlusherInterface;
-use App\Shared\Infrastructure\Security\DefaultUserAuthenticator;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;

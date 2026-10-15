@@ -2,7 +2,7 @@
 
 namespace App\Reporting\Application\Handler\Report;
 
-use App\Order\Infrastructure\Persistence\Doctrine\CustomerOrderDoctrineRepository;
+use App\Order\Domain\Repository\OrderRepository;
 use App\Reporting\Application\Report\CustomerInsightsReportCriteria;
 use App\Reporting\Domain\Metric\CustomerSalesMetric;
 use App\Reporting\Infrastructure\Persistence\Doctrine\CustomerSalesDoctrineRepository;
@@ -15,7 +15,7 @@ final readonly class CustomerInsightsReportHandler
     public function __construct(
         private CustomerSalesSummaryDoctrineRepository $summaryRepository,
         private CustomerSalesDoctrineRepository $salesRepository,
-        private CustomerOrderDoctrineRepository $orderRepository,
+        private OrderRepository $orderRepository,
         private ProductSalesChartBuilder $chartBuilder,
     ) {
     }

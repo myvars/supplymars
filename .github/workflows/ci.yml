@@ -47,6 +47,9 @@ jobs:
             - name: Run static analysis
               run: make check-phpstan
 
+            - name: Check dependencies between contexts
+              run: make check-deptrac
+
             - name: Lint container, Twig and YAML
               run: make check-lint
 

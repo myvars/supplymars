@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Shared\Domain\ValueObject;
+namespace App\Order\Domain\Model\Order;
 
 use App\Pricing\Domain\Model\VatRate\VatRate;
 

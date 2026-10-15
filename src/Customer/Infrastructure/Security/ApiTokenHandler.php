@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Shared\Infrastructure\Security;
+namespace App\Customer\Infrastructure\Security;
 
 use App\Customer\Domain\Model\User\User;
 use App\Customer\Domain\Repository\UserRepository;

@@ -20,4 +20,9 @@ interface ProductSalesRepository
      * @return array<int, array<string, mixed>>
      */
     public function findProductSalesSummary(ProductSalesType $productSalesType): array;
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    public function findLatestProductSales(ProductSalesType $productSalesType, int $limit = 10): array;
 }

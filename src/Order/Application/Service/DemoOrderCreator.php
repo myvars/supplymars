@@ -15,9 +15,9 @@ use App\Order\Application\Handler\CreateOrderHandler;
 use App\Order\Application\Handler\CreateOrderItemHandler;
 use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Order\Domain\Model\Order\OrderPublicId;
+use App\Order\Domain\Model\Order\ShippingMethod;
 use App\Order\Domain\Repository\OrderRepository;
 use App\Shared\Application\FlusherInterface;
-use App\Shared\Domain\ValueObject\ShippingMethod;
 
 final readonly class DemoOrderCreator
 {

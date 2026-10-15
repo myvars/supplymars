@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace App\Order\UI\Http\Validation;
 
-use App\Customer\Infrastructure\Persistence\Doctrine\UserDoctrineRepository;
+use App\Customer\Domain\Model\User\User;
+use App\Customer\Domain\Model\User\UserId;
+use App\Customer\Domain\Repository\UserRepository;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
 final class ValidCustomerIdValidator extends ConstraintValidator
 {
-    public function __construct(private readonly UserDoctrineRepository $userRepository)
+    public function __construct(private readonly UserRepository $userRepository)
     {
     }
 
@@ -24,7 +26,7 @@ final class ValidCustomerIdValidator extends ConstraintValidator
             return;
         }
 
-        if ($this->userRepository->find($value)) {
+        if ((int) $value > 0 && $this->userRepository->get(UserId::fromInt((int) $value)) instanceof User) {
             return;
         }
 

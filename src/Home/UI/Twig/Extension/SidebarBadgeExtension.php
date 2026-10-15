@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Shared\UI\Twig\Extension;
+namespace App\Home\UI\Twig\Extension;
 
-use App\Shared\UI\Twig\Runtime\SidebarBadgeExtensionRuntime;
+use App\Home\UI\Twig\Runtime\SidebarBadgeExtensionRuntime;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 

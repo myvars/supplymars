@@ -9,7 +9,6 @@ use App\Order\Domain\Model\Order\OrderId;
 use App\Order\Domain\Model\Order\OrderPublicId;
 use App\Order\Domain\Model\Order\OrderStatus;
 use App\Order\Domain\Repository\OrderRepository;
-use App\Reporting\Application\Report\OverdueOrderReportCriteria;
 use App\Review\Domain\Model\Review\ReviewStatus;
 use App\Shared\Application\Search\SearchCriteriaInterface;
 use App\Shared\Infrastructure\Persistence\Search\FindByCriteriaInterface;
@@ -185,12 +184,8 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
     /**
      * @return AdapterInterface<CustomerOrder>
      */
-    public function findOverdueOrders(OverdueOrderReportCriteria $dto): AdapterInterface
+    public function findOverdueOrders(\DateTime $startDate, string $sort, string $sortDirection): AdapterInterface
     {
-        $sort = $dto->getSort();
-        $sortDirection = $dto->getSortDirection();
-        $startDate = new \DateTime($dto->getDuration()->getStartDate());
-
         $qb = $this->getOverdueOrders($startDate)
             ->select('co, DATE_DIFF(CURRENT_DATE(), co.dueDate) AS HIDDEN overdueDays');
 

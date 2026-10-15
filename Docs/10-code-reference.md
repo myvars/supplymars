@@ -416,7 +416,7 @@ hasPositiveCost()             // cost > 0
 | AbstractUlidId | `src/Shared/Domain/ValueObject/AbstractUlidId.php` | Base ULID value object |
 | AbstractIntId | `src/Shared/Domain/ValueObject/AbstractIntId.php` | Base int ID value object |
 | PriceModel | `src/Shared/Domain/ValueObject/PriceModel.php` | Pretty-price rounding enum |
-| ShippingMethod | `src/Shared/Domain/ValueObject/ShippingMethod.php` | Shipping options enum |
+| ShippingMethod | `src/Order/Domain/Model/Order/ShippingMethod.php` | Shipping options enum |
 | StatusChange | `src/Shared/Domain/ValueObject/StatusChange.php` | Status transition VO |
 | StockChange | `src/Shared/Domain/ValueObject/StockChange.php` | Stock change VO |
 | CostChange | `src/Shared/Domain/ValueObject/CostChange.php` | Cost change VO |
@@ -444,7 +444,7 @@ hasPositiveCost()             // cost > 0
 | HasPublicUlid | `src/Shared/Infrastructure/Persistence/Doctrine/Mapping/HasPublicUlid.php` | ULID entity trait |
 | DomainEventDispatcher | `src/Shared/Infrastructure/Persistence/Doctrine/EventListener/DomainEventDispatcher.php` | Event dispatch listener |
 | DoctrineFlusher | `src/Shared/Infrastructure/Persistence/Doctrine/DoctrineFlusher.php` | Flusher implementation |
-| CurrentUserProvider | `src/Shared/Infrastructure/Security/CurrentUserProvider.php` | Current user access |
+| CurrentUserProvider | `src/Customer/Infrastructure/Security/CurrentUserProvider.php` | Current user access |
 | Paginator | `src/Shared/Infrastructure/Persistence/Search/Paginator.php` | Pagination service |
 
 ### FormFlow
@@ -488,7 +488,7 @@ hasPositiveCost()             // cost > 0
 | ApiResourceInterface | `src/Shared/UI/Http/Api/ApiResourceInterface.php` | Resource contract (`toArray()`) for class-string support in `collection()` |
 | ApiResponse | `src/Shared/UI/Http/Api/ApiResponse.php` | Static factory: `item()`, `collection()`, `error()`, `noContent()` |
 | ApiExceptionListener | `src/Shared/UI/Http/Api/EventListener/ApiExceptionListener.php` | Converts exceptions to RFC 7807 JSON for `/api/` routes |
-| ApiTokenHandler | `src/Shared/Infrastructure/Security/ApiTokenHandler.php` | Validates Bearer tokens via UserRepository |
+| ApiTokenHandler | `src/Customer/Infrastructure/Security/ApiTokenHandler.php` | Validates Bearer tokens via UserRepository |
 | ApiAuthenticationFailureHandler | `src/Shared/Infrastructure/Security/ApiAuthenticationFailureHandler.php` | Returns 401 JSON on auth failure |
 
 ### API Controllers
@@ -586,7 +586,7 @@ hasPositiveCost()             // cost > 0
 2. `src/Shared/UI/Http/Api/ApiResourceInterface.php` (resource contract)
 3. `src/Shared/UI/Http/Api/ApiResponse.php` (response factory)
 4. `src/Shared/UI/Http/Api/EventListener/ApiExceptionListener.php` (error handling)
-5. `src/Shared/Infrastructure/Security/ApiTokenHandler.php` (authentication)
+5. `src/Customer/Infrastructure/Security/ApiTokenHandler.php` (authentication)
 6. `src/{Context}/UI/Http/Api/` (controllers, resources, requests)
 
 ### "I need to add a new entity"

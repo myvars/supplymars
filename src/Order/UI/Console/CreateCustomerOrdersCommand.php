@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Order\UI\Console;
 
+use App\Customer\Infrastructure\Security\DefaultUserAuthenticator;
 use App\Order\Application\Service\DemoOrderCreator;
-use App\Shared\Infrastructure\Security\DefaultUserAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\Argument;

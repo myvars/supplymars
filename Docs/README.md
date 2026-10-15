@@ -6,7 +6,7 @@ For a high-level introduction, see the [main README](../README.md). For domain c
 
 ## High-Level Architecture
 
-SupplyMars is a **modular monolith** - bounded contexts are self-contained modules that mainly communicate through domain events and interfaces. This keeps the benefits of a single deployable unit while preserving clear boundaries, making it straightforward to extract contexts into separate services if scaling demands it.
+SupplyMars is a **modular monolith** - bounded contexts are self-contained modules that use each other only through their domain models (entities, events, repository interfaces), never each other's handlers, Doctrine repositories or controllers. Deptrac checks this in CI, with a few named exceptions. This keeps the benefits of a single deployable unit while keeping the boundaries visible, so the work needed to extract a context into a separate service stays bounded.
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────┐
@@ -99,6 +99,7 @@ SupplyMars is a **modular monolith** - bounded contexts are self-contained modul
 - **[adr/010-customer-insights-reporting.md](adr/010-customer-insights-reporting.md)** - Customer segmentation, geographic, and insights reporting
 - **[adr/011-rest-api-layer.md](adr/011-rest-api-layer.md)** - REST API alongside server-rendered UI
 - **[adr/013-database-queue-by-default.md](adr/013-database-queue-by-default.md)** - Messenger on a database queue by default; RabbitMQ as an opt-in
+- **[adr/014-architecture-rules.md](adr/014-architecture-rules.md)** - Framework attributes allowed in the domain; contexts use each other's Domain only; Deptrac in CI
 
 ---
 
@@ -125,6 +126,7 @@ make check                          # Every check CI runs (Docker); make check-<
 vendor/bin/php-cs-fixer fix         # Fix code style (@Symfony rules)
 vendor/bin/phpstan analyse          # Static analysis (level 7)
 vendor/bin/rector process           # Automated refactoring
+vendor/bin/deptrac analyse          # Rules between bounded contexts
 ```
 
 ### Console Commands (Simulation)

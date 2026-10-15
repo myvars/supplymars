@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Note\Application\Handler\Ticket;
 
+use App\Customer\Infrastructure\Security\CurrentUserProvider;
 use App\Note\Application\Command\Ticket\ReopenTicket;
 use App\Note\Domain\Model\Message\Message;
 use App\Note\Domain\Model\Ticket\Ticket;
 use App\Note\Domain\Repository\TicketRepository;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Application\Result;
-use App\Shared\Infrastructure\Security\CurrentUserProvider;
 
 final readonly class ReopenTicketHandler
 {

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Purchasing\UI\Http\Chart;
+namespace App\Audit\UI\Http\Chart;
 
 use App\Purchasing\Domain\Model\Supplier\SupplierColourScheme;
-use App\Reporting\UI\Http\Chart\ChartColorProviderInterface;
+use App\Shared\UI\Http\Chart\ChartColorProviderInterface;
 
 final readonly class SupplierColorProvider implements ChartColorProviderInterface
 {

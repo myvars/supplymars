@@ -8,9 +8,9 @@ use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Order\Domain\Model\Order\CustomerOrderItem;
 use App\Order\Domain\Model\Order\Event\OrderStatusWasChangedEvent;
 use App\Order\Domain\Model\Order\OrderStatus;
+use App\Order\Domain\Model\Order\ShippingMethod;
 use App\Pricing\Domain\Model\VatRate\VatRate;
 use App\Shared\Domain\Event\AbstractDomainEvent;
-use App\Shared\Domain\ValueObject\ShippingMethod;
 use PHPUnit\Framework\TestCase;
 
 class OrderDomainTest extends TestCase

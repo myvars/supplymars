@@ -5,12 +5,12 @@ namespace App\Tests\Purchasing\Domain;
 use App\Customer\Domain\Model\Address\Address;
 use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Order\Domain\Model\Order\CustomerOrderItem;
+use App\Order\Domain\Model\Order\ShippingMethod;
 use App\Purchasing\Domain\Model\PurchaseOrder\Event\PurchaseOrderStatusWasChangedEvent;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrder;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItem;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use App\Purchasing\Domain\Model\Supplier\Supplier;
-use App\Shared\Domain\ValueObject\ShippingMethod;
 use PHPUnit\Framework\TestCase;
 
 class PurchaseOrderDomainTest extends TestCase

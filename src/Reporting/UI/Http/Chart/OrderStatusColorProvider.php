@@ -3,6 +3,7 @@
 namespace App\Reporting\UI\Http\Chart;
 
 use App\Order\Domain\Model\Order\OrderStatus;
+use App\Shared\UI\Http\Chart\ChartColorProviderInterface;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
 
 #[AsAlias(ChartColorProviderInterface::class)]

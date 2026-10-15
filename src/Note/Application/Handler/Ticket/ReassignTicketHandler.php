@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Note\Application\Handler\Ticket;
 
+use App\Customer\Infrastructure\Security\CurrentUserProvider;
 use App\Note\Application\Command\Ticket\ReassignTicket;
 use App\Note\Domain\Model\Message\Message;
 use App\Note\Domain\Model\Pool\Pool;
@@ -14,7 +15,6 @@ use App\Note\Domain\Repository\TicketRepository;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Application\RedirectTarget;
 use App\Shared\Application\Result;
-use App\Shared\Infrastructure\Security\CurrentUserProvider;
 
 final readonly class ReassignTicketHandler
 {

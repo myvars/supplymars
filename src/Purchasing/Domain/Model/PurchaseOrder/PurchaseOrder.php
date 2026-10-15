@@ -4,12 +4,12 @@ namespace App\Purchasing\Domain\Model\PurchaseOrder;
 
 use App\Customer\Domain\Model\Address\Address;
 use App\Order\Domain\Model\Order\CustomerOrder;
+use App\Order\Domain\Model\Order\ShippingMethod;
 use App\Purchasing\Domain\Model\PurchaseOrder\Event\PurchaseOrderStatusWasChangedEvent;
 use App\Purchasing\Domain\Model\Supplier\Supplier;
 use App\Purchasing\Infrastructure\Persistence\Doctrine\PurchaseOrderDoctrineRepository;
 use App\Shared\Domain\Event\DomainEventProviderInterface;
 use App\Shared\Domain\Event\DomainEventProviderTrait;
-use App\Shared\Domain\ValueObject\ShippingMethod;
 use App\Shared\Domain\ValueObject\StatusChange;
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapping\HasPublicUlid;
 use Doctrine\Common\Collections\ArrayCollection;

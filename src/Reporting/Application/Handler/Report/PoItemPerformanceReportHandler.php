@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Reporting\Application\Handler\Report;
 
-use App\Purchasing\Infrastructure\Persistence\Doctrine\PurchaseOrderItemDoctrineRepository;
+use App\Purchasing\Domain\Repository\PurchaseOrderItemRepository;
 use App\Reporting\Application\Report\PoItemPerformanceReportCriteria;
 use App\Shared\Application\Result;
 use App\Shared\Infrastructure\Persistence\Search\Paginator;
@@ -14,7 +14,7 @@ use Pagerfanta\Pagerfanta;
 final readonly class PoItemPerformanceReportHandler
 {
     public function __construct(
-        private PurchaseOrderItemDoctrineRepository $purchaseOrderItemRepository,
+        private PurchaseOrderItemRepository $purchaseOrderItemRepository,
         private Paginator $paginator,
     ) {
     }
@@ -45,7 +45,12 @@ final readonly class PoItemPerformanceReportHandler
     private function getPerformanceItems(PoItemPerformanceReportCriteria $criteria): Pagerfanta
     {
         return $this->paginator->createPagination(
-            $this->purchaseOrderItemRepository->findForPerformanceReport($criteria),
+            $this->purchaseOrderItemRepository->findForPerformanceReport(
+                new \DateTime($criteria->getDuration()->getStartDate()),
+                new \DateTime($criteria->getDuration()->getEndDate()),
+                $criteria->getSort(),
+                $criteria->getSortDirection(),
+            ),
             $criteria->getPage(),
             $criteria->getLimit()
         );

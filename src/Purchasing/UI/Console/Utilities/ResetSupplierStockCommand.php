@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Purchasing\UI\Console\Utilities;
 
+use App\Customer\Infrastructure\Security\DefaultUserAuthenticator;
 use App\Purchasing\Domain\Model\Supplier\Supplier;
 use App\Purchasing\Domain\Model\Supplier\SupplierId;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
 use App\Purchasing\Domain\Repository\SupplierProductRepository;
 use App\Purchasing\Domain\Repository\SupplierRepository;
 use App\Shared\Application\FlusherInterface;
-use App\Shared\Infrastructure\Security\DefaultUserAuthenticator;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;

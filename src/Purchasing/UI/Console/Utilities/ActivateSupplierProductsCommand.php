@@ -2,12 +2,12 @@
 
 namespace App\Purchasing\UI\Console\Utilities;
 
+use App\Customer\Infrastructure\Security\DefaultUserAuthenticator;
 use App\Purchasing\Application\Command\SupplierProduct\ToggleSupplierProductStatus;
 use App\Purchasing\Application\Handler\SupplierProduct\ToggleSupplierProductStatusHandler;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
 use App\Purchasing\Domain\Repository\SupplierProductRepository;
 use App\Shared\Application\FlusherInterface;
-use App\Shared\Infrastructure\Security\DefaultUserAuthenticator;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;

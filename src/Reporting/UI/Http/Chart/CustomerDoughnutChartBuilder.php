@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Reporting\UI\Http\Chart;
 
+use App\Shared\UI\Http\Chart\ChartColorProviderInterface;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
 

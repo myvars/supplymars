@@ -2,10 +2,10 @@
 
 namespace App\Purchasing\UI\Console\Utilities;
 
+use App\Customer\Infrastructure\Security\DefaultUserAuthenticator;
 use App\Purchasing\Application\Service\PurchaseOrderRewindService;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrder;
 use App\Purchasing\Domain\Repository\PurchaseOrderRepository;
-use App\Shared\Infrastructure\Security\DefaultUserAuthenticator;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Attribute\Option;
 use Symfony\Component\Console\Command\Command;

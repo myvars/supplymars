@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Reporting\UI\Http\Chart;
 
+use App\Shared\UI\Http\Chart\ChartColorProviderInterface;
+
 final readonly class CustomerCityColorProvider implements ChartColorProviderInterface
 {
     private const array COLORS = [

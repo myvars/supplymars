@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Reporting\Application\Handler\Report;
 
-use App\Order\Infrastructure\Persistence\Doctrine\CustomerOrderDoctrineRepository;
+use App\Order\Domain\Repository\OrderRepository;
 use App\Reporting\Application\Report\OverdueOrderReportCriteria;
 use App\Shared\Application\Result;
 use App\Shared\Infrastructure\Persistence\Search\Paginator;
@@ -14,7 +14,7 @@ use Pagerfanta\Pagerfanta;
 final readonly class OverdueOrdersReportHandler
 {
     public function __construct(
-        private CustomerOrderDoctrineRepository $orderRepository,
+        private OrderRepository $orderRepository,
         private Paginator $paginator,
     ) {
     }
@@ -44,7 +44,11 @@ final readonly class OverdueOrdersReportHandler
     private function getOverdueOrders(OverdueOrderReportCriteria $criteria): Pagerfanta
     {
         return $this->paginator->createPagination(
-            $this->orderRepository->findOverdueOrders($criteria),
+            $this->orderRepository->findOverdueOrders(
+                new \DateTime($criteria->getDuration()->getStartDate()),
+                $criteria->getSort(),
+                $criteria->getSortDirection(),
+            ),
             $criteria->getPage(),
             $criteria->getLimit()
         );

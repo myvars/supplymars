@@ -2,12 +2,12 @@
 
 namespace App\Purchasing\UI\Console;
 
+use App\Customer\Infrastructure\Security\DefaultUserAuthenticator;
 use App\Purchasing\Application\Service\OrderAllocator;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrder;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use App\Purchasing\Domain\Repository\PurchaseOrderRepository;
 use App\Shared\Application\FlusherInterface;
-use App\Shared\Infrastructure\Security\DefaultUserAuthenticator;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;

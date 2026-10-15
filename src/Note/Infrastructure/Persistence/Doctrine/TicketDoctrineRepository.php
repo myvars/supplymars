@@ -2,6 +2,7 @@
 
 namespace App\Note\Infrastructure\Persistence\Doctrine;
 
+use App\Customer\Infrastructure\Security\CurrentUserProvider;
 use App\Note\Application\Search\TicketSearchCriteria;
 use App\Note\Domain\Model\Ticket\Ticket;
 use App\Note\Domain\Model\Ticket\TicketId;
@@ -10,7 +11,6 @@ use App\Note\Domain\Model\Ticket\TicketStatus;
 use App\Note\Domain\Repository\TicketRepository;
 use App\Shared\Application\Search\SearchCriteriaInterface;
 use App\Shared\Infrastructure\Persistence\Search\FindByCriteriaInterface;
-use App\Shared\Infrastructure\Security\CurrentUserProvider;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Pagerfanta\Adapter\AdapterInterface;

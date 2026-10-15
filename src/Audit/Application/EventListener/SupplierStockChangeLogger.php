@@ -6,7 +6,7 @@ namespace App\Audit\Application\EventListener;
 
 use App\Audit\Infrastructure\Logging\SupplierStockChangeLogWriter;
 use App\Purchasing\Domain\Model\SupplierProduct\Event\SupplierProductStockWasChangedEvent;
-use App\Purchasing\UI\Http\ArgumentResolver\SupplierProductPublicIdResolver;
+use App\Shared\Application\Identity\PublicIdResolverRegistry;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
@@ -18,14 +18,14 @@ final readonly class SupplierStockChangeLogger
 {
     public function __construct(
         private SupplierStockChangeLogWriter $changeLogWriter,
-        private SupplierProductPublicIdResolver $publicIdResolver,
+        private PublicIdResolverRegistry $publicIdResolverRegistry,
         private LoggerInterface $logger,
     ) {
     }
 
     public function __invoke(SupplierProductStockWasChangedEvent $event): void
     {
-        $legacyId = $this->publicIdResolver->resolve($event->getId()); // VO in, ?int out
+        $legacyId = $this->publicIdResolverRegistry->resolve($event->getId()); // VO in, ?int out
         if (null === $legacyId) {
             $this->logger->warning('Could not resolve legacy ID for public ID', [
                 'publicId' => (string) $event->getId(),
