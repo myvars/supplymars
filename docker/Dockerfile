@@ -69,8 +69,10 @@ ENV APP_ENV=prod
 # rather than installing the newest allowed versions instead of the tested ones
 COPY --link composer.json composer.lock symfony.lock ./
 
-# Install dependencies (caches unless composer files change)
-RUN composer install --no-cache --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress --no-interaction
+# Install dependencies (caches unless composer files change). validate fails on a lock file that no
+# longer matches composer.json, which install would only warn about
+RUN composer validate --no-check-all --no-check-publish && \
+    composer install --no-cache --prefer-dist --no-dev --no-autoloader --no-scripts --no-progress --no-interaction
 
 # Now copy everything else
 COPY --link . /app
