@@ -449,34 +449,42 @@ All public auth endpoints are rate-limited at the Nginx layer (production only):
 ```nginx
 # docker/nginx/conf.d/prod.conf
 
+map $request_method $form_post_limit_key {
+    POST    $binary_remote_addr;
+    default "";
+}
+
 limit_req_zone $binary_remote_addr zone=login:10m rate=10r/m;
-limit_req_zone $binary_remote_addr zone=register:10m rate=2r/m;
+limit_req_zone $form_post_limit_key zone=register:10m rate=2r/m;
+limit_req_status 429;
 
 location = /login {
     limit_req zone=login burst=5 nodelay;
 }
 
 location = /register {
-    limit_req zone=register burst=1 nodelay;
+    limit_req zone=register burst=2 nodelay;
 }
 
 location ^~ /reset-password {
-    limit_req zone=register burst=3 nodelay;
+    limit_req zone=register burst=2 nodelay;
 }
 
 location = /verify/resend {
-    limit_req zone=register burst=3 nodelay;
+    limit_req zone=register burst=2 nodelay;
 }
 ```
 
-| Endpoint | Zone | Limit | Burst | Rationale |
-|----------|------|-------|-------|-----------|
-| `/login` | `login` | 10/min per IP | 5 | Moderate — legitimate users may retry |
-| `/register` | `register` | 2/min per IP | 1 | Tight — registration also gated by app-level limiter |
-| `/reset-password/*` | `register` | 2/min per IP | 3 | Tight — prevents email-sending abuse; burst accommodates Turbo navigation |
-| `/verify/resend` | `register` | 2/min per IP | 3 | Tight — prevents verification email abuse; burst accommodates Turbo navigation |
+| Endpoint | Zone | Counts | Limit | Burst | Rationale |
+|----------|------|--------|-------|-------|-----------|
+| `/login` | `login` | All requests | 10/min per IP | 5 | Moderate — legitimate users may retry |
+| `/register` | `register` | POSTs only | 2/min per IP | 2 | Tight — registration also gated by app-level limiter |
+| `/reset-password/*` | `register` | POSTs only | 2/min per IP | 2 | Tight — prevents email-sending abuse |
+| `/verify/resend` | `register` | POSTs only | 2/min per IP | 2 | Tight — prevents verification email abuse |
 
-- Returns `503 Service Temporarily Unavailable` when exceeded
+- The `register` zone counts only form submissions. Nginx does not count a request whose key is empty, and the key is empty for every method except POST, so loading a form, a Turbo prefetch of it, or the page a submit redirects to uses none of the allowance. When every request counted, loading the form and submitting it within half a minute was refused.
+- A burst of 2 with `nodelay` lets three POSTs through at once (a submit and two resubmissions after validation errors), then one every 30 seconds. The three endpoints share the zone, so the allowance is per IP across all of them.
+- Returns `429 Too Many Requests` when exceeded, so a rate limit is not mistaken for an outage
 - Not applied in development (dev Nginx config has no rate limiting)
 
 ### Defence in Depth
