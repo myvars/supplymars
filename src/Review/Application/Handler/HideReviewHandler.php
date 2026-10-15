@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Review\Application\Handler;
 
+use App\Customer\Infrastructure\Security\CurrentUserProvider;
 use App\Review\Application\Command\HideReview;
 use App\Review\Domain\Model\Review\ProductReview;
 use App\Review\Domain\Repository\ReviewRepository;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Application\Result;
-use App\Shared\Infrastructure\Security\CurrentUserProvider;
 
 final readonly class HideReviewHandler
 {

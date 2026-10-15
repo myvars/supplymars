@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Tests\Shared\Infrastructure\Security;
+namespace App\Tests\Customer\Infrastructure\Security;
 
 use App\Customer\Domain\Model\User\User;
-use App\Shared\Infrastructure\Security\DefaultUserAuthenticator;
+use App\Customer\Infrastructure\Security\DefaultUserAuthenticator;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;

@@ -2,9 +2,9 @@
 
 namespace App\Review\UI\Console;
 
+use App\Customer\Infrastructure\Security\DefaultUserAuthenticator;
 use App\Review\Application\Service\ReviewGenerator;
 use App\Shared\Application\FlusherInterface;
-use App\Shared\Infrastructure\Security\DefaultUserAuthenticator;
 use Symfony\Component\Console\Attribute\Argument;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Attribute\Option;

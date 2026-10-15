@@ -25,7 +25,7 @@ security:
             stateless: true
             entry_point: App\Shared\Infrastructure\Security\ApiAuthenticationFailureHandler
             access_token:
-                token_handler: App\Shared\Infrastructure\Security\ApiTokenHandler
+                token_handler: App\Customer\Infrastructure\Security\ApiTokenHandler
                 failure_handler: App\Shared\Infrastructure\Security\ApiAuthenticationFailureHandler
         main:
             lazy: true

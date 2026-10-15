@@ -2,11 +2,11 @@
 
 namespace App\Shared\Application\Service;
 
+use App\Customer\Infrastructure\Security\CurrentUserProvider;
 use App\Note\Domain\Repository\TicketRepository;
 use App\Order\Domain\Repository\OrderRepository;
 use App\Purchasing\Domain\Repository\PurchaseOrderRepository;
 use App\Review\Domain\Repository\ReviewRepository;
-use App\Shared\Infrastructure\Security\CurrentUserProvider;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 

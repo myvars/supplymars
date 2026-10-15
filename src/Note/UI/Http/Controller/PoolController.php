@@ -2,6 +2,7 @@
 
 namespace App\Note\UI\Http\Controller;
 
+use App\Customer\Infrastructure\Security\CurrentUserProvider;
 use App\Note\Application\Command\Pool\DeletePool;
 use App\Note\Application\Command\Pool\TogglePoolSubscription;
 use App\Note\Application\Handler\Pool\CreatePoolHandler;
@@ -15,7 +16,6 @@ use App\Note\UI\Http\Form\Mapper\CreatePoolMapper;
 use App\Note\UI\Http\Form\Mapper\UpdatePoolMapper;
 use App\Note\UI\Http\Form\Model\PoolForm;
 use App\Note\UI\Http\Form\Type\PoolType;
-use App\Shared\Infrastructure\Security\CurrentUserProvider;
 use MyVars\FormFlow\ActionFlow;
 use MyVars\FormFlow\ConfirmFlow;
 use MyVars\FormFlow\FormFlow;

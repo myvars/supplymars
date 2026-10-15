@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Shared\Infrastructure\Security;
+namespace App\Customer\Infrastructure\Security;
 
 use App\Customer\Domain\Model\User\User;
 use Symfony\Bundle\SecurityBundle\Security;

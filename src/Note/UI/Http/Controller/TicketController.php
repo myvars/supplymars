@@ -2,6 +2,7 @@
 
 namespace App\Note\UI\Http\Controller;
 
+use App\Customer\Infrastructure\Security\CurrentUserProvider;
 use App\Note\Application\Command\Ticket\CloseTicket;
 use App\Note\Application\Command\Ticket\DeleteMessage;
 use App\Note\Application\Command\Ticket\ReopenTicket;
@@ -31,7 +32,6 @@ use App\Note\UI\Http\Form\Type\ReassignType;
 use App\Note\UI\Http\Form\Type\ReplyType;
 use App\Note\UI\Http\Form\Type\TicketFilterType;
 use App\Note\UI\Http\Form\Type\TicketType;
-use App\Shared\Infrastructure\Security\CurrentUserProvider;
 use MyVars\FormFlow\ActionFlow;
 use MyVars\FormFlow\ConfirmFlow;
 use MyVars\FormFlow\FormFlow;

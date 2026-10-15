@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Audit\Application\EventListener;
 
 use App\Audit\Infrastructure\Logging\StatusChangeLogWriter;
+use App\Customer\Infrastructure\Security\CurrentUserProvider;
 use App\Order\Domain\Model\Order\Event\OrderItemStatusWasChangedEvent;
 use App\Order\Domain\Model\Order\Event\OrderStatusWasChangedEvent;
 use App\Purchasing\Domain\Model\PurchaseOrder\Event\PurchaseOrderItemStatusWasChangedEvent;
 use App\Purchasing\Domain\Model\PurchaseOrder\Event\PurchaseOrderStatusWasChangedEvent;
 use App\Shared\Application\Identity\PublicIdResolverRegistry;
 use App\Shared\Domain\Event\StatusWasChangedEventInterface;
-use App\Shared\Infrastructure\Security\CurrentUserProvider;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
