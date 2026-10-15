@@ -140,7 +140,8 @@ services:
     ports:
       - "127.0.0.1:${NGINX_HOST_PORT:-8080}:80"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost"]
+      # Passes when nginx, PHP, the database, Redis and the queue all respond
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
       interval: 30s
       timeout: 10s
       retries: 10
