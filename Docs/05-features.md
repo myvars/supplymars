@@ -800,7 +800,7 @@ FormFlow is a thin orchestration layer that standardizes controller behavior acr
 | Flow | Purpose | Key Method |
 |------|---------|------------|
 | `FormFlow` | Create/update with forms | `form()` |
-| `ActionFlow` | Direct command execution (state changes): POST-only, CSRF-checked via `->csrf()` | `process()` |
+| `ActionFlow` | Direct command execution (state changes); CSRF-checked when the context calls `->csrf()` | `process()` |
 | `ConfirmFlow` | Confirm-then-act (delete and other confirmable actions) | `confirm()`, `execute()` |
 | `SearchFlow` | Paginated index pages | `search()` |
 | `InlineEditFlow` | Single-field inline editing via Turbo Frames | `handleField()` |
