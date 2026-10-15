@@ -304,8 +304,10 @@ src/Shared/UI/Http/Api/
     └── ApiExceptionListener.php             # RFC 7807 error handling
 
 src/Shared/Infrastructure/Security/
-├── ApiTokenHandler.php                      # Bearer token validation
 └── ApiAuthenticationFailureHandler.php      # 401 JSON responses
+
+src/Customer/Infrastructure/Security/
+└── ApiTokenHandler.php                      # Bearer token validation
 
 src/{Context}/UI/Http/Api/
 ├── {Entity}ApiController.php                # Route handlers

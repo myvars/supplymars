@@ -250,7 +250,7 @@ The system is organized into ten bounded contexts:
 | **Reporting** | Business intelligence | ProductSales, OrderSales, CustomerSales, Dashboards |
 | **Review** | Product reviews | ProductReview, ProductReviewSummary |
 
-Plus a **Shared Kernel** containing cross-cutting concerns.
+Plus a **Shared Kernel** containing cross-cutting concerns. A context may use another context's `Domain/` but not its internals, and the Shared Kernel uses no business context; see [Rules between contexts](03-architecture.md#rules-between-contexts).
 
 ## Data Flow Example
 

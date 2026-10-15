@@ -51,7 +51,7 @@ security:
             stateless: true
             entry_point: App\Shared\Infrastructure\Security\ApiAuthenticationFailureHandler
             access_token:
-                token_handler: App\Shared\Infrastructure\Security\ApiTokenHandler
+                token_handler: App\Customer\Infrastructure\Security\ApiTokenHandler
                 failure_handler: App\Shared\Infrastructure\Security\ApiAuthenticationFailureHandler
         main:
             lazy: true
@@ -134,7 +134,7 @@ firewalls:
         stateless: true
         entry_point: App\Shared\Infrastructure\Security\ApiAuthenticationFailureHandler
         access_token:
-            token_handler: App\Shared\Infrastructure\Security\ApiTokenHandler
+            token_handler: App\Customer\Infrastructure\Security\ApiTokenHandler
             failure_handler: App\Shared\Infrastructure\Security\ApiAuthenticationFailureHandler
 ```
 
@@ -183,7 +183,7 @@ All API authentication errors return RFC 7807 `application/problem+json`:
 ```
 
 **Key files:**
-- `src/Shared/Infrastructure/Security/ApiTokenHandler.php`
+- `src/Customer/Infrastructure/Security/ApiTokenHandler.php`
 - `src/Shared/Infrastructure/Security/ApiAuthenticationFailureHandler.php`
 - `src/Customer/Domain/Model/User/User.php` (`api_token_hash` field)
 - `src/Customer/UI/Console/IssueApiTokenCommand.php`

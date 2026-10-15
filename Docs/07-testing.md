@@ -582,7 +582,7 @@ class PriceCascadeTest extends KernelTestCase
 
 ## Code Quality Tools
 
-SupplyMars enforces code quality through three complementary tools: PHPStan, PHP-CS-Fixer and Rector. CI runs all three (as dry runs where they would change code), along with the other checks under [Running All Checks](#running-all-checks).
+SupplyMars enforces code quality through four complementary tools: PHPStan, PHP-CS-Fixer, Rector and Deptrac. CI runs all four (as dry runs where they would change code), along with the other checks under [Running All Checks](#running-all-checks).
 
 ### PHPStan (Static Analysis)
 
@@ -646,13 +646,21 @@ Active rule sets:
 - Doctrine-specific rules
 - Symfony-specific rules
 
+### Deptrac (Dependencies Between Contexts)
+
+```bash
+vendor/bin/deptrac analyse
+```
+
+**Configuration:** `deptrac.yaml`. Fails when a class imports something the [rules between contexts](03-architecture.md#rules-between-contexts) do not allow, or when an entry in its `skip_violations` list no longer matches an import.
+
 ### Running All Checks
 
 `make check` runs every check CI runs, with the same commands. Both call `scripts/check.sh` in the `php` container, after `prod-config`, which runs on the host (`make check-prod-config`; it is not a `scripts/check.sh` step). Locally, keep `vendor/` in step with `composer.lock`: CI installs it fresh, and the container only installs when `vendor/` is missing. Run it before opening a pull request.
 
 ```bash
 make check               # every step
-make check-phpstan       # one step: prod-config, cs, rector, phpstan, lint, audit, migrations or tests
+make check-phpstan       # one step: prod-config, cs, rector, phpstan, deptrac, lint, audit, migrations or tests
 ```
 
 | Step | What it runs |
@@ -661,6 +669,7 @@ make check-phpstan       # one step: prod-config, cs, rector, phpstan, lint, aud
 | `cs` | `php-cs-fixer fix --dry-run --diff` |
 | `rector` | `rector process --dry-run` |
 | `phpstan` | `phpstan analyse` (after warming the dev container it reads) |
+| `deptrac` | `deptrac analyse`: the rules between bounded contexts in `deptrac.yaml` (see [Architecture](03-architecture.md#rules-between-contexts)) |
 | `lint` | `lint:container` (test and dev), `lint:twig templates/`, `lint:yaml config/` |
 | `audit` | `composer audit`: known vulnerabilities and abandoned packages. A new advisory fails the next run whatever it changes |
 | `migrations` | Runs every migration on an empty database (`app_test_migrations`), then `doctrine:schema:validate`. Fails when the migrations do not produce the schema the entities describe, e.g. an entity change with no migration |

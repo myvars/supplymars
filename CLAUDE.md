@@ -19,6 +19,7 @@ make check                    # Every check CI runs, same commands (Docker); mak
 vendor/bin/php-cs-fixer fix   # @Symfony rules, yoda_style: false
 vendor/bin/phpstan analyse    # Level 7
 vendor/bin/rector process     # Dead code, type declarations, Doctrine/Symfony sets
+vendor/bin/deptrac analyse    # Rules between bounded contexts (deptrac.yaml)
 
 # Migrations
 symfony console make:migration        # Generate migration from entity changes
@@ -65,6 +66,9 @@ src/
 ├── Infrastructure/ Persistence/Doctrine/
 └── UI/             Http/ (Controllers, Forms, DTOs)
 ```
+
+- **Domain is not framework-free.** Doctrine/Gedmo mapping, `#[Assert\...]` constraints, `repositoryClass` and `#[AsAlias]` on repository interfaces are allowed. Business rules stay in plain methods.
+- **Between contexts** (enforced by Deptrac, `deptrac.yaml`): a context may use another context's `Domain/` — entities and Doctrine relations to them, enums, events, repository interfaces. Never its `Application/`, `Infrastructure/` or `UI/` (handlers, services, Doctrine repository classes, controllers, factories). Need another context's query? Type-hint its repository interface and add the method there. `Shared` imports from no business context. One exception: `CurrentUserProvider` and `DefaultUserAuthenticator` in `Customer\Infrastructure\Security` are usable everywhere. Existing violations awaiting a decision are listed in `skip_violations`; never add to that list. See `Docs/03-architecture.md#rules-between-contexts` and `Docs/adr/014-architecture-rules.md`.
 
 ### Key Domain Complexity
 
@@ -197,7 +201,7 @@ Framework APIs change between versions. Look things up in the project rather tha
 
 ## New Feature Checklist
 
-1. Determine the bounded context (existing or new — if new, register in `config/packages/doctrine.yaml`).
+1. Determine the bounded context (existing or new — if new, register in `config/packages/doctrine.yaml` and add its layers to `deptrac.yaml`).
 2. Follow DDD layers: Commands/Handlers in `Application/`, Entities/VOs in `Domain/Model/`, Repository interfaces in `Domain/Repository/`, Doctrine repos in `Infrastructure/Persistence/`, Controllers/Forms in `UI/Http/`.
 3. Create typed `{Entity}PublicId` extending `AbstractUlidId`.
 4. Use `HasPublicUlid` trait, call `initializePublicId()` in constructor.

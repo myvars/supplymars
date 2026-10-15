@@ -6,7 +6,7 @@ SupplyMars follows a **modular monolith** architecture with **Domain-Driven Desi
 
 ### Why a Modular Monolith?
 
-The architecture strikes a balance between simplicity and future flexibility. Contexts often communicate through domain events and well-defined interfaces rather than direct database queries or shared entities. This means that if scaling requirements change, individual bounded contexts (such as Reporting or Purchasing) can be extracted into separate services with minimal refactoring - the integration boundaries are already in place.
+The architecture strikes a balance between simplicity and future flexibility. A context may use another context's domain model (its entities, value objects, events and repository interfaces), so a `ProductSales` record in Reporting can point to a Catalog `Product` through an ordinary Doctrine relation. It never reaches into another context's handlers, Doctrine repositories or controllers, and the shared kernel depends on no business context. Deptrac checks these rules in CI (see [Rules between contexts](#rules-between-contexts)); the imports that still break them are listed as exceptions, each with its reason. Extracting a context such as Reporting into a separate service would still mean replacing those relations and repository calls with an API: the rules keep that work bounded, they do not remove it.
 
 ```
 src/
@@ -49,11 +49,13 @@ Each bounded context follows a consistent internal structure:
 
 ## Layering Rules
 
+These describe what each layer is for and what it depends on in practice. Within a context they are conventions, checked in review. Between contexts they are enforced (see [Rules between contexts](#rules-between-contexts)).
+
 ### UI Layer
 
 **Responsibility:** Handle HTTP requests, console commands, render views, serve API responses.
 
-**Allowed dependencies:** Application layer only.
+**Depends on:** Application (commands, handlers, search criteria) and Domain (entities resolved from the route, repository interfaces for read-only lookups).
 
 **Key components:**
 - Controllers (thin, delegate to FormFlow or handlers)
@@ -70,7 +72,7 @@ Each bounded context follows a consistent internal structure:
 
 **Responsibility:** Coordinate use cases, handle cross-cutting concerns.
 
-**Allowed dependencies:** Domain layer.
+**Depends on:** Domain, and framework services (`Security`, mailer, cache).
 
 **Key components:**
 - Commands (readonly DTOs representing operations)
@@ -84,7 +86,14 @@ Each bounded context follows a consistent internal structure:
 
 **Responsibility:** Business rules, domain logic, entity behavior.
 
-**Allowed dependencies:** None (pure domain).
+**Depends on:** Shared, other contexts' Domain layers, and mapping metadata. The domain is not framework-free. These are allowed:
+- Doctrine mapping attributes and collections, and Gedmo's `TimestampableEntity`, on entities
+- Symfony Validator constraints (`#[Assert\...]`, `#[UniqueEntity]`) on entities
+- Symfony `Uid` for public IDs, and `UserInterface` on the `User` entity
+- The entity's own Doctrine repository, named in `#[ORM\Entity(repositoryClass: ...)]`, and on the repository interface in `#[AsAlias(...)]`, which tells the container which class implements it
+- `FindByCriteriaInterface` (`src/Shared/Infrastructure/Persistence/Search/`) as a parent of a repository interface, for repositories that back a search page
+
+These are attributes and type declarations. Domain methods hold the business rules and do not call the framework, the database or other services.
 
 **Key components:**
 - Entities (with behavior, not anemic)
@@ -93,18 +102,42 @@ Each bounded context follows a consistent internal structure:
 - Domain events (record what happened)
 - Domain services (logic that doesn't fit entities)
 
-**Rule:** Domain layer has no infrastructure dependencies.
-
 ### Infrastructure Layer
 
 **Responsibility:** Implement domain interfaces, external integrations.
 
-**Allowed dependencies:** Domain layer interfaces.
+**Depends on:** Domain (the interfaces it implements, the entities it stores), Doctrine and other libraries.
 
 **Key components:**
 - Doctrine repositories (implement domain interfaces)
 - File storage adapters
 - External service clients
+
+## Rules Between Contexts
+
+Each context has a public part, its `Domain/` directory, and internals: `Application/`, `Infrastructure/` and `UI/`.
+
+| From | May use | Must not use |
+|------|---------|--------------|
+| A business context | Its own code, `Shared`, any other context's `Domain/` (entities, enums, value objects, events, repository interfaces) | Another context's `Application/`, `Infrastructure/` or `UI/`: its handlers, services, Doctrine repositories, controllers, forms, factories |
+| `Shared` | `Shared` only | Any business context |
+
+Examples from this codebase:
+
+- `ProductSales` (Reporting) has a Doctrine relation to `Product` (Catalog). Allowed: `Product` is in Catalog's `Domain/`.
+- `CalculateProductSalesHandler` (Reporting) loads products through `ProductRepository` (Catalog). Allowed: it is the repository *interface*, in Catalog's `Domain/`. When a context needs a query the interface does not offer yet, add the method to the interface.
+- Type-hinting `ProductDoctrineRepository` there instead would fail the build. The Doctrine class is Catalog's `Infrastructure/`.
+- `StatusChangeLogger` (Audit) listens to `OrderStatusWasChangedEvent` (Order). Allowed: events are in `Domain/`.
+
+**One named exception:** the signed-in user. `CurrentUserProvider` returns it, and `DefaultUserAuthenticator` signs in the default staff user for the simulation commands. Both are in `src/Customer/Infrastructure/Security/`. Every context needs them, so Deptrac gives them a layer of their own (`Current user`) that any context may use.
+
+### Enforcement
+
+`deptrac.yaml` splits each context into two layers, `{Context} Domain` and `{Context} internals`, and lists which layers each may use. `vendor/bin/deptrac analyse` fails on any import the table above does not allow. It runs in CI and in `make check` (`make check-deptrac`).
+
+Imports that break the rules but are waiting for a design decision are listed under `skip_violations` in `deptrac.yaml`, grouped, each with the reason it is still there. Deptrac fails on an entry that no longer matches an import, so when one is fixed its entry must go: the list only gets shorter. Do not add to it to get a new import past the check; fix the import instead.
+
+A new context must be added to `deptrac.yaml`: its two layers, its ruleset entries, its `Domain` layer in the lists of the other contexts, and its name in the `Unregistered` pattern. Until then its classes fall into the `Unregistered` layer, which may use nothing and which nothing may use, so the first import to or from the new context fails the build. See [ADR 014](adr/014-architecture-rules.md) for the decision.
 
 ## Request Flow
 
@@ -245,7 +278,7 @@ API endpoints follow a simpler flow than FormFlow. Controllers receive JSON inpu
 | AbstractApiController | `src/Shared/UI/Http/Api/` | Base controller with `handleResult()` and `resolveFilterId()` |
 | ApiResponse | `src/Shared/UI/Http/Api/` | Static factory for JSON responses |
 | ApiExceptionListener | `src/Shared/UI/Http/Api/EventListener/` | Converts exceptions to RFC 7807 JSON |
-| ApiTokenHandler | `src/Shared/Infrastructure/Security/` | Validates Bearer tokens |
+| ApiTokenHandler | `src/Customer/Infrastructure/Security/` | Validates Bearer tokens |
 | Resource classes | `src/{Context}/UI/Http/Api/Resource/` | Entity → JSON transformation |
 | Request classes | `src/{Context}/UI/Http/Api/Request/` | Validated input DTOs |
 
