@@ -3,8 +3,12 @@
 namespace App\Tests\Shared\UI\Http;
 
 use App\Shared\Infrastructure\Health\HealthCheckInterface;
+use App\Shared\Infrastructure\Health\QueueHealthCheck;
 use App\Shared\Infrastructure\Health\RedisHealthCheck;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Messenger\Envelope;
+use Symfony\Component\Messenger\Transport\Receiver\MessageCountAwareInterface;
+use Symfony\Component\Messenger\Transport\TransportInterface;
 use Zenstruck\Browser\Test\HasBrowser;
 
 class HealthControllerTest extends WebTestCase
@@ -50,5 +54,43 @@ class HealthControllerTest extends WebTestCase
             ->assertJsonMatches('checks.database', 'ok')
             ->assertJsonMatches('checks.queue', 'ok')
             ->assertNotContains('Connection refused');
+    }
+
+    public function testQueueCheckFailsWhenTheTransportCannotCountMessages(): void
+    {
+        $browser = $this->browser();
+
+        // The test transport (in-memory://) cannot count, so stand in for one that can but is unreachable
+        $transport = new class implements TransportInterface, MessageCountAwareInterface {
+            public function get(): iterable
+            {
+                return [];
+            }
+
+            public function ack(Envelope $envelope): void
+            {
+            }
+
+            public function reject(Envelope $envelope): void
+            {
+            }
+
+            public function send(Envelope $envelope): Envelope
+            {
+                return $envelope;
+            }
+
+            public function getMessageCount(): int
+            {
+                throw new \RuntimeException('Connection refused to database:3306');
+            }
+        };
+        static::getContainer()->set(QueueHealthCheck::class, new QueueHealthCheck($transport));
+
+        $browser
+            ->get('/health')
+            ->assertStatus(503)
+            ->assertJsonMatches('checks.queue', 'fail')
+            ->assertJsonMatches('checks.database', 'ok');
     }
 }
