@@ -1,11 +1,12 @@
 # Caddyfile — Reference copy for host-level reverse proxy.
 # Installed on server at /etc/caddy/Caddyfile.
 # Caddy auto-provisions Let's Encrypt certificates.
+# www.supplymars.com is the public playground (8002); live.supplymars.com is the live site (8001).
 
 supplymars.com, www.supplymars.com {
-    reverse_proxy localhost:8001
+    reverse_proxy localhost:8002
 }
 
 live.supplymars.com {
-    reverse_proxy localhost:8002
+    reverse_proxy localhost:8001
 }
