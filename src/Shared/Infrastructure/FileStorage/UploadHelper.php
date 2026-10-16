@@ -58,11 +58,6 @@ final readonly class UploadHelper
         }
     }
 
-    public function getPublicFilePath(string $path): string
-    {
-        return $this->uploadFilesystem->publicUrl($path);
-    }
-
     private function doUpload(File $file, ?string $directory, string $fileName, bool $isPublic = true): void
     {
         $path = $this->createFilePath($directory, $fileName);

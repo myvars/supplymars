@@ -159,20 +159,6 @@ final class UploadHelperTest extends TestCase
         self::assertTrue($result);
     }
 
-    public function testGetPublicFilePath(): void
-    {
-        $path = 'images/test.jpg';
-        $expected = 'https://cdn.example.com/images/test.jpg';
-
-        $this->filesystem
-            ->expects(self::once())
-            ->method('publicUrl')
-            ->with($path)
-            ->willReturn($expected);
-
-        self::assertSame($expected, $this->helper->getPublicFilePath($path));
-    }
-
     public function testUploadFileThrowsInPlaygroundMode(): void
     {
         $filesystem = $this->createStub(Filesystem::class);

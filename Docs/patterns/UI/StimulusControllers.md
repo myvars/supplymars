@@ -304,10 +304,6 @@ A click on a bar visits the link URL plus `?` and that bar's entry in `options.l
 
 ### Utilities
 
-**`auto_url_updater_controller`**
-- Updates browser URL without navigation
-- Available, not used by any template (the search box syncs the URL itself)
-
 **`csrf_protection_controller`** *(not a Stimulus controller — Symfony CSRF side-effect module)*
 - Manages CSRF tokens via global event listeners
 
@@ -329,7 +325,7 @@ These come from the Shadcn kit (`symfony/ux-toolkit`, see ADR 012) and are attac
 - **`alert_dialog_controller`** — `AlertDialog`
 - **`dropdown_menu_controller`**, **`dropdown_menu_sub_controller`** — `DropdownMenu` (the header user menu)
 - **`sonner_controller`** — the flash toaster in `base.html.twig`
-- **`popover_controller`**, **`calendar_controller`**, **`calendar_display_controller`**, **`date_picker_controller`** — `DatePicker` (see `DatePickerType`)
+- **`popover_controller`**, **`calendar_controller`**, **`date_picker_controller`** — `DatePicker` (see `DatePickerType`)
 
 ## Patterns
 

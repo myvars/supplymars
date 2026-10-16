@@ -100,8 +100,7 @@ assets/
 ├── app.js                            # Registers the custom "redirect" Turbo Stream action
 └── controllers/
     ├── basic_modal_controller.js     # Modal lifecycle
-    ├── searchbox_controller.js       # Live search (also syncs the URL)
-    └── auto_url_updater_controller.js  # URL sync (not used by any template)
+    └── searchbox_controller.js       # Live search (also syncs the URL)
 
 vendor/myvars/form-flow/src/Redirect/
 └── TurboAwareRedirector.php          # Stream response generation (inline)
