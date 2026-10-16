@@ -21,6 +21,7 @@ x-common-php-env: &common-php-env
   REDIS_SESSION_DSN: ${REDIS_SESSION_DSN}                 # Redis for PHP sessions
   MESSENGER_TRANSPORT_DSN: ${MESSENGER_TRANSPORT_DSN:-doctrine://default}   # Queue: a database table unless set
   MAILER_DSN: ${MAILER_DSN}                               # Mailer DSN (e.g., SMTP for real mail delivery)
+  MAILER_FROM: ${MAILER_FROM}                             # Sender address (e.g., no-reply@supplymars.com)
   AWS_S3_REGION: ${AWS_S3_REGION}                         # AWS S3 region for uploads
   AWS_S3_BUCKET: ${AWS_S3_BUCKET}                         # S3 bucket name
   AWS_S3_ACCESS_ID: ${AWS_S3_ACCESS_ID}                   # AWS S3 access key ID

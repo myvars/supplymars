@@ -2,9 +2,9 @@ framework:
     mailer:
         dsn: '%env(MAILER_DSN)%'
         envelope:
-            sender: 'no-reply@%env(DEFAULT_DOMAIN)%.com'
+            sender: '%env(MAILER_FROM)%'
         headers:
-            From: '%env(DEFAULT_DOMAIN)% <no-reply@%env(DEFAULT_DOMAIN)%.com>'
+            From: '%env(DEFAULT_DOMAIN)% <%env(MAILER_FROM)%>'
 
 when@prod:
     framework:
