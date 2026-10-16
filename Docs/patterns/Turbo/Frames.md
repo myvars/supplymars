@@ -206,23 +206,6 @@ Example bindings:
 <turbo-frame data-turbo-action="replace">
 ```
 
-### Manual URL Update
-
-`auto_url_updater_controller.js` rewrites the address bar when it connects. No template uses it today; the search box syncs the URL itself (`searchbox_controller.js`).
-
-```javascript
-// auto_url_updater_controller.js
-static values = { url: String }
-
-connect() {
-    const newUrl = encodeURI(this.urlValue);
-
-    if (newUrl) {
-        history.replaceState(history.state, '', newUrl);
-    }
-}
-```
-
 ## Best Practices
 
 1. **Always specify frame target** for links that should not navigate the full page
