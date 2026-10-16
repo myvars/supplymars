@@ -671,7 +671,7 @@ make check-phpstan       # one step: prod-config, cs, rector, phpstan, deptrac, 
 | `phpstan` | `phpstan analyse` (after warming the dev container it reads) |
 | `deptrac` | `deptrac analyse`: the rules between bounded contexts in `deptrac.yaml` (see [Architecture](03-architecture.md#rules-between-contexts)) |
 | `lint` | `lint:container` (test and dev), `lint:twig templates/`, `lint:yaml config/` |
-| `audit` | `composer audit`: known vulnerabilities and abandoned packages. A new advisory fails the next run whatever it changes |
+| `audit` | `composer audit`: known vulnerabilities and abandoned packages. A new advisory fails the next run whatever it changes. Between runs, GitHub's Dependabot security alerts (turned on for this repository; no update pull requests) report a new advisory for a locked package |
 | `migrations` | Runs every migration on an empty database (`app_test_migrations`), then `doctrine:schema:validate`. Fails when the migrations do not produce the schema the entities describe, e.g. an entity change with no migration |
 | `tests` | `scripts/run-tests.sh`: resets the test database and runs PHPUnit |
 

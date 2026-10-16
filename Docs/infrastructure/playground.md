@@ -65,6 +65,7 @@ REDIS_URL=redis://default:<password>@redis:6379
 REDIS_SESSION_DSN=redis://default:<password>@redis:6379/1
 REDIS_PASSWORD=<password>
 MAILER_DSN=<mailer-dsn>
+MAILER_FROM=no-reply@supplymars.com
 AWS_S3_REGION=eu-west-2
 AWS_S3_BUCKET=unicorn-bucket-two
 AWS_S3_ACCESS_ID=<access-id>
