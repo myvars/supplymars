@@ -43,7 +43,7 @@ final class ResetPasswordFlowTest extends WebTestCase
         $event = self::getMailerEvent();
         self::assertNotNull($event);
         self::assertTrue($event->isQueued());
-        self::assertEmailAddressContains($event->getMessage(), 'From', 'sender@test.example');
+        self::assertEmailHeaderSame($event->getMessage(), 'From', 'supplymars <sender@test.example>');
         self::assertSame('sender@test.example', $event->getEnvelope()->getSender()->getAddress());
     }
 
