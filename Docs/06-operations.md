@@ -46,11 +46,12 @@ symfony console doctrine:schema:create --env=test
 **Required Environment Variables:**
 ```bash
 APP_SECRET=<32-char-secret>
-DEFAULT_DOMAIN=supplymars.com
+DEFAULT_DOMAIN=supplymars
 DEFAULT_URI=https://supplymars.com
 DATABASE_URL=mysql://app:password@localhost:3306/supplymars
 REDIS_URL=redis://user:password@localhost:6379
 MAILER_DSN=smtp://user:password@smtp.provider.com:587
+MAILER_FROM=no-reply@supplymars.com
 AWS_S3_REGION=<region>
 AWS_S3_BUCKET=<bucket-name>
 AWS_S3_ACCESS_ID=<access-key>

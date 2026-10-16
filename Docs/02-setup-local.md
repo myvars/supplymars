@@ -69,6 +69,7 @@ MESSENGER_TRANSPORT_DSN=doctrine://default
 # Mail (Mailpit in dev)
 MAILER_DSN=smtp://127.0.0.1:1025
 DEV_MAIL_RECIPIENT=your@email.com
+MAILER_FROM=no-reply@supplymars.com  # Sender address of all mail
 
 # File Storage (local in dev)
 DEFAULT_URI=https://localhost:8000

@@ -19,16 +19,7 @@ final class ResetPasswordFlowTest extends WebTestCase
 
     public function testRequestingAResetQueuesTheEmail(): void
     {
-        UserFactory::createOne(['email' => 'reset@example.com']);
-
-        // Redirects are not followed: the next request would start a new kernel and an empty transport.
-        $this->browser()
-            ->visit('/reset-password')
-            ->interceptRedirects()
-            ->fillField('Email', 'reset@example.com')
-            ->click('Send Reset Link')
-            ->assertRedirected()
-            ->assertHeaderContains('Location', '/reset-password/check-email');
+        $this->requestReset();
 
         $transport = self::getContainer()->get('messenger.transport.async');
         self::assertInstanceOf(InMemoryTransport::class, $transport);
@@ -42,5 +33,31 @@ final class ResetPasswordFlowTest extends WebTestCase
         $email = $message->getMessage();
         self::assertInstanceOf(Email::class, $email);
         self::assertSame('Your password reset request', $email->getSubject());
+    }
+
+    public function testTheEmailIsSentFromTheConfiguredSender(): void
+    {
+        $this->requestReset();
+
+        // The queued message is the original; the configured sender is applied to the logged copy.
+        $event = self::getMailerEvent();
+        self::assertNotNull($event);
+        self::assertTrue($event->isQueued());
+        self::assertEmailHeaderSame($event->getMessage(), 'From', 'supplymars <sender@test.example>');
+        self::assertSame('sender@test.example', $event->getEnvelope()->getSender()->getAddress());
+    }
+
+    private function requestReset(): void
+    {
+        UserFactory::createOne(['email' => 'reset@example.com']);
+
+        // Redirects are not followed: the next request would start a new kernel and an empty transport.
+        $this->browser()
+            ->visit('/reset-password')
+            ->interceptRedirects()
+            ->fillField('Email', 'reset@example.com')
+            ->click('Send Reset Link')
+            ->assertRedirected()
+            ->assertHeaderContains('Location', '/reset-password/check-email');
     }
 }
