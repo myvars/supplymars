@@ -76,7 +76,7 @@ final class UserFactory extends PersistentObjectFactory
             ->with(['fullName' => 'Super Admin'])
             ->afterInstantiate(function (User $user): void {
                 $user->setStaff(true);
-                $user->setRoles(['ROLE_SUPER_ADMIN']);
+                $user->setRoles(['ROLE_ADMIN', 'ROLE_SUPER_ADMIN']);
             });
     }
 

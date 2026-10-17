@@ -294,7 +294,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
 
     public function isAdmin(): bool
     {
-        return in_array('ROLE_ADMIN', $this->getRoles(), true);
+        // ROLE_SUPER_ADMIN implies ROLE_ADMIN (security.yaml role_hierarchy), which stored roles don't apply
+        return array_intersect(['ROLE_ADMIN', 'ROLE_SUPER_ADMIN'], $this->getRoles()) !== [];
     }
 
     public static function hashApiToken(#[\SensitiveParameter] string $apiToken): string

@@ -196,7 +196,7 @@ All API authentication errors return RFC 7807 `application/problem+json`:
 |------|-------------|------------|
 | `ROLE_USER` | Base role | Automatic for all users |
 | `ROLE_ADMIN` | Admin access | When `isStaff = true` |
-| `ROLE_SUPER_ADMIN` | Full access including deletes and staff editing | Manual assignment |
+| `ROLE_SUPER_ADMIN` | Full access including deletes and staff editing | By hand in phpMyAdmin (see below) |
 
 ### Role Hierarchy
 
@@ -213,22 +213,40 @@ role_hierarchy:
 ```php
 // src/Customer/Domain/Model/User/User.php
 
-public function setStaff(bool $staff): void
+public function setStaff(bool $isStaff): User
 {
-    $this->isStaff = $staff;
-    $this->roles = $staff
-        ? ['ROLE_USER', 'ROLE_ADMIN']
-        : ['ROLE_USER'];
+    $this->isStaff = $isStaff;
+
+    if ($isStaff) {
+        $this->roles[] = 'ROLE_ADMIN';
+    } else {
+        $key = array_search('ROLE_ADMIN', $this->roles, true);
+        if (false !== $key) {
+            unset($this->roles[$key]);
+        }
+    }
+
+    return $this;
 }
 
 public function getRoles(): array
 {
-    // Guarantee ROLE_USER is always present
     $roles = $this->roles;
+    // guarantee every user at least has ROLE_USER
     $roles[] = 'ROLE_USER';
+
     return array_unique($roles);
 }
 ```
+
+`ROLE_ADMIN` follows the "Member of Staff" box on the customer edit form. `ROLE_SUPER_ADMIN` has no path in the app: a super admin is set by hand in phpMyAdmin, on the `user` row:
+
+- `is_staff` = `1`
+- `roles` = `["ROLE_ADMIN","ROLE_SUPER_ADMIN"]`
+
+Store both roles, as `setStaff()` would. The role hierarchy applies only to the logged-in token, not to the stored roles, so `User::isAdmin()` accepts either role itself. The playground reset (`scripts/playground-redact-staff.sql`) sets both on `admin@supplymars.com`.
+
+Admin accounts (either role) cannot be deleted: `User::isDeletable()` is false for any `isAdmin()` user and for any customer with orders.
 
 ### Access Control
 
@@ -324,7 +342,7 @@ File uploads are additionally blocked by `PLAYGROUND_MODE` environment variable 
 
 The `playground-redact-staff.sql` script runs after each nightly database restore:
 1. Scrambles all staff credentials except `admin@supplymars.com` and `demo@supplymars.com`
-2. Promotes `admin@supplymars.com` to `ROLE_SUPER_ADMIN` (preserves existing password)
+2. Sets `admin@supplymars.com` to `ROLE_ADMIN` + `ROLE_SUPER_ADMIN` (preserves existing password)
 3. Creates/resets the demo user with `ROLE_ADMIN` and the public password `demo`
 
 ### Data Reset
