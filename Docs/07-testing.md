@@ -623,7 +623,7 @@ Key rules:
 - `@Symfony` ruleset as base
 - `yoda_style: false` - use `$value === null`, not `null === $value`
 - Single space around concatenation operators
-- Strict types declaration required
+- `declare_strict_types` - every PHP file starts with `declare(strict_types=1);`. `importmap.php` is excluded, because `importmap:require` rewrites it
 
 ### Rector (Automated Refactoring)
 
