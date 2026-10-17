@@ -48,7 +48,6 @@ final class BackupDatabaseCommand
         // fails, so nothing chained after it with && treats a backup it did not take as done.
         if (!$this->lock()) {
             $io->warning('A backup is already running. This run has been skipped.');
-            $this->logger->warning('Database backup skipped: a backup is already running');
 
             return Command::FAILURE;
         }

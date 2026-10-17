@@ -51,13 +51,17 @@ final class BackupDatabaseCommandTest extends KernelTestCase
         $runningBackup = $this->lockFactory->createLock('app:backup-database');
         self::assertTrue($runningBackup->acquire());
 
+        $io = new SymfonyStyle(new ArrayInput([]), $this->output);
+
         try {
             $status = $this->backUp();
+            $dryRunStatus = $this->command()($io, dryRun: true);
         } finally {
             $runningBackup->release();
         }
 
         self::assertSame(Command::FAILURE, $status);
+        self::assertSame(Command::FAILURE, $dryRunStatus);
         self::assertStringContainsString('A backup is already running', $this->output->fetch());
         self::assertSame([], $this->backupFiles());
     }
@@ -69,8 +73,22 @@ final class BackupDatabaseCommandTest extends KernelTestCase
 
         self::assertSame(Command::SUCCESS, $command($io, dryRun: true));
         self::assertSame(Command::SUCCESS, $command($io, dryRun: true), $this->output->fetch());
+        $this->assertLockIsFree();
     }
 
+    public function testReleasesTheLockWhenTheRunFails(): void
+    {
+        $command = new BackupDatabaseCommand($this->backups, new NullLogger(), 'mysql://incomplete', $this->lockFactory);
+
+        self::assertSame(Command::FAILURE, $command(new SymfonyStyle(new ArrayInput([]), $this->output)));
+        self::assertStringContainsString('DATABASE_URL is missing', $this->output->fetch());
+        $this->assertLockIsFree();
+    }
+
+    /**
+     * A smoke test of the local copy. That the copy is renamed into place, so a reader never sees it
+     * half-written, cannot be shown from a single process.
+     */
     public function testReplacesTheLocalCopyWithTheNewBackup(): void
     {
         $localCopy = $this->backupsDir . '-local/nested/latest.sql.gz';
@@ -85,6 +103,13 @@ final class BackupDatabaseCommandTest extends KernelTestCase
         self::assertSame($this->backups->read($files[0]), file_get_contents($localCopy));
         self::assertStringContainsString('CREATE TABLE `user`', (string) gzdecode((string) file_get_contents($localCopy)));
         self::assertFileDoesNotExist($localCopy . '.partial');
+    }
+
+    private function assertLockIsFree(): void
+    {
+        $lock = $this->lockFactory->createLock('app:backup-database');
+        self::assertTrue($lock->acquire(), 'The backup lock is still held after the run.');
+        $lock->release();
     }
 
     private function backUp(?string $localCopy = null): int
