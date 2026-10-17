@@ -91,7 +91,9 @@ You can update:
 
 **Navigate to:** Supplier product detail > Edit > Click **Delete**
 
-**Requirements:** The supplier product must NOT be mapped to a catalog product. Unmap it first using the Remove action.
+If the supplier product is mapped to a catalog product, it is unmapped first: the product moves to its next best source (or to no source) and its price is recalculated.
+
+**Requirements:** The supplier product must not appear on any purchase order. If it does, the delete is refused; set it to inactive instead.
 
 ### Map to Catalog Product
 
@@ -178,6 +180,7 @@ This screen shows:
 - Changing cost affects the catalog product's sell price
 - Setting to inactive may change which supplier is the active source
 - Removing from a catalog product recalculates pricing
-- Cannot delete supplier products that are mapped to catalog products
+- Deleting a mapped supplier product recalculates the catalog product's source and price
+- Cannot delete supplier products that appear on purchase orders
 - Stock level changes trigger audit logging
 - The active source supplier is automatically selected - you cannot manually choose it

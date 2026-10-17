@@ -4,9 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Purchasing\UI;
 
+use App\Catalog\Domain\Model\Product\Product;
+use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
+use App\Tests\Shared\Factory\ProductFactory;
+use App\Tests\Shared\Factory\PurchaseOrderItemFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Zenstruck\Browser\KernelBrowser;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
 
@@ -26,5 +31,67 @@ final class DeleteSupplierProductFlowTest extends WebTestCase
             ->click('Delete Supplier Product')
             ->assertOn('/supplier-product/')
             ->assertSee('Supplier Product deleted');
+    }
+
+    public function testDeletingActiveSourceMovesProductToNextBestSource(): void
+    {
+        $product = ProductFactory::createOne();
+        $active = SupplierProductFactory::createOne(['product' => $product, 'cost' => '10.00', 'stock' => 5]);
+        $next = SupplierProductFactory::createOne(['product' => $product, 'cost' => '20.00', 'stock' => 5]);
+
+        self::assertSame($active->getId(), $product->getActiveProductSource()?->getId());
+        $priceBefore = $product->getSellPrice();
+
+        $this->deleteViaConfirmFlow($active)
+            ->assertSee('Supplier Product deleted');
+
+        $product = $this->reload($product);
+        self::assertSame($next->getId(), $product->getActiveProductSource()?->getId());
+        self::assertSame('20.00', $product->getCost());
+        self::assertNotSame($priceBefore, $product->getSellPrice());
+    }
+
+    public function testDeletingOnlySourceLeavesProductWithoutSource(): void
+    {
+        $product = ProductFactory::createOne();
+        $only = SupplierProductFactory::createOne(['product' => $product]);
+
+        self::assertTrue($product->hasActiveProductSource());
+
+        $this->deleteViaConfirmFlow($only)
+            ->assertSee('Supplier Product deleted');
+
+        $product = $this->reload($product);
+        self::assertFalse($product->hasActiveProductSource());
+        self::assertSame(0, $product->getStock());
+    }
+
+    public function testDeletingSupplierProductOnPurchaseOrderIsRefused(): void
+    {
+        $supplierProduct = SupplierProductFactory::createOne(['product' => null]);
+        PurchaseOrderItemFactory::createOne(['supplierProduct' => $supplierProduct]);
+
+        $this->deleteViaConfirmFlow($supplierProduct)
+            ->assertSee('Used on purchase orders');
+
+        self::assertNotNull(SupplierProductFactory::repository()->find($supplierProduct->getId()));
+    }
+
+    private function deleteViaConfirmFlow(SupplierProduct $supplierProduct): KernelBrowser
+    {
+        return $this->browser()
+            ->actingAs(UserFactory::new()->asSuperAdmin()->create())
+            ->get('/supplier-product/' . $supplierProduct->getPublicId()->value() . '/delete/confirm')
+            ->click('Delete Supplier Product')
+            ->assertSuccessful();
+    }
+
+    private function reload(Product $product): Product
+    {
+        self::getContainer()->get('doctrine')->getManager()->clear();
+        $product = ProductFactory::repository()->find($product->getId());
+        self::assertInstanceOf(Product::class, $product);
+
+        return $product;
     }
 }
