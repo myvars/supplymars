@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Purchasing\UI\Http\Controller;
 
+use App\Catalog\Domain\Model\Product\Product;
 use App\Purchasing\Application\Command\SupplierProduct\DeleteSupplierProduct;
 use App\Purchasing\Application\Command\SupplierProduct\MapSupplierProduct;
 use App\Purchasing\Application\Command\SupplierProduct\RemoveSupplierProduct;
@@ -202,13 +203,16 @@ class SupplierProductController extends AbstractController
         ToggleSupplierProductStatusHandler $handler,
         ActionFlow $flow,
     ): Response {
+        $product = $supplierProduct->getProduct();
+        $context = $product instanceof Product
+            ? FlowContext::forAction('app_pricing_stock', ['id' => $product->getPublicId()->value()])
+            : FlowContext::forAction('app_purchasing_supplier_product_show', ['id' => $supplierProduct->getPublicId()->value()]);
+
         return $flow->process(
             request: $request,
             command: new ToggleSupplierProductStatus($supplierProduct->getPublicId()),
             handler: $handler,
-            context: FlowContext::forAction('app_pricing_stock', [
-                'id' => $supplierProduct->getProduct()?->getPublicId()->value(),
-            ])->csrf('toggle_status' . $supplierProduct->getPublicId()->value()),
+            context: $context->csrf('toggle_status' . $supplierProduct->getPublicId()->value()),
         );
     }
 
