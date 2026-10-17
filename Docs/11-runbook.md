@@ -219,6 +219,10 @@ docker compose $LIVE exec -T cron php bin/console app:backup-database --dry-run
 docker compose $LIVE exec -T cron php bin/console app:backup-database --retention-days=60
 ```
 
+Only one backup runs at a time. A run that starts while another is still going does not wait: it prints a warning and exits with a failure, without dumping anything. If that happens to the 02:00 run, `/backups/latest.sql.gz` is whatever the run holding the lock leaves there, or the previous night's copy, and the 02:15 playground reset restores that. The copy is written beside the target and renamed into place, so the reset never reads a half-written file. The lock (`LOCK_DSN=flock`) is a file in the container, so run a manual backup in the `cron` container, as above. One started in the `php` container takes a different lock and can run at the same time as the nightly one.
+
+**Locking another scheduled command.** Any command in the crontab that could still be running when cron starts it again needs the same lock: add `LockableTrait` and pass it the `LockFactory`, as `BackupDatabaseCommand` does, and return early when `lock()` fails. Return a failure if the cron entry chains anything after the command with `&&`, so a skipped run does not report success; otherwise return success.
+
 ### 4.3 Pre-Deploy Backup
 
 Always take a manual backup before risky deployments (migrations that alter/drop columns, large schema changes):
