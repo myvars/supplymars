@@ -48,7 +48,10 @@ final class DeleteSupplierProductFlowTest extends WebTestCase
         $product = $this->reload($product);
         self::assertSame($next->getId(), $product->getActiveProductSource()?->getId());
         self::assertSame('20.00', $product->getCost());
-        self::assertSame(1, bccomp((string) $product->getSellPrice(), (string) $priceBefore, 2));
+        $priceAfter = $product->getSellPrice();
+        self::assertNotNull($priceBefore);
+        self::assertNotNull($priceAfter);
+        self::assertSame(1, bccomp($priceAfter, $priceBefore, 2));
     }
 
     public function testDeletingOnlySourceLeavesProductWithoutSource(): void
