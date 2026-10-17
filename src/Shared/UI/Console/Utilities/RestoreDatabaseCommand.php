@@ -176,7 +176,19 @@ final readonly class RestoreDatabaseCommand
                 mkdir($this->backupsDir, 0o755, true);
             }
 
-            file_put_contents($localPath, $s3Fs->read($latest));
+            // Streamed, so a backup larger than the memory limit still downloads
+            $source = $s3Fs->readStream($latest);
+            $target = fopen($localPath, 'w');
+            try {
+                if ($target === false || stream_copy_to_stream($source, $target) === false) {
+                    throw new \RuntimeException('Cannot write ' . $localPath);
+                }
+            } finally {
+                fclose($source);
+                if (is_resource($target)) {
+                    fclose($target);
+                }
+            }
 
             $io->writeln('  Download complete.');
 

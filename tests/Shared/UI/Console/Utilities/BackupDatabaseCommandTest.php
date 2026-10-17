@@ -6,6 +6,7 @@ namespace App\Tests\Shared\UI\Console\Utilities;
 
 use App\Shared\UI\Console\Utilities\BackupDatabaseCommand;
 use Doctrine\DBAL\Connection;
+use League\Flysystem\DirectoryListing;
 use League\Flysystem\FilesystemOperator;
 use Psr\Log\NullLogger;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -37,13 +38,62 @@ final class BackupDatabaseCommandTest extends KernelTestCase
         /** @var string $cacheDir */
         $cacheDir = self::getContainer()->getParameter('kernel.cache_dir');
         $this->backupsDir = $cacheDir . '/backups';
-        new Filesystem()->remove([$this->backupsDir, $this->backupsDir . '-local']);
+        new Filesystem()->remove([$this->backupsDir, $this->backupsDir . '-local', $this->backupsDir . '-blocker']);
 
         $this->output = new BufferedOutput();
 
         /** @var LockFactory $lockFactory */
         $lockFactory = self::getContainer()->get(LockFactory::class);
         $this->lockFactory = $lockFactory;
+    }
+
+    public function testUploadsAGzippedDumpOfTheDatabase(): void
+    {
+        $status = $this->backUp();
+
+        self::assertSame(Command::SUCCESS, $status, $this->output->fetch());
+        $files = $this->backupFiles();
+        self::assertCount(1, $files);
+        self::assertMatchesRegularExpression('/^supplymars-\d{4}-\d{2}-\d{2}-\d{6}\.sql\.gz$/', $files[0]);
+        self::assertStringContainsString('CREATE TABLE `user`', (string) gzdecode($this->backups->read($files[0])));
+    }
+
+    public function testStreamsTheUploadInsteadOfReadingTheDumpIntoMemory(): void
+    {
+        $backups = $this->createMock(FilesystemOperator::class);
+        $backups->expects(self::never())->method('write');
+        $backups->expects(self::once())
+            ->method('writeStream')
+            ->with(self::stringEndsWith('.sql.gz'), self::isResource());
+        $backups->method('listContents')->willReturn(new DirectoryListing([]));
+
+        self::assertSame(Command::SUCCESS, $this->backUp(backups: $backups), $this->output->fetch());
+    }
+
+    public function testFailsWhenTheLocalCopyCannotBeWritten(): void
+    {
+        $blocker = $this->backupsDir . '-blocker';
+        new Filesystem()->dumpFile($blocker, 'a file, not a directory');
+
+        $status = $this->backUp(localCopy: $blocker . '/latest.sql.gz');
+
+        self::assertSame(Command::FAILURE, $status);
+        self::assertStringContainsString('Failed to copy backup', $this->output->fetch());
+    }
+
+    public function testDeletesBackupsOlderThanTheRetentionPeriod(): void
+    {
+        $this->backups->write('supplymars-old.sql.gz', 'old');
+        $this->backups->write('supplymars-recent.sql.gz', 'recent');
+        touch($this->backupsDir . '/supplymars-old.sql.gz', time() - 31 * 86400);
+        touch($this->backupsDir . '/supplymars-recent.sql.gz', time() - 29 * 86400);
+
+        $status = $this->backUp();
+
+        self::assertSame(Command::SUCCESS, $status, $this->output->fetch());
+        self::assertFalse($this->backups->fileExists('supplymars-old.sql.gz'));
+        self::assertTrue($this->backups->fileExists('supplymars-recent.sql.gz'));
+        self::assertCount(2, $this->backupFiles());
     }
 
     public function testSkipsTheRunWhileAnotherBackupHoldsTheLock(): void
@@ -89,7 +139,7 @@ final class BackupDatabaseCommandTest extends KernelTestCase
      * A smoke test of the local copy. That the copy is renamed into place, so a reader never sees it
      * half-written, cannot be shown from a single process.
      */
-    public function testReplacesTheLocalCopyWithTheNewBackup(): void
+    public function testReplacesTheLocalCopyWithAnOwnerOnlyCopyOfTheNewBackup(): void
     {
         $localCopy = $this->backupsDir . '-local/nested/latest.sql.gz';
         new Filesystem()->dumpFile($localCopy, 'last night');
@@ -102,6 +152,7 @@ final class BackupDatabaseCommandTest extends KernelTestCase
         self::assertMatchesRegularExpression('/^supplymars-\d{4}-\d{2}-\d{2}-\d{6}\.sql\.gz$/', $files[0]);
         self::assertSame($this->backups->read($files[0]), file_get_contents($localCopy));
         self::assertStringContainsString('CREATE TABLE `user`', (string) gzdecode((string) file_get_contents($localCopy)));
+        self::assertSame(0o600, fileperms($localCopy) & 0o777);
         self::assertFileDoesNotExist($localCopy . '.partial');
     }
 
@@ -112,16 +163,16 @@ final class BackupDatabaseCommandTest extends KernelTestCase
         $lock->release();
     }
 
-    private function backUp(?string $localCopy = null): int
+    private function backUp(?string $localCopy = null, ?FilesystemOperator $backups = null): int
     {
-        $command = $this->command();
+        $command = $this->command($backups);
 
         return $command(new SymfonyStyle(new ArrayInput([]), $this->output), localCopy: $localCopy);
     }
 
-    private function command(): BackupDatabaseCommand
+    private function command(?FilesystemOperator $backups = null): BackupDatabaseCommand
     {
-        return new BackupDatabaseCommand($this->backups, new NullLogger(), $this->testDatabaseUrl(), $this->lockFactory);
+        return new BackupDatabaseCommand($backups ?? $this->backups, new NullLogger(), $this->testDatabaseUrl(), $this->lockFactory);
     }
 
     /**

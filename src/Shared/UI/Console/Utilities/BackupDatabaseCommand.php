@@ -124,31 +124,42 @@ final class BackupDatabaseCommand
             return Command::FAILURE;
         }
 
-        // 2. Upload to backups filesystem
+        // 2. Upload to backups filesystem, streamed so the dump is never held in memory
+        $stream = fopen($tempFile, 'r');
         try {
-            $this->backupsFsFilesystem->write($filename, (string) file_get_contents($tempFile));
+            if ($stream === false) {
+                throw new \RuntimeException('Cannot open ' . $tempFile);
+            }
+
+            $this->backupsFsFilesystem->writeStream($filename, $stream);
         } catch (\Throwable $throwable) {
             $io->error('Failed to upload backup: ' . $throwable->getMessage());
             $this->logger->error('Database backup upload failed', ['error' => $throwable->getMessage()]);
             $this->cleanupTempFile($tempFile);
 
             return Command::FAILURE;
+        } finally {
+            if (is_resource($stream)) {
+                fclose($stream);
+            }
         }
 
         $sizeMb = round($fileSize / 1024 / 1024, 2);
         $io->writeln(sprintf('  Saved <info>%s</info> (%s MB)', $filename, $sizeMb));
 
         // 2b. Save a local copy if requested (before temp file cleanup). Written beside the target and
-        // renamed into place, so the playground reset never reads a half-written copy.
+        // renamed into place, so the playground reset never reads a half-written copy. Owner-only: it
+        // is a full dump.
         if ($localCopy !== null) {
             $dir = dirname($localCopy);
-            if (!is_dir($dir)) {
+            if (!file_exists($dir)) {
                 mkdir($dir, 0o755, true);
             }
 
             $partial = $localCopy . '.partial';
-            if (!copy($tempFile, $partial) || !rename($partial, $localCopy)) {
+            if (!is_dir($dir) || !copy($tempFile, $partial) || !chmod($partial, 0o600) || !rename($partial, $localCopy)) {
                 $io->error('Failed to copy backup to ' . $localCopy);
+                $this->logger->error('Database backup local copy failed', ['path' => $localCopy]);
                 $this->cleanupTempFile($tempFile);
                 $this->cleanupTempFile($partial);
 
