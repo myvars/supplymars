@@ -25,6 +25,7 @@ final readonly class DeleteReviewHandler
             return Result::fail('Review not found.');
         }
 
+        $review->delete();
         $this->reviews->remove($review);
         $this->flusher->flush();
 

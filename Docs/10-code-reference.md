@@ -333,6 +333,7 @@ hasPositiveCost()             // cost > 0
 | ReviewWasCreatedEvent | `src/Review/Domain/Model/Review/Event/ReviewWasCreatedEvent.php` | Review created |
 | ReviewStatusWasChangedEvent | `src/Review/Domain/Model/Review/Event/ReviewStatusWasChangedEvent.php` | Status transition |
 | ReviewRatingWasChangedEvent | `src/Review/Domain/Model/Review/Event/ReviewRatingWasChangedEvent.php` | Rating updated on published review |
+| ReviewWasDeletedEvent | `src/Review/Domain/Model/Review/Event/ReviewWasDeletedEvent.php` | Review deleted |
 
 ### Validation
 

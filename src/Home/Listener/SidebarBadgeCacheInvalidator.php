@@ -12,12 +12,14 @@ use App\Purchasing\Domain\Model\PurchaseOrder\Event\PurchaseOrderStatusWasChange
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use App\Review\Domain\Model\Review\Event\ReviewStatusWasChangedEvent;
 use App\Review\Domain\Model\Review\Event\ReviewWasCreatedEvent;
+use App\Review\Domain\Model\Review\Event\ReviewWasDeletedEvent;
 use App\Review\Domain\Model\Review\ReviewStatus;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Contracts\Cache\CacheInterface;
 
 #[AsEventListener(event: ReviewWasCreatedEvent::class, method: 'onReviewCreated')]
 #[AsEventListener(event: ReviewStatusWasChangedEvent::class, method: 'onReviewStatusChanged')]
+#[AsEventListener(event: ReviewWasDeletedEvent::class, method: 'onReviewDeleted')]
 #[AsEventListener(event: PurchaseOrderStatusWasChangedEvent::class, method: 'onPurchaseOrderStatusChanged')]
 #[AsEventListener(event: OrderWasCreatedEvent::class, method: 'onOrderCreated')]
 #[AsEventListener(event: OrderStatusWasChangedEvent::class, method: 'onOrderStatusChanged')]
@@ -38,6 +40,13 @@ final readonly class SidebarBadgeCacheInvalidator
         $change = $event->getStatusChange();
 
         if ($change->before() === ReviewStatus::PENDING || $change->after() === ReviewStatus::PENDING) {
+            $this->cache->delete(SidebarBadgeProvider::KEY_PENDING_REVIEWS);
+        }
+    }
+
+    public function onReviewDeleted(ReviewWasDeletedEvent $event): void
+    {
+        if ($event->getStatus() === ReviewStatus::PENDING) {
             $this->cache->delete(SidebarBadgeProvider::KEY_PENDING_REVIEWS);
         }
     }

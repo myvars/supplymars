@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace App\Review\Application\Listener;
 
+use App\Catalog\Domain\Model\Product\Product;
+use App\Catalog\Domain\Repository\ProductRepository;
 use App\Review\Domain\Model\Review\Event\ReviewRatingWasChangedEvent;
 use App\Review\Domain\Model\Review\Event\ReviewStatusWasChangedEvent;
 use App\Review\Domain\Model\Review\Event\ReviewWasCreatedEvent;
+use App\Review\Domain\Model\Review\Event\ReviewWasDeletedEvent;
 use App\Review\Domain\Model\Review\ProductReview;
 use App\Review\Domain\Model\Review\ReviewPublicId;
 use App\Review\Domain\Model\ReviewSummary\ProductReviewSummary;
@@ -19,11 +22,13 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 #[AsEventListener(event: ReviewWasCreatedEvent::class, method: 'onReviewCreated')]
 #[AsEventListener(event: ReviewStatusWasChangedEvent::class, method: 'onReviewStatusChanged')]
 #[AsEventListener(event: ReviewRatingWasChangedEvent::class, method: 'onReviewRatingChanged')]
+#[AsEventListener(event: ReviewWasDeletedEvent::class, method: 'onReviewDeleted')]
 final readonly class ReviewSummaryUpdater
 {
     public function __construct(
         private ReviewRepository $reviews,
         private ReviewSummaryRepository $summaries,
+        private ProductRepository $products,
         private FlusherInterface $flusher,
     ) {
     }
@@ -43,6 +48,16 @@ final readonly class ReviewSummaryUpdater
         $this->recalculateSummary($event->getId());
     }
 
+    public function onReviewDeleted(ReviewWasDeletedEvent $event): void
+    {
+        $product = $this->products->getByPublicId($event->getProductId());
+        if (!$product instanceof Product) {
+            return;
+        }
+
+        $this->recalculateProductSummary($product);
+    }
+
     private function recalculateSummary(ReviewPublicId $reviewId): void
     {
         $review = $this->reviews->getByPublicId($reviewId);
@@ -50,8 +65,11 @@ final readonly class ReviewSummaryUpdater
             return;
         }
 
-        $product = $review->getProduct();
+        $this->recalculateProductSummary($review->getProduct());
+    }
 
+    private function recalculateProductSummary(Product $product): void
+    {
         $summary = $this->summaries->findByProduct($product);
         if (!$summary instanceof ProductReviewSummary) {
             $summary = ProductReviewSummary::create($product);
