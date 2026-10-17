@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Customer\Domain;
 
 use App\Customer\Domain\Model\User\User;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 final class UserDomainTest extends TestCase
@@ -78,6 +79,33 @@ final class UserDomainTest extends TestCase
             isVerified: true,
         );
         self::assertTrue($user->isDeletable());
+    }
+
+    /**
+     * @param list<string> $roles
+     */
+    #[DataProvider('superAdminRoles')]
+    public function testSuperAdminIsNotDeletable(array $roles): void
+    {
+        $user = User::create(
+            fullName: 'Erin',
+            email: 'erin@example.com',
+            isStaff: false,
+            isVerified: true,
+        );
+        $user->setRoles($roles);
+
+        self::assertTrue($user->isAdmin());
+        self::assertFalse($user->isDeletable());
+    }
+
+    /**
+     * @return iterable<string, array{list<string>}>
+     */
+    public static function superAdminRoles(): iterable
+    {
+        yield 'both roles' => [['ROLE_ADMIN', 'ROLE_SUPER_ADMIN']];
+        yield 'super admin role alone' => [['ROLE_SUPER_ADMIN']];
     }
 
     public function testToStringUsesEmail(): void
