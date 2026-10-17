@@ -34,7 +34,7 @@ This is not a commercial product. It is a working demonstration of how I approac
 
 ```bash
 # Quick start (Symfony server + Docker services)
-make up-dev-tools          # Start MySQL, Redis, Mailpit
+make up-dev-tools          # Start MySQL, Redis, Mailpit, phpMyAdmin
 symfony serve -d           # Start PHP server at https://127.0.0.1:8000
 ```
 

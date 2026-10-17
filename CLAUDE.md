@@ -7,7 +7,7 @@ This file provides guidance to Claude Code when working with this repository.
 ```bash
 # Development (preferred)
 symfony serve -d              # Start local dev server (https://127.0.0.1:8000)
-make up-dev-tools             # Start DB, Redis, Mailpit
+make up-dev-tools             # Start DB, Redis, Mailpit, phpMyAdmin (ports and DB name in .env)
 
 # Tests
 make test                     # Run all tests (Docker, handles DB setup)

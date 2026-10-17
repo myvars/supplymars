@@ -286,8 +286,9 @@ Development/operations tools with restricted access:
 
 | Tool | URL | Access |
 |------|-----|--------|
-| PHPMyAdmin | http://localhost:8080 | Local network only |
-| Mailpit | http://localhost:8025 | Local network only |
+| PHPMyAdmin | http://localhost:8080 | This machine only (`127.0.0.1`) |
+| PHPMyAdmin (live, playground) | http://localhost:8081, http://localhost:8082 | This machine only, through an SSH tunnel |
+| Mailpit | http://localhost:8025 | This machine only (`127.0.0.1`) |
 
 **Production:** These tools are not exposed publicly. Use SSH tunneling if needed.
 

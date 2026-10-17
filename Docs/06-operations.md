@@ -15,7 +15,7 @@ This document covers deployment, runtime operations, and system maintenance for 
 
 **Setup:**
 ```bash
-make up-dev-tools    # Infrastructure only
+make up-dev-tools    # Infrastructure only: MySQL, Redis, Mailpit, phpMyAdmin
 symfony serve -d     # Local PHP server
 ```
 
