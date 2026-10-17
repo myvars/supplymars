@@ -23,12 +23,13 @@ symfony serve -d     # Local PHP server
 
 **Characteristics:**
 - `APP_ENV=test`
-- Isolated database (`app_test`)
+- Isolated databases: `make test` runs ParaTest with one database per process (`app_test1`…`app_testN`), reset by `scripts/run-tests.sh` on every run (see [In Parallel](07-testing.md#in-parallel))
 - DAMA transaction rollback between tests
 - Mock file storage
 
-**Setup:**
+**Setup** (only for a plain `vendor/bin/phpunit` run, which uses `app_test`):
 ```bash
+symfony console doctrine:database:drop --if-exists --force --env=test
 symfony console doctrine:database:create --env=test
 symfony console doctrine:schema:create --env=test
 ```

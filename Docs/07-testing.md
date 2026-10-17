@@ -247,7 +247,7 @@ make test-CreateOrder
 
 `make test`, `make check` and CI run the suite through `scripts/run-tests.sh`, which uses [ParaTest](https://github.com/paratestphp/paratest) to start one PHPUnit process per CPU. ParaTest reads the same `phpunit.xml.dist`, so the extensions and the fail-on-deprecation settings apply to every process. It gives each process a `TEST_TOKEN` (1, 2, 3…), and `config/packages/doctrine.yaml` appends it to the test database name, so each process has its own database (`app_test1`, `app_test2`…) and DAMA rolls back inside it as usual. The script creates and resets these databases before each run.
 
-`TEST_PROCESSES` sets the number of processes, e.g. `docker compose run --rm -e APP_ENV=test -e TEST_PROCESSES=2 php ./scripts/run-tests.sh`. Lower it if the Docker VM runs short of memory.
+`TEST_PROCESSES` sets the number of processes, e.g. `TEST_PROCESSES=2 make test`. Lower it if the Docker VM runs short of memory.
 
 Tests run in separate processes at the same time, so a test must not rely on anything another test leaves behind or changes outside the database:
 - **Files:** the upload storage folder is shared by all processes, so each file needs a unique name. `UploadHelper` adds a random suffix to each stored file. The backups folder is per process (`test_backups_dir` in `config/packages/oneup_flysystem.yaml`), because the backup tests empty it in `setUp()`; a test that clears a folder needs the same.
@@ -259,7 +259,8 @@ A failure that only appears in parallel usually means two tests share one of the
 ### Locally
 
 ```bash
-# Ensure test database exists
+# Reset the serial test database (again after any entity change; make test resets only app_test1…N)
+symfony console doctrine:database:drop --if-exists --force --env=test
 symfony console doctrine:database:create --env=test
 symfony console doctrine:schema:create --env=test
 
