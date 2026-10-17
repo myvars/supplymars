@@ -46,6 +46,32 @@ final class ToggleSupplierProductStatusFlowTest extends WebTestCase
         self::assertTrue($supplierProduct->isActive());
     }
 
+    public function testToggleOfAnUnmappedSourceReturnsToTheSupplierProduct(): void
+    {
+        $product = ProductFactory::createOne();
+        $supplierProduct = SupplierProductFactory::createOne(['isActive' => true, 'product' => $product]);
+        $publicId = $supplierProduct->getPublicId()->value();
+        $url = '/supplier-product/' . $publicId . '/status/toggle';
+
+        $browser = $this->browser()->actingAs(UserFactory::new()->asStaff()->create());
+        $token = $this->actionToken($browser, '/pricing/' . $product->getPublicId()->value() . '/stock', $url);
+
+        $browser
+            ->visit('/supplier-product/' . $publicId . '/remove/confirm')
+            ->click('Remove');
+
+        self::assertNull($supplierProduct->getProduct());
+
+        $browser
+            ->post($url, ['body' => ['_token' => $token]])
+            ->assertOn('/supplier-product/' . $publicId)
+            ->assertStatus(200)
+            ->assertSee('Supplier product status changed')
+            ->assertSee('INACTIVE');
+
+        self::assertFalse($supplierProduct->isActive());
+    }
+
     public function testToggleIsNotReachableWithGet(): void
     {
         $supplierProduct = SupplierProductFactory::createOne([

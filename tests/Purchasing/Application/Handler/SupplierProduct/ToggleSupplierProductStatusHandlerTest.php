@@ -44,6 +44,20 @@ final class ToggleSupplierProductStatusHandlerTest extends KernelTestCase
         self::assertFalse($reloaded->isActive());
     }
 
+    public function testHandleTogglesStatusWhenNotMapped(): void
+    {
+        $supplierProduct = SupplierProductFactory::createOne([
+            'isActive' => true,
+            'product' => null,
+        ]);
+
+        $result = ($this->handler)(new ToggleSupplierProductStatus($supplierProduct->getPublicId()));
+
+        self::assertTrue($result->ok);
+        $reloaded = $this->supplierProducts->getByPublicId($supplierProduct->getPublicId());
+        self::assertFalse($reloaded->isActive());
+    }
+
     public function testHandleFailsWhenNotFound(): void
     {
         $missingId = SupplierProductPublicId::new();
