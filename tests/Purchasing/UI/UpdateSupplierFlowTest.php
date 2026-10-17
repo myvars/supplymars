@@ -43,4 +43,35 @@ final class UpdateSupplierFlowTest extends WebTestCase
             ->assertOn('/supplier/' . $publicId . '/edit')
             ->assertSee('Please enter a supplier name');
     }
+
+    public function testInlineEditRejectsOverLengthName(): void
+    {
+        $supplier = SupplierFactory::createOne(['name' => 'Old Name']);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/supplier/' . $supplier->getPublicId()->value() . '/inline/name?edit=1')
+            ->fillField('inline_field[value]', str_repeat('a', 256))
+            ->click('Save (Enter)')
+            ->assertStatus(422)
+            ->assertSeeIn('form', 'Max 255 characters') // the field's error, rendered inside the form
+            ->assertSeeElement('input[name="inline_field[value]"]');
+
+        self::assertSame('Old Name', $supplier->getName());
+    }
+
+    public function testInlineEditRejectsBlankName(): void
+    {
+        $entity = SupplierFactory::createOne(['name' => 'Old Value']);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/supplier/' . $entity->getPublicId()->value() . '/inline/name?edit=1')
+            ->fillField('inline_field[value]', '')
+            ->click('Save (Enter)')
+            ->assertStatus(422)
+            ->assertSeeIn('form', 'Please enter a supplier name');
+
+        self::assertSame('Old Value', $entity->getName());
+    }
 }
