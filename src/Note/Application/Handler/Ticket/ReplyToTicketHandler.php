@@ -13,6 +13,7 @@ use App\Note\Domain\Model\Ticket\Ticket;
 use App\Note\Domain\Repository\TicketRepository;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Application\Result;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final readonly class ReplyToTicketHandler
 {
@@ -20,6 +21,7 @@ final readonly class ReplyToTicketHandler
         private TicketRepository $tickets,
         private UserRepository $users,
         private FlusherInterface $flusher,
+        private ValidatorInterface $validator,
     ) {
     }
 
@@ -42,6 +44,11 @@ final readonly class ReplyToTicketHandler
             body: $command->body,
             visibility: $command->visibility,
         );
+
+        $errors = $this->validator->validate($message);
+        if (count($errors) > 0) {
+            return Result::fail((string) $errors);
+        }
 
         $ticket->addMessage($message);
         $ticket->transitionStatusForReply($command->authorType);
