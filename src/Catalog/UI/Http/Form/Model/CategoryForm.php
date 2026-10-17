@@ -13,6 +13,7 @@ final class CategoryForm
     public ?string $id = null;
 
     #[Assert\NotBlank(message: 'Please enter a category name')]
+    #[Assert\Length(max: 255, maxMessage: 'Max 255 characters')]
     public ?string $name = null;
 
     #[Assert\NotNull(message: 'Please choose a VAT rate')]

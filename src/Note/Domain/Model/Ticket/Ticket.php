@@ -32,6 +32,7 @@ class Ticket
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Please enter a subject')]
+    #[Assert\Length(max: 255, maxMessage: 'Max 255 characters')]
     private ?string $subject = null;
 
     #[ORM\Column(length: 255)]

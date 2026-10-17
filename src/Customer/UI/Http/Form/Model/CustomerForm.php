@@ -17,6 +17,7 @@ final class CustomerForm
 
     #[Assert\NotBlank(message: 'Please enter a valid email')]
     #[Assert\Email]
+    #[Assert\Length(max: 180, maxMessage: 'Max 180 characters')]
     public ?string $email = null;
 
     public bool $isVerified = false;

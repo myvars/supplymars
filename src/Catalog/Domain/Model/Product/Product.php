@@ -39,13 +39,16 @@ class Product
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Please enter a product name')]
+    #[Assert\Length(max: 255, maxMessage: 'Max 255 characters')]
     private ?string $name = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255, maxMessage: 'Max 255 characters')]
     private ?string $description = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Please enter a manufacturer part number')]
+    #[Assert\Length(max: 255, maxMessage: 'Max 255 characters')]
     private ?string $mfrPartNumber = null;
 
     #[ORM\Column]

@@ -17,6 +17,7 @@ use App\Shared\Infrastructure\Persistence\Doctrine\Mapping\HasPublicUlid;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'product_review')]
@@ -48,9 +49,11 @@ class ProductReview implements DomainEventProviderInterface
     private int $rating;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255, maxMessage: 'Max 255 characters')]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\Length(max: 2000, maxMessage: 'Max 2000 characters')]
     private ?string $body = null;
 
     #[ORM\Column(type: Types::STRING, enumType: ReviewStatus::class)]

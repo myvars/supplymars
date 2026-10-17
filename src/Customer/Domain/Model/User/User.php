@@ -36,6 +36,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
     #[ORM\Column(length: 180, unique: true)]
     #[Assert\NotBlank(message: 'Please enter a valid email')]
     #[Assert\Email]
+    #[Assert\Length(max: 180, maxMessage: 'Max 180 characters')]
     private ?string $email = null;
 
     /** @var array<int, string> */

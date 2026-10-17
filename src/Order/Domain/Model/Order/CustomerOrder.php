@@ -47,6 +47,7 @@ class CustomerOrder implements DomainEventProviderInterface
     private Address $billingAddress;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255, maxMessage: 'Max 255 characters')]
     private ?string $customerOrderRef = null;
 
     #[ORM\Column(length: 255)]

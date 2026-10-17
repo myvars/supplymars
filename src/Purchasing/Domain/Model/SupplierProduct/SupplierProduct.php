@@ -35,10 +35,12 @@ class SupplierProduct implements DomainEventProviderInterface
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Please enter a supplier product name')]
+    #[Assert\Length(max: 255, maxMessage: 'Max 255 characters')]
     private ?string $name = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Please enter a product code')]
+    #[Assert\Length(max: 255, maxMessage: 'Max 255 characters')]
     private ?string $productCode = null;
 
     #[ORM\ManyToOne(inversedBy: 'supplierProducts')]
@@ -57,6 +59,7 @@ class SupplierProduct implements DomainEventProviderInterface
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Please enter a manufacturer part number')]
+    #[Assert\Length(max: 255, maxMessage: 'Max 255 characters')]
     private ?string $mfrPartNumber = null;
 
     #[ORM\Column]

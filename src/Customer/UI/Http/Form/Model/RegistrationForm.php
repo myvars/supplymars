@@ -14,6 +14,7 @@ final class RegistrationForm
 
     #[Assert\NotBlank(message: 'Please enter a valid email')]
     #[Assert\Email]
+    #[Assert\Length(max: 180, maxMessage: 'Max 180 characters')]
     public ?string $email = null;
 
     #[Assert\NotBlank(message: 'Please confirm password')]

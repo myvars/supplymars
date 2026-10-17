@@ -14,9 +14,11 @@ final class SupplierProductForm
     public ?string $id = null;
 
     #[Assert\NotBlank(message: 'Please enter a supplier product name')]
+    #[Assert\Length(max: 255, maxMessage: 'Max 255 characters')]
     public ?string $name = null;
 
     #[Assert\NotBlank(message: 'Please enter a product code')]
+    #[Assert\Length(max: 255, maxMessage: 'Max 255 characters')]
     public ?string $productCode = null;
 
     #[Assert\NotNull(message: 'Please choose a Supplier')]
@@ -32,6 +34,7 @@ final class SupplierProductForm
     public ?int $supplierManufacturerId = null;
 
     #[Assert\NotBlank(message: 'Please enter a manufacturer part number')]
+    #[Assert\Length(max: 255, maxMessage: 'Max 255 characters')]
     public ?string $mfrPartNumber = null;
 
     #[Assert\NotNull(message: 'Please enter a weight')]

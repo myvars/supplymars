@@ -16,6 +16,7 @@ final class SubcategoryForm
     public ?int $categoryId = null;
 
     #[Assert\NotBlank(message: 'Please enter a subcategory name')]
+    #[Assert\Length(max: 255, maxMessage: 'Max 255 characters')]
     public ?string $name = null;
 
     /** @var numeric-string|null */

@@ -12,6 +12,7 @@ final class ManufacturerForm
     public ?string $id = null;
 
     #[Assert\NotBlank(message: 'Please enter a manufacturer name')]
+    #[Assert\Length(max: 255, maxMessage: 'Max 255 characters')]
     public ?string $name = null;
 
     public bool $isActive = false;

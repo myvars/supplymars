@@ -35,6 +35,7 @@ class VatRate implements DomainEventProviderInterface
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Please enter a VAT rate name')]
+    #[Assert\Length(max: 255, maxMessage: 'Max 255 characters')]
     private ?string $name = null;
 
     /** @var numeric-string|null */
