@@ -10,7 +10,7 @@ symfony serve -d              # Start local dev server (https://127.0.0.1:8000)
 make up-dev-tools             # Start DB, Redis, Mailpit, phpMyAdmin (ports and DB name in .env)
 
 # Tests
-make test                     # Run all tests (Docker, handles DB setup)
+make test                     # Run all tests in parallel with ParaTest (Docker, one DB per process)
 make test-SomeTest            # Run filtered tests
 vendor/bin/phpunit            # Run tests locally (ensure test DB exists)
 
@@ -170,6 +170,7 @@ are thin orchestrators using 5 flow types:
 - Factories in `tests/Shared/Factory/` (Zenstruck Foundry). Use `Factories` trait in test classes.
 - Auth: `#[WithStory(StaffUserStory::class)]` or `UserFactory::new()->asStaff()->create()`. For delete handlers: `#[WithStory(SuperAdminUserStory::class)]` or `UserFactory::new()->asSuperAdmin()->create()`.
 - Flow tests use `HasBrowser` trait (Zenstruck Browser). Named `{Feature}FlowTest.php` in `tests/{Context}/UI/`.
+- `make test` runs the suite in parallel (ParaTest, one database per process), so a test must not depend on another's files or order. The app cache is in memory in tests, so cached values (badge counts, login throttling) start empty on each kernel boot. See `Docs/07-testing.md#in-parallel`.
 - The `async` Messenger transport is `in-memory://` in tests, so no worker or broker is needed. To check that a message was queued, read `getSent()` on `messenger.transport.async` from the test container, without following the redirect first (see `ResetPasswordFlowTest`).
 - A feature isn't done until a test exercises it the way a caller would — an HTTP request for a controller, a handler call for a handler — not just "it didn't throw".
 
