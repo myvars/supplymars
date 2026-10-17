@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Note\UI;
 
 use App\Tests\Shared\Factory\PoolFactory;
+use App\Tests\Shared\Factory\TicketFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
@@ -64,5 +65,25 @@ final class CreateTicketFlowTest extends WebTestCase
             ->assertSee('Jane Mars')
             ->assertSee('I placed an order last week')
             ->assertSee($pool->getName());
+    }
+
+    public function testRejectsOverLengthSubjectAsFieldError(): void
+    {
+        $pool = PoolFactory::createOne(['isActive' => true]);
+        $customer = UserFactory::createOne();
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/note/ticket/new')
+            ->fillField('ticket[pool]', (string) $pool->getId())
+            ->fillField('ticket[customerId]', (string) $customer->getId())
+            ->fillField('ticket[subject]', str_repeat('a', 256))
+            ->fillField('ticket[body]', 'The product arrived with visible damage on the packaging.')
+            ->click('Create Ticket')
+            ->assertStatus(422)
+            ->assertSeeIn('[data-slot="field-error"]', 'Max 255 characters')
+            ->assertNotSee('Object(');
+
+        TicketFactory::assert()->empty();
     }
 }
