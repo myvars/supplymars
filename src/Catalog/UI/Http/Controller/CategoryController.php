@@ -163,6 +163,7 @@ class CategoryController extends AbstractController
                 frameId: 'inline-edit-category-' . $category->getPublicId() . '-name',
                 displayTemplate: 'catalog/category/_inline_name.html.twig',
                 entity: $category,
+                property: 'name',
             ),
         );
     }

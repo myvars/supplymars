@@ -163,6 +163,7 @@ class SubcategoryController extends AbstractController
                 frameId: 'inline-edit-subcategory-' . $subcategory->getPublicId() . '-name',
                 displayTemplate: 'catalog/subcategory/_inline_name.html.twig',
                 entity: $subcategory,
+                property: 'name',
             ),
         );
     }

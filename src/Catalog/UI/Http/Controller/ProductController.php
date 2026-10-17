@@ -184,6 +184,7 @@ class ProductController extends AbstractController
                 frameId: 'inline-edit-product-' . $product->getPublicId() . '-name',
                 displayTemplate: 'catalog/product/_inline_name.html.twig',
                 entity: $product,
+                property: 'name',
             ),
         );
     }
