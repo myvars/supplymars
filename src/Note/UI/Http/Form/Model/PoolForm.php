@@ -15,6 +15,7 @@ final class PoolForm
     #[Assert\Length(max: 255, maxMessage: 'Max 255 characters')]
     public ?string $name = null;
 
+    #[Assert\Length(max: 10000, maxMessage: 'Max 10000 characters')]
     public ?string $description = null;
 
     public bool $isActive = false;

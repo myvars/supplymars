@@ -37,6 +37,7 @@ class Message
 
     #[ORM\Column(type: Types::TEXT)]
     #[Assert\NotBlank(message: 'Please enter a message')]
+    #[Assert\Length(max: 10000, maxMessage: 'Max 10000 characters')]
     private ?string $body = null;
 
     #[ORM\Column(length: 255)]

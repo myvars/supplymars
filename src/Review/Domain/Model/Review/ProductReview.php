@@ -64,6 +64,7 @@ class ProductReview implements DomainEventProviderInterface
     private ?RejectionReason $rejectionReason = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\Length(max: 10000, maxMessage: 'Max 10000 characters')]
     private ?string $moderationNotes = null;
 
     #[ORM\ManyToOne(targetEntity: User::class)]

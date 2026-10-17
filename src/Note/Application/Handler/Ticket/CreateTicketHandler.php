@@ -51,6 +51,10 @@ final readonly class CreateTicketHandler
         );
 
         $errors = $this->validator->validate($ticket);
+        foreach ($ticket->getMessages() as $message) {
+            $errors->addAll($this->validator->validate($message));
+        }
+
         if (count($errors) > 0) {
             return Result::fail((string) $errors);
         }

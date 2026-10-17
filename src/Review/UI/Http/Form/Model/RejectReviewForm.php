@@ -15,6 +15,7 @@ final class RejectReviewForm
     #[Assert\NotBlank(message: 'Please select a rejection reason')]
     public ?RejectionReason $reason = null;
 
+    #[Assert\Length(max: 10000, maxMessage: 'Max 10000 characters')]
     public ?string $notes = null;
 
     public static function fromEntity(ProductReview $review): self

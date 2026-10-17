@@ -19,5 +19,6 @@ final class TicketForm
     public ?string $subject = null;
 
     #[Assert\NotBlank(message: 'Please enter a message')]
+    #[Assert\Length(max: 10000, maxMessage: 'Max 10000 characters')]
     public ?string $body = null;
 }

@@ -11,6 +11,7 @@ use App\Review\Domain\Model\Review\ReviewStatus;
 use App\Review\Domain\Repository\ReviewRepository;
 use App\Tests\Shared\Factory\ProductReviewFactory;
 use App\Tests\Shared\Story\StaffUserStory;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
@@ -49,5 +50,26 @@ class RejectReviewHandlerTest extends KernelTestCase
         self::assertSame(ReviewStatus::REJECTED, $persisted->getStatus());
         self::assertSame(RejectionReason::SPAM, $persisted->getRejectionReason());
         self::assertSame('Clearly spam content', $persisted->getModerationNotes());
+    }
+
+    #[WithStory(StaffUserStory::class)]
+    public function testHandleRefusesOverLengthNotesFromTheEntityRules(): void
+    {
+        // No form in front of the handler: the review's own Length rule must stop the save.
+        $review = ProductReviewFactory::createOne();
+
+        $result = ($this->handler)(new RejectReview(
+            $review->getPublicId(),
+            RejectionReason::SPAM,
+            str_repeat('a', 10001),
+        ));
+
+        self::assertFalse($result->ok);
+        self::assertStringContainsString('Max 10000 characters', (string) $result->message);
+
+        self::getContainer()->get(EntityManagerInterface::class)->clear();
+        $persisted = $this->reviews->getByPublicId($review->getPublicId());
+        self::assertSame(ReviewStatus::PENDING, $persisted->getStatus());
+        self::assertNull($persisted->getModerationNotes());
     }
 }
