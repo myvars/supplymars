@@ -43,11 +43,12 @@ The project uses multiple `.env` files:
 | `.env.local` | Local overrides (not committed) |
 | `.env.test` | Test environment settings |
 
-Create your local overrides if needed:
+Create your local overrides if needed, for settings only your machine uses. The database name and ports are
+not such a setting: they are in the `docker` block of `.env` (see [Development URLs](#development-urls)).
 
 ```bash
 # .env.local (optional - for custom settings)
-DATABASE_URL=mysql://root:mypassword@127.0.0.1:3306/app?serverVersion=8.4&charset=utf8mb4
+DEV_MAIL_RECIPIENT=me@example.com
 ```
 
 ### 3. Key Environment Variables
@@ -57,17 +58,23 @@ DATABASE_URL=mysql://root:mypassword@127.0.0.1:3306/app?serverVersion=8.4&charse
 APP_ENV=dev                          # Environment (dev, test, prod)
 APP_SECRET=your-secret-here          # Set in .env.dev
 
+# Database name and local ports, read by Docker Compose too (see Development URLs)
+DATABASE_NAME=app
+DATABASE_PORT=3306
+REDIS_PORT=6379
+MAILER_PORT=1025
+
 # Database
-DATABASE_URL=mysql://root:password@127.0.0.1:3306/app?serverVersion=8.4&charset=utf8mb4
+DATABASE_URL=mysql://root:password@127.0.0.1:${DATABASE_PORT}/${DATABASE_NAME}?serverVersion=8.4&charset=utf8mb4
 
 # Redis
-REDIS_URL=redis://default:password@127.0.0.1:6379
+REDIS_URL=redis://default:password@127.0.0.1:${REDIS_PORT}
 
 # Message queue (a table in the database)
 MESSENGER_TRANSPORT_DSN=doctrine://default
 
 # Mail (Mailpit in dev)
-MAILER_DSN=smtp://127.0.0.1:1025
+MAILER_DSN=smtp://127.0.0.1:${MAILER_PORT}
 DEV_MAIL_RECIPIENT=your@email.com
 MAILER_FROM=no-reply@supplymars.com  # Sender address of all mail
 
@@ -82,11 +89,11 @@ DEFAULT_URI=https://localhost:8000
 This approach runs PHP locally for faster iteration while Docker provides infrastructure.
 
 ```bash
-# 1. Start infrastructure services
+# 1. Start infrastructure services (MySQL, Redis, Mailpit, the phpMyAdmins)
 make up-dev-tools
 
 # 2. Create database and run migrations
-symfony console doctrine:database:create
+symfony console doctrine:database:create --if-not-exists    # the MySQL container already creates it
 symfony console doctrine:migrations:migrate --no-interaction
 
 # 3. Load fixtures (optional - provides seed data)
@@ -299,7 +306,7 @@ The queue is a database table by default ([ADR 013](adr/013-database-queue-by-de
 
    ```bash
    COMPOSE_PROFILES=rabbitmq
-   MESSENGER_TRANSPORT_DSN="phpamqplib://guest:guest@127.0.0.1:5672/%2f/messages"
+   MESSENGER_TRANSPORT_DSN="phpamqplib://guest:guest@127.0.0.1:${RABBITMQ_PORT}/%2f/messages"
    ```
 
 3. **Change the DSN the containers use**, in `compose.override.yaml`:
@@ -318,17 +325,44 @@ The queue is a database table by default ([ADR 013](adr/013-database-queue-by-de
 
    The playground commands pass `--profile playground`, which replaces `COMPOSE_PROFILES`. Add `--profile rabbitmq` to them as well, in the `Makefile` and in the deploy job of `.github/workflows/ci.yml`.
 
-`make up-dev-tools`, `make up` and the production targets then start RabbitMQ, and `php` waits for it to be healthy. The management UI is at http://localhost:15672 (guest / guest) in development. Tests are unaffected: the `test` environment always uses `in-memory://`.
+5. **Add `rabbitmq` to the `up-dev-tools` target** in the `Makefile`. It names the services it starts, and a
+   named service starts whether or not its profile is on, so it is not listed by default.
+
+`make up-dev-tools`, `make up` and the production targets then start RabbitMQ, and `php` waits for it to be healthy. The management UI is at http://localhost:15672 (guest / guest, port `RABBITMQ_UI_PORT`) in development. Tests are unaffected: the `test` environment always uses `in-memory://`.
 
 Messages already waiting in the database queue are not moved. Let the worker empty it before switching (`symfony console messenger:stats`).
 
 ## Development URLs
 
-| Service | URL | Credentials |
-|---------|-----|-------------|
-| Application | https://localhost:8000 (Symfony) or https://localhost (Docker) | - |
-| PHPMyAdmin | http://localhost:8080 | root / password |
-| Mailpit | http://localhost:8025 | - |
+| Service | URL | Port variable | Credentials |
+|---------|-----|---------------|-------------|
+| Application | https://localhost:8000 (Symfony) or https://localhost (Docker) | - | - |
+| PHPMyAdmin | http://localhost:8080 | `PHPMYADMIN_PORT` | root / password |
+| PHPMyAdmin (live) | http://localhost:8081 | `PHPMYADMIN_LIVE_PORT` | the live credentials |
+| PHPMyAdmin (playground) | http://localhost:8082 | `PHPMYADMIN_PLAYGROUND_PORT` | the playground credentials |
+| Mailpit | http://localhost:8025 | `MAILPIT_PORT` | - |
+| MySQL | 127.0.0.1:3306 | `DATABASE_PORT` | root / password |
+| Redis | 127.0.0.1:6379 | `REDIS_PORT` | - |
+
+The port variables and `DATABASE_NAME` are in the `docker` block of `.env`. Docker Compose reads them from
+that file, and `DATABASE_URL`, `REDIS_URL` and `MAILER_DSN` are built from them, so a change is made in one
+place. Change them in `.env`, not `.env.local`: Symfony does not load `.env.local` in the `test`
+environment, so dev and test would point at different servers. The production targets read the env files
+in `../supplymars-secrets/` instead of `.env`, so none of this reaches production.
+
+### One set of services, two ways to start them
+
+Every service is defined once, in `compose.yaml`, with its development settings and published ports in
+`compose.override.yaml`. `make up` starts them all. `make up-dev-tools` starts only the services it names
+(MySQL, Redis, Mailpit and the three phpMyAdmins), for use with `symfony serve`. Both use the same
+containers and volumes, so the database is the same whichever way you start it. `make up-prod-local`
+reuses the development phpMyAdmin and Mailpit definitions.
+
+### phpMyAdmin for the production databases
+
+`phpmyadmin-prod-live` (http://localhost:8081) and `phpmyadmin-prod-playground` (http://localhost:8082)
+connect through SSH tunnels on local ports 3307 and 3308. Open the tunnel and the page works; without one
+it shows a connection error. Each has its own footer (`docker/phpmyadmin/`) so the two are not mixed up.
 
 ## Useful Commands
 

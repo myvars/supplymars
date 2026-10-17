@@ -158,7 +158,7 @@ symfony console app:calculate-order-sales 7        # Last 7 days
 |---------|-----|
 | Application | https://localhost:8000 |
 | API Docs (Swagger) | https://localhost:8000/api/doc |
-| PHPMyAdmin | http://localhost:8080 |
+| PHPMyAdmin | http://localhost:8080 (live 8081, playground 8082, through SSH tunnels) |
 | Mailpit | http://localhost:8025 |
 
 ---

@@ -9,7 +9,7 @@ services:
   database:
     image: mysql:8.4
     environment:
-      MYSQL_DATABASE: app
+      MYSQL_DATABASE: ${DATABASE_NAME:-app}   # Set in .env; production env files leave it unset
       # Default username/pw set in .env
     volumes:
       - db-data:/var/lib/mysql  # Persist DB data between restarts

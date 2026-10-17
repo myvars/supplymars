@@ -47,12 +47,13 @@ certs:
 	@rm -rf docker/nginx/certs/dev-fullchain.pem docker/nginx/certs/dev-privkey.pem
 	mkcert -cert-file docker/nginx/certs/dev-fullchain.pem -key-file docker/nginx/certs/dev-privkey.pem localhost 127.0.0.1 ::1
 
+# The services for symfony serve. Add rabbitmq if the project opts in to it (Docs/02-setup-local.md).
 up-dev-tools:
-	docker compose -f compose.dev-tools.yaml up -d --wait --build
+	docker compose up -d --wait database redis mailer phpmyadmin phpmyadmin-prod-live phpmyadmin-prod-playground
 
 # --profile '*' also removes opt-in services (RabbitMQ) whether or not their profile is on
 down:
-	docker compose --profile '*' -f compose.yaml -f compose.dev-tools.yaml down --remove-orphans
+	docker compose --profile '*' down --remove-orphans
 
 test:
 	docker compose run --rm -e APP_ENV=test php ./scripts/run-tests.sh
