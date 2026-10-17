@@ -188,7 +188,7 @@ are thin orchestrators using 5 flow types:
 - **Attributes and autowiring, not config**: follow the surrounding code (`#[Route]`, `#[AsCommand]`, `#[AsEventListener]`, `#[Autowire(param:/env:)]`, `#[Target]`). A YAML service or route definition is the last resort.
 - **Readonly services**: don't mark a service class `readonly` if it might become lazy — a lazy proxy can't extend a `readonly` class. DTOs, commands and value objects are fine.
 - **New capabilities via Flex**: `composer require <package>` and let the recipe register the bundle and base config. Don't hand-edit `config/bundles.php` or hand-write a bundle's base config.
-- **Use the framework before building or importing**: check for a Symfony component before hand-writing infrastructure (locks, caches, HTTP clients, schedulers) or adding a third-party library.
+- **Use the framework before building or importing**: check for a Symfony component before hand-writing infrastructure (locks, caches, HTTP clients, schedulers) or adding a third-party library — e.g. `symfony/lock` for mutual exclusion, never a hand-built flag or lock file (`BackupDatabaseCommand` shows a scheduled command locked with `LockableTrait`; see `Docs/11-runbook.md#42-manual-backup`).
 - **Makers**: pass every argument up front with `--no-interaction` where supported; makers prompt by default, which hangs a non-interactive shell. If a maker still needs input, hand-write the code.
 
 ### Discover, don't guess
