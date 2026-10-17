@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 echo '<style>
 body::before {
     content: "!!! LIVE DATABASE !!!";

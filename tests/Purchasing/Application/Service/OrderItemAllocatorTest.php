@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Purchasing\Application\Service;
 
 use App\Purchasing\Application\Service\OrderItemAllocator;

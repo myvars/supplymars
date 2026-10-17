@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Catalog\Application\Handler\Product;
 
 use App\Catalog\Application\Command\Product\ProductFilter;

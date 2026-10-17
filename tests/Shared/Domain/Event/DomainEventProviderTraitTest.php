@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Shared\Domain\Event;
 
 use App\Shared\Domain\Event\AbstractDomainEvent;

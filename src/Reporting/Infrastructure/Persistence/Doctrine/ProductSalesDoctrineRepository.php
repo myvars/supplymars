@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Reporting\Infrastructure\Persistence\Doctrine;
 
 use App\Reporting\Application\Report\ProductSalesReportCriteria;

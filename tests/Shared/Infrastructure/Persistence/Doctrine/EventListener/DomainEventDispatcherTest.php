@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Shared\Infrastructure\Persistence\Doctrine\EventListener;
 
 use App\Shared\Domain\Event\AsyncDomainEventInterface;

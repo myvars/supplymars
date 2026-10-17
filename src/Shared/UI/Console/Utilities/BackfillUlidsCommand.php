@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Shared\UI\Console\Utilities;
 
 use App\Shared\Infrastructure\Persistence\Doctrine\Mapping\HasPublicUlid;

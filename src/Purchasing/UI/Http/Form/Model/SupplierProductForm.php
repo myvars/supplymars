@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Purchasing\UI\Http\Form\Model;
 
 use App\Catalog\Domain\Model\Product\Product;

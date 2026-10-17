@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Catalog\UI\Http\Api;
 
 use App\Catalog\Application\Search\ManufacturerSearchCriteria;

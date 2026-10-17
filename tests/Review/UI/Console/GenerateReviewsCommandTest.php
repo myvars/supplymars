@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Review\UI\Console;
 
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;

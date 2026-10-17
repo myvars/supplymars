@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Catalog\Infrastructure\Persistence\Doctrine;
 
 use App\Catalog\Application\Search\ProductSearchCriteria;

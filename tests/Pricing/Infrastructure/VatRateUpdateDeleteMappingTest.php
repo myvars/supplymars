@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Pricing\Infrastructure;
 
 use App\Pricing\Domain\Model\VatRate\VatRate;

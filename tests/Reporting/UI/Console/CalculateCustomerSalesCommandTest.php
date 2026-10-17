@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Reporting\UI\Console;
 
 use App\Reporting\Domain\Model\SalesType\CustomerSales;

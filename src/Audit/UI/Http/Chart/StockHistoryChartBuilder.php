@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Audit\UI\Http\Chart;
 
 use App\Audit\Domain\Model\StockChange\SupplierStockChangeLog;

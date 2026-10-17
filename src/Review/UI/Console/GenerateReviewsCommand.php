@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Review\UI\Console;
 
 use App\Customer\Infrastructure\Security\DefaultUserAuthenticator;

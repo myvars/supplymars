@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Audit\Application\Listener;
 
 use App\Audit\Application\EventListener\StatusChangeLogger;

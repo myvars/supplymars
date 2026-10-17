@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Customer\Application\Handler;
 
 use App\Customer\Application\Command\DeleteCustomer;

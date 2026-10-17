@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Pricing\Application\Handler\VatRate;
 
 use App\Pricing\Application\Command\VatRate\UpdateVatRate;

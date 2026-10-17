@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Purchasing\UI\Console;
 
 use App\Tests\Shared\Factory\CustomerOrderFactory;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Note\UI\Http\Form\DataTransformer;
 
 use App\Note\Domain\Model\Ticket\TicketStatus;
