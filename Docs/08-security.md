@@ -533,9 +533,12 @@ Nginx catches high-volume automated attacks. Symfony catches targeted brute-forc
 
 ### Domain Validation
 
-The entity's constraints are the source of truth. Every user-entered `VARCHAR` column has a `Length` rule matching
-the column, so an over-length value is refused before it reaches the database. Create and update handlers validate
-the entity before they flush and return `Result::fail()` when it is invalid, so nothing is saved:
+The entity's constraints are the source of truth. Every user-entered string column has a `Length` rule, so an
+over-length value is refused before it reaches the database. A `VARCHAR` rule matches the column. A `TEXT` column
+holds 65,535 bytes, so its rule is 10,000 characters, which fits even at 4 bytes per character (`Message.body`,
+`Pool.description`, `ProductReview.moderationNotes`), or a lower business limit (`ProductReview.body`, 2,000).
+Create, update, reply and reject handlers validate the entity before they flush and return `Result::fail()` when it
+is invalid, so nothing is saved:
 
 ```php
 // src/Purchasing/Domain/Model/Supplier/Supplier.php
