@@ -26,10 +26,10 @@ final class ReviewForm
     #[Assert\Range(min: 1, max: 5)]
     public ?int $rating = null;
 
-    #[Assert\Length(max: 255)]
+    #[Assert\Length(max: 255, maxMessage: 'Max 255 characters')]
     public ?string $title = null;
 
-    #[Assert\Length(max: 2000)]
+    #[Assert\Length(max: 2000, maxMessage: 'Max 2000 characters')]
     public ?string $body = null;
 
     public static function fromEntity(ProductReview $review): self

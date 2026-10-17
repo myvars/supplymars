@@ -79,6 +79,26 @@ final class OrderApiTest extends WebTestCase
             ->assertJsonMatches('"data"."customerOrderRef"', 'TEST-001');
     }
 
+    public function testCreateOrderWithOverLengthRefReturns422(): void
+    {
+        $user = UserFactory::new()->asStaff()->create();
+        $customer = UserFactory::createOne();
+        VatRateFactory::new()->withStandardRate()->create();
+
+        $this->browser()
+            ->actingAs($user, 'api')
+            ->post('/api/v1/orders', HttpOptions::json([
+                'customer' => $customer->getPublicId()->value(),
+                'shippingMethod' => 'THREE_DAY',
+                'customerOrderRef' => str_repeat('a', 256),
+            ]))
+            ->assertStatus(422)
+            ->assertJson()
+            ->assertContains('Max 255 characters');
+
+        CustomerOrderFactory::assert()->empty();
+    }
+
     public function testCreateOrderWithInvalidCustomerReturns422(): void
     {
         $user = UserFactory::new()->asStaff()->create();

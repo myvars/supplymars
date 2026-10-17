@@ -50,6 +50,6 @@ class CreateSupplierFlowTest extends WebTestCase
             ->assertSeeIn('[data-slot="field-error"]', 'Max 255 characters')
             ->assertNotSee('Object(');
 
-        SupplierFactory::assert()->count(0, ['name' => str_repeat('a', 256)]);
+        SupplierFactory::assert()->empty();
     }
 }

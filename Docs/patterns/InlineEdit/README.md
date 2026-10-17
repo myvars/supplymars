@@ -177,10 +177,10 @@ as form errors.
 
 ```php
 'formOptions' => [
-    // Validation constraints for the value
+    // Rules for this edit only, not the entity's (those come from `property`),
+    // e.g. a stricter format this screen asks for
     'constraints' => [
-        new Assert\Email(),
-        new Assert\Regex('/^[A-Z]/'),
+        new Assert\Regex('/^[A-Z]/', message: 'Start with a capital letter'),
     ],
 
     // Field type (default: TextType). Field-specific options such as `choices`

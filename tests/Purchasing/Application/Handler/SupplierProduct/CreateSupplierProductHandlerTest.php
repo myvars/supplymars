@@ -16,6 +16,7 @@ use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\SupplierCategoryFactory;
 use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Factory\SupplierManufacturerFactory;
+use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Factory\SupplierSubcategoryFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
@@ -164,5 +165,37 @@ final class CreateSupplierProductHandlerTest extends KernelTestCase
         );
 
         ($this->handler)($command);
+    }
+
+    public function testHandleRefusesAnOverLengthNameFromTheEntityRules(): void
+    {
+        // No form in front of the handler: the entity's own Length rule must stop the save.
+        $supplier = SupplierFactory::createOne();
+        $category = SupplierCategoryFactory::createOne(['supplier' => $supplier]);
+        $subcategory = SupplierSubcategoryFactory::createOne([
+            'supplier' => $supplier,
+            'supplierCategory' => $category,
+        ]);
+        $manufacturer = SupplierManufacturerFactory::createOne(['supplier' => $supplier]);
+
+        $result = ($this->handler)(new CreateSupplierProduct(
+            name: str_repeat('a', 256),
+            productCode: 'CODE123',
+            supplierId: SupplierId::fromInt($supplier->getId()),
+            supplierCategoryId: SupplierCategoryId::fromInt($category->getId()),
+            supplierSubcategoryId: SupplierSubcategoryId::fromInt($subcategory->getId()),
+            supplierManufacturerId: SupplierManufacturerId::fromInt($manufacturer->getId()),
+            mfrPartNumber: 'MFR-999',
+            weight: 100,
+            stock: 50,
+            leadTimeDays: 7,
+            cost: '15.25',
+            productId: null,
+            isActive: true
+        ));
+
+        self::assertFalse($result->ok);
+        self::assertStringContainsString('Max 255 characters', (string) $result->message);
+        SupplierProductFactory::assert()->empty();
     }
 }
