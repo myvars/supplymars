@@ -9,24 +9,30 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Attribute\Option;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Command\LockableTrait;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\DependencyInjection\Attribute\Target;
+use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Process\Process;
 
 #[AsCommand(
     name: 'app:backup-database',
     description: 'Backup the MySQL database to the backups filesystem (local dev, S3 prod).',
 )]
-final readonly class BackupDatabaseCommand
+final class BackupDatabaseCommand
 {
+    use LockableTrait;
+
     public function __construct(
         #[Target('backups_fsFilesystem')]
-        private FilesystemOperator $backupsFsFilesystem,
-        private LoggerInterface $logger,
+        private readonly FilesystemOperator $backupsFsFilesystem,
+        private readonly LoggerInterface $logger,
         #[Autowire(env: 'DATABASE_URL')]
-        private string $databaseUrl,
+        private readonly string $databaseUrl,
+        LockFactory $lockFactory,
     ) {
+        $this->lockFactory = $lockFactory;
     }
 
     public function __invoke(
@@ -38,6 +44,24 @@ final readonly class BackupDatabaseCommand
         #[Option(description: 'Copy the gzipped backup to this local path (e.g. /backups/latest.sql.gz).')]
         ?string $localCopy = null,
     ): int {
+        // Cron starts a new run whatever state the last one is in. A run that finds the lock held
+        // fails, so nothing chained after it with && treats a backup it did not take as done.
+        if (!$this->lock()) {
+            $io->warning('A backup is already running. This run has been skipped.');
+            $this->logger->warning('Database backup skipped: a backup is already running');
+
+            return Command::FAILURE;
+        }
+
+        try {
+            return $this->backUp($io, $retentionDays, $dryRun, $localCopy);
+        } finally {
+            $this->release();
+        }
+    }
+
+    private function backUp(SymfonyStyle $io, int $retentionDays, bool $dryRun, ?string $localCopy): int
+    {
         $startTime = microtime(true);
         $filename = sprintf('supplymars-%s.sql.gz', date('Y-m-d-His'));
 
@@ -115,16 +139,19 @@ final readonly class BackupDatabaseCommand
         $sizeMb = round($fileSize / 1024 / 1024, 2);
         $io->writeln(sprintf('  Saved <info>%s</info> (%s MB)', $filename, $sizeMb));
 
-        // 2b. Save a local copy if requested (before temp file cleanup)
+        // 2b. Save a local copy if requested (before temp file cleanup). Written beside the target and
+        // renamed into place, so the playground reset never reads a half-written copy.
         if ($localCopy !== null) {
             $dir = dirname($localCopy);
             if (!is_dir($dir)) {
                 mkdir($dir, 0o755, true);
             }
 
-            if (!copy($tempFile, $localCopy)) {
+            $partial = $localCopy . '.partial';
+            if (!copy($tempFile, $partial) || !rename($partial, $localCopy)) {
                 $io->error('Failed to copy backup to ' . $localCopy);
                 $this->cleanupTempFile($tempFile);
+                $this->cleanupTempFile($partial);
 
                 return Command::FAILURE;
             }
