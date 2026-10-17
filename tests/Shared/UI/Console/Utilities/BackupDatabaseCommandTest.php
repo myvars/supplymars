@@ -35,9 +35,9 @@ final class BackupDatabaseCommandTest extends KernelTestCase
         $backups = self::getContainer()->get('oneup_flysystem.backups_fs_filesystem');
         $this->backups = $backups;
 
-        /** @var string $cacheDir */
-        $cacheDir = self::getContainer()->getParameter('kernel.cache_dir');
-        $this->backupsDir = $cacheDir . '/backups';
+        /** @var string $backupsDir */
+        $backupsDir = self::getContainer()->getParameter('test_backups_dir');
+        $this->backupsDir = $backupsDir;
         new Filesystem()->remove([$this->backupsDir, $this->backupsDir . '-local', $this->backupsDir . '-blocker']);
 
         $this->output = new BufferedOutput();

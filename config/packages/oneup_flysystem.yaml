@@ -31,6 +31,10 @@ when@prod:
 
 # Tests write uploads and backups to the cache dir, not public/ or var/backups, so they never mix with the dev app's files
 when@test:
+    parameters:
+        # One folder per ParaTest process (TEST_TOKEN), because the backup tests empty it in setUp()
+        test_backups_dir: '%kernel.cache_dir%/backups%env(default::TEST_TOKEN)%'
+
     oneup_flysystem:
         adapters:
             products_adapter:
@@ -38,4 +42,4 @@ when@test:
                     location: '%kernel.cache_dir%/storage'
             backups_adapter:
                 local:
-                    location: '%kernel.cache_dir%/backups'
+                    location: '%test_backups_dir%'

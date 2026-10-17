@@ -243,10 +243,24 @@ make test-ManufacturerFlowTest
 make test-CreateOrder
 ```
 
+### In Parallel
+
+`make test`, `make check` and CI run the suite through `scripts/run-tests.sh`, which uses [ParaTest](https://github.com/paratestphp/paratest) to start one PHPUnit process per CPU. ParaTest reads the same `phpunit.xml.dist`, so the extensions and the fail-on-deprecation settings apply to every process. It gives each process a `TEST_TOKEN` (1, 2, 3…), and `config/packages/doctrine.yaml` appends it to the test database name, so each process has its own database (`app_test1`, `app_test2`…) and DAMA rolls back inside it as usual. The script creates and resets these databases before each run.
+
+`TEST_PROCESSES` sets the number of processes, e.g. `TEST_PROCESSES=2 make test`. Lower it if the Docker VM runs short of memory.
+
+Tests run in separate processes at the same time, so a test must not rely on anything another test leaves behind or changes outside the database:
+- **Files:** the upload storage folder is shared by all processes, so each file needs a unique name. `UploadHelper` adds a random suffix to each stored file. The backups folder is per process (`test_backups_dir` in `config/packages/oneup_flysystem.yaml`), because the backup tests empty it in `setUp()`; a test that clears a folder needs the same.
+- **Cache:** in the test environment the app cache is in memory (`cache.adapter.array`, `config/packages/cache.yaml`), not Redis. Each process, and each kernel boot, starts with an empty cache, so cached values such as the sidebar badge counts and the login throttling counts never pass from one test to another.
+- **Locks:** a command test that takes a lock (e.g. `BackupDatabaseCommandTest`) runs its tests one after another, because a test class stays in one process.
+
+A failure that only appears in parallel usually means two tests share one of these, or that a test depends on the order tests run in. Plain `vendor/bin/phpunit` runs serially against `app_test` (below), which helps tell the two apart.
+
 ### Locally
 
 ```bash
-# Ensure test database exists
+# Reset the serial test database (again after any entity change; make test resets only app_test1…N)
+symfony console doctrine:database:drop --if-exists --force --env=test
 symfony console doctrine:database:create --env=test
 symfony console doctrine:schema:create --env=test
 
@@ -544,15 +558,6 @@ class PriceCascadeTest extends KernelTestCase
 
 ## What "Good Coverage" Means
 
-### Coverage Targets
-
-| Layer | Target | Reasoning |
-|-------|--------|-----------|
-| Domain | 90%+ | Critical business rules |
-| Handlers | 80%+ | Main application logic |
-| Controllers | 60%+ | Integration verified by handler tests |
-| Infrastructure | 50%+ | Mostly Doctrine boilerplate |
-
 ### What to Test
 
 **Always test:**
@@ -673,7 +678,7 @@ make check-phpstan       # one step: prod-config, cs, rector, phpstan, deptrac, 
 | `lint` | `lint:container` (test and dev), `lint:twig templates/`, `lint:yaml config/` |
 | `audit` | `composer audit`: known vulnerabilities and abandoned packages. A new advisory fails the next run whatever it changes. Between runs, GitHub's Dependabot security alerts (turned on for this repository; no update pull requests) report a new advisory for a locked package |
 | `migrations` | Runs every migration on an empty database (`app_test_migrations`), then `doctrine:schema:validate`. Fails when the migrations do not produce the schema the entities describe, e.g. an entity change with no migration |
-| `tests` | `scripts/run-tests.sh`: resets the test database and runs PHPUnit |
+| `tests` | `scripts/run-tests.sh`: resets one test database per CPU and runs PHPUnit through ParaTest (see [In Parallel](#in-parallel)) |
 
 The tests build their schema with `doctrine:schema:create`, not the migrations, so the `migrations` step is what proves the migration files work. The first migration creates the whole schema; on a database that already has it (live and playground) it adds no SQL and is only recorded.
 

@@ -117,7 +117,7 @@ make up                             # All services containerized
 make bash                           # Shell into PHP container
 
 # Run tests
-make test                           # All tests via Docker
+make test                           # All tests via Docker, in parallel (ParaTest)
 make test-SomeTest                  # Filtered tests
 vendor/bin/phpunit                  # Local (ensure test DB exists)
 

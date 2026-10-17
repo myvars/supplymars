@@ -18,9 +18,9 @@ class BackupHealthControllerTest extends WebTestCase
     {
         self::bootKernel();
 
-        /** @var string $cacheDir */
-        $cacheDir = self::getContainer()->getParameter('kernel.cache_dir');
-        $this->backupsDir = $cacheDir . '/backups';
+        /** @var string $backupsDir */
+        $backupsDir = self::getContainer()->getParameter('test_backups_dir');
+        $this->backupsDir = $backupsDir;
         new Filesystem()->remove($this->backupsDir);
 
         self::ensureKernelShutdown();
