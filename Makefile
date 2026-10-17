@@ -56,14 +56,14 @@ down:
 	docker compose --profile '*' down --remove-orphans
 
 test:
-	docker compose run --rm -e APP_ENV=test php ./scripts/run-tests.sh
+	docker compose run --rm -e APP_ENV=test -e TEST_PROCESSES php ./scripts/run-tests.sh
 
 test-%:
-	docker compose run --rm -e APP_ENV=test php ./scripts/run-tests.sh --filter $*
+	docker compose run --rm -e APP_ENV=test -e TEST_PROCESSES php ./scripts/run-tests.sh --filter $*
 
 # Every check CI runs. check-<step> runs one: prod-config, cs, rector, phpstan, deptrac, lint, audit, migrations, tests
 check: check-prod-config
-	docker compose run --rm -e APP_ENV=test php ./scripts/check.sh
+	docker compose run --rm -e APP_ENV=test -e TEST_PROCESSES php ./scripts/check.sh
 
 # Runs on the host (scripts/check.sh runs in the php container, which has no Docker). Checks the
 # production compose files, for the live stack and the playground profile, and the nginx config,
@@ -78,7 +78,7 @@ check-prod-config:
 		$$(docker build -q --load --target nginx-dev -f docker/Dockerfile .) -t
 
 check-%:
-	docker compose run --rm -e APP_ENV=test php ./scripts/check.sh $*
+	docker compose run --rm -e APP_ENV=test -e TEST_PROCESSES php ./scripts/check.sh $*
 
 bash:
 	docker compose exec php bash

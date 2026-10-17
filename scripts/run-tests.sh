@@ -32,12 +32,14 @@ for token in $(seq 1 "$PROCESSES"); do
   reset_database "$token" &
   pids[token]=$!
 done
+failed=()
 for token in "${!pids[@]}"; do
-  if ! wait "${pids[token]}"; then
-    echo "[run-tests] Resetting test database $token failed"
-    exit 1
-  fi
+  wait "${pids[token]}" || failed+=("$token")
 done
+if ((${#failed[@]})); then
+  echo "[run-tests] Resetting test databases failed: ${failed[*]}"
+  exit 1
+fi
 
 echo "[run-tests] Running tests..."
 exec vendor/bin/paratest --processes="$PROCESSES" "$@"
