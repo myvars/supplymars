@@ -91,7 +91,7 @@ You can update:
 
 **Navigate to:** Supplier product detail > Edit > Click **Delete**
 
-If the supplier product is mapped to a catalog product, it is unmapped first: the product moves to its next best source (or to no source) and its price is recalculated.
+If the supplier product is mapped to a catalog product, it is unmapped first: the product moves to its next best source and its price is recalculated. If no other source is left, the product has no active source and its stock drops to 0.
 
 **Requirements:** The supplier product must not appear on any purchase order. If it does, the delete is refused; set it to inactive instead.
 

@@ -48,7 +48,7 @@ final class DeleteSupplierProductFlowTest extends WebTestCase
         $product = $this->reload($product);
         self::assertSame($next->getId(), $product->getActiveProductSource()?->getId());
         self::assertSame('20.00', $product->getCost());
-        self::assertNotSame($priceBefore, $product->getSellPrice());
+        self::assertSame(1, bccomp((string) $product->getSellPrice(), (string) $priceBefore, 2));
     }
 
     public function testDeletingOnlySourceLeavesProductWithoutSource(): void
@@ -75,6 +75,22 @@ final class DeleteSupplierProductFlowTest extends WebTestCase
             ->assertSee('Used on purchase orders');
 
         self::assertNotNull(SupplierProductFactory::repository()->find($supplierProduct->getId()));
+    }
+
+    public function testRefusedDeleteLeavesActiveSourceUnchanged(): void
+    {
+        $product = ProductFactory::createOne();
+        $active = SupplierProductFactory::createOne(['product' => $product, 'cost' => '10.00', 'stock' => 5]);
+        SupplierProductFactory::createOne(['product' => $product, 'cost' => '20.00', 'stock' => 5]);
+        PurchaseOrderItemFactory::createOne(['supplierProduct' => $active]);
+        $priceBefore = $product->getSellPrice();
+
+        $this->deleteViaConfirmFlow($active)
+            ->assertSee('Used on purchase orders');
+
+        $product = $this->reload($product);
+        self::assertSame($active->getId(), $product->getActiveProductSource()?->getId());
+        self::assertSame($priceBefore, $product->getSellPrice());
     }
 
     private function deleteViaConfirmFlow(SupplierProduct $supplierProduct): KernelBrowser
