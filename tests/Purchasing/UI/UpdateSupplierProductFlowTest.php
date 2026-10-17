@@ -64,6 +64,37 @@ final class UpdateSupplierProductFlowTest extends WebTestCase
             ->assertSee('After Edit');
     }
 
+    public function testRemappingTheActiveSourceToALowerIdProductMovesIt(): void
+    {
+        $user = UserFactory::new()->asStaff()->create();
+
+        // Doctrine orders UPDATEs by id compared as strings: give the new product the id that sorts
+        // first, so its UPDATE would run before the previous product's
+        $newProduct = ProductFactory::createOne();
+        $previousProduct = ProductFactory::createOne();
+        if (strcmp((string) $newProduct->getId(), (string) $previousProduct->getId()) > 0) {
+            [$newProduct, $previousProduct] = [$previousProduct, $newProduct];
+        }
+
+        $supplierProduct = SupplierProductFactory::createOne(['cost' => '10.00', 'product' => $previousProduct]);
+        $nextBest = SupplierProductFactory::createOne(['cost' => '20.00', 'product' => $previousProduct]);
+
+        $publicId = $supplierProduct->getPublicId()->value();
+
+        $this->browser()
+            ->actingAs($user)
+            ->get('/supplier-product/' . $publicId . '/edit')
+            ->fillField('supplier_product[product]', (string) $newProduct->getId())
+            ->click('Update Supplier Product')
+            ->assertOn('/supplier-product/' . $publicId);
+
+        $newProduct = ProductFactory::repository()->find($newProduct->getId());
+        $previousProduct = ProductFactory::repository()->find($previousProduct->getId());
+
+        self::assertSame($supplierProduct->getId(), $newProduct?->getActiveProductSource()?->getId());
+        self::assertSame($nextBest->getId(), $previousProduct?->getActiveProductSource()?->getId());
+    }
+
     public function testValidationErrorOnEmptyName(): void
     {
         $user = UserFactory::new()->asStaff()->create();

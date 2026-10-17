@@ -15,6 +15,7 @@ use App\Shared\Domain\Service\Pricing\MarkupCalculator;
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
@@ -94,24 +95,32 @@ final class SupplierProductPricingWasChangedListenerTest extends KernelTestCase
         self::assertNotSame($before, $reloaded->getSellPriceIncVat());
     }
 
-    public function testRecalculatesPreviousAndCurrentMappedProductsWhenRemapped(): void
+    /**
+     * Doctrine orders UPDATEs by id, compared as strings, so both orders must work: the new product
+     * must not take the supplier product as its active source while the previous one still holds it.
+     */
+    #[DataProvider('remapOrders')]
+    public function testRecalculatesPreviousAndCurrentMappedProductsWhenRemapped(bool $newProductHasLowerId): void
     {
-        $productA = ProductFactory::createOne();
-        $productB = ProductFactory::createOne();
+        if ($newProductHasLowerId) {
+            $productB = ProductFactory::createOne();
+            $productA = ProductFactory::createOne();
+        } else {
+            $productA = ProductFactory::createOne();
+            $productB = ProductFactory::createOne();
+        }
+
         $sp1 = SupplierProductFactory::createOne(['cost' => '10.00', 'product' => $productA]);
-        SupplierProductFactory::createOne(['cost' => '20.00', 'product' => $productA]);
+        $sp2 = SupplierProductFactory::createOne(['cost' => '20.00', 'product' => $productA]);
+        self::assertSame($sp1->getId(), $productA->getActiveProductSource()?->getId());
 
         $beforeA = $productA->getSellPriceIncVat();
-
-        /** @var MockObject&FlusherInterface $flusher */
-        $flusher = $this->createMock(FlusherInterface::class);
-        $flusher->expects(self::once())->method('flush');
 
         $listener = new SupplierProductPricingWasChanged(
             $this->supplierProducts,
             $this->products,
             $this->calculator,
-            $flusher
+            self::getContainer()->get(FlusherInterface::class)
         );
 
         // Remap supplier product to productB -> previousMappedProductId will be set
@@ -139,7 +148,6 @@ final class SupplierProductPricingWasChangedListenerTest extends KernelTestCase
             $listener($event);
         }
 
-        $this->em->flush();
         $this->em->clear();
 
         /** @var Product $reloadedA */
@@ -147,8 +155,18 @@ final class SupplierProductPricingWasChangedListenerTest extends KernelTestCase
         /** @var Product $reloadedB */
         $reloadedB = $this->em->getRepository(Product::class)->find($productB->getId());
 
-        self::assertTrue($reloadedB->hasActiveProductSource());
+        self::assertSame($sp1->getId(), $reloadedB->getActiveProductSource()?->getId());
+        self::assertSame($sp2->getId(), $reloadedA->getActiveProductSource()?->getId());
         self::assertNotSame($beforeA, $reloadedA->getSellPriceIncVat());
+    }
+
+    /**
+     * @return iterable<string, array{bool}>
+     */
+    public static function remapOrders(): iterable
+    {
+        yield 'new product has the lower id' => [true];
+        yield 'new product has the higher id' => [false];
     }
 
     public function testDoesNotFlushWhenNoRelevantChanges(): void

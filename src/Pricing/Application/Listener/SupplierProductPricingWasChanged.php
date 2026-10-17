@@ -46,8 +46,10 @@ final readonly class SupplierProductPricingWasChanged
 
         $updated = false;
         if ($previousProduct instanceof Product && $newProduct instanceof Product && $previousProduct->getId() !== $newProduct->getId()) {
-            // Move between different products
+            // Move between different products. Flush the previous product first: it may still hold the
+            // supplier product as its (unique) active source, and Doctrine orders the UPDATEs by id, not by need.
             $previousProduct->removeSupplierProduct($this->markupCalculator, $supplierProduct);
+            $this->flusher->flush();
             $newProduct->addSupplierProduct($this->markupCalculator, $supplierProduct);
             $updated = true;
         } elseif ($previousProduct instanceof Product && !$newProduct instanceof Product) {
