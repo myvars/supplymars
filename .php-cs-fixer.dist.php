@@ -11,11 +11,14 @@ $finder = new Finder()
     ->notPath([
         'config/bundles.php',
         'config/reference.php',
+        'importmap.php',
     ]);
 
 return new Config()
+    ->setRiskyAllowed(true)
     ->setRules([
         '@Symfony' => true,
+        'declare_strict_types' => true,
         'yoda_style' => false,
         'concat_space' => ['spacing' => 'one']
     ])

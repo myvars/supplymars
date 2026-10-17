@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Purchasing\UI\Http\Validation;
 
 use App\Catalog\Domain\Model\Product\Product;
@@ -32,7 +34,7 @@ final class ValidProductIdValidator extends ConstraintValidator
         }
 
         $this->context->buildViolation($constraint->message)
-            ->setParameter('{{ value }}', $value)
+            ->setParameter('{{ value }}', (string) $value)
             ->addViolation();
     }
 }

@@ -117,7 +117,7 @@ These areas have non-obvious design. Read the corresponding ADR in `Docs/adr/` b
 ### FormFlow (Controller Pattern)
 
 The flow coordinators live in the external **`myvars/form-flow`** package (namespace `MyVars\FormFlow\`,
-required from Packagist as `^1.3`, enabled as `FormFlowBundle`) — **not** in `src/`; do not re-add an
+required from Packagist as `^1.3.1`, enabled as `FormFlowBundle`) — **not** in `src/`; do not re-add an
 in-app `FormFlow` directory. The app provides the **adapters** — `Result`, `RedirectTarget`,
 `FlashMessenger` and `Application\Search\SearchCriteriaInterface` implement/extend the package's
 `Contract\` ports (autowired; `FlasherInterface` aliased in `services.yaml`). The package ships
@@ -176,6 +176,7 @@ are thin orchestrators using 5 flow types:
 
 - Readonly properties where possible; constructor property promotion.
 - No Yoda conditions (`$value === null`, not `null === $value`).
+- `declare(strict_types=1);` in every PHP file (PHP-CS-Fixer enforces it).
 - Full type hints on all methods.
 - String concatenation: `'foo' . $bar` (space around `.`).
 - Rich entities with domain logic; thin controllers (delegate to Flow/handlers).

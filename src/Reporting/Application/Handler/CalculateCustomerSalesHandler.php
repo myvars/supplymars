@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Reporting\Application\Handler;
 
 use App\Customer\Domain\Repository\UserRepository;
@@ -46,7 +48,7 @@ final readonly class CalculateCustomerSalesHandler
                 (int) $sale['customerId'],
                 $date,
                 (int) $sale['orderCount'],
-                $sale['orderValue'] ?? '0.00',
+                (string) ($sale['orderValue'] ?? '0.00'),
                 (int) ($sale['itemCount'] ?? 0),
             );
 

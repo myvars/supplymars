@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Purchasing\Infrastructure\Persistence\Doctrine;
 
 use App\Purchasing\Application\Search\SupplierSearchCriteria;

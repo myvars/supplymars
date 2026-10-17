@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Customer\Infrastructure\Factory;
 
 use App\Customer\Domain\Model\Address\Address;

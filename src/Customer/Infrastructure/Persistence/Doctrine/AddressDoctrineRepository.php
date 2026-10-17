@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Infrastructure\Persistence\Doctrine;
 
 use App\Customer\Domain\Model\Address\Address;

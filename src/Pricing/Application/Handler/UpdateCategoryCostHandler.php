@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Pricing\Application\Handler;
 
 use App\Catalog\Domain\Model\Category\Category;

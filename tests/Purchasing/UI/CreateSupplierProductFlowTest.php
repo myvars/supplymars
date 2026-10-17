@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Purchasing\UI;
 
 use App\Tests\Shared\Factory\ProductFactory;
@@ -51,6 +53,17 @@ final class CreateSupplierProductFlowTest extends WebTestCase
             ->click('Create Supplier Product')
             ->assertOn('/supplier-product/')
             ->assertSee('Flow Supplier Product');
+    }
+
+    public function testUnknownProductIdShowsValidationError(): void
+    {
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/supplier-product/new')
+            ->fillField('supplier_product[product]', '999999999')
+            ->click('Create Supplier Product')
+            ->assertOn('/supplier-product/new')
+            ->assertSee('Product not found.');
     }
 
     public function testValidationErrorsOnEmptySubmission(): void

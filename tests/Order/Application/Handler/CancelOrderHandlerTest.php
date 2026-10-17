@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Order\Application\Handler;
 
 use App\Order\Application\Command\CancelOrder;

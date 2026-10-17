@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Pricing\Infrastructure\Persistence\Doctrine;
 
 use App\Pricing\Application\Search\VatRateSearchCriteria;

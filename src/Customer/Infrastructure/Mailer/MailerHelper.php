@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Infrastructure\Mailer;
 
 use App\Customer\Domain\Model\User\User;

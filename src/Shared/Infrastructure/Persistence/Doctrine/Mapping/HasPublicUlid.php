@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Shared\Infrastructure\Persistence\Doctrine\Mapping;
 
 use Doctrine\ORM\Mapping as ORM;

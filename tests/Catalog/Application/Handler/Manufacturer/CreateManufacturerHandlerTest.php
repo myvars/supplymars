@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Catalog\Application\Handler\Manufacturer;
 
 use App\Catalog\Application\Command\Manufacturer\CreateManufacturer;

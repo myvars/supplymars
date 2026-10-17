@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Order\Infrastructure\Persistence\Doctrine;
 
 use App\Order\Domain\Model\Order\CustomerOrderItem;

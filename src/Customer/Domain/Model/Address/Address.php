@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Customer\Domain\Model\Address;
 
 use App\Customer\Domain\Model\User\User;

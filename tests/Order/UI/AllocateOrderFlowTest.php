@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Order\UI;
 
 use App\Order\Domain\Model\Order\CustomerOrder;

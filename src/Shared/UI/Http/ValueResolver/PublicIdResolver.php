@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Shared\UI\Http\ValueResolver;
 
 use Doctrine\Persistence\ManagerRegistry;

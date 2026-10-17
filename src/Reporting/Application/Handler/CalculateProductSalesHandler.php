@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Reporting\Application\Handler;
 
 use App\Catalog\Domain\Model\Product\Product;
@@ -43,9 +45,9 @@ final readonly class CalculateProductSalesHandler
                     $product,
                     $supplier,
                     $date,
-                    $sale['salesQty'],
-                    $sale['salesCost'],
-                    $sale['salesValue']
+                    (int) $sale['salesQty'],
+                    (string) $sale['salesCost'],
+                    (string) $sale['salesValue']
                 );
 
                 $errors = $this->validator->validate($productSales);

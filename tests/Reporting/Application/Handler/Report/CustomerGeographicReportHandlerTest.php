@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Reporting\Application\Handler\Report;
 
 use App\Reporting\Application\Handler\Report\CustomerGeographicReportHandler;

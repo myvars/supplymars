@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Purchasing\Application\Service;
 
 use App\Audit\Domain\Repository\StatusChangeLogRepository;

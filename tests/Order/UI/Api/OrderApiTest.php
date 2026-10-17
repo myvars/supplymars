@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Order\UI\Api;
 
 use App\Tests\Shared\Factory\AddressFactory;

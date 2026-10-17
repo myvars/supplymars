@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Customer\UI\Console;
 
 use App\Tests\Shared\Factory\UserFactory;

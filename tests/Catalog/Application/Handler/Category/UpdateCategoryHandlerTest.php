@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Catalog\Application\Handler\Category;
 
 use App\Catalog\Application\Command\Category\UpdateCategory;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Reporting\Application\Handler;
 
 use App\Reporting\Domain\Metric\SalesDuration;
@@ -48,10 +50,10 @@ final readonly class CalculateOrderSalesSummaryHandler
         foreach ($sales as $sale) {
             $orderSalesSummary = OrderSalesSummary::create(
                 $orderSalesType,
-                $sale['dateString'],
-                $sale['orderCount'],
-                $sale['orderValue'],
-                $sale['averageOrderValue']
+                (string) $sale['dateString'],
+                (int) $sale['orderCount'],
+                (string) $sale['orderValue'],
+                (string) $sale['averageOrderValue']
             );
 
             $errors = $this->validator->validate($orderSalesSummary);

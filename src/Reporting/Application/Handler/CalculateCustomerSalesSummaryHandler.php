@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Reporting\Application\Handler;
 
 use App\Customer\Domain\Repository\UserRepository;
@@ -60,8 +62,8 @@ final readonly class CalculateCustomerSalesSummaryHandler
 
         // Calculate revenue metrics
         $revenueData = $this->orderRepository->findRevenueMetrics($startDate, $endDate);
-        $totalRevenue = $revenueData['totalRevenue'] ?? '0.00';
-        $averageAov = $revenueData['averageAov'] ?? '0.00';
+        $totalRevenue = (string) ($revenueData['totalRevenue'] ?? '0.00');
+        $averageAov = (string) ($revenueData['averageAov'] ?? '0.00');
 
         // Calculate CLV (lifetime revenue / total customers)
         $lifetimeRevenue = $this->orderRepository->findLifetimeRevenue();
@@ -130,12 +132,12 @@ final readonly class CalculateCustomerSalesSummaryHandler
         foreach ($geoData as $geo) {
             $summary = CustomerGeographicSummary::create(
                 $customerSalesType,
-                $geo['city'],
+                (string) $geo['city'],
                 $dateString,
                 (int) $geo['customerCount'],
                 (int) $geo['orderCount'],
-                $geo['orderValue'] ?? '0.00',
-                $geo['averageOrderValue'] ?? '0.00',
+                (string) ($geo['orderValue'] ?? '0.00'),
+                (string) ($geo['averageOrderValue'] ?? '0.00'),
             );
 
             $errors = $this->validator->validate($summary);
@@ -173,7 +175,7 @@ final readonly class CalculateCustomerSalesSummaryHandler
         $processed = 0;
 
         foreach ($segmentData as $seg) {
-            $segment = CustomerSegment::tryFrom($seg['segment']);
+            $segment = CustomerSegment::tryFrom((string) $seg['segment']);
             if ($segment === null) {
                 continue;
             }
@@ -184,9 +186,9 @@ final readonly class CalculateCustomerSalesSummaryHandler
                 $dateString,
                 (int) $seg['customerCount'],
                 (int) $seg['orderCount'],
-                $seg['orderValue'] ?? '0.00',
-                $seg['averageOrderValue'] ?? '0.00',
-                $seg['averageItemsPerOrder'] ?? '0.00',
+                (string) ($seg['orderValue'] ?? '0.00'),
+                (string) ($seg['averageOrderValue'] ?? '0.00'),
+                (string) ($seg['averageItemsPerOrder'] ?? '0.00'),
             );
 
             $errors = $this->validator->validate($summary);

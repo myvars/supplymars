@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Tests\Reporting\UI\Http\Chart;
 
 use App\Order\Domain\Model\Order\OrderStatus;
