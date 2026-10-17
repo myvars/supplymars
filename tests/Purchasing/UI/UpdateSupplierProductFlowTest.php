@@ -75,6 +75,7 @@ final class UpdateSupplierProductFlowTest extends WebTestCase
         if (strcmp((string) $newProduct->getId(), (string) $previousProduct->getId()) > 0) {
             [$newProduct, $previousProduct] = [$previousProduct, $newProduct];
         }
+
         $supplierProduct = SupplierProductFactory::createOne(['cost' => '10.00', 'product' => $previousProduct]);
         $nextBest = SupplierProductFactory::createOne(['cost' => '20.00', 'product' => $previousProduct]);
 
