@@ -86,4 +86,24 @@ final class CreateTicketFlowTest extends WebTestCase
 
         TicketFactory::assert()->empty();
     }
+
+    public function testRejectsOverLengthBodyAsFieldError(): void
+    {
+        $pool = PoolFactory::createOne(['isActive' => true]);
+        $customer = UserFactory::createOne();
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/note/ticket/new')
+            ->fillField('ticket[pool]', (string) $pool->getId())
+            ->fillField('ticket[customerId]', (string) $customer->getId())
+            ->fillField('ticket[subject]', 'Damaged product received')
+            ->fillField('ticket[body]', str_repeat('a', 10001))
+            ->click('Create Ticket')
+            ->assertStatus(422)
+            ->assertSeeIn('[data-slot="field-error"]', 'Max 10000 characters')
+            ->assertNotSee('Object(');
+
+        TicketFactory::assert()->empty();
+    }
 }

@@ -98,4 +98,22 @@ final class ReplyToTicketFlowTest extends WebTestCase
         $fresh = TicketFactory::repository()->find($ticket->getId());
         self::assertSame(2, $fresh->getMessageCount());
     }
+
+    public function testRejectsOverLengthReplyAsFieldError(): void
+    {
+        $pool = PoolFactory::createOne(['isActive' => true]);
+        $ticket = TicketFactory::createOne(['pool' => $pool]);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/note/ticket/' . $ticket->getPublicId()->value())
+            ->fillField('reply[body]', str_repeat('a', 10001))
+            ->click('Send Reply')
+            ->assertStatus(422)
+            ->assertSeeIn('[data-slot="field-error"]', 'Max 10000 characters')
+            ->assertNotSee('Object(');
+
+        $fresh = TicketFactory::repository()->find($ticket->getId());
+        self::assertSame(1, $fresh->getMessageCount());
+    }
 }

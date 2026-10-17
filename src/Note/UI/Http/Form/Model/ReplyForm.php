@@ -9,6 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 final class ReplyForm
 {
     #[Assert\NotBlank(message: 'Please enter a message')]
+    #[Assert\Length(max: 10000, maxMessage: 'Max 10000 characters')]
     public ?string $body = null;
 
     public string $visibility = 'PUBLIC';

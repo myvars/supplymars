@@ -31,6 +31,7 @@ class Pool
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Assert\Length(max: 10000, maxMessage: 'Max 10000 characters')]
     private ?string $description = null;
 
     #[ORM\Column]

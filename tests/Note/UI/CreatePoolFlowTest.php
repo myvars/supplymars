@@ -53,4 +53,20 @@ final class CreatePoolFlowTest extends WebTestCase
 
         PoolFactory::assert()->empty();
     }
+
+    public function testRejectsOverLengthDescriptionAsFieldError(): void
+    {
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/note/pool/new')
+            ->fillField('pool[name]', 'Product questions')
+            ->fillField('pool[description]', str_repeat('a', 10001))
+            ->checkField('pool[isActive]')
+            ->click('Create Pool')
+            ->assertStatus(422)
+            ->assertSeeIn('[data-slot="field-error"]', 'Max 10000 characters')
+            ->assertNotSee('Object(');
+
+        PoolFactory::assert()->empty();
+    }
 }
