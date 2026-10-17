@@ -70,8 +70,10 @@ final class BackupDatabaseCommandTest extends KernelTestCase
         self::assertSame(Command::SUCCESS, $this->backUp(backups: $backups), $this->output->fetch());
     }
 
-    public function testFailsWhenTheLocalCopyCannotBeWritten(): void
+    public function testFailsAfterTheUploadAndSkipsRetentionWhenTheLocalCopyCannotBeWritten(): void
     {
+        $this->backups->write('supplymars-old.sql.gz', 'old');
+        touch($this->backupsDir . '/supplymars-old.sql.gz', time() - 31 * 86400);
         $blocker = $this->backupsDir . '-blocker';
         new Filesystem()->dumpFile($blocker, 'a file, not a directory');
 
@@ -79,6 +81,8 @@ final class BackupDatabaseCommandTest extends KernelTestCase
 
         self::assertSame(Command::FAILURE, $status);
         self::assertStringContainsString('Failed to copy backup', $this->output->fetch());
+        self::assertCount(2, $this->backupFiles(), 'The new backup is uploaded and the old one is kept.');
+        self::assertTrue($this->backups->fileExists('supplymars-old.sql.gz'));
     }
 
     public function testDeletesBackupsOlderThanTheRetentionPeriod(): void

@@ -76,7 +76,7 @@ The nginx container's healthcheck calls `/health` (over HTTPS in `compose.yaml`,
 
 It catches every way backups stop: a failed run (which the command logs but Sentry does not see), and a run that never happened (cron container down, wrong crontab, server off at 02:00, every run skipped because a hung one holds the lock).
 
-It is deliberately not one of the `/health` checks. `/health` is the nginx container's healthcheck and the deploy's post-deploy check, and a missed backup must not mark the stack down or fail a deploy. Each call lists the S3 backups, so `prod.conf` gives it the same outside-caller cap as `/health`.
+It is deliberately not one of the `/health` checks. `/health` is the nginx container's healthcheck and the deploy's post-deploy check, and a missed backup must not mark the stack down or fail a deploy. Each call lists the S3 backups, so `prod.conf` gives it the same outside-caller cap as `/health` and a per-caller rate (6 a minute, burst 3); more get 429.
 
 Both stacks use the same bucket, so the playground answers for live's backups. Monitor it on live only.
 
