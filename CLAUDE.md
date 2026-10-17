@@ -106,6 +106,7 @@ These areas have non-obvious design. Read the corresponding ADR in `Docs/adr/` b
 
 - **Error tracking**: `sentry/sentry-symfony`, registered for `prod` only. It reports uncaught exceptions (not errors a command catches and logs) from web requests, console commands and Messenger workers when `SENTRY_DSN` is set, and sends nothing when it is empty. `SENTRY_ENVIRONMENT` (`live` or `playground`) separates the two stacks.
 - **`/health`**: public JSON endpoint, 200 or 503, listing each check as `ok` or `fail`. To check another dependency, add a class implementing `HealthCheckInterface` in `src/Shared/Infrastructure/Health/`; it is picked up automatically.
+- **`/health/backup`**: fails when no backup has landed for 26 hours; watched by the uptime monitor on live. Kept out of `/health` on purpose, because `/health` gates the nginx healthcheck and deploys.
 - See `Docs/13-monitoring.md`.
 
 ### Deployment

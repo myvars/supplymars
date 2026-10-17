@@ -193,12 +193,12 @@ The live cron container runs `app:backup-database` daily at 02:00 UTC (see `dock
 
 - Creates a gzipped mysqldump (`supplymars-YYYY-MM-DD-HHmmss.sql.gz`)
 - Uploads to the S3 backups filesystem (`unicorn-bucket-two/backups/`)
-- Saves a local copy to `/backups/latest.sql.gz` (host: `/home/ubuntu/supplymars-backups/latest.sql.gz`)
+- Saves a local copy to `/backups/latest.sql.gz` (host: `/home/ubuntu/supplymars-backups/latest.sql.gz`), readable by its owner only (`0600`)
 - Deletes S3 backups older than 30 days (default retention)
 
 The local copy is used by the playground reset at 02:15 UTC.
 
-Backup logs appear in `docker compose $LIVE logs cron`.
+Backup logs appear in `docker compose $LIVE logs cron`. A failed run is logged there but does not reach Sentry. What tells you backups have stopped, for any reason, is the uptime monitor on `/health/backup`, which fails once the newest backup on S3 is more than 26 hours old ([13-monitoring.md](13-monitoring.md#backup-check)).
 
 ### 4.2 Manual Backup
 
@@ -259,7 +259,7 @@ The queue is a table in the same database, so the restore brings back the emails
 
 ### 4.5 Verify a Backup
 
-Periodically verify backups are valid (download and check, or test-restore on dev):
+Quick checks that a backup exists. To show that it can be restored, do the rehearsal in 4.6.
 
 ```bash
 # Check file exists and has reasonable size on S3
@@ -271,6 +271,16 @@ ls -lh /home/ubuntu/supplymars-backups/latest.sql.gz
 # Dev: restore and verify
 symfony console app:restore-database --from-s3
 ```
+
+### 4.6 Restore Rehearsal
+
+Once a month, restore last night's backup on your own machine and use the app. A backup is only known to be good once it has been restored.
+
+1. `make up-dev-tools`, then `symfony console app:restore-database --from-s3`. It asks for the production S3 keys (from `../supplymars-secrets/live.env`), downloads the newest backup to `var/backups/` and replaces the dev database with it.
+2. `symfony serve -d`, log in and open the dashboard, an order, a product and a purchase order. The newest orders should be from the previous evening.
+3. Delete the downloaded file from `var/backups/` when done: it is a full copy of production.
+
+If any step fails, treat it as a broken backup and fix it before the next one is needed.
 
 ---
 

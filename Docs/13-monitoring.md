@@ -1,6 +1,6 @@
 # Monitoring
 
-Three things tell you a production stack is in trouble: error tracking, the health endpoint, and an external uptime monitor that calls it.
+Three things tell you a production stack is in trouble: error tracking, the health endpoints, and an external uptime monitor that calls them.
 
 ## Error tracking (Sentry)
 
@@ -70,9 +70,20 @@ Add a class implementing `App\Shared\Infrastructure\Health\HealthCheckInterface`
 
 The nginx container's healthcheck calls `/health` (over HTTPS in `compose.yaml`, over HTTP in `compose.prod.yaml`), so `make up` and the `make up-prod-*` targets wait until the whole stack answers, and `docker compose ps` shows nginx as unhealthy when the database, Redis or the queue is down.
 
+## Backup check
+
+`GET /health/backup` is public and returns the same JSON shape as `/health`, with one check, `backup`. It passes when the newest `.sql.gz` on the backups filesystem (S3 `backups/` in production) was written less than 26 hours ago: the 02:00 run plus a margin for a slow dump. It fails with 503 when the newest backup is older, or when there is none. As with `/health`, the reason goes to the log, not the response.
+
+It catches every way backups stop: a failed run (which the command logs but Sentry does not see), and a run that never happened (cron container down, wrong crontab, server off at 02:00, every run skipped because a hung one holds the lock).
+
+It is deliberately not one of the `/health` checks. `/health` is the nginx container's healthcheck and the deploy's post-deploy check, and a missed backup must not mark the stack down or fail a deploy. Each call lists the S3 backups, so `prod.conf` gives it the same outside-caller cap as `/health`.
+
+Both stacks use the same bucket, so the playground answers for live's backups. Monitor it on live only.
+
 ## Uptime monitoring
 
-Nothing in the code. Point an external uptime monitor at both stacks and alert on any response other than 200:
+Nothing in the code. Point an external uptime monitor (Sentry Uptime) at these and alert on any response other than 200:
 
 - `https://live.supplymars.com/health`
 - `https://supplymars.com/health` (playground)
+- `https://live.supplymars.com/health/backup`: every hour is enough, with a failure tolerance of 2
