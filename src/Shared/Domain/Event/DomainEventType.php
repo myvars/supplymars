@@ -28,4 +28,5 @@ enum DomainEventType: string
     case REVIEW_CREATED = 'review.created';
     case REVIEW_STATUS_CHANGED = 'review.status.changed';
     case REVIEW_RATING_CHANGED = 'review.rating.changed';
+    case REVIEW_DELETED = 'review.deleted';
 }

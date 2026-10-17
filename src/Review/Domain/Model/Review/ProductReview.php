@@ -10,6 +10,7 @@ use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Review\Domain\Model\Review\Event\ReviewRatingWasChangedEvent;
 use App\Review\Domain\Model\Review\Event\ReviewStatusWasChangedEvent;
 use App\Review\Domain\Model\Review\Event\ReviewWasCreatedEvent;
+use App\Review\Domain\Model\Review\Event\ReviewWasDeletedEvent;
 use App\Shared\Domain\Event\DomainEventProviderInterface;
 use App\Shared\Domain\Event\DomainEventProviderTrait;
 use App\Shared\Domain\ValueObject\StatusChange;
@@ -140,6 +141,13 @@ class ProductReview implements DomainEventProviderInterface
     {
         $this->changeStatus(ReviewStatus::PUBLISHED, $moderator);
         $this->publishedAt ??= new \DateTimeImmutable();
+    }
+
+    public function delete(): void
+    {
+        $this->raiseDomainEvent(
+            new ReviewWasDeletedEvent($this->product->getPublicId(), $this->status)
+        );
     }
 
     public function getId(): ?int

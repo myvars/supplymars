@@ -557,6 +557,7 @@ Events are dispatched for every flush, whether it goes through the `Flusher`, a 
 - `ReviewWasCreatedEvent` → Recalculates product review summary
 - `ReviewStatusWasChangedEvent` → Recalculates product review summary
 - `ReviewRatingWasChangedEvent` → Recalculates product review summary
+- `ReviewWasDeletedEvent` → Recalculates product review summary, clears the pending-review badge
 - `ProductImageWasDeletedEvent` → Removes the image file from storage and its cached thumbnails
 
 ### The Queue

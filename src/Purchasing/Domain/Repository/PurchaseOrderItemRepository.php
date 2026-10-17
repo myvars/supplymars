@@ -9,6 +9,7 @@ use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItemId;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItemPublicId;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use App\Purchasing\Domain\Model\Supplier\Supplier;
+use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
 use App\Purchasing\Infrastructure\Persistence\Doctrine\PurchaseOrderItemDoctrineRepository;
 use Pagerfanta\Adapter\AdapterInterface;
 use Symfony\Component\DependencyInjection\Attribute\AsAlias;
@@ -23,6 +24,8 @@ interface PurchaseOrderItemRepository
     public function get(PurchaseOrderItemId $id): ?PurchaseOrderItem;
 
     public function getByPublicId(PurchaseOrderItemPublicId $publicId): ?PurchaseOrderItem;
+
+    public function existsForSupplierProduct(SupplierProduct $supplierProduct): bool;
 
     /** @return PurchaseOrderItem[] */
     public function findPurchaseOrderItemsByStatus(

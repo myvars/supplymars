@@ -9,6 +9,7 @@ use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItemId;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItemPublicId;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use App\Purchasing\Domain\Model\Supplier\Supplier;
+use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
 use App\Purchasing\Domain\Repository\PurchaseOrderItemRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -49,6 +50,11 @@ class PurchaseOrderItemDoctrineRepository extends ServiceEntityRepository implem
     public function getByPublicId(PurchaseOrderItemPublicId $publicId): ?PurchaseOrderItem
     {
         return $this->findOneBy(['publicId' => $publicId->value()]);
+    }
+
+    public function existsForSupplierProduct(SupplierProduct $supplierProduct): bool
+    {
+        return $this->count(['supplierProduct' => $supplierProduct]) > 0;
     }
 
     public function findPurchaseOrderItemsByStatus(
