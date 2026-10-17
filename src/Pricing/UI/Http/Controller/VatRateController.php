@@ -143,6 +143,7 @@ class VatRateController extends AbstractController
                 displayTemplate: 'pricing/vat_rate/_inline_name.html.twig',
                 entity: $vatRate,
                 entityVarName: 'vatRate',
+                property: 'name',
             ),
         );
     }

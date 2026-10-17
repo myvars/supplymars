@@ -51,4 +51,35 @@ class UpdateSubcategoryFlowTest extends WebTestCase
             ->assertOn('/subcategory/' . $publicId . '/edit')
             ->assertSee('Please enter a subcategory name');
     }
+
+    public function testInlineEditRejectsOverLengthName(): void
+    {
+        $entity = SubcategoryFactory::createOne(['name' => 'Old Value']);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/subcategory/' . $entity->getPublicId()->value() . '/inline/name?edit=1')
+            ->fillField('inline_field[value]', str_repeat('a', 256))
+            ->click('Save (Enter)')
+            ->assertStatus(422)
+            ->assertSeeIn('form', 'Max 255 characters') // the field's error, rendered inside the form
+            ->assertSeeElement('input[name="inline_field[value]"]');
+
+        self::assertSame('Old Value', $entity->getName());
+    }
+
+    public function testInlineEditRejectsBlankName(): void
+    {
+        $entity = SubcategoryFactory::createOne(['name' => 'Old Value']);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/subcategory/' . $entity->getPublicId()->value() . '/inline/name?edit=1')
+            ->fillField('inline_field[value]', '')
+            ->click('Save (Enter)')
+            ->assertStatus(422)
+            ->assertSeeIn('form', 'Please enter a Subcategory name');
+
+        self::assertSame('Old Value', $entity->getName());
+    }
 }

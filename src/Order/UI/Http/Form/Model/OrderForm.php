@@ -18,5 +18,6 @@ final class OrderForm
     #[Assert\NotNull(message: 'Please choose a shipping method')]
     public ?ShippingMethod $shippingMethod = null;
 
+    #[Assert\Length(max: 255, maxMessage: 'Max 255 characters')]
     public ?string $customerOrderRef = null;
 }

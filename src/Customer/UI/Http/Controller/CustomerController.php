@@ -129,6 +129,7 @@ class CustomerController extends AbstractController
                 displayTemplate: 'customer/_inline_fullname.html.twig',
                 entity: $customer,
                 entityVarName: 'customer',
+                property: 'fullName',
             ),
         );
     }

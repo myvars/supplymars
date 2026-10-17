@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Purchasing\UI;
 
+use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
@@ -35,5 +36,20 @@ class CreateSupplierFlowTest extends WebTestCase
             ->click('Create Supplier')
             ->assertOn('/supplier/new')
             ->assertSee('Please enter a supplier name');
+    }
+
+    public function testRejectsOverLengthNameAsFieldError(): void
+    {
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/supplier/new')
+            ->fillField('supplier[name]', str_repeat('a', 256))
+            ->fillField('supplier[isActive]', '1')
+            ->click('Create Supplier')
+            ->assertStatus(422)
+            ->assertSeeIn('[data-slot="field-error"]', 'Max 255 characters')
+            ->assertNotSee('Object(');
+
+        SupplierFactory::assert()->empty();
     }
 }

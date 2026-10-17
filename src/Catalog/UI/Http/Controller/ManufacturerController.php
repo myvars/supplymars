@@ -142,6 +142,7 @@ class ManufacturerController extends AbstractController
                 frameId: 'inline-edit-manufacturer-' . $manufacturer->getPublicId() . '-name',
                 displayTemplate: 'catalog/manufacturer/_inline_name.html.twig',
                 entity: $manufacturer,
+                property: 'name',
             ),
         );
     }

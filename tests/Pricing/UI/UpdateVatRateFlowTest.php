@@ -43,4 +43,35 @@ final class UpdateVatRateFlowTest extends WebTestCase
             ->assertOn('/vat-rate/' . $publicId . '/edit')
             ->assertSee('Please enter a VAT rate name');
     }
+
+    public function testInlineEditRejectsOverLengthName(): void
+    {
+        $entity = VatRateFactory::createOne(['name' => 'Old Value']);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/vat-rate/' . $entity->getPublicId()->value() . '/inline/name?edit=1')
+            ->fillField('inline_field[value]', str_repeat('a', 256))
+            ->click('Save (Enter)')
+            ->assertStatus(422)
+            ->assertSeeIn('form', 'Max 255 characters') // the field's error, rendered inside the form
+            ->assertSeeElement('input[name="inline_field[value]"]');
+
+        self::assertSame('Old Value', $entity->getName());
+    }
+
+    public function testInlineEditRejectsBlankName(): void
+    {
+        $entity = VatRateFactory::createOne(['name' => 'Old Value']);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/vat-rate/' . $entity->getPublicId()->value() . '/inline/name?edit=1')
+            ->fillField('inline_field[value]', '')
+            ->click('Save (Enter)')
+            ->assertStatus(422)
+            ->assertSeeIn('form', 'Please enter a VAT rate name');
+
+        self::assertSame('Old Value', $entity->getName());
+    }
 }

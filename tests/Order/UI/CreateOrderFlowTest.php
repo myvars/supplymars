@@ -6,6 +6,7 @@ namespace App\Tests\Order\UI;
 
 use App\Order\Domain\Model\Order\ShippingMethod;
 use App\Tests\Shared\Factory\AddressFactory;
+use App\Tests\Shared\Factory\CustomerOrderFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Factory\VatRateFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -72,5 +73,29 @@ class CreateOrderFlowTest extends WebTestCase
             ->assertOn('/order/new')
             ->assertSee('Please enter a valid customer Id')
             ->assertSee('Customer with Id "-1" not found');
+    }
+
+    public function testRejectsOverLengthCustomerOrderRefAsFieldError(): void
+    {
+        $customer = UserFactory::createOne();
+        AddressFactory::createOne([
+            'customer' => $customer,
+            'isDefaultBillingAddress' => true,
+            'isDefaultShippingAddress' => true,
+        ]);
+        VatRateFactory::new()->withStandardRate()->create();
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asSuperAdmin()->create())
+            ->get('/order/new')
+            ->fillField('order[customerId]', (string) $customer->getId())
+            ->fillField('order[shippingMethod]', ShippingMethod::THREE_DAY->value)
+            ->fillField('order[customerOrderRef]', str_repeat('a', 256))
+            ->click('Create Order')
+            ->assertStatus(422)
+            ->assertSeeIn('[data-slot="field-error"]', 'Max 255 characters')
+            ->assertNotSee('Object(');
+
+        CustomerOrderFactory::assert()->empty();
     }
 }

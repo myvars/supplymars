@@ -48,4 +48,35 @@ class UpdateProductFlowTest extends WebTestCase
             ->assertSee('Please enter a product name')
             ->assertSee('Please enter a manufacturer part number');
     }
+
+    public function testInlineEditRejectsOverLengthName(): void
+    {
+        $entity = ProductFactory::createOne(['name' => 'Old Value']);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/product/' . $entity->getPublicId()->value() . '/inline/name?edit=1')
+            ->fillField('inline_field[value]', str_repeat('a', 256))
+            ->click('Save (Enter)')
+            ->assertStatus(422)
+            ->assertSeeIn('form', 'Max 255 characters') // the field's error, rendered inside the form
+            ->assertSeeElement('input[name="inline_field[value]"]');
+
+        self::assertSame('Old Value', $entity->getName());
+    }
+
+    public function testInlineEditRejectsBlankName(): void
+    {
+        $entity = ProductFactory::createOne(['name' => 'Old Value']);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/product/' . $entity->getPublicId()->value() . '/inline/name?edit=1')
+            ->fillField('inline_field[value]', '')
+            ->click('Save (Enter)')
+            ->assertStatus(422)
+            ->assertSeeIn('form', 'Please enter a product name');
+
+        self::assertSame('Old Value', $entity->getName());
+    }
 }

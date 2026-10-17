@@ -513,39 +513,38 @@ Nginx catches high-volume automated attacks. Symfony catches targeted brute-forc
 
 ## Input Validation
 
-### Form Validation
-
-Symfony forms validate input using constraints:
-
-```php
-class CustomerForm
-{
-    #[Assert\NotBlank]
-    #[Assert\Email]
-    public ?string $email = null;
-
-    #[Assert\NotBlank]
-    #[Assert\Length(max: 50)]
-    public ?string $fullName = null;
-}
-```
-
 ### Domain Validation
 
-Entity constraints enforced at domain level:
+The entity's constraints are the source of truth. Every user-entered `VARCHAR` column has a `Length` rule matching
+the column, so an over-length value is refused before it reaches the database. Create and update handlers validate
+the entity before they flush and return `Result::fail()` when it is invalid, so nothing is saved:
 
 ```php
-// src/Catalog/Domain/Model/Product/Product.php
+// src/Purchasing/Domain/Model/Supplier/Supplier.php
 
-#[Assert\NotBlank]
-private string $name;
-
-#[Assert\Range(min: 0, max: 10000)]
-private int $stock;
-
-#[Assert\PositiveOrZero]
-private string $cost;
+#[ORM\Column(length: 255)]
+#[Assert\NotBlank(message: 'Please enter a supplier name')]
+#[Assert\Length(max: 255, maxMessage: 'Max 255 characters')]
+private ?string $name = null;
 ```
+
+### Form Validation
+
+A form validates its form model, not the entity. A rule the user can break from the form (usually `NotBlank`
+and `Length`) is repeated on the form model, so the error appears next to the field. Without it, the handler's
+check still stops the save, but the error comes back as a flash message:
+
+```php
+// src/Purchasing/UI/Http/Form/Model/SupplierForm.php
+
+#[Assert\NotBlank(message: 'Please enter a supplier name')]
+#[Assert\Length(max: 255, maxMessage: 'Max 255 characters')]
+public ?string $name = null;
+```
+
+Repeat only those rules. An API payload does the same, for the same reason (e.g. `customerOrderRef` on
+`CreateOrderPayload`). An inline edit runs no handler, so it names the entity property it saves to and the flow
+checks the value against that property's rules (see `Docs/patterns/InlineEdit/README.md`).
 
 ### File Uploads
 

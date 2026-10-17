@@ -16,6 +16,7 @@ final readonly class CreateOrderPayload
         #[Assert\Choice(choices: ['THREE_DAY', 'NEXT_DAY'], message: 'Invalid shipping method.')]
         public string $shippingMethod,
 
+        #[Assert\Length(max: 255, maxMessage: 'Max 255 characters')]
         public ?string $customerOrderRef = null,
     ) {
     }

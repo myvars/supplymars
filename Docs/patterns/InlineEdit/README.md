@@ -57,13 +57,17 @@ public function inlineName(
             frameId: 'inline-edit-manufacturer-' . $manufacturer->getPublicId() . '-name',
             displayTemplate: 'catalog/manufacturer/_inline_name.html.twig',
             entity: $manufacturer,
+            property: 'name',
         ),
     );
 }
 ```
 
-The flow does not persist anything: the `onSave` callback applies the value and flushes. Validation comes only
-from `formOptions['constraints']`; nothing on the entity is validated automatically.
+The flow does not persist anything: the `onSave` callback applies the value and flushes. No handler runs, so
+`property` names the entity property the value is saved to: the flow checks the value against that property's own
+rules (`NotBlank`, `Length`, …) before `onSave`, and shows a violation next to the field without saving. The entity
+stays the one place the rules are declared; do not copy them into `formOptions`. A mistyped property throws on the
+first request rather than silently skipping the check.
 
 ### 3. Include in Parent Template
 
@@ -138,7 +142,7 @@ $flow->handleField(
 - The flow does not flush; `onSave` owns persistence
 - The flash appears unless `onSave` returns `false`. Return `$flusher->flush()` (`App\Shared\Application\FlusherInterface`, true only when Doctrine had changes) to suppress it for no-op saves
 - Exceptions from `onSave` are caught and displayed as form errors
-- Validation comes only from `formOptions['constraints']`; the entity is not validated automatically
+- With `property` set on the context, the value is checked against that entity property's rules before `onSave` runs (Default group, property rules only, the value as submitted)
 
 ### `InlineEditContext::create()`
 
@@ -151,6 +155,7 @@ $flow->handleField(
 | `entityVarName` | string\|null | Variable name in template (auto-derived) |
 | `displayTemplateVars` | array | Additional template variables |
 | `successMessage` | string\|null | Flash message (null to disable) |
+| `property` | string\|null | Entity property the value is saved to; its validation rules are checked before `onSave` |
 
 ### `<twig:InlineEdit>` Component
 
@@ -165,15 +170,17 @@ $flow->handleField(
 
 ## Form Options
 
-The `formOptions` parameter is optional. Without `constraints`, the value is not validated
-(exceptions from `onSave` are still caught and displayed as form errors).
+The `formOptions` parameter is optional. `constraints` validates the value in the form, before the entity check
+and `onSave`. Use it only for a rule that does not belong on the entity; a rule the entity already declares is
+checked through `property` instead, so it is not copied. Exceptions from `onSave` are still caught and displayed
+as form errors.
 
 ```php
 'formOptions' => [
-    // Validation constraints for the value
+    // Rules for this edit only, not the entity's (those come from `property`),
+    // e.g. a stricter format this screen asks for
     'constraints' => [
-        new Assert\Email(),
-        new Assert\Regex('/^[A-Z]/'),
+        new Assert\Regex('/^[A-Z]/', message: 'Start with a capital letter'),
     ],
 
     // Field type (default: TextType). Field-specific options such as `choices`

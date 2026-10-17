@@ -142,6 +142,7 @@ class SupplierController extends AbstractController
                 frameId: 'inline-edit-supplier-' . $supplier->getPublicId() . '-name',
                 displayTemplate: 'purchasing/supplier/_inline_name.html.twig',
                 entity: $supplier,
+                property: 'name',
             ),
         );
     }

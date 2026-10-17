@@ -27,6 +27,7 @@ class Pool
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Please enter a pool name')]
+    #[Assert\Length(max: 255, maxMessage: 'Max 255 characters')]
     private ?string $name = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]

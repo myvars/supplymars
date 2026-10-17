@@ -118,7 +118,7 @@ These areas have non-obvious design. Read the corresponding ADR in `Docs/adr/` b
 ### FormFlow (Controller Pattern)
 
 The flow coordinators live in the external **`myvars/form-flow`** package (namespace `MyVars\FormFlow\`,
-required from Packagist as `^1.3.1`, enabled as `FormFlowBundle`) — **not** in `src/`; do not re-add an
+required from Packagist as `^1.4`, enabled as `FormFlowBundle`) — **not** in `src/`; do not re-add an
 in-app `FormFlow` directory. The app provides the **adapters** — `Result`, `RedirectTarget`,
 `FlashMessenger` and `Application\Search\SearchCriteriaInterface` implement/extend the package's
 `Contract\` ports (autowired; `FlasherInterface` aliased in `services.yaml`). The package ships
@@ -131,7 +131,7 @@ are thin orchestrators using 5 flow types:
 | `ActionFlow` | State transitions (approve, close, etc.): POST-only, CSRF-checked via `->csrf()` |
 | `ConfirmFlow` | Confirm-then-execute (delete, cancel, rewind, remove…) with per-action CSRF |
 | `SearchFlow` | Paginated index pages (takes a Pagerfanta adapter) |
-| `InlineEditFlow` | Inline field editing via Turbo Frames (the `onSave` callback owns persistence + flush) |
+| `InlineEditFlow` | Inline field editing via Turbo Frames (the `onSave` callback owns persistence + flush; `property:` on the context checks the entity's rules first) |
 
 - **Mappers** are `__invoke` callables: form DTO → command. Located in `{Context}/UI/Http/Form/Mapper/`, named `{Action}{Entity}Mapper`.
 - **Filter mappers**: `SearchCriteria` → `FilterCommand` (readonly DTO implementing `SearchCriteriaInterface`). Handler builds redirect via `FilterParamBuilder`.

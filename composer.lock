@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ba5c02737a392da2c81335291cf60dc1",
+    "content-hash": "f3c224a0c865f7ac78b947b0865893af",
     "packages": [
         {
             "name": "async-aws/core",
@@ -3143,16 +3143,16 @@
         },
         {
             "name": "myvars/form-flow",
-            "version": "v1.3.1",
+            "version": "v1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myvars/form-flow.git",
-                "reference": "6dbe8d00a674ede953f2f5f3c6888d3807f87d3f"
+                "reference": "70fedbfd0b741bb8b7d35a8cf3b3d0fcea4f3f0f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myvars/form-flow/zipball/6dbe8d00a674ede953f2f5f3c6888d3807f87d3f",
-                "reference": "6dbe8d00a674ede953f2f5f3c6888d3807f87d3f",
+                "url": "https://api.github.com/repos/myvars/form-flow/zipball/70fedbfd0b741bb8b7d35a8cf3b3d0fcea4f3f0f",
+                "reference": "70fedbfd0b741bb8b7d35a8cf3b3d0fcea4f3f0f",
                 "shasum": ""
             },
             "require": {
@@ -3174,12 +3174,16 @@
                 "friendsofphp/php-cs-fixer": "^3.95",
                 "phpstan/phpstan": "^2.2",
                 "phpstan/phpstan-symfony": "^2.0",
-                "phpunit/phpunit": "^13.1"
+                "phpunit/phpunit": "^13.1",
+                "symfony/validator": "^8.1"
+            },
+            "suggest": {
+                "symfony/validator": "Checks an inline edit against the entity property's rules (InlineEditContext property)"
             },
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "1.3.x-dev"
+                    "dev-main": "1.4.x-dev"
                 }
             },
             "autoload": {
@@ -3209,9 +3213,9 @@
             ],
             "support": {
                 "issues": "https://github.com/myvars/form-flow/issues",
-                "source": "https://github.com/myvars/form-flow/tree/v1.3.1"
+                "source": "https://github.com/myvars/form-flow/tree/v1.4.0"
             },
-            "time": "2026-10-16T16:25:40+00:00"
+            "time": "2026-10-17T15:22:05+00:00"
         },
         {
             "name": "nelmio/api-doc-bundle",
