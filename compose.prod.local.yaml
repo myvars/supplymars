@@ -46,25 +46,14 @@ services:
       - "127.0.0.1:8000:80"   # Override to fixed port for local testing
 
 
-  # --- PhpMyAdmin (Prod local Tool) ---
+  # --- PhpMyAdmin and Mailpit (Prod local Tools): the development definitions ---
+  # The --env-file of make up-prod-local replaces .env, so their ports are the defaults (8080, 1025, 8025).
   phpmyadmin:
-    image: phpmyadmin
-    depends_on:
-      database:
-        condition: service_healthy
-    ports:
-      - "8080:80"   # Access at http://localhost:8080
-    environment:
-      PMA_HOST: database
-    restart: unless-stopped
+    extends:
+      file: compose.override.yaml
+      service: phpmyadmin
 
-
-  # --- Mailpit (Prod local SMTP capture) ---
   mailer:
-    image: axllent/mailpit
-    ports:
-      - "1025:1025"   # SMTP for app to deliver to Mailpit
-      - "8025:8025"   # Web UI for inspecting mails (http://localhost:8025)
-    environment:
-      MP_SMTP_AUTH_ACCEPT_ANY: 1
-      MP_SMTP_AUTH_ALLOW_INSECURE: 1
+    extends:
+      file: compose.override.yaml
+      service: mailer
