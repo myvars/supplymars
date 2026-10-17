@@ -32,9 +32,9 @@ final readonly class CalculateOrderSalesHandler
         foreach ($sales as $sale) {
             $orderSales = OrderSales::create(
                 $date,
-                $sale['orderCount'],
-                $sale['orderValue'],
-                $sale['averageOrderValue']
+                (int) $sale['orderCount'],
+                (string) $sale['orderValue'],
+                (string) $sale['averageOrderValue']
             );
 
             $errors = $this->validator->validate($orderSales);

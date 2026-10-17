@@ -64,11 +64,11 @@ final readonly class CalculateProductSalesSummaryHandler
         foreach ($sales as $sale) {
             $productSalesSummary = ProductSalesSummary::create(
                 $productSalesType,
-                $sale['salesId'],
-                $sale['dateString'],
-                $sale['salesQty'],
-                $sale['salesCost'],
-                $sale['salesValue'],
+                (int) $sale['salesId'],
+                (string) $sale['dateString'],
+                (int) $sale['salesQty'],
+                (string) $sale['salesCost'],
+                (string) $sale['salesValue'],
             );
 
             $errors = $this->validator->validate($productSalesSummary);

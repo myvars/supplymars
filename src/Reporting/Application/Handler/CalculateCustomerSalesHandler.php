@@ -48,7 +48,7 @@ final readonly class CalculateCustomerSalesHandler
                 (int) $sale['customerId'],
                 $date,
                 (int) $sale['orderCount'],
-                $sale['orderValue'] ?? '0.00',
+                (string) ($sale['orderValue'] ?? '0.00'),
                 (int) ($sale['itemCount'] ?? 0),
             );
 

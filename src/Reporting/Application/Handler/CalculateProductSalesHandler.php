@@ -45,9 +45,9 @@ final readonly class CalculateProductSalesHandler
                     $product,
                     $supplier,
                     $date,
-                    $sale['salesQty'],
-                    $sale['salesCost'],
-                    $sale['salesValue']
+                    (int) $sale['salesQty'],
+                    (string) $sale['salesCost'],
+                    (string) $sale['salesValue']
                 );
 
                 $errors = $this->validator->validate($productSales);

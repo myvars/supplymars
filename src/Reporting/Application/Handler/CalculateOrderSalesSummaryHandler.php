@@ -50,10 +50,10 @@ final readonly class CalculateOrderSalesSummaryHandler
         foreach ($sales as $sale) {
             $orderSalesSummary = OrderSalesSummary::create(
                 $orderSalesType,
-                $sale['dateString'],
-                $sale['orderCount'],
-                $sale['orderValue'],
-                $sale['averageOrderValue']
+                (string) $sale['dateString'],
+                (int) $sale['orderCount'],
+                (string) $sale['orderValue'],
+                (string) $sale['averageOrderValue']
             );
 
             $errors = $this->validator->validate($orderSalesSummary);
