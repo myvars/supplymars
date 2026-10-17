@@ -71,7 +71,7 @@ security:
         - { path: ^/$, roles: PUBLIC_ACCESS }
         - { path: ^/(about|contact|privacy|terms)$, roles: PUBLIC_ACCESS }
         - { path: ^/help, roles: PUBLIC_ACCESS }
-        - { path: ^/health$, roles: PUBLIC_ACCESS }
+        - { path: ^/health(/backup)?$, roles: PUBLIC_ACCESS }
         - { path: ^/, roles: ROLE_ADMIN }
 
 when@test:

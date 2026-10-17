@@ -684,13 +684,13 @@ symfony console app:backup-database --retention-days=60
 
 **Side Effects:**
 - Creates a gzipped mysqldump (`supplymars-YYYY-MM-DD-HHmmss.sql.gz`)
-- Uploads to the configured Flysystem backups filesystem
-- Optionally copies the gzipped file to a local path (`--local-copy`), written to `<path>.partial` and renamed into place
+- Uploads to the configured Flysystem backups filesystem, streamed from disk, so the dump is never held in memory
+- Optionally copies the gzipped file to a local path (`--local-copy`), written to `<path>.partial`, made owner-only (`0600`, it is a full dump) and renamed into place. If the copy fails, the run fails after the upload and skips retention
 - Deletes backups older than the retention period
 
 **Locking:** only one run at a time, through `symfony/lock` (`LockableTrait`). A run that starts while another holds the lock prints a warning and exits with a failure (exit code 1) without dumping anything. See [11-runbook.md](11-runbook.md#42-manual-backup).
 
-**Cron:** Runs daily at 02:00 UTC on the live stack (see `docker/php/cron/live-crontab`).
+**Cron:** Runs daily at 02:00 UTC on the live stack (see `docker/php/cron/live-crontab`). `/health/backup` reports when no backup has landed for 26 hours ([13-monitoring.md](13-monitoring.md#backup-check)).
 
 ---
 

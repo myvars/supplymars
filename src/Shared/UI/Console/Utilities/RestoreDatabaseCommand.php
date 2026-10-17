@@ -176,7 +176,38 @@ final readonly class RestoreDatabaseCommand
                 mkdir($this->backupsDir, 0o755, true);
             }
 
-            file_put_contents($localPath, $s3Fs->read($latest));
+            // Streamed, so a backup larger than the memory limit still downloads. A dropped connection
+            // looks like the end of the stream, so the size is checked: a truncated dump is never restored.
+            $source = null;
+            $target = null;
+            try {
+                $source = $s3Fs->readStream($latest);
+                $target = fopen($localPath, 'w');
+                if ($target === false) {
+                    throw new \RuntimeException('Cannot write ' . $localPath);
+                }
+
+                if (stream_copy_to_stream($source, $target) !== $s3Fs->fileSize($latest)) {
+                    throw new \RuntimeException('Download incomplete: ' . $latest);
+                }
+
+                // Owner-only: it is a full copy of production
+                chmod($localPath, 0o600);
+            } catch (\Throwable $throwable) {
+                if (file_exists($localPath)) {
+                    unlink($localPath);
+                }
+
+                throw $throwable;
+            } finally {
+                if (is_resource($source)) {
+                    fclose($source);
+                }
+
+                if (is_resource($target)) {
+                    fclose($target);
+                }
+            }
 
             $io->writeln('  Download complete.');
 
