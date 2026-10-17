@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e79064014bd009d72101f06647daa22e",
+    "content-hash": "3288f7571a6cff877113cd4e65285cea",
     "packages": [
         {
             "name": "async-aws/core",
@@ -3143,16 +3143,16 @@
         },
         {
             "name": "myvars/form-flow",
-            "version": "v1.3.0",
+            "version": "v1.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myvars/form-flow.git",
-                "reference": "c039cf9454ee4870baead705380a5b367a734fb0"
+                "reference": "6dbe8d00a674ede953f2f5f3c6888d3807f87d3f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myvars/form-flow/zipball/c039cf9454ee4870baead705380a5b367a734fb0",
-                "reference": "c039cf9454ee4870baead705380a5b367a734fb0",
+                "url": "https://api.github.com/repos/myvars/form-flow/zipball/6dbe8d00a674ede953f2f5f3c6888d3807f87d3f",
+                "reference": "6dbe8d00a674ede953f2f5f3c6888d3807f87d3f",
                 "shasum": ""
             },
             "require": {
@@ -3209,9 +3209,9 @@
             ],
             "support": {
                 "issues": "https://github.com/myvars/form-flow/issues",
-                "source": "https://github.com/myvars/form-flow/tree/v1.3.0"
+                "source": "https://github.com/myvars/form-flow/tree/v1.3.1"
             },
-            "time": "2026-10-13T11:07:25+00:00"
+            "time": "2026-10-16T16:25:40+00:00"
         },
         {
             "name": "nelmio/api-doc-bundle",
