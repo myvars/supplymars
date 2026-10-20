@@ -90,12 +90,14 @@ RUN set -eux; \
 USER www-data
 
 # Build assets, compile cache, and warm the Symfony container (generates preload file)
+# The Tailwind binary (about 105 MB) is deleted after the build; the built CSS stays.
 RUN set -eux; \
     php bin/console importmap:install --no-interaction && \
     php bin/console tailwind:build --minify && \
     php bin/console asset-map:compile --env=prod --no-debug && \
     php bin/console cache:warmup --env=prod --no-debug && \
-    sed -i '/Preloader::preload/d' var/cache/prod/App_KernelProdContainer.preload.php;
+    sed -i '/Preloader::preload/d' var/cache/prod/App_KernelProdContainer.preload.php && \
+    rm -rf var/tailwind/v*;
 
 
 # ------------ Php Production Stage ------------
