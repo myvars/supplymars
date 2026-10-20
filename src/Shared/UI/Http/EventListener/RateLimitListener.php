@@ -42,9 +42,11 @@ final readonly class RateLimitListener
 
         $request = $event->getRequest();
         $clientIp = $request->getClientIp() ?? '';
+        // Decoded, as the router matches it: /log%69n is /login and must share its count
+        $path = rawurldecode($request->getPathInfo());
 
         foreach ($this->rules as $rule) {
-            if (preg_match('{' . $rule['path'] . '}', $request->getPathInfo()) !== 1
+            if (preg_match('{' . $rule['path'] . '}', $path) !== 1
                 || (isset($rule['methods']) && !in_array($request->getMethod(), $rule['methods'], true))
                 || (($rule['exempt_loopback'] ?? false) && in_array($clientIp, self::LOOPBACK, true))) {
                 continue;

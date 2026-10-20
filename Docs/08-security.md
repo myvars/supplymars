@@ -538,7 +538,7 @@ app.rate_limits:
 
 - Over the limit, the answer is `429 Too Many Requests` with `Retry-After`, so a rate limit is not mistaken for an outage.
 - The form rule counts only POSTs, so loading a form, a Turbo prefetch of it, or the page a submit redirects to uses none of the allowance. When every request counted, Turbo's hover prefetch and the form load used up the allowance, so a submit within half a minute was refused. The burst of 3 lets a submit and two resubmissions after validation errors through at once.
-- Every `/login` request counts: a failed login is a POST and the redirect back to the form, so about four failed attempts a minute reach `login_throttling`, which then counts failures per IP and username.
+- Every `/login` request counts: a failed login is a POST and the redirect back to the form, so at most five failed attempts a minute reach `login_throttling`, which then counts failures per IP and username.
 - Sign-up has a second limit of its own: `RegistrationController` consumes the `registration` limiter (5 an hour per IP, defined in the same file) for each submitted form, and answers with a flash message rather than a 429.
 - The counts are in the app cache (Redis). Tests use an in-memory pool that keeps its counts between the requests of one test (`config/packages/cache.yaml`); `tests/Shared/UI/Http/RateLimitTest.php` checks each rule.
 - **Adding a limit:** define a limiter under `framework.rate_limiter`, and add a rule that names it to `app.rate_limits`. A rule's `path` is a regular expression, as in `access_control`.

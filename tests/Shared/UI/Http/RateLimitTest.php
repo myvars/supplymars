@@ -103,6 +103,27 @@ class RateLimitTest extends WebTestCase
         self::assertNotSame(429, $browser->client()->getResponse()->getStatusCode());
     }
 
+    public function testAnEncodedPathCountsAsThePathItRoutesTo(): void
+    {
+        $browser = $this->browser()->disableReboot();
+        $browser->client()->followRedirects(false);
+        $this->from($browser, '81.2.69.190');
+
+        // The router decodes the path, so /log%69n is the login page and shares its count
+        for ($i = 1; $i <= 10; ++$i) {
+            $browser->get('/log%69n')->assertSuccessful();
+        }
+
+        $browser->get('/login')->assertStatus(429);
+        $browser->get('/log%69n')->assertStatus(429);
+
+        for ($i = 1; $i <= 3; ++$i) {
+            $browser->post('/regist%65r');
+        }
+
+        $browser->post('/regist%65r')->assertStatus(429);
+    }
+
     private function from(KernelBrowser $browser, string $ip): void
     {
         $browser->client()->setServerParameter('REMOTE_ADDR', $ip);

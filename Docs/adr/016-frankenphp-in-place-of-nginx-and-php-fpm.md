@@ -47,6 +47,10 @@ The skeleton made this change first (myvars/skeleton#83, its ADR 015) and found,
 - A POST over 4 MiB reaches the app with no body, CSRF token included, so the product image upload answers 403 where nginx answered 413. Neither sets a flash, so in both cases the page refreshes without saying why. Dropzone stops a single file over 2 MB in the browser; only two files near the limit, sent together, get there.
 - `make up` needs the browser to trust Caddy's local certificate authority once per machine (`Docs/02-setup-local.md`), in place of mkcert.
 - FrankenPHP starts two PHP threads per CPU by default, in each stack.
+- Only `/assets/` files get a year's cache. nginx also cached other static files under `public/` (the favicon, images) by extension; they are now revalidated, which costs little.
+- `TRUSTED_PROXIES=private_ranges` trusts anything on Docker's network and loopback. That is safe because the host Caddy replaces any `X-Forwarded-For` a visitor sends; if it is ever told to trust upstream proxies, a visitor could claim `127.0.0.1` and skip the `/health` limit.
+- The production binary binds port 80 as `www-data` through a file capability set in the image. A Docker daemon that sets `no-new-privileges` by default would stop that.
+- The rate-limit rules match the decoded path, as the router does, so an encoded path (`/log%69n`) counts as the route it reaches.
 
 ## Alternatives Considered
 

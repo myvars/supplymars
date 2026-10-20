@@ -55,6 +55,10 @@ class TrustedProxyTest extends WebTestCase
         $browser = $this->browser();
         $browser->client()->followRedirects(false);
         $this->viaProxy($browser, '81.2.69.170');
+        // Only the client IP and the scheme are trusted: a forwarded host must not change generated links
+        // (reset password emails would otherwise point wherever the request said)
+        $browser->client()->setServerParameter('HTTP_X_FORWARDED_HOST', 'evil.example');
+        $browser->client()->setServerParameter('HTTP_X_FORWARDED_PORT', '8443');
 
         $browser
             ->get('/dashboard/')
