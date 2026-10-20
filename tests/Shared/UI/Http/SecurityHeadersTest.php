@@ -40,6 +40,16 @@ class SecurityHeadersTest extends WebTestCase
         $this->assertSecurityHeaders($browser);
     }
 
+    public function testApiDocLoadsNothingFromACdn(): void
+    {
+        // The policy allows no CDN, so Swagger UI's files must be inlined (assets_mode: offline)
+        $this->browser()
+            ->get('/api/doc')
+            ->assertSuccessful()
+            ->assertContains('SwaggerUIBundle')
+            ->assertNotContains('cdn.jsdelivr.net');
+    }
+
     private function assertSecurityHeaders(KernelBrowser $browser): void
     {
         $browser

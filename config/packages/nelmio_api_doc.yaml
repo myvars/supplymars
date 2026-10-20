@@ -16,3 +16,8 @@ when@dev:
         areas:
             path_patterns:
                 - '^/api/'
+
+# Swagger UI's files are inlined into /api/doc, not loaded from a CDN the Content Security Policy blocks
+nelmio_api_doc:
+    html_config:
+        assets_mode: offline

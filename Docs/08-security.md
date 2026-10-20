@@ -461,6 +461,8 @@ csp:
 - **`https://challenges.cloudflare.com`** in `script-src`, `connect-src` and `frame-src`: the Turnstile widget. `turnstile_controller.js` loads its script from there, and the widget runs in an iframe that calls back to it.
 - **The S3 bucket host in `img-src`**: production stores product images and their thumbnails in S3. If the bucket or region changes, change the host here. Development stores them in `public/`, so the host does nothing there.
 
+- **No CDN.** `/api/doc` inlines Swagger UI's files (`html_config.assets_mode: offline` in `config/packages/nelmio_api_doc.yaml`) rather than loading them from jsDelivr, and `templates/bundles/NelmioApiDocBundle/SwaggerUi/index.html.twig` drops the bundle's logo, which comes from the CDN in every mode.
+
 The bundle leaves out a directive whose value equals `default-src`, so `font-src` does not appear in the header. Fonts still fall back to `default-src 'self'`.
 
 `compat_headers: false` stops the bundle sending the old `X-Content-Security-Policy` header as well.
