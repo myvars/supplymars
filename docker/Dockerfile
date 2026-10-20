@@ -77,9 +77,9 @@ RUN composer validate --no-check-all --no-check-publish && \
 # Now copy everything else
 COPY --link . /app
 
-# Clean up dev/test files, set prod php.ini, install PHP dependencies, prepare directories for cache and logs.
+# Remove docker/ (only the Dockerfile reads it), install PHP dependencies, prepare directories for cache and logs.
 RUN set -eux; \
-    rm -Rf docker/ tests/ Docs/ && \
+    rm -Rf docker/ && \
     mkdir -p var/cache/prod var/log public/assets assets/vendor && \
     chown -R www-data:www-data var public/assets assets /usr/local/etc/php/conf.d && \
     chmod -R 775 var public/assets assets && \
@@ -90,12 +90,16 @@ RUN set -eux; \
 USER www-data
 
 # Build assets, compile cache, and warm the Symfony container (generates preload file)
+# importmap:install comes first: the Tailwind build imports CSS from assets/vendor/. The Tailwind
+# binary (about 105 MB) is deleted after the build; the built CSS stays.
+# PHP 8.5 workaround: see the preload comment in docker/php/docker-entrypoint.sh.
 RUN set -eux; \
     php bin/console importmap:install --no-interaction && \
     php bin/console tailwind:build --minify && \
     php bin/console asset-map:compile --env=prod --no-debug && \
     php bin/console cache:warmup --env=prod --no-debug && \
-    sed -i '/Preloader::preload/d' var/cache/prod/App_KernelProdContainer.preload.php;
+    sed -i '/Preloader::preload/d' var/cache/prod/App_KernelProdContainer.preload.php && \
+    rm -rf var/tailwind/v*;
 
 
 # ------------ Php Production Stage ------------
