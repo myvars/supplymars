@@ -595,18 +595,18 @@ RabbitMQ is kept as an opt-in for when the database queue is outgrown. See [ADR 
 
 ### Simulation Timing
 
-Production cron schedule (from `docker/php/cron/live-crontab`):
+Production schedule (from `src/Shared/Infrastructure/Scheduler/MainSchedule.php`, run by the Messenger worker):
 
 | Interval | Command | Purpose |
 |----------|---------|---------|
-| */5 min | `app:create-customer-orders 2 --random` | Steady order flow |
+| Twice per 5 min, jittered | `app:create-customer-orders 1 --random` | Steady order flow, one order at a time |
 | */15 min | `app:build-purchase-orders 20` | Allocate orders to suppliers |
 | +1 min offset | `app:accept-purchase-orders 20` | Supplier responses (runs 1 min after build) |
 | Hourly | `app:ship-purchase-order-items 100` | Ship accepted items |
 | Hourly | `app:deliver-purchase-order-items 100` | Complete deliveries |
 | */15 min | `app:update-supplier-stock 20` | Stock fluctuation |
-| Daily 00:03 | `app:calculate-product-sales 1` | Reporting ETL |
-| Daily 00:07 | `app:calculate-order-sales 1` | Reporting ETL |
+| Daily 00:03 | `app:calculate-product-sales 1 1` | Reporting ETL |
+| Daily 00:07 | `app:calculate-order-sales 1 1` | Reporting ETL |
 
 ## Frontend Navigation
 

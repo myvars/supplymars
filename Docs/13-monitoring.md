@@ -12,7 +12,7 @@ It is switched on by one environment variable, set in each stack's env file in `
 SENTRY_DSN=https://<key>@<org>.ingest.sentry.io/<project>
 ```
 
-With `SENTRY_DSN` empty (the default in `.env`) the bundle sends nothing. `compose.prod.yaml` passes the variable to the php, messenger and cron containers.
+With `SENTRY_DSN` empty (the default in `.env`) the bundle sends nothing. `compose.prod.yaml` passes the variable to the php and messenger containers.
 
 Both stacks run with `APP_ENV=prod` and report to the same Sentry project. `SENTRY_ENVIRONMENT` tells them apart: `live` by default, `playground` in `playground.env`. Filter by environment in Sentry to see one stack.
 
@@ -21,10 +21,11 @@ With a DSN set, an uncaught exception is reported from:
 | Where | Example |
 |-------|---------|
 | Web requests | A controller or handler throws and the user sees a 500 page |
-| Console commands | A command run by cron or by hand throws an exception it does not catch |
+| Console commands | A command run by hand throws an exception it does not catch |
+| Scheduled jobs | A job in `MainSchedule` throws, or exits with a failure code (`RunCommandFailedException`). Not retried: the next run is the next scheduled time |
 | Messenger workers | A queued message fails in `messenger:consume`. Each failed attempt is reported, including ones that will be retried |
 
-Only uncaught exceptions are reported. Most cron commands (`app:backup-database`, the purchasing and reporting commands) catch their errors, log them and exit with a failure code, so those failures are in the cron container's log, not in Sentry. Sending logged errors to Sentry needs the Monolog handler (below).
+Only uncaught exceptions are reported. Most scheduled commands (`app:backup-database`, the purchasing and reporting commands) catch their errors per item, log them and exit with a failure code. Run by the schedule, that failure code reaches Sentry as one `RunCommandFailedException` per run, with the details in the messenger container's log. Run by hand, it does not reach Sentry. Sending logged errors to Sentry needs the Monolog handler (below).
 
 Expected responses are left out so they do not bury real faults: anything thrown as an HTTP exception (a 404, a failed API validation) and the "access denied" that sends an anonymous visitor to the login page. The list is `ignore_exceptions` in `config/packages/sentry.yaml`. Sentry matches every exception in the chain, so an HTTP exception thrown on purpose with a 5xx status is not reported either.
 
@@ -74,7 +75,7 @@ The nginx container's healthcheck calls `/health` (over HTTPS in `compose.yaml`,
 
 `GET /health/backup` is public and returns the same JSON shape as `/health`, with one check, `backup`. It passes when the newest `.sql.gz` on the backups filesystem (S3 `backups/` in production) was written less than 26 hours ago: the 02:00 run plus a margin for a slow dump. It fails with 503 when the newest backup is older, or when there is none. As with `/health`, the reason goes to the log, not the response.
 
-It catches every way backups stop: a failed run (which the command logs but Sentry does not see), and a run that never happened (cron container down, wrong crontab, server off at 02:00, every run skipped because a hung one holds the lock).
+It catches every way backups stop: a failed run (also reported to Sentry), and a run that never happened (messenger container down or not consuming `scheduler_default`, `PLAYGROUND_MODE` wrongly on for live, server off at 02:00, every run skipped because a hung one holds the lock).
 
 It is deliberately not one of the `/health` checks. `/health` is the nginx container's healthcheck and the deploy's post-deploy check, and a missed backup must not mark the stack down or fail a deploy. Each call lists the S3 backups, so `prod.conf` gives it the same outside-caller cap as `/health` and a per-caller rate (6 a minute, burst 3); more get 429.
 

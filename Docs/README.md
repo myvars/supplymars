@@ -66,7 +66,7 @@ SupplyMars is a **modular monolith** - bounded contexts are self-contained modul
 - **[05-features.md](05-features.md)** - Feature-by-feature documentation for developers
 
 ### Operations
-- **[06-operations.md](06-operations.md)** - Deployment, cron jobs, workers, data simulation
+- **[06-operations.md](06-operations.md)** - Deployment, scheduled jobs, workers, data simulation
 - **[07-testing.md](07-testing.md)** - Test strategy, factories, running tests
 - **[08-security.md](08-security.md)** - Authentication, authorization, safety assumptions
 - **[11-runbook.md](11-runbook.md)** - Production runbook: deploy pipeline (images built in CI, pulled by the server), rollback, backup/restore, where secrets live, troubleshooting
@@ -100,6 +100,7 @@ SupplyMars is a **modular monolith** - bounded contexts are self-contained modul
 - **[adr/011-rest-api-layer.md](adr/011-rest-api-layer.md)** - REST API alongside server-rendered UI
 - **[adr/013-database-queue-by-default.md](adr/013-database-queue-by-default.md)** - Messenger on a database queue by default; RabbitMQ as an opt-in
 - **[adr/014-architecture-rules.md](adr/014-architecture-rules.md)** - Framework attributes allowed in the domain; contexts use each other's Domain only; Deptrac in CI
+- **[adr/015-symfony-scheduler-in-place-of-cron.md](adr/015-symfony-scheduler-in-place-of-cron.md)** - Scheduled jobs in the Messenger worker, one at a time; no cron image
 
 ---
 

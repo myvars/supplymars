@@ -1,6 +1,6 @@
 # CLI Reference
 
-This document lists all custom console commands in SupplyMars. Most of these run on cron to simulate e-commerce activity - creating orders, processing shipments, and fluctuating stock levels.
+This document lists all custom console commands in SupplyMars. Most of these run as scheduled jobs (`src/Shared/Infrastructure/Scheduler/MainSchedule.php`) to simulate e-commerce activity - creating orders, processing shipments, and fluctuating stock levels.
 
 ## Error Handling
 
@@ -671,7 +671,7 @@ symfony console app:generate-reviews 50 42
 # Standard backup (uploads to S3 in prod, saves to var/backups/ in dev)
 symfony console app:backup-database
 
-# Backup with local copy (used by live cron for playground reset)
+# Backup with local copy (the live schedule's form, for the playground reset)
 symfony console app:backup-database --local-copy=/backups/latest.sql.gz
 
 # Dry run
@@ -689,7 +689,7 @@ symfony console app:backup-database --retention-days=60
 
 **Locking:** only one run at a time, through `symfony/lock` (`LockableTrait`). A run that starts while another holds the lock prints a warning and exits with a failure (exit code 1) without dumping anything. See [11-runbook.md](11-runbook.md#42-manual-backup).
 
-**Cron:** Runs daily at 02:00 UTC on the live stack (see `docker/php/cron/live-crontab`). `/health/backup` reports when no backup has landed for 26 hours ([13-monitoring.md](13-monitoring.md#backup-check)).
+**Schedule:** Runs daily at 02:00 UTC on the live stack, in the messenger container (`MainSchedule`). Run a manual backup in that container too, so it shares the scheduled run's lock. `/health/backup` reports when no backup has landed for 26 hours ([13-monitoring.md](13-monitoring.md#backup-check)).
 
 ---
 

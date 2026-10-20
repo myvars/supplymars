@@ -1,6 +1,6 @@
 # Production Runbook
 
-Step-by-step operational procedures for the SupplyMars production environment on AWS Lightsail. For architecture details, cron schedules, and worker configuration, see [06-operations.md](06-operations.md). For all console commands, see [09-cli-reference.md](09-cli-reference.md). For playground-specific details, see [infrastructure/playground.md](infrastructure/playground.md).
+Step-by-step operational procedures for the SupplyMars production environment on AWS Lightsail. For architecture details, scheduled jobs, and worker configuration, see [06-operations.md](06-operations.md). For all console commands, see [09-cli-reference.md](09-cli-reference.md). For playground-specific details, see [infrastructure/playground.md](infrastructure/playground.md).
 
 ---
 
@@ -13,19 +13,18 @@ Two Docker Compose stacks run on the same Lightsail instance, fronted by Caddy (
 | Live | `supplymars-live` | 8001 | `live.supplymars.com` |
 | Playground | `supplymars-playground` | 8002 | `supplymars.com`, `www.supplymars.com` (the public demo) |
 
-Each stack runs 6 containers (7 for playground, which includes `reset`). The queue is a table in the stack's own database; RabbitMQ is an opt-in and does not run ([ADR 013](adr/013-database-queue-by-default.md)):
+Each stack runs 5 containers (6 for playground, which includes `reset`). The queue is a table in the stack's own database; RabbitMQ is an opt-in and does not run ([ADR 013](adr/013-database-queue-by-default.md)):
 
 | Service | Image | Purpose |
 |---------|-------|---------|
 | nginx | `ghcr.io/myvars/supplymars/nginx` | Reverse proxy (HTTP only — Caddy handles TLS) |
 | php | `ghcr.io/myvars/supplymars/php` | PHP-FPM application server |
-| messenger | `ghcr.io/myvars/supplymars/php` | Async message consumer |
-| cron | `ghcr.io/myvars/supplymars/cron` | Scheduled tasks. The image holds both schedules; `CRONTAB_FILE` in the env file picks the stack's when the container starts |
+| messenger | `ghcr.io/myvars/supplymars/php` | Async message consumer, and the scheduled jobs (`src/Shared/Infrastructure/Scheduler/MainSchedule.php`; `PLAYGROUND_MODE` picks the stack's) |
 | database | mysql:8.4 | Primary data store |
 | redis | redis:8.8-alpine | Cache, sessions |
-| reset | `ghcr.io/myvars/supplymars/reset` | Nightly DB reset (playground only) |
+| reset | `ghcr.io/myvars/supplymars/reset` | Nightly DB reset at 02:15, on its own cron (playground only) |
 
-**CI builds, the server runs.** The four application images are built by GitHub Actions from a commit on `main`, tagged with its SHA and pushed to the GitHub Container Registry (GHCR). The server pulls the images of the commit it has checked out and starts them; it never builds. The checkout supplies only the compose files and the Makefile: the code is inside the images.
+**CI builds, the server runs.** The three application images are built by GitHub Actions from a commit on `main`, tagged with its SHA and pushed to the GitHub Container Registry (GHCR). The server pulls the images of the commit it has checked out and starts them; it never builds. The checkout supplies only the compose files and the Makefile: the code is inside the images.
 
 **Deploy path:** `/home/ubuntu/supplymars`
 **Env files:** `/home/ubuntu/supplymars-secrets/{live,playground}.env`
@@ -78,7 +77,7 @@ docker compose $PLAYGROUND ps
 Merging to `main` triggers the GitHub Actions pipeline (`.github/workflows/ci.yml`):
 
 1. **test**: each step of `make check`: the production config check, code style, Rector, PHPStan, the Symfony linters, `composer audit`, migrations from an empty database, and the full test suite (see [07-testing.md](07-testing.md#running-all-checks))
-2. **publish**, once the tests pass: builds the `php`, `cron`, `nginx` and `reset` production images from that commit and pushes them to `ghcr.io/myvars/supplymars/`, tagged with its SHA. The tests ran against the development image of the same commit; the production images are built from the same code but are not tested separately
+2. **publish**, once the tests pass: builds the `php`, `nginx` and `reset` production images from that commit and pushes them to `ghcr.io/myvars/supplymars/`, tagged with its SHA. The tests ran against the development image of the same commit; the production images are built from the same code but are not tested separately
 3. **deploy**, once they are pushed, over SSH:
 
     ```bash
@@ -176,8 +175,9 @@ docker stats --no-stream
 # Check for failed Messenger messages
 docker compose $LIVE exec -T php php bin/console messenger:failed:show
 
-# Check cron output
-docker compose $LIVE logs --tail=50 cron
+# Scheduled jobs: what runs when, and the worker's log (failed runs also reach Sentry)
+docker compose $LIVE exec -T messenger php bin/console debug:scheduler
+docker compose $LIVE logs --tail=50 messenger
 
 # MySQL process list (check for long-running queries)
 docker compose $LIVE exec -T database mysqladmin -u root -p processlist
@@ -189,7 +189,7 @@ docker compose $LIVE exec -T database mysqladmin -u root -p processlist
 
 ### 4.1 Automated Daily Backup
 
-The live cron container runs `app:backup-database` daily at 02:00 UTC (see `docker/php/cron/live-crontab`):
+The live messenger container runs `app:backup-database --local-copy=/backups/latest.sql.gz` daily at 02:00 UTC, as a scheduled job (`src/Shared/Infrastructure/Scheduler/MainSchedule.php`). It is first of the jobs due at 02:00, and the worker runs one job at a time:
 
 - Creates a gzipped mysqldump (`supplymars-YYYY-MM-DD-HHmmss.sql.gz`)
 - Uploads to the S3 backups filesystem (`unicorn-bucket-two/backups/`)
@@ -198,37 +198,37 @@ The live cron container runs `app:backup-database` daily at 02:00 UTC (see `dock
 
 The local copy is used by the playground reset at 02:15 UTC.
 
-Backup logs appear in `docker compose $LIVE logs cron`. A failed run is logged there but does not reach Sentry. What tells you backups have stopped, for any reason, is the uptime monitor on `/health/backup`, which fails once the newest backup on S3 is more than 26 hours old ([13-monitoring.md](13-monitoring.md#backup-check)).
+Backup errors appear in `docker compose $LIVE logs messenger`; a successful run's output is not logged (`RunCommandMessage` keeps it). A failed run, or one skipped because a manual backup holds the lock, exits with a failure and reaches Sentry as `RunCommandFailedException`. It is not retried: the next run is the next night. What tells you backups have stopped, for any reason, is the uptime monitor on `/health/backup`, which fails once the newest backup on S3 is more than 26 hours old ([13-monitoring.md](13-monitoring.md#backup-check)).
 
 ### 4.2 Manual Backup
 
-Trigger a backup outside the cron schedule:
+Trigger a backup outside the schedule:
 
 ```bash
 # Run backup (S3 + local copy)
-docker compose $LIVE exec -T cron \
+docker compose $LIVE exec -T messenger \
     php bin/console app:backup-database --local-copy=/backups/latest.sql.gz
 
 # S3 only (no local copy)
-docker compose $LIVE exec -T cron php bin/console app:backup-database
+docker compose $LIVE exec -T messenger php bin/console app:backup-database
 
 # Dry run (see what would happen)
-docker compose $LIVE exec -T cron php bin/console app:backup-database --dry-run
+docker compose $LIVE exec -T messenger php bin/console app:backup-database --dry-run
 
 # Custom retention (e.g., keep 60 days)
-docker compose $LIVE exec -T cron php bin/console app:backup-database --retention-days=60
+docker compose $LIVE exec -T messenger php bin/console app:backup-database --retention-days=60
 ```
 
-Only one backup runs at a time. A run that starts while another is still going does not wait: it prints a warning and exits with a failure, without dumping anything. If that happens to the 02:00 run, `/backups/latest.sql.gz` is whatever the run holding the lock leaves there, or the previous night's copy, and the 02:15 playground reset restores that. The copy is written beside the target and renamed into place, so the reset never reads a half-written file. The lock (`LOCK_DSN=flock`) is a file in the container, so run a manual backup in the `cron` container, as above. One started in the `php` container takes a different lock and can run at the same time as the nightly one.
+Only one backup runs at a time. A run that starts while another is still going does not wait: it prints a warning and exits with a failure, without dumping anything. If that happens to the 02:00 run, `/backups/latest.sql.gz` is whatever the run holding the lock leaves there, or the previous night's copy, and the 02:15 playground reset restores that. The copy is written beside the target and renamed into place, so the reset never reads a half-written file. The lock (`LOCK_DSN=flock`) is a file in the container, so run a manual backup in the `messenger` container, where the scheduler runs, as above. One started in the `php` container takes a different lock and can run at the same time as the nightly one.
 
-**Locking another scheduled command.** Any command in the crontab that could still be running when cron starts it again needs the same lock: add `LockableTrait` and pass it the `LockFactory`, as `BackupDatabaseCommand` does, and return early when `lock()` fails. Return a failure if the cron entry chains anything after the command with `&&`, so a skipped run does not report success; otherwise return success.
+**Scheduled commands of your own.** Add a `RecurringMessage::cron()` with a `RunCommandMessage` to `MainSchedule`, inside the `PLAYGROUND_MODE` check if it is for live only, and to `MainScheduleTest`. The schedule is locked and the worker runs one job at a time, so a scheduled command never overlaps its own previous run. It can still overlap a manual run: a command where that matters takes the same lock as `BackupDatabaseCommand` (`LockableTrait` with the `LockFactory`, returning early when `lock()` fails). A job that takes more than a few seconds delays async messages; one that takes minutes is the point to give `scheduler_default` a worker of its own ([ADR 015](adr/015-symfony-scheduler-in-place-of-cron.md)).
 
 ### 4.3 Pre-Deploy Backup
 
 Always take a manual backup before risky deployments (migrations that alter/drop columns, large schema changes):
 
 ```bash
-docker compose $LIVE exec -T cron php bin/console app:backup-database
+docker compose $LIVE exec -T messenger php bin/console app:backup-database
 ```
 
 ### 4.4 Restore (Production)
@@ -244,7 +244,7 @@ aws s3 ls s3://unicorn-bucket-two/backups/ --region eu-west-2
 aws s3 cp s3://unicorn-bucket-two/backups/supplymars-2026-02-13-020001.sql.gz /tmp/
 
 # 2. Stop the application (prevent writes during restore)
-docker compose $LIVE stop php messenger cron
+docker compose $LIVE stop php messenger
 
 # 3. Restore
 gunzip < /tmp/supplymars-2026-02-13-020001.sql.gz | \
@@ -291,20 +291,18 @@ If any step fails, treat it as a broken backup and fix it before the next one is
 For planned maintenance (database migrations, infrastructure changes):
 
 ```bash
-# 1. Stop cron (prevent new jobs)
-docker compose $LIVE stop cron
-
-# 2. Drain the Messenger worker (let it finish current messages, then stop)
+# 1. Drain the Messenger worker: it finishes the current message or scheduled job, then stops, and no
+#    new jobs start. Jobs missed while it is down run once when it is back
 docker compose $LIVE stop messenger
 
-# 3. Stop the PHP container (app returns 502 via nginx)
+# 2. Stop the PHP container (app returns 502 via nginx)
 docker compose $LIVE stop php
 ```
 
 ### 5.2 Bringing the App Back Online
 
 ```bash
-# Starts PHP first (it runs pending migrations), then Messenger and Cron once PHP is healthy
+# Starts PHP first (it runs pending migrations), then Messenger once PHP is healthy
 make up-prod-live
 make verify-prod-live
 ```
@@ -341,7 +339,7 @@ docker compose $LIVE restart php
 
 ### 6.2 Queue Backlog Growing
 
-**Symptoms:** `async` count in `messenger:stats` increasing, emails delayed.
+**Symptoms:** `async` count in `messenger:stats` increasing, emails delayed. The same worker runs the scheduled jobs, so a long-running job (the backup at 02:00) delays emails until it ends.
 
 **Diagnosis:**
 ```bash
@@ -355,20 +353,23 @@ docker compose $LIVE logs --tail=100 messenger
 docker compose $LIVE restart messenger
 ```
 
-### 6.3 Cron Jobs Not Running
+### 6.3 Scheduled Jobs Not Running
 
 **Symptoms:** No new orders being created, reports not updating, stale data.
 
 **Diagnosis:**
 ```bash
-docker compose $LIVE ps cron
-docker compose $LIVE logs --tail=100 cron
-docker compose $LIVE exec cron crontab -l
+docker compose $LIVE ps messenger
+# The worker must consume scheduler_default as well as async
+docker compose $LIVE exec -T messenger ps aux | grep messenger:consume
+# The jobs and their next run times (PLAYGROUND_MODE picks the stack's)
+docker compose $LIVE exec -T messenger php bin/console debug:scheduler
+docker compose $LIVE logs --tail=100 messenger
 ```
 
 **Fix:**
 ```bash
-docker compose $LIVE restart cron
+docker compose $LIVE restart messenger
 ```
 
 ### 6.4 Slow Pages

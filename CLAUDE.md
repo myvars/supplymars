@@ -111,7 +111,8 @@ These areas have non-obvious design. Read the corresponding ADR in `Docs/adr/` b
 
 ### Deployment
 
-- CI builds the production images (`php`, `cron`, `nginx`, `reset`) and pushes them to GHCR, tagged with the commit SHA. The server pulls the images of its checked-out commit and starts them with `make up-prod-live` / `make up-prod-playground`; it never builds. Rollback is `git reset --hard <previous-sha> && make up-prod-live && make up-prod-playground`.
+- CI builds the production images (`php`, `nginx`, `reset`) and pushes them to GHCR, tagged with the commit SHA. The server pulls the images of its checked-out commit and starts them with `make up-prod-live` / `make up-prod-playground`; it never builds. Rollback is `git reset --hard <previous-sha> && make up-prod-live && make up-prod-playground`.
+- **Scheduled jobs**: Symfony Scheduler, listed in `src/Shared/Infrastructure/Scheduler/MainSchedule.php` (a `RunCommandMessage` per job; `debug:scheduler` lists them; `PLAYGROUND_MODE` leaves out the live-only ones). No cron, except the playground `reset` container's. Only the production `messenger` container consumes `scheduler_default`, one job at a time; dev and `make up-prod-local` consume only `async`. See `Docs/adr/015-symfony-scheduler-in-place-of-cron.md`.
 - Application secrets are in the env files outside the repository (`../supplymars-secrets/`), never GitHub secrets.
 - See `Docs/11-runbook.md`.
 

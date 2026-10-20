@@ -69,8 +69,7 @@ The production Docker stack includes:
 |---------|-------|---------|
 | nginx | Custom (nginx-prod) | Reverse proxy, SSL termination |
 | php | Custom (php-prod) | Application server |
-| messenger | Custom (php-prod) | Async message consumer |
-| cron | Custom (cron-prod) | Scheduled tasks |
+| messenger | Custom (php-prod) | Async message consumer and scheduled jobs |
 | database | mysql:8.4 | Primary data store |
 | redis | redis:8.4-alpine | Cache, sessions |
 
@@ -106,83 +105,56 @@ fi
 
 Only the PHP container has `RUN_MIGRATIONS=true` to prevent race conditions.
 
-## Cron / Scheduled Jobs
+## Scheduled Jobs
 
-### Production Crontab
+Scheduled jobs run with Symfony Scheduler inside the Messenger worker, not cron (see [ADR-015](adr/015-symfony-scheduler-in-place-of-cron.md)). Every job is listed in `src/Shared/Infrastructure/Scheduler/MainSchedule.php`, as a console command run through `RunCommandMessage`, so each can still be run by hand. `PLAYGROUND_MODE` picks the stack's jobs.
 
-Located at `docker/php/cron/live-crontab`:
-
-```cron
-# Order simulation
-*/5  * * * * app:create-customer-orders 2 --random
-
-# Purchase order workflow (build before accept)
-*/15       * * * * app:build-purchase-orders 20
-1,16,31,46 * * * * app:accept-purchase-orders 20
-0    * * * * app:ship-purchase-order-items 100
-0    * * * * app:deliver-purchase-order-items 100
-
-# Stock management
-*/15 * * * * app:update-supplier-stock 20
-
-# Reporting aggregation
-3  0 * * * app:calculate-product-sales 1
-5  0 * * * app:calculate-product-sales-summary
-10 * * * * app:calculate-product-sales 1 0
-40 * * * * app:calculate-product-sales 1 0
-
-7  0 * * * app:calculate-order-sales 1
-9  0 * * * app:calculate-order-sales-summary
-10 * * * * app:calculate-order-sales 1 0
-40 * * * * app:calculate-order-sales 1 0
-
-# Customer insights aggregation
-15 0 * * * app:calculate-customer-sales 1
-17 0 * * * app:calculate-customer-sales-summary
-20 * * * * app:calculate-customer-sales 1 0
-50 * * * * app:calculate-customer-sales 1 0
-
-# Log cleanup
-0 0 * * 0 truncate -s 0 /var/log/cron.log
+```bash
+# The jobs, their schedules and next run times
+docker compose $LIVE exec -T messenger php bin/console debug:scheduler
 ```
+
+Only the production `messenger` container consumes `scheduler_default`. Development and `make up-prod-local` consume only `async`, so no scheduled job runs on a local machine. Times are UTC.
 
 ### Job Descriptions
 
 | Schedule | Command | Purpose |
 |----------|---------|---------|
-| */5 min | `app:create-customer-orders 2` | Continuous order flow |
+| Twice per 5 min, at a random moment | `app:create-customer-orders 1 --random` | Continuous order flow, about 12 an hour |
 | */15 min | `app:build-purchase-orders 20` | Allocate pending orders |
 | :01,:16,:31,:46 | `app:accept-purchase-orders 20` | Simulate supplier responses (1 min after build) |
 | Hourly | `app:ship-purchase-order-items 100` | Progress to shipped |
 | Hourly | `app:deliver-purchase-order-items 100` | Complete deliveries |
-| */15 min | `app:update-supplier-stock 20` | Stock level fluctuation |
-| Daily 00:03 | `app:calculate-product-sales 1` | Daily product sales ETL |
-| Daily 00:07 | `app:calculate-order-sales 1` | Daily order sales ETL |
-| */10,40 | `app:calculate-*-sales 1 0` | Hourly incremental updates |
-| Daily 00:15 | `app:calculate-customer-sales 1` | Daily customer sales ETL |
-| Daily 00:17 | `app:calculate-customer-sales-summary` | Customer summaries |
-| */20,50 | `app:calculate-customer-sales 1 0` | Hourly customer updates |
+| */15 min | `app:update-supplier-stock 20` | Stock level fluctuation (after the build, never at the same time) |
+| Daily 00:03, 00:07, 00:11 | `app:calculate-{product,order,customer}-sales 1 1` | Rebuild yesterday's daily sales |
+| Daily 00:05, 00:09, 00:13 | `app:calculate-{product,order,customer}-sales-summary 1` | Summaries for the dashboards |
+| :10/:40, :12/:42, :15/:45 | `app:calculate-{product,order,customer}-sales 1` | Today's sales, twice an hour |
+| Daily 01:30, live only | `app:refund-purchase-orders 50` | Refund rejected purchase orders |
+| Daily 02:00, live only | `app:backup-database --local-copy=/backups/latest.sql.gz` | Backup to S3, and the copy the playground reset restores |
 | On demand | `app:generate-reviews {count}` | Generate fake reviews for testing |
+
+The worker runs one job at a time, in schedule order when several are due together; the backup is first of the jobs due at 02:00. While a job runs, async messages (emails, async events) wait. A run missed while the worker restarts happens when it comes back, once. The playground reset is not a scheduled job: it runs in its own `reset` container, on cron, at 02:15.
 
 ### Error Handling
 
-All cron commands use a continue-on-failure pattern (see [ADR-003](adr/003-simulation-first-design.md)). When an individual item fails during processing:
+All scheduled commands use a continue-on-failure pattern (see [ADR-003](adr/003-simulation-first-design.md)). When an individual item fails during processing:
 
 1. The exception is caught and logged with structured context (entity ID, error message)
 2. Processing continues with the next item
 3. A summary warning is output: `N item(s) failed — see logs for details.`
 4. The command exits with code 1 (`Command::FAILURE`)
 
-This means a single database error or entity issue will not halt an entire batch. Operators should monitor for non-zero exit codes in cron output and review application logs for failure details.
+This means a single database error or entity issue will not halt an entire batch. A scheduled run that exits non-zero is reported to Sentry (`RunCommandFailedException`); the application logs have the details. It is not retried and does not go to the `failed` transport: the next run is the next scheduled time.
 
 ## Workers / Consumers
 
 ### Messenger Consumer
 
-The messenger service processes async events:
+The messenger service processes async events and, in production, the scheduled jobs:
 
 ```bash
-php bin/console messenger:consume async --time-limit=3600 --sleep=5
+php bin/console messenger:consume scheduler_default async --time-limit=3600 --sleep=5   # production
+php bin/console messenger:consume async --time-limit=3600 --sleep=5                     # development
 ```
 
 **Configuration:**
@@ -355,7 +327,7 @@ This avoids expensive aggregations on every dashboard load.
 
 ### Monitoring Recommendations
 
-1. **Cron exit codes:** Alert on non-zero exit codes from simulation/reporting commands (indicates partial failures — see [Error Handling](#error-handling) above)
+1. **Failed scheduled runs:** Sentry reports non-zero exit codes from simulation/reporting commands (indicates partial failures — see [Error Handling](#error-handling) above)
 2. **Queue depth:** Alert if `messenger:stats` shows the `async` queue growing
 3. **Failed messages:** Alert on any failed messenger messages
 4. **Database size:** Monitor growth from simulation data
@@ -364,7 +336,7 @@ This avoids expensive aggregations on every dashboard load.
 
 ### Backup Strategy
 
-**Database:** The `app:backup-database` command runs daily at 02:00 UTC via the cron container. It creates a gzipped mysqldump, uploads to S3 (`unicorn-bucket-two/backups/`), and retains 30 days by default. The `--local-copy` option also saves the backup to a host-mounted directory for the playground reset. See [09-cli-reference.md](09-cli-reference.md) and [11-runbook.md](11-runbook.md) for details.
+**Database:** The `app:backup-database` command runs daily at 02:00 UTC on live, as a scheduled job in the messenger container. It creates a gzipped mysqldump, uploads to S3 (`unicorn-bucket-two/backups/`), and retains 30 days by default. The `--local-copy` option also saves the backup to a host-mounted directory for the playground reset. See [09-cli-reference.md](09-cli-reference.md) and [11-runbook.md](11-runbook.md) for details.
 
 **Redis:** RDB snapshots enabled by default in the Redis image.
 

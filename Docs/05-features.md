@@ -355,7 +355,7 @@ The Customer Insights feature provides analytics on customer behavior, geographi
 ### Main Workflows
 
 **Daily ETL Pipeline:**
-1. `app:calculate-customer-sales` runs daily via cron
+1. `app:calculate-customer-sales` runs daily as a scheduled job
 2. Aggregates order data into CustomerSales and CustomerActivitySales records
 3. `app:calculate-customer-sales-summary` pre-computes summaries for fast dashboard loads
 
