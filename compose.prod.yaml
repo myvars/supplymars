@@ -51,7 +51,7 @@ services:
   redis:
     logging: *common-logging
     environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD}    # Protect Redis in prod (set strong pw)
+      REDIS_PASSWORD: ${REDIS_PASSWORD}    # Required: Redis refuses to start without it (compose.yaml)
 
 
   # --- RabbitMQ Message Broker (only with the rabbitmq profile) ---

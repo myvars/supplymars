@@ -27,7 +27,10 @@ services:
     ports:
       - "127.0.0.1:${REDIS_PORT:-6379}:6379"   # Localhost only
     environment:
-      REDIS_PASSWORD: password    # Dev pw (never use in prod!)
+      REDIS_PASSWORD: password    # Dev pw (never use in prod!); REDIS_URL above carries it
+    labels:
+      # symfony serve would export its own REDIS_URL for this service, without the password, over .env's
+      com.symfony.server.service-ignore: true
 
 
   # --- RabbitMQ (Dev, only with the rabbitmq profile) ---
