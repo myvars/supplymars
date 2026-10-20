@@ -17,7 +17,6 @@ if [ "$APP_ENV" != "prod" ]; then
     if [ "${SKIP_ASSET_BUILD:-false}" != "true" ]; then
         php bin/console importmap:install --no-interaction || echo "Importmap install failed"
         php bin/console tailwind:build --minify || echo "Tailwind build failed"
-        php bin/console asset-map:compile || echo "Asset map compile failed"
     else
         echo "[docker-entrypoint] Skipping asset builds (SKIP_ASSET_BUILD=true)"
     fi
