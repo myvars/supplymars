@@ -533,6 +533,7 @@ hasPositiveCost()             // cost > 0
 | `config/packages/doctrine.yaml` | Database and ORM |
 | `config/packages/security.yaml` | Authentication (web + API firewalls) |
 | `config/packages/nelmio_api_doc.yaml` | Swagger/OpenAPI documentation |
+| `config/packages/nelmio_security.yaml` | Security headers (CSP, X-Frame-Options, nosniff, Referrer-Policy) |
 | `config/packages/messenger.yaml` | Queue configuration |
 | `config/packages/cache.yaml` | Caching strategy |
 | `config/services.yaml` | Service definitions |

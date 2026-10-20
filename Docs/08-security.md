@@ -419,30 +419,55 @@ Customer data is fabricated:
 
 ## Security Headers
 
-### Nginx Configuration
+The app sends the security headers, through `nelmio/security-bundle`, so `symfony serve`, the tests and production all use the same policy. A change that breaks the policy shows up as a violation in the browser console in development, not only after a deploy.
 
-```nginx
-# docker/nginx/conf.d/prod.conf
+| Header | Value | Sent by |
+|--------|-------|---------|
+| `Content-Security-Policy` | see below | the app |
+| `X-Frame-Options` | `SAMEORIGIN` | the app |
+| `X-Content-Type-Options` | `nosniff` | the app |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` | the app |
+| `Strict-Transport-Security` | `max-age=63072000; includeSubDomains` | nginx |
 
-add_header X-Content-Type-Options "nosniff" always;
-add_header X-Frame-Options "SAMEORIGIN" always;
-add_header Referrer-Policy "strict-origin-when-cross-origin" always;
-add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' data: https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://unicorn-bucket-two.s3.eu-west-2.amazonaws.com; font-src 'self'; connect-src 'self' https://challenges.cloudflare.com; frame-src 'self' https://challenges.cloudflare.com; form-action 'self'; base-uri 'self'" always;
-```
+HSTS stays in nginx (`docker/nginx/conf.d/prod.conf`, at server level), and Caddy passes it on. In the bundle it comes with `forced_ssl`, which also redirects to HTTPS, and Caddy already does that. There is no `preload`: submitting the domain to the browsers' preload list is slow to undo. `includeSubDomains` means every subdomain of `supplymars.com` must serve HTTPS.
 
-nginx sets these once, at server level. A `location` block with any `add_header` of its own inherits none of them, so `prod.conf` keeps `add_header` out of its location blocks. Asset Mapper files under `/assets/` are served by a `^~ /assets/` prefix location with a one-year expiry and these same headers.
+The app adds its headers only to responses that go through Symfony. What nginx answers itself carries only HSTS: static files (`public/assets/`, and in development Docker `public/bundles/`, `public/uploads/` and `public/media/`) and nginx's own error responses (413, 429, 502). Production images are in S3 and never served by nginx. Redirects carry no CSP, `X-Frame-Options` or `nosniff`: the bundle leaves them out, as they have no body.
 
 ### Content Security Policy
 
-The CSP header includes `'unsafe-inline'` for both `script-src` and `style-src`:
+To change the policy, edit `csp.enforce` in `config/packages/nelmio_security.yaml`. It applies in every environment.
 
-- **`script-src 'unsafe-inline'`** — Required for the dark-mode FOUC-prevention script in `templates/base.html.twig` (lines 4-8), which must run before page paint to avoid a flash of unstyled content.
-- **`style-src 'unsafe-inline'`** — Required for Tailwind CSS runtime style injection and inline styles set by UI components.
-- **`script-src data:`** — Required for Asset Mapper's CSS importmap shims.
-- **`challenges.cloudflare.com`** (script, connect, frame) — Cloudflare Turnstile.
-- **The S3 bucket host in `img-src`** — product images.
+```yaml
+# config/packages/nelmio_security.yaml
+csp:
+    enabled: true
+    compat_headers: false
+    enforce:
+        level1_fallback: false
+        default-src: ['self']
+        script-src: ['self', 'unsafe-inline', 'data:', 'https://challenges.cloudflare.com']
+        style-src: ['self', 'unsafe-inline']
+        img-src: ['self', 'data:', 'https://unicorn-bucket-two.s3.eu-west-2.amazonaws.com']
+        font-src: ['self']
+        connect-src: ['self', 'https://challenges.cloudflare.com']
+        frame-src: ['self', 'https://challenges.cloudflare.com']
+        form-action: ['self']
+        base-uri: ['self']
+```
 
-Removing `unsafe-inline` would require nonce-based CSP, which Symfony's Asset Mapper does not currently support. If Asset Mapper adds nonce support in a future release, the inline script should be migrated and `unsafe-inline` removed.
+- **`script-src 'unsafe-inline'`**: the dark-mode script in `templates/base.html.twig`, which must run before the page is painted, and the inline `onload` of the kit's `Avatar:Image`.
+- **`script-src data:`**: Asset Mapper's CSS loaders (`data:application/javascript,...`), for example Dropzone's CSS.
+- **`style-src 'unsafe-inline'`**: `style=` attributes, Sonner and Turbo's progress bar.
+- **`https://challenges.cloudflare.com`** in `script-src`, `connect-src` and `frame-src`: the Turnstile widget. `turnstile_controller.js` loads its script from there, and the widget runs in an iframe that calls back to it.
+- **The S3 bucket host in `img-src`**: production stores product images and their thumbnails in S3. If the bucket or region changes, change the host here. Development stores them in `public/`, so the host does nothing there.
+
+The bundle leaves out a directive whose value equals `default-src`, so `font-src` does not appear in the header. Fonts still fall back to `default-src 'self'`.
+
+`compat_headers: false` stops the bundle sending the old `X-Content-Security-Policy` header as well.
+
+**No nonces yet.** Once a policy holds a nonce, browsers ignore `'unsafe-inline'`, and the dark-mode script and `Avatar:Image` would be blocked. The bundle adds a nonce only when a template calls `csp_nonce()`, so don't call it until both are changed. The debug toolbar adds none of its own while `'unsafe-inline'` is in the policy, so dev, test and production send the same `script-src`.
+
+**The Symfony exception page in debug has no CSP.** Symfony removes the header from its own error page when debug is on (`ErrorListener::removeCspHeader`). Production error pages keep it. `tests/Shared/UI/Http/SecurityHeadersTest.php` checks a normal page and a 404 rendered without debug.
 
 ### SSL/TLS
 
@@ -451,7 +476,7 @@ Removing `unsafe-inline` would require nonce-based CSP, which Symfony's Asset Ma
 **Production:**
 - TLSv1.2 and TLSv1.3 only
 - Modern cipher suite (ECDHE, AES-GCM)
-- HSTS enabled
+- HSTS enabled (sent by nginx, passed through by Caddy). The other security headers come from the app ([Security Headers](#security-headers))
 
 ## Rate Limiting
 

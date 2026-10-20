@@ -1,0 +1,35 @@
+# Security headers, sent by the app so dev, test and production use the same policy.
+# HSTS is not here: nginx sends it (docker/nginx/conf.d). See Docs/08-security.md.
+nelmio_security:
+    clickjacking:
+        paths:
+            '^/.*': SAMEORIGIN
+
+    content_type:
+        nosniff: true
+
+    referrer_policy:
+        enabled: true
+        policies:
+            - 'strict-origin-when-cross-origin'
+
+    csp:
+        enabled: true
+        compat_headers: false
+        enforce:
+            level1_fallback: false
+            default-src: ['self']
+            # 'unsafe-inline': the dark-mode script in base.html.twig and the Avatar:Image onload.
+            # A nonce in this list would make browsers ignore 'unsafe-inline', so don't call
+            # csp_nonce() until those are gone. data:: Asset Mapper's CSS loaders.
+            # challenges.cloudflare.com: the Turnstile widget (turnstile_controller.js).
+            script-src: ['self', 'unsafe-inline', 'data:', 'https://challenges.cloudflare.com']
+            # 'unsafe-inline': style= attributes, Sonner and Turbo's progress bar
+            style-src: ['self', 'unsafe-inline']
+            # The S3 bucket that product images and thumbnails are served from
+            img-src: ['self', 'data:', 'https://unicorn-bucket-two.s3.eu-west-2.amazonaws.com']
+            font-src: ['self']
+            connect-src: ['self', 'https://challenges.cloudflare.com']
+            frame-src: ['self', 'https://challenges.cloudflare.com']
+            form-action: ['self']
+            base-uri: ['self']
