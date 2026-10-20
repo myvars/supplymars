@@ -292,7 +292,8 @@ For planned maintenance (database migrations, infrastructure changes):
 
 ```bash
 # 1. Drain the Messenger worker: it finishes the current message or scheduled job, then stops, and no
-#    new jobs start. Jobs missed while it is down run once when it is back
+#    new jobs start (stop_grace_period gives a running backup up to 15 minutes). Jobs missed while it
+#    is down run once when it is back
 docker compose $LIVE stop messenger
 
 # 2. Stop the PHP container (app returns 502 via nginx)

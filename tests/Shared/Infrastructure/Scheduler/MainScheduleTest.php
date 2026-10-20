@@ -7,10 +7,12 @@ namespace App\Tests\Shared\Infrastructure\Scheduler;
 use App\Shared\Infrastructure\Scheduler\MainSchedule;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\Clock\MockClock;
 use Symfony\Component\Console\Messenger\RunCommandMessage;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Lock\LockFactory;
 use Symfony\Component\Scheduler\Generator\MessageContext;
+use Symfony\Component\Scheduler\Generator\MessageGenerator;
 use Symfony\Component\Scheduler\RecurringMessage;
 use Symfony\Component\Scheduler\Schedule;
 use Symfony\Contracts\Cache\CacheInterface;
@@ -56,21 +58,29 @@ final class MainScheduleTest extends KernelTestCase
 
     public function testTheBackupRunsFirstOfTheJobsDueAtTwo(): void
     {
-        // Jobs due at the same moment run in the order they were added, and the worker runs one at a
-        // time, so the backup's copy is written before the playground reset reads it at 02:15
-        $utc = new \DateTimeZone('UTC');
-        $twoAm = new \DateTimeImmutable('2026-10-21 02:00:00', $utc);
-        $before = $twoAm->modify('-1 second');
+        // The worker runs one job at a time, so the backup's copy is written before the playground
+        // reset reads it at 02:15. Driven through the scheduler's own generator, at 01:59 then 02:00
+        self::bootKernel();
+        $container = self::getContainer();
+        /** @var CacheInterface $cache */
+        $cache = $container->get('cache.scheduler');
+        $provider = new MainSchedule($cache, $container->get(LockFactory::class), playgroundMode: false);
 
-        $dueAtTwo = [];
-        foreach ($this->schedule(playgroundMode: false)->getRecurringMessages() as $recurringMessage) {
-            if ($recurringMessage->getTrigger()->getNextRunDate($before) == $twoAm) {
-                $dueAtTwo[] = $this->command($recurringMessage);
-            }
+        $clock = new MockClock(new \DateTimeImmutable('2026-10-21 01:59:00', new \DateTimeZone('UTC')));
+        $generator = new MessageGenerator($provider, 'default', $clock);
+        self::assertSame([], [...$generator->getMessages()]);
+
+        $clock->sleep(60);
+        $commands = [];
+        foreach ($generator->getMessages() as $message) {
+            self::assertInstanceOf(RunCommandMessage::class, $message);
+            $commands[] = $message->input;
         }
 
-        self::assertSame('app:backup-database --local-copy=/backups/latest.sql.gz', $dueAtTwo[0] ?? null);
-        self::assertGreaterThan(1, \count($dueAtTwo));
+        self::assertSame('app:backup-database --local-copy=/backups/latest.sql.gz', $commands[0] ?? null);
+        foreach (['app:build-purchase-orders 20', 'app:ship-purchase-order-items 100', 'app:deliver-purchase-order-items 100', 'app:update-supplier-stock 20'] as $dueToo) {
+            self::assertContains($dueToo, $commands);
+        }
     }
 
     public function testMakesUpAMissedRunAndNeverRunsAJobTwice(): void

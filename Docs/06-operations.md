@@ -153,12 +153,12 @@ This means a single database error or entity issue will not halt an entire batch
 The messenger service processes async events and, in production, the scheduled jobs:
 
 ```bash
-php bin/console messenger:consume scheduler_default async --time-limit=3600 --sleep=5   # production
-php bin/console messenger:consume async --time-limit=3600 --sleep=5                     # development
+php bin/console messenger:consume scheduler_default async --time-limit=3600 --memory-limit=192M --sleep=5   # production
+php bin/console messenger:consume async --time-limit=3600 --sleep=5                                         # development
 ```
 
 **Configuration:**
-- **Time limit:** 3600 seconds (1 hour) before restart
+- **Time limit:** 3600 seconds (1 hour) before restart; in production also above 192M of memory, and a stop waits up to 15 minutes for a running job
 - **Sleep:** 5 seconds between batches
 - **Retry:** 3 attempts with exponential backoff
 - **Transport:** Doctrine (`doctrine://default`), a table in the application database

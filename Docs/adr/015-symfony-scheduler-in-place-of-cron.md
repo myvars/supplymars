@@ -27,11 +27,12 @@ Cron also started jobs due at the same minute together. `app:build-purchase-orde
 ## Consequences
 
 - One fewer image, one fewer container, and no environment copying.
+- Every command now shares one worker's memory, where under cron each had its own process. The worker stops itself between messages above 192M (`--memory-limit`) and Docker restarts it. A job killed mid-run (out of memory, or a stop past `stop_grace_period`, 15 minutes) has not advanced the schedule's state, so it runs again when the worker comes back.
 - Jobs due together no longer run at the same second, which should end the deadlocks between building purchase orders and updating supplier stock.
 - While a job runs, the worker handles nothing else, so async messages (emails, async domain events) wait. The jobs take seconds, and the backup minutes at night. If a job grows long, `scheduler_default` gets a worker of its own, in one container only (the lock is a file).
 - A scheduled command that throws or exits with a failure code becomes a failed message, reported to Sentry as `RunCommandFailedException`. Under cron those failures were only in the container log. The simulation and reporting commands exit with a failure when any item fails, so a partial failure is now reported once per run. Scheduled messages are not retried and not sent to the `failed` transport; the next run is the next scheduled time.
 - A successful run's output is no longer written to the log: `RunCommandMessage` keeps it. Errors the commands log still are.
-- The nightly playground reset flushes the playground's Redis, and with it the schedule's state. The worker then carries on from the current time, so nothing is made up and nothing runs twice.
+- The nightly playground reset flushes the playground's Redis, and with it the schedule's state. The worker then carries on from the current time: nothing runs twice, and a job that fell due in the few seconds before the flush was noticed is skipped until its next run.
 - Schedule times follow PHP's `date.timezone`, which the image sets to UTC, as the container's cron did.
 
 ## Alternatives Considered

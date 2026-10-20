@@ -91,8 +91,12 @@ services:
       <<: *common-php-env
     # Also runs the scheduled jobs (src/Shared/Infrastructure/Scheduler/MainSchedule.php; PLAYGROUND_MODE
     # picks the stack's). The scheduler comes first: the worker goes back to the first receiver after
-    # each message, and it only returns jobs that are due
-    command: sh -c "php bin/console messenger:consume scheduler_default async --time-limit=3600 --sleep=5"
+    # each message, and it only returns jobs that are due. The memory limit (under PHP's 256M) stops the
+    # worker cleanly between jobs, as one worker now runs every command for up to an hour
+    command: sh -c "php bin/console messenger:consume scheduler_default async --time-limit=3600 --memory-limit=192M --sleep=5"
+    # Docker's default 10 s would kill a running backup on a stop or a deploy; the worker exits as soon as
+    # the current job ends
+    stop_grace_period: 15m
     volumes:
       - /home/ubuntu/supplymars-backups:/backups   # Live's nightly backup writes latest.sql.gz here for the playground reset
 
