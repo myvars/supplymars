@@ -67,7 +67,7 @@ MAILER_PORT=1025
 # Database
 DATABASE_URL=mysql://root:password@127.0.0.1:${DATABASE_PORT}/${DATABASE_NAME}?serverVersion=8.4&charset=utf8mb4
 
-# Redis
+# Redis: the app cache and sessions. The password must match REDIS_PASSWORD in compose.override.yaml
 REDIS_URL=redis://default:password@127.0.0.1:${REDIS_PORT}
 
 # Message queue (a table in the database)
@@ -89,7 +89,7 @@ DEFAULT_URI=https://localhost:8000
 This approach runs PHP locally for faster iteration while Docker provides infrastructure.
 
 ```bash
-# 1. Start infrastructure services (MySQL, Redis, Mailpit, the phpMyAdmins)
+# 1. Start infrastructure services (MySQL, Redis, Mailpit, the phpMyAdmins). Sessions are in Redis, so logging in needs it
 make up-dev-tools
 
 # 2. Create database and run migrations
@@ -231,7 +231,7 @@ docker compose up -d database && sleep 10
 docker compose ps redis
 
 # Verify connection
-docker compose exec redis redis-cli ping
+docker compose exec redis sh -c 'REDISCLI_AUTH="$REDIS_PASSWORD" redis-cli ping'
 # Should return: PONG
 ```
 
@@ -341,7 +341,7 @@ Messages already waiting in the database queue are not moved. Let the worker emp
 | PHPMyAdmin (playground) | http://localhost:8082 | `PHPMYADMIN_PLAYGROUND_PORT` | the playground credentials |
 | Mailpit | http://localhost:8025 | `MAILPIT_PORT` | - |
 | MySQL | 127.0.0.1:3306 | `DATABASE_PORT` | root / password |
-| Redis | 127.0.0.1:6379 | `REDIS_PORT` | - |
+| Redis | 127.0.0.1:6379 | `REDIS_PORT` | default / password |
 
 The port variables and `DATABASE_NAME` are in the `docker` block of `.env`. Docker Compose reads them from
 that file, and `DATABASE_URL`, `REDIS_URL` and `MAILER_DSN` are built from them, so a change is made in one
