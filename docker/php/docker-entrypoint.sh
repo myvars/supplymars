@@ -3,11 +3,6 @@ set -euo pipefail
 
 echo "[docker-entrypoint] Running in environment: $APP_ENV"
 
-# Configure session for production
-if [ "${APP_ENV}" = "prod" ] && [ -n "${REDIS_SESSION_DSN:-}" ]; then
-  echo "session.save_path = \"${REDIS_SESSION_DSN}\"" > /usr/local/etc/php/conf.d/99-session-redis.ini
-fi
-
 if [ "$APP_ENV" != "prod" ]; then
     echo "[docker-entrypoint] Installing composer dependencies..."
     if [ ! -d vendor ]; then
