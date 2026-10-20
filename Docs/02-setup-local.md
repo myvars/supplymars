@@ -121,6 +121,13 @@ make up
 open https://localhost
 ```
 
+The `php` container runs FrankenPHP, which serves `https://localhost` with a certificate from its own local certificate authority, kept in the `caddy_data` volume. Browsers warn about it until you trust that authority, once per machine (on macOS; the volume keeps it across restarts):
+
+```bash
+docker compose cp php:/data/caddy/pki/authorities/local/root.crt /tmp/caddy-root.crt
+sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain /tmp/caddy-root.crt
+```
+
 ## Running Locally
 
 ### Symfony Server Mode
@@ -276,9 +283,11 @@ symfony server:stop
 symfony serve -d
 ```
 
-### Nginx Container Unhealthy
+### PHP Container Unhealthy
 
-The nginx healthcheck calls `/health`, so nginx is also reported unhealthy when the database, Redis or the queue is down. `curl -k https://localhost/health` shows which check failed, and `docker compose exec php tail var/log/dev.log` shows why.
+**Symptom:** `make up` fails with `container ...-php-1 is unhealthy`
+
+The php healthcheck calls `/health`, so the container is reported unhealthy when the database, Redis or the queue is down, as well as when FrankenPHP itself does not answer. `curl -k https://localhost/health` shows which check failed, `docker compose logs php` shows FrankenPHP's own errors, and `docker compose exec php tail var/log/dev.log` shows the app's.
 
 ### Test Database Not Found
 

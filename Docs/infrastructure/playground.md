@@ -76,7 +76,7 @@ MYSQL_PASSWORD=<password>
 MYSQL_ROOT_PASSWORD=<password>
 PLAYGROUND_MODE=false   # Also picks the scheduled jobs: true leaves out the refund and the backup
 SENTRY_DSN=<dsn>
-NGINX_HOST_PORT=8001
+HTTP_HOST_PORT=8001
 DB_HOST_PORT=3307
 ```
 
@@ -91,7 +91,7 @@ AWS_S3_PRODUCTS_PREFIX=playground
 UPLOADS_BASE_URL=https://unicorn-bucket-two.s3.eu-west-2.amazonaws.com/playground
 PLAYGROUND_MODE=true
 SENTRY_ENVIRONMENT=playground
-NGINX_HOST_PORT=8002
+HTTP_HOST_PORT=8002
 DB_HOST_PORT=3308
 ```
 
