@@ -20,24 +20,14 @@ services:
       <<: *mailer-env
 
 
-    # --- Messenger Worker (Prod local) ---
+  # --- Messenger Worker (Prod local) ---
   messenger:
     environment:
       <<: *mailer-env
-
-
-  # --- Cron Jobs (Prod) ---
-  cron:
-    environment:
-      <<: *mailer-env
-    # Prevent cron from running real jobs on local machine
-    command: /bin/sh -c 'printenv | grep -v "no_proxy" > /etc/environment && tail -f /dev/null'
-    healthcheck:
-      test: [ "CMD-SHELL", "ps aux | grep -q '[t]ail -f /dev/null'" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 5s
+    # Only the async queue, so the scheduled jobs (simulation, a real backup) never run on a local machine
+    command: sh -c "php bin/console messenger:consume async --time-limit=3600 --sleep=5"
+    # No backup runs here, and the server's backups directory does not exist on a local machine
+    volumes: !reset []
 
 
   # --- Nginx Webserver (Prod local) ---

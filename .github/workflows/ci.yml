@@ -62,7 +62,7 @@ jobs:
             - name: Run tests
               run: make check-tests
 
-    # Builds the php, cron, nginx and reset production images and pushes them to GHCR, tagged with
+    # Builds the php, nginx and reset production images and pushes them to GHCR, tagged with
     # the commit SHA. The server pulls them; it never builds. See Docs/11-runbook.md.
     publish:
         needs: test
@@ -92,10 +92,10 @@ jobs:
               run: echo "$TOKEN" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
 
             - name: Build production images
-              run: docker compose --progress=plain build php cron nginx reset
+              run: docker compose --progress=plain build php nginx reset
 
             - name: Push production images
-              run: docker compose push php cron nginx reset
+              run: docker compose push php nginx reset
 
     deploy:
         needs: publish

@@ -16,11 +16,11 @@ up-prod-local:
 # Run on the server. Pull the images CI built for the checked-out commit and start them; never
 # build. Rollback: git reset --hard <previous-sha> && make up-prod-live. See Docs/11-runbook.md.
 up-prod-live:
-	IMAGE_TAG=$(IMAGE_TAG) docker compose $(LIVE) pull php cron nginx
+	IMAGE_TAG=$(IMAGE_TAG) docker compose $(LIVE) pull php nginx
 	IMAGE_TAG=$(IMAGE_TAG) docker compose $(LIVE) up -d --no-build --remove-orphans --wait
 
 up-prod-playground:
-	IMAGE_TAG=$(IMAGE_TAG) docker compose $(PLAYGROUND) pull php cron nginx reset
+	IMAGE_TAG=$(IMAGE_TAG) docker compose $(PLAYGROUND) pull php nginx reset
 	IMAGE_TAG=$(IMAGE_TAG) docker compose $(PLAYGROUND) up -d --no-build --remove-orphans --wait
 
 # The deploy job's checks: /health answers on the port Caddy proxies to, and no migration is pending

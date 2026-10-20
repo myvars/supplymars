@@ -44,8 +44,8 @@ final class BackupDatabaseCommand
         #[Option(description: 'Copy the gzipped backup to this local path (e.g. /backups/latest.sql.gz).')]
         ?string $localCopy = null,
     ): int {
-        // Cron starts a new run whatever state the last one is in. A run that finds the lock held
-        // fails, so nothing chained after it with && treats a backup it did not take as done.
+        // The schedule starts a run whatever state a manual one is in. A run that finds the lock held
+        // fails, so it is reported rather than passing for a backup it did not take.
         if (!$this->lock()) {
             $io->warning('A backup is already running. This run has been skipped.');
 

@@ -2,7 +2,7 @@
 # Docker Compose: Production configuration
 # ========================================
 # Used by both Live and Playground stacks. Differences controlled via env vars.
-# CI builds the php, cron, nginx and reset images, tagged with the commit SHA, and pushes them to
+# CI builds the php, nginx and reset images, tagged with the commit SHA, and pushes them to
 # GHCR; the server pulls and starts them (make up-prod-live, make up-prod-playground) and never
 # builds. IMAGE_TAG is the commit SHA to run ("local" for a build on your own machine).
 
@@ -89,23 +89,12 @@ services:
       target: php-prod
     environment:
       <<: *common-php-env
-    # No volume mounts—worker runs using baked production code and environment
-
-
-  # --- Cron Jobs (Prod) ---
-  cron:
-    logging: *common-logging
-    image: ghcr.io/myvars/supplymars/cron:${IMAGE_TAG:-local}
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-      target: cron-prod
-    environment:
-      <<: *common-php-env
-    # The image holds both stacks' schedules; CRONTAB_FILE (in the env file) picks this stack's
-    command: /bin/sh -c 'install -m 0644 ${CRONTAB_FILE:-docker/php/cron/live-crontab} /etc/cron.d/app-cron && printenv | grep -v "no_proxy" > /etc/environment && cron -f'
+    # Also runs the scheduled jobs (src/Shared/Infrastructure/Scheduler/MainSchedule.php; PLAYGROUND_MODE
+    # picks the stack's). The scheduler comes first: the worker goes back to the first receiver after
+    # each message, and it only returns jobs that are due
+    command: sh -c "php bin/console messenger:consume scheduler_default async --time-limit=3600 --sleep=5"
     volumes:
-      - /home/ubuntu/supplymars-backups:/backups
+      - /home/ubuntu/supplymars-backups:/backups   # Live's nightly backup writes latest.sql.gz here for the playground reset
 
 
   # --- Playground Reset (nightly DB clone from live) ---
