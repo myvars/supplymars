@@ -23,3 +23,8 @@ when@test:
         cache:
             # In memory, so each ParaTest process has its own cache and nothing carries over between tests
             app: cache.adapter.array
+    services:
+        # Rate limit counts (rate_limiter.yaml, login_throttling) are in memory too, in a pool that is not
+        # cleared between the requests of one test, as resettable services are. Each test starts empty.
+        cache.rate_limiter:
+            class: Symfony\Component\Cache\Adapter\ArrayAdapter
