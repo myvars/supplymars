@@ -17,8 +17,7 @@ x-common-php-env: &common-php-env
   DEFAULT_DOMAIN: ${DEFAULT_DOMAIN}                       # Production domain
   DEFAULT_URI: ${DEFAULT_URI}                             # Production URL (e.g., https://www.supplymars.com)
   DATABASE_URL: ${DATABASE_URL}                           # Full DB connection string (use app user)
-  REDIS_URL: ${REDIS_URL}                                 # Redis connection for cache
-  REDIS_SESSION_DSN: ${REDIS_SESSION_DSN}                 # Redis for PHP sessions
+  REDIS_URL: ${REDIS_URL}                                 # Redis for the cache and sessions, with REDIS_PASSWORD
   MESSENGER_TRANSPORT_DSN: ${MESSENGER_TRANSPORT_DSN:-doctrine://default}   # Queue: a database table unless set
   MAILER_DSN: ${MAILER_DSN}                               # Mailer DSN (e.g., SMTP for real mail delivery)
   MAILER_FROM: ${MAILER_FROM}                             # Sender address (e.g., no-reply@supplymars.com)
@@ -51,7 +50,7 @@ services:
   redis:
     logging: *common-logging
     environment:
-      REDIS_PASSWORD: ${REDIS_PASSWORD}    # Protect Redis in prod (set strong pw)
+      REDIS_PASSWORD: ${REDIS_PASSWORD}    # Required: Redis refuses to start without it (compose.yaml)
 
 
   # --- RabbitMQ Message Broker (only with the rabbitmq profile) ---

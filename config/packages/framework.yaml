@@ -3,8 +3,9 @@ framework:
     secret: '%env(APP_SECRET)%'
 
     # Note that the session will be started ONLY if you read or write from it.
+    # Sessions are in Redis in every environment, symfony serve included (make up-dev-tools starts it)
     session:
-        handler_id: null
+        handler_id: '%env(REDIS_URL)%'
 
     rate_limiter:
         registration:

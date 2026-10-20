@@ -62,7 +62,6 @@ DEFAULT_DOMAIN=supplymars
 DEFAULT_URI=https://live.supplymars.com
 DATABASE_URL=mysql://app:<password>@database:3306/app
 REDIS_URL=redis://default:<password>@redis:6379
-REDIS_SESSION_DSN=redis://default:<password>@redis:6379/1
 REDIS_PASSWORD=<password>
 MAILER_DSN=<mailer-dsn>
 MAILER_FROM=no-reply@supplymars.com
@@ -98,6 +97,8 @@ NGINX_HOST_PORT=8002
 DB_HOST_PORT=3308
 CRONTAB_FILE=docker/php/cron/playground-crontab
 ```
+
+`REDIS_PASSWORD` is required: Redis will not start without it, and `REDIS_URL` must carry the same password, since sessions and the cache both connect through it.
 
 `MESSENGER_TRANSPORT_DSN` is not set: the queue defaults to the database (`compose.prod.yaml`). An env file must not keep an old AMQP DSN, which would override the default and stop the worker, since the AMQP transport is no longer installed.
 

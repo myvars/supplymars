@@ -53,7 +53,7 @@ docker compose $PLAYGROUND exec -T php php bin/console sentry:test
 | Check | What it does |
 |-------|--------------|
 | `database` | Runs `SELECT 1` on the default connection |
-| `redis` | Pings the Redis client used for the cache |
+| `redis` | Pings the Redis client used for the cache and sessions. Fails when `REDIS_URL`'s password does not match `REDIS_PASSWORD` |
 | `queue` | Asks the `async` Messenger transport how many messages are waiting. With the database queue ([ADR 013](adr/013-database-queue-by-default.md)) this counts rows in `messenger_messages`, so it fails whenever the database does. It does not notice a stopped `messenger` worker: messages wait in the table and the check still passes. A transport with nothing to connect to (`sync://`, `in-memory://` in tests) always passes |
 
 A stopped service fails its check at once. A host that accepts the connection but never answers (a hung database) holds the check until nginx gives up after 60 seconds and returns 504. Set the uptime monitor to treat a timeout or any status other than 200 as down.

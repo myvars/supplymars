@@ -316,7 +316,7 @@ orm:
 ### Caching Strategy
 
 **Application cache:** Redis via SNC Redis bundle
-**Sessions:** Redis (configured in PHP INI)
+**Sessions:** Redis, through Symfony's session handler on `REDIS_URL`
 **HTTP cache:** Nginx serves static assets with long TTL
 
 ### Reporting Performance

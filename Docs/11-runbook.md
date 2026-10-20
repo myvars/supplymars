@@ -382,7 +382,7 @@ docker compose $LIVE exec -T database mysqladmin -u root -p processlist
 docker stats --no-stream
 
 # Redis stats
-docker compose $LIVE exec redis redis-cli -a "$REDIS_PASSWORD" info stats | grep instantaneous_ops_per_sec
+docker compose $LIVE exec redis sh -c 'REDISCLI_AUTH="$REDIS_PASSWORD" redis-cli info stats' | grep instantaneous_ops_per_sec
 ```
 
 **Common causes:**

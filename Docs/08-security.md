@@ -354,7 +354,7 @@ The playground database resets nightly at 02:15 UTC via cron, restoring a clean 
 ### What Is Protected
 
 1. **Passwords:** Hashed with strong algorithms
-2. **Sessions:** PHP's native handler (`handler_id: null`). In the Docker images PHP stores them in Redis (`docker/php/conf.d/10-app.ini`, `REDIS_SESSION_DSN` in prod); with `symfony serve` they use PHP's local default
+2. **Sessions:** in Redis in every environment, through Symfony's Redis session handler on `REDIS_URL` (`framework.session.handler_id`). `symfony serve` needs Redis running to log in; `make up-dev-tools` starts it. Redis refuses connections without `REDIS_PASSWORD` (`compose.yaml` passes it to `requirepass`), so `REDIS_URL` must carry it
 3. **CSRF tokens:** Required for Symfony forms, login, ActionFlow actions that call `->csrf()`, ConfirmFlow actions and the requests sent from JavaScript (product image upload and reorder, see [CSRF Protection](#csrf-protection)). The REST API is stateless and uses bearer tokens instead
 4. **Remember-me tokens:** Signed with kernel secret
 

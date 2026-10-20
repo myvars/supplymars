@@ -23,14 +23,18 @@ services:
     restart: unless-stopped
 
 
-  # --- Redis Cache ---
+  # --- Redis: app cache and sessions ---
+  # The image ignores REDIS_PASSWORD, so the command passes it to requirepass. Refuses to start when it is
+  # empty. Each client's REDIS_URL must carry the same password. Runs through the image's entrypoint,
+  # which drops to the redis user.
   redis:
     image: redis:8.8-alpine
+    command: [ "sh", "-c", ': "$${REDIS_PASSWORD:?REDIS_PASSWORD must be set}"; exec docker-entrypoint.sh redis-server --requirepass "$$REDIS_PASSWORD"' ]
     volumes:
       - redis_data:/data  # Persist redis data between restarts
     healthcheck:
-      # Wait for Redis to be ready
-      test: [ "CMD", "redis-cli", "ping" ]
+      # Passes only with the password: an unauthenticated ping gets NOAUTH, and redis-cli still exits 0
+      test: [ "CMD-SHELL", 'REDISCLI_AUTH="$$REDIS_PASSWORD" redis-cli ping | grep -q PONG' ]
       interval: 30s
       timeout: 5s
       retries: 5
