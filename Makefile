@@ -90,10 +90,4 @@ logs-%:
 clean-build:
 	docker compose build --no-cache
 
-k6:
-	./scripts/run-k6-script.sh $(SCRIPT) $(ENV) false
-
-k6-dash:
-	./scripts/run-k6-script.sh $(SCRIPT) $(ENV) true
-
-.PHONY: up up-prod-local up-prod-live up-prod-playground verify-prod-live verify-prod-playground down-prod-live down-prod-playground certs up-dev-tools down test test-% check check-prod-config check-% bash logs logs-% clean-build k6 k6-dash
+.PHONY: up up-prod-local up-prod-live up-prod-playground verify-prod-live verify-prod-playground down-prod-live down-prod-playground certs up-dev-tools down test test-% check check-prod-config check-% bash logs logs-% clean-build
