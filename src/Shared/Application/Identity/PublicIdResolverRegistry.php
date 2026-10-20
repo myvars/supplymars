@@ -7,8 +7,9 @@ namespace App\Shared\Application\Identity;
 use App\Shared\Domain\ValueObject\AbstractUlidId;
 use Psr\Container\ContainerInterface;
 use Symfony\Component\DependencyInjection\Attribute\AutowireLocator;
+use Symfony\Contracts\Service\ResetInterface;
 
-final class PublicIdResolverRegistry
+final class PublicIdResolverRegistry implements ResetInterface
 {
     /**
      * @param ContainerInterface $resolvers keyed by each resolver's #[AsTaggedItem] index (the VO class)
@@ -19,7 +20,12 @@ final class PublicIdResolverRegistry
     ) {
     }
 
-    /** @var array<string, int|null> simple in-request cache ["VOClass|value" => int|null] */
+    /**
+     * Misses are cached too. Emptied by reset(), which the container calls between Messenger
+     * messages and between requests in a worker, so a result never outlives one request or message.
+     *
+     * @var array<string, int|null> ["VOClass|value" => int|null]
+     */
     private array $cache = [];
 
     public function resolve(AbstractUlidId $publicId): ?int
@@ -33,5 +39,10 @@ final class PublicIdResolverRegistry
         $resolver = $this->resolvers->get($publicId::class) ?? null;
 
         return $this->cache[$key] = $resolver?->resolve($publicId);
+    }
+
+    public function reset(): void
+    {
+        $this->cache = [];
     }
 }
