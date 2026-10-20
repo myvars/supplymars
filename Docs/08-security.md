@@ -431,7 +431,7 @@ The app sends the security headers, through `nelmio/security-bundle`, so `symfon
 
 HSTS stays in nginx (`docker/nginx/conf.d/prod.conf`, at server level), and Caddy passes it on. In the bundle it comes with `forced_ssl`, which also redirects to HTTPS, and Caddy already does that. There is no `preload`: submitting the domain to the browsers' preload list is slow to undo. `includeSubDomains` means every subdomain of `supplymars.com` must serve HTTPS.
 
-The app adds its headers only to responses that go through Symfony. What nginx answers itself carries only HSTS: static files (`public/assets/`, and in development Docker `public/bundles/`, `public/uploads/` and `public/media/`) and nginx's own error responses (413, 429, 502). Production images are in S3 and never served by nginx. Redirects carry no CSP, `X-Frame-Options` or `nosniff`: the bundle leaves them out, as they have no body.
+The app adds its headers only to responses that go through Symfony. What nginx answers itself carries only HSTS: static files (`public/assets/`, and in development Docker `public/bundles/`, `public/uploads/` and `public/media/`) and nginx's own responses: 403 from the denied paths, 404 for a missing static file (any `/assets/` path, or a `.js`, `.css` or image extension), and 413, 429 and 502. Production images are in S3 and never served by nginx. Redirects carry no CSP, `X-Frame-Options` or `nosniff`: the bundle leaves them out, as they have no body.
 
 ### Content Security Policy
 
@@ -461,7 +461,7 @@ csp:
 - **`https://challenges.cloudflare.com`** in `script-src`, `connect-src` and `frame-src`: the Turnstile widget. `turnstile_controller.js` loads its script from there, and the widget runs in an iframe that calls back to it.
 - **The S3 bucket host in `img-src`**: production stores product images and their thumbnails in S3. If the bucket or region changes, change the host here. Development stores them in `public/`, so the host does nothing there.
 
-- **No CDN.** `/api/doc` inlines Swagger UI's files (`html_config.assets_mode: offline` in `config/packages/nelmio_api_doc.yaml`) rather than loading them from jsDelivr, and `templates/bundles/NelmioApiDocBundle/SwaggerUi/index.html.twig` drops the bundle's logo, which comes from the CDN in every mode.
+- **No CDN.** `/api/doc` inlines Swagger UI's files (`html_config.assets_mode: offline` in `config/packages/nelmio_api_doc.yaml`) rather than loading them from jsDelivr, and `templates/bundles/NelmioApiDocBundle/SwaggerUi/index.html.twig` drops the bundle's logo, which comes from the CDN in every mode. The FrankenPHP hot-reload scripts in `templates/base.html.twig` also come from jsDelivr and would be blocked; they load only when `FRANKENPHP_HOT_RELOAD` is set, which nothing here does yet.
 
 The bundle leaves out a directive whose value equals `default-src`, so `font-src` does not appear in the header. Fonts still fall back to `default-src 'self'`.
 

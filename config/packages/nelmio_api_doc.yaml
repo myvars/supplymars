@@ -17,7 +17,9 @@ when@dev:
             path_patterns:
                 - '^/api/'
 
-# Swagger UI's files are inlined into /api/doc, not loaded from a CDN the Content Security Policy blocks
+# Swagger UI's files are inlined into /api/doc (about 2 MB), not loaded from a CDN the Content
+# Security Policy blocks. assets_mode: bundle would let them be cached, but the production image has
+# no public/bundles/ (composer install --no-scripts, and .dockerignore leaves it out).
 nelmio_api_doc:
     html_config:
         assets_mode: offline
