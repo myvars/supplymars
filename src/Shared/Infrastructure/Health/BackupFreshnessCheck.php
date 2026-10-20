@@ -8,7 +8,7 @@ use League\Flysystem\FilesystemOperator;
 use Symfony\Component\DependencyInjection\Attribute\Target;
 
 /**
- * Whether last night's backup landed. Deliberately not a HealthCheckInterface: /health is the nginx
+ * Whether last night's backup landed. Deliberately not a HealthCheckInterface: /health is the container
  * healthcheck and the deploy check, and a missed backup must not mark the stack down.
  */
 final readonly class BackupFreshnessCheck

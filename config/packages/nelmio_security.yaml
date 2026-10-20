@@ -1,5 +1,5 @@
 # Security headers, sent by the app so dev, test and production use the same policy.
-# HSTS is not here: nginx sends it (docker/nginx/conf.d). See Docs/08-security.md.
+# HSTS is not here: FrankenPHP sends it (docker/frankenphp/Caddyfile). See Docs/08-security.md.
 nelmio_security:
     clickjacking:
         paths:

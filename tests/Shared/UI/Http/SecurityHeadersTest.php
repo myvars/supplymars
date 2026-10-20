@@ -10,7 +10,7 @@ use Zenstruck\Browser\Test\HasBrowser;
 
 /**
  * The app sends the security headers, so dev and tests use the production policy. HSTS is the web
- * server's (docker/nginx/conf.d/prod.conf) and is not checked here.
+ * server's (docker/frankenphp/Caddyfile) and is not checked here.
  */
 class SecurityHeadersTest extends WebTestCase
 {

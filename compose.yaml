@@ -57,7 +57,7 @@ services:
     restart: unless-stopped
 
 
-  # --- PHP Application (FPM) ---
+  # --- PHP Application (FrankenPHP: web server and PHP in one) ---
   php:
     build:
       context: .
@@ -73,13 +73,21 @@ services:
         required: false   # Only waited for when the rabbitmq profile is on
     environment:
       RUN_MIGRATIONS: "true"  # Only php container runs migrations/messenger-setup
-    command: php-fpm
+      SERVER_NAME: localhost  # HTTPS from Caddy's local certificate authority (docker/frankenphp/Caddyfile)
+    ports:
+      - "80:80"         # HTTP, redirects to HTTPS
+      - "443:443"       # HTTPS
+      - "443:443/udp"   # HTTP/3
+    volumes:
+      - caddy_data:/data      # Caddy's local CA and certificates, kept so the browser trusts them across restarts
+      - caddy_config:/config
     healthcheck:
-      test: [ "CMD", "php-fpm", "-t" ]
+      # Passes when FrankenPHP, the database, Redis and the queue all respond
+      test: [ "CMD", "curl", "-kf", "https://localhost/health" ]
       interval: 30s
       timeout: 10s
-      retries: 5
-      start_period: 30s
+      retries: 10
+      start_period: 60s
     restart: unless-stopped
 
 
@@ -104,28 +112,9 @@ services:
     restart: unless-stopped
 
 
-  # --- Nginx Webserver ---
-  nginx:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-      target: nginx-dev
-    depends_on:
-      php:
-        condition: service_healthy
-    environment:
-      SERVER_NAME: ${SERVER_NAME:-localhost}
-    healthcheck:
-      # Passes when nginx, PHP, the database, Redis and the queue all respond
-      test: [ "CMD", "curl", "-kf", "https://localhost/health" ]
-      interval: 30s
-      timeout: 10s
-      retries: 10
-      start_period: 60s
-    restart: unless-stopped
-
-
 # --- Volumes ---
 volumes:
   db-data:  # MySQL data
   redis_data: # Redis data
+  caddy_data:   # Caddy's certificates (local CA in development)
+  caddy_config: # Caddy's saved configuration

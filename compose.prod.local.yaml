@@ -18,6 +18,8 @@ services:
   php:
     environment:
       <<: *mailer-env
+    ports: !override
+      - "127.0.0.1:8000:80"   # Fixed port for local testing
 
 
   # --- Messenger Worker (Prod local) ---
@@ -28,12 +30,6 @@ services:
     command: sh -c "php bin/console messenger:consume async --time-limit=3600 --sleep=5"
     # No backup runs here, and the server's backups directory does not exist on a local machine
     volumes: !reset []
-
-
-  # --- Nginx Webserver (Prod local) ---
-  nginx:
-    ports:
-      - "127.0.0.1:8000:80"   # Override to fixed port for local testing
 
 
   # --- PhpMyAdmin and Mailpit (Prod local Tools): the development definitions ---

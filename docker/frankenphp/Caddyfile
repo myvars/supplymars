@@ -1,0 +1,64 @@
+# FrankenPHP (Caddy with PHP built in). SERVER_NAME picks the mode:
+# - development (make up): localhost, HTTPS from Caddy's own local certificate authority;
+# - production: :80, plain HTTP behind the host-level Caddy, which terminates TLS. See Docs/11-runbook.md.
+# Rate limits, the client IP, HTTPS detection, the body size limit and the security headers other than
+# HSTS are the app's, so development and tests see them too. See ADR 016.
+{
+	# The local CA cannot be added to the host's trust store from inside a container
+	skip_install_trust
+
+	servers {
+		# The host Caddy reaches the container through Docker's network. This only makes the access
+		# log show the visitor's IP: PHP still sees the proxy, and Symfony reads X-Forwarded-For itself.
+		trusted_proxies static private_ranges
+		client_ip_headers X-Forwarded-For
+	}
+}
+
+{$SERVER_NAME:localhost} {
+	log
+
+	root /app/public
+	encode zstd gzip
+
+	# HSTS belongs to the server that answers for HTTPS; the host Caddy passes it on
+	header {
+		Strict-Transport-Security "max-age=63072000; includeSubDomains"
+		-Server
+	}
+
+	# Asset Mapper output: file names carry a content hash. Only files that exist, so a 404 is not cached
+	@asset {
+		path /assets/*
+		file
+	}
+	header @asset Cache-Control "public, max-age=31536000, immutable"
+
+	# route keeps the order below; Caddy otherwise sorts directives itself, and would rewrite first
+	route {
+		# nginx refused TRACE by default (frankenphp.dev/docs/migrate)
+		@trace method TRACE
+		respond @trace 405
+
+		@dotfiles {
+			path_regexp /\.
+			not path /.well-known/*
+		}
+		respond @dotfiles 403
+
+		@config path_regexp \.env|composer\.(json|lock)
+		respond @config 403
+
+		# Only the front controller runs. Anything that is not a file goes to index.php, and any other
+		# .php file is hidden from the file server, so it returns 404 rather than running or downloading
+		@notFile not file {path}
+		rewrite @notFile /index.php
+
+		@frontController path /index.php
+		php @frontController
+
+		file_server {
+			hide *.php
+		}
+	}
+}

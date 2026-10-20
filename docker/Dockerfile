@@ -1,26 +1,20 @@
-# ------------ Php Base Stage ------------
-FROM php:8.5.11-fpm AS php-base
+# One image for the web server and the Messenger worker: the php service runs FrankenPHP (the image's
+# default command), and messenger runs messenger:consume. See Docs/adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md.
 
-# Install system dependencies for extensions
-RUN apt-get update && apt-get install -y \
+# ------------ Php Base Stage ------------
+FROM dunglas/frankenphp:1.13.1-php8.5.11 AS php-base
+
+# System tools (mysqldump for the backup command) and PHP extensions
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git unzip procps default-mysql-client \
-    libicu-dev libzip-dev zlib1g-dev \
-    libjpeg62-turbo-dev libpng-dev libfreetype6-dev libwebp-dev libxpm-dev \
-    libxslt1-dev \
- && docker-php-ext-configure gd \
-      --with-freetype \
-      --with-jpeg \
-      --with-webp \
-      --with-xpm \
- && docker-php-ext-install \
+ && install-php-extensions \
       intl \
       pdo_mysql \
       zip \
       bcmath \
       gd \
       xsl \
- && pecl install redis-6.3.0 \
- && docker-php-ext-enable redis \
+      redis-6.3.0 \
  && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install Composer
@@ -29,18 +23,16 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # Set up PHP configuration directory
 ENV PHP_INI_SCAN_DIR="$PHP_INI_DIR/conf.d:$PHP_INI_DIR/app.conf.d"
 
-# Copy PHP configuration and entrypoint script
+# Copy PHP configuration, the Caddyfile and the entrypoint script
 COPY --link docker/php/conf.d/10-app.ini $PHP_INI_DIR/app.conf.d/
-COPY --link docker/php/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-
-# Configure PHP-FPM to listen on port 9000
-RUN sed -i 's/^listen = .*/listen = 9000/' /usr/local/etc/php-fpm.d/www.conf
-
-# Make scripts executable
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+COPY --link docker/frankenphp/Caddyfile /etc/frankenphp/Caddyfile
+COPY --link --chmod=755 docker/php/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 # Set the working directory
 WORKDIR /app
+
+ENTRYPOINT ["docker-entrypoint.sh"]
+CMD ["frankenphp", "run", "--config", "/etc/frankenphp/Caddyfile"]
 
 
 # ------------ Php Dev Stage ------------
@@ -52,11 +44,8 @@ ENV XDEBUG_MODE=off
 
 # Install and enable Xdebug, set dev stage defaults
 RUN set -eux; \
-    pecl install xdebug && docker-php-ext-enable xdebug && \
+    install-php-extensions xdebug && \
     mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini";
-
-# Ensure entrypoint script is used
-ENTRYPOINT ["docker-entrypoint.sh"]
 
 
 # ------------ Php Production Builder Stage ------------
@@ -81,7 +70,7 @@ COPY --link . /app
 RUN set -eux; \
     rm -Rf docker/ && \
     mkdir -p var/cache/prod var/log public/assets assets/vendor && \
-    chown -R www-data:www-data var public/assets assets /usr/local/etc/php/conf.d && \
+    chown -R www-data:www-data var public/assets assets && \
     chmod -R 775 var public/assets assets && \
     composer dump-autoload --classmap-authoritative --no-dev && \
     composer dump-env prod;
@@ -109,17 +98,18 @@ FROM php-base AS php-prod
 ENV APP_ENV=prod
 ENV APP_DEBUG=0
 
-# Set prod stage defaults
-RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini";
-
-# Enable OPcache for production
+# Production php.ini and OPcache settings
+RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 COPY --link docker/php/conf.d/20-app.prod.ini $PHP_INI_DIR/app.conf.d/
+
+# PHP runs as www-data, as the PHP-FPM workers did. It needs Caddy's data and config directories; the
+# PHP configuration stays root's. The frankenphp binary can bind port 80 without root.
+RUN chown -R www-data:www-data /data/caddy /config/caddy
 
 # Copy built Symfony assets from the builder stage
 COPY --from=php-prod-builder /app /app
 
-# Ensure entrypoint script is used
-ENTRYPOINT ["docker-entrypoint.sh"]
+USER www-data
 
 
 # ---- Playground Reset Stage ----
@@ -150,14 +140,3 @@ RUN chmod 0644 /etc/cron.d/reset-cron
 
 CMD ["cron", "-f"]
 
-
-# ---- NGINX Dev Stage ----
-FROM nginx:1.31-alpine AS nginx-dev
-
-
-# ---- NGINX Production Stage (behind Caddy) ----
-FROM nginx:1.31-alpine AS nginx-prod
-
-COPY --link docker/nginx/conf.d/prod.conf /etc/nginx/conf.d/default.conf
-
-COPY --from=php-prod /app/public /app/public
