@@ -5,34 +5,26 @@
 /public/uploads/
 /config/secrets/prod/prod.decrypt.private.php
 
-# Tailwind + front-end build artifacts
-/node_modules/
+# Asset Mapper output
 /public/assets/
-/public/build/
-
-# If you use asset mapper or encore
 /assets/vendor/
-/assets/generated/
 
-# Compiled Tailwind output (if any custom output path)
-/tailwind.config.js
-/postcss.config.js
-/purgecss.config.js
-/vite.config.js
+# Tests and docs are not in the image. Leaving them out keeps the build cache valid when only they change
+/tests/
+/Docs/
 
 # Environment config files — copy explicitly in Dockerfile
 .env.local
 .env.*.local
 .env.test
 .env.dev
-.env.test.local
 
 # Git-related
 .git
 .gitignore
-.gitattributes
 
 # Editor and OS files
+.idea/
 .DS_Store
 Thumbs.db
 *.log
@@ -42,13 +34,9 @@ Thumbs.db
 *.tmp
 *.orig
 
-# Composer, PHPUnit, PHP caches
-/.phpunit.result.cache
-/.composer
+# PHPUnit and PHP-CS-Fixer caches
+/.phpunit.cache
+/.php-cs-fixer.cache
 
-# Docker & tooling
-docker-compose.override.yaml
+# Docker
 .dockerignore
-Dockerfile
-entry-*.sh
-docker-entrypoint.sh
