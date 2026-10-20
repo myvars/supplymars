@@ -65,16 +65,6 @@ services:
       - messenger-var:/app/var    # Dedicated volume for var/ (cache/logs)
 
 
-  # --- Cron Jobs (Dev) ---
-  cron:
-    environment:
-      <<: *common-php-env
-      SKIP_ASSET_BUILD: "true"  # Cron doesn't serve HTTP
-    volumes:
-      - ./docker/php/cron/dev-crontab:/etc/cron.d/app-cron:ro   # Mount dev crontab
-      - .:/app                    # Mount source for code reload
-      - cron-var:/app/var         # Dedicated volume for var/ (cache/logs)
-
   # --- Nginx Webserver (Dev) ---
   nginx:
     ports:
@@ -143,4 +133,3 @@ services:
 volumes:
   app-var:          # Dedicated to main php container
   messenger-var:    # Messenger service isolation
-  cron-var:         # Cron service isolation

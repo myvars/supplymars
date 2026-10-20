@@ -14,6 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Exception\InvalidOptionException;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
@@ -45,7 +46,6 @@ class CreateCustomerOrdersCommandTest extends KernelTestCase
 
         $this->commandTester->execute([
             'order-count' => 2,
-            '--skip-timing' => true,
         ]);
 
         self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
@@ -72,7 +72,6 @@ class CreateCustomerOrdersCommandTest extends KernelTestCase
         $this->commandTester->execute([
             'order-count' => 1,
             '--random' => true,
-            '--skip-timing' => true,
         ]);
 
         self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
@@ -88,7 +87,6 @@ class CreateCustomerOrdersCommandTest extends KernelTestCase
         $this->commandTester->execute([
             'order-count' => 3,
             '--dry-run' => true,
-            '--skip-timing' => true,
         ]);
 
         self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
@@ -103,7 +101,6 @@ class CreateCustomerOrdersCommandTest extends KernelTestCase
 
         $this->commandTester->execute([
             'order-count' => 1,
-            '--skip-timing' => true,
         ], ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]);
 
         self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
@@ -111,18 +108,28 @@ class CreateCustomerOrdersCommandTest extends KernelTestCase
     }
 
     #[WithStory(StaffUserStory::class)]
-    public function testSkipTimingOptionIsAccepted(): void
+    public function testCreatesOneOrderByDefault(): void
     {
         $this->createTestProducts(5);
+
+        $initialCount = $this->getOrderCount();
+
+        $this->commandTester->execute([]);
+
+        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
+        self::assertStringContainsString('Created 1 customer orders', $this->commandTester->getDisplay());
+        self::assertSame($initialCount + 1, $this->getOrderCount());
+    }
+
+    public function testHasNoTimingOption(): void
+    {
+        // The command never waits: the schedule (MainSchedule) spreads the orders instead
+        $this->expectException(InvalidOptionException::class);
 
         $this->commandTester->execute([
             'order-count' => 1,
             '--skip-timing' => true,
         ]);
-
-        // Verifies --skip-timing is a valid option and command succeeds.
-        // Timing-based assertions removed as they are flaky on slow CI.
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
     }
 
     private function createTestProducts(int $count): void

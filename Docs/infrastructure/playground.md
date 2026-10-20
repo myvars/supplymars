@@ -24,7 +24,7 @@ Each stack has its own database, Redis, and PHP containers, and its own queue (a
 
 ### Nightly Reset
 
-At **02:00 UTC**, the live cron container runs `app:backup-database --local-copy=/backups/latest.sql.gz`. This uploads the backup to S3 and saves a copy to `/home/ubuntu/supplymars-backups/` on the host.
+At **02:00 UTC**, the live messenger container runs `app:backup-database --local-copy=/backups/latest.sql.gz` as a scheduled job, first of the jobs due then. This uploads the backup to S3 and saves a copy to `/home/ubuntu/supplymars-backups/` on the host.
 
 At **02:15 UTC**, the playground reset container runs `playground-reset.sh`, which:
 
@@ -41,8 +41,7 @@ The credential redaction runs as raw SQL in the reset container (which has no PH
 |------|---------|
 | `compose.prod.yaml` | Production overrides (both stacks), naming the images CI publishes to GHCR |
 | `compose.publish.yaml` | Build cache for the CI job that publishes the images |
-| `docker/php/cron/live-crontab` | Live cron schedule (includes backup). The cron image holds both schedules; `CRONTAB_FILE` in the env file picks one when the container starts |
-| `docker/php/cron/playground-crontab` | Playground cron schedule |
+| `src/Shared/Infrastructure/Scheduler/MainSchedule.php` | Both stacks' scheduled jobs, run by the messenger container. `PLAYGROUND_MODE` leaves out the refund and the backup on playground |
 | `docker/php/cron/reset-crontab` | Reset container cron (02:15 UTC) |
 | `scripts/playground-reset.sh` | Reset script (DB restore, credential redaction, S3 sync, cache flush) |
 | `scripts/playground-redact-staff.sql` | Staff credential scrambling and demo user creation |
@@ -75,11 +74,10 @@ TURNSTILE_SITE_KEY=<key>
 TURNSTILE_SECRET_KEY=<key>
 MYSQL_PASSWORD=<password>
 MYSQL_ROOT_PASSWORD=<password>
-PLAYGROUND_MODE=false
+PLAYGROUND_MODE=false   # Also picks the scheduled jobs: true leaves out the refund and the backup
 SENTRY_DSN=<dsn>
 NGINX_HOST_PORT=8001
 DB_HOST_PORT=3307
-CRONTAB_FILE=docker/php/cron/live-crontab
 ```
 
 ### playground.env
@@ -95,7 +93,6 @@ PLAYGROUND_MODE=true
 SENTRY_ENVIRONMENT=playground
 NGINX_HOST_PORT=8002
 DB_HOST_PORT=3308
-CRONTAB_FILE=docker/php/cron/playground-crontab
 ```
 
 `REDIS_PASSWORD` is required: Redis will not start without it, and `REDIS_URL` must carry the same password, since sessions and the cache both connect through it.
@@ -190,7 +187,7 @@ Seed the backup file (required before playground can start):
 docker compose --env-file ../supplymars-secrets/live.env \
     -p supplymars-live \
     -f compose.yaml -f compose.prod.yaml \
-    exec -T cron php bin/console app:backup-database --local-copy=/backups/latest.sql.gz
+    exec -T messenger php bin/console app:backup-database --local-copy=/backups/latest.sql.gz
 ```
 
 Start the playground stack:
@@ -255,7 +252,7 @@ docker compose --env-file ../supplymars-secrets/playground.env \
 # --- Manual backup with local copy ---
 docker compose --env-file ../supplymars-secrets/live.env \
     -p supplymars-live -f compose.yaml -f compose.prod.yaml \
-    exec -T cron php bin/console app:backup-database --local-copy=/backups/latest.sql.gz
+    exec -T messenger php bin/console app:backup-database --local-copy=/backups/latest.sql.gz
 
 # --- Container health ---
 docker compose --env-file ../supplymars-secrets/live.env \
@@ -287,7 +284,7 @@ ls -lh /home/ubuntu/supplymars-backups/latest.sql.gz
 # Run backup manually
 docker compose --env-file ../supplymars-secrets/live.env \
     -p supplymars-live -f compose.yaml -f compose.prod.yaml \
-    exec -T cron php bin/console app:backup-database --local-copy=/backups/latest.sql.gz
+    exec -T messenger php bin/console app:backup-database --local-copy=/backups/latest.sql.gz
 ```
 
 ### Caddy won't provision certificates

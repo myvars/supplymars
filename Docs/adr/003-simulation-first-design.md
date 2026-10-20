@@ -54,6 +54,8 @@ Production runs simulation on cron to maintain data flow:
 0    * * * * app:ship-purchase-order-items 100
 ```
 
+Since [ADR 015](015-symfony-scheduler-in-place-of-cron.md) these jobs run with Symfony Scheduler in the Messenger worker, not cron; `src/Shared/Infrastructure/Scheduler/MainSchedule.php` holds the current schedule.
+
 ## Consequences
 
 ### Positive

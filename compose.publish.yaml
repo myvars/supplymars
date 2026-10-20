@@ -14,15 +14,6 @@ services:
       cache_to:
         - type=gha,scope=php-prod,mode=max
 
-  cron:
-    build:
-      cache_from:
-        - type=gha,scope=php-dev
-        - type=gha,scope=php-prod
-        - type=gha,scope=cron-prod
-      cache_to:
-        - type=gha,scope=cron-prod,mode=max
-
   nginx:
     build:
       cache_from:

@@ -8,7 +8,7 @@ if [ "$APP_ENV" != "prod" ]; then
     if [ ! -d vendor ]; then
         composer install --no-interaction --prefer-dist
     fi
-    # Build assets (skip for messenger/cron containers that don't serve HTTP)
+    # Build assets (skip for the messenger container, which doesn't serve HTTP)
     if [ "${SKIP_ASSET_BUILD:-false}" != "true" ]; then
         php bin/console importmap:install --no-interaction || echo "Importmap install failed"
         php bin/console tailwind:build --minify || echo "Tailwind build failed"

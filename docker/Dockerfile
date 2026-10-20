@@ -3,7 +3,7 @@ FROM php:8.5.11-fpm AS php-base
 
 # Install system dependencies for extensions
 RUN apt-get update && apt-get install -y \
-    git cron unzip procps default-mysql-client \
+    git unzip procps default-mysql-client \
     libicu-dev libzip-dev zlib1g-dev \
     libjpeg62-turbo-dev libpng-dev libfreetype6-dev libwebp-dev libxpm-dev \
     libxslt1-dev \
@@ -120,16 +120,6 @@ COPY --from=php-prod-builder /app /app
 
 # Ensure entrypoint script is used
 ENTRYPOINT ["docker-entrypoint.sh"]
-
-
-# ---- Cron Production Stage ----
-# Note: messenger uses php-dev/php-prod directly (no separate stage needed)
-# Note: cron-dev uses php-dev directly (no separate stage needed)
-FROM php-prod AS cron-prod
-
-# One image for both stacks: the cron service's command in compose.prod.yaml installs the schedule
-# that CRONTAB_FILE names when the container starts
-COPY --link docker/php/cron/live-crontab docker/php/cron/playground-crontab /app/docker/php/cron/
 
 
 # ---- Playground Reset Stage ----

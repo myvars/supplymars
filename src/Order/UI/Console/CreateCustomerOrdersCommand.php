@@ -34,13 +34,11 @@ readonly class CreateCustomerOrdersCommand
         InputInterface $input,
         OutputInterface $output,
         #[Argument(description: 'Order count')]
-        int $orderCount = 0,
+        int $orderCount = 1,
         #[Option(description: 'Randomise')]
         bool $random = false,
         #[Option(description: 'Run without persisting changes')]
         bool $dryRun = false,
-        #[Option(description: 'Skip timing delays (for testing)')]
-        bool $skipTiming = false,
     ): int {
         $io = new SymfonyStyle($input, $output);
         if ($orderCount < 1) {
@@ -73,10 +71,6 @@ readonly class CreateCustomerOrdersCommand
         $failed = 0;
 
         for ($i = 0; $i < $orderCount; ++$i) {
-            if (!$skipTiming) {
-                sleep(random_int(1, intdiv(300, $orderCount)));
-            }
-
             if ($dryRun) {
                 $processedIds[] = 'DRY-RUN-' . ($i + 1);
                 ++$processed;

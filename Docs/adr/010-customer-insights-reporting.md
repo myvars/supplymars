@@ -93,6 +93,8 @@ Customer Insights lives in the Reporting context, not Customer, because:
 15,45 * * * * app:calculate-customer-sales 1
 ```
 
+Since [ADR 015](015-symfony-scheduler-in-place-of-cron.md) these jobs run with Symfony Scheduler in the Messenger worker, not cron; `src/Shared/Infrastructure/Scheduler/MainSchedule.php` holds the current schedule.
+
 ## Consequences
 
 ### Positive

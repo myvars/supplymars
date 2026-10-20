@@ -176,7 +176,7 @@ SupplyMars is **simulation-first** by design. Console commands drive the entire 
 | Stock | `app:update-supplier-stock` | Fluctuates inventory |
 | Refunds | `app:refund-purchase-orders` | Handles rejections |
 
-These simulations run on cron in production to maintain realistic data flow.
+These simulations run as scheduled jobs in production to maintain realistic data flow.
 
 ## What Makes This Non-Trivial
 

@@ -347,7 +347,7 @@ The `playground-redact-staff.sql` script runs after each nightly database restor
 
 ### Data Reset
 
-The playground database resets nightly at 02:15 UTC via cron, restoring a clean copy of production data with staff credentials redacted. See `Docs/infrastructure/playground.md` for details.
+The playground database resets nightly at 02:15 UTC (the `reset` container's cron), restoring a clean copy of production data with staff credentials redacted. See `Docs/infrastructure/playground.md` for details.
 
 ## Data Safety Assumptions
 

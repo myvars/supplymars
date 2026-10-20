@@ -73,6 +73,8 @@ These summaries are refreshed after daily data is computed.
 10 * * * * app:calculate-order-sales 1 0
 ```
 
+Since [ADR 015](015-symfony-scheduler-in-place-of-cron.md) these jobs run with Symfony Scheduler in the Messenger worker, not cron; `src/Shared/Infrastructure/Scheduler/MainSchedule.php` holds the current schedule.
+
 ## Consequences
 
 ### Positive

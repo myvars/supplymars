@@ -92,31 +92,11 @@ services:
     depends_on:
       php:
         condition: service_healthy  # Wait for php to finish setup
+    # Only the async queue: scheduled jobs (scheduler_default) run in production only, see compose.prod.yaml
     command: sh -c "php bin/console messenger:consume async --time-limit=3600 --sleep=5"
     healthcheck:
       # Checks the messenger is running
       test: ["CMD-SHELL", "ps aux | grep -q '[m]essenger:consume'"]
-      interval: 60s
-      timeout: 10s
-      retries: 5
-      start_period: 30s
-    restart: unless-stopped
-
-
-  # --- Cron Jobs ---
-  cron:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-      target: php-dev
-    depends_on:
-      php:
-        condition: service_healthy  # Wait for php to finish setup
-    # Export all env vars for cron, then start cron in foreground
-    command: /bin/sh -c 'printenv | grep -v "no_proxy" > /etc/environment && cron -f'
-    healthcheck:
-      # Checks cron is running
-      test: ["CMD-SHELL", "ps aux | grep -q '[c]ron -f'"]
       interval: 60s
       timeout: 10s
       retries: 5
