@@ -29,14 +29,13 @@ This applies to: `app:create-customer-orders`, `app:build-purchase-orders`, `app
 **Arguments:**
 | Name | Type | Required | Default | Description |
 |------|------|----------|---------|-------------|
-| `orderCount` | int | Yes | - | Number of orders to create |
+| `orderCount` | int | No | 1 | Number of orders to create, all at once (the schedule spreads them over time) |
 
 **Options:**
 | Name | Description |
 |------|-------------|
 | `--random` | Randomize the order count (0 to orderCount) |
 | `--dry-run` | Preview what would be created without persisting |
-| `--skip-timing` | Skip timing delays (useful for testing) |
 
 **Example:**
 ```bash

@@ -24,7 +24,7 @@ symfony console app:create-customer-orders 10
 ```
 
 **Arguments:**
-- `orderCount` (required) - Number of orders to create
+- `orderCount` (default 1) - Number of orders to create, all at once
 
 **Options:**
 - `--random` - Randomise actual count (0 to orderCount)
