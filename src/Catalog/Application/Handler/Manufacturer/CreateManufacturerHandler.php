@@ -32,7 +32,7 @@ final readonly class CreateManufacturerHandler
 
         $errors = $this->validator->validate($manufacturer);
         if (count($errors) > 0) {
-            return Result::fail((string) $errors);
+            return Result::fail((string) $errors[0]->getMessage());
         }
 
         $this->manufacturers->add($manufacturer);

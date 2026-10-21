@@ -47,7 +47,7 @@ final readonly class ReplyToTicketHandler
 
         $errors = $this->validator->validate($message);
         if (count($errors) > 0) {
-            return Result::fail((string) $errors);
+            return Result::fail((string) $errors[0]->getMessage());
         }
 
         $ticket->addMessage($message);

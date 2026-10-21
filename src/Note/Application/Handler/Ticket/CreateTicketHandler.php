@@ -56,7 +56,7 @@ final readonly class CreateTicketHandler
         }
 
         if (count($errors) > 0) {
-            return Result::fail((string) $errors);
+            return Result::fail((string) $errors[0]->getMessage());
         }
 
         $this->tickets->add($ticket);

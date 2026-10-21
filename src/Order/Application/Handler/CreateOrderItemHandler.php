@@ -47,7 +47,7 @@ final readonly class CreateOrderItemHandler
 
         $errors = $this->validator->validate($orderItem);
         if (count($errors) > 0) {
-            return Result::fail((string) $errors);
+            return Result::fail((string) $errors[0]->getMessage());
         }
 
         $this->orderItems->add($orderItem);

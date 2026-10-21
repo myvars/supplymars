@@ -563,8 +563,9 @@ The entity's constraints are the source of truth. Every user-entered string colu
 over-length value is refused before it reaches the database. A `VARCHAR` rule matches the column. A `TEXT` column
 holds 65,535 bytes, so its rule is 10,000 characters, which fits even at 4 bytes per character (`Message.body`,
 `Pool.description`, `ProductReview.moderationNotes`), or a lower business limit (`ProductReview.body`, 2,000).
-Create, update, reply and reject handlers validate the entity before they flush and return `Result::fail()` when it
-is invalid, so nothing is saved:
+Create, update, reply and reject handlers validate the entity before they flush and return
+`Result::fail((string) $errors[0]->getMessage())` when it is invalid, so nothing is saved and the user sees the
+rule's own message ("Max 255 characters"), not a dump of the violation list:
 
 ```php
 // src/Purchasing/Domain/Model/Supplier/Supplier.php
@@ -588,6 +589,11 @@ check still stops the save, but the error comes back as a flash message:
 #[Assert\Length(max: 255, maxMessage: 'Max 255 characters')]
 public ?string $name = null;
 ```
+
+A uniqueness rule is repeated too, as `#[UniqueEntity]` on the form model with `entityClass` naming the entity.
+An edit form also needs `identifierFieldNames`, compared with the entity's Doctrine identifier, not its public id, so
+the form model carries that identifier in a property that is not a form field (`CustomerForm::$userId`, mapped as
+`['userId' => 'id']`). Without it the record's own unchanged email would count as taken.
 
 Repeat only those rules. An API payload does the same, for the same reason (e.g. `customerOrderRef` on
 `CreateOrderPayload`). An inline edit runs no handler, so it names the entity property it saves to and the flow

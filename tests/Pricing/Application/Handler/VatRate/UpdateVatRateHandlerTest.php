@@ -75,6 +75,6 @@ final class UpdateVatRateHandlerTest extends KernelTestCase
         $result = ($this->handler)($command);
 
         self::assertFalse($result->ok);
-        self::assertStringContainsString('Please enter a VAT rate %', $result->message);
+        self::assertSame('Please enter a VAT rate %', $result->message);
     }
 }

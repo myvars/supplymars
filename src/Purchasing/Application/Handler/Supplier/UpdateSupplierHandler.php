@@ -35,7 +35,7 @@ final readonly class UpdateSupplierHandler
 
         $errors = $this->validator->validate($supplier);
         if (count($errors) > 0) {
-            return Result::fail((string) $errors);
+            return Result::fail((string) $errors[0]->getMessage());
         }
 
         $this->flusher->flush();

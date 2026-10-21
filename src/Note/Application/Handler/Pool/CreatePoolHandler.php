@@ -34,7 +34,7 @@ final readonly class CreatePoolHandler
 
         $errors = $this->validator->validate($pool);
         if (count($errors) > 0) {
-            return Result::fail((string) $errors);
+            return Result::fail((string) $errors[0]->getMessage());
         }
 
         $this->pools->add($pool);
