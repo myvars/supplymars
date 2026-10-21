@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Accepted.
 
 ## Context
 
@@ -42,8 +42,8 @@ We adopted **Hotwire Turbo** with a structured frame hierarchy and native `<dial
 ├─────────────────────────────────────────────────────────────────┤
 │  <turbo-frame id="{model}-table">                               │
 │  ├── Search/list results                                        │
-│  ├── data-turbo-action="advance" (URL reflects filters)         │
-│  └── Targeted by searchbox auto-submit                          │
+│  ├── data-turbo-action="advance" (pagination adds history)      │
+│  └── Searchbox loads it, history.replaceState updates the URL   │
 ├─────────────────────────────────────────────────────────────────┤
 │  <turbo-frame id="reports">                                     │
 │  ├── Dashboard widgets                                          │
@@ -85,13 +85,9 @@ Instead of HTTP redirects after form submission, we return Turbo Streams:
 <!-- Refresh current page in place -->
 <turbo-stream action="refresh"></turbo-stream>
 
-<!-- Append flash message -->
-<turbo-stream action="append" target="flash-container">
-    <template><!-- flash HTML --></template>
-</turbo-stream>
 ```
 
-The `TurboAwareRedirector` detects Turbo requests and returns streams instead of HTTP 303 redirects.
+The `TurboAwareRedirector` detects Turbo requests and returns streams instead of HTTP 303 redirects. The flash message shows on the refreshed or redirected page. A form re-rendered in its frame (a 422 with errors) appends its flashes with `<turbo-stream action="append" target="flash-container">`.
 
 ### Link Targeting Rules
 
@@ -143,7 +139,7 @@ Key files:
 | `templates/shared/turbo/modal_frame.html.twig`, `embedded_frame.html.twig` | Layouts for the modal frame and for other named frames |
 | `assets/app.js` | Registers the custom `redirect` stream action |
 | `templates/shared/turbo/_modal.html.twig` | Modal component with dialog |
-| `templates/shared/turbo/_frame_success_stream.html.twig` | Flash message streams |
+| `templates/shared/turbo/_frame_success_stream.html.twig` | Flash message stream for a form re-rendered in its frame |
 | `vendor/myvars/form-flow/src/Redirect/TurboAwareRedirector.php` | Stream response generation (inline) |
 
 Turbo configuration in `base.html.twig`:
@@ -156,9 +152,7 @@ Turbo configuration in `base.html.twig`:
 
 These meta tags are disabled in test environment to ensure predictable test behavior.
 
-## Related Documentation
+## Related
 
-- [Turbo Frames Pattern](../patterns/Turbo/Frames.md)
-- [Modal System Pattern](../patterns/Turbo/Modals.md)
-- [Turbo Streams Pattern](../patterns/Turbo/Streams.md)
+- [Turbo patterns: frames, modals, streams](../patterns/Turbo/README.md)
 - [FormFlow Pattern](../patterns/FormFlow/README.md) - Uses TurboAwareRedirector
