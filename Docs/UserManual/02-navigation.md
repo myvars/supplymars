@@ -1,288 +1,128 @@
 # Navigation
 
-## The Main Menu
+How the screens fit together: the header, the menu and its badges, Help, list pages, forms, inline editing, notifications and the keyboard. Every feature page assumes this one.
 
-### Opening the Menu
+**Where:** everywhere. The header bar is at the top of every page.
 
-Click the **menu button** (☰) in the top-left corner of the header to open the navigation menu. The menu slides in from the left side of the screen.
+## The header
 
-### Closing the Menu
+| Item | What it does |
+|------|--------------|
+| Menu button (three lines, left) | Opens the menu. |
+| Logo | Goes to the home page. |
+| **Help** (a `?` icon on small screens) | Opens help for the current screen. |
+| Sun / moon icon | Switches between light and dark mode. Your choice is kept in this browser. |
+| Avatar (signed in) | User menu: your name and email, **Settings** (your customer record), **Sign Out**. |
+| **Sign In** (signed out) | Goes to the sign-in page ([Getting Started](01-getting-started.md)). |
 
-- Click the **X** button in the top-right of the menu
-- Click on any menu item (the menu closes automatically)
-- Click anywhere outside the menu
+## The menu
 
-### Menu Structure
+The menu slides in from the left. Click a section to expand or collapse it; click a link to go there and close the menu. Click the X or anywhere outside the menu to close it without moving.
 
-The menu is organised into sections:
+| Section | Links |
+|---------|-------|
+| **Home** | The home page |
+| **Dashboard** | Today's figures and action items ([Reports and Dashboard](13-reports.md)) |
+| **Catalog** | Products, Categories, Subcategories, Manufacturers |
+| **Orders** | Orders, Pending Orders |
+| **Purchasing** | Purchase Orders, Suppliers, Supplier Products |
+| **Customers** | The customer list |
+| **Reviews** | Review Search, Moderation Queue |
+| **Reporting** | Product Sales, Order Summary, Customer Insights, PO Performance, Overdue Orders, Rejected POs |
+| **Admin** | VAT Rates |
+| **Notes** | My Queue, Tickets, Pools |
 
-```
-Home
-Dashboard (admin only)
-├── Catalog
-│   ├── Products
-│   ├── Categories
-│   ├── Subcategories
-│   └── Manufacturers
-├── Orders
-│   ├── Orders
-│   └── Pending Orders ④
-├── Purchasing
-│   ├── Purchase Orders
-│   ├── Suppliers
-│   └── Supplier Products
-├── Customers
-├── Reviews
-│   ├── Review Search
-│   └── Moderation Queue ④
-├── Reporting
-│   ├── Product Sales
-│   ├── Order Summary
-│   ├── Customer Insights
-│   ├── PO Performance
-│   ├── Overdue Orders ④
-│   └── Rejected POs ④
-├── Admin
-│   └── VAT Rates
-└── Notes
-    ├── My Queue ④
-    ├── Tickets
-    └── Pools
-```
+**Pending Orders**, **Moderation Queue** and **Rejected POs** are the full lists with a status filter already applied. The funnel icon does not turn yellow for these shortcuts, although the list is filtered.
 
-### Expandable Sections
+### Badges
 
-Some menu items have a **▼** arrow indicating they expand to show sub-items:
+A count appears next to some links when it is above zero.
 
-1. Click on **Catalog** to expand and see:
-   - Products
-   - Categories
-   - Subcategories
-   - Manufacturers
-
-2. Click on **Orders** to expand and see:
-   - Orders (all orders)
-   - Pending Orders (filtered to pending status)
-
-3. Click on **Purchasing** to expand and see:
-   - Purchase Orders
-   - Suppliers
-   - Supplier Products
-
-4. Click on **Reviews** to expand and see:
-   - Review Search
-   - Moderation Queue
-
-5. Click on **Reporting** to expand and see:
-   - Product Sales
-   - Order Summary
-   - Customer Insights
-   - PO Performance
-   - Overdue Orders
-   - Rejected POs
-
-6. Click on **Admin** to expand and see:
-   - VAT Rates
-
-7. Click on **Notes** to expand and see:
-   - My Queue
-   - Tickets
-   - Pools
-
-Click the section again to collapse it.
-
-### Notification Badges
-
-Some menu items display a count badge showing items that need attention:
-
-| Badge | Colour | What It Shows |
-|-------|--------|---------------|
-| Pending Orders | Yellow | Orders awaiting processing |
-| Moderation Queue | Red | Reviews awaiting moderation |
+| Link | Colour | Counts |
+|------|--------|--------|
+| Pending Orders | Yellow | Orders in Pending status |
+| Moderation Queue | Red | Reviews waiting for moderation |
 | Overdue Orders | Orange | Orders past their due date |
-| Rejected POs | Red | Purchase orders rejected by suppliers |
-| My Queue | Blue | Open tickets in your subscribed pools |
+| Rejected POs | Red | Purchase orders a supplier rejected |
+| My Queue | Blue | Open tickets in the pools you subscribe to |
 
-Badges only appear when the count is greater than zero. Counts are cached and update automatically when relevant actions occur.
-
-## Page Types
-
-### List Pages (Index)
-
-List pages show multiple records in a searchable, sortable format:
-
-**Features:**
-- **Search box** - Type to filter results
-- **Sort columns** - Click column headers to change sort order
-- **Pagination** - Navigate through pages of results
-- **Filter button** - Access advanced filtering options
-- **Add button** - Create a new record
-
-**Example: Product List**
-- Shows product name, stock, price, and status
-- Click a product card to view details
-- Click the pencil icon to edit
-
-### Detail Pages (Show)
-
-Detail pages display complete information about a single record:
-
-**Features:**
-- Full record details displayed in cards
-- **Edit button** - Modify the record
-- Related records shown below (e.g., order items on an order)
-- Status indicators and timestamps
-
-### Form Modals
-
-When you create or edit records, forms appear in a modal (popup) over the current page:
-
-**Using Form Modals:**
-1. Click **Add** or **Edit** to open the form
-2. Fill in the required fields (marked with *)
-3. Click **Save** to submit
-4. The modal closes and you see a success message
-
-**Cancelling:**
-- Click outside the modal
-- Click the X button (if shown)
-- Press Escape on your keyboard
-
-## Common UI Elements
-
-### Cards
-
-Information is displayed in cards with:
-- Optional title at the top
-- Content in the body
-- Optional edit button (pencil icon) in the corner
-
-Click a card with a link icon to navigate to the detail page.
-
-### Buttons
-
-| Button Style | Use |
-|--------------|-----|
-| Blue (Primary) | Main actions like Save, Create |
-| Grey (Secondary) | Alternative actions |
-| Red (Danger) | Destructive actions like Delete |
-| White (Alternative) | Cancel, Back |
-
-### Status Badges
-
-Records show their status as coloured text:
-- **Green** - Active, Delivered, Accepted
-- **Red** - Inactive, Cancelled, Rejected
-- **Yellow/Orange** - Pending, Processing
-
-### Status History
-
-On orders and purchase orders, clicking a status badge opens the status change history. This audit log shows:
-- Each status transition
-- When the change occurred
-- Who made the change
-
-This is available for orders, order items, purchase orders, and purchase order items.
-
-### Notifications (Toasts)
-
-After actions, notifications appear briefly:
-- **Green** - Success message
-- **Red** - Error message
-- **Yellow** - Warning message
-
-Notifications disappear automatically after 2 seconds, or click the X to dismiss them immediately.
-
-## Searching and Filtering
-
-### Quick Search
-
-Most list pages have a search box at the top:
-1. Type your search term
-2. Results filter automatically as you type
-3. Clear the search box to show all results
-
-### Advanced Filters
-
-Click the **Filter** button (funnel icon) to access advanced filtering:
-
-1. A filter form opens
-2. Select filter criteria (varies by page)
-3. Click **Search** to apply filters
-4. The filter button highlights yellow when filters are active
-
-**To clear filters:**
-1. Click the Filter button
-2. Clear or reset the filter fields
-3. Click Search
-
-### Sorting
-
-Click on column headers to sort:
-- First click: Sort ascending (A-Z, 0-9)
-- Second click: Sort descending (Z-A, 9-0)
-
-The current sort column is indicated in the header.
-
-### Pagination
-
-For large result sets:
-- Page numbers appear at the bottom
-- Click a number to jump to that page
-- Use Previous/Next links to move one page at a time
+Counts are taken when the whole page loads, so moving between screens does not update them; reload the browser to refresh them. Even then, **Overdue Orders** and **My Queue** can be up to 5 minutes behind.
 
 ## Help
 
-Click the **Help** button in the header bar to open a contextual help panel on the right side of the screen. The content changes based on the page you are currently viewing, showing relevant guidance, tips, and links to related topics.
+Click **Help** or press `?` to open the help panel on the right; press `?` again, click the X or click outside to close it. It shows a short summary of the screen you are on, with links to related topics. The back arrow returns to the topic you came from (one step). A few screens have no topic and show "No help is available for this page." Help works for everyone, signed in or not.
 
-**Using help:**
-- Click **Help** to open the panel, click it again or press **?** to close
-- Click a related topic to navigate within the help panel
-- Use the **←** back arrow to return to the previous help topic
-- Click the **X** button or click outside the panel to close it
+## List pages
 
-Help is available on all pages, including the login and registration screens.
+Most list pages share one layout: a title with the result count, a search box, a filter icon, a create button, sortable column headings, the results as cards, and page numbers.
 
-## Inline Editing
+- **Search:** type in the box; results update as you type. Empty the box to see everything.
+- **Filter:** click the funnel icon at the end of the search box, choose values, click **Apply Filter**. The funnel turns yellow while a filter is active. To remove it, clear the fields and click **Apply Filter** again. Suppliers, Manufacturers, VAT Rates, Customers and Pools have no filter.
+- **Sort:** click a column heading; click it again to reverse. A caret marks the sorted column and its direction.
+- **Create:** the button is labelled **Create {Entity}**, for example **Create Product**; Supplier Products is the exception, with **Add Supplier Product**. Customers and Purchase Orders have no create button, and **Create Order** shows only for super admins.
+- **Open a record:** click its card.
 
-Some fields can be edited directly on list and detail pages without opening a form. Inline-editable fields (such as names) appear with a subtle edit indicator when you hover over them.
+## Detail pages
 
-**How to use inline editing:**
-1. Click the editable text to activate edit mode
-2. Type the new value
-3. Press **Enter** or click away to save
-4. Press **Escape** to cancel without saving
+A detail page shows the record in cards, with related records below (for example, an order's items and purchase orders).
 
-A success notification confirms the change. If the new value is the same as the old one, no save occurs.
+- **Edit:** click the pencil icon on the record's card. The form opens in a dialog.
+- **Delete:** where a record can be deleted, a **Delete {Entity}** button sits at the bottom of its edit dialog. It asks you to confirm with **Delete {Entity}** or **Cancel**. Some deletes are super admin only ([Getting Started](01-getting-started.md#roles)); each feature page says what blocks a delete.
+- **Status history:** on orders, order items, purchase orders and PO items, click the status badge. The log lists when the record was created and each status it reached, with the time and how long after creation. It does not show who made the change. On live, the history of orders, order items, purchase orders and PO items in a final status (Delivered, Cancelled, Refunded) is deleted nightly once it is more than 12 months old.
 
-Inline editing is available for names on products, categories, subcategories, manufacturers, suppliers, customers, and VAT rates.
+### Status badge colours
 
-## Keyboard Shortcuts
+Each feature page lists its own statuses. The colours follow one scheme:
 
-While SupplyMars is primarily mouse-driven, some keyboard shortcuts work:
+| Colour | Statuses |
+|--------|----------|
+| Green | Delivered, Active, Verified, Published |
+| Emerald | Accepted; the Returning segment; Staff messages |
+| Blue | Shipped, Open; the New segment; Customer messages |
+| Yellow | Processing, Replied |
+| Orange | Rejected |
+| Purple | Refunded; the Loyal segment |
+| Red | Cancelled, Inactive, Unverified; the Admin badge; the Lapsed segment |
+| Grey | Pending, Hidden, Closed |
 
-| Key | Action |
-|-----|--------|
-| Escape | Close modal/form |
-| Enter | Submit form (when in a field) |
-| Tab | Move between form fields |
+## Forms
 
-## Mobile Navigation
+Create and edit forms open in a dialog over the page. The submit button is **Create {Entity}** or **Update {Entity}**. Required fields are not marked; a missing or invalid value shows its message under the field when you submit. Press Escape, or click outside the dialog, to close it without saving.
 
-On smaller screens:
-- The menu is hidden by default
-- Tap the menu button to open it
-- The layout adjusts to a single column
-- Cards and tables reflow for smaller displays
+## Inline editing
 
-## Navigating with Turbo
+On a detail page, a record's name can be edited in place. This works for product, category, subcategory, manufacturer, supplier and VAT rate names, and a customer's full name. It is not available on list pages.
 
-SupplyMars uses Turbo for fast navigation:
-- Clicking links updates the page content without full reloads
-- Forms submit and update in place
-- Back/forward browser buttons work as expected
+1. Click the name (a pencil appears on hover).
+2. Type the new value.
+3. Press Enter, or click elsewhere, to save. Press Escape to cancel.
 
-If a page seems stuck:
-1. Wait a moment - the system may be loading
-2. Refresh the page if needed
-3. Check your internet connection
+A toast confirms the change only when the value actually changed. An invalid value shows its message beside the field.
+
+## Notifications (toasts)
+
+Results of your actions appear as toasts in the top right. Each has a coloured icon and closes by itself; the X closes it at once.
+
+| Type | Icon colour | Stays for |
+|------|-------------|-----------|
+| Success | Green | 3.5 seconds |
+| Info | Blue | 5 seconds |
+| Warning | Orange | 6 seconds |
+| Error | Red | 6 seconds |
+
+## Keyboard
+
+| Key | Does |
+|-----|------|
+| `?` | Opens or closes Help (not while typing in a field) |
+| Escape | Closes a dialog, the menu or Help; cancels an inline edit |
+| Enter | Saves an inline edit |
+
+## Small screens
+
+The layout drops to one column and cards stack. The menu works the same way; **Help** and **Sign In** become icons in the header.
+
+## Related
+
+- [Getting Started](01-getting-started.md): signing in and roles.
+- [Troubleshooting](troubleshooting.md#screens-and-forms): screens and forms.

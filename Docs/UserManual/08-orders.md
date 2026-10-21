@@ -1,262 +1,113 @@
 # Orders
 
-## What Orders Are For
-
-Orders (Customer Orders) represent purchases made by customers. Each order contains:
+A customer order holds the items a customer bought, the shipping method and the delivery address. Its items are fulfilled through purchase orders to suppliers.
 
-- Customer information
-- Shipping and billing addresses
-- One or more order items (products)
-- Shipping method and cost
-- Total pricing including VAT
+Press `?` on this screen for a short summary.
 
-Orders progress through a lifecycle from creation to delivery, with items being allocated to suppliers via purchase orders.
+**Where:** **Orders > Orders** (all orders) or **Orders > Pending Orders** (the same list filtered to Pending)
 
-## What You Can Do
+## Tasks
 
-- View all orders with search and filtering
-- Create new orders
-- Create demo orders for testing
-- Add items to orders
-- Edit order item quantities and prices
-- Cancel orders (when pending)
-- Allocate orders to suppliers
-- Lock/unlock orders to prevent concurrent editing
-- View order status history
+### Find an order
 
-## Screens and Actions
+1. Open **Orders > Orders**. Each card shows the order number, customer, created date, your reference, total inc VAT and status.
+2. Sort by **Order**, **Created**, **Customer**, **Total** or **Status**.
+3. To filter, click the funnel icon, set **Customer Order Id**, **Purchase Order Id**, **Customer Id**, **with Product Id**, **Order Status**, **Start Date** or **End Date**, and click **Apply Filter**.
 
-### Order List
+### Create an order (super admin only)
 
-**Navigate to:** Orders
+1. Click **Create Order**. Other staff don't see this button.
+2. Fill in **Customer Id** (the customer's number), **Shipping Method** (Three Day Shipping or Next Day Shipping) and **Customer order ref** (optional, up to 255 characters).
+3. Click **Create Order**.
 
-The order list shows all orders with:
-- Order number (#000001 format)
-- Customer name
-- Created date
-- Total price (including VAT)
-- Current status
+The order starts as Pending with no items. It takes the customer's default shipping and billing addresses, and its due date from the shipping method.
 
-**Sorting options:** ID, Created Date, Customer Name, Total Price, Status
+### Create a demo order
 
-**Filtering options:**
-- By Order ID
-- By Purchase Order ID
-- By Customer ID
-- By Product ID (orders containing a product)
-- By Order Status
-- By Date Range (start and end dates)
+1. Click **Create Demo Order** (lightning icon) on the order list.
+2. The dialog shows how many of today's 10 demo orders have been made ("3 of 10 demo orders created today."). Click **Create Order**.
 
-### Create an Order
+A toast confirms "Demo order #000123 created." The demo order has 1 to 5 lines of random products (active, in stock and with an active supplier product), 1 to 5 of each, and a reference starting `DEMO-`. It goes to an existing customer about 1 time in 3, otherwise to a newly made random customer. You return to the list, where the new order is briefly highlighted. Demo orders are real orders: they go through allocation, suppliers and reports like any other.
 
-**Navigate to:** Orders > Click **Create Order**
+### Read an order
 
-1. Fill in the form:
-   - **Customer ID** (required) - Enter customer's ID number
-   - **Shipping Method** (required) - Three Day or Next Day
-   - **Customer Order Reference** (optional) - Custom reference
+Click an order. The page has:
 
-2. Click **Save**
+- **Order card:** order number, lock icon, created date, reference, **Allocate** (while the order can be edited), status (click it for the status history) and an X icon to cancel.
+- **Delivery Address** and **Order Summary:** Item(s) subtotal, Shipping, VAT, Total.
+- **Items:** "N lines (M items)", **Add Item**, and one card per item that still has quantity not yet on a purchase order. Editing, removing, cancelling and allocating an item by hand are in [Order Items](09-order-items.md).
+- **Purchase Orders:** the purchase orders made for this order.
 
-The order is created with:
-- Shipping address from customer's default
-- Billing address from customer's default
-- Due date calculated from shipping method
-- Status set to PENDING
+### Add an item
 
-### View Order Details
+1. Click **Add Item**.
+2. Enter **Product Id** (the product's number) and **Quantity** (1–10,000).
+3. Click **Create Order Item**.
 
-**Navigate to:** Click on any order
+The item's price is the product's current sell price. To change, remove or cancel it afterwards, see [Order Items](09-order-items.md#tasks).
 
-The detail page shows:
+### Allocate an order
 
-**Order Card:**
-- Order number and created date
-- Customer order reference (if set)
-- Lock status
-- Allocate button (if editable)
-- Status (clickable to view history)
+Click **Allocate**. The app gives each line with outstanding quantity to one supplier that can supply all of it, and creates or adds to that supplier's purchase order. When nothing is left outstanding, it also moves every Pending purchase order item on the order to Processing. How the supplier is chosen: [Stock](11-stock.md#how-the-active-source-is-chosen).
 
-**Summary Card:**
-- Delivery address
-- Items subtotal
-- Shipping cost
-- Total before VAT
-- VAT amount
-- Grand total
+If you allocated every line by hand from the supplier lists, Allocate has nothing to do ("No items to allocate.") and the purchase order items stay Pending; see [Order Items](09-order-items.md#allocate-an-item-to-a-supplier) for the way out.
 
-**Items Card:**
-- Line and item counts
-- Add Item button (if editable)
-- List of all order items with:
-  - Product image and name
-  - Unit price
-  - Quantity (outstanding/total)
-  - Status
-  - Supplier allocation options
+### Cancel an order
 
-**Purchase Orders Section:**
-- Related purchase orders for this order
-- Supplier fulfillment status
+1. Click the X icon on the order card.
+2. Click **Cancel Order** (or **Go Back**).
 
-### Add Items to an Order
+Every item is cancelled and the order becomes Cancelled.
 
-**Navigate to:** Order detail > Click **Add Item**
+### Lock or unlock an order
 
-1. Fill in the form:
-   - **Product ID** (required) - Product to add
-   - **Quantity** (required) - Number of units (1-10,000)
+Click the lock icon on the order card. While locked, the card shows "Locked by {name}". Click it again to unlock.
 
-2. Click **Save**
+## Rules and limits
 
-The item is added with the product's current sell price.
+| Action | Blocked when | Message |
+|---|---|---|
+| Create Order | You are not a super admin | Button not shown |
+| Create a demo order | 10 demo orders already made today (by anyone) | The dialog says "You have reached the daily limit of 10 demo orders." and offers only **Close** |
+| Allocate | No line has outstanding quantity (including when every line was allocated by hand) | "No items to allocate." |
+| Allocate | A line has no single supplier with enough stock | "Cannot allocate all items" (the other lines are still allocated) |
+| Cancel order | The order is not Pending, or an item has quantity on a purchase order | "Order cannot be cancelled" / "Items cannot be cancelled" |
 
-### Edit an Order Item
+Item rules and messages (quantity, price, cancel) are in [Order Items](09-order-items.md#rules-and-limits).
 
-**Navigate to:** Order detail > Click item's **Edit** button
+- **The demo limit is shared:** 10 per day for everyone together, not per user. The count starts again at midnight.
+- **The X icon also shows on Processing orders,** but only Pending orders can be cancelled. To stop work on a Processing order, change its purchase order items; there is no action that cancels a whole purchase order. See [Purchase Orders](10-purchase-orders.md).
+- **The lock is a note for people, but the scheduled jobs respect it.** Nothing stops anyone editing a locked order, and anyone can unlock it. The scheduled allocation, supplier acceptance, shipping and delivery jobs skip a locked order until it is unlocked.
+- **Items and Allocate** are available while the order is Pending or Processing.
+- Nothing checks that a product is active, complete or in stock when you add it.
 
-You can update:
-- **Quantity** - Must not be less than quantity already allocated
-- **Price Inc VAT** - Override the unit price
+## Shipping methods
 
-### Cancel an Order
+| Method | Price (exc VAT) | Due |
+|---|---|---|
+| Three Day Shipping | £3.99 | 3 days after the order is created |
+| Next Day Shipping | £9.99 | 1 day after the order is created |
 
-**Navigate to:** Order detail > Click **Cancel**
+VAT on shipping uses the default VAT rate. Totals leave out cancelled items, and a cancelled order has no shipping charge.
 
-1. Confirm cancellation
-2. All items are cancelled
-3. Order status changes to CANCELLED
+## Statuses
 
-**Requirements:** Order must be in PENDING status with no items allocated to purchase orders.
+The order's status is the least advanced status among its items, in this order: Pending, Processing, Shipped, Delivered, Cancelled. An order with one Pending item stays Pending; cancelled items don't hold the order back. Item statuses: [Order Items](09-order-items.md#statuses).
 
-### Cancel an Order Item
+| Status | Badge | Meaning |
+|---|---|---|
+| Pending | Grey | At least one item is Pending: not yet on a purchase order, or its purchase order is still Pending |
+| Processing | Yellow | No item is Pending, and at least one has not shipped |
+| Shipped | Blue | Every item has shipped or got further |
+| Delivered | Green | Every item is delivered (or cancelled) |
+| Cancelled | Red | Every item is cancelled |
 
-**Navigate to:** Order detail > Click item's **Cancel** button
+Apart from Cancelled, no order status is final. Whenever an item changes, the order's status is worked out again from its items, with no check on where it came from. So it can move backwards: rewinding a purchase order to Pending returns even a Delivered order to Pending.
 
-**Requirements:**
-- Item must have no quantity allocated to purchase orders
-- Item status must be PENDING or PROCESSING
+## Related
 
-### Allocate an Order
-
-**Navigate to:** Order detail > Click **Allocate**
-
-This automatically:
-1. Finds available supplier products for each item
-2. Creates purchase orders for each supplier
-3. Links order items to purchase order items
-4. Updates order status to PROCESSING
-
-### Create a Demo Order
-
-**Navigate to:** Orders > Click **Create Demo Order** (lightning icon)
-
-Demo orders let you quickly generate a test order without manually filling in customer and product details.
-
-1. Click the **Create Demo Order** button on the order list page
-2. A confirmation dialog shows your current usage and the daily limit
-3. Click **Confirm** to create the order
-
-**What it creates:**
-- An order for a randomly selected customer with 1-5 line items
-- Random products and quantities from the catalog
-- Order reference prefixed with `DEMO-`
-
-**Limits:**
-- Maximum 10 demo orders per day
-- The confirmation dialog shows how many you have used today
-- When the limit is reached, the button is disabled
-
-After creation, you are redirected to the order list with a success message showing the new order number. Newly created items are briefly highlighted.
-
-### Lock/Unlock an Order
-
-**Navigate to:** Order detail > Click **Lock** or **Unlock**
-
-- **Locked:** Shows which user locked it; prevents others from editing
-- **Unlocked:** Anyone can edit
-
-Use locking when working on an order to prevent conflicts.
-
-## Fields and Options
-
-### Order Fields
-
-| Field | Required | Description |
-|-------|----------|-------------|
-| Customer | Yes | Customer placing the order |
-| Shipping Method | Yes | THREE_DAY or NEXT_DAY |
-| Customer Order Reference | No | Custom reference (max 255 chars) |
-| Shipping Address | Auto | From customer's default |
-| Billing Address | Auto | From customer's default |
-| Due Date | Auto | Calculated from shipping method |
-
-### Order Item Fields
-
-| Field | Required | Description |
-|-------|----------|-------------|
-| Product | Yes | Product being ordered |
-| Quantity | Yes | Units to order (1-10,000) |
-| Price | Auto | Unit price from product |
-| Price Inc VAT | Auto | Unit price with VAT |
-| Weight | Auto | Unit weight from product |
-
-### Shipping Methods
-
-| Method | Shipping Cost | Due Date |
-|--------|---------------|----------|
-| Three Day | £3.99 | 3 days from order |
-| Next Day | £9.99 | 1 day from order |
-
-## Status and Lifecycle
-
-### Order Status
-
-| Status | Level | Meaning |
-|--------|-------|---------|
-| **PENDING** | 1 | Created, not yet allocated |
-| **PROCESSING** | 2 | Allocated to suppliers |
-| **SHIPPED** | 3 | Items dispatched |
-| **DELIVERED** | 4 | All items delivered |
-| **CANCELLED** | 5 | Order cancelled |
-
-### Status Transitions
-
-```
-PENDING → PROCESSING (when allocated)
-PENDING → CANCELLED (manual cancellation)
-PROCESSING → SHIPPED (when items ship)
-SHIPPED → DELIVERED (when items delivered)
-```
-
-### Automatic Status Updates
-
-Order status is automatically derived from item statuses:
-- The status with the lowest level among items becomes the order status
-- Example: If items are [PROCESSING, SHIPPED], order is PROCESSING
-
-### Item Status
-
-Order items have the same status values as orders. Item status is derived from related purchase order item statuses.
-
-## Pricing Calculations
-
-| Calculation | Formula |
-|-------------|---------|
-| Item Total | Unit Price × Quantity |
-| Item Total Inc VAT | Unit Price Inc VAT × Quantity |
-| Subtotal | Sum of all item totals |
-| Shipping Inc VAT | Shipping × (1 + VAT Rate) |
-| Order Total | Subtotal + Shipping |
-| Order Total Inc VAT | Subtotal Inc VAT + Shipping Inc VAT |
-
-Cancelled items are excluded from totals.
-
-## Warnings
-
-- Orders can only be cancelled when in PENDING status
-- Once allocated, orders cannot be cancelled (cancel individual POs instead)
-- Editing item quantity cannot reduce below allocated amount
-- Deleting items is not possible; cancel them instead
-- Locked orders can only be modified by the user who locked them
-- Order totals automatically recalculate when items change
+- [Order Items](09-order-items.md)
+- [Purchase Orders](10-purchase-orders.md)
+- [Customers](07-customers.md)
+- [Stock](11-stock.md)
+- [Simulations](14-simulations.md): what happens to orders on their own

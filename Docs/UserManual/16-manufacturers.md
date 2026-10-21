@@ -1,88 +1,47 @@
 # Manufacturers
 
-## What Manufacturers Are For
+Manufacturers are the companies that make your products. Every product has one.
 
-Manufacturers represent the companies that produce the products in your catalog. Each product must be assigned to a manufacturer, which helps with:
+Press `?` on this screen for a short summary.
 
-- **Product organisation** - Grouping products by who makes them
-- **Filtering and search** - Finding products by manufacturer in lists and reports
-- **Supplier mapping** - Matching supplier products to catalog products via manufacturer part numbers
+**Where:** **Catalog > Manufacturers**
 
-## What You Can Do
+## Tasks
 
-- View all manufacturers in a searchable list
-- Create new manufacturers
-- Edit manufacturer details (including inline name editing)
-- Delete manufacturers (when they have no products)
-- View products linked to a manufacturer
+### Find a manufacturer
 
-## Screens and Actions
+Open **Catalog > Manufacturers**. Search by name, or sort by **Id**, **Manufacturer** or **Status**. This list has no filter.
 
-### Manufacturer List
+### Create a manufacturer
 
-**Navigate to:** Catalog > Manufacturers
+1. Click **Create Manufacturer**.
+2. Fill in **Manufacturer Name** (up to 255 characters) and **Active** (unticked by default).
+3. Click **Create Manufacturer**.
 
-The manufacturer list shows all manufacturers with:
-- Manufacturer name
-- Active/Inactive status
+### View the detail page
 
-**Sorting options:** ID, Name, Status
+Click a manufacturer. The card shows its status and, when it has any, a link to its products. Below it is a sales report for its products.
 
-### Create a Manufacturer
+### Edit a manufacturer
 
-**Navigate to:** Catalog > Manufacturers > Click **Create Manufacturer**
+1. Click the pencil icon on the card.
+2. Change the fields and click **Update Manufacturer**.
 
-1. Fill in the form:
-   - **Manufacturer Name** (required) - Display name (max 255 characters)
-   - **Active** (checkbox) - Whether the manufacturer is available for use
+The name can also be changed in place on the detail page ([inline editing](02-navigation.md#inline-editing)).
 
-2. Click **Save**
+### Delete a manufacturer
 
-### View Manufacturer Details
+1. Click the pencil icon to open the edit modal.
+2. Click **Delete Manufacturer**, then confirm.
 
-**Navigate to:** Click on any manufacturer
+## Rules and limits
 
-The detail page shows:
-- Manufacturer information card
-- Product count with link to filtered product list
+- **Delete is refused** while any product uses the manufacturer: "Has products — reassign them first."
+- **Active is a label only.** An inactive manufacturer still appears in the product form, and its products can still be sold.
+- **Names aren't checked for duplicates.** Map Product on a supplier product matches manufacturers by name, so a duplicate name may link to the wrong one; see [Supplier Products](06-supplier-products.md#map-to-a-catalog-product).
 
-### Edit a Manufacturer
+## Related
 
-**Navigate to:** Manufacturer detail > Click **Edit**
-
-You can update:
-- Manufacturer name
-- Active status
-
-You can also edit the manufacturer name directly from the list or detail page by clicking the name (inline editing). Press **Enter** or click away to save, or press **Escape** to cancel.
-
-### Delete a Manufacturer
-
-**Navigate to:** Manufacturer detail > Edit > Click **Delete**
-
-1. A confirmation dialog appears
-2. Click **Delete** to confirm
-
-**Requirements:** The manufacturer must have no products assigned. Reassign or remove all products first.
-
-## Fields and Options
-
-| Field | Required | Default | Description |
-|-------|----------|---------|-------------|
-| Manufacturer Name | Yes | - | Display name (max 255 characters) |
-| Active | No | Inactive | Whether manufacturer is available for use |
-
-## Status and Lifecycle
-
-### Active Status
-
-| Status | Meaning |
-|--------|---------|
-| **Active** (green) | Manufacturer is available for product assignment |
-| **Inactive** (red) | Manufacturer is not available for new products |
-
-## Warnings
-
-- Manufacturers with linked products cannot be deleted
-- Deactivating a manufacturer does not affect existing products
-- Manufacturer names should be unique for clarity, though this is not enforced by the system
+- [Products](03-products.md)
+- [Supplier Products](06-supplier-products.md)
+- [Reports and Dashboard](13-reports.md)

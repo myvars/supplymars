@@ -1,220 +1,85 @@
-# Pricing & VAT
+# Pricing and VAT
 
-## What Pricing Is For
+Sell prices are worked out from the active supplier's cost, a markup, the category's VAT rate and a price model that rounds the price. You set markups and price models at three levels: category, subcategory and product.
 
-The pricing system calculates sell prices from supplier costs using:
+Press `?` on this screen for a short summary.
 
-- **Markup percentages** - Added at category, subcategory, and product levels
-- **VAT rates** - Tax rates assigned to categories
-- **Price models** - Rounding rules for final prices
+**Where:** **Catalog > Products**, then open a product and its **Cost** tab. VAT rates: **Admin > VAT Rates**.
 
-## What You Can Do
+## The Cost tab
 
-- Manage VAT rates
-- Set category markup and pricing
-- Set subcategory markup and pricing
-- Set product-specific markup and pricing
-- View pricing breakdowns
+- The **inventory card** at the top shows cost, stock, sell price, sell price inc VAT and the effective mark-up (see [Stock](11-stock.md)). Under the mark-up it says which level the price model and the mark-up come from, and the VAT rate name.
+- The **Pricing Cascade** below has three cards: **Category**, **Subcategory** and **Product**. Each shows that level's mark-up % and price model. A dash means the level is not set and the next level up applies. A tick marks the level whose mark-up, and the level whose price model, is in use.
 
-## Screens and Actions
+## Tasks
 
-### VAT Rates
+### Change a markup or price model
 
-**Navigate to:** Admin > VAT Rates
+1. On the Cost tab, click the pencil icon on the **Category**, **Subcategory** or **Product** card.
+2. Change **Category / Subcategory / Product Markup %**, **Price Model** or **Active**.
+3. Click **Update Category Cost** (or **Update Subcategory Cost**, **Update Product Cost**).
 
-The VAT rate list shows all configured rates.
+The category and subcategory cards edit the whole category or subcategory, so every product in it is affected. The same fields are in the edit form under **Catalog > Categories** and **Catalog > Subcategories** ([Categories and Subcategories](04-categories.md)). A product's markup and price model can be edited only here.
 
-#### Create a VAT Rate
+### Manage VAT rates
 
-1. Click **Create VAT Rate**
-2. Enter:
-   - **VAT Rate Name** - Display name (e.g., "Standard Rate")
-   - **VAT Rate %** - Percentage (e.g., 20.00)
-3. Click **Save**
+1. Go to **Admin > VAT Rates** and click **Create VAT Rate**.
+2. Enter **VAT Rate Name** and **VAT Rate %** (0 or more).
+3. Click **Create VAT Rate**.
 
-#### Edit a VAT Rate
+To edit, click the pencil icon on the row (or on the detail page) and click **Update VAT Rate**. On the detail page you can also click the name to rename it in place, and follow the link to the categories using the rate. A category's VAT rate is chosen in the category form.
 
-1. Click on a VAT rate
-2. Click **Edit**
-3. Update name or rate
-4. Click **Save**
+To delete, open the edit modal and click **Delete VAT Rate**. Super admin only; other users see "Deleting is disabled for this user." A rate still used by a category can't be deleted: the delete fails with an error.
 
-**Note:** Changing a VAT rate affects all products in categories using that rate.
+## How a price is worked out
 
-#### Delete a VAT Rate
+1. **Markup.** The product's markup if it is above 0, otherwise the subcategory's if above 0, otherwise the category's. The first level that is set **replaces** the others. Markups are never added together.
+2. **Price model.** The product's if it is not None, otherwise the subcategory's if not None, otherwise the category's.
+3. Sell price ex VAT = cost × (1 + markup %).
+4. Add VAT at the category's rate.
+5. The price model rounds the **price inc VAT**.
+6. The sell price ex VAT and the mark-up are then worked back from the rounded price. So the mark-up shown on the inventory card is what the rounded price earns, not the markup you set.
 
-1. Click on a VAT rate
-2. Click **Edit** > **Delete**
-3. Confirm deletion
+**Example:** cost £10.00, category markup 50%, subcategory markup 10%, product markup 0, VAT 20%, category price model Pretty 99.
 
-**Warning:** Cannot delete VAT rates in use by categories.
+- Subcategory markup 10% applies (the product's is 0). £10.00 × 1.10 = £11.00.
+- With VAT: £11.00 × 1.20 = £13.20. Pretty 99 gives **£13.99** inc VAT.
+- Worked back: sell price £11.66 ex VAT, mark-up 16.600%.
 
-### Product Pricing
+## Price models
 
-**Navigate to:** Product detail > **Cost** tab
+Rounding is applied to the price inc VAT and never goes down.
 
-View the pricing breakdown:
-- Current cost (from active supplier)
-- Markup percentage and source
-- Price model
-- Sell price (exc and inc VAT)
+| Model | Rule | £13.20 → | £13.96 → |
+|---|---|---|---|
+| None | No rounding. On a product or subcategory it means "use the level above" | £13.20 | £13.96 |
+| Default (Cost+) | No rounding | £13.20 | £13.96 |
+| Pretty 00 | Up to the next whole pound | £14.00 | £14.00 |
+| Pretty 10 | Up to the next 10p | £13.20 | £14.00 |
+| Pretty 49 | .49 below 50p, otherwise .99 | £13.49 | £13.99 |
+| Pretty 95 | .95, or the next pound's .95 above .95 | £13.95 | £14.95 |
+| Pretty 99 | Always .99 | £13.99 | £13.99 |
 
-#### Edit Product Pricing
+## Rules and limits
 
-1. Click **Edit Product Cost**
-2. Update:
-   - **Product Markup %** - Product-specific markup
-   - **Price Model** - Rounding method
-   - **Active** - Whether product is for sale
-3. Click **Save**
-
-### Category Pricing
-
-**Navigate to:** Product detail > **Cost** tab > Click **Edit Category Cost**
-
-Or: Catalog > Categories > Select category > Edit
-
-Update:
-- **Category Markup %** - Base markup for all products
-- **Price Model** - Rounding method
-- **Active** - Whether category is active
-
-### Subcategory Pricing
-
-**Navigate to:** Product detail > **Cost** tab > Click **Edit Subcategory Cost**
-
-Or: Catalog > Subcategories > Select subcategory > Edit
-
-Update:
-- **Subcategory Markup %** - Additional markup on top of category
-- **Price Model** - Override category's model (or "None" to inherit)
-- **Active** - Whether subcategory is active
-
-## Pricing Hierarchy
-
-Prices are calculated using a hierarchy:
-
-```
-Supplier Cost (from active supplier product)
-        ↓
-+ Category Markup %
-        ↓
-+ Subcategory Markup % (if > 0)
-        ↓
-+ Product Markup % (if > 0)
-        ↓
-Apply Price Model (rounding)
-        ↓
-+ VAT (from category's VAT rate)
-        ↓
-= Final Sell Price Inc VAT
-```
-
-### Markup Calculation
-
-Markups are additive percentages applied to cost:
-
-```
-Marked Up Price = Cost × (1 + Markup%)
-```
-
-**Example:**
-- Cost: £10.00
-- Category Markup: 50% → £10 × 1.50 = £15.00
-- Subcategory Markup: 10% → £15 × 1.10 = £11.50 (takes precedence over category)
-- Product Markup: 0% → £11.50 (no change)
-
-### Price Models
-
-Price models apply rounding for psychological pricing:
-
-| Model | Description | Example         |
-|-------|-------------|-----------------|
-| **None** | No rounding (inherit from parent) | £11.55 → £11.55 |
-| **Default (Cost+)** | Standard calculation | £11.55 → £11.55 |
-| **Pretty 00** | Round to .00 | £11.55 → £12.00 |
-| **Pretty 10** | Round to .10 | £11.55 → £11.60 |
-| **Pretty 49** | Round to .49/.99 | £11.55 → £11.99 |
-| **Pretty 95** | Round to .95 | £11.55 → £11.95 |
-| **Pretty 99** | Round to .99 | £11.55 → £11.99 |
-
-### VAT Calculation
-
-VAT is added after price model rounding:
-
-```
-Sell Price Inc VAT = Sell Price × (1 + VAT Rate%)
-```
-
-**Example:**
-- Sell Price: £16.99
-- VAT Rate: 20%
-- Sell Price Inc VAT: £16.99 × 1.20 = £20.39
-
-## Fields and Options
-
-### VAT Rate Fields
-
-| Field | Required | Description |
-|-------|----------|-------------|
-| VAT Rate Name | Yes | Display name |
-| VAT Rate % | Yes | Percentage (0 or higher) |
-
-### Pricing Fields (Product/Category/Subcategory)
-
-| Field | Required | Default | Description |
-|-------|----------|---------|-------------|
-| Markup % | Yes | Varies | Percentage markup on cost |
-| Price Model | Yes | Varies | Rounding method |
-| Active | No | Varies | Whether available for sale |
-
-### Default Values
-
-| Level | Default Markup | Default Price Model |
-|-------|----------------|---------------------|
+| Level | Default markup | Default price model |
+|---|---|---|
 | Category | 5.000% | Default (Cost+) |
-| Subcategory | 0.000% | None (inherit) |
-| Product | 0.000% | None (inherit) |
+| Subcategory | 0.000% (not set) | None (use category) |
+| Product | 0.000% (not set) | None (use subcategory or category) |
 
-## Pricing Events
+- A category must have a price model: None gives "A category must have a price model".
+- Markups can't be negative ("Please enter a positive or zero … markup %").
+- Keep the category markup above 0. With an effective markup of 0 and no rounding, the price can't be worked out and saving the product, category or VAT rate fails with an error.
+- Changes apply straight away to the affected products: editing a VAT rate to every product in the categories using it; choosing another VAT rate for a category to its active products; a category or subcategory markup or price model change to its active products that take their markup or price model from that level; a product change to that product; a supplier product edit that changes a value to the product it is mapped to.
+- Simulated stock and cost changes do not reprice products ([Stock](11-stock.md#rules-and-limits)).
+- Prices on existing orders never change. An order item keeps the price it was added at.
+- The **Active** box on the cost forms turns the category, subcategory or product on or off. A product is complete only when all three are active and it has an active supplier product ([Products](03-products.md#rules-and-limits)).
 
-When pricing settings change, the system recalculates affected products:
+The technical rules are in [Sourcing and Pricing](../04-sourcing-and-pricing.md).
 
-| Change | Products Affected |
-|--------|-------------------|
-| VAT Rate changed | All products in categories using that rate |
-| Category pricing changed | All products in that category |
-| Subcategory pricing changed | All products in that subcategory |
-| Product pricing changed | That product only |
-| Supplier product cost changed | Products using that supplier |
+## Related
 
-## Cost Tab Overview
-
-The product Cost tab displays:
-
-**Current Pricing:**
-- Cost price (from active supplier)
-- Effective markup percentage
-- Markup source (product, subcategory, or category)
-- Price model in use
-- Sell price exc VAT
-- Sell price inc VAT
-
-**Edit Links:**
-- Edit Product Cost
-- Edit Category Cost
-- Edit Subcategory Cost
-
-**Category/Subcategory Info:**
-- Category name, markup, price model
-- Subcategory name, markup, price model (if applicable)
-- VAT rate name and percentage
-
-## Warnings
-
-- Changing VAT rates affects all products in related categories
-- Category markup changes cascade to all products
-- Price model "None" at product level uses subcategory's model; if subcategory is also "None", uses category's model
-- Categories must have a price model (cannot be "None")
-- Pricing changes take effect immediately
-- Historical order prices are not affected by pricing changes
+- [Categories and Subcategories](04-categories.md): categories, subcategories and their VAT rate
+- [Products](03-products.md)
+- [Stock](11-stock.md): where the cost comes from

@@ -1,204 +1,73 @@
-# Categories & Subcategories
+# Categories and Subcategories
 
-## What Categories Are For
+Categories and subcategories group the catalog in two levels and set each product's VAT rate, markup and price model.
 
-Categories and subcategories organise your product catalog into a two-level hierarchy. Beyond organisation, they also control:
+Press `?` on this screen for a short summary.
 
-- **VAT rates** - Each category has an assigned VAT rate
-- **Markup percentages** - Base pricing markup applied to products
-- **Price models** - How final prices are calculated and rounded
+**Where:** **Catalog > Categories**, and **Catalog > Subcategories**
 
-## What You Can Do
+## Tasks
 
-### Categories
-- View all categories
-- Create new categories
-- Edit category details including pricing settings
-- Delete categories
-- View products in a category
-- View category sales analytics
+### Find a category
 
-### Subcategories
-- View all subcategories
-- Create new subcategories within a category
-- Edit subcategory details including pricing overrides
-- Delete subcategories
-- View products in a subcategory
+1. Open **Catalog > Categories**. Each card shows the name, Active/Inactive badge, manager ("Managed by …") and markup.
+2. Sort by **Id**, **Category**, **Markup** or **Status**.
+3. To filter, click the funnel icon, set **Vat Rate**, **Price Model** or **Category Manager**, and click **Apply Filter**.
 
-## Screens and Actions
+### Create a category
 
-### Category List
+1. Click **Create Category**.
+2. Fill in **Category Name**, **VAT Rate**, **Category Markup %**, **Price Model**, **Category Manager** and **Active**.
+3. Click **Create Category**.
 
-**Navigate to:** Catalog > Categories
+Defaults: markup 5.000%, price model Default (Cost+), Inactive.
 
-The category list shows all categories with:
-- Category name
-- Active/Inactive status
+### Find a subcategory
 
-**Sorting options:** ID, Name, Markup, Status
+1. Open **Catalog > Subcategories**. Each card shows the name, parent category, manager and markup.
+2. Sort by **Id**, **Category**, **Subcategory**, **Markup** or **Status**.
+3. To filter, click the funnel icon, set **Category**, **Price Model** or **Subcategory Manager**, and click **Apply Filter**.
 
-**Filtering options:**
-- By VAT Rate
-- By Price Model
-- By Category Manager
+### Create a subcategory
 
-### Create a Category
+1. Click **Create Subcategory**.
+2. Fill in **Category**, **Subcategory Name**, **Subcategory Markup %**, **Price Model**, **Subcategory Manager** (optional) and **Active**.
+3. Click **Create Subcategory**.
 
-**Navigate to:** Catalog > Categories > Click **Create Category**
+Defaults: markup 0.000%, price model None, Inactive.
 
-1. Fill in the form:
-   - **Category Name** (required)
-   - **VAT Rate** (required) - Select from available rates
-   - **Category Markup %** (required) - Base markup percentage
-   - **Price Model** (required) - How prices are calculated
-   - **Category Manager** (required) - Staff member responsible
-   - **Active** (checkbox)
+### View the detail page
 
-2. Click **Save**
+Click a category or subcategory. The card shows markup, price model, VAT rate (categories), manager and a link to its products. A category page also lists its subcategories. Both pages show a sales report for their products.
 
-### View Category Details
+### Edit
 
-**Navigate to:** Click on any category
+1. Click the pencil icon on the card.
+2. Change the fields and click **Update Category** or **Update Subcategory**.
 
-The detail page shows:
-- Category card with all settings
-- List of subcategories in this category
-- Product count and link
-- Sales dashboard for category products
+The name can also be changed in place on the detail page ([inline editing](02-navigation.md#inline-editing)).
 
-### Edit a Category
+### Delete
 
-**Navigate to:** Category detail > Click **Edit**
+1. Click the pencil icon to open the edit modal.
+2. Click **Delete Category** or **Delete Subcategory**, then confirm.
 
-### Delete a Category
+## Rules and limits
 
-**Navigate to:** Category detail > Edit > Click **Delete**
+| Action | Blocked when | Message |
+|---|---|---|
+| Delete a category | It still has subcategories | "Has subcategories — remove them first." |
+| Delete a subcategory | It still has products | "Has products — move or remove them first." |
+| Save a category | Price Model is None | "A category must have a price model" |
+| Save a category | No Category Manager chosen | "Please choose a category owner" |
 
-**Warning:** You should remove or reassign all products and subcategories before deleting a category.
+- **Markup and price model** cascade from product to subcategory to category, and a lower level replaces a higher one; the rules are in [Pricing and VAT](12-pricing.md).
+- **Inactive** category or subcategory: its products are incomplete (see [Products](03-products.md#rules-and-limits)).
+- **Changing VAT rate, markup or price model** reprices products straight away: a VAT rate change every active product in the category; a markup or price model change only the active products that take their markup or price model from this level ([Pricing and VAT](12-pricing.md#rules-and-limits)).
+- Names take up to 255 characters; markups must be zero or more.
 
----
+## Related
 
-### Subcategory List
-
-**Navigate to:** Catalog > Subcategories
-
-The subcategory list shows all subcategories with:
-- Subcategory name
-- Parent category
-- Active/Inactive status
-
-**Sorting options:** ID, Name, Category, Markup, Status
-
-**Filtering options:**
-- By Category
-- By Price Model
-- By Manager
-
-### Create a Subcategory
-
-**Navigate to:** Catalog > Subcategories > Click **Create Subcategory**
-
-1. Fill in the form:
-   - **Category** (required) - Parent category
-   - **Subcategory Name** (required)
-   - **Subcategory Markup %** (required) - Additional markup
-   - **Price Model** (required) - Can be "None" to use category's model
-   - **Subcategory Manager** (optional)
-   - **Active** (checkbox)
-
-2. Click **Save**
-
-### View Subcategory Details
-
-**Navigate to:** Click on any subcategory
-
-The detail page shows:
-- Subcategory card with settings
-- Link to parent category
-- Product count and link
-- Sales dashboard
-
-## Fields and Options
-
-### Category Fields
-
-| Field | Required | Default | Description |
-|-------|----------|---------|-------------|
-| Category Name | Yes | - | Display name |
-| VAT Rate | Yes | - | Tax rate for all products |
-| Category Markup % | Yes | 5.000% | Base markup percentage |
-| Price Model | Yes | Default (Cost+) | Pricing calculation method |
-| Category Manager | Yes | - | Responsible staff member |
-| Active | No | Inactive | Whether category is active |
-
-### Subcategory Fields
-
-| Field | Required | Default | Description |
-|-------|----------|---------|-------------|
-| Category | Yes | - | Parent category |
-| Subcategory Name | Yes | - | Display name |
-| Subcategory Markup % | Yes | 0.000% | Additional markup on top of category |
-| Price Model | Yes | None | Override category's model (or inherit) |
-| Subcategory Manager | No | None | Responsible staff member (optional) |
-| Active | No | Inactive | Whether subcategory is active |
-
-### Price Models
-
-| Model | Description |
-|-------|-------------|
-| **None** | Use parent category's price model (subcategories only) |
-| **Default (Cost+)** | Standard cost-plus pricing |
-| **Pretty 00** | Round to .00 endings (e.g., 100.00) |
-| **Pretty 10** | Round to .10 endings (e.g., 100.10) |
-| **Pretty 49** | Round to .49/.99 endings |
-| **Pretty 95** | Round to .95 endings |
-| **Pretty 99** | Round to .99 endings (psychological pricing) |
-
-## Pricing Inheritance
-
-Pricing is calculated in layers:
-
-```
-Product Cost
-    ↓
-+ Category Markup %
-    ↓
-+ Subcategory Markup % (if set)
-    ↓
-+ Product Markup % (if set)
-    ↓
-Apply Price Model Rounding
-    ↓
-+ VAT (from category)
-    ↓
-= Final Sell Price
-```
-
-**Example:**
-- Cost: £10.00
-- Category Markup: 50% → £15.00
-- Subcategory Markup: 10% → £16.50
-- Price Model (Pretty 99): → £16.99
-- VAT (20%): → £20.39
-
-## Status and Lifecycle
-
-### Active Status
-
-| Status | Meaning |
-|--------|---------|
-| **Active** (green) | Category/subcategory is available for use |
-| **Inactive** (red) | Not available; products cannot be sold |
-
-### Impact of Inactive Status
-
-- **Inactive Category:** All products in this category cannot be sold
-- **Inactive Subcategory:** All products in this subcategory cannot be sold
-
-## Warnings
-
-- Changing a category's VAT rate affects the sell price of all products in that category
-- Changing markup percentages triggers price recalculation for all affected products
-- Categories require a price model; subcategories can use "None" to inherit
-- Deleting a category with products or subcategories may cause issues
-- Setting a category to inactive prevents all its products from being sold
+- [Products](03-products.md)
+- [Pricing and VAT](12-pricing.md)
+- [Reports and Dashboard](13-reports.md)

@@ -1,163 +1,72 @@
-# Stock Management
+# Stock
 
-## What Stock Management Is For
+Stock is held per supplier product: each supplier has its own stock and cost for the products it sells. A product's stock and cost come from one of them, its **active source**.
 
-Stock management tracks inventory levels across your suppliers. In SupplyMars, stock is managed at the supplier product level - each supplier maintains their own stock for the products they offer.
+Press `?` on this screen for a short summary.
 
-Key concepts:
-- **Supplier product stock** - Units available at each supplier
-- **Active source** - The supplier automatically selected for orders
-- **Lead time** - Days until stock is available if out of stock
+**Where:** **Catalog > Products**, then open a product and its **Stock** tab.
 
-## What You Can Do
+## The Stock tab
 
-- View stock levels for products
-- View all supplier options for a product
-- Update supplier product stock levels
-- Toggle supplier products active/inactive
-- Remove supplier products from catalog products
-- View stock audit history
+**Inventory card** (top):
 
-## Screens and Actions
+- **Cost Price** (with the active source's supplier), **Stock** (with when that supplier product was last updated), **Sell Price** (with the price model) and **Sell Inc VAT** (with the VAT rate name).
+- **Mark-up**, with where the VAT, price model and mark-up come from (see [Pricing and VAT](12-pricing.md)).
+- An incomplete product shows the heading "Incomplete Product" with "No active supplier", or "Inactive category, subcategory or product", instead ([Products](03-products.md#rules-and-limits)).
 
-### Product Stock Dashboard
+**Supplier Sources** (below), one row per supplier product mapped to this product:
 
-**Navigate to:** Product detail > **Stock** tab
+- Supplier name (links to the supplier product), product name, product code and when it was last updated.
+- "N in stock" or "No stock", the cost, and how much more it costs than the active source (for example +£1.20).
+- The active source has a green bar and a **Best price** badge. An inactive supplier product shows an Inactive badge. An active one whose supplier is inactive shows "Supplier inactive".
 
-This is the main stock management screen showing:
+## Tasks
 
-**Inventory Card:**
-- Current cost price (from active supplier)
-- Stock level
-- Sell price (exc and inc VAT)
-- Markup percentage
-- VAT rate and price model
-- Last update timestamp
+### Turn a source on or off
 
-**Supplier Sources Table:**
-A compact table listing all suppliers for this product:
-- Supplier name, product description, code, and last update
-- Stock level or lead time
-- Cost price with variance from cheapest source
-- Toggle and remove actions per row
-- Active source highlighted with green accent and "Best price" badge
-- Explanation: lowest cost source with stock is selected automatically
+Click the toggle icon on the row. An inactive source is never chosen as the active source or by automatic allocation. The product's active source, cost and price are worked out again straight away.
 
-### Update Stock Levels
+### Remove a source
 
-**Navigate to:** Purchasing > Supplier Products > Find product > Click **Edit**
+1. Click the Remove (trash) icon on the row.
+2. Click **Remove**.
 
-1. Update the **Stock Level** field (0-10,000)
-2. Click **Save**
+The supplier product is unmapped from this product, not deleted. It stays in **Purchasing > Supplier Products**. The product picks its active source again from what is left.
 
-Changes take effect immediately:
-- Audit log records the change
-- Product's active source may recalculate
-- Related products update their displayed stock
+### Change a supplier's stock or cost
 
-### Toggle Supplier Product Status
+1. Go to **Purchasing > Supplier Products**. Sort by **Stock**, or filter on **Stock Level: Out of Stock**, to find low stock.
+2. Click the pencil icon on the supplier product.
+3. Change **Stock Level** (0 to 10,000) or **Cost**.
+4. Click **Update Supplier Product**.
 
-**Navigate to:** Product Stock dashboard > Click toggle icon on supplier row
+The mapped product's active source, stock, cost and price are worked out again, and the change is logged. This happens only when a value changed: saving the form unchanged recalculates nothing.
 
-Quickly switch a supplier product between Active and Inactive:
-- **Active:** Can be selected for purchase orders
-- **Inactive:** Won't be used for new orders
+### See stock history
 
-### Remove Supplier Product
+Open the product's **History** tab. It has **Stock History** and **Cost History** charts, with **7 days**, **30 days** (the default), **90 days** and **All** buttons. Every stock or cost change of each supplier product is logged, from edits and from the stock simulation.
 
-**Navigate to:** Product Stock dashboard > Click trash icon on supplier row
+## How the active source is chosen
 
-1. Confirm the removal
-2. Supplier product is unlinked (not deleted)
-3. Product recalculates pricing with remaining suppliers
+1. Only supplier products that are active, with an active supplier.
+2. Only those with stock and a cost above 0.
+3. The lowest cost wins. On equal cost, the one with more stock wins.
 
-### View in Supplier Product List
+If none qualifies, the product has no active source: it shows "No active supplier", its stock shows 0, and it keeps its last cost and price.
 
-**Navigate to:** Purchasing > Supplier Products
+Automatic allocation (the order's **Allocate** button and the scheduled job) uses the same rules, but asks for a supplier with stock of at least the item's whole outstanding quantity. If none has enough, the item is left unallocated; it is never split across suppliers. Manual allocation from the order page lets you pick any active source, whatever its stock ([Order Items](09-order-items.md#allocate-an-item-to-a-supplier)). The full rules, with a worked example, are in [Sourcing and Pricing](../04-sourcing-and-pricing.md) (technical).
 
-The list shows stock levels for all supplier products:
-- Stock column shows current levels
-- Sort by Stock to find low/out of stock items
-- Filter by "Out of Stock" to find items needing attention
+## Rules and limits
 
-## Stock Display
+- **Stock is never reserved or deducted.** Allocation, acceptance, shipping and delivery leave supplier stock as it is. Stock changes only when someone edits a supplier product, or when the stock simulation runs. Many orders can be allocated against the same stock.
+- **Simulated stock changes do not update the product.** The stock simulation changes supplier stock and cost and logs it, but the product's active source, stock, cost and price stay as they were until a supplier product or supplier is changed or toggled. The **Supplier Sources** rows always show the supplier's current stock; the inventory card may be behind. Automatic allocation reads the current supplier stock.
+- **To bring a product up to date,** click the toggle on one of its sources twice (off, then on again), or change a value on a supplier product and save. Saving a supplier product with nothing changed does not recalculate anything.
+- Turning a supplier on or off in **Purchasing > Suppliers** also recalculates the products it supplies ([Suppliers](05-suppliers.md)).
+- The Stock tab never shows lead time. It shows on the supplier product's own page, and in the order item's supplier list for a supplier product with no stock.
 
-### Stock Status Indicators
+## Related
 
-| Display | Meaning |
-|---------|---------|
-| **X in stock** | Has available inventory |
-| **Out of stock** | Zero units available |
-| **Out of stock (Y day lead time)** | No stock, shows expected wait |
-
-### Where Stock Appears
-
-- Product list cards
-- Product detail pages
-- Product stock dashboard
-- Supplier product list
-- Supplier product detail pages
-
-## Active Source Selection
-
-When a product has multiple supplier options, the system automatically selects the "active source":
-
-**Selection criteria (in order):**
-1. Must have stock > 0
-2. Must have cost > 0
-3. Must be active (supplier product)
-4. Must have active supplier
-5. Lowest cost wins
-6. Highest stock breaks ties
-
-**When selection recalculates:**
-- Supplier product stock changes
-- Supplier product cost changes
-- Supplier product status changes
-- Supplier status changes
-- Supplier product removed from product
-
-## Stock Audit Trail
-
-Every stock change is logged in the audit system:
-
-**Logged information:**
-- Event type (stock changed, cost changed)
-- Supplier product ID
-- Final stock level
-- Final cost
-- Timestamp
-
-This audit trail helps you:
-- Track stock history
-- Identify patterns
-- Investigate discrepancies
-
-## Stock and Orders
-
-### Impact on Orders
-
-Stock levels affect order processing:
-- Products with no stock cannot be allocated
-- Lead time indicates when stock may be available
-- Alternative suppliers may be selected if primary is out of stock
-
-### Stock Reservation
-
-SupplyMars does **not** reserve stock when orders are created. Stock is deducted when:
-- Purchase orders are created (allocation)
-- Suppliers confirm they can fulfil
-
-This means:
-- Stock levels show current availability
-- Multiple orders may compete for the same stock
-- Allocation may fail if stock depletes
-
-## Warnings
-
-- Stock is managed per supplier product, not per catalog product
-- Changing stock may trigger active source recalculation
-- Setting a supplier product to inactive may change the active source
-- Removing all suppliers from a product leaves it unfulfillable
-- Stock changes are audited and cannot be hidden
-- Lead time only displays when stock is zero
+- [Supplier Products](06-supplier-products.md): supplier products and mapping
+- [Pricing and VAT](12-pricing.md): how cost becomes a sell price
+- [Products](03-products.md)
+- [Simulations](14-simulations.md): what the stock simulation does
