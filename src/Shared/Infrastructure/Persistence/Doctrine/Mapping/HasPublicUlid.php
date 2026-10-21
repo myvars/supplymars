@@ -15,19 +15,19 @@ trait HasPublicUlid
 {
     // During backfill: set nullable:true; after backfill flip to false and run a new migration.
     #[ORM\Column(type: 'ulid', unique: true, nullable: true)]
-    private ?string $publicId = null;
+    private ?Ulid $publicId = null;
 
     /** Call from your entity constructor. */
     public function initializePublicId(): void
     {
-        $this->publicId ??= (string) new Ulid();
+        $this->publicId ??= new Ulid();
     }
 
     /** Ensures a value exists for new rows even if constructor initialization was skipped. */
     // #[ORM\PrePersist]
     public function ensurePublicId(): void
     {
-        $this->publicId ??= (string) new Ulid();
+        $this->publicId ??= new Ulid();
     }
 
     /** Internal helper for entity-specific VO getter. */
@@ -37,6 +37,6 @@ trait HasPublicUlid
             throw new \LogicException('publicId is not set (are you mid-backfill or missing initialization?)');
         }
 
-        return $this->publicId;
+        return (string) $this->publicId;
     }
 }
