@@ -130,6 +130,7 @@ Only the production `messenger` container consumes `scheduler_default`. Developm
 | :10/:40, :12/:42, :15/:45 | `app:calculate-{product,order,customer}-sales 1` | Today's sales, twice an hour |
 | Daily 01:30, live only | `app:refund-purchase-orders 50` | Refund rejected purchase orders |
 | Daily 02:00, live only | `app:backup-database --local-copy=/backups/latest.sql.gz` | Backup to S3, and the copy the playground reset restores |
+| Daily 03:30, live only | `app:prune-status-change-log` | Delete status history older than 12 months of finished orders and purchase orders, in batches (see [Audit Logging](05-features.md#audit-logging)) |
 | On demand | `app:generate-reviews {count}` | Generate fake reviews for testing |
 
 The worker runs one job at a time, in schedule order when several are due together; the backup is first of the jobs due at 02:00. While a job runs, async messages (emails, async events) wait. A run missed while the worker restarts happens when it comes back, once. The playground reset is not a scheduled job: it runs in its own `reset` container, on cron, at 02:15.
