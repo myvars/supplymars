@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Accepted. Amended by ADR 015: the jobs run on Symfony Scheduler, not cron.
 
 ## Context
 
@@ -124,7 +124,7 @@ Key files:
 - `src/Reporting/Application/Handler/CalculateCustomerSalesSummaryHandler.php` - Summary ETL
 - `src/Reporting/Application/Handler/Report/CustomerInsightsReportHandler.php` - Dashboard handler
 
-## Related Documentation
+## Related
 
 - [ADR 005: Two-Layer Reporting Aggregation](005-reporting-strategy.md)
-- [Features: Customer Insights](../05-features.md)
+- [Features: Customer Insights](../05-features.md#customer-insights)

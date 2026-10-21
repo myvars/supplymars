@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Accepted. Amended: automatic allocation uses one supplier that can supply the whole outstanding quantity; lines split only through manual PO items and refunds.
 
 ## Context
 
@@ -22,13 +22,13 @@ We implemented **order line splitting** where a single CustomerOrderItem can be 
 
 1. **Outstanding quantity tracking** - CustomerOrderItem tracks:
    ```php
-   getOutstandingQty() = quantity - sum(non-cancelled PO item quantities)
+   getOutstandingQty() = quantity - sum(non-cancelled, non-refunded PO item quantities)
    ```
 
-2. **Iterative allocation** - OrderAllocator processes items with outstanding quantity:
-   - Find best source with minimum required quantity
-   - If source has less than outstanding: allocate what's available
-   - Remaining quantity stays outstanding for next allocation pass
+2. **Allocation** - OrderAllocator processes items with outstanding quantity:
+   - Find the best source that can supply the whole outstanding quantity
+   - If no source can: skip the item; it stays outstanding for the next allocation pass
+   - A line is split across suppliers only when staff add or edit PO items by hand, or after a cancel or refund
 
 3. **Multiple PO items per order item** - A CustomerOrderItem can have multiple PurchaseOrderItems, each from a different supplier with different quantities.
 
@@ -36,12 +36,12 @@ We implemented **order line splitting** where a single CustomerOrderItem can be 
 
 ### Example
 
-Customer orders 100 widgets:
+A split line, as staff would build it by hand (automatic allocation would skip this line, because no single supplier has 100). Customer orders 100 widgets:
 - Supplier A has 60 @ £8.00 (cheapest)
 - Supplier B has 50 @ £8.50
 - Supplier C has 30 @ £9.00
 
-Allocation result:
+Result:
 - PO to Supplier A: 60 units
 - PO to Supplier B: 40 units (fulfills remaining 40)
 - Outstanding: 0
@@ -67,7 +67,7 @@ Allocation result:
 Key files:
 - `src/Order/Domain/Model/Order/CustomerOrderItem.php` - `getOutstandingQty()`, `getQtyAddedToPurchaseOrders()`
 - `src/Purchasing/Domain/Model/PurchaseOrder/PurchaseOrderItem.php` - Links to CustomerOrderItem
-- `src/Purchasing/Application/Service/OrderItemAllocator.php` - Creates split allocations
+- `src/Purchasing/Application/Service/OrderItemAllocator.php` - Creates or tops up the PO item for an order item
 
 The `getMaxQuantity()` method on PurchaseOrderItem ensures edits don't exceed what the order item still needs:
 ```php

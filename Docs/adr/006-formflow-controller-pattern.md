@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Accepted. Amended in #1: the flows moved from `src/` to the `myvars/form-flow` package, which the app requires from Packagist.
 
 ## Context
 
@@ -148,3 +148,9 @@ $model->template('create'); // 'catalog/manufacturer/create.html.twig'
 {{ path(routes.new) }}
 {{ path(routes.delete, {'id': result.publicId.value}) }}
 ```
+
+## Related
+
+- [FormFlow pattern](../patterns/FormFlow/README.md)
+- [FormFlow template overrides](../patterns/FormFlow/Overrides.md)
+- [form-flow package docs](https://github.com/myvars/form-flow/blob/v1.4.0/docs/flows.md)

@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Accepted. Amended in #30: tokens are stored as SHA-256 hashes.
 
 ## Context
 
@@ -41,7 +41,7 @@ We added a **lightweight REST API layer** alongside the existing server-rendered
 │  │  FormFlow           │          │  AbstractApiController     │  │
 │  │  Twig + Turbo       │          │  ApiResponse helpers       │  │
 │  │  Symfony Forms      │          │  Resource DTOs (output)    │  │
-│  │  Session auth       │          │  Request DTOs (input)      │  │
+│  │  Session auth       │          │  Payload DTOs (input)      │  │
 │  │  CSRF protection    │          │  Bearer token auth         │  │
 │  │                     │          │  RFC 7807 errors           │  │
 │  └─────────┬───────────┘          └──────────┬─────────────────┘  │
@@ -58,13 +58,13 @@ We added a **lightweight REST API layer** alongside the existing server-rendered
 
 **Resource classes as output DTOs:** Each API response is shaped by a readonly `Resource` class implementing `ApiResourceInterface`, with a `fromEntity()` factory and `toArray()` method. This decouples the JSON representation from the entity structure and allows different representations for list vs. detail views (`ProductListResource` vs. `ProductResource`). The interface enables `ApiResponse::collection()` to accept a resource class-string directly instead of requiring a verbose closure.
 
-**Request classes as input DTOs:** Write endpoints use `#[MapRequestPayload]` with Symfony Validator constraints. Validation errors are caught by `ApiExceptionListener` and returned as RFC 7807 with a `violations` array.
+**Payload classes as input DTOs:** Write endpoints use `#[MapRequestPayload]` with Symfony Validator constraints. Validation errors are caught by `ApiExceptionListener` and returned as RFC 7807 with a `violations` array.
 
 **Separate firewall:** The `api` firewall is stateless and uses `access_token` authentication. It sits before the `main` firewall in the config so `/api/` routes never hit session handling.
 
 **Tokens stored hashed:** Each user has at most one token, a random 256-bit value issued with `app:user:issue-token <email>` and printed once. Only its SHA-256 hash is stored (`User.apiTokenHash`, unique index); `ApiTokenHandler` hashes the presented token and looks the user up by the hash. A fast unsalted hash is enough: the token cannot be guessed from its hash, and an unsalted hash can be found through the index. A password hasher (bcrypt, argon2) is for low-entropy secrets and would rule out the indexed lookup. The migration to hashed storage revoked every existing token rather than hashing it, because backups taken before it hold those tokens in plain text.
 
-**NelmioApiDoc for Swagger:** OpenAPI documentation is generated from `#[OA\...]` attributes on controllers and Resource classes. The Swagger UI is available at `/api/doc` in development.
+**NelmioApiDoc for Swagger:** OpenAPI documentation is generated from `#[OA\...]` attributes on controllers and Resource classes. The Swagger UI is served at `/api/doc`, public in every environment; its title and auth scheme are dev-only config (`when@dev` in `config/packages/nelmio_api_doc.yaml`).
 
 **Selective public access:** Catalog endpoints are public (read-only product browsing). Order endpoints require `ROLE_ADMIN` via Bearer token. This is controlled via `access_control` rules, not per-controller logic.
 
@@ -89,9 +89,9 @@ We added a **lightweight REST API layer** alongside the existing server-rendered
 
 This decision **complements** rather than replaces ADR 008. The server-driven UI remains the primary interface for staff users. The API layer serves a different audience (external systems, automation) with different constraints (stateless, JSON, no CSRF). The two layers share all business logic through the Application and Domain layers.
 
-## Implementation Notes
+### Implementation Notes
 
-### File Structure
+#### File Structure
 
 ```
 src/{Context}/UI/Http/Api/
@@ -99,12 +99,12 @@ src/{Context}/UI/Http/Api/
 ├── Resource/
 │   ├── {Entity}Resource.php            # Detail view DTO
 │   └── {Entity}ListResource.php        # List view DTO (optional)
-└── Request/
-    ├── Create{Entity}Request.php       # Write input DTO
-    └── Update{Entity}Request.php       # Write input DTO
+└── Payload/
+    ├── Create{Entity}Payload.php       # Write input DTO
+    └── Update{Entity}Payload.php       # Write input DTO
 ```
 
-### Response Envelope
+#### Response Envelope
 
 ```json
 // Single item
@@ -120,7 +120,7 @@ src/{Context}/UI/Http/Api/
 // Error (RFC 7807)
 {
     "type": "about:blank",
-    "title": "Unprocessable Content",
+    "title": "Validation Failed",
     "status": 422,
     "detail": "One or more fields are invalid.",
     "violations": [
@@ -129,7 +129,7 @@ src/{Context}/UI/Http/Api/
 }
 ```
 
-### Key Files
+#### Key Files
 
 - `src/Shared/UI/Http/Api/AbstractApiController.php` — Base controller
 - `src/Shared/UI/Http/Api/ApiResourceInterface.php` — Resource contract (`toArray()`)
@@ -141,8 +141,8 @@ src/{Context}/UI/Http/Api/
 - `config/packages/nelmio_api_doc.yaml` — Swagger configuration
 - `config/packages/security.yaml` — API firewall and access control
 
-## Related Documentation
+## Related
 
 - [Server-Driven UI](008-server-driven-ui-architecture.md) — Why the web UI uses HTML, not JSON
 - [API Pattern](../patterns/API/README.md) — How to add new API endpoints
-- [Security](../08-security.md) — Full authentication and authorization documentation
+- [API authentication](../patterns/API/README.md#authentication) — Bearer tokens and access rules

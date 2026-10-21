@@ -84,10 +84,9 @@ Instead of HTTP redirects after form submission, we return Turbo Streams:
 
 <!-- Refresh current page in place -->
 <turbo-stream action="refresh"></turbo-stream>
-
 ```
 
-The `TurboAwareRedirector` detects Turbo requests and returns streams instead of HTTP 303 redirects. The flash message shows on the refreshed or redirected page. A form re-rendered in its frame (a 422 with errors) appends its flashes with `<turbo-stream action="append" target="flash-container">`.
+The `TurboAwareRedirector` detects Turbo requests and returns streams instead of HTTP 303 redirects. The flash message shows on the refreshed or redirected page. When a frame layout renders, as on a 422 re-render with errors, it appends its flashes with `<turbo-stream action="append" target="flash-container">`.
 
 ### Link Targeting Rules
 

@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted. Classic mode first (#80), then worker mode in production (#82), as planned in #68.
+Accepted. Amended in #82: worker mode in production, after classic mode in #80, as planned in #68.
 
 ## Context
 
@@ -26,7 +26,7 @@ The skeleton made this change first (myvars/skeleton#83, its ADR 015) and found,
 
 ## Decision
 
-- **One image** on the official FrankenPHP image, pinned (`dunglas/frankenphp:1.13.2-php8.5.12`), with dev and prod stages. The `php` container runs FrankenPHP (the image's default command) and `messenger` runs `messenger:consume`. The nginx stages, `docker/nginx/`, the `nginx` service, `make certs` and mkcert are removed. The `reset` image is unchanged.
+- **One image** on the official FrankenPHP image, pinned to an exact version in `docker/Dockerfile`, with dev and prod stages. The `php` container runs FrankenPHP (the image's default command) and `messenger` runs `messenger:consume`. The nginx stages, `docker/nginx/`, the `nginx` service, `make certs` and mkcert are removed. The `reset` image is unchanged.
 - **One Caddyfile** (`docker/frankenphp/Caddyfile`), the skeleton's. `SERVER_NAME` is `localhost` in development (HTTPS from Caddy's local certificate authority) and `:80` in production, published on `127.0.0.1:${HTTP_HOST_PORT}` (live 8001, playground 8002), so the host Caddy config does not change. It keeps what nginx did as a web server:
   - HSTS (`max-age=63072000; includeSubDomains`, no `preload`, as decided in #68), and no `Server` header;
   - zstd/gzip, and a year's immutable cache on `/assets/` files that exist;

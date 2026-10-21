@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Accepted. Amended by ADR 012: general-purpose primitives such as Button now come from the Shadcn kit, Flowbite is gone, and the in-house Card is now EntityCard.
 
 ## Context
 
@@ -53,8 +53,8 @@ We adopted a **server-driven UI architecture** using:
 ┌─────────────────────────────────────────────────────────────────┐
 │                        BROWSER                                  │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
-│  │   Turbo     │  │  Stimulus   │  │      Flowbite/          │  │
-│  │  (Navigate) │  │ (Enhance)   │  │      Chart.js           │  │
+│  │   Turbo     │  │  Stimulus   │  │      Chart.js           │  │
+│  │  (Navigate) │  │ (Enhance)   │  │      (Charts)           │  │
 │  └─────────────┘  └─────────────┘  └─────────────────────────┘  │
 │                                                                 │
 │  JavaScript adds: modals, search, charts, dropdowns, toasts     │
@@ -124,20 +124,20 @@ These trade-offs are acceptable for an internal operations tool where:
 - Data consistency matters more than perceived speed
 - Forms are the primary interaction pattern
 
-## Implementation Notes
+### Implementation Notes
 
-### Component Architecture
+#### Component Architecture
 
 ```
 src/Shared/UI/Twig/Components/   # PHP component classes
 templates/components/            # Component templates
 
-# Example: Button component
-Button.php                       # Props, variant logic
-Button.html.twig                 # HTML structure
+# Example: EntityCard component
+EntityCard.php                   # Props, variant logic
+EntityCard.html.twig             # HTML structure
 ```
 
-### Stimulus Controller Pattern
+#### Stimulus Controller Pattern
 
 ```javascript
 // assets/controllers/example_controller.js
@@ -156,7 +156,7 @@ export default class extends Controller {
 }
 ```
 
-### Form Flow Integration
+#### Form Flow Integration
 
 Forms use the FormFlow pattern ([ADR 006](006-formflow-controller-pattern.md)):
 
@@ -165,7 +165,7 @@ Forms use the FormFlow pattern ([ADR 006](006-formflow-controller-pattern.md)):
 3. Error: Re-render form with validation errors (HTTP 422)
 4. Success: Turbo Stream redirect/refresh
 
-### Key Files
+#### Key Files
 
 | Category | Location |
 |----------|----------|
@@ -176,7 +176,7 @@ Forms use the FormFlow pattern ([ADR 006](006-formflow-controller-pattern.md)):
 | Asset Config | `importmap.php`, `assets/styles/app.css` |
 | Tailwind Config | `assets/styles/app.css` (embedded config) |
 
-## Related Documentation
+## Related
 
 - [UI Patterns](../patterns/UI/README.md) - Detailed component and controller docs
 - [Turbo Architecture](007-turbo-frame-modal-architecture.md) - Navigation and modal system
