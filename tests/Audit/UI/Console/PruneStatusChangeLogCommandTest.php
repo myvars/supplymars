@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Audit\UI\Console;
 
-use App\Audit\Domain\Model\StatusChange\StatusChangeLog;
 use App\Order\Domain\Model\Order\OrderStatus;
 use App\Purchasing\Application\Service\ProcessingSimulator;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
@@ -78,6 +77,7 @@ class PruneStatusChangeLogCommandTest extends KernelTestCase
         foreach ($deleted as $id) {
             self::assertNull(StatusChangeLogFactory::repository()->find($id));
         }
+
         foreach ($kept as $id) {
             self::assertNotNull(StatusChangeLogFactory::repository()->find($id));
         }
@@ -134,7 +134,6 @@ class PruneStatusChangeLogCommandTest extends KernelTestCase
             'status' => $status->value,
             'eventTimestamp' => new \DateTimeImmutable($ago),
         ]);
-        \assert($log instanceof StatusChangeLog);
 
         return (int) $log->getId();
     }
