@@ -1,425 +1,92 @@
-# Stimulus Controllers
+# Stimulus controllers
 
-Stimulus provides progressive enhancement for server-rendered HTML. Controllers add behavior without taking over rendering.
+Every Stimulus controller in use in `assets/controllers/`, what it does and where it is mounted. Read when writing a new controller: one may already exist, and a kit recipe comes first ([ADR 012](../../adr/012-shadcn-ui-kit.md)). File `basic_modal_controller.js` is `data-controller="basic-modal"`.
 
-## Philosophy
+## Controllers
 
-```
-HTML is the source of truth.
-JavaScript reads from HTML, writes to HTML.
-No client-side state management.
-```
+"Kit" marks a controller that came with a Shadcn kit recipe (`ux:install`); its component attaches it, and you edit it like any project file but keep the local changes ADR 012 lists.
 
-## Architecture
+| Controller | What it does | Key values / targets | Used in |
+|------------|--------------|----------------------|---------|
+| `alert_dialog` | Kit. Confirmation dialog for content already on the page | targets `trigger`, `dialog` | `AlertDialog` component; no page uses it yet |
+| `aos` | Animate On Scroll; loads `aos` lazily, skipped under reduced motion | none | `home/` pages (index, about, contact, privacy, terms) |
+| `bar_chart` | Axis and tooltip formatting for a Chart.js bar chart; a click visits `linkUrl` + `?` + `options.linkParams[index]` | value `linkUrl` | `reporting/order_summary`, `product_sales`, `customer_insights` |
+| `basic_modal` | The Turbo modal: opens on frame load, closes on a successful submit | targets `dialog`, `frame` | `Modal` component; see [Turbo](../Turbo/README.md) |
+| `calendar` | Kit. Month grid for `Calendar` | targets `month`, `previous`, `next`, `input` | `Calendar`, via `DatePicker` |
+| `card_link` | Makes a whole element navigate with Turbo `visit()`, ignoring clicks on inner links and buttons | value `url` | `purchasing/purchase_order/_order_po_card.html.twig` |
+| `date_picker` | Kit. Input plus popover calendar | targets `trigger`, `value`, `input` | `DatePicker` (`DatePickerType`, see [Forms](Forms.md#pick-a-date-from-a-calendar)) |
+| `dialog` | Kit. Opens and closes a modal `<dialog>`: Escape, click outside, focus return | targets `trigger`, `dialog` | `Sheet` (sidebar menu, help panel); `Dialog` component, no page uses it yet |
+| `doughnut_chart` | Tooltip formatting for a Chart.js doughnut; a click replaces `{label}` in `linkUrl` with the segment's label | value `linkUrl` | `reporting/order_summary`, `customer_geographic`, `customer_segments` |
+| `dropdown_menu` | Kit. Menu with arrow-key navigation, Escape, focus return | targets `trigger`, `content`, `item` | `DropdownMenu` (header user menu) |
+| `dropdown_menu_sub` | Kit. Submenu of `dropdown_menu` | targets `trigger`, `content` | `DropdownMenu:Sub`; no submenu yet |
+| `dropzone` | Drag-and-drop image upload (Dropzone.js), then a Turbo refresh | values `url`, `paramName` | `catalog/product_image/show.html.twig` |
+| `help_drawer` | Loads the current page's help into the help `Sheet`; `?` shortcut | target `frame` | `_help_drawer.html.twig` |
+| `inline_edit` | Focuses the field; Enter submits (Cmd/Ctrl+Enter in a textarea), Escape cancels, click outside submits; input grows to fit | targets `cancel`, `sizer` | `InlineEdit` component; see [InlineEdit](../InlineEdit/README.md) |
+| `line_chart` | Axis and tooltip formatting for a Chart.js line chart | none | `audit/product_history.html.twig` |
+| `new_item_highlight` | One-shot glow (`.new-item-highlight`) on an item created less than `threshold` ms ago | values `createdAt` (ISO 8601), `threshold` (default 3000) | `order/index.html.twig` |
+| `popover` | Kit. Floating content anchored to a trigger | targets `trigger`, `content` | `Popover`, `DatePicker` |
+| `searchbox` | Debounced (250 ms) search input that reloads the results frame and replaces the URL | value `basePath`; target `queryInput` | `Search` component |
+| `sidebar_active` | Highlights the current nav link (longest path prefix, query aware), opens the section holding it, toggles sections | `data-nav="top|section|dropdown|child|icon"` markers | `_menu.html.twig` |
+| `sonner` | Kit. The page toaster: stacks toasts, pauses on hover, swipe to dismiss | targets `list`, `toast` | `<twig:Sonner id="flash-container">` in `base.html.twig`; `FlashToast` |
+| `sortable` | Drag-and-drop reorder (SortableJS), posts the new order, then a Turbo refresh | values `reorderUrl`, `csrfToken` | `catalog/product_image/show.html.twig` |
+| `submit_form` | `submitForm()` clicks the `submit` target | target `submit` | every `FlowForm`; see [Submit on change](#submit-on-change) |
+| `theme_toggle` | Dark mode toggle, saved in `localStorage` | targets `sunIcon`, `moonIcon` | `_header.html.twig` |
+| `toggle` | Shows and hides the `toggleable` target | target `toggleable` | `order/_order_item_card.html.twig` |
+| `turnstile` | Renders the Cloudflare Turnstile widget for `TurnstileType` | value `sitekey`; targets `container`, `response` | `form/turnstile.html.twig` (registration), `customer/security/login.html.twig` |
 
-```
-assets/
-├── app.js                    # Entry point, imports bootstrap
-├── stimulus_bootstrap.js     # Auto-loads controllers
-├── lib/                      # Shared utility modules
-│   ├── chart_format.js       # Value formatting for charts (currency, %, integer)
-│   └── turbo.js              # Turbo helper functions (turboRefresh)
-└── controllers/              # Controller files
-    ├── basic_modal_controller.js
-    ├── searchbox_controller.js
-    └── ...
-```
+`csrf_protection_controller.js` is not a Stimulus controller. It is Symfony's CSRF module, imported for its side effects: it sets the double-submit CSRF cookie on form submits, Turbo's included.
 
-Controllers are auto-discovered by filename convention:
-- `example_controller.js` → `data-controller="example"`
-- `basic_modal_controller.js` → `data-controller="basic-modal"`
+Shared helpers live in `assets/lib/`: `chart_format.js` (currency, percent and integer formatting for the chart controllers) and `turbo.js` (`turboRefresh()`, used by `dropzone` and `sortable`).
 
-## Controller Anatomy
+## How to
 
-```javascript
-import { Controller } from '@hotwired/stimulus';
+### Submit on change
 
-export default class extends Controller {
-    // Elements to reference
-    static targets = ['output', 'input'];
+`FlowForm` (`templates/components/FlowForm.html.twig`) mounts `submit_form`, so any `FlowForm` can submit itself when a field changes. Point the field's `change` event at `submitForm` and add a hidden `SubmitType` child named `auto-update` as the `submit` target; `hidden-submit-button` (`assets/styles/app.css`) hides it. From `ProductType`:
 
-    // Data from HTML attributes
-    static values = {
-        url: String,
-        count: { type: Number, default: 0 },
-        enabled: Boolean,
-    };
-
-    // Lifecycle: controller connected to DOM
-    connect() {
-        console.log('Controller connected');
-    }
-
-    // Lifecycle: controller disconnected from DOM
-    disconnect() {
-        console.log('Controller disconnected');
-    }
-
-    // Action method (called from data-action)
-    submit(event) {
-        event.preventDefault();
-        this.outputTarget.textContent = this.inputTarget.value;
-    }
-
-    // Value changed callback
-    countValueChanged(value, previousValue) {
-        console.log(`Count changed from ${previousValue} to ${value}`);
-    }
-}
+```php
+->add('category', EntityType::class, [
+    // …
+    'attr' => ['data-action' => 'change->submit-form#submitForm'],
+])
+// …
+$builder->add('auto-update', SubmitType::class, [
+    'attr' => ['class' => 'hidden-submit-button', 'data-submit-form-target' => 'submit'],
+]);
 ```
 
-## HTML Binding
+The name matters: `AutoUpdateGuard` in `myvars/form-flow` skips the handler only when the clicked button is a form child named `auto-update`, and FormFlow re-renders the form (422, errors cleared). Under any other name, or as a raw `<button name="auto-update">` in the template, every change is processed for real, so an edit form saves the record. supplymars does this on the field a dependent field (`addDependent()`, `symfonycasts/dynamic-forms`) hangs off, so the form re-renders with the new choices: `ProductType`, `ProductFilterType`, `SupplierProductType`, `SupplierProductFilterType`.
 
-### Controller Connection
+### Charts
 
-```html
-<div data-controller="example">
-    <!-- Controller scope -->
-</div>
-
-<!-- Multiple controllers -->
-<div data-controller="example other">
-```
-
-### Targets
-
-```html
-<div data-controller="example">
-    <input data-example-target="input">
-    <span data-example-target="output"></span>
-
-    <!-- Multiple targets -->
-    <li data-example-target="item"></li>
-    <li data-example-target="item"></li>
-</div>
-```
-
-```javascript
-// Access in controller
-this.inputTarget        // First matching element
-this.outputTarget       // First matching element
-this.itemTargets        // Array of all matching elements
-this.hasInputTarget     // Boolean: does target exist?
-```
-
-### Values
-
-```html
-<div data-controller="example"
-     data-example-url-value="/api/search"
-     data-example-count-value="5"
-     data-example-enabled-value="true">
-```
-
-```javascript
-// Access in controller
-this.urlValue           // "/api/search" (String)
-this.countValue         // 5 (Number)
-this.enabledValue       // true (Boolean)
-
-// Set values (updates HTML attribute too)
-this.countValue = 10;
-```
-
-### Actions
-
-```html
-<div data-controller="example">
-    <!-- Click event -->
-    <button data-action="click->example#submit">Submit</button>
-
-    <!-- Other events -->
-    <input data-action="input->example#search">
-    <form data-action="submit->example#handleSubmit">
-    <select data-action="change->example#update">
-
-    <!-- Multiple actions -->
-    <input data-action="focus->example#highlight blur->example#unhighlight">
-
-    <!-- Window/document events -->
-    <div data-action="resize@window->example#layout">
-    <div data-action="turbo:load@document->example#refresh">
-</div>
-```
-
-## Existing Controllers
-
-### Modal & Dialog
-
-**`basic_modal_controller`**
-- Manages native `<dialog>` element
-- Auto-opens when Turbo frame loads content
-- Auto-closes on successful form submission
-- Handles click-outside and escape key
-
-```html
-<div data-controller="basic-modal"
-     data-action="turbo:before-cache@window->basic-modal#close
-                  turbo:submit-end->basic-modal#submitEnd
-                  turbo:frame-load->basic-modal#frameLoaded">
-    <dialog data-basic-modal-target="dialog"
-            data-action="close->basic-modal#close
-                         mousedown->basic-modal#onMouseDown
-                         click->basic-modal#clickOutside">
-        <turbo-frame id="modal" data-basic-modal-target="frame"></turbo-frame>
-    </dialog>
-</div>
-```
-
-### Search & Filtering
-
-**`searchbox_controller`**
-- Debounced search input (250ms)
-- Updates Turbo frame with results
-- Manages URL state
-
-```html
-<form data-controller="searchbox"
-      data-searchbox-base-path-value="/products">
-    <input data-searchbox-target="queryInput"
-           data-action="input->searchbox#debouncedQueryInputChanged">
-</form>
-```
-
-**`autosubmit_controller`**
-- `submit` submits the form at once; `debouncedSubmit` waits 300ms. Bind either with `data-action`
-- Available, not currently used
-
-```html
-<form data-controller="autosubmit">
-    <select data-action="change->autosubmit#submit">
-</form>
-```
-
-### Form Enhancement
-
-**`inline_edit_controller`**
-- On the `InlineEdit` frame: focuses the field, Enter submits (Cmd/Ctrl+Enter in a textarea), Escape cancels, a click outside submits
-- The input grows to fit its text via the `sizer` target
-
-**`dependent_field_controller`**
-- Cascading select fields: fetches HTML for the chosen value and puts it in the dependent element
-- `dependent` is the DOM id of the element to fill; the URL's `%id%` placeholder (URL-encoded by `path()`) is replaced with the selected value
-- Available, not currently used
-
-```html
-<select data-controller="dependent-field"
-        data-dependent-field-dependent-value="subcategory"
-        data-dependent-field-url-value="{{ path('app_subcategory_options', {id: '%id%'}) }}"
-        data-action="change->dependent-field#updateDependent">
-```
-
-**`submit_form_controller`**
-- `submitForm()` clicks the element marked `data-submit-form-target="submit"`
-- Used with dependent fields
-
-**`turnstile_controller`**
-- Renders the Cloudflare Turnstile widget for `TurnstileType` (value `sitekey`; targets `container`, `response`)
-
-### UI Interaction
-
-**`toggle_controller`**
-- Show/hide elements
-- Optional click-outside-to-close behavior
-
-```html
-<!-- Simple toggle -->
-<div data-controller="toggle">
-    <button data-action="click->toggle#toggle">Toggle</button>
-    <div data-toggle-target="toggleable" class="hidden">Content</div>
-</div>
-
-<!-- Dropdown with click-outside-to-close -->
-<div data-controller="toggle" data-toggle-close-on-click-outside-value="true">
-    <button data-action="click->toggle#toggle">Menu</button>
-    <div data-toggle-target="toggleable" class="hidden">Dropdown</div>
-</div>
-```
-
-**`card_link_controller`**
-- Makes an entire card clickable as a navigation link
-- Inner links and buttons still work normally (clicks on `<a>` or `<button>` are ignored)
-- Uses Turbo `visit()` for navigation
-
-```html
-<div data-controller="card-link"
-     data-card-link-url-value="/purchase/order/123"
-     data-action="click->card-link#visit"
-     class="cursor-pointer">
-    <p>Clicking here navigates to the URL</p>
-    <a href="/status">This link still works independently</a>
-</div>
-```
-
-**`new_item_highlight_controller`**
-- One-shot glow animation for recently created list items
-- Compares `createdAt` timestamp against current time
-- Applies `.new-item-highlight` CSS class if within threshold
-- Self-removes class after animation completes
-
-```html
-<div data-controller="new-item-highlight"
-     data-new-item-highlight-created-at-value="{{ result.createdAt|date('c') }}"
-     data-new-item-highlight-threshold-value="3000">
-```
-
-Values:
-- `createdAt` (String) — ISO 8601 timestamp of the item's creation
-- `threshold` (Number, default: 3000) — Age in ms below which the highlight triggers
-
-**`sidebar_active_controller`**
-- Highlights active nav item in sidebar based on current URL
-- Matches links by longest pathname prefix, with query param awareness
-- Updates on `connect()` and `turbo:frame-load@window`
-- Manages section dropdown open/close and active styling for top-level links, section buttons, child links, icons
-
-```html
-<nav data-controller="sidebar-active"
-     data-action="turbo:frame-load@window->sidebar-active#update">
-    <a data-nav="top" href="/orders">...</a>
-    <button data-nav="section">...</button>
-    <ul data-nav="dropdown">
-        <a data-nav="child" href="/catalog/products">...</a>
-    </ul>
-</nav>
-```
-
-**`theme_toggle_controller`**
-- Dark mode toggle
-- Persists to localStorage
-
-### Data Visualization
-
-**`bar_chart_controller`** / **`line_chart_controller`** / **`doughnut_chart_controller`**
-- Chart.js integration (bar, line, doughnut)
-- Shared formatting via `assets/lib/chart_format.js` (currency, percentage, integer)
-- Click-to-navigate support (bar, doughnut)
-
-A click on a bar visits the link URL plus `?` and that bar's entry in `options.linkParams`. A click on a doughnut segment replaces `{label}` in the link URL with the segment's label, and `{LABEL}` with its upper-case, underscored form. `templates/reporting/order_summary.html.twig` uses both:
+Charts render through the `chart` controller of `@symfony/ux-chartjs` (`assets/controllers.json`) with `render_chart()`; do not import Chart.js in a controller. To add formatting or click-through, pass an in-house controller to `render_chart()` as `data-controller`. ux-chartjs mounts it next to its own `chart` controller on the `<canvas>`, where it listens for `chartjs:pre-connect` (to change options) and `chartjs:connect` (to get the chart). From `reporting/order_summary.html.twig`:
 
 ```twig
-'data-bar-chart-link-url-value': path('app_order_index'),
-'data-doughnut-chart-link-url-value': path('app_order_index') ~ '?orderStatus={label}&…',
+{{ render_chart(report.orderProgressChart, {
+    'data-controller': 'doughnut_chart',
+    'data-doughnut-chart-link-url-value': path('app_order_index') ~ '?orderStatus={label}&startDate=' ~ report.startDate ~ '&endDate=' ~ report.endDate,
+}) }}
 ```
 
-### Utilities
+The chart builders (`src/Reporting/UI/Http/Chart/`, `src/Audit/UI/Http/Chart/`) set the axis type the formatters read and, for bar charts, `options.linkParams`.
 
-**`csrf_protection_controller`** *(not a Stimulus controller — Symfony CSRF side-effect module)*
-- Manages CSRF tokens via global event listeners
+### Side panels
 
-**`aos_controller`**
-- Animate On Scroll initialization
+The sidebar menu (`_menu.html.twig`) and the help panel (`_help_drawer.html.twig`) are kit `<twig:Sheet>` components: a modal `<dialog>` that slides in from an edge, driven by the `dialog` controller. The browser keeps focus inside and makes the page behind inert; a rule in `assets/styles/app.css` stops the page scrolling while one is open.
 
-**`sortable_controller`**
-- Drag-and-drop reordering (SortableJS)
+- Give the content an inner element that fills the panel. A click that lands on the `<dialog>` element itself counts as a click outside and closes it.
+- `turbo:before-cache@window->dialog#close` on the `Sheet` closes it before Turbo caches the page, so a back navigation does not restore it open.
+- Links inside close the panel as they navigate with `data-action="dialog#close"`.
+- A panel that needs more behaviour puts its own controller on the same element and calls `dialog` (as `help_drawer` does).
 
-**`dropzone_controller`**
-- File upload with drag-and-drop
-- Posts the form's other fields (its CSRF `_token`) with the files; `acceptedFiles` and `maxFilesize` are a convenience only, the server validates again (see `Docs/08-security.md`)
+## Gotchas
 
-### Kit controllers
+- **Help panel fetches only when the page path changed.** `help_drawer` builds `/help?page=` from `window.location.pathname` (the query string is ignored) and sets the frame's `src` only when that URL differs from the last load, and the frame is `loading="lazy"`, so nothing is fetched until the panel opens. The `?` / `Shift+/` shortcut is ignored while typing in a field.
+- **Doughnut links replace only `{label}`**, URL-encoded. There is no upper-case or enum-name placeholder, so the label must be the value the target filter expects.
+- **Dropzone limits are a convenience.** `acceptedFiles` and `maxFilesize` (fixed in the controller) only stop the obvious mistakes in the browser; `CreateProductImageHandler` validates every upload again ([Security](../../08-security.md#file-uploads)). The controller sits on the upload `<form>`, so the form's CSRF `_token` field is posted with the files.
 
-These come from the Shadcn kit (`symfony/ux-toolkit`, see ADR 012) and are attached by its components, not by hand:
+## Related
 
-- **`dialog_controller`** — `Dialog` and `Sheet` (the sidebar menu and help panel)
-- **`alert_dialog_controller`** — `AlertDialog`
-- **`dropdown_menu_controller`**, **`dropdown_menu_sub_controller`** — `DropdownMenu` (the header user menu)
-- **`sonner_controller`** — the flash toaster in `base.html.twig`
-- **`popover_controller`**, **`calendar_controller`**, **`date_picker_controller`** — `DatePicker` (see `DatePickerType`)
-
-## Patterns
-
-### Debouncing
-
-```javascript
-import debounce from 'debounce';
-
-export default class extends Controller {
-    initialize() {
-        this.search = debounce(this.search.bind(this), 250);
-    }
-
-    search() {
-        // Called max once per 250ms
-    }
-}
-```
-
-### Turbo Integration
-
-```javascript
-// Listen for Turbo events
-connect() {
-    document.addEventListener('turbo:load', this.handleLoad);
-}
-
-disconnect() {
-    document.removeEventListener('turbo:load', this.handleLoad);
-}
-
-// Or via data-action
-// data-action="turbo:load@document->controller#method"
-```
-
-### Third-Party Libraries
-
-```javascript
-// Lazy load for performance
-async connect() {
-    const { Chart } = await import('chart.js');
-    this.chart = new Chart(this.element, config);
-}
-
-disconnect() {
-    this.chart?.destroy();
-}
-```
-
-### Loading States
-
-```javascript
-async submit() {
-    this.element.ariaBusy = 'true';
-    this.submitTarget.disabled = true;
-
-    try {
-        await fetch(this.urlValue);
-    } finally {
-        this.element.ariaBusy = 'false';
-        this.submitTarget.disabled = false;
-    }
-}
-```
-
-## Best Practices
-
-1. **Keep controllers small** - One concern per controller
-
-2. **Use targets, not querySelector**:
-   ```javascript
-   // Good
-   this.outputTarget
-
-   // Avoid
-   this.element.querySelector('.output')
-   ```
-
-3. **Use values for configuration**:
-   ```html
-   <!-- Good: configurable via HTML -->
-   <div data-example-delay-value="500">
-   ```
-
-4. **Clean up in disconnect()**:
-   ```javascript
-   disconnect() {
-       this.observer?.disconnect();
-       this.chart?.destroy();
-   }
-   ```
-
-5. **Don't store state in JavaScript** - Use HTML attributes or values
-
-6. **Leverage Turbo events** for navigation-aware behavior
-
-7. **Use `stimulus-use`** for common patterns (transitions, click-outside)
+- [UI patterns](README.md)
+- [Turbo](../Turbo/README.md): the modal (`basic_modal`) and the search frame
+- [ADR 012](../../adr/012-shadcn-ui-kit.md): kit recipes and local changes

@@ -1,437 +1,81 @@
-# Symfony Forms
+# Symfony forms
 
-Forms handle all data input with server-side validation. The architecture separates concerns across Form Types, Form Models (DTOs), and Mappers.
+How forms render, the field kinds the theme supports, and the form helpers this app adds. Read when adding a form or a field, or when a form renders or submits oddly.
 
-## Architecture
+Form types, form models and mappers live in `src/{Context}/UI/Http/Form/` (`Type/`, `Model/`, `Mapper/`); `ProductType`, `ProductForm` and `ProductController` in Catalog are a full example. How a controller runs a form is in [FormFlow](../FormFlow/README.md). Where validation rules go (the entity is the source of truth; rules the user can break are repeated on the form model) is in [Security: Validation](../../08-security.md#validation).
 
-```
-src/{Context}/UI/Http/Form/
-├── Type/                 # Form type classes
-│   └── ProductType.php
-├── Model/                # Form DTOs
-│   └── ProductForm.php
-├── Mapper/               # DTO → Command conversion
-│   └── CreateProductMapper.php
-└── DataTransformer/      # Value transformation
-    └── IdToEntityTransformer.php
-```
+## Rules
 
-## Form Flow
+- Every form renders through the global theme `templates/form/shadcn_theme.html.twig` (registered in `config/packages/twig.yaml` with `form/turnstile.html.twig`). It renders each field with the kit components in `templates/components/` (`Field`, `Input`, `Textarea`, `NativeSelect`, `Checkbox`, `RadioGroup:Item`, `Switch`, `InputGroup`, `DatePicker`, `Calendar`, `Button`).
+- Change a field kind in the theme, not per template. The theme is a project file: edit the field's block there, or the component template to change how a control looks.
+- A relation on a form model is usually an `?int` id, not an entity (`ProductForm::$categoryId`). The `EntityType` field converts it with `IdToEntityTransformer` (below).
+- A dependent field uses `symfonycasts/dynamic-forms` (`addDependent()`), and the field it hangs off submits the form on change: see [Submit on change](StimulusControllers.md#submit-on-change).
 
-```
-┌─────────────────────────────────────────────────────────────────┐
-│  1. Controller receives request                                 │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  2. FormFlow creates form with FormType + FormModel             │
-│     $form = createForm(ProductType::class, new ProductForm())   │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌─────────────────────────────────────────────────────────────────┐
-│  3. Form handles request                                        │
-│     $form->handleRequest($request)                              │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-              ┌───────────────┴───────────────┐
-              ▼                               ▼
-┌─────────────────────────┐    ┌─────────────────────────────────┐
-│  Invalid: Re-render     │    │  Valid: Map to Command          │
-│  form with errors       │    │  $command = $mapper($formData)  │
-│  Return 422             │    └─────────────────────────────────┘
-└─────────────────────────┘                   │
-                                              ▼
-                           ┌─────────────────────────────────────┐
-                           │  4. Handler executes command        │
-                           │     Returns Result::ok() or fail()  │
-                           └─────────────────────────────────────┘
-                                              │
-                                              ▼
-                           ┌─────────────────────────────────────┐
-                           │  5. Redirect on success             │
-                           │     Or re-render on handler failure │
-                           └─────────────────────────────────────┘
-```
+## How to
 
-## Form Type
+### Opt a form out of the theme
 
-Form types define the form structure and field configuration:
-
-```php
-<?php
-// src/Catalog/UI/Http/Form/Type/ProductType.php
-
-namespace App\Catalog\UI\Http\Form\Type;
-
-use App\Catalog\UI\Http\Form\Model\ProductForm;
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-
-/**
- * @extends AbstractType<ProductForm>
- */
-final class ProductType extends AbstractType
-{
-    public function buildForm(FormBuilderInterface $builder, array $options): void
-    {
-        $builder
-            ->add('name', TextType::class, [
-                'label' => 'Product Name',
-                'attr' => ['placeholder' => 'Enter product name'],
-            ])
-            ->add('category', EntityType::class, [
-                'class' => Category::class,
-                'choice_label' => 'name',
-                'placeholder' => 'Select category',
-            ])
-            ->add('price', MoneyType::class, [
-                'currency' => 'GBP',
-                'divisor' => 100,  // Store as pence
-            ]);
-    }
-
-    public function configureOptions(OptionsResolver $resolver): void
-    {
-        $resolver->setDefaults([
-            'data_class' => ProductForm::class,
-        ]);
-    }
-}
-```
-
-## Form Model (DTO)
-
-Form models are simple DTOs that hold form data:
-
-```php
-<?php
-// src/Catalog/UI/Http/Form/Model/ProductForm.php
-
-namespace App\Catalog\UI\Http\Form\Model;
-
-use App\Catalog\Domain\Model\Product\Product;
-use Symfony\Component\Validator\Constraints as Assert;
-
-final class ProductForm
-{
-    public ?int $id = null;
-
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 3, max: 255)]
-    public string $name = '';
-
-    #[Assert\NotNull]
-    public ?int $categoryId = null;
-
-    #[Assert\Positive]
-    public ?int $price = null;
-
-    /**
-     * Factory for update forms
-     */
-    public static function fromEntity(Product $product): self
-    {
-        $form = new self();
-        $form->id = $product->getId();
-        $form->name = $product->getName();
-        $form->categoryId = $product->getCategory()->getId();
-        $form->price = $product->getPrice();
-
-        return $form;
-    }
-}
-```
-
-## Mapper
-
-Mappers convert form DTOs to commands:
-
-```php
-<?php
-// src/Catalog/UI/Http/Form/Mapper/CreateProductMapper.php
-
-namespace App\Catalog\UI\Http\Form\Mapper;
-
-use App\Catalog\Application\Command\Product\CreateProduct;
-use App\Catalog\UI\Http\Form\Model\ProductForm;
-use App\Shared\Domain\ValueObject\CategoryId;
-
-final class CreateProductMapper
-{
-    public function __invoke(ProductForm $data): CreateProduct
-    {
-        return new CreateProduct(
-            name: $data->name,
-            categoryId: CategoryId::fromInt($data->categoryId),
-            price: $data->price,
-        );
-    }
-}
-```
-
-```php
-// Update mapper includes the ID
-final class UpdateProductMapper
-{
-    public function __invoke(ProductForm $data): UpdateProduct
-    {
-        return new UpdateProduct(
-            id: ProductPublicId::fromString($data->id),
-            name: $data->name,
-            categoryId: CategoryId::fromInt($data->categoryId),
-            price: $data->price,
-        );
-    }
-}
-```
-
-## Controller Integration
-
-Controllers use FormFlow for consistent handling:
-
-```php
-#[Route('/catalog/product/new', methods: ['GET', 'POST'])]
-public function new(
-    Request $request,
-    CreateProductMapper $mapper,
-    CreateProductHandler $handler,
-    FormFlow $flow,
-): Response {
-    return $flow->form(
-        request: $request,
-        formType: ProductType::class,
-        data: new ProductForm(),
-        mapper: $mapper,
-        handler: $handler,
-        context: FlowContext::forCreate('catalog/product'),
-    );
-}
-
-#[Route('/catalog/product/{id}/edit', methods: ['GET', 'POST'])]
-public function edit(
-    Request $request,
-    #[ValueResolver('public_id')] Product $product,
-    UpdateProductMapper $mapper,
-    UpdateProductHandler $handler,
-    FormFlow $flow,
-): Response {
-    return $flow->form(
-        request: $request,
-        formType: ProductType::class,
-        data: ProductForm::fromEntity($product),
-        mapper: $mapper,
-        handler: $handler,
-        context: FlowContext::forUpdate('catalog/product')
-            ->allowDelete(true)
-            ->successRoute('app_catalog_product_show', ['id' => $product->publicId]),
-    );
-}
-```
-
-## Dynamic Forms
-
-Use `symfonycasts/dynamic-forms` for dependent fields:
-
-```php
-use Symfonycasts\DynamicForms\DynamicFormBuilder;
-
-public function buildForm(FormBuilderInterface $builder, array $options): void
-{
-    $builder = new DynamicFormBuilder($builder);
-
-    $builder
-        ->add('category', EntityType::class, [
-            'class' => Category::class,
-            'choice_label' => 'name',
-        ])
-        ->addDependent('subcategory', 'category', function (DependentField $field, ?Category $category) {
-            if (!$category) {
-                $field->add(ChoiceType::class, [
-                    'choices' => [],
-                    'placeholder' => 'Select category first',
-                ]);
-                return;
-            }
-
-            $field->add(EntityType::class, [
-                'class' => Subcategory::class,
-                'query_builder' => fn (SubcategoryRepository $repo) =>
-                    $repo->createQueryBuilder('s')
-                        ->where('s.category = :category')
-                        ->setParameter('category', $category),
-                'choice_label' => 'name',
-            ]);
-        });
-}
-```
-
-## Stimulus Integration
-
-Add Stimulus attributes for enhanced behavior:
-
-```php
-$builder->add('category', EntityType::class, [
-    'class' => Category::class,
-    'attr' => [
-        // Trigger form resubmit on change (for dependent fields). submitForm() clicks the element
-        // marked data-submit-form-target="submit": a hidden 'auto-update' SubmitType, as in ProductType.
-        'data-action' => 'change->submit-form#submitForm',
-    ],
-]);
-
-$builder->add('search', SearchType::class, [
-    'attr' => [
-        // Connect to searchbox controller
-        'data-searchbox-target' => 'queryInput',
-        'data-action' => 'input->searchbox#debouncedQueryInputChanged',
-    ],
-]);
-```
-
-## Form Themes
-
-Forms use an in-app theme that renders every field through the Shadcn kit components in
-`templates/components/` (`Field`, `Input`, `Textarea`, `NativeSelect`, `Checkbox`,
-`RadioGroup:Item`, `Switch`, `InputGroup`, `DatePicker`, `Calendar`, `Button`):
-
-```yaml
-# config/packages/twig.yaml
-twig:
-    form_themes:
-        - 'form/shadcn_theme.html.twig'
-        - 'form/turnstile.html.twig'
-```
-
-The theme is an ordinary project file: adjust a field kind by editing its block in
-`templates/form/shadcn_theme.html.twig`, or change how a control looks in its component template.
-
-A field that should not look like a standard control opts out for that form (the inline edit
-form does this to blend into the surrounding text):
+A form that must not look like standard controls (the inline edit form, which blends into the surrounding text) opts out for that form:
 
 ```twig
 {% form_theme form with ['form_div_layout.html.twig'] only %}
 ```
 
-`MoneyType` and `PercentType` show their symbol inside the input as an `InputGroup` addon. A date
-that should be picked from a calendar uses `DatePickerType`
-(`src/Shared/UI/Http/Form/Type/DatePickerType.php`): it renders the kit's `DatePicker` and submits a
-`Y-m-d` string through the calendar's hidden input, so a browser test sets it with
-`submitForm()` rather than `fillField()`.
+### Money and percent
 
-### Known gaps
+`MoneyType` and `PercentType` show their symbol inside the input's frame as an `InputGroup` addon, before or after the value, wherever the currency's pattern or the percent sign puts it. Nothing to configure.
 
-The theme hands attributes to components rather than printing them through Symfony's `attributes`
-block, so a few field options that Symfony's own themes support are not honoured. None is used in
-this codebase; add support in the theme when one is needed.
+### Map an entity field to an id
 
-| Option | Behaviour |
-|--------|-----------|
-| `row_attr` | Ignored. |
-| `attr.placeholder`, `attr.title` | Printed as given, not translated. |
-| `placeholder_attr` | Ignored on a select's empty option. |
-| `attr.size` on a select | Taken as the kit select's styling prop, so it does not produce a list. |
-| `attr.class` on a single select | Lands on the select's wrapper, not the `<select>`. `data-*` attributes do reach the `<select>`. |
-
-More generally, an `attr` key that matches a component prop sets that prop. That is useful on buttons
-(`attr: ['variant' => 'outline']`).
-
-Also not covered yet: range and colour inputs, and collections.
-
-## Data Transformers
-
-Transform data between form and model representations:
+`App\Shared\UI\Form\DataTransformer\IdToEntityTransformer` turns the form model's int id into the entity for the `EntityType` field, and the chosen entity back into its `getId()`. An id that no longer exists throws `TransformationFailedException`. Get one per entity class from `IdToEntityTransformerFactory::for()` (optionally with a finder closure) and add it as a model transformer:
 
 ```php
-<?php
-// src/Shared/UI/Http/Form/DataTransformer/IdToEntityTransformer.php
-
-use Symfony\Component\Form\DataTransformerInterface;
-
-/**
- * @implements DataTransformerInterface<Entity, string>
- */
-final class IdToEntityTransformer implements DataTransformerInterface
-{
-    public function __construct(
-        private EntityRepository $repository,
-    ) {}
-
-    public function transform(mixed $value): string
-    {
-        if (!$value instanceof Entity) {
-            return '';
-        }
-
-        return $value->getPublicId()->value();
-    }
-
-    public function reverseTransform(mixed $value): ?Entity
-    {
-        if (!$value) {
-            return null;
-        }
-
-        return $this->repository->findByPublicId(
-            EntityPublicId::fromString($value)
-        );
-    }
-}
+->add('category', EntityType::class, [
+    'class' => Category::class,
+    'choice_label' => 'name',
+    'property_path' => 'categoryId',
+])
+// …
+$builder->get('category')->addModelTransformer($this->transformer->for(Category::class));
 ```
 
-Usage in form type:
+About a dozen form types do this, and the reusable field types (`SubcategoryIdType`, `Supplier*IdType`) build it in. The per-context `DataTransformer/` folders hold the string-to-enum transformers for filter forms.
+
+### Pick a date from a calendar
+
+Use `DatePickerType` (`src/Shared/UI/Http/Form/Type/DatePickerType.php`) in place of `DateType`. It renders the kit's `DatePicker` and submits a `Y-m-d` string through the calendar's hidden input.
 
 ```php
-$builder->add('product', HiddenType::class);
-$builder->get('product')->addModelTransformer($this->productTransformer);
+->add('startDate', DatePickerType::class, [
+    'required' => false,
+    'side' => 'top',
+])
 ```
 
-## Validation
+`side` (`bottom` by default, or `top`) is the edge of the field the calendar opens on. The calendar is positioned inside the form, so in the Turbo modal a field near the bottom needs `top`; opening downwards runs into the modal's scroll area and is cut off, most visibly on a phone. The order and purchase order filters use `top`.
 
-Validation uses Symfony Validator constraints on the form model:
+### Test a date picker field
+
+The value is in a hidden input, so a browser test cannot `fillField()` it. Submit the form through the client with the value the calendar would set, as `tests/Order/UI/OrderFilterFlowTest.php` does:
 
 ```php
-use Symfony\Component\Validator\Constraints as Assert;
-
-final class ProductForm
-{
-    #[Assert\NotBlank(message: 'Product name is required')]
-    #[Assert\Length(
-        min: 3,
-        max: 255,
-        minMessage: 'Name must be at least {{ limit }} characters',
-    )]
-    public string $name = '';
-
-    #[Assert\NotNull(message: 'Please select a category')]
-    public ?int $categoryId = null;
-
-    #[Assert\Positive(message: 'Price must be positive')]
-    #[Assert\LessThan(value: 1000000, message: 'Price too high')]
-    public ?int $price = null;
-
-    #[Assert\Valid]  // Validate nested objects
-    public ?AddressForm $address = null;
-}
+->use(static function (AbstractBrowser $client) use ($values): void {
+    $client->submitForm('Apply Filter', $values); // 'order_filter[startDate]' => '2025-01-01', …
+})
 ```
 
-## Best Practices
+## Known gaps
 
-1. **Separate form models from entities** - Forms have their own DTOs
+The field kinds the theme covers, the ones it does not yet (range, colour, collections) and the field options it does not honour are listed in the header comment of `templates/form/shadcn_theme.html.twig`. Add support in the theme when one is needed.
 
-2. **Use mappers for transformation** - Keep forms focused on presentation
+## Gotchas
 
-3. **Add validation to form models** - Not entities
+- **Another registered theme's label blocks win.** If any other theme in `form_themes` defines `checkbox_label` or `radio_label`, it overrides this theme's rows. The theme defines both for that reason; keep them when editing it.
+- **An empty form that returns a 500 is a missing constraint, not a theme problem.** `FlowForm` submits with `novalidate`, so a required field left blank reaches the server. If the form model has no constraint on it, the mapper passes `null` to the command and it fails with a `TypeError`. Add `NotBlank` to the form model; the theme then shows the error under the field.
 
-4. **Use EntityType for relationships** - Let Symfony handle the query
+## Related
 
-5. **Configure placeholder text** - Guide users with helpful placeholders
-
-6. **Use dynamic forms for dependencies** - Cleaner than JavaScript
-
-7. **Add Stimulus for enhancement** - Auto-submit, dependent fields
-
-8. **Test forms independently** - Form types are unit testable
+- [UI patterns](README.md)
+- [FormFlow](../FormFlow/README.md): controllers, form models and mappers in use
+- [Stimulus controllers](StimulusControllers.md#submit-on-change): submitting a form when a field changes
+- [ADR 012](../../adr/012-shadcn-ui-kit.md): the kit and the theme decision

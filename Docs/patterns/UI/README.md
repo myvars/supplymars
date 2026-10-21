@@ -1,145 +1,42 @@
-# Server-Driven UI Pattern
+# UI patterns
 
-This document describes the server-driven UI architecture used in SupplyMars. Instead of a JavaScript frontend framework, we use Symfony's server rendering with progressive enhancement.
+How the server-rendered UI is put together and where each kind of piece goes. Read when adding a component, a controller or a form field. The architecture decision is [ADR 008](../../adr/008-server-driven-ui-architecture.md); the UI kit decision is [ADR 012](../../adr/012-shadcn-ui-kit.md).
 
-## Philosophy
+## When to use what
 
-**Server renders complete HTML. JavaScript enhances interaction.**
+| Need | Use | Rule |
+|------|-----|------|
+| A general-purpose primitive (button, field, dialog, dropdown, tabs, tooltip) | Shadcn kit component, `<twig:Button>` etc. | Kit first. If it is missing, `symfony console ux:install <recipe> --kit=shadcn`; do not hand-build one. |
+| The same composition of kit components in several places | In-house wrapper (`Callout`, `StatusBadge`, `DataTable`, …) | Build the wrapper from the kit's pieces, never parallel markup. |
+| A domain-shaped piece of UI (`EntityCard`, `KpiCard`, `InlineEdit`, `SupplierDot`) | In-house component | Descriptive name. Never a name the kit uses. |
+| Behaviour in the browser (drag and drop, uploads, chart formatting, keyboard shortcuts) | Stimulus controller | Check the existing ones and the kit recipes first; see [Stimulus controllers](StimulusControllers.md). |
+| Data input and validation | Symfony form, rendered through the global theme | See [Forms](Forms.md). |
+| Partial page updates, modals | Turbo Frames and Streams | See [Turbo](../Turbo/README.md). |
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│  Without JavaScript:                                         │
-│  • Pages render completely                                   │
-│  • Forms submit and validate                                 │
-│  • Navigation works (full page reload)                       │
-│  • Every feature is functional                               │
-├──────────────────────────────────────────────────────────────┤
-│  With JavaScript:                                            │
-│  • Turbo: Instant navigation, no full reload                 │
-│  • Stimulus: Modals, dropdowns, toasts, charts               │
-│  • Shadcn kit: Menus, side panels, date pickers              │
-│  • Better UX, same functionality                             │
-└──────────────────────────────────────────────────────────────┘
-```
+The wrapper list and button variants are in the UI kit section of [CLAUDE.md](../../../CLAUDE.md); the local changes to kit files are recorded in [ADR 012](../../adr/012-shadcn-ui-kit.md).
 
-## Technology Stack
+## Components
 
-| Layer | Technology | Purpose |
-|-------|------------|---------|
-| Templates | Twig | HTML rendering |
-| Components | Twig Components | Reusable UI pieces |
-| Forms | Symfony Forms | Data input, validation |
-| Enhancement | Stimulus.js | Progressive JavaScript |
-| Navigation | Turbo | SPA-like page loads |
-| Styling | Tailwind CSS | Utility-first CSS |
-| Assets | Asset Mapper | Zero-build JS delivery |
+Most in-house components are anonymous Twig components: a template with `{% props %}` and no PHP class. Ten have a PHP class in `src/Shared/UI/Twig/Components/`, because they compute something (icons, colours, defaults, image URLs): `Callout`, `EntityCard`, `FlashToast`, `InlineEdit`, `PageBreadcrumb`, `ProductImage`, `ProfitBadge`, `StatusBadge`, `StatusIcon`, `SupplierDot`. Add a class only when a template would need logic.
 
-## When to Use What
+There is no component gallery page. `tests/Shared/UI/KitComponentsFlowTest.php` checks the kit-based wrappers, form addons, flash toasts, side panels and user menu as real pages render them; extend it when you change one.
 
-### Use Twig Components for:
-- Reusable UI elements (buttons, cards, badges)
-- Elements with variants (colors, sizes)
-- Complex HTML structures that repeat
-- Elements needing PHP logic (status colors, icon selection)
+## File locations
 
-### Use Stimulus Controllers for:
-- User interactions (click, hover, input)
-- DOM manipulation (show/hide, add/remove classes)
-- Third-party library integration (charts, datepickers)
-- Async behavior (debounce, fetch)
+| What | Where |
+|------|-------|
+| Component templates (kit and in-house) | `templates/components/` |
+| Component PHP classes | `src/Shared/UI/Twig/Components/` |
+| Stimulus controllers | `assets/controllers/` (shared helpers in `assets/lib/`) |
+| Kit role tokens (`--card`, `--border`, …), `focus-ring` | `assets/styles/shadcn.css` |
+| Tailwind v4 config (`@theme` colour scales, custom variants) | `assets/styles/app.css` |
+| Global form theme | `templates/form/shadcn_theme.html.twig` |
+| Form types / form models / mappers | `src/{Context}/UI/Http/Form/Type/`, `Model/`, `Mapper/` |
+| JavaScript dependencies | `importmap.php` |
 
-### Use Symfony Forms for:
-- All data input
-- Validation (server-side, re-render on error)
-- CSRF protection
-- Complex field relationships (dependent selects)
+## Related
 
-### Use Turbo for:
-- Page navigation (automatic via Turbo Drive)
-- Partial updates (Turbo Frames)
-- Server-pushed changes (Turbo Streams)
-
-## Quick Reference
-
-### Creating a Twig Component
-
-```php
-// src/Shared/UI/Twig/Components/MyComponent.php
-#[AsTwigComponent]
-final class MyComponent
-{
-    public string $variant = 'default';
-    public ?string $title = null;
-}
-```
-
-```twig
-{# templates/components/MyComponent.html.twig #}
-<div class="{{ this.variant }}">
-    <h2>{{ title }}</h2>
-    {% block content %}{% endblock %}
-</div>
-```
-
-```twig
-{# Usage #}
-<twig:MyComponent variant="primary" title="Hello">
-    <p>Content here</p>
-</twig:MyComponent>
-```
-
-### Creating a Stimulus Controller
-
-```javascript
-// assets/controllers/example_controller.js
-import { Controller } from '@hotwired/stimulus';
-
-export default class extends Controller {
-    static targets = ['output'];
-    static values = { message: String };
-
-    greet() {
-        this.outputTarget.textContent = this.messageValue;
-    }
-}
-```
-
-```html
-<!-- Usage -->
-<div data-controller="example" data-example-message-value="Hello!">
-    <button data-action="click->example#greet">Greet</button>
-    <span data-example-target="output"></span>
-</div>
-```
-
-### Form with Stimulus Enhancement
-
-```php
-// Form type with Stimulus data attributes
-$builder->add('category', EntityType::class, [
-    'attr' => [
-        'data-action' => 'change->dependent-field#updateDependent',
-    ],
-]);
-```
-
-## File Locations
-
-```
-src/Shared/UI/Twig/Components/     # PHP component classes
-templates/components/              # Component templates
-assets/controllers/                # Stimulus controllers
-src/{Context}/UI/Http/Form/Type/   # Symfony form types
-src/{Context}/UI/Http/Form/Model/  # Form DTOs
-assets/styles/app.css              # Tailwind config
-importmap.php                      # JavaScript dependencies
-```
-
-## Related Documentation
-
-- [Typography](Typography.md) - Typography scale and conventions
-- [Surfaces](Surfaces.md) - Surface hierarchy and layering conventions
-- [Stimulus Controllers](StimulusControllers.md) - Controller patterns
-- [Symfony Forms](Forms.md) - Form architecture
-- [ADR 008](../../adr/008-server-driven-ui-architecture.md) - Architecture decision
-- [Turbo Patterns](../Turbo/README.md) - Navigation and modals
+- [Styling](Styling.md): colour, surface and type conventions
+- [Forms](Forms.md): the form theme, field kinds and gotchas
+- [Stimulus controllers](StimulusControllers.md): every controller and what it is for
+- [Turbo](../Turbo/README.md): frames, modals and streams
