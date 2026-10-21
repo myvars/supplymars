@@ -1,291 +1,92 @@
-# Operations Guide
+# Operations
 
-This document covers deployment, runtime operations, and system maintenance for SupplyMars.
-
-## Environments
-
-### Development
-
-**Characteristics:**
-- `APP_ENV=dev`
-- Debug mode enabled
-- Local PHP server or Docker
-- Mailpit captures all emails
-- Redis with default credentials
-
-**Setup:**
-```bash
-make up-dev-tools    # Infrastructure only: MySQL, Redis, Mailpit, phpMyAdmin
-symfony serve -d     # Local PHP server
-```
-
-### Test
-
-**Characteristics:**
-- `APP_ENV=test`
-- Isolated databases: `make test` runs ParaTest with one database per process (`app_test1`…`app_testN`), reset by `scripts/run-tests.sh` on every run (see [In Parallel](07-testing.md#in-parallel))
-- DAMA transaction rollback between tests
-- Mock file storage
-
-**Setup** (only for a plain `vendor/bin/phpunit` run, which uses `app_test`):
-```bash
-symfony console doctrine:database:drop --if-exists --force --env=test
-symfony console doctrine:database:create --env=test
-symfony console doctrine:schema:create --env=test
-```
-
-### Production
-
-**Characteristics:**
-- `APP_ENV=prod`
-- OPcache enabled
-- Assets pre-compiled
-- Redis caching
-- S3 file storage
-- Secure credentials via environment variables
-
-**Required Environment Variables:**
-```bash
-APP_SECRET=<32-char-secret>
-DEFAULT_DOMAIN=supplymars
-DEFAULT_URI=https://supplymars.com
-DATABASE_URL=mysql://app:password@localhost:3306/supplymars
-REDIS_URL=redis://user:password@localhost:6379
-MAILER_DSN=smtp://user:password@smtp.provider.com:587
-MAILER_FROM=no-reply@supplymars.com
-AWS_S3_REGION=<region>
-AWS_S3_BUCKET=<bucket-name>
-AWS_S3_ACCESS_ID=<access-key>
-AWS_S3_SECRET_ACCESS_KEY=<secret-key>
-```
-
-## Deployment Model
-
-### Docker Production Stack
-
-The production Docker stack includes:
-
-| Service | Image | Purpose |
-|---------|-------|---------|
-| php | Custom (php-prod) | FrankenPHP: web server and application server, in worker mode (TLS is the host Caddy's) |
-| messenger | Custom (php-prod) | Async message consumer and scheduled jobs |
-| database | mysql:8.4 | Primary data store |
-| redis | redis:8.4-alpine | Cache, sessions |
-
-**Deployment:** CI builds the production images, tags them with the commit SHA and pushes them to GHCR. The server pulls the images of its checked-out commit and starts them with `make up-prod-live` and `make up-prod-playground`; it never builds. See [11-runbook.md](11-runbook.md#2-deployment).
-
-### Build Process
-
-Production images are built in stages, in CI (or locally with `make up-prod-local`):
-
-```dockerfile
-# Stage 1: php-prod-builder
-# - Installs production dependencies
-# - Builds Tailwind CSS
-# - Compiles asset map
-# - Dumps optimized autoloader
-
-# Stage 2: php-prod
-# - Copies built assets from builder
-# - Enables OPcache
-# - Runs as www-data user
-```
-
-### Migration Strategy
-
-Migrations run automatically on container start:
-
-```bash
-# docker/php/docker-entrypoint.sh
-if [ "$RUN_MIGRATIONS" = "true" ]; then
-    php bin/console doctrine:migrations:migrate --no-interaction
-fi
-```
-
-Only the PHP container has `RUN_MIGRATIONS=true` to prevent race conditions.
+Read when you add or change a scheduled job, touch the Messenger worker, fill a database with simulated data, or change the production MySQL settings. Deploys, backups, restores and the environment variables are in [11-runbook.md](11-runbook.md); what each command does is in [09-cli-reference.md](09-cli-reference.md).
 
 ## Scheduled Jobs
 
-Scheduled jobs run with Symfony Scheduler inside the Messenger worker, not cron (see [ADR-015](adr/015-symfony-scheduler-in-place-of-cron.md)). Every job is listed in `src/Shared/Infrastructure/Scheduler/MainSchedule.php`, as a console command run through `RunCommandMessage`, so each can still be run by hand. `PLAYGROUND_MODE` picks the stack's jobs.
+Symfony Scheduler runs the jobs inside the Messenger worker, not cron ([ADR 015](adr/015-symfony-scheduler-in-place-of-cron.md)). Every job is in `src/Shared/Infrastructure/Scheduler/MainSchedule.php`, as a console command sent through `RunCommandMessage`, so each one can also be run by hand. `debug:scheduler` lists them with their next run times.
 
-```bash
-# The jobs, their schedules and next run times
-docker compose $LIVE exec -T messenger php bin/console debug:scheduler
-```
+The schedule (what runs when, and which jobs are live only) is in the commands table of [09-cli-reference.md](09-cli-reference.md#commands).
 
-Only the production `messenger` container consumes `scheduler_default`. Development and `make up-prod-local` consume only `async`, so no scheduled job runs on a local machine. Times are UTC.
+How it runs:
 
-### Job Descriptions
+- **Production only.** Only the production `messenger` container consumes `scheduler_default` (`compose.prod.yaml`). Development and `make up-prod-local` consume only `async`, so no job runs on a local machine.
+- **`PLAYGROUND_MODE` leaves out the live-only jobs.** A playground refund at 01:30 would be replaced by the 02:15 reset from live's backup, and the playground gets live's pruned history each night anyway.
+- **One job at a time**, in schedule order when several are due together. The backup is first in the list, so its copy is written before the playground reset reads it at 02:15. The reset itself is not a scheduled job: it runs on cron in its own `reset` container ([playground.md](infrastructure/playground.md)).
+- **Missed runs.** The last run time is kept in the `cache.scheduler` pool, so a run missed while the worker restarts happens when it comes back, once (`processOnlyLastMissedRun`).
+- **Locked.** The schedule takes the `main-schedule` lock, so two workers never run the same job twice.
 
-| Schedule | Command | Purpose |
-|----------|---------|---------|
-| Twice per 5 min, at a random moment | `app:create-customer-orders 1 --random` | Continuous order flow, about 12 an hour |
-| */15 min | `app:build-purchase-orders 20` | Allocate pending orders |
-| :01,:16,:31,:46 | `app:accept-purchase-orders 20` | Simulate supplier responses (1 min after build) |
-| Hourly | `app:ship-purchase-order-items 100` | Progress to shipped |
-| Hourly | `app:deliver-purchase-order-items 100` | Complete deliveries |
-| */15 min | `app:update-supplier-stock 20` | Stock level fluctuation (after the build, never at the same time) |
-| Daily 00:03, 00:07, 00:11 | `app:calculate-{product,order,customer}-sales 1 1` | Rebuild yesterday's daily sales |
-| Daily 00:05, 00:09, 00:13 | `app:calculate-{product,order,customer}-sales-summary 1` | Summaries for the dashboards |
-| :10/:40, :12/:42, :15/:45 | `app:calculate-{product,order,customer}-sales 1` | Today's sales, twice an hour |
-| Daily 01:30, live only | `app:refund-purchase-orders 50` | Refund rejected purchase orders |
-| Daily 02:00, live only | `app:backup-database --local-copy=/backups/latest.sql.gz` | Backup to S3, and the copy the playground reset restores |
-| Daily 03:30, live only | `app:prune-status-change-log` | Delete status history older than 12 months of finished orders and purchase orders, in batches (see [Audit Logging](05-features.md#audit-logging)) |
-| On demand | `app:generate-reviews {count}` | Generate fake reviews for testing |
+### When a job fails
 
-The worker runs one job at a time, in schedule order when several are due together; the backup is first of the jobs due at 02:00. While a job runs, async messages (emails, async events) wait. A run missed while the worker restarts happens when it comes back, once. The playground reset is not a scheduled job: it runs in its own `reset` container, on cron, at 02:15.
+The batch commands carry on past a failed item and exit 1 ([09 exit codes](09-cli-reference.md#exit-codes-and-locking)). What a failed scheduled run reports, and why it is not retried: [13-monitoring.md](13-monitoring.md#error-tracking-sentry).
 
-### Error Handling
+### Scheduled commands of your own
 
-All scheduled commands use a continue-on-failure pattern (see [ADR-003](adr/003-simulation-first-design.md)). When an individual item fails during processing:
+1. Add a `RecurringMessage::cron()` with a `RunCommandMessage` to `MainSchedule`, inside the `PLAYGROUND_MODE` check if it is for live only.
+2. Add it to `tests/Shared/Infrastructure/Scheduler/MainScheduleTest.php`, which lists every job on each stack.
+3. A scheduled command never overlaps its own previous run (the schedule is locked, one job at a time), but it can overlap a manual run. Where that matters, use `LockableTrait` with the `LockFactory` and return early when `lock()` fails, as `src/Shared/UI/Console/Utilities/BackupDatabaseCommand.php` does. Decide what a skipped run returns: the backup returns failure, so Sentry hears of it; `PruneStatusChangeLogCommand` returns success with a note.
+4. Run manual copies of locked jobs in `messenger`, where the scheduler runs: the lock is per container ([11-runbook.md](11-runbook.md#42-manual-backup)).
+5. Keep jobs short. While a job runs, async messages (emails, async events) wait. A job that takes minutes is the point to give `scheduler_default` a worker of its own ([ADR 015](adr/015-symfony-scheduler-in-place-of-cron.md)).
+6. Follow the continue-on-failure contract above, so one bad row does not stop the batch.
 
-1. The exception is caught and logged with structured context (entity ID, error message)
-2. Processing continues with the next item
-3. A summary warning is output: `N item(s) failed — see logs for details.`
-4. The command exits with code 1 (`Command::FAILURE`)
+## Messenger worker
 
-This means a single database error or entity issue will not halt an entire batch. A scheduled run that exits non-zero is reported to Sentry (`RunCommandFailedException`); the application logs have the details. It is not retried and does not go to the `failed` transport: the next run is the next scheduled time.
+One container, `messenger`, runs the queue and the schedule from the same image as `php`.
 
-## Workers / Consumers
+| | Production | Development, `make up-prod-local` |
+|---|---|---|
+| Command | `messenger:consume scheduler_default async --time-limit=3600 --memory-limit=192M --sleep=5` | `messenger:consume async --time-limit=3600 --sleep=5` |
+| Receivers | `scheduler_default` first, then `async` | `async` only |
 
-### Messenger Consumer
+- **Order of receivers.** The worker goes back to the first receiver after each message, and the scheduler only returns jobs that are due, so jobs are not starved by a long queue.
+- **Restarts.** After an hour, or between jobs once above 192M (under PHP's 256M), the worker stops cleanly and the container restarts it.
+- **Stops.** The worker cannot catch SIGTERM (no `pcntl`), so a stop or deploy kills it after 30 s (`stop_grace_period`). A job cut short has not advanced the schedule and runs again; a message cut short is redelivered.
+- **Queue.** `async` is `doctrine://default` (`MESSENGER_TRANSPORT_DSN`), the `messenger_messages` table in the application database; RabbitMQ is an opt-in ([ADR 013](adr/013-database-queue-by-default.md)). Routed to it: `SendEmailMessage` and every `AsyncDomainEventInterface` event.
+- **Retries.** 3, with the delay doubling each time (`config/packages/messenger.yaml`), then the `failed` queue (`doctrine://default?queue_name=failed`, same table). Inspecting and retrying failures: [11-runbook.md](11-runbook.md).
+- **Tests** use `in-memory://` for `async` ([07-testing.md](07-testing.md)).
 
-The messenger service processes async events and, in production, the scheduled jobs:
+## Simulated data
 
-```bash
-php bin/console messenger:consume scheduler_default async --time-limit=3600 --memory-limit=192M --sleep=5   # production
-php bin/console messenger:consume async --time-limit=3600 --sleep=5                                         # development
-```
-
-**Configuration:**
-- **Time limit:** 3600 seconds (1 hour) before restart; in production also above 192M of memory. A stop kills the worker after 30 seconds (`stop_grace_period`); a job it cuts short runs again when the worker is back
-- **Sleep:** 5 seconds between batches
-- **Retry:** 3 attempts with exponential backoff
-- **Transport:** Doctrine (`doctrine://default`), a table in the application database
-- **Failure transport:** Doctrine (`doctrine://default?queue_name=failed`)
-
-**Routed messages:**
-- `Symfony\Component\Mailer\Messenger\SendEmailMessage`
-- `App\Shared\Domain\Event\AsyncDomainEventInterface`
-
-### Monitoring Messenger
-
-```bash
-# View queue status
-symfony console messenger:stats
-
-# View failed messages
-symfony console messenger:failed:show
-
-# Retry failed messages
-symfony console messenger:failed:retry
-
-# Process specific message
-symfony console messenger:failed:retry <id>
-```
-
-Messages wait in the `messenger_messages` table (`queue_name` `default` for the queue, `failed` for failures), so they can also be inspected in phpMyAdmin. RabbitMQ is an opt-in: see [Switching to RabbitMQ](02-setup-local.md#switching-to-rabbitmq).
-
-## Processing Simulator
-
-The `ProcessingSimulator` service encapsulates business timing constraints for order fulfillment simulation. This service centralises the logic previously spread across individual console commands.
-
-### Timing Constraints
-
-| Operation | Business Hours | Minimum Wait | Success Rate |
-|-----------|----------------|--------------|--------------|
-| Shipping | 09:00-18:00 | 2 hours after acceptance | 95% |
-| Delivery | 07:00-21:00 | 12 hours after shipping | 95% |
-
-### Service Methods
-
-**Probabilistic checks (for simulation):**
-- `canShip()` - Returns true if item can ship (timing + 95% probability)
-- `canDeliver()` - Returns true if item can deliver (timing + 95% probability)
-
-**Timing-only checks (for testing):**
-- `canShipTimingOnly()` - Returns true if timing constraints met (no probability)
-- `canDeliverTimingOnly()` - Returns true if timing constraints met (no probability)
-
-**Key file:** `src/Purchasing/Domain/Service/ProcessingSimulator.php`
-
-### Usage in Commands
-
-The shipping and delivery console commands use `ProcessingSimulator` to determine which items are eligible for status progression:
-
-```php
-// In ShipPOItemsCommand
-foreach ($items as $item) {
-    if ($this->simulator->canShip($item)) {
-        // Progress item to SHIPPED
-    }
-}
-```
-
-## Data Reset / Simulation Behaviour
-
-### Full Reset
-
-To reset the database and start fresh:
-
-```bash
-# Drop and recreate database
-symfony console doctrine:database:drop --force
-symfony console doctrine:database:create
-symfony console doctrine:migrations:migrate --no-interaction
-
-# Load fixtures (optional)
-symfony console doctrine:fixtures:load --no-interaction
-```
 ### Simulation Bootstrap
 
-After fixtures, run simulation commands to build data:
+To fill an empty development database, in this order. What each command does, its options and its timing rules are in [09-cli-reference.md](09-cli-reference.md).
 
 ```bash
-# Create initial orders
-symfony console app:create-customer-orders 100
+# 1. Purge, then the staff user and base data (what it creates: 02-setup-local.md#a-user-and-data)
+symfony console doctrine:fixtures:load --no-interaction
 
-# Allocate to suppliers
+# 2. Orders and their purchase orders
+symfony console app:create-customer-orders 100
 symfony console app:build-purchase-orders 200
 
-# Progress through workflow
-symfony console app:accept-purchase-orders 100
-symfony console app:ship-purchase-order-items 200
-symfony console app:deliver-purchase-order-items 200
+# 3. Move the purchase orders on. Without --supplier each run picks one random supplier,
+#    so run these once per supplier. --skip-timing: just-accepted items are not 2 hours old
+symfony console app:accept-purchase-orders 100 --supplier=<id>
+symfony console app:ship-purchase-order-items 200 --supplier=<id> --skip-timing
+symfony console app:deliver-purchase-order-items 200 --supplier=<id> --skip-timing
 
-# Generate product reviews
+# 4. Reviews (of delivered purchases) and report data; each sales command also runs its summary
 symfony console app:generate-reviews 100
-
-# Generate reporting data
 symfony console app:calculate-product-sales 30
 symfony console app:calculate-order-sales 30
+symfony console app:calculate-customer-sales 30
 ```
 
-This sets all products to random stock between 0-300 units.
+The commands fail until the `DEFAULT_STAFF_EMAIL` user exists ([09](09-cli-reference.md#simulation-behaviour)), which the fixtures create. A copy of production is the other way to get data: `app:restore-database` ([11-runbook.md](11-runbook.md)).
 
-## Performance Considerations
+## MySQL sizing
 
 ### Database Optimization
 
-**Indexes:** Doctrine mappings define indexes on frequently queried columns:
-- Public IDs (ULID)
-- Foreign keys
-- Status fields
-- Date ranges
+`docker/mysql/production.cnf` is mounted into `database` by `compose.prod.yaml` only, so `make up-prod-local` uses it and `make up` keeps the image's defaults. One 2 GB server runs both stacks, each with its own MySQL, and the defaults are sized for a bigger machine. On 2026-10-21 the two `mysqld` processes held 1.4 GB of the server's 2 GB of swap (#86).
 
-**Query caching:** Production uses Redis for Doctrine query/result cache:
-```yaml
-# config/packages/doctrine.yaml (prod)
-orm:
-    query_cache_driver:
-        type: pool
-        pool: doctrine.system_cache_pool
-    result_cache_driver:
-        type: pool
-        pool: doctrine.result_cache_pool
-```
-
-**MySQL settings (production):** `docker/mysql/production.cnf`, mounted into `database` by `compose.prod.yaml` only, so `make up-prod-local` uses it and `make up` keeps the image's defaults. One 2 GB server runs both stacks, each with its own MySQL, and the defaults are sized for a bigger machine. On 2026-10-21 the two `mysqld` processes held 1.4 GB of the server's 2 GB of swap (#86). The file turns off the Performance Schema and the X Protocol, lowers `max_connections` to 50 and `innodb_log_buffer_size` to 16M. `innodb_buffer_pool_size` stays at 128M: live's data (about 1.8 GB, mostly `status_change_log`) would not fit in memory on this host anyway, and the pages the app reads do (99.98% of reads hit the pool).
+| Setting | Value | Why |
+|---------|-------|-----|
+| `performance_schema` | `OFF` | The largest saving. The app never reads it; phpMyAdmin's status pages and most `sys` views lose their data |
+| `max_connections` | 50 (default 151) | FrankenPHP threads, the worker, the playground reset and the odd console or phpMyAdmin session |
+| `innodb_log_buffer_size` | 16M (default 64M) | Allocated up front; the app's transactions are small |
+| `mysqlx` | `OFF` | Nothing uses the X Protocol |
+| `innodb_buffer_pool_size` | default 128M | Live's data (about 1.8 GB, mostly `status_change_log`) would not fit on this host anyway, and the pages the app reads do: 99.98% of reads hit the pool |
 
 Measured locally on `mysql:8.4`, the same instance with and without the file:
 
@@ -296,77 +97,20 @@ Measured locally on `mysql:8.4`, the same instance with and without the file:
 | Restore of that copy, as the playground reset does it | 123 s | 122 s |
 | Two report-style aggregates over `status_change_log` and orders | 4.9–5.1 s | 4.9–5.0 s |
 
-Check the values in use with `SHOW VARIABLES` (`Docs/11-runbook.md`, section 3.2).
+Check the values in use with `SHOW VARIABLES` and memory with the commands in [11-runbook.md](11-runbook.md).
 
-### Caching Strategy
+## Gotchas
 
-**Application cache:** Redis via SNC Redis bundle
-**Sessions:** Redis, through Symfony's session handler on `REDIS_URL`
-**HTTP cache:** FrankenPHP serves `/assets/` (content-hashed file names) with a year's immutable cache
+- **Stock oversell.** Allocation checks that a supplier has the stock (`OrderAllocator`) but never lowers it, so any number of orders can be allocated against the same units until `app:update-supplier-stock` or an edit changes the figure.
+- **Order lock is advisory** ([05 Orders](05-features.md#orders)).
+- **The simulation grows the database.** Orders arrive around the clock on both stacks; `status_change_log` is most of live's data, which is why `app:prune-status-change-log` runs nightly.
+- **One worker does everything.** While it is down or busy with a long job, emails and async events wait in the queue (they are not lost), and scheduled runs are made up once when it returns.
 
-### Reporting Performance
+## Related
 
-**Two-layer aggregation:**
-1. Daily records (ProductSales, OrderSales) - computed once per day
-2. Summary records (ProductSalesSummary, OrderSalesSummary) - pre-aggregated for dashboards
-
-This avoids expensive aggregations on every dashboard load.
-
-## Known Operational Risks
-
-### Single Points of Failure
-
-| Component | Risk | Mitigation |
-|-----------|------|------------|
-| MySQL | Data loss | Regular backups, replication |
-| Messenger worker | Email delayed while it is down | Messages wait in the database until it restarts |
-| Redis | Session loss | Persistence, sentinel |
-
-### Race Conditions
-
-**Migration races:** Only PHP container runs migrations (`RUN_MIGRATIONS=true`)
-
-**Order locking:** Orders can be locked by users to prevent concurrent edits
-
-**Stock oversell:** Not fully protected - relies on allocation time stock check
-
-### Simulation Side Effects
-
-**Order generation:** Creates real database records that consume storage
-
-**Email sending:** In production, simulation commands may trigger actual emails
-
-**Reporting data:** Simulation creates realistic but fabricated metrics
-
-### Monitoring Recommendations
-
-1. **Failed scheduled runs:** Sentry reports non-zero exit codes from simulation/reporting commands (indicates partial failures — see [Error Handling](#error-handling) above)
-2. **Queue depth:** Alert if `messenger:stats` shows the `async` queue growing
-3. **Failed messages:** Alert on any failed messenger messages
-4. **Database size:** Monitor growth from simulation data
-5. **Response times:** Track slow queries and API latency
-6. **API error rates:** Monitor 4xx/5xx responses on `/api/` routes
-
-### Backup Strategy
-
-**Database:** The `app:backup-database` command runs daily at 02:00 UTC on live, as a scheduled job in the messenger container. It creates a gzipped mysqldump, uploads to S3 (`unicorn-bucket-two/backups/`), and retains 30 days by default. The `--local-copy` option also saves the backup to a host-mounted directory for the playground reset. See [09-cli-reference.md](09-cli-reference.md) and [11-runbook.md](11-runbook.md) for details.
-
-**Redis:** RDB snapshots enabled by default in the Redis image.
-
-**File storage:** S3 for all uploads and media.
-
-### Disaster Recovery
-
-1. **Database restore:** See [11-runbook.md](11-runbook.md) Section 4.4 for full restore procedure.
-
-2. **Reprocess failed messages:**
-   ```bash
-   symfony console messenger:failed:retry --all
-   ```
-
-3. **Regenerate reporting:**
-   ```bash
-   symfony console app:calculate-product-sales 90
-   symfony console app:calculate-order-sales 90
-   symfony console app:calculate-customer-sales 90
-   ```
+- [ADR 003](adr/003-simulation-first-design.md): why the simulation drives the lifecycle
+- [ADR 005](adr/005-reporting-strategy.md): the two reporting layers the sales commands fill
+- [ADR 015](adr/015-symfony-scheduler-in-place-of-cron.md): Scheduler in place of cron
+- [09-cli-reference.md](09-cli-reference.md): every command
+- [11-runbook.md](11-runbook.md): deploy, backup, restore, the worker's failed messages
+- [13-monitoring.md](13-monitoring.md): Sentry and `/health`
