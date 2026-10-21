@@ -2,7 +2,7 @@
 # default command), and messenger runs messenger:consume. See Docs/adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md.
 
 # ------------ Php Base Stage ------------
-FROM dunglas/frankenphp:1.13.1-php8.5.11 AS php-base
+FROM dunglas/frankenphp:1.13.2-php8.5.12 AS php-base
 
 # System tools (mysqldump for the backup command) and PHP extensions
 RUN apt-get update && apt-get install -y --no-install-recommends \
