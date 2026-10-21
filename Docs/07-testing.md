@@ -670,7 +670,7 @@ make check-phpstan       # one step: prod-config, cs, rector, phpstan, deptrac, 
 
 | Step | What it runs |
 |------|--------------|
-| `prod-config` | `docker compose config` on the production compose files (`compose.prod.yaml` and `compose.publish.yaml`), for the live stack and the `playground` profile, and `frankenphp validate` on `docker/frankenphp/Caddyfile` in both its modes (`SERVER_NAME` `localhost` and `:80`). These are otherwise used only by the publish and deploy jobs, so a mistake in them would first show there. Runs on the host, with Docker |
+| `prod-config` | `docker compose config` on the production compose files (`compose.prod.yaml` and `compose.publish.yaml`), for the live stack and the `playground` profile, and `frankenphp validate` on `docker/frankenphp/Caddyfile` in both its modes (`SERVER_NAME` `localhost` and `:80`), then in production's worker mode with the `FRANKENPHP_CONFIG` from `compose.prod.yaml`, so a wrong worker path fails here. These are otherwise used only by the publish and deploy jobs, so a mistake in them would first show there. Runs on the host, with Docker |
 | `cs` | `php-cs-fixer fix --dry-run --diff` |
 | `rector` | `rector process --dry-run` |
 | `phpstan` | `phpstan analyse` (after warming the dev container it reads) |

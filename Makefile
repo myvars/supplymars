@@ -64,8 +64,9 @@ check: check-prod-config
 # Runs on the host (scripts/check.sh runs in the php container, which has no Docker). Checks the
 # production compose files, for the live stack and the playground profile, and the Caddyfile in both
 # its modes (development's localhost, production's :80), which otherwise only the publish and deploy
-# jobs use. Compose warns about every unset production variable, and Caddy logs every step, so their
-# output is shown only on failure.
+# jobs use, then production's worker mode with the FRANKENPHP_CONFIG compose.prod.yaml sets. Compose
+# warns about every unset production variable, and Caddy logs every step, so their output is shown only
+# on failure.
 check-prod-config:
 	@docker compose -f compose.yaml -f compose.prod.yaml -f compose.publish.yaml config -q 2>/dev/null \
 		|| docker compose -f compose.yaml -f compose.prod.yaml -f compose.publish.yaml config -q
@@ -76,6 +77,10 @@ check-prod-config:
 			$(FRANKENPHP_IMAGE) frankenphp validate --config /etc/frankenphp/Caddyfile 2>&1) || { echo "$$out"; exit 1; }; \
 		echo "Caddyfile valid with SERVER_NAME=$$server_name"; \
 	done
+	@worker=$$(docker compose -f compose.yaml -f compose.prod.yaml config php 2>/dev/null | sed -n 's/^ *FRANKENPHP_CONFIG: //p'); \
+	out=$$(docker run --rm -e SERVER_NAME=:80 -e FRANKENPHP_CONFIG="$$worker" -v $(CURDIR)/docker/frankenphp/Caddyfile:/etc/frankenphp/Caddyfile:ro \
+		-v $(CURDIR)/public:/app/public:ro $(FRANKENPHP_IMAGE) frankenphp validate --config /etc/frankenphp/Caddyfile 2>&1) || { echo "$$out"; exit 1; }; \
+	echo "Caddyfile valid with FRANKENPHP_CONFIG=$$worker"
 
 check-%:
 	docker compose run --rm -e APP_ENV=test -e TEST_PROCESSES php ./scripts/check.sh $*
