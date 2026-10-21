@@ -70,6 +70,12 @@ enum OrderStatus: string
         return self::CANCELLED === $this;
     }
 
+    /** Final: no status follows this one. */
+    public function isFinal(): bool
+    {
+        return $this === self::DELIVERED || $this === self::CANCELLED;
+    }
+
     public function canTransitionTo(OrderStatus $to): bool
     {
         return match ($this) {

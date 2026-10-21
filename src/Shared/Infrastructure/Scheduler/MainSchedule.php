@@ -63,6 +63,8 @@ final readonly class MainSchedule implements ScheduleProviderInterface
         if (!$this->playgroundMode) {
             // Live only: a playground refund at 01:30 would be replaced by the 02:15 reset from live's backup
             $schedule->add($this->job('30 1 * * *', 'app:refund-purchase-orders 50'));
+            // Live only: the playground is restored from live's backup each night, so it keeps the same history
+            $schedule->add($this->job('30 3 * * *', 'app:prune-status-change-log'));
         }
 
         return $schedule

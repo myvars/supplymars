@@ -49,6 +49,12 @@ enum PurchaseOrderStatus: string
         return self::CANCELLED === $this;
     }
 
+    /** Final: no status follows this one. */
+    public function isFinal(): bool
+    {
+        return in_array($this, [self::REFUNDED, self::DELIVERED, self::CANCELLED], true);
+    }
+
     public function canTransitionTo(PurchaseOrderStatus $to): bool
     {
         return match ($this) {

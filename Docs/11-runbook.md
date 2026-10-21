@@ -545,6 +545,15 @@ docker compose $LIVE exec -T database \
 
 **Note:** `OPTIMIZE TABLE` locks the table briefly. Run during low-traffic periods.
 
+**After a large delete.** InnoDB keeps the space of deleted rows for reuse and does not hand it back to the disk. After the first run of `app:prune-status-change-log` (2.4 million rows on live, October 2026) or a change to its retention, rebuild the table once to shrink it:
+
+```bash
+docker compose $LIVE exec -T database \
+    mysql -u root -p -e "OPTIMIZE TABLE app.status_change_log;"
+```
+
+On a copy of live this took 12 seconds and took the table from 1,100 MB to 561 MB. InnoDB rebuilds the table and allows writes while it runs. The nightly prune that follows deletes only a day's worth of rows, which InnoDB reuses, so it needs no rebuild. The playground needs none either: it is restored from live's backup each night.
+
 ### 8.3 Rebuild Reporting Data
 
 If reporting data becomes inconsistent, rebuild from source:

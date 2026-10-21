@@ -38,21 +38,23 @@ final class MainScheduleTest extends KernelTestCase
         ['15,45 * * * *', 'app:calculate-customer-sales 1'],
     ];
 
-    public function testLiveRunsEverySimulationAndReportingJobWithTheRefundAndTheBackup(): void
+    public function testLiveRunsEverySimulationAndReportingJobWithTheRefundTheBackupAndThePrune(): void
     {
         self::assertSame(
             [
                 ['0 2 * * *', 'app:backup-database --local-copy=/backups/latest.sql.gz'],
                 ...self::SHARED_JOBS,
                 ['30 1 * * *', 'app:refund-purchase-orders 50'],
+                ['30 3 * * *', 'app:prune-status-change-log'],
             ],
             $this->jobs($this->schedule(playgroundMode: false)),
         );
     }
 
-    public function testPlaygroundRunsNeitherTheRefundNorTheBackup(): void
+    public function testPlaygroundRunsNoneOfTheRefundTheBackupAndThePrune(): void
     {
-        // A refund would be replaced by the nightly reset from live's backup, and live takes the backup
+        // A refund would be replaced by the nightly reset from live's backup, live takes the backup, and the
+        // reset brings live's pruned history
         self::assertSame(self::SHARED_JOBS, $this->jobs($this->schedule(playgroundMode: true)));
     }
 
@@ -103,7 +105,7 @@ final class MainScheduleTest extends KernelTestCase
         $display = $tester->getDisplay();
         self::assertStringContainsString('app:create-customer-orders 1 --random', $display);
         // .env has PLAYGROUND_MODE=0: the live schedule
-        self::assertSame(\count(self::SHARED_JOBS) + 2, substr_count($display, 'RunCommandMessage'));
+        self::assertSame(\count(self::SHARED_JOBS) + 3, substr_count($display, 'RunCommandMessage'));
     }
 
     private function schedule(bool $playgroundMode): Schedule

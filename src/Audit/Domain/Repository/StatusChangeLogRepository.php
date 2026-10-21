@@ -27,4 +27,10 @@ interface StatusChangeLogRepository
     public function findByEvent(DomainEventType $eventType, int $eventTypeId): array;
 
     public function findPoStatusChangeByStatus(int $poItemId, PurchaseOrderStatus $status): ?StatusChangeLog;
+
+    /**
+     * Deletes the rows written before $before whose order, order item, purchase order or purchase order item is
+     * in a final status, in transactions of at most $batchSize rows. Returns the number deleted.
+     */
+    public function deleteFinishedBefore(\DateTimeImmutable $before, int $batchSize): int;
 }
