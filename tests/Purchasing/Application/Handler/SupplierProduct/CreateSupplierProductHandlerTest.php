@@ -195,7 +195,7 @@ final class CreateSupplierProductHandlerTest extends KernelTestCase
         ));
 
         self::assertFalse($result->ok);
-        self::assertStringContainsString('Max 255 characters', (string) $result->message);
+        self::assertSame('Max 255 characters', (string) $result->message);
         SupplierProductFactory::assert()->empty();
     }
 }

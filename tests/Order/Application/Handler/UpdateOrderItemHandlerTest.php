@@ -88,7 +88,7 @@ class UpdateOrderItemHandlerTest extends KernelTestCase
         $result = ($this->handler)($command);
 
         self::assertFalse($result->ok);
-        self::assertStringContainsString('Quantity must be >= 0', $result->message);
+        self::assertSame('Quantity must be >= 0', $result->message);
     }
 
     public function testZeroQuantityRemovesOrderItem(): void

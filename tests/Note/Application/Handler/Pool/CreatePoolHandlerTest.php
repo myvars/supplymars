@@ -33,7 +33,7 @@ final class CreatePoolHandlerTest extends KernelTestCase
         ));
 
         self::assertFalse($result->ok);
-        self::assertStringContainsString('Max 10000 characters', (string) $result->message);
+        self::assertSame('Max 10000 characters', (string) $result->message);
         PoolFactory::assert()->empty();
     }
 }

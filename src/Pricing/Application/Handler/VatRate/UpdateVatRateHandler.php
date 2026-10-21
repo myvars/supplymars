@@ -34,7 +34,7 @@ final readonly class UpdateVatRateHandler
 
         $errors = $this->validator->validate($vatRate);
         if (count($errors) > 0) {
-            return Result::fail((string) $errors);
+            return Result::fail((string) $errors[0]->getMessage());
         }
 
         $this->flusher->flush();

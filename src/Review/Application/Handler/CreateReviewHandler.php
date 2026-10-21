@@ -60,7 +60,7 @@ final readonly class CreateReviewHandler
 
         $errors = $this->validator->validate($review);
         if (count($errors) > 0) {
-            return Result::fail((string) $errors);
+            return Result::fail((string) $errors[0]->getMessage());
         }
 
         $this->reviews->add($review);

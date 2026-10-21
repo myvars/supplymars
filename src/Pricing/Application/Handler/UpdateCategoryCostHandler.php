@@ -36,7 +36,7 @@ final readonly class UpdateCategoryCostHandler
 
         $errors = $this->validator->validate($category);
         if (count($errors) > 0) {
-            return Result::fail((string) $errors);
+            return Result::fail((string) $errors[0]->getMessage());
         }
 
         $this->flusher->flush();

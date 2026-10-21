@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Customer\UI\Http\Form\Model;
 
+use App\Customer\Domain\Model\User\User;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email', entityClass: User::class)]
 final class RegistrationForm
 {
     #[Assert\NotBlank(message: 'Please enter a full name')]

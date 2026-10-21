@@ -65,7 +65,7 @@ class RejectReviewHandlerTest extends KernelTestCase
         ));
 
         self::assertFalse($result->ok);
-        self::assertStringContainsString('Max 10000 characters', (string) $result->message);
+        self::assertSame('Max 10000 characters', (string) $result->message);
 
         self::getContainer()->get(EntityManagerInterface::class)->clear();
         $persisted = $this->reviews->getByPublicId($review->getPublicId());

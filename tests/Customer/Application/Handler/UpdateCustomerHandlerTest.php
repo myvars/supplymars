@@ -107,7 +107,7 @@ final class UpdateCustomerHandlerTest extends KernelTestCase
         $command = new UpdateCustomer(
             id: $user->getPublicId(),
             fullName: '', // NotBlank violation
-            email: 'not-an-email', // Email violation
+            email: 'valid@example.com',
             isVerified: true,
             isStaff: false,
         );
@@ -115,8 +115,44 @@ final class UpdateCustomerHandlerTest extends KernelTestCase
         $result = ($this->handler)($command);
 
         self::assertFalse($result->ok);
-        self::assertStringContainsString('Please enter a full name', $result->message);
-        self::assertStringContainsString('This value is not a valid email address', $result->message);
+        self::assertSame('Please enter a full name', $result->message);
+    }
+
+    public function testFailsOnInvalidEmail(): void
+    {
+        $user = UserFactory::new()->create();
+
+        $command = new UpdateCustomer(
+            id: $user->getPublicId(),
+            fullName: 'Some Customer',
+            email: 'not-an-email',
+            isVerified: true,
+            isStaff: false,
+        );
+
+        $result = ($this->handler)($command);
+
+        self::assertFalse($result->ok);
+        self::assertSame('This value is not a valid email address.', $result->message);
+    }
+
+    public function testFailsOnEmailInUseWithReadableMessage(): void
+    {
+        UserFactory::createOne(['email' => 'taken@example.com']);
+        $user = UserFactory::createOne(['email' => 'mine@example.com']);
+
+        $command = new UpdateCustomer(
+            id: $user->getPublicId(),
+            fullName: 'Some Customer',
+            email: 'taken@example.com',
+            isVerified: true,
+            isStaff: false,
+        );
+
+        $result = ($this->handler)($command);
+
+        self::assertFalse($result->ok);
+        self::assertSame('There is already an account with this email', $result->message);
     }
 
     private function handlerWithSecurity(bool $isSuperAdmin): UpdateCustomerHandler

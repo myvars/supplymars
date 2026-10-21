@@ -67,6 +67,37 @@ final class UpdateCustomerFlowTest extends WebTestCase
         self::assertSame('before@example.com', $customer->getEmail());
     }
 
+    public function testRejectsEmailInUseAsFieldError(): void
+    {
+        UserFactory::createOne(['email' => 'taken@example.com']);
+        $customer = UserFactory::createOne(['fullName' => 'Before Edit', 'email' => 'before@example.com']);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/customer/' . $customer->getPublicId()->value() . '/edit')
+            ->fillField('customer[email]', 'taken@example.com')
+            ->click('Update Customer')
+            ->assertStatus(422)
+            ->assertSeeIn('[data-slot="field-error"]', 'There is already an account with this email')
+            ->assertNotSee('Object(');
+
+        self::assertSame('before@example.com', UserFactory::repository()->find($customer->getId())?->getEmail());
+    }
+
+    public function testKeepingOwnEmailIsNotADuplicate(): void
+    {
+        $customer = UserFactory::createOne(['fullName' => 'Before Edit', 'email' => 'mine@example.com']);
+        $publicId = $customer->getPublicId()->value();
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/customer/' . $publicId . '/edit')
+            ->fillField('customer[fullName]', 'After Edit')
+            ->click('Update Customer')
+            ->assertOn('/customer/' . $publicId)
+            ->assertSee('After Edit');
+    }
+
     public function testInlineEditRejectsOverLengthFullName(): void
     {
         $entity = UserFactory::createOne(['fullName' => 'Old Value']);

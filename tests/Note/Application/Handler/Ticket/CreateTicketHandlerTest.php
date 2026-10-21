@@ -50,7 +50,7 @@ final class CreateTicketHandlerTest extends KernelTestCase
         ));
 
         self::assertFalse($result->ok);
-        self::assertStringContainsString('Max 10000 characters', (string) $result->message);
+        self::assertSame('Max 10000 characters', (string) $result->message);
         TicketFactory::assert()->empty();
         MessageFactory::assert()->empty();
     }
