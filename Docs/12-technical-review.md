@@ -2,6 +2,8 @@
 
 *An architectural and engineering review of the SupplyMars project, produced on 31 March 2026 to coincide with the V1.0 public release.*
 
+> A snapshot of 31 March 2026, not maintained, and partly edited since. Changed since: the database queue by default ([ADR 013](adr/013-database-queue-by-default.md)), Symfony Scheduler in place of cron ([ADR 015](adr/015-symfony-scheduler-in-place-of-cron.md)), FrankenPHP in place of nginx and PHP-FPM ([ADR 016](adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md)), and `/health` and Sentry ([13-monitoring.md](13-monitoring.md)).
+
 This review is an honest assessment of where the project stands today: what it does well, where it shows its age, and what could be improved. Work will continue on new features and refinements, and the recommendations outlined here will be addressed over time as the project evolves.
 
 ---
