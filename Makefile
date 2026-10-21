@@ -78,6 +78,7 @@ check-prod-config:
 		echo "Caddyfile valid with SERVER_NAME=$$server_name"; \
 	done
 	@worker=$$(docker compose -f compose.yaml -f compose.prod.yaml config php 2>/dev/null | sed -n 's/^ *FRANKENPHP_CONFIG: //p'); \
+	[ -n "$$worker" ] || { echo "No FRANKENPHP_CONFIG for php in compose.prod.yaml"; exit 1; }; \
 	out=$$(docker run --rm -e SERVER_NAME=:80 -e FRANKENPHP_CONFIG="$$worker" -v $(CURDIR)/docker/frankenphp/Caddyfile:/etc/frankenphp/Caddyfile:ro \
 		-v $(CURDIR)/public:/app/public:ro $(FRANKENPHP_IMAGE) frankenphp validate --config /etc/frankenphp/Caddyfile 2>&1) || { echo "$$out"; exit 1; }; \
 	echo "Caddyfile valid with FRANKENPHP_CONFIG=$$worker"

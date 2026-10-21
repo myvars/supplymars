@@ -160,7 +160,7 @@ A service that caches on purpose implements `Symfony\Contracts\Service\ResetInte
 | A value in the app cache with an expiry, keyed by user when it is per user (`SidebarBadgeProvider`'s "My Queue" count) | A static property holding data |
 | Twig components: a new instance each time they render | |
 
-**The guard:** `tests/Shared/UI/Http/StateBetweenRequestsTest.php` keeps one kernel across requests (`disableReboot()`), as a worker does, and interleaves two logged-in staff users and a visitor. Each page must show only its own user in the header and their own "My Queue" count, each status change must be logged against the user who made it, and the visitor must be sent to the login page. Other tests boot a fresh kernel per request and do not see a leak. A feature that shows or records per-user data through a new service extends this test.
+**The guard:** `tests/Shared/UI/Http/StateBetweenRequestsTest.php` keeps one kernel across requests (`disableReboot()`), as a worker does, and interleaves two logged-in staff users and a visitor. Each page must show only its own user in the header and their own "My Queue" count, each status change must be logged against the user who made it, and the visitor must be sent to the login page. Other tests boot a fresh kernel per request and do not see a leak. The app cache is an in-memory adapter in tests, emptied between requests, so the test guards services, not cache keys: a value cached per user must still carry the user in its key. A feature that shows or records per-user data through a new service extends this test.
 
 Development (`symfony serve`, `make up`) runs in classic mode, where every request starts afresh, so a leak shows only in production, under `make up-prod-local` and in tests that keep one kernel.
 
