@@ -1,181 +1,69 @@
-# SupplyMars Documentation
+# Documentation
 
-Technical documentation for SupplyMars, covering architecture, setup, features, and operations.
+Index of the SupplyMars docs, with when to read each one. AI agents start at [CLAUDE.md](../CLAUDE.md), which summarises the rules and links here.
 
-For a high-level introduction, see the [main README](../README.md). For domain concepts and what makes the system non-trivial, start with [01-overview.md](01-overview.md).
+SupplyMars is a modular monolith: bounded contexts that use each other only through their `Domain/`, checked by Deptrac in CI ([03-architecture.md](03-architecture.md#rules-between-contexts)).
 
-## High-Level Architecture
+## Start here
 
-SupplyMars is a **modular monolith** - bounded contexts are self-contained modules that use each other only through their domain models (entities, events, repository interfaces), never each other's handlers, Doctrine repositories or controllers. Deptrac checks this in CI, with a few named exceptions. This keeps the benefits of a single deployable unit while keeping the boundaries visible, so the work needed to extract a context into a separate service stays bounded.
+- [01-overview.md](01-overview.md): domain map, which context owns which entities and which doc holds each rule. Read when new to the codebase or looking for where a business rule is written down.
+- [02-setup-local.md](02-setup-local.md): running the app locally, a user and data, the [local URLs](02-setup-local.md#development-urls) and ports, RabbitMQ opt-in. Read when setting up a checkout or when a local service will not start.
 
-```
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                            PRESENTATION LAYER                               │
-│  ┌───────────┐ ┌───────────┐ ┌───────────┐ ┌───────────────┐ ┌───────────┐  │
-│  │  Twig +   │ │ FormFlow  │ │  Console  │ │ Turbo Frames  │ │   REST    │  │
-│  │ Tailwind  │ │Controllers│ │ Commands  │ │  & Streams    │ │   API     │  │
-│  └───────────┘ └───────────┘ └───────────┘ └───────────────┘ └───────────┘  │
-└─────────────────────────────────────────────────────────────────────────────┘
-                                      │
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                            APPLICATION LAYER                                │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐ │
-│  │  Commands   │  │  Handlers   │  │  Listeners  │  │  Search Criteria    │ │
-│  │  (DTOs)     │  │             │  │  (Events)   │  │                     │ │
-│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────────────┘ │
-└─────────────────────────────────────────────────────────────────────────────┘
-                                      │
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                               DOMAIN LAYER                                  │
-│  ┌───────────┐ ┌───────────┐ ┌───────────┐ ┌───────────┐ ┌───────────────┐  │
-│  │  Catalog  │ │   Order   │ │ Purchasing│ │  Pricing  │ │   Reporting   │  │
-│  │           │ │           │ │           │ │           │ │               │  │
-│  │ Products  │ │  Customer │ │ Suppliers │ │ VAT Rates │ │ Product Sales │  │
-│  │ Categories│ │  Orders   │ │ Purchase  │ │ Markups   │ │ Order Sales   │  │
-│  │ Subcats   │ │  Order    │ │ Orders    │ │ Price     │ │ Dashboards    │  │
-│  │ Mfrs      │ │  Items    │ │ Supplier  │ │ Models    │ │               │  │
-│  │           │ │           │ │ Products  │ │           │ │               │  │
-│  └───────────┘ └───────────┘ └───────────┘ └───────────┘ └───────────────┘  │
-│  ┌───────────┐ ┌───────────┐ ┌───────────┐ ┌─────────────────────────────┐  │
-│  │ Customer  │ │  Review   │ │   Audit   │ │         Shared Kernel       │  │
-│  │           │ │           │ │           │ │  Events, Value Objects,     │  │
-│  │ Users     │ │ Product   │ │ Status    │ │  Services, Result, FormFlow │  │
-│  │ Addresses │ │ Reviews   │ │ Logs      │ │  ULID IDs, MarkupCalculator │  │
-│  │           │ │ Summaries │ │           │ │                             │  │
-│  └───────────┘ └───────────┘ └───────────┘ └─────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────────────────┘
-                                      │
-┌─────────────────────────────────────────────────────────────────────────────┐
-│                           INFRASTRUCTURE LAYER                              │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐ │
-│  │  Doctrine   │  │  Messenger  │  │   Redis     │  │  S3 / Local FS      │ │
-│  │  MySQL 8.4  │  │  DB queue   │  │   Cache     │  │  File Storage       │ │
-│  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────────────┘ │
-└─────────────────────────────────────────────────────────────────────────────┘
-```
+## Reference
 
-## Documentation Index
+- [03-architecture.md](03-architecture.md): layers, rules between contexts, state between requests, domain events, the queue, where to start reading. Read before adding a class to an unfamiliar context, a listener, a service that holds data or a new context.
+- [04-sourcing-and-pricing.md](04-sourcing-and-pricing.md): best source, allocation, status roll-up, the pricing cascade and price calculation. Read before changing `Product`, the allocators, order/PO statuses, the Pricing listeners or `MarkupCalculator`.
+- [05-features.md](05-features.md): the business rules of each feature and the files that hold them. Read before changing a feature's behaviour.
+- [07-testing.md](07-testing.md): running and writing tests, parallel runs, factories, the checks CI runs. Read before adding a feature, and when a test fails only under `make test` or in CI.
+- [08-security.md](08-security.md): users and roles, what only a super admin can do, headers, trusted proxies, rate limits, uploads, CSRF. Read before adding a route, a role check, an upload or a state-changing action.
+- [09-cli-reference.md](09-cli-reference.md): what each `app:` command does, when it runs, simulation behaviour, exit codes and locking. Read before running, changing or debugging a command.
 
-### Getting Started
-- **[01-overview.md](01-overview.md)** - System purpose, domain concepts, what makes this non-trivial
-- **[02-setup-local.md](02-setup-local.md)** - Prerequisites, environment setup, running locally
+## Operations
 
-### Technical Deep-Dives
-- **[03-architecture.md](03-architecture.md)** - Module structure, request flow, layering rules
-- **[04-sourcing-and-pricing.md](04-sourcing-and-pricing.md)** - Multi-supplier sourcing, pricing engine, order splitting
-- **[05-features.md](05-features.md)** - Feature-by-feature documentation for developers
+- [06-operations.md](06-operations.md): scheduled jobs, the Messenger worker, simulated data, MySQL sizing. Read when adding or changing a scheduled job, touching the worker or filling a database.
+- [11-runbook.md](11-runbook.md): the production stacks, env files, server set-up, deploy, rollback, backup and restore, troubleshooting. Read before touching the server and when something breaks in production. The host Caddy config it uses is [infrastructure/Caddyfile](infrastructure/Caddyfile).
+- [13-monitoring.md](13-monitoring.md): Sentry, `/health`, `/health/backup`, uptime monitoring. Read before changing Sentry, adding a dependency to check or setting up the monitor.
+- [infrastructure/playground.md](infrastructure/playground.md): how the public playground differs from live, `PLAYGROUND_MODE`, the nightly reset. Read before changing anything gated on `PLAYGROUND_MODE` or the reset scripts.
 
-### Operations
-- **[06-operations.md](06-operations.md)** - Deployment, scheduled jobs, workers, data simulation
-- **[07-testing.md](07-testing.md)** - Test strategy, factories, running tests
-- **[08-security.md](08-security.md)** - Authentication, authorization, safety assumptions
-- **[11-runbook.md](11-runbook.md)** - Production runbook: deploy pipeline (images built in CI, pulled by the server), rollback, backup/restore, where secrets live, troubleshooting
-- **[13-monitoring.md](13-monitoring.md)** - Error tracking (Sentry), the `/health` endpoint, uptime monitoring
+## Patterns
 
-### Reference
-- **[09-cli-reference.md](09-cli-reference.md)** - All console commands with examples
+- [patterns/FormFlow/README.md](patterns/FormFlow/README.md): which flow fits which action, the app's adapters, how handlers report back. Read before writing or changing a web controller.
+- [patterns/FormFlow/Overrides.md](patterns/FormFlow/Overrides.md): recipes for replacing the template a flow renders. Read when an entity needs a page that differs from the shared default.
+- [patterns/FormFlow/EmbeddedForms.md](patterns/FormFlow/EmbeddedForms.md): a form in its own Turbo Frame on a host page instead of the modal. Read when a form belongs on a page, such as the reply under a ticket.
+- [patterns/InlineEdit/README.md](patterns/InlineEdit/README.md): editing one field in place with `InlineEditFlow`. Read when making a field inline-editable.
+- [patterns/API/README.md](patterns/API/README.md): the REST API, its authentication, response format, endpoints and how to add one. Read before adding or changing an endpoint, or calling the API.
+- [patterns/Turbo/README.md](patterns/Turbo/README.md): frames, modals and streams. Read when adding a link, a modal form or a frame, or when a flash or modal misbehaves.
+- [patterns/Templates/README.md](patterns/Templates/README.md): template naming, comment headers and the variables FormFlow passes. Read before adding a template.
+- [patterns/UI/README.md](patterns/UI/README.md): how the server-rendered UI is put together and where each piece goes. Read before adding a component, a controller or a form field.
+- [patterns/UI/Forms.md](patterns/UI/Forms.md): the form theme, the field kinds it supports and the app's form helpers. Read when adding a form or a field, or when one renders or submits oddly.
+- [patterns/UI/StimulusControllers.md](patterns/UI/StimulusControllers.md): every Stimulus controller, what it does and where it is mounted; side panels. Read before writing a new controller.
+- [patterns/UI/Styling.md](patterns/UI/Styling.md): surface, border, type and text-colour classes, and the dark-mode rule. Read when styling anything that is not a kit component.
 
-### Patterns
-- **[patterns/FormFlow/](patterns/FormFlow/README.md)** - Thin controller orchestration for CRUD operations
-- **[patterns/Turbo/](patterns/Turbo/README.md)** - Turbo Frames, Streams, and modal system
-- **[patterns/UI/](patterns/UI/README.md)** - Server-driven UI with Twig Components, Stimulus, and Forms
-- **[patterns/InlineEdit/](patterns/InlineEdit/README.md)** - Click-to-edit fields with auto-save
-- **[patterns/API/](patterns/API/README.md)** - REST API controllers, resources, and request DTOs
+## Architecture Decision Records
 
-### Review
-- **[12-technical-review.md](12-technical-review.md)** - Honest technical review of the project as of V1.0 (31 March 2026), covering architecture, strengths, trade-offs, and recommendations
+Records of decisions; later amendments are noted in each ADR's Status line.
 
-### Architecture Decision Records
-- **[adr/001-multi-supplier-sourcing.md](adr/001-multi-supplier-sourcing.md)** - Why orders split across suppliers
-- **[adr/002-order-line-splitting.md](adr/002-order-line-splitting.md)** - Why order items can have multiple prices
-- **[adr/003-simulation-first-design.md](adr/003-simulation-first-design.md)** - Why simulation drives the system
-- **[adr/004-pricing-abstraction.md](adr/004-pricing-abstraction.md)** - Hierarchical pricing with pretty-price rounding
-- **[adr/005-reporting-strategy.md](adr/005-reporting-strategy.md)** - Two-layer aggregation for performance
-- **[adr/006-formflow-controller-pattern.md](adr/006-formflow-controller-pattern.md)** - FormFlow abstraction for thin controllers
-- **[adr/007-turbo-frame-modal-architecture.md](adr/007-turbo-frame-modal-architecture.md)** - Turbo Frames with native dialog modals
-- **[adr/008-server-driven-ui-architecture.md](adr/008-server-driven-ui-architecture.md)** - Server-driven UI instead of JavaScript SPA
-- **[adr/009-support-ticket-system.md](adr/009-support-ticket-system.md)** - Pool-based support ticket system with conversation threads
-- **[adr/010-customer-insights-reporting.md](adr/010-customer-insights-reporting.md)** - Customer segmentation, geographic, and insights reporting
-- **[adr/011-rest-api-layer.md](adr/011-rest-api-layer.md)** - REST API alongside server-rendered UI
-- **[adr/013-database-queue-by-default.md](adr/013-database-queue-by-default.md)** - Messenger on a database queue by default; RabbitMQ as an opt-in
-- **[adr/014-architecture-rules.md](adr/014-architecture-rules.md)** - Framework attributes allowed in the domain; contexts use each other's Domain only; Deptrac in CI
-- **[adr/015-symfony-scheduler-in-place-of-cron.md](adr/015-symfony-scheduler-in-place-of-cron.md)** - Scheduled jobs in the Messenger worker, one at a time; no cron image
-- **[adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md](adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md)** - One FrankenPHP image in place of nginx + PHP-FPM; rate limits and trusted proxies in the app; worker mode in production
+- [001](adr/001-multi-supplier-sourcing.md): products aggregate several supplier products; the best source is the lowest cost, then the highest stock. Read before changing how a product picks its supplier.
+- [002](adr/002-order-line-splitting.md): one order line can be split across suppliers by outstanding quantity, its status derived from its purchase order items. Read before changing allocation or order item status.
+- [003](adr/003-simulation-first-design.md): console commands drive the order, purchasing and fulfilment lifecycle with realistic timing. Read before changing a simulation command.
+- [004](adr/004-pricing-abstraction.md): three-level markup (product, subcategory, category) with price-model rounding. Read before changing price calculation.
+- [005](adr/005-reporting-strategy.md): two-layer reporting, daily records plus pre-computed summaries. Read before adding a report or changing the sales tables.
+- [006](adr/006-formflow-controller-pattern.md): FormFlow for thin controllers. Read before writing a controller.
+- [007](adr/007-turbo-frame-modal-architecture.md): Turbo Frames with native `<dialog>` modals. Read before changing frames or modals.
+- [008](adr/008-server-driven-ui-architecture.md): server-driven UI instead of a JavaScript SPA. Read before adding JavaScript.
+- [009](adr/009-support-ticket-system.md): pool-based support tickets with threaded messages. Read before changing tickets or pools.
+- [010](adr/010-customer-insights-reporting.md): customer activity, geographic and segment reports on the two-layer model. Read before changing the customer reports.
+- [011](adr/011-rest-api-layer.md): a REST API alongside the server-rendered UI, reusing the same handlers. Read before adding an API endpoint.
+- [012](adr/012-shadcn-ui-kit.md): Shadcn kit components via Symfony UX Toolkit; Flowbite removed. Read before installing or updating a kit recipe.
+- [013](adr/013-database-queue-by-default.md): Messenger on a database queue by default; RabbitMQ as an opt-in. Read before changing the queue or the worker.
+- [014](adr/014-architecture-rules.md): framework attributes allowed in the domain; contexts use each other's `Domain/` only; Deptrac in CI. Read before adding a dependency between contexts.
+- [015](adr/015-symfony-scheduler-in-place-of-cron.md): scheduled jobs run by Symfony Scheduler in the Messenger worker, one at a time; no cron. Read before adding a scheduled job.
+- [016](adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md): one FrankenPHP image in place of nginx and PHP-FPM; rate limits and trusted proxies in the app. Read before changing the web server or the image.
 
----
+## Records
 
-## Common Tasks Cheat Sheet
+- [12-technical-review.md](12-technical-review.md): architectural review as of V1.0, 31 March 2026. A dated snapshot, not maintained.
 
-### Development
+## User manual
 
-```bash
-# Start local development (preferred)
-symfony serve -d                    # PHP server at https://127.0.0.1:8000
-make up-dev-tools                   # MySQL, Redis, Mailpit, PHPMyAdmin
-
-# Or use full Docker stack
-make up                             # All services containerized
-make bash                           # Shell into PHP container
-
-# Run tests
-make test                           # All tests via Docker, in parallel (ParaTest)
-make test-SomeTest                  # Filtered tests
-vendor/bin/phpunit                  # Local (ensure test DB exists)
-
-# Code quality (see 07-testing.md for configuration details)
-make check                          # Every check CI runs (Docker); make check-<step> for one
-vendor/bin/php-cs-fixer fix         # Fix code style (@Symfony rules)
-vendor/bin/phpstan analyse          # Static analysis (level 7)
-vendor/bin/rector process           # Automated refactoring
-vendor/bin/deptrac analyse          # Rules between bounded contexts
-```
-
-### Console Commands (Simulation)
-
-```bash
-# Order simulation
-symfony console app:create-customer-orders 10      # Create 10 orders
-symfony console app:build-purchase-orders 50       # Allocate to suppliers
-
-# Purchase order workflow
-symfony console app:accept-purchase-orders 20      # Supplier acceptance
-symfony console app:ship-purchase-order-items 50   # Ship items
-symfony console app:deliver-purchase-order-items 50 # Deliver items
-
-# Product reviews
-symfony console app:generate-reviews 50            # Generate fake reviews
-
-# Stock simulation
-symfony console app:update-supplier-stock 50       # Fluctuate stock/costs
-
-# Reporting
-symfony console app:calculate-product-sales 7      # Last 7 days
-symfony console app:calculate-order-sales 7        # Last 7 days
-```
-
-### Local URLs
-
-| Service | URL |
-|---------|-----|
-| Application | https://localhost:8000 |
-| API Docs (Swagger) | https://localhost:8000/api/doc |
-| PHPMyAdmin | http://localhost:8080 (live 8081, playground 8082, through SSH tunnels) |
-| Mailpit | http://localhost:8025 |
-
----
-
-## Key Technologies
-
-| Component | Technology | Purpose |
-|-----------|------------|---------|
-| Language | PHP 8.5+ | Application code |
-| Framework | Symfony 8.1 | HTTP, DI, console, forms |
-| Database | MySQL 8.4 | Primary data store |
-| ORM | Doctrine | Entity mapping, migrations |
-| Queue | Symfony Messenger, database transport | Outgoing email, async events. RabbitMQ is an opt-in ([ADR 013](adr/013-database-queue-by-default.md)) |
-| Cache | Redis | Sessions, query cache |
-| Frontend | Tailwind CSS + Turbo | Styling, SPA-like UX |
-| API Docs | NelmioApiDoc (Swagger) | OpenAPI documentation |
-| Testing | PHPUnit + Foundry | Test framework + factories |
-| File Storage | S3 / Local | Product images |
-
+- [UserManual/README.md](UserManual/README.md): how staff use the app day to day, screen by screen. Read for what a screen does from the user's side.
