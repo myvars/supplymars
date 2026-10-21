@@ -185,6 +185,7 @@ are thin orchestrators using 5 flow types:
 - Rich entities with domain logic; thin controllers (delegate to Flow/handlers).
 - Use existing Form model / type / mapper patterns.
 - Use repositories for all queries.
+- **No request's data in a service property.** Production runs FrankenPHP in worker mode, so one set of services serves many requests, as the Messenger worker's serves many messages. Read the user, request or session when needed (`CurrentUserProvider`, `RequestStack`); never keep them, or anything derived from them, in a property. A service that caches on purpose implements `ResetInterface` and clears itself in `reset()` (`PublicIdResolverRegistry`). `StateBetweenRequestsTest` guards this. See `Docs/03-architecture.md#state-between-requests`.
 
 ## Symfony Conventions
 
