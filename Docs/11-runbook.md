@@ -17,7 +17,7 @@ Each stack runs 4 containers (5 for playground, which includes `reset`). The que
 
 | Service | Image | Purpose |
 |---------|-------|---------|
-| php | `ghcr.io/myvars/supplymars/php` | FrankenPHP: web server and PHP in one, in classic mode (HTTP only — Caddy on the host handles TLS). Runs as `www-data` ([ADR 016](adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md)) |
+| php | `ghcr.io/myvars/supplymars/php` | FrankenPHP: web server and PHP in one, in worker mode (HTTP only — Caddy on the host handles TLS). Runs as `www-data` ([ADR 016](adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md)) |
 | messenger | `ghcr.io/myvars/supplymars/php` | Async message consumer, and the scheduled jobs (`src/Shared/Infrastructure/Scheduler/MainSchedule.php`; `PLAYGROUND_MODE` picks the stack's) |
 | database | mysql:8.4 | Primary data store |
 | redis | redis:8.8-alpine | Cache, sessions |
@@ -132,6 +132,19 @@ docker compose $PLAYGROUND exec php php bin/console doctrine:migrations:migrate 
 ```
 
 The next push to `main` deploys as normal. To stay on the old version until a fix is ready, revert the bad commit on `main` instead, which deploys through CI.
+
+### 2.4 Restarting the PHP Workers
+
+The `php` container runs FrankenPHP in worker mode: each worker keeps the app in memory and serves up to 500 requests (`FRANKENPHP_LOOP_MAX` in `compose.prod.yaml`) before it starts afresh. A deploy recreates the container, so every deploy starts new workers on the new code.
+
+To restart them by hand, for example if the container's memory keeps growing (`docker stats`):
+
+```bash
+docker compose $LIVE exec php curl -fsS -X POST http://localhost:2019/frankenphp/workers/restart
+docker compose $PLAYGROUND exec php curl -fsS -X POST http://localhost:2019/frankenphp/workers/restart
+```
+
+This goes through FrankenPHP's admin API, which listens inside the container only. Requests in progress finish first, and the site stays up. `docker compose $LIVE restart php` also works, but the site is down for the few seconds it takes to start.
 
 ---
 

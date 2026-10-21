@@ -111,6 +111,7 @@ These areas have non-obvious design. Read the corresponding ADR in `Docs/adr/` b
 
 ### Deployment
 
+- One image: FrankenPHP (Caddy with PHP built in, `docker/frankenphp/Caddyfile`), in worker mode in production (`FRANKENPHP_CONFIG` in `compose.prod.yaml`, each worker restarted after 500 requests) and classic mode in development. The `php` container serves the site from it and `messenger` runs the queue from it. See `Docs/adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md`.
 - CI builds the production images (`php`, which `messenger` also runs, and `reset`) and pushes them to GHCR, tagged with the commit SHA. The server pulls the images of its checked-out commit and starts them with `make up-prod-live` / `make up-prod-playground`; it never builds. Rollback is `git reset --hard <previous-sha> && make up-prod-live && make up-prod-playground`.
 - **Scheduled jobs**: Symfony Scheduler, listed in `src/Shared/Infrastructure/Scheduler/MainSchedule.php` (a `RunCommandMessage` per job; `debug:scheduler` lists them; `PLAYGROUND_MODE` leaves out the live-only ones). No cron, except the playground `reset` container's. Only the production `messenger` container consumes `scheduler_default`, one job at a time; dev and `make up-prod-local` consume only `async`. See `Docs/adr/015-symfony-scheduler-in-place-of-cron.md`.
 - Application secrets are in the env files outside the repository (`../supplymars-secrets/`), never GitHub secrets.
@@ -185,6 +186,7 @@ are thin orchestrators using 5 flow types:
 - Rich entities with domain logic; thin controllers (delegate to Flow/handlers).
 - Use existing Form model / type / mapper patterns.
 - Use repositories for all queries.
+- **No request's data in a service property.** Production runs FrankenPHP in worker mode, so one set of services serves many requests, as the Messenger worker's serves many messages. Read the user, request or session when needed (`CurrentUserProvider`, `RequestStack`); never keep them, or anything derived from them, in a property. A service that caches on purpose implements `ResetInterface` and clears itself in `reset()` (`PublicIdResolverRegistry`). `StateBetweenRequestsTest` guards this. See `Docs/03-architecture.md#state-between-requests`.
 
 ## Symfony Conventions
 

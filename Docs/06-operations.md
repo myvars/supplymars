@@ -67,7 +67,7 @@ The production Docker stack includes:
 
 | Service | Image | Purpose |
 |---------|-------|---------|
-| php | Custom (php-prod) | FrankenPHP: web server and application server (TLS is the host Caddy's) |
+| php | Custom (php-prod) | FrankenPHP: web server and application server, in worker mode (TLS is the host Caddy's) |
 | messenger | Custom (php-prod) | Async message consumer and scheduled jobs |
 | database | mysql:8.4 | Primary data store |
 | redis | redis:8.4-alpine | Cache, sessions |

@@ -145,6 +145,25 @@ There is no `skip_violations` list. When an import fails the check, fix it: use 
 
 A new context must be added to `deptrac.yaml`: its two layers, its two ruleset entries (`[+Public, …]`), its `Domain` layer in the list of the `Public` entry, and its name in the `Unregistered` pattern. Until then its classes fall into the `Unregistered` layer, which may use nothing and which nothing may use, so the first import to or from the new context fails the build. See [ADR 014](adr/014-architecture-rules.md) for the decision.
 
+## State Between Requests
+
+In production FrankenPHP runs in worker mode: each worker starts the app once and serves up to 500 requests with the same services before it restarts ([ADR 016](adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md)). The Messenger worker already worked this way, between messages, and the scheduled jobs run inside it. A service that keeps a request's data in a property therefore hands it to the next request, which may be another user's.
+
+**The rule:** a service keeps no data from one request or message in a property. Read the current user, the request and the session when they are needed (`CurrentUserProvider`, `Security`, `RequestStack`) rather than storing them or anything worked out from them.
+
+A service that caches on purpose implements `Symfony\Contracts\Service\ResetInterface` and clears the cache in `reset()`, as `PublicIdResolverRegistry` does. Autoconfiguration tags it `kernel.reset`, and Symfony then calls `reset()` between requests, and the Messenger worker between messages. Symfony already resets its own services this way: the entity manager, the security token, Twig's globals and Monolog's buffers.
+
+| Fine | Not fine |
+|------|----------|
+| Injected services and configuration, in `readonly` properties | `private ?User $user`, filled on first use |
+| A property used within one call and cleared when the call starts (`DomainEventDispatcher` clears its list at the start of every flush) | An array of lookups kept "for this request", with no `reset()` |
+| A value in the app cache with an expiry, keyed by user when it is per user (`SidebarBadgeProvider`'s "My Queue" count) | A static property holding data |
+| Twig components: a new instance each time they render | |
+
+**The guard:** `tests/Shared/UI/Http/StateBetweenRequestsTest.php` keeps one kernel across requests (`disableReboot()`), as a worker does, and interleaves two logged-in staff users and a visitor. Each page must show only its own user in the header and their own "My Queue" count, each status change must be logged against the user who made it, and the visitor must be sent to the login page. Other tests boot a fresh kernel per request and do not see a leak. The app cache is an in-memory adapter in tests, emptied between requests, so the test guards services, not cache keys: a value cached per user must still carry the user in its key. A feature that shows or records per-user data through a new service extends this test.
+
+Development (`symfony serve`, `make up`) runs in classic mode, where every request starts afresh, so a leak shows only in production, under `make up-prod-local` and in tests that keep one kernel.
+
 ## Request Flow
 
 ### HTTP Request → Response
