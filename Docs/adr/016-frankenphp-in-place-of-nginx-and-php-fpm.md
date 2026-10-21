@@ -68,6 +68,7 @@ The skeleton made this change first (myvars/skeleton#83, its ADR 015) and found,
   | `/`, 20 concurrent | 566–705 req/s | 951–975 req/s |
 
   Each request saves the 3–6 ms it took to start the app. Memory of the `php` container over 25,000 requests (half `/order/`, half `/`, 20 at a time): it rises from about 150 MiB to about 200 MiB as the 20 workers warm up, then stays at 195–203 MiB with restarts every 500 requests, and 202–204 MiB with none.
+- MySQL, not FrankenPHP, held most of the server's memory and swap after the worker-mode deploy. Its production settings and their before and after numbers are in `Docs/06-operations.md#database-optimization` (#86).
 - In worker mode a service that keeps state between requests is a bug that only shows in production, `make up-prod-local` and tests that keep one kernel. The rule and `StateBetweenRequestsTest` are the guard.
 - A deploy recreates the `php` container and so restarts the workers. They can also be restarted by hand through FrankenPHP's admin API, inside the container (`Docs/11-runbook.md`, section 2.4).
 

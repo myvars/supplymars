@@ -284,6 +284,19 @@ orm:
         pool: doctrine.result_cache_pool
 ```
 
+**MySQL settings (production):** `docker/mysql/production.cnf`, mounted into `database` by `compose.prod.yaml` only, so `make up-prod-local` uses it and `make up` keeps the image's defaults. One 2 GB server runs both stacks, each with its own MySQL, and the defaults are sized for a bigger machine. On 2026-10-21 the two `mysqld` processes held 1.4 GB of the server's 2 GB of swap (#86). The file turns off the Performance Schema and the X Protocol, lowers `max_connections` to 50 and `innodb_log_buffer_size` to 16M. `innodb_buffer_pool_size` stays at 128M: live's data (about 1.8 GB, mostly `status_change_log`) would not fit in memory on this host anyway, and the pages the app reads do (99.98% of reads hit the pool).
+
+Measured locally on `mysql:8.4`, the same instance with and without the file:
+
+| | Defaults | `production.cnf` |
+|---|---|---|
+| Memory, empty and idle | 453 MiB | 144 MiB |
+| Memory after restoring a copy of live | 616 MiB | 356 MiB |
+| Restore of that copy, as the playground reset does it | 123 s | 122 s |
+| Two report-style aggregates over `status_change_log` and orders | 4.9–5.1 s | 4.9–5.0 s |
+
+Check the values in use with `SHOW VARIABLES` (`Docs/11-runbook.md`, section 3.2).
+
 ### Caching Strategy
 
 **Application cache:** Redis via SNC Redis bundle
