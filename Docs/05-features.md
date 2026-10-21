@@ -1,888 +1,181 @@
-# Feature Documentation
+# Features
 
-This document provides feature-by-feature documentation for developers working with SupplyMars. Each section covers the purpose, workflows, entry points, and business rules for a specific capability.
+The business rules of each feature, with the files that hold them. Read it before changing a feature's behaviour. Screen-by-screen steps are in the [UserManual](UserManual/README.md), routes in `symfony console debug:router`, the reasons in the linked ADRs. Sourcing, allocation, statuses and pricing are in [04-sourcing-and-pricing.md](04-sourcing-and-pricing.md).
 
-## Products & Categorization
+## Applies to Every Feature
 
-### Purpose
 
-The Catalog context manages the product information displayed to customers and used throughout the system. Products aggregate supplier offerings into a unified catalog.
+- **Delete rights.** Five delete handlers check `ROLE_SUPER_ADMIN`: product, supplier, supplier product, VAT rate and pool. Every other delete is open to any staff user.
+- **Deletes that hit a foreign key fail.** Nothing checks for or cascades to dependent rows, so the flush throws. A product can't be deleted while it has images, supplier products or order items, a VAT rate while a category uses it, a pool while it has tickets.
+- **Inline editing.** Names (and a customer's `fullName`) are edited in place on show pages. The list is `symfony console debug:router | grep inline`; the pattern is in [patterns/InlineEdit/README.md](patterns/InlineEdit/README.md).
 
-### Main Workflows
+## Catalog
 
-**Creating a Product:**
-1. Navigate to `/catalog/product/new`
-2. Fill required fields: name, manufacturer part number, category, subcategory, manufacturer
-3. Product created with default pricing (inherits from category)
-4. Optionally set product-level markup or price model overrides
+- A product needs a name, a manufacturer part number, a category, a subcategory and a manufacturer. VAT comes from the category.
+- `mfrPartNumber` is not unique. Mapping a supplier product (`app_purchasing_supplier_product_map`) finds or creates the product, manufacturer, category and subcategory by **name** (`SupplierProductMappingService`).
+- A product's stock, cost and lead time are copies of its active source's values. See [04 Stock](04-sourcing-and-pricing.md#stock).
+- A manufacturer's Active flag is a label. Nothing filters on it.
+- **Images:** JPG, PNG, GIF or WebP, up to 2 MiB, checked on the server by extension and content (`CreateProductImageHandler`; upload limits in [08-security.md](08-security.md)). Ordered by `position` from 1; the first is the product's main image (`Product::getFirstImage()`). Deleting one raises `ProductImageWasDeletedEvent`, whose listener deletes the file and its LiipImagine thumbnails.
+- Files are stored through Flysystem (`products_fs`): `public/` locally, S3 in production (`config/packages/oneup_flysystem.yaml`).
 
-**Mapping Supplier Products:**
-1. Create SupplierProducts in Purchasing context
-2. Map via manufacturer part number matching or manual association
-3. System automatically selects best source and recalculates pricing
+Key files: `src/Catalog/Domain/Model/Product/Product.php`, `src/Catalog/Application/Handler/ProductImage/CreateProductImageHandler.php`, `src/Catalog/Application/Listener/ProductImageWasDeleted.php`, `src/Purchasing/Application/Service/SupplierProductMappingService.php`.
 
-**Managing Categories:**
-1. Categories define base markup, VAT rate, and price model
-2. Subcategories can override markup and price model
-3. Changes cascade to affected products via domain events
+UI steps: [UserManual 03](UserManual/03-products.md), [04](UserManual/04-categories.md), [16](UserManual/16-manufacturers.md).
 
-### Entry Points
+## Customers
 
-| Action | Controller | Route |
-|--------|------------|-------|
-| List products | `ProductController::index` | `app_catalog_product_index` |
-| Create product | `ProductController::new` | `app_catalog_product_new` |
-| Edit product | `ProductController::edit` | `app_catalog_product_edit` |
-| View product | `ProductController::show` | `app_catalog_product_show` |
-| Delete product | `ProductController::delete` | `app_catalog_product_delete` |
+- A user is staff when `isStaff` is set, which adds `ROLE_ADMIN`. Everything except the routes marked `PUBLIC_ACCESS` in `access_control` (`config/packages/security.yaml`: public pages, login, registration, password reset, verify, help, health, the public catalog API and `/api/doc`) needs `ROLE_ADMIN`. `ROLE_SUPER_ADMIN` includes `ROLE_ADMIN`.
+- `/register` creates a non-staff user, who can sign in but can't open any back-office page.
+- Email verification is not enforced at login. `/verify/resend` exists, but nothing links to it.
+- Only a super admin can edit a staff account (`UpdateCustomerHandler`). Making a user staff sends the Admin Access Granted email.
+- Email is unique (`UniqueEntity` on `User`).
+- **Emails:** Inky templates with inline CSS (`templates/shared/email/emailBase.html.twig`, `assets/styles/email.css`). `MailerHelper` has one method per email: verify email, reset password, admin access granted. `app:send-test-emails` (dev only) sends each one to Mailpit.
 
-**Key files:**
-- `src/Catalog/UI/Http/Controller/ProductController.php`
-- `src/Catalog/Application/Handler/Product/CreateProductHandler.php`
-- `src/Catalog/Domain/Model/Product/Product.php`
+Key files: `src/Customer/Domain/Model/User/User.php`, `src/Customer/Application/Handler/UpdateCustomerHandler.php`, `src/Customer/Infrastructure/Mailer/MailerHelper.php`.
 
-### API Endpoints (Catalog)
+UI steps: [UserManual 07](UserManual/07-customers.md).
 
-The Catalog context exposes **public** read-only API endpoints (no authentication required):
+## Orders
 
-| Method | Endpoint | Purpose |
-|--------|----------|---------|
-| GET | `/api/v1/catalog/products` | List products (paginated, filterable by category/subcategory/manufacturer) |
-| GET | `/api/v1/catalog/products/{id}` | Get product detail (includes review summary) |
-| GET | `/api/v1/catalog/categories` | List categories |
-| GET | `/api/v1/catalog/categories/{id}` | Get category detail (includes subcategories) |
-| GET | `/api/v1/catalog/subcategories` | List subcategories (filterable by category) |
-| GET | `/api/v1/catalog/manufacturers` | List manufacturers |
-| GET | `/api/v1/catalog/manufacturers/{id}` | Get manufacturer detail |
+- Status rules, allocation and how an order's status is derived from its items: [04 Statuses](04-sourcing-and-pricing.md#statuses) and [04 Allocation](04-sourcing-and-pricing.md#allocation).
+- An order item copies the product's price when added. A product can be on two lines at two prices ([04 Prices on orders](04-sourcing-and-pricing.md#prices-on-orders)).
+- Items can be added or removed only while the order is PENDING or PROCESSING (`OrderStatus::allowEdit()`, checked in `CustomerOrder`). Editing an item is limited by the item's own status in the template only; `UpdateOrderItemHandler` doesn't check it.
+- An order can be cancelled only while PENDING, and only if no item has quantity on a purchase order (`CustomerOrder::cancelOrder()`, `CustomerOrderItem::allowCancel()`). `canTransitionTo()` would allow PROCESSING → CANCELLED, but `allowCancel()` doesn't.
+- **Lock:** a "someone is working on this" flag holding the user who set it. Nothing enforces it; any staff user can toggle it (`LockOrderHandler`).
+- **Demo orders:** a random customer, shipping method and products, reference `DEMO-…`. At most 10 a day across all users, counted by the reference prefix (`CreateDemoOrderHandler::DAILY_LIMIT`).
+- Creating an order by hand (`/order/new`) is super admin only.
+- `OrderController` names are misleading: `delete()` cancels the order, `cancel()` toggles the lock, `process()` allocates.
 
-**Key files:**
-- `src/Catalog/UI/Http/Api/ProductApiController.php`
-- `src/Catalog/UI/Http/Api/CategoryApiController.php`
-- `src/Catalog/UI/Http/Api/SubcategoryApiController.php`
-- `src/Catalog/UI/Http/Api/ManufacturerApiController.php`
-- `src/Catalog/UI/Http/Api/Resource/` — Resource DTOs for JSON serialization
+Key files: `src/Order/Domain/Model/Order/CustomerOrder.php`, `src/Order/Domain/Model/Order/CustomerOrderItem.php`, `src/Order/Application/Handler/CreateDemoOrderHandler.php`, `src/Order/Application/Service/DemoOrderCreator.php`.
 
-### Business Rules
+UI steps: [UserManual 08](UserManual/08-orders.md), [09](UserManual/09-order-items.md).
 
-1. **Unique part numbers:** `mfrPartNumber` must be unique across products
-2. **Category required:** Every product must have a category (for VAT rate)
-3. **Subcategory required:** Every product must have a subcategory
-4. **Stock derivation:** Product stock comes from active supplier source
-5. **Pricing cascade:** Category/subcategory changes trigger selective recalculation
+## Purchasing
 
----
+- **Suppliers:** a supplier has a name, a colour scheme (used in charts) and an Active flag. An inactive supplier's products are never a source. Warehouse flag: see [04](04-sourcing-and-pricing.md#suppliers-and-supplier-products)).
+- **Supplier products:** cost, stock and lead time per supplier. A cost of 0 or no stock means "not a source". The lead time is copied to the product; purchase order due dates come from the order's shipping method, not the lead time.
+- **One editable PO per supplier per order.** Allocation reuses the order's PENDING PO for that supplier and creates a new one only when there is none (`EditablePurchaseOrderProvider`).
+- Only PENDING PO items can change quantity. A PO item can't exceed its line's outstanding quantity ([04 Allocation](04-sourcing-and-pricing.md#allocation)).
+- PO statuses are an enum with `canTransitionTo()`, not Symfony Workflow. The table is in [04 Statuses](04-sourcing-and-pricing.md#statuses).
+- Rejected items are refunded and reallocated by `app:refund-purchase-orders` (live only, nightly).
+- **Rewind** (any status, confirm page on the PO): every item goes back to PENDING, the PO's and its items' status change logs are deleted, and the order's status is derived again. Stock is not touched, and the erased history can't be recovered. `app:rewind-mixed-status-purchase-orders` rewinds POs whose items have mixed statuses.
 
-## Suppliers & Supplier Products
+Key files: `src/Purchasing/Domain/Model/PurchaseOrder/PurchaseOrder.php`, `src/Purchasing/Application/Service/EditablePurchaseOrderProvider.php`, `src/Purchasing/Application/Service/PurchaseOrderRewindService.php`, `src/Purchasing/Domain/Model/SupplierProduct/SupplierProduct.php`.
 
-### Purpose
-
-The Purchasing context manages supplier relationships and their product offerings. Suppliers provide inventory sources with independent pricing and stock levels.
-
-### Main Workflows
-
-**Creating a Supplier:**
-1. Navigate to `/purchasing/supplier/new`
-2. Set name and active status
-3. Optionally designate as warehouse (one per system)
-
-**Creating Supplier Products:**
-1. Navigate to `/purchasing/supplier-product/new`
-2. Associate with supplier, category, subcategory, manufacturer
-3. Set cost, stock, lead time
-4. Map to catalog product (or leave unmapped)
-
-**Stock/Price Updates:**
-1. Manual: Edit supplier product directly
-2. Automated: `app:update-supplier-stock` command simulates feeds
-3. Events trigger product pricing recalculation
-
-### Entry Points
-
-| Action | Controller | Route |
-|--------|------------|-------|
-| List suppliers | `SupplierController::index` | `app_purchasing_supplier_index` |
-| Create supplier | `SupplierController::new` | `app_purchasing_supplier_new` |
-| List supplier products | `SupplierProductController::index` | `app_purchasing_supplier_product_index` |
-| Create supplier product | `SupplierProductController::new` | `app_purchasing_supplier_product_new` |
-
-**Key files:**
-- `src/Purchasing/UI/Http/Controller/SupplierController.php`
-- `src/Purchasing/Domain/Model/Supplier/Supplier.php`
-- `src/Purchasing/Domain/Model/SupplierProduct/SupplierProduct.php`
-
-### Business Rules
-
-1. **One warehouse:** Only one supplier can have `isWarehouse = true`
-2. **Active filtering:** Inactive suppliers excluded from sourcing
-3. **Cost validation:** Cost must be positive for viable sourcing
-4. **Stock events:** Stock/cost changes raise domain events
-5. **Lead time:** Used for due date calculation on purchase orders
-
----
-
-## Customer Orders
-
-### Purpose
-
-The Order context manages customer purchases from initial creation through fulfillment. Orders contain items that reference catalog products.
-
-### Main Workflows
-
-**Creating a Demo Order:**
-1. Click "Create Demo Order" on the order index page
-2. Confirm in the modal dialog
-3. A random customer, shipping method, and products are assigned automatically
-4. Order created in PENDING status with `DEMO-XXXX` reference
-5. Limited to 10 demo orders per day (global)
-
-**Creating an Order (ROLE_SUPER_ADMIN only):**
-1. Navigate to `/order/new`
-2. Select customer and shipping method
-3. Order created in PENDING status
-
-**Adding Order Items:**
-1. View order detail page
-2. Add products with quantities
-3. Items capture current product price
-
-**Allocating to Suppliers:**
-1. Trigger allocation (manual or via command)
-2. System creates PurchaseOrders per supplier
-3. Order moves to PROCESSING status
-
-**Order Lifecycle:**
-```
-PENDING → PROCESSING → SHIPPED → DELIVERED
-                    ↘ CANCELLED
-```
-
-### Entry Points
-
-| Action | Controller | Route | Role |
-|--------|------------|-------|------|
-| List orders | `OrderController::index` | `app_order_index` | `ROLE_ADMIN` |
-| Create demo order (confirm) | `OrderController::demoConfirm` | `app_order_demo_confirm` | `ROLE_ADMIN` |
-| Create demo order (execute) | `OrderController::demoCreate` | `app_order_demo_create` | `ROLE_ADMIN` |
-| Create order | `OrderController::new` | `app_order_new` | `ROLE_SUPER_ADMIN` |
-| View order | `OrderController::show` | `app_order_show` | `ROLE_ADMIN` |
-| Cancel order | `OrderController::cancel` | `app_order_cancel` | `ROLE_ADMIN` |
-
-**Key files:**
-- `src/Order/UI/Http/Controller/OrderController.php`
-- `src/Order/Application/Handler/CreateOrderHandler.php`
-- `src/Order/Application/Handler/CreateDemoOrderHandler.php`
-- `src/Order/Application/Service/DemoOrderCreator.php`
-- `src/Order/Domain/Model/Order/CustomerOrder.php`
-- `src/Order/Domain/Model/Order/CustomerOrderItem.php`
-
-### API Endpoints (Orders)
-
-The Order context exposes **authenticated** API endpoints (requires `ROLE_ADMIN` via Bearer token):
-
-| Method | Endpoint | Purpose |
-|--------|----------|---------|
-| GET | `/api/v1/orders` | List orders (paginated, filterable by customer) |
-| POST | `/api/v1/orders` | Create an order |
-| GET | `/api/v1/orders/{id}` | Get order detail (includes items) |
-| POST | `/api/v1/orders/{id}/cancel` | Cancel an order |
-| POST | `/api/v1/orders/{id}/allocate` | Allocate order to suppliers |
-| POST | `/api/v1/orders/{id}/items` | Add an order item |
-| PUT | `/api/v1/orders/{id}/items/{itemId}` | Update an order item quantity |
-| DELETE | `/api/v1/orders/{id}/items/{itemId}` | Remove an order item |
-
-**Key files:**
-- `src/Order/UI/Http/Api/OrderApiController.php`
-- `src/Order/UI/Http/Api/OrderItemApiController.php`
-- `src/Order/UI/Http/Api/Request/` — Validated input DTOs
-- `src/Order/UI/Http/Api/Resource/` — Resource DTOs for JSON serialization
-
-### Business Rules
-
-1. **Price capture:** Item prices frozen at creation time
-2. **Edit window:** Orders editable only in PENDING/PROCESSING status
-3. **Cancel restrictions:** Can only cancel PENDING orders
-4. **Status derivation:** Order status = minimum item status
-5. **Locking:** Orders can be locked by user to prevent concurrent edits
-6. **Demo order limit:** Maximum 10 demo orders per day (global, counted by `DEMO-` ref prefix)
-
----
-
-## Purchase Orders
-
-### Purpose
-
-Purchase orders represent fulfillment requests to suppliers. A single customer order can generate multiple POs across different suppliers.
-
-### Main Workflows
-
-**Automatic Generation:**
-1. Order allocation creates POs per supplier
-2. PO items link to customer order items
-3. Outstanding quantities tracked for split fulfillment
-
-**Status Progression:**
-```
-PENDING → PROCESSING → ACCEPTED → SHIPPED → DELIVERED
-                    ↘ REJECTED → REFUNDED
-                    ↘ CANCELLED
-```
-
-**Handling Rejections:**
-1. Supplier rejects PO item
-2. Item moves to REJECTED status
-3. `app:refund-purchase-orders` processes refund and re-allocates
-
-### Entry Points
-
-| Action | Controller | Route |
-|--------|------------|-------|
-| List POs | `PurchaseOrderController::index` | `app_purchasing_purchase_order_index` |
-| View PO | `PurchaseOrderController::show` | `app_purchasing_purchase_order_show` |
-
-**Key files:**
-- `src/Purchasing/UI/Http/Controller/PurchaseOrderController.php`
-- `src/Purchasing/Domain/Model/PurchaseOrder/PurchaseOrder.php`
-- `src/Purchasing/Domain/Model/PurchaseOrder/PurchaseOrderItem.php`
-
-### Business Rules
-
-1. **Multi PO per supplier:** Each supplier can have multiple editable POs per order
-2. **Quantity limits:** Combined PO item qty cannot exceed order item outstanding qty
-3. **Status cascade:** PO status derived from minimum item status
-4. **Edit restrictions:** Only PENDING items allow quantity changes
-5. **Status transitions:** Enforced via state machine
-
----
+UI steps: [UserManual 05](UserManual/05-suppliers.md), [06](UserManual/06-supplier-products.md), [10](UserManual/10-purchase-orders.md).
 
 ## Stock Simulation
 
-### Purpose
+`app:update-supplier-stock` stands in for supplier stock feeds (every 15 minutes, see [06 Scheduled Jobs](06-operations.md#scheduled-jobs)). For each supplier product:
 
-Stock simulation maintains realistic inventory levels across suppliers without requiring actual EDI feeds.
+- Low stock is replenished and its cost moved; otherwise stock falls a little. The numbers are in [09-cli-reference.md](09-cli-reference.md).
+- **Products are not repriced** by these changes ([04 Stock](04-sourcing-and-pricing.md#stock)).
 
-### Main Workflows
+`app:reset-supplier-stock` and `app:activate-supplier-products` are in [09-cli-reference.md](09-cli-reference.md). Why the platform simulates: [ADR 003](adr/003-simulation-first-design.md).
 
-**Automated Stock Fluctuation:**
-```bash
-# Simulates real-world inventory changes
-symfony console app:update-supplier-stock 50
-```
+Key files: `src/Purchasing/UI/Console/UpdateSupplierStockCommand.php`, `src/Purchasing/Domain/Model/SupplierProduct/SupplierProduct.php`.
 
-**Simulation Logic:**
-1. If stock ≤ 20: Replenish (add 0-100 units)
-2. Otherwise: Decrease by up to 10% of current level
-3. Cost varies by ±10%
+UI steps: [UserManual 11](UserManual/11-stock.md), [14](UserManual/14-simulations.md).
 
-**Stock Events:**
-1. Stock change raises `SupplierProductStockWasChangedEvent`
-2. Audit listener logs changes
-3. Product may recalculate active source
+## Pricing
 
-### Entry Points
+All rules (markup and price model levels, VAT, rounding, which events reprice what) are in [04-sourcing-and-pricing.md](04-sourcing-and-pricing.md#pricing-cascade). The Pricing screens (`PricingController`) edit the markup and price model at product, subcategory and category level; VAT rates are under `/vat-rate/`.
 
-| Action | Type | Command |
-|--------|------|---------|
-| Update stock | Console | `app:update-supplier-stock {count}` |
-| Reset stock | Console | `app:reset-supplier-stock {supplierId}` |
-| Activate products | Console | `app:activate-supplier-products {count}` |
+Key files: `src/Pricing/UI/Http/Controller/PricingController.php`, `src/Shared/Domain/Service/Pricing/MarkupCalculator.php`, `src/Pricing/Application/Listener/`.
 
-**Key files:**
-- `src/Purchasing/UI/Console/UpdateSupplierStockCommand.php`
-- `src/Purchasing/Domain/Model/SupplierProduct/SupplierProduct.php`
+Why: [ADR 004](adr/004-pricing-abstraction.md). UI steps: [UserManual 12](UserManual/12-pricing.md).
 
-### Business Rules
+## Reporting
 
-1. **Replenish threshold:** 20 units triggers replenishment
-2. **Cost variance:** ±10% random variance
-3. **Stock variance:** Up to 10% decrease per cycle
-4. **Event logging:** All changes tracked via domain events
+- Two layers: daily records per day and type, and summaries per duration read by the screens. The commands and their schedule are in [06 Scheduled Jobs](06-operations.md#scheduled-jobs); why: [ADR 005](adr/005-reporting-strategy.md).
+- Every report filters by `SalesDuration` through `SalesDurationTrait`. The screens offer Today, 7 days, 30 days (default) and MTD (`templates/reporting/_sales_durations.html.twig`).
+- Reports: product sales, order summary, overdue orders, PO item performance and the three customer reports below.
+- **PO item performance:** sorts by profit, status, product or supplier name. Default is profit ascending, so the worst items come first (`PoItemPerformanceReportCriteria`).
+- **Dashboard** (`/dashboard/`) is in Home, not Reporting: today's order and product summaries against the same day last week, the sidebar badge counts (pending and overdue orders, rejected POs, pending reviews), the latest orders and top products (`DashboardDataProvider`).
 
----
+Key files: `src/Reporting/UI/Http/Controller/ReportsController.php`, `src/Reporting/Application/Handler/Report/`, `src/Reporting/Domain/Metric/SalesDuration.php`, `src/Home/Service/DashboardDataProvider.php`.
 
-## Pricing Engine
-
-### Purpose
-
-The Pricing context manages VAT rates and orchestrates price cascades when underlying costs or margins change.
-
-### Main Workflows
-
-**Editing Product Pricing:**
-1. Navigate to `/pricing/{id}/cost`
-2. View current cost breakdown
-3. Edit product/subcategory/category markup
-4. Changes trigger recalculation
-
-**VAT Rate Management:**
-1. Create/edit VAT rates via `/pricing/vat/`
-2. Rate changes cascade to all products in affected categories
-
-**Price Model Selection:**
-1. Set at category, subcategory, or product level
-2. Higher specificity wins
-3. Changes cascade via domain events
-
-### Entry Points
-
-| Action | Controller | Route |
-|--------|------------|-------|
-| View product pricing | `PricingController::cost` | `app_pricing_cost` |
-| Edit product markup | `PricingController::editProductCost` | `app_pricing_cost_product_edit` |
-| Edit category markup | `PricingController::editCategoryCost` | `app_pricing_cost_category_edit` |
-| List VAT rates | `VatRateController::index` | `app_pricing_vat_rate_index` |
-
-**Key files:**
-- `src/Pricing/UI/Http/Controller/PricingController.php`
-- `src/Shared/Domain/Service/Pricing/MarkupCalculator.php`
-- `src/Pricing/Application/Listener/CategoryPricingWasChanged.php`
-
-### Business Rules
-
-1. **Markup inheritance:** Product → Subcategory → Category
-2. **Price model inheritance:** Same hierarchy
-3. **VAT from category:** All products in category share VAT rate
-4. **Selective cascade:** Only affected products recalculated
-5. **Precision:** bcmath used for decimal calculations
-
----
+UI steps: [UserManual 13](UserManual/13-reports.md).
 
 ## Customer Insights
 
-### Purpose
+Three reports (insights, geographic, segments) and an insights card on each customer's page. Why and the summary fields: [ADR 010](adr/010-customer-insights-reporting.md).
 
-The Customer Insights feature provides analytics on customer behavior, geographic distribution, and segmentation to support business intelligence and marketing decisions.
+- Segments use **lifetime** orders that are not cancelled, not orders in the period:
 
-### Main Workflows
+| Segment | Rule |
+|---|---|
+| NEW | 1 order (the customer card also shows NEW for 0 orders) |
+| RETURNING | 2–3 orders |
+| LOYAL | 4+ orders |
+| LAPSED | report: no order in the period, last order between 60 days and a year before the period's start. Card: last order more than 60 days ago |
 
-**Daily ETL Pipeline:**
-1. `app:calculate-customer-sales` runs daily as a scheduled job
-2. Aggregates order data into CustomerSales and CustomerActivitySales records
-3. `app:calculate-customer-sales-summary` pre-computes summaries for fast dashboard loads
+- In the segment report LAPSED customers are not in the other segments: anyone with an order in the period is never lapsed. On the customer card LAPSED replaces the segment (`UserDoctrineRepository::findCustomerInsights()`).
+- Geography uses the **shipping** address city.
+- The customer card reads Customer's own repository, so Customer doesn't import Reporting ([ADR 014](adr/014-architecture-rules.md)).
 
-**Insights Dashboard:**
-1. Navigate to `/reports/customer/insights`
-2. View top customers by revenue, activity trends
-3. Filter by duration (7d, 30d, 90d, 365d)
+Key files: `src/Reporting/Application/Handler/Report/CustomerInsightsReportHandler.php`, `src/Reporting/Application/Handler/Report/CustomerSegmentReportHandler.php`, `src/Order/Infrastructure/Persistence/Doctrine/CustomerOrderDoctrineRepository.php`, `src/Customer/Infrastructure/Persistence/Doctrine/UserDoctrineRepository.php`.
 
-**Geographic Analysis:**
-1. Navigate to `/reports/customer/geographic`
-2. View pie chart of sales distribution by city
-3. Useful for regional marketing decisions
+## Reviews
 
-**Segment Analysis:**
-1. Navigate to `/reports/customer/segments`
-2. View customer categorisation: NEW, RETURNING, LOYAL, LAPSED
-3. See revenue contribution by segment
+- Eligibility: the order is DELIVERED, belongs to the customer and contains the product. One review per customer and product (unique constraint). Rating 1–5.
+- Eligibility is checked by the form's `ValidReviewEligibility` constraint, **not by `CreateReviewHandler`**. A caller that skips the form (`app:generate-reviews` picks eligible orders itself) must check it.
+- Statuses: PENDING → PUBLISHED or REJECTED; PUBLISHED ↔ HIDDEN; REJECTED is final.
+- Only PENDING and PUBLISHED reviews can be edited. Delete is on the edit page, so REJECTED and HIDDEN reviews can't be deleted from the UI.
+- `ReviewSummaryUpdater` recalculates the product's summary (average, distribution) when a review is created, deleted, or changes status or rating.
 
-**Customer Profile Insights:**
-1. View any customer detail page
-2. Insights card shows:
-   - Lifetime revenue and order count
-   - Revenue rank vs other customers
-   - Customer segment classification
-   - Review activity
+Key files: `src/Review/Domain/Model/Review/ProductReview.php`, `src/Review/Domain/Model/Review/ReviewStatus.php`, `src/Review/UI/Http/Validation/ValidReviewEligibilityValidator.php`, `src/Review/Application/Listener/ReviewSummaryUpdater.php`.
 
-### Entry Points
-
-| Route | Controller | Purpose |
-|-------|------------|---------|
-| `/reports/customer/insights` | `ReportsController::customerInsights` | Main insights dashboard |
-| `/reports/customer/geographic` | `ReportsController::customerGeographic` | Geographic breakdown |
-| `/reports/customer/segments` | `ReportsController::customerSegments` | Segment analysis |
-
-**Key files:**
-- `src/Reporting/UI/Http/Controller/ReportsController.php`
-- `src/Reporting/Application/Handler/CustomerInsightsReportHandler.php`
-- `src/Reporting/Application/Handler/CustomerGeographicReportHandler.php`
-- `src/Reporting/Application/Handler/CustomerSegmentReportHandler.php`
-- `UserRepository::findCustomerInsights()` (`src/Customer/Infrastructure/Persistence/Doctrine/UserDoctrineRepository.php`)
-
-### Business Rules
-
-**Customer Segmentation Logic:**
-- **NEW:** 0-1 lifetime orders
-- **RETURNING:** 2-3 lifetime orders
-- **LOYAL:** 4+ lifetime orders
-- **LAPSED:** Any segment with no activity in 60+ days
-
-**Two-Layer Reporting Architecture:**
-- Daily granular records (CustomerSales, CustomerActivitySales)
-- Pre-aggregated summaries for dashboard performance (CustomerSalesSummary, CustomerGeographicSummary, CustomerSegmentSummary)
-
----
-
-## Purchase Order Rewind
-
-### Purpose
-
-Allows administrators to reset a purchase order back to pending status, useful for error recovery or testing scenarios.
-
-### Main Workflows
-
-**Manual Rewind via UI:**
-1. Navigate to PO detail page
-2. Click "Rewind" button in actions area
-3. Confirm action in modal
-4. PO and all items reset to PENDING
-5. Audit logs for the PO are cleared
-6. Parent customer order status regenerated
-
-**Bulk Rewind via Console:**
-```bash
-# Find and rewind POs with inconsistent item statuses
-symfony console app:rewind-mixed-status-purchase-orders
-```
-
-### Entry Points
-
-| Action | Controller | Route |
-|--------|------------|-------|
-| Rewind confirm | `PurchaseOrderController::rewindConfirm` | `app_purchasing_purchase_order_rewind_confirm` |
-| Rewind execute | `PurchaseOrderController::rewind` | `app_purchasing_purchase_order_rewind` |
-
-**Key files:**
-- `src/Purchasing/UI/Http/Controller/PurchaseOrderController.php`
-- `src/Purchasing/Application/Handler/RewindPurchaseOrderHandler.php`
-- `src/Purchasing/Domain/Service/PurchaseOrderRewindService.php`
-
-### Business Rules
-
-1. **Status reset:** PO and all items return to PENDING status
-2. **Audit cleanup:** Status change logs for the PO are removed
-3. **Cascade effect:** Parent customer order status is regenerated
-4. **Stock unchanged:** Inventory levels are not affected (manual adjustment may be needed)
-5. **Irreversible context:** Use carefully as it erases status history
-
----
-
-## Reporting & Reports
-
-### Purpose
-
-The Reporting context provides business intelligence through pre-aggregated sales data and interactive reports. The operational dashboard at `/dashboard/` provides a quick overview of today's activity and items needing attention.
-
-### Main Workflows
-
-**Operational Dashboard:**
-1. Navigate to `/dashboard/`
-2. View today's orders, revenue, profit, and margin KPIs
-3. Compare against same day last week
-4. See action items (pending/overdue orders, rejected POs)
-5. Browse latest orders and top products
-
-**Detailed Reports:**
-- Product Sales: `/reports/product/sales`
-- Order Summary: `/reports/order/summary`
-- Overdue Orders: `/reports/overdue/orders`
-
-**Data Aggregation:**
-```bash
-# Daily aggregation commands
-symfony console app:calculate-product-sales 7
-symfony console app:calculate-order-sales 7
-```
-
-### Entry Points
-
-| Action | Controller | Route |
-|--------|------------|-------|
-| Product sales | `ReportsController::productSales` | `app_reports_product_sales` |
-| Order summary | `ReportsController::orderSummary` | `app_reports_order_summary` |
-| Overdue orders | `ReportsController::overdueOrders` | `app_reports_overdue_orders` |
-
-**Key files:**
-- `src/Reporting/UI/Http/Controller/ReportsController.php`
-- `src/Reporting/UI/Http/Dashboard/DashboardViewer.php`
-- `src/Reporting/Application/Handler/CalculateProductSalesHandler.php`
-
-### Business Rules
-
-1. **Two-layer aggregation:** Daily records + pre-computed summaries
-2. **Duration options:** Today, Last 7, Last 30, MTD
-3. **Chart data:** Bar charts for trends, doughnut for status breakdown
-4. **Filter dimensions:** Product, category, subcategory, manufacturer, supplier
-
----
-
-## PO Item Performance Report
-
-### Purpose
-
-The PO Item Performance Report tracks purchase order item profitability and fulfillment metrics across suppliers and products. It helps identify which supplier-product combinations yield the best margins and which have fulfillment issues.
-
-### Main Workflows
-
-**Viewing PO Item Performance:**
-1. Navigate to Reporting → PO Performance
-2. Select duration filter
-3. Filter by date range (7d, 30d, 90d, 365d)
-4. Sort by profit, status, product, or supplier
-5. View summary totals and paginated item details
-
-### Entry Points
-
-| Route | Handler | Purpose |
-|-------|---------|---------|
-| `/reports/po/performance` | `ReportsController::poPerformance` | PO item profitability analysis |
-
-**Key files:**
-- `src/Reporting/Application/Handler/Report/PoItemPerformanceReportHandler.php`
-- `src/Reporting/Application/Report/PoItemPerformanceReportCriteria.php`
-
-### Business Rules
-
-1. **Date filtering:** Uses SalesDuration trait for consistent date range options
-2. **Sort options:** profit, status, product.name, supplier.name
-3. **Default sort:** By profit ascending (lowest first to identify problem items)
-4. **Summary aggregation:** Provides totals alongside paginated details
-
----
-
-## Image/Media Handling
-
-### Purpose
-
-Product images are managed via the Catalog context with storage adapters for local filesystem (development) or S3 (production).
-
-### Main Workflows
-
-**Uploading Images:**
-1. Navigate to product edit page
-2. Upload images via file input
-3. Images stored with position ordering
-4. First image becomes primary
-
-**Storage Configuration:**
-- Development: Local filesystem (`public/uploads/`)
-- Production: AWS S3 bucket
-
-### Entry Points
-
-| Action | Type | Notes |
-|--------|------|-------|
-| Upload image | Dropzone or form submission | `CreateProductImageHandler`, CSRF token required |
-| Delete image | Controller action | Raises ProductImageWasDeleted event |
-| Reorder images | Controller action | Updates position values |
-
-**Key files:**
-- `src/Catalog/Domain/Model/ProductImage/ProductImage.php`
-- `src/Shared/Infrastructure/FileStorage/UploadHelper.php`
-- `config/packages/oneup_flysystem.yaml`
-
-### Business Rules
-
-1. **Position ordering:** Images sorted by position (1-based)
-2. **Size limits:** Max 2 MiB per image, checked on the server
-3. **Type validation:** JPG, PNG, GIF and WebP only, by extension and detected content; a rejected file stops the files sent with it, two at a time (see `Docs/08-security.md`)
-4. **Cascade delete:** Images deleted with product
-5. **Thumbnail generation:** Via Imagine bundle (inferred)
-
----
-
-## Audit Logging
-
-### Purpose
-
-The Audit context tracks significant changes to entities, particularly status transitions and stock changes.
-
-### Main Workflows
-
-**Status Change Logging:**
-1. Entity status changes raise events
-2. Audit listener captures change details
-3. Stored in `StatusChangeLog` entity
-
-**Status Change Retention:**
-1. `app:prune-status-change-log` runs daily at 03:30 on live (see [Scheduled Jobs](06-operations.md#scheduled-jobs))
-2. It deletes status change rows older than 12 months (`--months`) whose order, order item, purchase order or purchase order item is in a final status: delivered, cancelled or refunded
-3. Rows of an entity that is still open are kept however old they are: `ProcessingSimulator` times shipping and delivery from an item's `ACCEPTED` and `SHIPPED` rows
-4. It walks the old rows once, 5,000 ids at a time (`--batch-size`), each window its own transaction, so no long lock is held beside the simulation
-5. The playground keeps the same history: it is restored from live's backup each night
-6. Rewinding a purchase order reopens its order and order items. If they were finished more than 12 months ago, their history before the rewind is already gone
-
-**Stock Change Logging:**
-1. Supplier product stock/cost changes raise events
-2. Audit listener captures before/after values
-3. Stored in `SupplierStockChangeLog` entity
-
-**Stock/Cost History Charts:**
-1. Navigate to a product → History tab (`/product/{id}/history`)
-2. Two line charts: Stock History (stepped lines) and Cost History (smooth lines)
-3. One line per supplier, colour-matched to supplier colour scheme
-4. Duration picker: LAST 7 / LAST 30 / LAST 90 / ALL (default: LAST 30)
-5. Daily data points with carry-forward normalization
-
-### Entry Points
-
-Audit logs are primarily accessed via:
-- Entity detail pages (shows history)
-- Admin reporting (aggregate views)
-- Product History tab (stock/cost charts)
-
-**Key files:**
-- `src/Audit/Domain/Model/StatusChangeLog/StatusChangeLog.php`
-- `src/Audit/Domain/Model/SupplierStockChangeLog/SupplierStockChangeLog.php`
-- `src/Audit/Application/Listener/` (event listeners)
-- `src/Audit/UI/Console/PruneStatusChangeLogCommand.php` (status change retention)
-- `src/Audit/UI/Http/Controller/StockChangeHistoryController.php` (history charts)
-- `src/Audit/UI/Http/Chart/StockHistoryChartBuilder.php` (chart building)
-- `src/Audit/Domain/Model/StockChange/HistoryDuration.php` (duration enum)
-
-### Business Rules
-
-1. **Immutable records:** Audit logs are append-only. Status change rows are deleted only by a purchase order rewind and by retention
-2. **Retention:** Status change history of finished entities is kept for 12 months. Stock change history is kept in full (the charts' ALL option reads it)
-3. **User tracking:** Changes associated with acting user
-4. **Timestamp precision:** DateTimeImmutable for accuracy
-5. **Event-driven:** No direct writes, only via listeners
-6. **Carry-forward:** Chart data fills gaps with last known value per supplier per day
-7. **Multi-year display:** Date labels include year suffix when data spans multiple years
-
----
-
-## Product Reviews
-
-### Purpose
-
-The Review context provides a customer feedback and moderation system. Reviews are linked to delivered orders and moderated before publication. Published reviews generate per-product summaries with average ratings and rating distribution.
-
-### Main Workflows
-
-**Creating a Review:**
-1. Navigate to `/review/new`
-2. Provide customer ID, product ID, and order ID
-3. Set rating (1-5), optional title and body
-4. System validates eligibility (delivered order, correct customer/product, no duplicates)
-5. Review created in PENDING status
-
-**Moderating Reviews:**
-1. View pending review detail page
-2. Approve to publish, or reject with reason and optional notes
-3. Approved reviews appear on the product page
-4. Rejected reviews are terminal and cannot be recovered
-
-**Product Review Summary:**
-1. Summaries recalculate automatically on review creation, status change, or rating change
-2. Product detail page shows average rating, distribution chart, and latest reviews
-
-### Entry Points
-
-| Action | Controller | Route |
-|--------|------------|-------|
-| List reviews | `ReviewController::index` | `app_review_index` |
-| Filter reviews | `ReviewController::filter` | `app_review_search_filter` |
-| Create review | `ReviewController::new` | `app_review_new` |
-| View review | `ReviewController::show` | `app_review_show` |
-| Edit review | `ReviewController::edit` | `app_review_edit` |
-| Delete confirm | `ReviewController::deleteConfirm` | `app_review_delete_confirm` |
-| Delete review | `ReviewController::delete` | `app_review_delete` |
-| Approve review | `ReviewController::approve` | `app_review_approve` |
-| Reject review | `ReviewController::reject` | `app_review_reject` |
-| Hide review | `ReviewController::hide` | `app_review_hide` |
-| Republish review | `ReviewController::republish` | `app_review_republish` |
-
-**Key files:**
-- `src/Review/UI/Http/Controller/ReviewController.php`
-- `src/Review/Application/Handler/CreateReviewHandler.php`
-- `src/Review/Domain/Model/Review/ProductReview.php`
-- `src/Review/Domain/Model/ReviewSummary/ProductReviewSummary.php`
-- `src/Review/Application/Listener/ReviewSummaryUpdater.php`
-
-### Business Rules
-
-1. **Eligibility:** Order must be DELIVERED, belong to the customer, and contain the product
-2. **Status transitions:** PENDING can transition to PUBLISHED or REJECTED; PUBLISHED can transition to HIDDEN; HIDDEN can transition to PUBLISHED; REJECTED is terminal
-3. **Editable states:** Only PENDING and PUBLISHED reviews can be edited
-4. **Summary automation:** Product review summaries recalculate on any review change affecting published stats
-5. **Rating validation:** Rating must be an integer from 1 to 5
-6. **One per customer and product:** A customer can only submit one review per product (enforced by unique constraint)
-
----
+UI steps: [UserManual 15](UserManual/15-reviews.md).
 
 ## Support Pools & Tickets
 
-### Purpose
+Why pools, statuses and visibility work as they do: [ADR 009](adr/009-support-ticket-system.md).
 
-The Note context provides an internal support system for managing customer queries and staff communication. Pools organize tickets by topic, and tickets contain threaded messages with visibility controls.
+- Ticket statuses: OPEN → REPLIED or CLOSED; REPLIED → OPEN or CLOSED; CLOSED → OPEN only (reopen).
+- A staff reply sets REPLIED, a customer reply OPEN. A reply to a CLOSED ticket leaves it CLOSED (`Ticket::transitionStatusForReply()`).
+- Close, reopen and reassign add a system message. System messages and the first message of a ticket can't be deleted (`DeleteMessageHandler`).
+- Messages are PUBLIC (staff and customer) or INTERNAL (staff only).
+- Snooze needs a future date. Snoozed tickets are hidden from the index unless "show snoozed" is set.
+- Subscribing to a pool counts its tickets that are not closed (OPEN or REPLIED) and not snoozed in the My Queue badge and includes them in the index's "my pools" filter.
+- A pool's "customer visible" flag is shown as a label; nothing filters on it.
+- `messageCount` and `lastMessageAt` are kept on the ticket for sorting.
+- A pool with tickets can't be deleted (foreign key, see the top of this page).
 
-### Main Workflows
+Key files: `src/Note/Domain/Model/Ticket/Ticket.php`, `src/Note/Domain/Model/Ticket/TicketStatus.php`, `src/Note/Domain/Model/Pool/Pool.php`, `src/Note/Application/Handler/Ticket/DeleteMessageHandler.php`.
 
-**Pool Management:**
-1. Navigate to `/note/pool/new`
-2. Set name, description, active status, and customer visibility
-3. Staff can subscribe to pools to filter their ticket view
-4. Toggle subscriptions via the pool detail page
+UI steps: [UserManual 17](UserManual/17-notes.md).
 
-**Ticket Lifecycle:**
-1. Create ticket at `/note/ticket/new` — select pool, customer, subject, and initial message
-2. Staff reply via `/note/ticket/{id}/reply` — choose PUBLIC or INTERNAL visibility
-3. Close ticket — adds system message audit trail, status transitions to CLOSED
-4. Reopen ticket — adds system message, status transitions back to OPEN
-5. Reassign ticket to a different pool
-6. Snooze ticket until a future date (hidden from default view until then)
+## Audit Logging
 
-**Message Visibility Model:**
-- **PUBLIC** — visible to both staff and customers
-- **INTERNAL** — visible to staff only, for private notes and discussion
+- **Status changes** of orders, order items, purchase orders and purchase order items are written to `StatusChangeLog` by `StatusChangeLogger`, with the acting user.
+- **Supplier stock and cost changes** are written to `SupplierStockChangeLog` by `SupplierStockChangeLogger`, with before and after values.
+- Logs are written only by these listeners. Status change rows are deleted only by a PO rewind and by retention.
+- **History charts** (`/product/{id}/history`): stock and cost per supplier in the supplier's colour, one point a day, gaps filled with the last known value. Durations LAST 7, 30 (default), 90 and ALL (`HistoryDuration`). Labels show the year when the data spans years.
 
-**System Messages:**
-- Generated automatically for close, reopen, and reassign actions
-- Provide audit trail within the ticket conversation
-- Cannot be deleted
+### Status change retention
 
-### Entry Points
+- `app:prune-status-change-log` runs daily at 03:30 on live ([06 Scheduled Jobs](06-operations.md#scheduled-jobs)).
+- It deletes rows older than 12 months (`--months`) whose order, order item, PO or PO item is in a final status: delivered, cancelled or refunded.
+- Rows of an entity still open are kept however old: `ProcessingSimulator` times shipping and delivery from an item's ACCEPTED and SHIPPED rows.
+- It walks the old rows once, 5,000 ids at a time (`--batch-size`), each window its own transaction, so no long lock is held beside the simulation.
+- The playground has the same history: it is restored from live's backup each night.
+- Rewinding a PO reopens its order and items. If they finished more than 12 months ago, their history before the rewind is already gone.
+- Stock change history is kept in full; the charts' ALL reads it.
 
-| Action | Controller | Route |
-|--------|------------|-------|
-| List pools | `PoolController::index` | `app_note_pool_index` |
-| Create pool | `PoolController::new` | `app_note_pool_new` |
-| Edit pool | `PoolController::edit` | `app_note_pool_edit` |
-| Delete pool | `PoolController::delete` | `app_note_pool_delete` |
-| Toggle subscription | `PoolController::subscribe` | `app_note_pool_subscribe` |
-| List tickets | `TicketController::index` | `app_note_ticket_index` |
-| Create ticket | `TicketController::new` | `app_note_ticket_new` |
-| View ticket | `TicketController::show` | `app_note_ticket_show` |
-| Reply to ticket | `TicketController::reply` | `app_note_ticket_reply` |
-| Close ticket | `TicketController::close` | `app_note_ticket_close` |
-| Reopen ticket | `TicketController::reopen` | `app_note_ticket_reopen` |
-| Reassign ticket | `TicketController::reassign` | `app_note_ticket_reassign` |
-| Snooze ticket | `TicketController::toggleSnooze` | `app_note_ticket_toggle_snooze` |
-| Delete message | `TicketController::deleteMessage` | `app_note_ticket_message_delete` |
+Key files: `src/Audit/Application/EventListener/StatusChangeLogger.php`, `src/Audit/Application/EventListener/SupplierStockChangeLogger.php`, `src/Audit/UI/Console/PruneStatusChangeLogCommand.php`, `src/Audit/UI/Http/Chart/StockHistoryChartBuilder.php`.
 
-**Key files:**
-- `src/Note/UI/Http/Controller/PoolController.php`
-- `src/Note/UI/Http/Controller/TicketController.php`
-- `src/Note/Domain/Model/Pool/Pool.php`
-- `src/Note/Domain/Model/Ticket/Ticket.php`
-- `src/Note/Domain/Model/Message/Message.php`
+## API
 
-### Business Rules
+- `/api/v1/catalog/*` is public and read-only. `/api/v1/orders*` needs a bearer token of a `ROLE_ADMIN` user (`app:user:issue-token`).
+- `/api/doc` (Swagger UI) is served and public in every environment.
+- Endpoints, payloads, errors and how to add one: [patterns/API/README.md](patterns/API/README.md). Why: [ADR 011](adr/011-rest-api-layer.md).
 
-1. **Pool deletion cascades:** Deleting a pool removes all associated tickets and messages
-2. **Ticket status transitions:** OPEN ↔ REPLIED ↔ CLOSED, with guards on invalid transitions
-3. **Reply status effect:** Staff reply sets REPLIED; customer reply sets OPEN; closed tickets remain CLOSED
-4. **Snooze filtering:** Snoozed tickets hidden from default index unless explicitly included
-5. **Original message protection:** The first message in a ticket cannot be deleted
-6. **System message protection:** System-generated messages cannot be deleted
-7. **Message count tracking:** `messageCount` and `lastMessageAt` are maintained on the ticket for sorting
+Key files: `src/Catalog/UI/Http/Api/`, `src/Order/UI/Http/Api/`, `src/Order/UI/Http/Api/Payload/`.
 
----
+## Related
 
-## Transactional Emails
-
-### Purpose
-
-The Customer context sends transactional emails for key account lifecycle events. Emails use Inky (Foundation for Emails) with inline CSS for cross-client compatibility, styled with a dark theme matching the site's default appearance.
-
-### Email Templates
-
-| Email | Template | Trigger |
-|-------|----------|---------|
-| Verify Email | `customer/registration/verify-email.html.twig` | User registration |
-| Reset Password | `customer/reset_password/reset-password.html.twig` | Password reset request |
-| Admin Access Granted | `customer/admin-access-granted.html.twig` | Staff status granted via `UpdateCustomerHandler` |
-
-### Architecture
-
-- **Base template:** `templates/shared/email/emailBase.html.twig` — logo, footer, Inky/CSS processing
-- **CSS:** `assets/styles/email.css` — dark theme (gray-900 background, gray-800 content, blue CTA buttons)
-- **Sender service:** `src/Customer/Infrastructure/Mailer/MailerHelper.php` — one method per email type
-- **Test command:** `app:send-test-emails` (dev only) — sends all templates to Mailpit for preview
-
-### Key Files
-
-- `src/Customer/Infrastructure/Mailer/MailerHelper.php`
-- `src/Customer/Domain/Model/User/EmailVerifier.php`
-- `templates/shared/email/emailBase.html.twig`
-- `assets/styles/email.css`
-- `assets/styles/foundation-emails.min.css`
-
----
-
-## FormFlow Pattern
-
-### Purpose
-
-FormFlow is a thin orchestration layer that standardizes controller behavior across create, update, state-change, delete, search and inline-edit operations.
-
-### Flow Types
-
-| Flow | Purpose | Key Method |
-|------|---------|------------|
-| `FormFlow` | Create/update with forms | `form()` |
-| `ActionFlow` | Direct command execution (state changes); CSRF-checked when the context calls `->csrf()` | `process()` |
-| `ConfirmFlow` | Confirm-then-act (delete and other confirmable actions) | `confirm()`, `execute()` |
-| `SearchFlow` | Paginated index pages | `search()` |
-| `InlineEditFlow` | Single-field inline editing via Turbo Frames | `handleField()` |
-
-### Usage Example
-
-```php
-// src/Catalog/UI/Http/Controller/ManufacturerController.php
-
-#[Route(path: '/manufacturer/new', name: 'app_catalog_manufacturer_new', methods: ['GET', 'POST'])]
-public function new(
-    Request $request,
-    CreateManufacturerMapper $mapper,
-    CreateManufacturerHandler $handler,
-    FormFlow $flow,
-): Response {
-    return $flow->form(
-        request: $request,
-        formType: ManufacturerType::class,
-        data: new ManufacturerForm(),
-        mapper: $mapper,
-        handler: $handler,
-        context: FlowContext::forCreate($this->model()),
-    );
-}
-```
-
-**Key files:**
-- `vendor/myvars/form-flow/src/FormFlow.php`
-- `vendor/myvars/form-flow/src/View/FlowContext.php`
-- `vendor/myvars/form-flow/src/Redirect/TurboAwareRedirector.php`
-
-### Benefits
-
-1. **Consistency:** All forms behave the same way
-2. **Turbo support:** Automatic Turbo Stream responses
-3. **Flash messages:** Standardized success/error messaging
-4. **Redirect handling:** Configurable success routes
-5. **Validation:** Integrated with Symfony Validator
-
----
-
-## Inline Editing
-
-### Purpose
-
-Inline editing allows staff to edit entity names directly on show pages without navigating to a full edit form. Uses Turbo Frames for seamless in-place editing.
-
-### Supported Entities
-
-| Entity | Field | Route |
-|--------|-------|-------|
-| Manufacturer | name | `/manufacturer/{id}/inline/name` |
-| Category | name | `/category/{id}/inline/name` |
-| Subcategory | name | `/subcategory/{id}/inline/name` |
-| Product | name | `/product/{id}/inline/name` |
-| Supplier | name | `/supplier/{id}/inline/name` |
-| VatRate | name | `/vat-rate/{id}/inline/name` |
-| Customer | fullName | `/customer/{id}/inline/fullname` |
-
-### How It Works
-
-1. Click on the displayed value to enter edit mode
-2. Modify the value in the inline input
-3. Press Enter or click outside to save; Escape to cancel
-4. Success toast shown only when value actually changes
-
-### Key Files
-
-- `vendor/myvars/form-flow/src/InlineEdit/InlineEditFlow.php` — flow handler
-- `vendor/myvars/form-flow/src/InlineEdit/InlineEditContext.php` — configuration
-- `templates/components/InlineEdit.html.twig` — Twig component
-- `assets/controllers/inline_edit_controller.js` — Stimulus controller
-
-Full pattern documentation: `Docs/patterns/InlineEdit/README.md`
+- [04-sourcing-and-pricing.md](04-sourcing-and-pricing.md): sourcing, allocation, statuses, pricing
+- [06-operations.md](06-operations.md): scheduled jobs, the worker
+- [09-cli-reference.md](09-cli-reference.md): every command
+- [UserManual](UserManual/README.md): screen-by-screen steps
