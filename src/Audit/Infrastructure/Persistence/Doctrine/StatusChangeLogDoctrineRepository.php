@@ -84,16 +84,13 @@ class StatusChangeLogDoctrineRepository extends ServiceEntityRepository implemen
         ];
 
         // Rows are written in time order, so the rows before $before all have lower ids than the first row after it.
-        // The search walks that old end of the table once, a window of ids at a time.
-        $firstId = $this->firstId();
-        if ($firstId === null) {
-            return 0;
-        }
+        // The search walks that old end of the table once, $batchSize rows at a time.
         $endId = $this->firstIdFrom($before) ?? $this->lastId() + 1;
+        $fromId = $this->firstId();
 
         $deleted = 0;
-        for ($fromId = $firstId; $fromId < $endId; $fromId += $batchSize) {
-            $toId = min($fromId + $batchSize, $endId);
+        while ($fromId !== null && $fromId < $endId) {
+            $toId = min($this->idAfter($fromId, $batchSize) ?? $endId, $endId);
 
             $ids = [];
             foreach ($entities as [$eventType, $entityClass, $finalStatuses]) {
@@ -123,6 +120,8 @@ class StatusChangeLogDoctrineRepository extends ServiceEntityRepository implemen
                     ->getQuery()
                     ->execute();
             }
+
+            $fromId = $toId < $endId ? $toId : null;
         }
 
         return $deleted;
@@ -133,6 +132,22 @@ class StatusChangeLogDoctrineRepository extends ServiceEntityRepository implemen
         $id = $this->createQueryBuilder('sc')->select('MIN(sc.id)')->getQuery()->getSingleScalarResult();
 
         return $id === null ? null : (int) $id;
+    }
+
+    /** The id $count rows after $fromId, so that ids from $fromId up to it hold $count rows. */
+    private function idAfter(int $fromId, int $count): ?int
+    {
+        $row = $this->createQueryBuilder('sc')
+            ->select('sc.id')
+            ->where('sc.id >= :fromId')
+            ->setParameter('fromId', $fromId)
+            ->orderBy('sc.id', 'ASC')
+            ->setFirstResult($count)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+
+        return $row === null ? null : (int) $row['id'];
     }
 
     private function lastId(): int
