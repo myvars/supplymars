@@ -1,92 +1,40 @@
 # System Architecture
 
-## Module / Folder Structure
+The rules the code follows: layers, what one context may use from another, state between requests, domain events and the queue, plus where to start reading for each area. Read it before adding a class to a context you have not worked in, a listener, a service that holds data, or a new context.
 
-SupplyMars follows a **modular monolith** architecture with **Domain-Driven Design (DDD)** principles. Each bounded context is organized as a self-contained module with its own layers, allowing the codebase to evolve without tight coupling between domains.
+## Layers
 
-### Why a Modular Monolith?
+The app is a modular monolith: one deployable, split into bounded contexts (listed in [01-overview.md](01-overview.md)) and a shared kernel (`Shared`). The rules below keep the work of extracting a context into a service bounded; they do not remove it.
 
-The architecture strikes a balance between simplicity and future flexibility. A context may use another context's domain model (its entities, value objects, events and repository interfaces), so a `ProductSales` record in Reporting can point to a Catalog `Product` through an ordinary Doctrine relation. It never reaches into another context's handlers, Doctrine repositories or controllers, and the shared kernel depends on no business context. Deptrac checks these rules in CI (see [Rules between contexts](#rules-between-contexts)); the imports that still break them are listed as exceptions, each with its reason. Extracting a context such as Reporting into a separate service would still mean replacing those relations and repository calls with an API: the rules keep that work bounded, they do not remove it.
-
-```
-src/
-├── Audit/                    # Change tracking and logging
-├── Catalog/                  # Products, categories, manufacturers
-├── Customer/                 # Users, addresses, authentication
-├── Home/                     # Homepage, operational dashboard
-├── Order/                    # Customer orders and order items
-├── Pricing/                  # VAT rates, pricing listeners
-├── Purchasing/               # Suppliers, supplier products, purchase orders
-├── Reporting/                # Sales reporting and dashboards
-├── Note/                     # Support pools, tickets, internal messaging
-├── Review/                   # Product reviews and moderation
-└── Shared/                   # Cross-cutting concerns (Shared Kernel)
+```text
+src/{Context}/
+├── Application/      Command/ Handler/ Listener/ Search/ Service/
+├── Domain/           Model/{Aggregate}/ (entity, typed IDs, enums, Event/)  Repository/ (interfaces)
+├── Infrastructure/   Persistence/Doctrine/  Security/  Mailer/  Factory/ …
+└── UI/               Http/ (controllers, forms, Api/)  Console/  Twig/
 ```
 
-Each bounded context follows a consistent internal structure:
+A context has only the directories it needs. Where the tree differs:
 
-```
-{Context}/
-├── Application/              # Use cases, orchestration
-│   ├── Command/              # Write operation DTOs (readonly)
-│   ├── Handler/              # Command processors
-│   ├── Listener/             # Domain event subscribers
-│   ├── Search/               # Read model criteria
-│   └── Service/              # Application services
-├── Domain/                   # Business logic
-│   ├── Model/                # Entities, Aggregates, Value Objects
-│   ├── Repository/           # Repository interfaces
-│   ├── Event/                # Domain events
-│   └── Service/              # Domain services
-├── Infrastructure/           # External concerns
-│   ├── Persistence/          # Doctrine repositories
-│   └── Factory/              # Object creation utilities
-└── UI/                       # Presentation
-    ├── Http/                 # Controllers, Forms, DTOs
-    │   └── Api/              # API controllers, Resources, Requests
-    └── Console/              # CLI commands
-```
+| Where | What |
+|-------|------|
+| Domain events | In `Domain/Model/{Aggregate}/Event/` (e.g. `src/Order/Domain/Model/Order/Event/`). Only `Shared` has `Domain/Event/`: the interfaces, `DomainEventProviderTrait` and `DomainEventType` |
+| `Domain/Service/` | Only `src/Reporting/Domain/Service/` (`SalesDateRangeResolver`) and `src/Shared/Domain/Service/Pricing/` (`MarkupCalculator`). Add one only for a rule that belongs to no single entity |
+| `Infrastructure/` | `Security/` (Customer: `CurrentUserProvider`, `ApiTokenHandler`; Shared), `Mailer/` (Customer), `Factory/` (Customer's demo-customer factories), `Logging/` (Audit). `Shared` also has `FileStorage/`, `Health/` and `Scheduler/` |
+| `UI/Http/Api/` | Catalog and Order (`Resource/`; Order also `Payload/` for input), base classes in `src/Shared/UI/Http/Api/`. See [API](patterns/API/README.md) |
+| Odd ones | Reporting has `Application/Report/` and `Domain/Metric/`. Audit's listeners are in `Application/EventListener/`, not `Listener/` |
+| `Home` | No `Application/` or `Domain/`: just `Listener/`, `Service/` and `UI/`. One Deptrac layer, `Home internals`, that nothing else may use |
 
-## Layering Rules
+| Layer | May depend on | Rule |
+|-------|---------------|------|
+| UI | Application, Domain | Controllers hold no business logic: they hand off to a flow, a handler or (API) a repository |
+| Application | Domain, framework services (`Security`, mailer, cache) | Orchestrates; the business rules stay in the domain |
+| Domain | `Shared`, other contexts' `Domain/`, mapping metadata | See below |
+| Infrastructure | Domain, Doctrine and other libraries | Implements the domain's interfaces |
 
-These describe what each layer is for and what it depends on in practice. Within a context they are conventions, checked in review. Between contexts they are enforced (see [Rules between contexts](#rules-between-contexts)).
+Within a context these are conventions, checked in review. Between contexts they are enforced (next section).
 
-### UI Layer
-
-**Responsibility:** Handle HTTP requests, console commands, render views, serve API responses.
-
-**Depends on:** Application (commands, handlers, search criteria) and Domain (entities resolved from the route, repository interfaces for read-only lookups).
-
-**Key components:**
-- Controllers (thin, delegate to FormFlow or handlers)
-- Forms (Symfony form types)
-- Console commands
-- Twig templates
-- API controllers (JSON endpoints, delegate to handlers/repositories)
-- API Resource classes (readonly DTOs for JSON serialization)
-- API Request classes (validated input DTOs)
-
-**Rule:** Controllers must not contain business logic. Web controllers orchestrate via FormFlow; API controllers use handlers directly and return `ApiResponse` helpers.
-
-### Application Layer
-
-**Responsibility:** Coordinate use cases, handle cross-cutting concerns.
-
-**Depends on:** Domain, and framework services (`Security`, mailer, cache).
-
-**Key components:**
-- Commands (readonly DTOs representing operations)
-- Handlers (process commands, return Result objects)
-- Listeners (respond to domain events)
-- Search criteria (read model queries)
-
-**Rule:** Application layer orchestrates but doesn't contain domain rules.
-
-### Domain Layer
-
-**Responsibility:** Business rules, domain logic, entity behavior.
-
-**Depends on:** Shared, other contexts' Domain layers, and mapping metadata. The domain is not framework-free. These are allowed:
+The domain is not framework-free. These are allowed:
 - Doctrine mapping attributes and collections, and Gedmo's `TimestampableEntity`, on entities
 - Symfony Validator constraints (`#[Assert\...]`, `#[UniqueEntity]`) on entities
 - Symfony `Uid` for public IDs, and `UserInterface` on the `User` entity
@@ -95,23 +43,7 @@ These describe what each layer is for and what it depends on in practice. Within
 
 These are attributes and type declarations. Domain methods hold the business rules and do not call the framework, the database or other services.
 
-**Key components:**
-- Entities (with behavior, not anemic)
-- Value Objects (immutable, self-validating)
-- Repository interfaces (not implementations)
-- Domain events (record what happened)
-- Domain services (logic that doesn't fit entities)
-
-### Infrastructure Layer
-
-**Responsibility:** Implement domain interfaces, external integrations.
-
-**Depends on:** Domain (the interfaces it implements, the entities it stores), Doctrine and other libraries.
-
-**Key components:**
-- Doctrine repositories (implement domain interfaces)
-- File storage adapters
-- External service clients
+A web request runs: route and firewall → `PublicIdResolver` (`#[ValueResolver('public_id')]`) loads the entity by its ULID → the controller hands off to a flow → a mapper turns the form DTO into a command → the handler calls domain methods, flushes and returns a `Result`. See [FormFlow](patterns/FormFlow/README.md). API requests skip the flows: see [API](patterns/API/README.md).
 
 ## Rules Between Contexts
 
@@ -137,13 +69,11 @@ Examples from this codebase:
 | `Order sourcing` | `OrderAllocator`, `CreatePurchaseOrderItem` and its handler (`src/Purchasing/Application/`) | Purchasing | Order | Sourcing an order from suppliers is Purchasing's job, started from Order: allocating a whole order, or adding a purchase order item from the order screen |
 | `Demo customers` | `RandomUserFactory`, `RandomAddressFactory` (`src/Customer/Infrastructure/Factory/`) | Customer | Order | Demo orders are placed by simulated customers |
 
-### Enforcement
+When an import fails the check, fix it: use the other context's `Domain/`, add the query to its repository interface, or move the class to the context that owns it. Add a named exception only for a deliberate dependency on another context's behaviour: give it a layer of its own in `deptrac.yaml`, open only to the contexts that need it, and a row in the table above. There is no `skip_violations` list; an entry there would let any later import of the same class through without a reason on record.
 
-`deptrac.yaml` splits each context into two layers, `{Context} Domain` and `{Context} internals`, and lists which layers each may use. `vendor/bin/deptrac analyse` fails on any import the table above does not allow. It runs in CI and in `make check` (`make check-deptrac`).
+**What Deptrac cannot see:** references made only by name in a string. `HelpController::ROUTE_MAP` (`src/Shared/UI/Http/Controller/HelpController.php`) maps business route names to help pages, and `DomainEventType` (`src/Shared/Domain/Event/`) has a case per business event. Both live in Shared on purpose, as registries the contexts fill in. Renaming a route or an event means updating them by hand.
 
-There is no `skip_violations` list. When an import fails the check, fix it: use the other context's `Domain/`, add the query to its repository interface, or move the class to the context that owns it. Add a named exception only for a deliberate dependency on another context's behaviour, as its own layer in `deptrac.yaml`, open only to the contexts that need it, and add it to the table above.
-
-A new context must be added to `deptrac.yaml`: its two layers, its two ruleset entries (`[+Public, …]`), its `Domain` layer in the list of the `Public` entry, and its name in the `Unregistered` pattern. Until then its classes fall into the `Unregistered` layer, which may use nothing and which nothing may use, so the first import to or from the new context fails the build. See [ADR 014](adr/014-architecture-rules.md) for the decision.
+**Enforcement.** `deptrac.yaml` splits each context into `{Context} Domain` and `{Context} internals` (Home has only `Home internals`). `vendor/bin/deptrac analyse` fails on any import the tables do not allow, in CI and in `make check` (`make check-deptrac`). A new context needs, in `deptrac.yaml`, its two layers, its two ruleset entries (`[+Public, …]`), its Domain layer in the `Public` list and its name in the `Unregistered` pattern; and a mapping in `config/packages/doctrine.yaml`. Until it is in `deptrac.yaml` its classes fall into the `Unregistered` layer, which may use nothing and which nothing may use, so the first import to or from the new context fails the build. See [ADR 014](adr/014-architecture-rules.md) for the decision.
 
 ## State Between Requests
 
@@ -151,529 +81,79 @@ In production FrankenPHP runs in worker mode: each worker starts the app once an
 
 **The rule:** a service keeps no data from one request or message in a property. Read the current user, the request and the session when they are needed (`CurrentUserProvider`, `Security`, `RequestStack`) rather than storing them or anything worked out from them.
 
-A service that caches on purpose implements `Symfony\Contracts\Service\ResetInterface` and clears the cache in `reset()`, as `PublicIdResolverRegistry` does. Autoconfiguration tags it `kernel.reset`, and Symfony then calls `reset()` between requests, and the Messenger worker between messages. Symfony already resets its own services this way: the entity manager, the security token, Twig's globals and Monolog's buffers.
+A service that caches on purpose implements `Symfony\Contracts\Service\ResetInterface` and clears the cache in `reset()`, as `PublicIdResolverRegistry` does. Autoconfiguration tags it `kernel.reset`, and Symfony then calls `reset()` between requests, and the Messenger worker between messages.
 
 | Fine | Not fine |
 |------|----------|
 | Injected services and configuration, in `readonly` properties | `private ?User $user`, filled on first use |
-| A property used within one call and cleared when the call starts (`DomainEventDispatcher` clears its list at the start of every flush) | An array of lookups kept "for this request", with no `reset()` |
-| A value in the app cache with an expiry, keyed by user when it is per user (`SidebarBadgeProvider`'s "My Queue" count) | A static property holding data |
+| A property used within one call and reset when the call starts (`DomainEventDispatcher` resets its list of deleted entities in `onFlush`, on every flush) | An array of lookups kept "for this request", with no `reset()` |
+| A value in the app cache with an expiry, keyed by user when it is per user (`SidebarBadgeProvider`'s "My Queue" count, `KEY_MY_QUEUE_PREFIX` + user id) | A static property holding data |
 | Twig components: a new instance each time they render | |
 
 **The guard:** `tests/Shared/UI/Http/StateBetweenRequestsTest.php` keeps one kernel across requests (`disableReboot()`), as a worker does, and interleaves two logged-in staff users and a visitor. Each page must show only its own user in the header and their own "My Queue" count, each status change must be logged against the user who made it, and the visitor must be sent to the login page. Other tests boot a fresh kernel per request and do not see a leak. The app cache is an in-memory adapter in tests, emptied between requests, so the test guards services, not cache keys: a value cached per user must still carry the user in its key. A feature that shows or records per-user data through a new service extends this test.
 
 Development (`symfony serve`, `make up`) runs in classic mode, where every request starts afresh, so a leak shows only in production, under `make up-prod-local` and in tests that keep one kernel.
 
-## Request Flow
+## Domain Events
 
-### HTTP Request → Response
+- An entity records events with `DomainEventProviderTrait` (`raiseDomainEvent()`) in a domain method; nothing is dispatched then.
+- After each flush, `DomainEventDispatcher` (`src/Shared/Infrastructure/Persistence/Doctrine/EventListener/`) releases the events of every managed entity that records them, and of entities the flush deleted, and dispatches each to the event dispatcher (sync listeners).
+- Events implementing `AsyncDomainEventInterface` are also sent to the `async` Messenger transport. No event does today.
 
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                            HTTP REQUEST                                │
-└────────────────────────────────────────────────────────────────────────┘
-                                   │
-                                   ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                          SYMFONY KERNEL                                │
-│  • Route matching                                                      │
-│  • Security checks (firewall)                                          │
-│  • Parameter conversion (ValueResolver)                                │
-└────────────────────────────────────────────────────────────────────────┘
-                                   │
-                                   ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                            CONTROLLER                                  │
-│  • Receives Request + resolved entities                                │
-│  • Delegates to FormFlow (create/update/delete/search)                 │
-│  • Returns Response                                                    │
-└────────────────────────────────────────────────────────────────────────┘
-                                   │
-                                   ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                             FORMFLOW                                   │
-│  • Handles form lifecycle (GET/POST)                                   │
-│  • Validates form data                                                 │
-│  • Invokes Mapper to create Command                                    │
-│  • Invokes Handler to process Command                                  │
-│  • Returns Response (redirect or re-render)                            │
-└────────────────────────────────────────────────────────────────────────┘
-                                   │
-                          ┌────────┴────────┐
-                          ▼                 ▼
-┌─────────────────────────────┐  ┌───────────────────────────────────────┐
-│           MAPPER            │  │                HANDLER                │
-│  • Form DTO → Command DTO   │  │  • Loads entities via Repository      │
-│  • Value object creation    │  │  • Invokes domain methods             │
-│                             │  │  • Validates with Symfony Validator   │
-└─────────────────────────────┘  │  • Persists via Flusher               │
-                                 │  • Returns Result (ok/fail)           │
-                                 └───────────────────────────────────────┘
-                                            │
-                                            ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                          DOMAIN LAYER                                  │
-│  • Entity methods enforce business rules                               │
-│  • Domain events raised (collected, not dispatched)                    │
-│  • Value objects validate on construction                              │
-└────────────────────────────────────────────────────────────────────────┘
-                                            │
-                                            ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                         INFRASTRUCTURE                                 │
-│  • EntityManager flush()                                               │
-│  • DomainEventDispatcher (postFlush listener)                          │
-│    ├── Sync events → EventDispatcher                                   │
-│    └── Async events → MessageBus (database queue)                      │
-└────────────────────────────────────────────────────────────────────────┘
-                                            │
-                                            ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                          HTTP RESPONSE                                 │
-│  • 303 redirect (success)                                              │
-│  • 422 re-render (validation failure)                                  │
-│  • Turbo Stream response (if Turbo request)                            │
-└────────────────────────────────────────────────────────────────────────┘
-```
+| Interface | Runs | Use when |
+|-----------|------|----------|
+| `DomainEventInterface` | Synchronously, in the same request, after the flush | It must succeed immediately (pricing, audit log, cache invalidation) |
+| `AsyncDomainEventInterface` | Also queued on the `async` transport | It can fail, retry or lag (email, external calls) |
 
-### Key Classes in the Flow
+Who listens (`#[AsEventListener]`):
 
-| Step | Class | Location |
-|------|-------|----------|
-| ValueResolver | `PublicIdResolver` | `src/Shared/UI/Http/ValueResolver/` |
-| FormFlow | `FormFlow`, `ActionFlow`, `ConfirmFlow`, `SearchFlow` | `vendor/myvars/form-flow/src/` |
-| Mapper | Context-specific mappers | `src/{Context}/UI/Http/Form/Mapper/` |
-| Handler | Context-specific handlers | `src/{Context}/Application/Handler/` |
-| Repository | Domain interfaces + Doctrine impl | `src/{Context}/Domain/Repository/` + `Infrastructure/Persistence/` |
-| EventDispatcher | `DomainEventDispatcher` | `src/Shared/Infrastructure/Persistence/Doctrine/EventListener/` |
+| Listener | Events | Does |
+|----------|--------|------|
+| `src/Pricing/Application/Listener/` (one class per event) | `CategoryPricingWasChangedEvent`, `SubcategoryPricingWasChangedEvent`, `VatRateWasChangedEvent`, `SupplierStatusWasChangedEvent`, `SupplierProductStatusWasChangedEvent`, `SupplierProductPricingWasChangedEvent` | Reprices the affected products: see [04-sourcing-and-pricing.md](04-sourcing-and-pricing.md) |
+| `StatusChangeLogger` (`src/Audit/Application/EventListener/`) | Order, order item, PO and PO item status changes | Writes the status change log |
+| `SupplierStockChangeLogger` (same directory) | `SupplierProductStockWasChangedEvent` | Writes the stock change log. Nothing else listens: a stock change does not reprice the product |
+| `ReviewSummaryUpdater` (`src/Review/Application/Listener/`) | The four `Review*` events | Recalculates the product's review summary |
+| `SidebarBadgeCacheInvalidator` (`src/Home/Listener/`) | Review created, status changed, deleted; PO status changed; order created, status changed | Deletes the sidebar badge counts that changed |
+| `ProductImageWasDeleted` (`src/Catalog/Application/Listener/`) | `ProductImageWasDeletedEvent` | Deletes the image file and its cached thumbnails |
 
-### API Request → Response
+The other events (`OrderItemWasChangedEvent`, `OrderItemWasCreatedEvent`, `PurchaseOrderWasCreatedEvent`, `PurchaseOrderItemWasCreatedEvent`) have no listener yet.
 
-API endpoints follow a simpler flow than FormFlow. Controllers receive JSON input, delegate to existing handlers or repositories, and return JSON via `ApiResponse`.
+## The Queue
 
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                            HTTP REQUEST                                │
-│  Authorization: Bearer <token>                                         │
-│  Content-Type: application/json                                        │
-└────────────────────────────────────────────────────────────────────────┘
-                                   │
-                                   ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                          SYMFONY KERNEL                                │
-│  • Route matching (/api/v1/...)                                        │
-│  • API firewall (stateless, Bearer token via ApiTokenHandler)          │
-│  • MapRequestPayload / MapQueryString for input DTOs                   │
-└────────────────────────────────────────────────────────────────────────┘
-                                   │
-                                   ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│                        API CONTROLLER                                  │
-│  • Extends AbstractApiController                                       │
-│  • Receives validated Request DTO or SearchCriteria                    │
-│  • Delegates to Handler (writes) or Repository (reads)                 │
-│  • Transforms result via Resource class                                │
-│  • Returns ApiResponse (item / collection / error / noContent)         │
-└────────────────────────────────────────────────────────────────────────┘
-                          │                    │
-                          ▼                    ▼
-              ┌───────────────────┐  ┌──────────────────────────────────┐
-              │   RESOURCE (DTO)  │  │           HANDLER                │
-              │  Entity → array   │  │  (same as web: domain logic,     │
-              │  for JSON output  │  │   returns Result ok/fail)        │
-              └───────────────────┘  └──────────────────────────────────┘
-                                               │
-                                               ▼
-              ┌────────────────────────────────────────────────────────────┐
-              │                    JSON RESPONSE                           │
-              │  • 200 { "data": {...} }              (single item)        │
-              │  • 200 { "data": [...], "meta": {}, "links": {} }          │
-              │  • 201 { "data": {...} }              (created)            │
-              │  • 204                                (no content)         │
-              │  • 4xx/5xx RFC 7807 problem+json      (errors)             │
-              └────────────────────────────────────────────────────────────┘
-```
+Outgoing email and async events are routed to the `async` Messenger transport (`config/packages/messenger.yaml`). By default that is the Doctrine transport: messages are rows in the `messenger_messages` table, in the application's own database, and the `messenger` container (or `symfony console messenger:consume async`) works through them. Failed messages go to the `failed` transport, in the same table. No domain event is async today, so the queue carries email only.
 
-**On error**, `ApiExceptionListener` intercepts exceptions for `/api/` routes and returns RFC 7807 problem+json responses. Validation errors include a `violations` array.
-
-### Key API Classes
-
-| Class | Location | Purpose |
-|-------|----------|---------|
-| AbstractApiController | `src/Shared/UI/Http/Api/` | Base controller with `handleResult()` and `resolveFilterId()` |
-| ApiResponse | `src/Shared/UI/Http/Api/` | Static factory for JSON responses |
-| ApiExceptionListener | `src/Shared/UI/Http/Api/EventListener/` | Converts exceptions to RFC 7807 JSON |
-| ApiTokenHandler | `src/Customer/Infrastructure/Security/` | Validates Bearer tokens |
-| Resource classes | `src/{Context}/UI/Http/Api/Resource/` | Entity → JSON transformation |
-| Request classes | `src/{Context}/UI/Http/Api/Request/` | Validated input DTOs |
-
-See [API Pattern](patterns/API/README.md) for implementation details and [ADR 011](adr/011-rest-api-layer.md) for the architectural decision.
-
-## Supplier Model
-
-### Entity Relationships
-
-```
-┌─────────────────┐
-│    Supplier     │
-│─────────────────│
-│ name            │
-│ isActive        │
-│ isWarehouse     │──────┐
-└─────────────────┘      │
-        │                │
-        │ 1:N            │
-        ▼                │
-┌─────────────────┐      │
-│ SupplierProduct │      │
-│─────────────────│      │
-│ name            │      │
-│ productCode     │      │
-│ mfrPartNumber   │      │
-│ cost            │      │
-│ stock           │      │
-│ leadTimeDays    │      │
-│ isActive        │      │
-└─────────────────┘      │
-        │                │
-        │ N:1            │
-        ▼                │
-┌─────────────────┐      │
-│    Product      │◄─────┘ (warehouse = primary)
-│─────────────────│
-│ name            │
-│ cost (derived)  │
-│ sellPrice       │
-│ sellPriceIncVat │
-│ stock (derived) │
-└─────────────────┘
-```
-
-### Supplier Types
-
-**Warehouse Supplier:**
-- `isWarehouse = true`
-- Primary inventory source
-- Single warehouse per system (enforced by configuration)
-- Products created from warehouse first
-
-**EDI/Dropship Suppliers:**
-- `isWarehouse = false`
-- External fulfillment partners
-- May have overlapping products with warehouse
-- Costs and stock fluctuate independently
-
-### Best Source Selection
-
-Products select their "best" supplier via `calculateBestActiveSource()`:
-
-```php
-// src/Catalog/Domain/Model/Product/Product.php
-
-private function calculateBestActiveSource(): ?SupplierProduct
-{
-    $sources = $this->getActiveSupplierProducts();
-
-    // Filter: must have stock and positive cost
-    $viable = $sources->filter(fn($sp) =>
-        $sp->hasStock() && $sp->hasPositiveCost()
-    );
-
-    // Sort by cost ASC, then stock DESC
-    // Returns lowest cost; if tied, highest stock wins
-}
-```
-
-## Pricing Model
-
-### Markup Hierarchy
-
-Pricing follows a three-level inheritance:
-
-```
-┌─────────────────────────────────────────────────┐
-│                    PRODUCT                      │
-│  defaultMarkup: 0 (no override)                 │
-│  priceModel: NONE (no override)                 │
-│                    │                            │
-│                    │ inherits if 0/NONE         │
-│                    ▼                            │
-├─────────────────────────────────────────────────┤
-│                  SUBCATEGORY                    │
-│  defaultMarkup: 0 (no override) or 15.000       │
-│  priceModel: NONE (no override) or PRETTY_99    │
-│                    │                            │
-│                    │ inherits if 0/NONE         │
-│                    ▼                            │
-├─────────────────────────────────────────────────┤
-│                   CATEGORY                      │
-│  defaultMarkup: 5.000 (always set)              │
-│  priceModel: DEFAULT (always set)               │
-│  vatRate: 20.00% (Standard Rate)                │
-└─────────────────────────────────────────────────┘
-```
-
-### Price Calculation
-
-```
-Final Price = PriceModel.getPrettyPrice(
-    cost × (1 + markup/100) × (1 + vatRate/100)
-)
-```
-
-All calculations use `bcmath` for precision:
-- `src/Shared/Domain/Service/Pricing/MarkupCalculator.php`
-
-### Price Models (Pretty Rounding)
-
-| Model | Effect | Example |
-|-------|--------|---------|
-| `NONE` | No rounding | 25.67 → 25.67 |
-| `DEFAULT` | No rounding | 25.67 → 25.67 |
-| `PRETTY_00` | Round to .00 | 25.67 → 26.00 |
-| `PRETTY_10` | Round to .10 | 25.67 → 25.70 |
-| `PRETTY_49` | Round to .49/.99 | 25.50+ → 25.99 |
-| `PRETTY_95` | Round to .95 | 25.67 → 25.95 |
-| `PRETTY_99` | Round to .99 | 25.67 → 25.99 |
-
-## Order Sourcing Logic
-
-### Allocation Process
-
-When an order is allocated to suppliers:
-
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                       OrderAllocator.process()                         │
-└────────────────────────────────────────────────────────────────────────┘
-                                   │
-                                   ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│             For each CustomerOrderItem with outstanding qty            │
-└────────────────────────────────────────────────────────────────────────┘
-                                   │
-                                   ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│     Product.getBestSourceWithMinQuantity(outstandingQty)               │
-│     → Returns SupplierProduct with lowest cost + sufficient stock      │
-└────────────────────────────────────────────────────────────────────────┘
-                                   │
-                                   ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│     EditablePurchaseOrderProvider.getOrCreateForSupplier()             │
-│     → Returns existing editable PO or creates new one                  │
-└────────────────────────────────────────────────────────────────────────┘
-                                   │
-                                   ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│     OrderItemAllocator.forOrderItem()                                  │
-│     → Creates PurchaseOrderItem for outstanding quantity               │
-│     → Recalculates PO totals                                           │
-└────────────────────────────────────────────────────────────────────────┘
-                                   │
-                                   ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│     Update item/order statuses: PENDING → PROCESSING                   │
-└────────────────────────────────────────────────────────────────────────┘
-```
-
-**Key files:**
-- `src/Purchasing/Application/Service/OrderAllocator.php`
-- `src/Purchasing/Application/Service/OrderItemAllocator.php`
-- `src/Purchasing/Application/Service/EditablePurchaseOrderProvider.php`
-
-### Purchase Order Lifecycle
-
-```
-     PENDING ──────────────────────────────────────────┐
-        │                                              │
-        ▼                                              │
-   PROCESSING ─────────────────────────────────────────┤
-        │                                              │
-        ├─────────► ACCEPTED                           │
-        │              │                               │
-        │              ├─────► SHIPPED                 │
-        │              │          │                    │
-        │              │          ▼                    │
-        │              │      DELIVERED                │
-        │              │                               │
-        │              └─────► REJECTED                │
-        │                          │                   │
-        │                          ▼                   │
-        │                      REFUNDED                │
-        │                                              │
-        └──────────────────────► CANCELLED ◄───────────┘
-```
-
-## Eventing / Async Processing
-
-### Domain Event Infrastructure
-
-Events are collected during entity operations and dispatched after persistence:
-
-```php
-// Entity raises event
-class Product implements DomainEventProviderInterface
-{
-    use DomainEventProviderTrait;
-
-    public function changePricing(...): void
-    {
-        // ... business logic ...
-        $this->raiseDomainEvent(new ProductPricingWasChangedEvent(...));
-    }
-}
-```
-
-### Event Dispatch Flow
-
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                       EntityManager::flush()                           │
-└────────────────────────────────────────────────────────────────────────┘
-                                   │
-                                   ▼
-┌────────────────────────────────────────────────────────────────────────┐
-│              DomainEventDispatcher (postFlush listener)                │
-│  • Collects events from flushed entities, and from entities the        │
-│    flush deleted                                                       │
-│  • Dispatches sync events via EventDispatcher                          │
-│  • Dispatches async events via MessageBus                              │
-└────────────────────────────────────────────────────────────────────────┘
-                    │                              │
-                    ▼                              ▼
-        ┌─────────────────────┐      ┌─────────────────────────────────┐
-        │   SYNC LISTENERS    │      │     ASYNC (DATABASE QUEUE)      │
-        │  (after the commit) │      │  • AsyncDomainEventInterface    │
-        │                     │      │  • Processed by messenger:      │
-        │  • Pricing cascade  │      │    consume async                │
-        │  • Audit logging    │      │  • Email notifications          │
-        └─────────────────────┘      └─────────────────────────────────┘
-```
-
-An entity that is deleted can raise an event too: the dispatcher notes the entities scheduled for deletion in `onFlush`, before the flush takes them out of the identity map, and dispatches their events with the rest. Raise the event in a domain method, and always follow it with `remove()` and a flush. An entity that raises a deletion event but is never removed still dispatches it on the next flush, and its listeners act on a row that still exists:
-
-```php
-$productImage->delete();                 // raises ProductImageWasDeletedEvent
-$this->productImages->remove($productImage);
-$this->flusher->flush();                 // the event is dispatched after the delete
-```
-
-Events are dispatched for every flush, whether it goes through the `Flusher`, a direct `EntityManager::flush()`, fixtures or Foundry factories. They are dispatched after the flush commits. A sync listener that throws does not undo the change, unless the flush runs inside an outer transaction, but the exception still reaches the caller: the change is saved even though the request fails.
-
-### Event Types
-
-| Event Interface | Dispatch | Use Case |
-|-----------------|----------|----------|
-| `DomainEventInterface` | Synchronous | Pricing cascades, audit logging |
-| `AsyncDomainEventInterface` | Queued on the `async` Messenger transport | Email, external notifications |
-
-**Key events:**
-- `SupplierProductPricingWasChangedEvent` → Recalculates product pricing
-- `CategoryPricingWasChangedEvent` → Cascades to category products
-- `PurchaseOrderStatusWasChangedEvent` → Updates order item status
-- `OrderStatusWasChangedEvent` → Audit logging
-- `ReviewWasCreatedEvent` → Recalculates product review summary
-- `ReviewStatusWasChangedEvent` → Recalculates product review summary
-- `ReviewRatingWasChangedEvent` → Recalculates product review summary
-- `ReviewWasDeletedEvent` → Recalculates product review summary, clears the pending-review badge
-- `ProductImageWasDeletedEvent` → Removes the image file from storage and its cached thumbnails
-
-### The Queue
-
-Outgoing email and async events are routed to the `async` Messenger transport (`config/packages/messenger.yaml`). By default that is the Doctrine transport: messages are rows in the `messenger_messages` table, in the application's own database, and the `messenger` container (or `symfony console messenger:consume async`) works through them. Failed messages go to the `failed` transport, which uses the same table. No domain event is async today, so the queue carries email only.
-
-In the `test` environment the transport is `in-memory://`: nothing is stored, no worker runs, and a test can read what was sent.
+In the `test` environment the transport is `in-memory://`: nothing is stored, no worker runs, and a test can read what was sent ([07-testing.md](07-testing.md)).
 
 RabbitMQ is kept as an opt-in for when the database queue is outgrown. See [ADR 013](adr/013-database-queue-by-default.md) for the decision and [Switching to RabbitMQ](02-setup-local.md#switching-to-rabbitmq) for the steps.
 
-## Simulation Boundaries
+Scheduled jobs run in the same `messenger` container, from `scheduler_default`: see [06-operations.md](06-operations.md#scheduled-jobs).
 
-### What Is Simulated
+## Where to Start
 
-| Component | Simulation | Reality |
-|-----------|------------|---------|
-| Customer orders | `app:create-customer-orders` | Would come from storefront |
-| Payment processing | Not implemented | Would integrate with payment gateway |
-| Supplier acceptance | `app:accept-purchase-orders` (98% accept) | Would be EDI/API response |
-| Shipping | `app:ship-purchase-order-items` (time-based) | Would be carrier tracking |
-| Delivery | `app:deliver-purchase-order-items` (time-based) | Would be proof of delivery |
-| Stock files | `app:update-supplier-stock` (random variance) | Would be EDI stock feeds |
-| Pricing feeds | Stock command updates costs | Would be supplier price files |
-| Product reviews | `app:generate-reviews` (weighted random) | Would be customer-submitted |
+Reading order for the areas whose logic spans several files.
 
-### What Is Real
+| To understand | Read, in order |
+|---------------|----------------|
+| Pricing | `src/Shared/Domain/Service/Pricing/MarkupCalculator.php`, `src/Shared/Domain/ValueObject/PriceModel.php`, `src/Catalog/Domain/Model/Product/Product.php` (`getActiveMarkup()`, `recalculatePrice()`), `src/Pricing/Application/Listener/` |
+| Order allocation | `src/Purchasing/Application/Service/OrderAllocator.php`, `src/Purchasing/Application/Service/OrderItemAllocator.php`, `Product::getBestSourceWithMinQuantity()`, `src/Order/Domain/Model/Order/CustomerOrderItem.php` (`getOutstandingQty()`) |
+| Status flows | `src/Order/Domain/Model/Order/OrderStatus.php`, `src/Purchasing/Domain/Model/PurchaseOrder/PurchaseOrderStatus.php` (`canTransitionTo()`), then `generateStatus()` on `CustomerOrder`, `CustomerOrderItem` and `PurchaseOrder` |
+| Reviews | `src/Review/Domain/Model/Review/ProductReview.php`, `ReviewStatus.php`, `src/Review/Application/Listener/ReviewSummaryUpdater.php`, `src/Review/UI/Http/Validation/ValidReviewEligibilityValidator.php` (who may review) |
+| Support tickets | `src/Note/Domain/Model/Ticket/Ticket.php` (transitions, snooze), `TicketStatus.php`, `src/Note/Domain/Model/Message/Message.php` (visibility, author type), `src/Note/Domain/Model/Pool/Pool.php` |
+| REST API | `src/Shared/UI/Http/Api/AbstractApiController.php`, `ApiResponse.php`, `src/Shared/UI/Http/Api/EventListener/ApiExceptionListener.php`, `src/Customer/Infrastructure/Security/ApiTokenHandler.php`, then `src/{Context}/UI/Http/Api/` |
 
-| Component | Implementation |
-|-----------|----------------|
-| Order allocation logic | Actual business rules |
-| Pricing calculations | Real markup/VAT/rounding |
-| Status state machines | Enforced transitions |
-| Reporting aggregation | Real SQL queries |
-| Authentication/authorization | Full Symfony Security |
+## Gotchas
 
-### Simulation Timing
+- **A deleted entity's event fires only if it is `remove()`d and flushed.** The dispatcher notes entities scheduled for deletion in `onFlush`, before the flush drops them from the identity map. An entity that raises a deletion event but is never removed still dispatches it on the next flush, and its listeners act on a row that still exists. Always follow the domain method with `remove()` and a flush (`DeleteProductImageHandler`).
+- **Events fire on every flush:** through `FlusherInterface` (`DoctrineFlusher`), a direct `EntityManager::flush()`, fixtures and Foundry factories alike.
+- **Events fire after the commit.** A sync listener that throws does not undo the change (unless the flush runs inside an outer transaction), but the exception still reaches the caller: the change is saved and the request fails.
 
-Production schedule (from `src/Shared/Infrastructure/Scheduler/MainSchedule.php`, run by the Messenger worker):
+## Related
 
-| Interval | Command | Purpose |
-|----------|---------|---------|
-| Twice per 5 min, jittered | `app:create-customer-orders 1 --random` | Steady order flow, one order at a time |
-| */15 min | `app:build-purchase-orders 20` | Allocate orders to suppliers |
-| +1 min offset | `app:accept-purchase-orders 20` | Supplier responses (runs 1 min after build) |
-| Hourly | `app:ship-purchase-order-items 100` | Ship accepted items |
-| Hourly | `app:deliver-purchase-order-items 100` | Complete deliveries |
-| */15 min | `app:update-supplier-stock 20` | Stock fluctuation |
-| Daily 00:03 | `app:calculate-product-sales 1 1` | Reporting ETL |
-| Daily 00:07 | `app:calculate-order-sales 1 1` | Reporting ETL |
-
-## Frontend Navigation
-
-### Turbo (Hotwire)
-
-SupplyMars uses Hotwire Turbo for SPA-like navigation without a JavaScript framework. See [ADR 007](adr/007-turbo-frame-modal-architecture.md) for the architectural decision.
-
-### Frame Hierarchy
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│  <turbo-frame id="body">        Main content, updates URL       │
-├─────────────────────────────────────────────────────────────────┤
-│  <turbo-frame id="modal">       Dialogs inside <dialog>         │
-├─────────────────────────────────────────────────────────────────┤
-│  <turbo-frame id="{model}-table">  Search results, updates URL  │
-├─────────────────────────────────────────────────────────────────┤
-│  <turbo-frame id="reports">     Dashboard widgets               │
-└─────────────────────────────────────────────────────────────────┘
-```
-
-### Modal System
-
-Forms and confirmations render in a native `<dialog>` element managed by Stimulus:
-
-1. Link with `data-turbo-frame="modal"` triggers fetch
-2. Server detects `turbo-frame: modal` header, returns minimal layout
-3. Stimulus controller opens dialog on frame load
-4. Form submits to same frame, receives Turbo Stream response
-5. Controller auto-closes on successful submission
-
-### Turbo Streams
-
-After form submission, the server returns Turbo Streams instead of HTTP redirects:
-
-```html
-<turbo-stream action="refresh"></turbo-stream>
-<turbo-stream action="append" target="flash-container">...</turbo-stream>
-```
-
-The `TurboAwareRedirector` in FormFlow handles this automatically.
-
-### Key Files
-
-| File | Purpose |
-|------|---------|
-| `assets/controllers/basic_modal_controller.js` | Modal lifecycle |
-| `templates/shared/turbo/modal_base.html.twig` | Layout decision |
-| `vendor/myvars/form-flow/src/Redirect/TurboAwareRedirector.php` | Stream generation |
-
-See [Turbo Patterns](patterns/Turbo/README.md) and [UI Patterns](patterns/UI/README.md) for detailed documentation
+- [ADR 014](adr/014-architecture-rules.md): rules between contexts
+- [ADR 016](adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md): worker mode
+- [ADR 013](adr/013-database-queue-by-default.md): the database queue
+- [FormFlow](patterns/FormFlow/README.md): the request flow in controllers
+- [API](patterns/API/README.md): the REST API flow, auth and errors
+- [Turbo](patterns/Turbo/README.md): frames, modals and streams
+- [04-sourcing-and-pricing.md](04-sourcing-and-pricing.md): suppliers, best source, allocation, pricing cascade, PO lifecycle
+- [09-cli-reference.md](09-cli-reference.md): the simulation commands and what each does
