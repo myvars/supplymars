@@ -90,7 +90,7 @@ The fixtures already give each supplier product a catalog product, so after `doc
 - **Running the chain straight through moves little.** Items accepted a moment ago won't ship (2-hour wait), and outside 09:00–18:00 UTC nothing ships at all. Use `--skip-timing` on ship and deliver when seeding data.
 - **One supplier per run** means `accept-purchase-orders 100` leaves the other suppliers' POs waiting. Repeat the command, or pass `--supplier` for each.
 - **Ship and deliver need the item's ACCEPTED / SHIPPED `StatusChangeLog` row.** An item that reached that status without one (data loaded without the audit event, or history deleted) never moves without `--skip-timing`. A rewind deletes the rows but also returns the items to PENDING, so the next acceptance writes a new row.
-- **Locked orders are skipped** by build and accept, so a lock left on an order stalls it.
+- **Locked orders are skipped** by build, accept, ship and deliver, so a lock left on an order stalls it.
 - **Simulated stock and cost changes don't reprice products**; only the audit listens to the stock event ([04](04-sourcing-and-pricing.md)).
 - **The auto-run summary is incremental.** After recomputing many days, run the summary with `rebuild` 1, or the 30-day and 12-month charts keep the old figures.
 - The simulations write real rows. Don't run them against a copy of production you care about.
