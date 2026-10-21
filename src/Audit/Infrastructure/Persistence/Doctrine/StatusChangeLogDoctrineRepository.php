@@ -8,6 +8,11 @@ use App\Audit\Domain\Model\StatusChange\StatusChangeLog;
 use App\Audit\Domain\Model\StatusChange\StatusChangeLogId;
 use App\Audit\Domain\Model\StatusChange\StatusChangeLogPublicId;
 use App\Audit\Domain\Repository\StatusChangeLogRepository;
+use App\Order\Domain\Model\Order\CustomerOrder;
+use App\Order\Domain\Model\Order\CustomerOrderItem;
+use App\Order\Domain\Model\Order\OrderStatus;
+use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrder;
+use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItem;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use App\Shared\Domain\Event\DomainEventType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -64,6 +69,66 @@ class StatusChangeLogDoctrineRepository extends ServiceEntityRepository implemen
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    public function deleteFinishedBefore(\DateTimeImmutable $before, int $limit): int
+    {
+        $finalOrderStatuses = array_column(array_filter(OrderStatus::cases(), fn (OrderStatus $status): bool => $status->isFinal()), 'value');
+        $finalPurchaseOrderStatuses = array_column(array_filter(PurchaseOrderStatus::cases(), fn (PurchaseOrderStatus $status): bool => $status->isFinal()), 'value');
+
+        $entities = [
+            [DomainEventType::ORDER_STATUS_CHANGED, CustomerOrder::class, $finalOrderStatuses],
+            [DomainEventType::ORDER_ITEM_STATUS_CHANGED, CustomerOrderItem::class, $finalOrderStatuses],
+            [DomainEventType::PURCHASE_ORDER_STATUS_CHANGED, PurchaseOrder::class, $finalPurchaseOrderStatuses],
+            [DomainEventType::PURCHASE_ORDER_ITEM_STATUS_CHANGED, PurchaseOrderItem::class, $finalPurchaseOrderStatuses],
+        ];
+
+        // Rows are written in time order, so every row before $before has a lower id than the first row after it.
+        // Bounding the search by that id keeps it to the old end of the table rather than scanning all of it.
+        $boundaryId = $this->createQueryBuilder('sc')
+            ->select('sc.id')
+            ->where('sc.eventTimestamp >= :before')
+            ->setParameter('before', $before)
+            ->orderBy('sc.id', 'ASC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult()['id'] ?? null;
+
+        $ids = [];
+        foreach ($entities as [$eventType, $entityClass, $finalStatuses]) {
+            $remaining = $limit - count($ids);
+            if ($remaining === 0) {
+                break;
+            }
+
+            $qb = $this->createQueryBuilder('sc')
+                ->select('sc.id')
+                ->join($entityClass, 'e', 'WITH', 'e.id = sc.eventTypeId')
+                ->where('sc.eventType = :eventType')
+                ->andWhere('sc.eventTimestamp < :before')
+                ->andWhere('e.status IN (:finalStatuses)')
+                ->setParameter('eventType', $eventType)
+                ->setParameter('before', $before)
+                ->setParameter('finalStatuses', $finalStatuses)
+                ->setMaxResults($remaining);
+
+            if ($boundaryId !== null) {
+                $qb->andWhere('sc.id < :boundaryId')->setParameter('boundaryId', $boundaryId);
+            }
+
+            array_push($ids, ...$qb->getQuery()->getSingleColumnResult());
+        }
+
+        if ($ids === []) {
+            return 0;
+        }
+
+        return $this->createQueryBuilder('sc')
+            ->delete()
+            ->where('sc.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->execute();
     }
 
     /**
