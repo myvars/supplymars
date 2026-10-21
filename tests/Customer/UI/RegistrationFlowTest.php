@@ -33,4 +33,23 @@ class RegistrationFlowTest extends WebTestCase
 
         UserFactory::assert()->empty();
     }
+
+    public function testRejectsEmailInUseAsFieldError(): void
+    {
+        UserFactory::createOne(['email' => 'taken@example.com']);
+
+        $this->browser()
+            ->get('/register')
+            ->fillField('registration_form[fullName]', 'New Customer')
+            ->fillField('registration_form[email]', 'taken@example.com')
+            ->checkField('registration_form[agreeTerms]')
+            ->fillField('registration_form[plainPassword][first]', 'correct-horse-battery')
+            ->fillField('registration_form[plainPassword][second]', 'correct-horse-battery')
+            ->click('Create account')
+            ->assertStatus(422)
+            ->assertSeeIn('[data-slot="field-error"]', 'There is already an account with this email')
+            ->assertNotSee('Object(');
+
+        UserFactory::assert()->count(1);
+    }
 }
