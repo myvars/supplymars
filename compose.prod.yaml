@@ -103,9 +103,10 @@ services:
     # each message, and it only returns jobs that are due. The memory limit (under PHP's 256M) stops the
     # worker cleanly between jobs, as one worker now runs every command for up to an hour
     command: sh -c "php bin/console messenger:consume scheduler_default async --time-limit=3600 --memory-limit=192M --sleep=5"
-    # Docker's default 10 s would kill a running backup on a stop or a deploy; the worker exits as soon as
-    # the current job ends
-    stop_grace_period: 15m
+    # The worker cannot catch SIGTERM (no pcntl), so a stop or a deploy waits this long, then kills it.
+    # Short, so a deploy is not held up: a job killed mid-run has not advanced the schedule and runs
+    # again when the worker is back, and a message killed mid-handling is redelivered later (ADR 015)
+    stop_grace_period: 30s
     volumes:
       # Live's nightly backup writes latest.sql.gz here for the playground reset. The worker runs as
       # www-data (uid 33), which must own the host directory (Docs/11-runbook.md)

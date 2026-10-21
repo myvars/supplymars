@@ -290,9 +290,9 @@ If any step fails, treat it as a broken backup and fix it before the next one is
 For planned maintenance (database migrations, infrastructure changes):
 
 ```bash
-# 1. Drain the Messenger worker: it finishes the current message or scheduled job, then stops, and no
-#    new jobs start (stop_grace_period gives a running backup up to 15 minutes). Jobs missed while it
-#    is down run once when it is back
+# 1. Stop the Messenger worker, so no new jobs start. It cannot finish the job in hand: Docker kills it
+#    after 30 seconds (stop_grace_period). A job cut short, and jobs missed while it is down, run once
+#    when it is back. Check first that the 02:00 backup is not running (docker top)
 docker compose $LIVE stop messenger
 
 # 2. Stop the PHP container (the host Caddy returns 502)
@@ -371,7 +371,27 @@ docker compose $LIVE logs --tail=100 messenger
 docker compose $LIVE restart messenger
 ```
 
-### 6.4 Slow Pages
+### 6.4 Deploy Timed Out
+
+**Symptoms:** the deploy job fails with `Run Command Timeout`; the site may return 502.
+
+When the SSH session ends, a `docker compose up` already started keeps running on the server, but nothing after it does (the other stack, the verify steps). It can leave containers `Created` and never started: the old ones already removed, the new ones not running.
+
+```bash
+# 1. Is a compose run from the deploy still going? Let it finish, or Ctrl-C it, before starting another
+pgrep -af "docker compose"
+
+# 2. What it left behind: Created means replaced but never started
+docker compose $LIVE ps -a
+
+# 3. Finish the deploy by hand, for both stacks
+make up-prod-live && make up-prod-playground
+make verify-prod-live && make verify-prod-playground
+```
+
+On 2026-10-21 the deploy of #81 stopped this way: Compose waited for the messenger worker, which ignores `SIGTERM`, through a 15-minute `stop_grace_period` (now 30 seconds, #83). Live was down for about 20 minutes, until step 3.
+
+### 6.5 Slow Pages
 
 **Diagnosis:**
 ```bash
@@ -390,7 +410,7 @@ docker compose $LIVE exec redis sh -c 'REDISCLI_AUTH="$REDIS_PASSWORD" redis-cli
 - Redis eviction (memory pressure)
 - Large report calculation running during peak traffic
 
-### 6.5 Failed Messenger Messages
+### 6.6 Failed Messenger Messages
 
 ```bash
 # View failed messages
@@ -406,7 +426,7 @@ docker compose $LIVE exec -T php php bin/console messenger:failed:retry <id>
 docker compose $LIVE exec -T php php bin/console messenger:failed:remove <id>
 ```
 
-### 6.6 Disk Space
+### 6.7 Disk Space
 
 **Diagnosis:**
 ```bash

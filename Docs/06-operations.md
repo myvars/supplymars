@@ -157,7 +157,7 @@ php bin/console messenger:consume async --time-limit=3600 --sleep=5             
 ```
 
 **Configuration:**
-- **Time limit:** 3600 seconds (1 hour) before restart; in production also above 192M of memory, and a stop waits up to 15 minutes for a running job
+- **Time limit:** 3600 seconds (1 hour) before restart; in production also above 192M of memory. A stop kills the worker after 30 seconds (`stop_grace_period`); a job it cuts short runs again when the worker is back
 - **Sleep:** 5 seconds between batches
 - **Retry:** 3 attempts with exponential backoff
 - **Transport:** Doctrine (`doctrine://default`), a table in the application database
