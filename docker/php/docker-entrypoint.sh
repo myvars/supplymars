@@ -22,7 +22,9 @@ fi
 # Warm cache (prod uses pre-built cache from Docker image; dev/test rebuild fresh)
 if [ "$APP_ENV" = "prod" ]; then
     php -d memory_limit=256M bin/console cache:warmup --env=prod || echo "Cache warmup failed"
-    # PHP 8.5 workaround: Preloader::preload() crashes FPM when preloading 900+ classes recursively.
+    # PHP 8.5 workaround: Preloader::preload() breaks a grown app when preloading 900+ classes recursively.
+    # Under PHP-FPM it crashed at startup; under FrankenPHP the server starts and reports healthy, then
+    # every request fails with "Call to undefined function dirname()". Never remove this in a cleanup.
     # The require statements in the preload file already provide the bulk of OPcache preloading benefit.
     PRELOAD_FILE="var/cache/prod/App_KernelProdContainer.preload.php"
     if [ -f "$PRELOAD_FILE" ]; then

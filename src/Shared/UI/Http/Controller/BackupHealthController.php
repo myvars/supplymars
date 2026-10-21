@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
- * Separate from /health, which the nginx healthcheck and the deploy depend on; only the uptime monitor calls this.
+ * Separate from /health, which the container healthcheck and the deploy depend on; only the uptime monitor calls this.
  */
 final readonly class BackupHealthController
 {

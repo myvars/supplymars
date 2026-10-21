@@ -67,8 +67,7 @@ The production Docker stack includes:
 
 | Service | Image | Purpose |
 |---------|-------|---------|
-| nginx | Custom (nginx-prod) | Reverse proxy, SSL termination |
-| php | Custom (php-prod) | Application server |
+| php | Custom (php-prod) | FrankenPHP: web server and application server (TLS is the host Caddy's) |
 | messenger | Custom (php-prod) | Async message consumer and scheduled jobs |
 | database | mysql:8.4 | Primary data store |
 | redis | redis:8.4-alpine | Cache, sessions |
@@ -289,7 +288,7 @@ orm:
 
 **Application cache:** Redis via SNC Redis bundle
 **Sessions:** Redis, through Symfony's session handler on `REDIS_URL`
-**HTTP cache:** Nginx serves static assets with long TTL
+**HTTP cache:** FrankenPHP serves `/assets/` (content-hashed file names) with a year's immutable cache
 
 ### Reporting Performance
 

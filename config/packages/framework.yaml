@@ -2,16 +2,15 @@
 framework:
     secret: '%env(APP_SECRET)%'
 
+    # In production the host Caddy proxies every request. Trusting it makes getClientIp() the visitor's
+    # (rate limits, login_throttling) and makes URLs https when the visitor used HTTPS. See ADR 016.
+    trusted_proxies: '%env(TRUSTED_PROXIES)%'
+    trusted_headers: ['x-forwarded-for', 'x-forwarded-proto']
+
     # Note that the session will be started ONLY if you read or write from it.
     # Sessions are in Redis in every environment, symfony serve included (make up-dev-tools starts it)
     session:
         handler_id: '%env(REDIS_URL)%'
-
-    rate_limiter:
-        registration:
-            policy: sliding_window
-            limit: 5
-            interval: '60 minutes'
 
     #esi: true
     #fragments: true

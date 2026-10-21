@@ -57,9 +57,13 @@ docker compose $PLAYGROUND exec -T php php bin/console sentry:test
 | `redis` | Pings the Redis client used for the cache and sessions. Fails when `REDIS_URL`'s password does not match `REDIS_PASSWORD` |
 | `queue` | Asks the `async` Messenger transport how many messages are waiting. With the database queue ([ADR 013](adr/013-database-queue-by-default.md)) this counts rows in `messenger_messages`, so it fails whenever the database does. It does not notice a stopped `messenger` worker: messages wait in the table and the check still passes. A transport with nothing to connect to (`sync://`, `in-memory://` in tests) always passes |
 
-A stopped service fails its check at once. A host that accepts the connection but never answers (a hung database) holds the check until nginx gives up after 60 seconds and returns 504. Set the uptime monitor to treat a timeout or any status other than 200 as down.
+A stopped service fails its check at once. A host that accepts the connection but never answers (a hung database) holds the check until the client's connection timeout, which can be 30 seconds or more. Set the uptime monitor to treat a timeout or any status other than 200 as down.
 
-Because a slow answer holds a PHP worker, `docker/nginx/conf.d/prod.conf` lets only two outside `/health` requests run at once (`limit_conn`); any others get an immediate 429. That stops repeated calls from piling up behind a slow check, but it is not a hard bound on workers: nginx frees its slot after 60 seconds while PHP may still be waiting on a hung database. The container's own healthcheck comes from loopback and is not counted, so outside calls cannot make it fail. Because the cap is shared, a burst of outside calls can give the uptime monitor a 429; alert on it like any other non-200, and read 429 as "throttled", not "down".
+Because a slow answer holds a PHP thread, each outside caller may call `/health` 10 times a minute (`config/packages/rate_limiter.yaml`); more get an immediate 429. The count is per client IP, so one caller using up its allowance does not throttle the uptime monitor or `make verify-prod-*`. It is not a bound on threads: FrankenPHP starts two per CPU, so on a small server a few callers whose checks hang can occupy them all. A check only hangs when the database, Redis or the queue does, and the site's own pages need those too, so the site is down by then anyway. nginx used to cap concurrent calls instead; a rate is the nearest the app can do, because it only runs once PHP has the request. The container's own healthcheck comes from loopback and is not counted, so outside calls cannot make it fail or fail `up --wait`. `make verify-prod-*` calls through the published port from the server itself, so it has a count of its own; its curl retries a 429. Alert on a 429 like any other non-200, and read it as "throttled", not "down".
+
+The loopback exemption uses the client IP Symfony takes from `X-Forwarded-For` when the request comes from a trusted proxy (`framework.trusted_proxies`). The host Caddy replaces any `X-Forwarded-For` a visitor sends with the address it saw, so a client cannot claim to be `127.0.0.1`. FrankenPHP drops header names with underscores, so `X_Forwarded_For` cannot stand in for it either.
+
+The limit's counts are in Redis. When Redis is down, the cache treats the counts as missing and lets the call through, so `/health` still answers 503 and names the failed check.
 
 The response says only which check failed. The reason (the exception) is written to the application log at `error` level, because the endpoint is public.
 
@@ -69,7 +73,7 @@ Add a class implementing `App\Shared\Infrastructure\Health\HealthCheckInterface`
 
 ### Docker
 
-The nginx container's healthcheck calls `/health` (over HTTPS in `compose.yaml`, over HTTP in `compose.prod.yaml`), so `make up` and the `make up-prod-*` targets wait until the whole stack answers, and `docker compose ps` shows nginx as unhealthy when the database, Redis or the queue is down.
+The php container's healthcheck calls `/health` (over HTTPS in `compose.yaml`, over HTTP in `compose.prod.yaml`), so `make up` and the `make up-prod-*` targets wait until the whole stack answers, and `docker compose ps` shows php as unhealthy when the database, Redis or the queue is down.
 
 ## Backup check
 
@@ -77,7 +81,7 @@ The nginx container's healthcheck calls `/health` (over HTTPS in `compose.yaml`,
 
 It catches every way backups stop: a failed run (also reported to Sentry), and a run that never happened (messenger container down or not consuming `scheduler_default`, `PLAYGROUND_MODE` wrongly on for live, server off at 02:00, every run skipped because a hung one holds the lock).
 
-It is deliberately not one of the `/health` checks. `/health` is the nginx container's healthcheck and the deploy's post-deploy check, and a missed backup must not mark the stack down or fail a deploy. Each call lists the S3 backups, so `prod.conf` gives it the same outside-caller cap as `/health` and a per-caller rate (6 a minute, burst 3); more get 429.
+It is deliberately not one of the `/health` checks. `/health` is the php container's healthcheck and the deploy's post-deploy check, and a missed backup must not mark the stack down or fail a deploy. Each call lists the S3 backups, so `config/packages/rate_limiter.yaml` gives each caller 6 a minute; more get 429.
 
 Both stacks use the same bucket, so the playground answers for live's backups. Monitor it on live only.
 

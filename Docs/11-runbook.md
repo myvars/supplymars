@@ -8,23 +8,22 @@ Step-by-step operational procedures for the SupplyMars production environment on
 
 Two Docker Compose stacks run on the same Lightsail instance, fronted by Caddy (auto TLS via Let's Encrypt):
 
-| Stack | Project Name | Nginx Port | Domain |
-|-------|-------------|------------|--------|
+| Stack | Project Name | Port (`HTTP_HOST_PORT`) | Domain |
+|-------|-------------|------------------------|--------|
 | Live | `supplymars-live` | 8001 | `live.supplymars.com` |
 | Playground | `supplymars-playground` | 8002 | `supplymars.com`, `www.supplymars.com` (the public demo) |
 
-Each stack runs 5 containers (6 for playground, which includes `reset`). The queue is a table in the stack's own database; RabbitMQ is an opt-in and does not run ([ADR 013](adr/013-database-queue-by-default.md)):
+Each stack runs 4 containers (5 for playground, which includes `reset`). The queue is a table in the stack's own database; RabbitMQ is an opt-in and does not run ([ADR 013](adr/013-database-queue-by-default.md)):
 
 | Service | Image | Purpose |
 |---------|-------|---------|
-| nginx | `ghcr.io/myvars/supplymars/nginx` | Reverse proxy (HTTP only — Caddy handles TLS) |
-| php | `ghcr.io/myvars/supplymars/php` | PHP-FPM application server |
+| php | `ghcr.io/myvars/supplymars/php` | FrankenPHP: web server and PHP in one, in classic mode (HTTP only — Caddy on the host handles TLS). Runs as `www-data` ([ADR 016](adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md)) |
 | messenger | `ghcr.io/myvars/supplymars/php` | Async message consumer, and the scheduled jobs (`src/Shared/Infrastructure/Scheduler/MainSchedule.php`; `PLAYGROUND_MODE` picks the stack's) |
 | database | mysql:8.4 | Primary data store |
 | redis | redis:8.8-alpine | Cache, sessions |
 | reset | `ghcr.io/myvars/supplymars/reset` | Nightly DB reset at 02:15, on its own cron (playground only) |
 
-**CI builds, the server runs.** The three application images are built by GitHub Actions from a commit on `main`, tagged with its SHA and pushed to the GitHub Container Registry (GHCR). The server pulls the images of the commit it has checked out and starts them; it never builds. The checkout supplies only the compose files and the Makefile: the code is inside the images.
+**CI builds, the server runs.** The two application images are built by GitHub Actions from a commit on `main`, tagged with its SHA and pushed to the GitHub Container Registry (GHCR). The server pulls the images of the commit it has checked out and starts them; it never builds. The checkout supplies only the compose files and the Makefile: the code is inside the images.
 
 **Deploy path:** `/home/ubuntu/supplymars`
 **Env files:** `/home/ubuntu/supplymars-secrets/{live,playground}.env`
@@ -77,7 +76,7 @@ docker compose $PLAYGROUND ps
 Merging to `main` triggers the GitHub Actions pipeline (`.github/workflows/ci.yml`):
 
 1. **test**: each step of `make check`: the production config check, code style, Rector, PHPStan, the Symfony linters, `composer audit`, migrations from an empty database, and the full test suite (see [07-testing.md](07-testing.md#running-all-checks))
-2. **publish**, once the tests pass: builds the `php`, `nginx` and `reset` production images from that commit and pushes them to `ghcr.io/myvars/supplymars/`, tagged with its SHA. The tests ran against the development image of the same commit; the production images are built from the same code but are not tested separately
+2. **publish**, once the tests pass: builds the `php` and `reset` production images from that commit and pushes them to `ghcr.io/myvars/supplymars/`, tagged with its SHA. The tests ran against the development image of the same commit; the production images are built from the same code but are not tested separately
 3. **deploy**, once they are pushed, over SSH:
 
     ```bash
@@ -196,7 +195,7 @@ The live messenger container runs `app:backup-database --local-copy=/backups/lat
 - Saves a local copy to `/backups/latest.sql.gz` (host: `/home/ubuntu/supplymars-backups/latest.sql.gz`), readable by its owner only (`0600`)
 - Deletes S3 backups older than 30 days (default retention)
 
-The local copy is used by the playground reset at 02:15 UTC.
+The local copy is used by the playground reset at 02:15 UTC. The worker runs as `www-data` (uid 33), so the host directory must be its: `sudo chown -R 33:33 /home/ubuntu/supplymars-backups` once on a new server. Otherwise the S3 upload still succeeds, the local copy fails (reported to Sentry), and the playground keeps restoring an old `latest.sql.gz`.
 
 Backup errors appear in `docker compose $LIVE logs messenger`; a successful run's output is not logged (`RunCommandMessage` keeps it). A failed run, or one skipped because a manual backup holds the lock, exits with a failure and reaches Sentry as `RunCommandFailedException`. It is not retried: the next run is the next night. What tells you backups have stopped, for any reason, is the uptime monitor on `/health/backup`, which fails once the newest backup on S3 is more than 26 hours old ([13-monitoring.md](13-monitoring.md#backup-check)).
 
@@ -296,7 +295,7 @@ For planned maintenance (database migrations, infrastructure changes):
 #    is down run once when it is back
 docker compose $LIVE stop messenger
 
-# 2. Stop the PHP container (app returns 502 via nginx)
+# 2. Stop the PHP container (the host Caddy returns 502)
 docker compose $LIVE stop php
 ```
 
@@ -314,13 +313,12 @@ make verify-prod-live
 
 ### 6.1 App Returns 502/504
 
-**Symptoms:** Nginx returns 502 Bad Gateway or 504 Gateway Timeout.
+**Symptoms:** The host Caddy returns 502 Bad Gateway or 504 Gateway Timeout.
 
 **Diagnosis:**
 ```bash
 docker compose $LIVE ps php
-docker compose $LIVE logs --tail=100 php
-docker compose $LIVE logs --tail=50 nginx
+docker compose $LIVE logs --tail=100 php    # FrankenPHP's own log lines, then the app's
 ```
 
 **Common causes:**

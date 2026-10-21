@@ -26,8 +26,8 @@ final readonly class CreateProductImageHandler
     public const array ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
 
     /**
-     * PHP's default upload_max_filesize. Raising it means raising that setting and nginx's
-     * client_max_body_size too, or the request never reaches this check. Change the size messages
+     * Under upload_max_filesize and post_max_size (4M, docker/php/conf.d/10-app.ini). Raising it past
+     * them means raising them too, or the request never reaches this check. Change the size messages
      * below with it.
      */
     public const string MAX_SIZE = '2Mi';

@@ -56,7 +56,7 @@ The scope of this project is unusually broad for a solo effort. It covers:
 
 **CI/CD and deployment.** A GitHub Actions pipeline that runs code style checks, PHPStan, Doctrine schema validation, and the full test suite on every push. Deployment to AWS Lightsail via SSH with smoke tests. Two production stacks (live and playground) managed via Docker Compose with multi-stage builds.
 
-**Infrastructure.** A seven-stage Dockerfile covering development, production, cron, and playground reset. Five Docker Compose configurations for different environments. Redis for caching and sessions, RabbitMQ for async messaging, MySQL 8.4, Nginx with Caddy reverse proxy, S3 for file storage, Amazon SES for email.
+**Infrastructure.** A seven-stage Dockerfile covering development, production, cron, and playground reset. Five Docker Compose configurations for different environments. Redis for caching and sessions, RabbitMQ for async messaging, MySQL 8.4, FrankenPHP behind a Caddy reverse proxy, S3 for file storage, Amazon SES for email.
 
 **Developer experience.** A Makefile with clear targets, a local dev setup using Symfony CLI, Mailpit for email testing, PhpMyAdmin, Xdebug support, and a thorough setup guide with troubleshooting.
 

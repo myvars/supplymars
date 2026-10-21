@@ -1,0 +1,45 @@
+# Rate limits on public routes, applied by App\Shared\UI\Http\EventListener\RateLimitListener before
+# routing and the firewall, so a refused request costs no session or database work. Over the limit, the
+# answer is 429 with Retry-After. See Docs/08-security.md#rate-limiting.
+#
+# To add one: define its limiter below, and add a rule to app.rate_limits that names it.
+framework:
+    rate_limiter:
+        login:
+            policy: sliding_window
+            limit: 10
+            interval: '1 minute'
+        # 2 a minute, with a burst of 3 so a submit and two resubmissions after validation errors get through
+        form_post:
+            policy: token_bucket
+            limit: 3
+            rate: { interval: '30 seconds', amount: 1 }
+        # /health is public, and each call can hold a PHP thread for 30-45 seconds when a dependency hangs
+        # (Docs/13-monitoring.md). Per IP, so one caller cannot use up the uptime monitor's allowance
+        health:
+            policy: sliding_window
+            limit: 10
+            interval: '1 minute'
+        # Each call lists the backups on S3; the uptime monitor calls it hourly
+        health_backup:
+            policy: sliding_window
+            limit: 6
+            interval: '1 minute'
+        # Not a rule below: RegistrationController consumes it for each submitted sign-up, and answers
+        # with a flash message rather than a 429
+        registration:
+            policy: sliding_window
+            limit: 5
+            interval: '60 minutes'
+
+parameters:
+    # Each request counts against every rule it matches, with a count for each client IP.
+    # - path: regular expression on the path, as in access_control
+    # - methods: only these methods count (all when left out). Loading a form, or Turbo prefetching it,
+    #   must not use up the allowance for submitting it
+    # - exempt_loopback: true does not count calls from inside the container (the Docker healthcheck)
+    app.rate_limits:
+        - { path: '^/login$', limiter: login }
+        - { path: '^/(register$|reset-password|verify/resend$)', methods: [POST], limiter: form_post }
+        - { path: '^/health$', limiter: health, exempt_loopback: true }
+        - { path: '^/health/backup$', limiter: health_backup }

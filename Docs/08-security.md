@@ -285,7 +285,7 @@ access_control:
     - { path: ^/, roles: ROLE_ADMIN }
 ```
 
-`/health` is public so an uptime monitor and the Docker healthcheck can call it. It reports only `ok` or `fail` per check, never the reason, and production nginx lets two outside requests run at once (see [13-monitoring.md](13-monitoring.md)).
+`/health` is public so an uptime monitor and the Docker healthcheck can call it. It reports only `ok` or `fail` per check, never the reason, and each outside caller may make 10 requests a minute (see [13-monitoring.md](13-monitoring.md)).
 
 ## Admin Surface vs. Internal Tools
 
@@ -427,11 +427,11 @@ The app sends the security headers, through `nelmio/security-bundle`, so `symfon
 | `X-Frame-Options` | `SAMEORIGIN` | the app |
 | `X-Content-Type-Options` | `nosniff` | the app |
 | `Referrer-Policy` | `strict-origin-when-cross-origin` | the app |
-| `Strict-Transport-Security` | `max-age=63072000; includeSubDomains` | nginx |
+| `Strict-Transport-Security` | `max-age=63072000; includeSubDomains` | FrankenPHP (`docker/frankenphp/Caddyfile`) |
 
-HSTS stays in nginx (`docker/nginx/conf.d/prod.conf`, at server level), and Caddy passes it on. In the bundle it comes with `forced_ssl`, which also redirects to HTTPS, and Caddy already does that. There is no `preload`: submitting the domain to the browsers' preload list is slow to undo. `includeSubDomains` means every subdomain of `supplymars.com` must serve HTTPS.
+HSTS stays in the container's Caddyfile, and the host Caddy passes it on. In the bundle it comes with `forced_ssl`, which also redirects to HTTPS, and Caddy already does that. There is no `preload`: submitting the domain to the browsers' preload list is slow to undo. `includeSubDomains` means every subdomain of `supplymars.com` must serve HTTPS.
 
-The app adds its headers only to responses that go through Symfony. What nginx answers itself carries only HSTS: static files (in production `public/assets/`, and in development Docker `public/bundles/`, `public/uploads/` and `public/media/`) and nginx's own responses: 403 from the denied paths, in production 404 for a missing static file (any `/assets/` path, or a `.js`, `.css` or image extension), and 413, 429 and 502. In development Docker a missing static file goes to Symfony, whose asset server answers `/assets/`. Production images are in S3 and never served by nginx. Redirects carry no CSP, `X-Frame-Options` or `nosniff`: the bundle leaves them out, as they have no body.
+The app adds its headers only to responses that go through Symfony, including its 429s. What FrankenPHP answers itself carries only HSTS: static files (`public/assets/`, `public/bundles/`, and in development `public/uploads/` and `public/media/`) and its own refusals (403 for dotfiles and config files, 404 for a `.php` file other than `index.php`, 405 for `TRACE`). A missing file goes to Symfony, which answers 404 (or, under `/media/cache/resolve/`, generates the thumbnail). Production images are in S3 and never served by the container. Redirects carry no CSP, `X-Frame-Options` or `nosniff`: the bundle leaves them out, as they have no body.
 
 ### Content Security Policy
 
@@ -473,12 +473,28 @@ The bundle leaves out a directive whose value equals `default-src`, so `font-src
 
 ### SSL/TLS
 
-**Development:** Self-signed certificates via Symfony CLI
+**Development:** Self-signed certificates via Symfony CLI (`symfony serve`), or FrankenPHP's local certificate authority with `make up` ([02-setup-local.md](02-setup-local.md))
 
 **Production:**
 - TLSv1.2 and TLSv1.3 only
 - Modern cipher suite (ECDHE, AES-GCM)
-- HSTS enabled (sent by nginx, passed through by Caddy). The other security headers come from the app ([Security Headers](#security-headers))
+- The `php` container (FrankenPHP) serves plain HTTP on `127.0.0.1` only, so it is reachable only through Caddy
+- HSTS enabled (sent by FrankenPHP, passed through by Caddy). The other security headers come from the app ([Security Headers](#security-headers))
+
+### Trusted Proxies
+
+Every production request reaches PHP from the host Caddy, so `REMOTE_ADDR` is the proxy's address and PHP sees no HTTPS flag. `config/packages/framework.yaml` trusts the proxy's headers:
+
+```yaml
+framework:
+    trusted_proxies: '%env(TRUSTED_PROXIES)%'    # private_ranges in .env
+    trusted_headers: ['x-forwarded-for', 'x-forwarded-proto']
+```
+
+- `$request->getClientIp()` is then the visitor's address. `login_throttling`, the `registration` limiter and the rate limits below count by it; without this, every visitor would be one IP, and one attacker could lock everyone out.
+- Generated URLs and redirects use `https` when `X-Forwarded-Proto` is `https`.
+- `private_ranges` is Symfony's list of private and reserved networks, which covers Docker's network. It also includes the documentation ranges (`192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24`), so tests use ordinary public addresses for visitors (`tests/Shared/UI/Http/TrustedProxyTest.php`).
+- A client cannot claim another address: the host Caddy replaces any `X-Forwarded-For` a visitor sends, and the container is reachable only from the host. Only `X-Forwarded-For` and `X-Forwarded-Proto` are trusted; `Host` comes from the request as the host Caddy passes it on.
 
 ## Rate Limiting
 
@@ -500,61 +516,44 @@ login_throttling:
 - State stored in the cache pool (Redis in production)
 - Resets automatically after the interval expires
 
-### Nginx Rate Limiting
+### Request Rate Limits
 
-All public auth endpoints are rate-limited at the Nginx layer (production only):
+The app limits requests to a few public routes itself, with Symfony's RateLimiter, so development, tests and production behave the same. nginx did this before FrankenPHP replaced it ([ADR 016](adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md)). `App\Shared\UI\Http\EventListener\RateLimitListener` checks each request against the rules in `config/packages/rate_limiter.yaml` before routing and the firewall, so a refused request does no other work:
 
-```nginx
-# docker/nginx/conf.d/prod.conf
-
-map $request_method $form_post_limit_key {
-    POST    $binary_remote_addr;
-    default "";
-}
-
-limit_req_zone $binary_remote_addr zone=login:10m rate=10r/m;
-limit_req_zone $form_post_limit_key zone=register:10m rate=2r/m;
-limit_req_status 429;
-
-location = /login {
-    limit_req zone=login burst=5 nodelay;
-}
-
-location = /register {
-    limit_req zone=register burst=2 nodelay;
-}
-
-location ^~ /reset-password {
-    limit_req zone=register burst=2 nodelay;
-}
-
-location = /verify/resend {
-    limit_req zone=register burst=2 nodelay;
-}
+```yaml
+# config/packages/rate_limiter.yaml (limiters under framework.rate_limiter)
+app.rate_limits:
+    - { path: '^/login$', limiter: login }
+    - { path: '^/(register$|reset-password|verify/resend$)', methods: [POST], limiter: form_post }
+    - { path: '^/health$', limiter: health, exempt_loopback: true }
+    - { path: '^/health/backup$', limiter: health_backup }
 ```
 
-| Endpoint | Zone | Counts | Limit | Burst | Rationale |
-|----------|------|--------|-------|-------|-----------|
-| `/login` | `login` | All requests | 10/min per IP | 5 | Moderate — legitimate users may retry |
-| `/register` | `register` | POSTs only | 2/min per IP | 2 | Tight — registration also gated by app-level limiter |
-| `/reset-password*` | `register` | POSTs only | 2/min per IP | 2 | Tight — prevents email-sending abuse |
-| `/verify/resend` | `register` | POSTs only | 2/min per IP | 2 | Tight — prevents verification email abuse |
+| Path | Counts | Limit | Counted per |
+|------|--------|-------|-------------|
+| `/login` | All requests | 10 a minute (sliding window) | Client IP |
+| `/register`, `/reset-password*`, `/verify/resend` | POSTs only | 2 a minute, burst of 3 (token bucket) | Client IP, across all three |
+| `/health` | All requests except from loopback | 10 a minute (sliding window) | Client IP |
+| `/health/backup` | All requests | 6 a minute (sliding window) | Client IP |
 
-- The `register` zone counts only form submissions. Nginx does not count a request whose key is empty, and the key is empty for every method except POST, so loading a form, a Turbo prefetch of it, or the page a submit redirects to uses none of the allowance. When every request counted, Turbo's hover prefetch and the form load used up the allowance, so a submit within half a minute was refused.
-- A burst of 2 with `nodelay` lets three POSTs through at once (a submit and two resubmissions after validation errors), then one every 30 seconds. The three endpoints share the zone, so the allowance is per IP across all of them.
-- Returns `429 Too Many Requests` when exceeded, so a rate limit is not mistaken for an outage.
-- Not applied in development (dev Nginx config has no rate limiting)
+- Over the limit, the answer is `429 Too Many Requests` with `Retry-After`, so a rate limit is not mistaken for an outage.
+- The form rule counts only POSTs, so loading a form, a Turbo prefetch of it, or the page a submit redirects to uses none of the allowance. When every request counted, Turbo's hover prefetch and the form load used up the allowance, so a submit within half a minute was refused. The burst of 3 lets a submit and two resubmissions after validation errors through at once.
+- Every `/login` request counts: a failed login is a POST and the redirect back to the form, so at most five failed attempts a minute reach `login_throttling`, which then counts failures per IP and username.
+- Sign-up has a second limit of its own: `RegistrationController` consumes the `registration` limiter (5 an hour per IP, defined in the same file) for each submitted form, and answers with a flash message rather than a 429.
+- The counts are in the app cache (Redis). Tests use an in-memory pool that keeps its counts between the requests of one test (`config/packages/cache.yaml`); `tests/Shared/UI/Http/RateLimitTest.php` checks each rule.
+- **Adding a limit:** define a limiter under `framework.rate_limiter`, and add a rule that names it to `app.rate_limits`. A rule's `path` is a regular expression, as in `access_control`.
 
 ### Defence in Depth
 
-The two layers complement each other:
+The layers complement each other:
 
-| Layer | Scope | Tracks By | Limit |
-|-------|-------|-----------|-------|
-| Nginx | Reverse proxy | IP address | 2–10 req/min (by endpoint) |
-| Symfony | Application | IP + username | 5 attempts/15 min (login only) |
+| Layer | Tracks By | Limit |
+|-------|-----------|-------|
+| Request rate limits | IP address | 2–10 req/min (by endpoint) |
+| `registration` limiter | IP address | 5 sign-up submissions/hour |
+| `login_throttling` | IP + username | 5 failed attempts/15 min |
 
-Nginx catches high-volume automated attacks. Symfony catches targeted brute-force against specific accounts.
+The request limits catch high-volume automated attacks. `login_throttling` catches targeted brute-force against specific accounts.
 
 ## Input Validation
 
@@ -617,11 +616,12 @@ $constraint = new Image(
 
 - **Type:** the constraint's `extensions` option checks the filename's extension *and* that the detected
   content type belongs to it. An `.svg` file is rejected, and so is HTML renamed to `photo.jpg`.
-- **Size:** 2 MiB per file, which is PHP's default `upload_max_filesize`. To allow more, raise that
-  setting and nginx's `client_max_body_size` (4 MB per request in `docker/nginx/conf.d/`) as well as the
-  constant and its messages; otherwise the request is refused before it reaches the handler. Dropzone
-  sends up to two files per request (its `parallelUploads` default), so two files close to the limit
-  can together exceed nginx's 4 MB and be refused with a `413`.
+- **Size:** 2 MiB per file. PHP accepts 4 MiB per request (`post_max_size` and `upload_max_filesize` in
+  `docker/php/conf.d/10-app.ini`). To allow more, raise those as well as the constant and its messages.
+  PHP drops a bigger request's body before the app sees it, CSRF token included, so the request is
+  refused with a `403` and no flash. Dropzone sends up to two files per request (its `parallelUploads`
+  default), so two files close to the limit can together exceed 4 MiB; the page then refreshes without
+  saying why (nginx's `413` before it did the same).
 - **Validate first:** if one file in a request fails validation, none of that request's files are
   stored. Dropzone sends files two at a time, so other requests in the same drop can still succeed.
   The response is `422` with the reason in `error`, which Dropzone shows on the file, and the error

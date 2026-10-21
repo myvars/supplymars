@@ -2,8 +2,8 @@
 # Docker Compose: Production configuration
 # ========================================
 # Used by both Live and Playground stacks. Differences controlled via env vars.
-# CI builds the php, nginx and reset images, tagged with the commit SHA, and pushes them to
-# GHCR; the server pulls and starts them (make up-prod-live, make up-prod-playground) and never
+# CI builds the php and reset images, tagged with the commit SHA, and pushes them to GHCR; php
+# runs both the php and messenger services. The server pulls and starts them (make up-prod-live, make up-prod-playground) and never
 # builds. IMAGE_TAG is the commit SHA to run ("local" for a build on your own machine).
 
 x-common-logging: &common-logging
@@ -76,7 +76,16 @@ services:
     environment:
       <<: *common-php-env
       RUN_MIGRATIONS: "true"  # Only php container runs migrations/messenger-setup
-    # No code mounts—built artifacts only; code changes require a new image.
+      SERVER_NAME: ":80"      # Plain HTTP; Caddy on the host terminates TLS
+    # Localhost only; Caddy on the host proxies to this port (live 8001, playground 8002). Replaces dev's 80 and 443.
+    ports: !override
+      - "127.0.0.1:${HTTP_HOST_PORT:-8001}:80"
+    # No code mounts—built artifacts only; code changes require a new image. No Caddy volumes either:
+    # without TLS there are no certificates to keep.
+    volumes: !reset []
+    healthcheck:
+      # Passes when FrankenPHP, the database, Redis and the queue all respond
+      test: [ "CMD", "curl", "-f", "http://localhost/health" ]
 
 
   # --- Messenger Worker (Prod) ---
@@ -98,7 +107,9 @@ services:
     # the current job ends
     stop_grace_period: 15m
     volumes:
-      - /home/ubuntu/supplymars-backups:/backups   # Live's nightly backup writes latest.sql.gz here for the playground reset
+      # Live's nightly backup writes latest.sql.gz here for the playground reset. The worker runs as
+      # www-data (uid 33), which must own the host directory (Docs/11-runbook.md)
+      - /home/ubuntu/supplymars-backups:/backups
 
 
   # --- Playground Reset (nightly DB clone from live) ---
@@ -128,25 +139,6 @@ services:
       retries: 3
       start_period: 5s
     restart: unless-stopped
-
-
-  # --- Nginx Webserver (Prod) ---
-  nginx:
-    logging: *common-logging
-    image: ghcr.io/myvars/supplymars/nginx:${IMAGE_TAG:-local}
-    build:
-      context: .
-      dockerfile: docker/Dockerfile
-      target: nginx-prod
-    ports:
-      - "127.0.0.1:${NGINX_HOST_PORT:-8080}:80"
-    healthcheck:
-      # Passes when nginx, PHP, the database, Redis and the queue all respond
-      test: ["CMD", "curl", "-f", "http://localhost/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 10
-      start_period: 60s
 
 
 # --- Prod Volumes ---

@@ -1,3 +1,0 @@
-# Locally-generated dev TLS certs — never commit (private key!).
-# Regenerate with: make certs
-*.pem
