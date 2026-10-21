@@ -404,7 +404,21 @@ make verify-prod-live && make verify-prod-playground
 
 On 2026-10-21 the deploy of #81 stopped this way: Compose waited for the messenger worker, which ignores `SIGTERM`, through a 15-minute `stop_grace_period` (now 30 seconds, #83). Live was down for about 20 minutes, until step 3.
 
-### 6.5 Slow Pages
+### 6.5 Signed-In Users Get a 500 After a Deploy
+
+**Symptoms:** after a deploy, every page fails for users who were signed in before it, while new visitors are fine. The log shows a `TypeError` from `unserialize()` on a `User` property.
+
+The session in Redis holds the signed-in `User` object, serialized by the previous code. When a property of `User` changes type, PHP cannot restore the old session, and Symfony does not catch the error. Clear the sessions on both stacks. Everyone is signed out once, and remember-me signs them back in.
+
+```bash
+# Session keys start with sf_s (the session handler's default prefix); cache keys are left alone
+docker compose $LIVE exec redis sh -c 'export REDISCLI_AUTH="$REDIS_PASSWORD"; redis-cli --scan --pattern "sf_s*" | xargs -r redis-cli unlink'
+docker compose $PLAYGROUND exec redis sh -c 'export REDISCLI_AUTH="$REDIS_PASSWORD"; redis-cli --scan --pattern "sf_s*" | xargs -r redis-cli unlink'
+```
+
+#87 needed this: `publicId` changed from a string to a `Ulid`.
+
+### 6.6 Slow Pages
 
 **Diagnosis:**
 ```bash
@@ -423,7 +437,7 @@ docker compose $LIVE exec redis sh -c 'REDISCLI_AUTH="$REDIS_PASSWORD" redis-cli
 - Redis eviction (memory pressure)
 - Large report calculation running during peak traffic
 
-### 6.6 Failed Messenger Messages
+### 6.7 Failed Messenger Messages
 
 ```bash
 # View failed messages
@@ -439,7 +453,7 @@ docker compose $LIVE exec -T php php bin/console messenger:failed:retry <id>
 docker compose $LIVE exec -T php php bin/console messenger:failed:remove <id>
 ```
 
-### 6.7 Disk Space
+### 6.8 Disk Space
 
 **Diagnosis:**
 ```bash
