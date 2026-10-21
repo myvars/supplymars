@@ -1,156 +1,62 @@
 # Template Conventions
 
-## Directory Structure
+How templates under `templates/` are named and documented, and the variables FormFlow passes to them. Read it before adding a template.
 
-```
-templates/
-├── base.html.twig                         Main HTML layout (body frame, modal, flashes)
-├── _header.html.twig                      Navigation bar
-├── _footer.html.twig                      Footer
-├── _logo.html.twig                        Logo partial
-├── _menu.html.twig                        Sidebar navigation drawer
-├── _flashes.html.twig                     Flash message rendering (FlashToast)
-├── _help_drawer.html.twig                 Contextual help panel
-│
-├── form/                                  Global form theme (shadcn_theme.html.twig), Turnstile field
-├── help/                                  Contextual help topics
-├── home/                                  Homepage
-│
-├── components/                            Twig Components (PascalCase)
-│   ├── EntityCard.html.twig
-│   ├── Search.html.twig
-│   └── ...
-│
-├── shared/
-│   ├── form_flow/                         App overrides of the myvars/form-flow default templates
-│   │   ├── base.html.twig                 Router — resolves operation to template
-│   │   ├── create.html.twig               Default create form (modal)
-│   │   ├── update.html.twig               Default update form (modal)
-│   │   ├── delete.html.twig               Default delete confirmation (modal)
-│   │   ├── index.html.twig                Default search/list page
-│   │   ├── filter.html.twig               Default filter form (modal)
-│   │   ├── missing.html.twig              Fallback when no template found
-│   │   ├── inline_edit_display.html.twig  Inline edit: display mode
-│   │   ├── inline_edit_form.html.twig     Inline edit: form mode
-│   │   └── inline_edit_success.stream.html.twig
-│   ├── turbo/                             Turbo integration
-│   │   ├── modal_base.html.twig           Layout selector (modal frame / other frame / full page)
-│   │   ├── modal_frame.html.twig          Minimal modal wrapper
-│   │   ├── embedded_frame.html.twig       Embedded turbo-frame layout
-│   │   ├── _modal.html.twig               Dialog component in base layout
-│   │   └── _frame_success_stream.html.twig
-│   ├── email/                             Email base layout
-│   └── pagerfanta/                        Pagination template
-│
-├── {context}/                             Bounded context pages & partials
-│   ├── {entity}/
-│   │   ├── index.html.twig               Search/list page
-│   │   ├── show.html.twig                Detail page (composes card partials)
-│   │   ├── _*_card.html.twig             Card partials
-│   │   └── _inline_*.html.twig           Inline edit display partials
-│   └── ...
-│
-└── bundles/                               Third-party template overrides
-    └── TwigBundle/Exception/              Error pages
-```
-
-## Naming Conventions
+## Naming
 
 | Pattern | Purpose | Example |
 |---|---|---|
-| `index.html.twig` | Search/list page | `catalog/product/index.html.twig` |
-| `show.html.twig` | Detail page | `order/show.html.twig` |
-| `_*_card.html.twig` | Card partial (underscore = partial) | `_product_card.html.twig` |
-| `_inline_*.html.twig` | Inline edit display partial | `_inline_name.html.twig` |
-| `PascalCase.html.twig` | Twig Component | `EntityCard.html.twig`, `Search.html.twig` |
-| `*.stream.html.twig` | Turbo Stream template | `inline_edit_success.stream.html.twig` |
-| Action templates | State transitions (modals) | `cancel.html.twig`, `reassign.html.twig` |
+| `{context}/{entity}/index.html.twig` | Search/list page | `catalog/product/index.html.twig` |
+| `{context}/{entity}/show.html.twig` | Detail page, composed of card partials | `catalog/product/show.html.twig`, `order/show.html.twig` |
+| `{context}/{entity}/{action}.html.twig` | Flow template or action modal | `order/cancel.html.twig`, `note/ticket/reassign.html.twig`, `customer/delete.html.twig` |
+| `_*_card.html.twig` | Card partial | `catalog/product/_product_card.html.twig` |
+| `_inline_*.html.twig` | Inline edit display partial | `catalog/product/_inline_name.html.twig` |
+| `components/PascalCase.html.twig` | Twig Component, used as `<twig:Name>` | `EntityCard.html.twig`, `Search.html.twig` |
+| `*.stream.html.twig` | Turbo Stream template | `shared/form_flow/inline_edit_success.stream.html.twig` |
 
-**Rules:**
-- Underscore prefix (`_`) = included by other templates, never rendered directly.
-- No prefix = routed page or flow template.
-- PascalCase in `components/` = Twig Component consumed as `<twig:Name>`.
-- Templates mirror bounded contexts: `{context}/{entity}/{action}.html.twig`.
+- An underscore prefix means a partial: included by other templates, never rendered directly. No prefix means a routed page or flow template.
+- Templates mirror the bounded contexts: `{context}/{entity}/...`, or `{entity}/...` for a `FlowModel::simple()` controller (`order/`, `customer/`).
+- `shared/form_flow/` holds the app's overrides of the `myvars/form-flow` default templates. Which one a flow renders: [Overrides](../FormFlow/Overrides.md).
+- `shared/turbo/` holds the modal and frame layouts: [Turbo](../Turbo/README.md).
+- `bundles/TwigBundle/Exception/` holds the error pages (`error.html.twig`, `error403`, `error404`, `error500`).
+- Help topics in `help/` extend `help/_layout.html.twig`.
 
-## FormFlow Variables
-
-Templates rendered by FormFlow receive these variables automatically:
+## FormFlow variables
 
 | Variable | Type | Available in | Description |
 |---|---|---|---|
-| `flowModel` | `string` | All | Entity name (e.g., "Product", "Supplier") |
-| `flowOperation` | `string` | All | Operation: create, update, delete, filter, action, index |
-| `routes` | `FlowRoutes` | All | Typed route names (`.index`, `.new`, `.show`, `.delete`, `.deleteConfirm`, `.filter`) |
-| `template` | `string` | All | Resolved template path |
-| `form` | `FormView` | create, update, filter | Symfony form view |
-| `result` | object | create, update, filter, delete | The form data object passed to the flow (create, update, filter); the entity (delete and other confirmations) |
-| `results` | `Pagerfanta` | index | Paginated result set |
+| `flowModel` | `string` | All | Display name ("Product", "VAT Rate") |
+| `flowModelPlural` | `string` | All | Plural display name (display name + "s" unless `displayNamePlural:` is set); no app template uses it yet |
+| `flowOperation` | `string` | All | `create`, `update`, `delete`, `filter`, `action`, `index` |
+| `template` | `string` | All | First template the include chain tries |
+| `routes` | `FlowRoutes` | All | Route names: `.index`, `.new`, `.show`, `.delete`, `.deleteConfirm`, `.filter` |
+| `form` | `FormView` | create, update, filter | The form |
+| `result` | object | create, update, filter, delete, action | The form data object (form flows); the entity (confirm pages) |
 | `flowBackLink` | `?string` | create, update, filter | The Referer URL, or null |
-| `flowAllowDelete` | `bool` | update | Whether to show delete button |
-| `flowModelPlural` | `string` | All | Plural display name (e.g., "Orders") |
-| `confirmKey` | `string` | delete and other confirmations | CSRF token key (`delete` by default) |
+| `flowAllowDelete` | `bool` | create, update, filter | Set by `->allowDelete()`; the app's update template uses it |
+| `results` | `Pagerfanta` | index | Paginated result set |
+| `confirmKey` | `string` | delete, action (confirm page) | CSRF token key (`delete` unless set by `forConfirm()`) |
 
-### Template Resolution Order
+Use `routes` rather than building route names: `{{ path(routes.delete, {'id': result.publicId.value}) }}`.
 
-FormFlow resolves templates in this order:
-1. Custom context template: `{context}/{entity}/{operation}.html.twig`
-2. Shared base template: `shared/form_flow/{operation}.html.twig`
-3. Fallback: `shared/form_flow/missing.html.twig`
+## Comment headers
 
-To override the default create modal for products, create `catalog/product/create.html.twig`.
-
-## Twig Component Blocks
-
-### Search
-
-| Block | Purpose | Required? |
-|---|---|---|
-| `result_count` | Header with result count | No (has default) |
-| `sort` | Sort column headers (use `<twig:SortLink>`) | Yes |
-| `list_item` | Single result card (loops over `results`) | Yes |
-| `filter` | Filter icon/link | No (has default) |
-| `add` | Create button | No (has default) |
-
-### EntityCard
-
-| Block | Purpose |
-|---|---|
-| `content` | Main card body (implicit) |
-| `cardImage` | Optional image slot (used with `layout="horizontal"`) |
-
-### FlowForm
-
-| Block | Purpose |
-|---|---|
-| `before_submit` | Content before the submit button (e.g., delete link) |
-
-### ModalPanel / ConfirmDialog
-
-| Block | Purpose |
-|---|---|
-| `content` | Modal body content (implicit for ModalPanel) |
-| `message` | Confirmation message text (ConfirmDialog) |
-
-## Comment Header Style
-
-Card partials and show pages should include a brief header comment:
+New card partials, show pages and action modals start with a short comment: what it is, where it is used, and its variables. Not every existing one has it yet.
 
 ```twig
-{# Supplier product detail card.
-   Used on: supplier product show page.
-   Variable: supplierProduct (SupplierProduct entity) #}
+{# Single order item card with product image, price, quantity, and supplier toggle.
+   Used on: order show page (inside _order_items_card). Variable: orderItem (CustomerOrderItem) #}
 ```
 
-Anonymous Twig Components document props above the `{% props %}` declaration. PHP-backed components (such as `EntityCard`) have no `{% props %}`; they list their props in the same header comment.
+A Twig Component documents its props and blocks in the same header, above `{% props %}` for an anonymous component. A PHP-backed component (`EntityCard`) has no `{% props %}` and lists its props in the header. That header is the reference for the component's props and blocks; do not copy it into docs.
 
-```twig
-{# CSRF-protected confirmation dialog, built on ModalPanel.
-   - title: Dialog heading
-   - formAction: POST URL for the form submission
-   - csrfId: CSRF token identifier
-   - confirmLabel: Text on the confirm button
-   Block: message (confirmation text shown above buttons) #}
-{% props title, formAction, csrfId, confirmLabel, confirmVariant = 'destructive-solid', cancelLabel = 'Cancel' %}
-```
+## Gotchas
 
-Keep headers minimal: entity name, where it's used, and variable contract. Don't repeat what's obvious from the template name.
+- `Search`'s `sort` and `list_item` blocks are empty by default, so an index page that does not fill them shows no sort links and an empty item per result. The shared `shared/form_flow/index.html.twig` fills both with the id only.
+- After `ux:install` replaces a template at an existing path, run `rm -rf var/cache/dev var/cache/test` (see `CLAUDE.md`).
+
+## Related
+
+- [FormFlow Overrides](../FormFlow/Overrides.md): template resolution and recipes
+- [FormFlow](../FormFlow/README.md)
+- Package [templates reference](https://github.com/myvars/form-flow/blob/v1.4.0/docs/templates.md)

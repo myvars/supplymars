@@ -1,101 +1,64 @@
 # Embedded Forms
 
-Embedded forms render a FormFlow form inline within another page, as opposed to in a modal dialog. They use Turbo Frames to scope form submissions without full-page navigation.
+A FormFlow form rendered inside another page, in its own Turbo Frame, instead of in the modal. Read when a form belongs on a host page, such as the reply form under a ticket.
 
-## When to Use
+## Rules
 
 | Scenario | Use |
-|----------|-----|
+|---|---|
 | Quick action (edit, reassign, confirm) | Modal |
-| Form that belongs in context of another page (reply, comment) | Embedded |
-| Form visited directly as its own page | Full-page |
+| Form that belongs on another page (reply, comment) | Embedded |
+| Form visited as its own page | Full page |
 
-## How It Works
+- **Render the form server-side on the host page**, not lazy-loaded with a frame `src`, so it is part of the page Turbo re-renders after the submit.
+- **The handler returns no `RedirectTarget`.** A plain `Result::ok()` makes the flow answer with `<turbo-stream action="refresh">`, which re-renders the host page in place with scroll kept (`base.html.twig` sets `turbo-refresh-method` to `replace` and `turbo-refresh-scroll` to `preserve`). A `RedirectTarget` always navigates.
 
-### Three-Way Layout Detection
+How a frame request picks its layout (`modal_base.html.twig` and the `Turbo-Frame` header) and how `FlowForm` picks the submit frame (`formFrame`) are in [Turbo](../Turbo/README.md).
 
-`modal_base.html.twig` inspects the `Turbo-Frame` request header:
+## How to
 
-1. **`modal`** — extends `modal_frame.html.twig` (modal dialog)
-2. **Any other value** — extends `embedded_frame.html.twig` (inline frame)
-3. **Absent** — extends `base.html.twig` (full page)
+The reply form on the ticket page is the live example.
 
-### Submit Frame Target
+1. **Template for the POST response** (shown with validation errors), `templates/note/ticket/reply_embedded.html.twig`. It extends `shared/turbo/modal_base.html.twig` and does not use `<twig:ModalPanel>`:
 
-`FlowForm` sets `data-turbo-frame` on the submit button. Priority:
+   ```twig
+   {% extends 'shared/turbo/modal_base.html.twig' %}
 
-1. `formFrame` prop (explicit override)
-2. `Turbo-Frame` request header value
-3. `_top` fallback
+   {% block body %}
+       <twig:FlowForm :form="form" buttonLabel="Send Reply"/>
+   {% endblock %}
+   ```
 
-## Step-by-Step
+2. **Host controller** (`TicketController::show()`) creates the form with an explicit `action` URL pointing at the flow route (`'action' => $this->generateUrl('app_note_ticket_reply', [...])`) and passes the view to the host template (`templates/note/ticket/show.html.twig`), which wraps it in a frame and names that frame in `formFrame`:
 
-### 1. Create an Embedded Template
+   ```twig
+   <turbo-frame id="ticket-reply">
+       <twig:FlowForm :form="replyForm" buttonLabel="Send Reply" formFrame="ticket-reply"/>
+   </turbo-frame>
+   ```
 
-Extends `modal_base.html.twig` but does **not** use `<twig:ModalPanel>`. This handles POST responses (validation errors):
+3. **Flow controller** (`TicketController::reply()`) points at the template and the host page:
 
-```twig
-{% extends 'shared/turbo/modal_base.html.twig' %}
+   ```php
+   context: FlowContext::forCreate($this->model())
+       ->template('note/ticket/reply_embedded.html.twig')
+       ->successRoute('app_note_ticket_show', ['id' => $ticket->getPublicId()->value()]),
+   ```
 
-{% block body %}
-    <p class="mb-3 text-xs font-medium uppercase tracking-wide text-gray-400 dark:text-gray-500">Form Title</p>
-    <twig:FlowForm :form="form" buttonLabel="Submit"/>
-{% endblock %}
-```
+4. **Handler** (`ReplyToTicketHandler`) returns `Result::ok(message: 'Reply sent')`, no `RedirectTarget`.
 
-### 2. Render the Form on the Host Page
-
-In the host controller, create the form with an explicit `action` URL:
-
-```php
-$form = $this->createForm(YourType::class, new YourForm(), [
-    'action' => $this->generateUrl('app_context_entity_action', ['id' => $entity->getPublicId()->value()]),
-])->createView();
-```
-
-In the host template, wrap it in a `<turbo-frame>` and pass `formFrame`:
-
-```twig
-<turbo-frame id="your-form">
-    <twig:FlowForm :form="yourForm" buttonLabel="Submit" formFrame="your-form"/>
-</turbo-frame>
-```
-
-The form must be rendered server-side (not lazy-loaded via `src`) so that it is part of the page Turbo re-renders after submission.
-
-### 3. Configure the Handler Controller
-
-Point to the embedded template and set `successRoute` to the host page:
-
-```php
-context: FlowContext::forCreate($this->model())
-    ->template('your_context/your_embedded_form.html.twig')
-    ->successRoute('app_context_entity_show', ['id' => $entity->getPublicId()->value()]),
-```
-
-### 4. Avoid RedirectTarget in the Handler
-
-Return `Result::ok()` without a `RedirectTarget`. This lets `TurboAwareRedirector` use `<turbo-stream action="refresh">`, which re-renders the current page in place with the scroll position kept (`base.html.twig` sets `turbo-refresh-method` to `replace` and `turbo-refresh-scroll` to `preserve`).
-
-```php
-return Result::ok(message: 'Saved');
-```
-
-## Worked Example: Ticket Reply
-
-**Key files:**
-- `templates/note/ticket/reply_embedded.html.twig` — embedded template for POST responses
-- `templates/note/ticket/show.html.twig` — host page renders form inline in `<turbo-frame>`
-- `src/Note/UI/Http/Controller/TicketController.php` — `show()` creates the form, `reply()` handles submission
-- `src/Note/Application/Handler/Ticket/ReplyToTicketHandler.php` — returns `Result::ok()` without redirect
-
-## Comparison: Modal vs Embedded
+## Modal versus embedded
 
 | Aspect | Modal | Embedded |
-|--------|-------|----------|
-| Uses `<twig:ModalPanel>` | Yes | No |
-| Host page markup | `<a data-turbo-frame="modal">` | `<turbo-frame>` with inline form |
-| Frame ID | `modal` | Custom (e.g., `ticket-reply`) |
-| On success | Modal closes + page refreshes | Page refreshes in place, scroll kept |
-| Handler redirect | Either works | Avoid `RedirectTarget` |
-| Form creation | FormFlow only | Host controller + FormFlow |
+|---|---|---|
+| `<twig:ModalPanel>` | Yes | No |
+| Host page markup | `<a data-turbo-frame="modal">` | `<turbo-frame>` with the form inside |
+| Frame id | `modal` | Your own (`ticket-reply`) |
+| On success | Modal closes, page refreshes | Page refreshes in place, scroll kept |
+| Handler `RedirectTarget` | Either works | Avoid |
+| Form created by | FormFlow | Host controller (GET) and FormFlow (POST) |
+
+## Related
+
+- [FormFlow](README.md)
+- [Turbo](../Turbo/README.md)
