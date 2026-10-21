@@ -1,899 +1,104 @@
 # CLI Reference
 
-This document lists all custom console commands in SupplyMars. Most of these run as scheduled jobs (`src/Shared/Infrastructure/Scheduler/MainSchedule.php`) to simulate e-commerce activity - creating orders, processing shipments, and fluctuating stock levels.
-
-## Error Handling
-
-All simulation and reporting commands that process entities in loops follow a consistent error handling pattern (see [ADR-003](adr/003-simulation-first-design.md)):
-
-- **Continue on failure:** If an individual item fails, the command catches the exception, logs it, and continues to the next item. A single failure does not halt the entire batch.
-- **Failure logging:** Each failure is logged with structured context (entity ID, error message) via Monolog.
-- **Console warning:** After the loop completes, if any items failed, a warning is displayed: `N item(s) failed — see logs for details.`
-- **Exit codes:**
-  - `0` (`Command::SUCCESS`) — all items processed successfully.
-  - `1` (`Command::FAILURE`) — one or more items failed during processing.
-  - `2` (`Command::INVALID`) — invalid input arguments.
-
-This applies to: `app:create-customer-orders`, `app:build-purchase-orders`, `app:accept-purchase-orders`, `app:ship-purchase-order-items`, `app:deliver-purchase-order-items`, `app:refund-purchase-orders`, `app:update-supplier-stock`, `app:generate-reviews`, `app:calculate-order-sales`, `app:calculate-customer-sales`, `app:calculate-product-sales`.
-
----
-
-## Order Context
-
-### app:create-customer-orders
-
-**Purpose:** Create simulated customer orders with random products and customers.
-
-**File:** `src/Order/UI/Console/CreateCustomerOrdersCommand.php`
-
-**Arguments:**
-| Name | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| `orderCount` | int | No | 1 | Number of orders to create, all at once (the schedule spreads them over time) |
-
-**Options:**
-| Name | Description |
-|------|-------------|
-| `--random` | Randomize the order count (0 to orderCount) |
-| `--dry-run` | Preview what would be created without persisting |
-
-**Example:**
-```bash
-# Create exactly 10 orders
-symfony console app:create-customer-orders 10
-
-# Create 0-10 orders (random)
-symfony console app:create-customer-orders 10 --random
-
-# Verbose output shows created order IDs
-symfony console app:create-customer-orders 5 -v
-```
-
-**Side Effects:**
-- Creates User entities (if needed)
-- Creates Address entities (if needed)
-- Creates CustomerOrder entities (with `TEST-XXXX` reference)
-- Creates CustomerOrderItem entities (1-5 per order)
-
-**Implementation:** Delegates to `DemoOrderCreator` service (`src/Order/Application/Service/DemoOrderCreator.php`), which is also used by the web-based "Create Demo Order" feature on the order index page (with `DEMO-XXXX` reference and a daily limit of 10).
-
-**Constants (on `DemoOrderCreator`):**
-- `MAX_ORDER_LINES = 5` - Maximum items per order
-- `MAX_LINE_QTY = 5` - Maximum quantity per line
-
----
-
-## Purchasing Context
-
-### app:build-purchase-orders
-
-**Purpose:** Allocate pending customer orders to supplier purchase orders.
-
-**File:** `src/Purchasing/UI/Console/BuildPOsCommand.php`
-
-**Arguments:**
-| Name | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| `orderCount` | int | No | 50 | Number of orders to process |
-
-**Options:**
-| Name | Description |
-|------|-------------|
-| `--dry-run` | Preview allocations without persisting |
-
-**Example:**
-```bash
-# Process up to 50 orders
-symfony console app:build-purchase-orders
-
-# Process up to 100 orders
-symfony console app:build-purchase-orders 100
-
-# Preview what would be created
-symfony console app:build-purchase-orders 20 --dry-run -v
-```
-
-**Side Effects:**
-- Creates PurchaseOrder entities (one per supplier per order)
-- Creates PurchaseOrderItem entities
-- Updates CustomerOrderItem status to PROCESSING
-- Triggers domain events
-
----
-
-### app:accept-purchase-orders
-
-**Purpose:** Simulate supplier acceptance/rejection of purchase orders.
-
-**File:** `src/Purchasing/UI/Console/AcceptPOsCommand.php`
-
-**Arguments:**
-| Name | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| `poCount` | int | No | 50 | Number of POs to process |
-
-**Options:**
-| Name | Description |
-|------|-------------|
-| `--dry-run` | Preview without persisting changes |
-| `--supplier=ID` | Target a specific supplier by internal ID |
-
-**Example:**
-```bash
-# Accept/reject up to 50 POs
-symfony console app:accept-purchase-orders
-
-# Process more POs
-symfony console app:accept-purchase-orders 100
-
-# Target a specific supplier
-symfony console app:accept-purchase-orders 50 --supplier=3
-```
-
-**Side Effects:**
-- Updates PurchaseOrderItem status to ACCEPTED (98%) or REJECTED (2%)
-- Updates PurchaseOrder status (derived from items)
-- Updates CustomerOrderItem status (derived from PO items)
-
-**Constants:**
-- `REJECTION_ODDS = 50` - 1 in 50 chance of rejection per item
-
----
-
-### app:ship-purchase-order-items
-
-**Purpose:** Simulate shipping of accepted purchase order items.
-
-**File:** `src/Purchasing/UI/Console/ShipPOItemsCommand.php`
-
-**Arguments:**
-| Name | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| `poItemCount` | int | No | 50 | Number of items to process |
-
-**Options:**
-| Name | Description |
-|------|-------------|
-| `--dry-run` | Preview without persisting changes |
-| `--supplier=ID` | Target a specific supplier by internal ID |
-| `--skip-timing` | Bypass business hours and wait time checks |
-
-**Example:**
-```bash
-symfony console app:ship-purchase-order-items 100
-
-# Skip timing constraints (for testing)
-symfony console app:ship-purchase-order-items 100 --skip-timing
-
-# Target specific supplier
-symfony console app:ship-purchase-order-items 50 --supplier=3
-```
-
-**Side Effects:**
-- Updates PurchaseOrderItem status to SHIPPED
-- Cascades status updates to parent entities
-
-**Simulation Logic:**
-- Item must be in ACCEPTED status
-- Status change timestamp must be 2+ hours old
-- Current time must be between 09:00-18:00
-- 95% probability of shipping when conditions met
-- Use `--skip-timing` to bypass timing/probability checks
-
----
-
-### app:deliver-purchase-order-items
-
-**Purpose:** Simulate delivery of shipped purchase order items.
-
-**File:** `src/Purchasing/UI/Console/DeliverPOItemsCommand.php`
-
-**Arguments:**
-| Name | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| `poItemCount` | int | No | 50 | Number of items to process |
-
-**Options:**
-| Name | Description |
-|------|-------------|
-| `--dry-run` | Preview without persisting changes |
-| `--supplier=ID` | Target a specific supplier by internal ID |
-| `--skip-timing` | Bypass business hours and wait time checks |
-
-**Example:**
-```bash
-symfony console app:deliver-purchase-order-items 100
-
-# Skip timing constraints (for testing)
-symfony console app:deliver-purchase-order-items 100 --skip-timing
-
-# Target specific supplier
-symfony console app:deliver-purchase-order-items 50 --supplier=3
-```
-
-**Side Effects:**
-- Updates PurchaseOrderItem status to DELIVERED
-- Sets `deliveredAt` timestamp
-- Cascades status updates to parent entities
-
-**Simulation Logic:**
-- Item must be in SHIPPED status
-- Status change timestamp must be 12+ hours old
-- Current time must be between 07:00-21:00
-- 95% probability of delivery when conditions met
-- Use `--skip-timing` to bypass timing/probability checks
-
----
-
-### app:refund-purchase-orders
-
-**Purpose:** Process refunds for rejected purchase orders and re-allocate.
-
-**File:** `src/Purchasing/UI/Console/RefundPOsCommand.php`
-
-**Arguments:**
-| Name | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| `poCount` | int | No | 50 | Number of POs to process |
-
-**Example:**
-```bash
-symfony console app:refund-purchase-orders 20
-```
-
-**Side Effects:**
-- Updates all items in rejected POs to REFUNDED status
-- Re-runs allocation on customer order (finds alternative suppliers)
-- May create new PurchaseOrders
-
----
-
-### app:update-supplier-stock
-
-**Purpose:** Simulate real-world supplier stock level and cost fluctuations.
-
-**File:** `src/Purchasing/UI/Console/UpdateSupplierStockCommand.php`
-
-**Arguments:**
-| Name | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| `productCount` | int | No | 50 | Number of products to update |
-
-**Example:**
-```bash
-# Update 50 random supplier products
-symfony console app:update-supplier-stock
-
-# Update 100 products with verbose output
-symfony console app:update-supplier-stock 100 -v
-```
-
-**Side Effects:**
-- Modifies SupplierProduct stock levels
-- Modifies SupplierProduct costs
-- Raises `SupplierProductStockWasChangedEvent`
-- May trigger product pricing recalculation
-
-**Simulation Logic:**
-- If stock ≤ 20: Replenish with 0-100 units
-- Otherwise: Decrease by up to 10%
-- Cost varies by ±10%
-
-**Constants:**
-- `COST_VARIANCE_PERCENT = 10`
-- `STOCK_VARIANCE_PERCENT = 10`
-- `STOCK_REPLENISH_LEVEL = 20`
-
----
-
-## Purchasing Setup Commands
-
-### app:create-supplier-products
-
-**Purpose:** Map supplier products to catalog products (initial setup).
-
-**File:** `src/Purchasing/UI/Console/Setup/CreateSupplierProductsCommand.php`
-
-**Arguments:** None
-
-**Example:**
-```bash
-symfony console app:create-supplier-products
-```
-
-**Side Effects:**
-- Iterates all non-warehouse suppliers
-- Matches SupplierProducts to Products by manufacturer part number
-- Creates new Products if no match found
-- Links SupplierProducts to matched/created Products
-
----
-
-### app:create-warehouse-products
-
-**Purpose:** Create catalog products from warehouse supplier products.
-
-**File:** `src/Purchasing/UI/Console/Setup/CreateWarehouseProductsCommand.php`
-
-**Arguments:** None
-
-**Example:**
-```bash
-symfony console app:create-warehouse-products
-```
-
-**Side Effects:**
-- Gets warehouse supplier
-- Creates Product entities from SupplierProducts
-- Maps SupplierProducts to created Products
-
----
-
-## Purchasing Utilities
-
-### app:activate-supplier-products
-
-**Purpose:** Activate inactive supplier products.
-
-**File:** `src/Purchasing/UI/Console/Utilities/ActivateSupplierProductsCommand.php`
-
-**Arguments:**
-| Name | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| `productCount` | int | No | 50 | Number of products to activate |
-
-**Example:**
-```bash
-symfony console app:activate-supplier-products 100
-```
-
-**Side Effects:**
-- Toggles `isActive` status on supplier products
-- Triggers `SupplierProductStatusWasChangedEvent`
-
----
-
-### app:reset-supplier-stock
-
-**Purpose:** Reset all supplier product stock levels to random values.
-
-**File:** `src/Purchasing/UI/Console/Utilities/ResetSupplierStockCommand.php`
-
-**Arguments:**
-| Name | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| `supplierId` | string | Yes | - | Supplier internal ID |
-
-**Example:**
-```bash
-# Reset stock for supplier with ID 1
-symfony console app:reset-supplier-stock 1
-```
-
-**Side Effects:**
-- Sets all supplier's products to random stock (0-300)
-- Useful for testing scenarios
-
-**Constants:**
-- `MAX_STOCK_LEVEL = 300`
-
----
-
-### app:rewind-mixed-status-purchase-orders
-
-**Purpose:** Find and rewind purchase orders with inconsistent item statuses back to pending.
-
-**File:** `src/Purchasing/UI/Console/Utilities/RewindMixedStatusPurchaseOrdersCommand.php`
-
-**Arguments:** None
-
-**Options:**
-| Name | Description |
-|------|-------------|
-| `--limit=N` | Maximum POs to process (default: 100) |
-| `--days-back=N` | Number of days back to search (default: 30) |
-| `--dry-run` | Preview without persisting changes |
-
-**Example:**
-```bash
-# Find and rewind POs with mixed item statuses
-symfony console app:rewind-mixed-status-purchase-orders
-
-# Preview what would be rewound
-symfony console app:rewind-mixed-status-purchase-orders --dry-run -v
-
-# Search last 60 days, limit to 50 POs
-symfony console app:rewind-mixed-status-purchase-orders --days-back=60 --limit=50
-```
-
-**Side Effects:**
-- Finds POs where items have inconsistent statuses (e.g., some accepted, some rejected)
-- Resets PO and all items to PENDING status
-- Clears status change audit logs for the PO
-- Regenerates parent customer order status
-
-**Use Cases:**
-- Error recovery when POs have mixed accepted/rejected items
-- Testing scenarios requiring PO reset
-- Recovering from system issues
-
----
-
-## Reporting Context
-
-### app:calculate-customer-sales
-
-**Purpose:** Calculate daily customer sales and activity metrics for reporting.
-
-**File:** `src/Reporting/UI/Console/CalculateCustomerSalesCommand.php`
-
-**Arguments:**
-| Name | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| `dayCount` | int | Yes | - | Number of days to process |
-| `dayOffset` | int | No | 0 | Day offset from today |
-
-**Options:**
-| Name | Description |
-|------|-------------|
-| `--dry-run` | Preview without persisting changes |
-| `--skip-summary` | Skip auto-running the summary command |
-
-**Example:**
-```bash
-# Calculate last 7 days
-symfony console app:calculate-customer-sales 7
-
-# Calculate yesterday only
-symfony console app:calculate-customer-sales 1 1
-
-# Preview what would be calculated
-symfony console app:calculate-customer-sales 7 --dry-run
-
-# Calculate without running summaries
-symfony console app:calculate-customer-sales 7 --skip-summary
-```
-
-**Side Effects:**
-- Creates/updates CustomerSales entities (per-customer daily records)
-- Creates/updates CustomerActivitySales entities (active, new, returning counts)
-- Deletes existing data for processed dates
-- Automatically runs `app:calculate-customer-sales-summary` if offset is 0 (unless `--skip-summary`)
-
----
-
-### app:calculate-customer-sales-summary
-
-**Purpose:** Calculate pre-aggregated customer sales summaries for dashboard performance.
-
-**File:** `src/Reporting/UI/Console/CalculateCustomerSalesSummaryCommand.php`
-
-**Arguments:**
-| Name | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| `rebuild` | int | No | 0 | Full rebuild flag |
-
-**Options:**
-| Name | Description |
-|------|-------------|
-| `--duration` | Duration to aggregate (7d, 30d, 90d, 365d) |
-
-**Example:**
-```bash
-# Incremental update for all durations
-symfony console app:calculate-customer-sales-summary
-
-# Full rebuild
-symfony console app:calculate-customer-sales-summary 1
-
-# Specific duration
-symfony console app:calculate-customer-sales-summary --duration=30d
-```
-
-**Side Effects:**
-- Creates/updates CustomerSalesSummary entities (top customers by revenue)
-- Creates/updates CustomerGeographicSummary entities (sales by city)
-- Creates/updates CustomerSegmentSummary entities (sales by customer segment)
-
----
-
-### app:calculate-product-sales
-
-**Purpose:** Calculate and store product sales data for reporting.
-
-**File:** `src/Reporting/UI/Console/CalculateProductSalesCommand.php`
-
-**Arguments:**
-| Name | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| `dayCount` | int | Yes | - | Number of days to process |
-| `dayOffset` | int | No | 0 | Day offset from today |
-
-**Example:**
-```bash
-# Calculate last 7 days
-symfony console app:calculate-product-sales 7
-
-# Calculate yesterday only
-symfony console app:calculate-product-sales 1 1
-
-# Calculate 30 days starting from 7 days ago
-symfony console app:calculate-product-sales 30 7
-```
-
-**Side Effects:**
-- Creates/updates ProductSales entities
-- Deletes existing data for processed dates
-- Automatically runs `app:calculate-product-sales-summary` if offset is 0
-
----
-
-### app:calculate-product-sales-summary
-
-**Purpose:** Calculate pre-aggregated product sales summaries.
-
-**File:** `src/Reporting/UI/Console/CalculateProductSalesSummaryCommand.php`
-
-**Arguments:**
-| Name | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| `rebuild` | int | No | 0 | Full rebuild flag |
-
-**Example:**
-```bash
-# Incremental update
-symfony console app:calculate-product-sales-summary
-
-# Full rebuild
-symfony console app:calculate-product-sales-summary 1
-```
-
-**Side Effects:**
-- Creates/updates ProductSalesSummary entities
-- Aggregates across all SalesType × SalesDuration combinations
-
----
-
-### app:calculate-order-sales
-
-**Purpose:** Calculate and store order sales data for reporting.
-
-**File:** `src/Reporting/UI/Console/CalculateOrderSalesCommand.php`
-
-**Arguments:**
-| Name | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| `dayCount` | int | Yes | - | Number of days to process |
-| `dayOffset` | int | No | 0 | Day offset from today |
-
-**Example:**
-```bash
-# Calculate last 7 days
-symfony console app:calculate-order-sales 7
-
-# Calculate yesterday only
-symfony console app:calculate-order-sales 1 1
-```
-
-**Side Effects:**
-- Creates/updates OrderSales entities
-- Deletes existing data for processed dates
-- Automatically runs `app:calculate-order-sales-summary` if offset is 0
-
----
-
-### app:calculate-order-sales-summary
-
-**Purpose:** Calculate pre-aggregated order sales summaries.
-
-**File:** `src/Reporting/UI/Console/CalculateOrderSalesSummaryCommand.php`
-
-**Arguments:**
-| Name | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| `rebuild` | int | No | 0 | Full rebuild flag |
-
-**Example:**
-```bash
-# Incremental update
-symfony console app:calculate-order-sales-summary
-
-# Full rebuild
-symfony console app:calculate-order-sales-summary 1
-```
-
-**Side Effects:**
-- Creates/updates OrderSalesSummary entities
-- Aggregates across all SalesDuration values
-
----
-
-## Review Context
-
-### app:generate-reviews
-
-**Purpose:** Generate fake product reviews for eligible delivered purchases.
-
-**File:** `src/Review/UI/Console/GenerateReviewsCommand.php`
-
-**Arguments:**
-| Name | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| `count` | int | No | 20 | Maximum number of reviews to generate |
-| `productId` | int | No | - | Optional product ID to target |
-
-**Example:**
-```bash
-# Generate up to 20 reviews
-symfony console app:generate-reviews
-
-# Generate up to 100 reviews
-symfony console app:generate-reviews 100
-
-# Generate reviews for a specific product
-symfony console app:generate-reviews 50 42
-```
-
-**Side Effects:**
-- Creates ProductReview entities in PENDING status
-- Auto-generates weighted random ratings
-- Creates or updates ProductReviewSummary for affected products
-
-**Simulation Logic:**
-- Finds delivered orders without existing reviews
-- Applies weighted random rating distribution:
-  - 5 stars: 35%
-  - 4 stars: 35%
-  - 3 stars: 15%
-  - 2 stars: 10%
-  - 1 star: 5%
-- Selects from predefined title and body text per rating level
-
----
-
-## Shared Context
-
-### app:backup-database
-
-**Purpose:** Backup the MySQL database to the backups filesystem (local disk in dev, S3 in prod).
-
-**File:** `src/Shared/UI/Console/Utilities/BackupDatabaseCommand.php`
-
-**Options:**
-| Name | Type | Default | Description |
-|------|------|---------|-------------|
-| `--retention-days` | int | 30 | Number of days to retain backups (older backups are deleted) |
-| `--dry-run` | bool | false | Show what would happen without executing |
-| `--local-copy` | string | null | Copy the gzipped backup to this local path |
-
-**Example:**
-```bash
-# Standard backup (uploads to S3 in prod, saves to var/backups/ in dev)
-symfony console app:backup-database
-
-# Backup with local copy (the live schedule's form, for the playground reset)
-symfony console app:backup-database --local-copy=/backups/latest.sql.gz
-
-# Dry run
-symfony console app:backup-database --dry-run
-
-# Custom retention
-symfony console app:backup-database --retention-days=60
-```
-
-**Side Effects:**
-- Creates a gzipped mysqldump (`supplymars-YYYY-MM-DD-HHmmss.sql.gz`)
-- Uploads to the configured Flysystem backups filesystem, streamed from disk, so the dump is never held in memory
-- Optionally copies the gzipped file to a local path (`--local-copy`), written to `<path>.partial`, made owner-only (`0600`, it is a full dump) and renamed into place. If the copy fails, the run fails after the upload and skips retention
-- Deletes backups older than the retention period
-
-**Locking:** only one run at a time, through `symfony/lock` (`LockableTrait`). A run that starts while another holds the lock prints a warning and exits with a failure (exit code 1) without dumping anything. See [11-runbook.md](11-runbook.md#42-manual-backup).
-
-**Schedule:** Runs daily at 02:00 UTC on the live stack, in the messenger container (`MainSchedule`). Run a manual backup in that container too, so it shares the scheduled run's lock. `/health/backup` reports when no backup has landed for 26 hours ([13-monitoring.md](13-monitoring.md#backup-check)).
-
----
-
-### app:backfill-ulids
-
-**Purpose:** Backfill missing ULID public IDs for entities.
-
-**File:** `src/Shared/UI/Console/Utilities/BackfillUlidsCommand.php`
-
-**Arguments:**
-| Name | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| `batchSize` | int | No | 200 | Batch size for flushing |
-
-**Options:**
-| Name | Description |
-|------|-------------|
-| `--limit` | Maximum rows per entity |
-
-**Example:**
-```bash
-# Backfill all entities
-symfony console app:backfill-ulids
-
-# Backfill with smaller batches
-symfony console app:backfill-ulids 50
-
-# Backfill with limit
-symfony console app:backfill-ulids --limit=1000
-```
-
-**Side Effects:**
-- Generates ULIDs for entities with null `publicId`
-- Uses `initializePublicId()` method on entities
-- Processes in batches to manage memory
-
----
-
-## Customer Context
+What each `app:` command does and when it runs. Read it before running a simulation command by hand, changing one, or wondering why one did nothing. Arguments and options in full: `symfony console <command> --help`. The schedule itself is `src/Shared/Infrastructure/Scheduler/MainSchedule.php`; how the scheduler and worker run is in [06-operations.md](06-operations.md#scheduled-jobs).
+
+## Commands
+
+Times are UTC. Which stacks run the schedule ("live only" jobs are left out of the playground, and nothing runs in development): [06-operations.md](06-operations.md#scheduled-jobs).
+
+| Command | Context | Scheduled | Purpose | Notable arguments / options |
+|---|---|---|---|---|
+| `app:create-customer-orders` | Order | `1 --random`, twice every 5 min with jitter (about 12 orders an hour) | Random orders of 1–5 lines, quantity 1–5, ref `TEST-` + zero-padded customer id | `order-count` (1), `--random` (0 to `order-count`), `--dry-run` |
+| `app:build-purchase-orders` | Purchasing | `20`, every 15 min | Allocates PENDING, unlocked orders with no PO yet to suppliers ([04](04-sourcing-and-pricing.md)) | `order-count` (50), `--dry-run` |
+| `app:accept-purchase-orders` | Purchasing | `20`, at :01, :16, :31, :46 | Accepts or rejects PROCESSING POs of unlocked orders | `po-count` (50), `--supplier`, `--dry-run` |
+| `app:ship-purchase-order-items` | Purchasing | `100`, hourly | Ships ACCEPTED items that pass the timing check | `po-item-count` (50), `--supplier`, `--skip-timing`, `--dry-run` |
+| `app:deliver-purchase-order-items` | Purchasing | `100`, hourly | Delivers SHIPPED items that pass the timing check | `po-item-count` (50), `--supplier`, `--skip-timing`, `--dry-run` |
+| `app:refund-purchase-orders` | Purchasing | `50`, 01:30, live only | Marks the items of REJECTED POs REFUNDED and re-runs allocation (may pick the same supplier) | `po-count` (50), `--dry-run` |
+| `app:update-supplier-stock` | Purchasing | `20`, every 15 min | Moves supplier product stock and cost | `product-count` (50), `--supplier`, `--dry-run` |
+| `app:calculate-product-sales` | Reporting | `1 1` at 00:03; `1` at :10, :40 | Daily product sales records | `day-count` (required), `day-offset` (0), `--skip-summary`, `--dry-run` |
+| `app:calculate-product-sales-summary` | Reporting | `1` at 00:05 | Pre-computed product summaries | `rebuild` (0), `--dry-run` |
+| `app:calculate-order-sales` | Reporting | `1 1` at 00:07; `1` at :12, :42 | Daily order sales records | as product sales |
+| `app:calculate-order-sales-summary` | Reporting | `1` at 00:09 | Pre-computed order summaries | `rebuild` (0), `--dry-run` |
+| `app:calculate-customer-sales` | Reporting | `1 1` at 00:11; `1` at :15, :45 | Daily customer sales and activity (active, new, returning) | as product sales |
+| `app:calculate-customer-sales-summary` | Reporting | `1` at 00:13 | Top customers, by city, by segment | `rebuild` (0), `--dry-run` |
+| `app:backup-database` | Shared | `--local-copy=/backups/latest.sql.gz`, 02:00, live only | Gzipped mysqldump to the backups filesystem (S3 in prod, `var/backups/` in dev), then deletes old backups | `--retention-days` (30), `--local-copy`, `--dry-run` |
+| `app:prune-status-change-log` | Audit | 03:30, live only | Deletes status history of finished orders and POs older than the retention period | `--months` (12), `--batch-size` (5000) |
+| `app:generate-reviews` | Review | no | PENDING reviews for delivered purchases with no review yet | `count` (20), `product-id`, `--dry-run` |
+| `app:create-warehouse-products` | Purchasing | no | Setup: creates catalog products from the warehouse supplier's products | — |
+| `app:create-supplier-products` | Purchasing | no | Setup: maps each active, unmapped dropshipper product to a product with the same manufacturer part number, else creates one | — |
+| `app:activate-supplier-products` | Purchasing | no | Activates inactive supplier products (through the status toggle) | `product-count` (50) |
+| `app:reset-supplier-stock` | Purchasing | no | Sets every product of one supplier to random stock 0–300 | `supplierId` (required, internal id) |
+| `app:rewind-mixed-status-purchase-orders` | Purchasing | no | Finds POs whose items disagree (some rejected) and rewinds them to PENDING, deleting their status history | `--limit` (100), `--days-back` (30), `--dry-run` |
+| `app:backfill-ulids` | Shared | no | Fills a null `publicId` on every `HasPublicUlid` entity | `batch-size` (200), `--limit` |
+| `app:user:issue-token` | Customer | no | New API token for a user; replaces the old one | `email` |
+| `app:restore-database` | Shared | no, dev only | Restores a `.sql.gz` from `var/backups/` into the local database | `--from-s3`, `--file`, `--force` |
+| `app:send-test-emails` | Customer | no, dev only | Sends the three customer emails to Mailpit with dummy data | — |
 
 ### app:user:issue-token
 
-**Purpose:** Issue a new API token for a user, replacing any existing one.
+- The token is printed once, as the only line on stdout (messages go to stderr), also with `--quiet`, so `... --quiet | pbcopy` works. It is a 64-character hex string. Only its SHA-256 hash is stored, so it can't be shown again and a database backup holds no working token.
+- Exits 1 if no user has that email. The order endpoints need `ROLE_ADMIN`, so issue tokens to staff users ([patterns/API/README.md](patterns/API/README.md)).
 
-**File:** `src/Customer/UI/Console/IssueApiTokenCommand.php`
+## Simulation behaviour
 
-**Arguments:**
-| Argument | Required | Description |
-|----------|----------|-------------|
-| `email` | Yes | Email of the user |
+| Rule | Detail | Source |
+|---|---|---|
+| Acting user | Every simulation, setup and utility command in Order, Purchasing and Review logs in as `DEFAULT_STAFF_EMAIL` (`admin@supplymars.com` in `.env`). That user must exist, or the command throws | `DefaultUserAuthenticator::ensureAuthenticated()` |
+| One supplier per run | accept, ship, deliver and update-stock pick **one random supplier** (any supplier, warehouse included) unless `--supplier` is given. `ship 100` ships up to 100 items of that one supplier | `resolveSupplier()` in each command |
+| Rejection | Rolled once **per PO**, 1 in 50; every item of the PO gets the result | `AcceptPOsCommand::REJECTION_ODDS` |
+| Shipping | 09:00–18:00, at least 2 hours after the item's ACCEPTED status change, then 95% chance | `ProcessingSimulator` |
+| Delivery | 07:00–21:00, at least 12 hours after the SHIPPED status change, then 95% chance | `ProcessingSimulator` |
+| `--skip-timing` | Skips the hours, the wait **and** the 95% roll: every candidate item moves | `ShipPOItemsCommand`, `DeliverPOItemsCommand` |
+| Stock | Stock ≤ 20: add 0–100. Otherwise remove up to 10%. Cost moves up to ±10%. Product prices don't follow ([04](04-sourcing-and-pricing.md)) | `UpdateSupplierStockCommand` |
+| Customers | 1 order in 3 goes to an existing verified non-staff user; otherwise a new random user and address are created | `DemoOrderCreator` |
+| Demo order button | Orders > Create Demo Order uses the same `DemoOrderCreator`, with ref prefix `DEMO-`, 10 a day across all users | `CreateDemoOrderHandler::DAILY_LIMIT` |
+| Review ratings | 5★ 35%, 4★ 35%, 3★ 15%, 2★ 10%, 1★ 5% | `ReviewGenerator` |
 
-**Example:**
-```bash
-symfony console app:user:issue-token admin@example.com
-symfony console app:user:issue-token admin@example.com --quiet | pbcopy
-```
+### Reporting chain
 
-**Side Effects:**
-- Generates a random 64-character hex token and stores only its SHA-256 hash
-- Prints the token once, as the only line on stdout (messages go to stderr), also with `--quiet`. It cannot be shown again
-- Replaces the user's existing token: the old one stops working
-- Exits `1` if no user has that email
+Each `calculate-*-sales` command rewrites the daily records for its range. When `day-offset` is 0 and neither `--skip-summary` nor `--dry-run` is given, it then runs its summary command **incrementally** (`rebuild` 0: today and the current month only). With `rebuild` 1 the summary also recomputes the last 30 days and 12 months of chart series.
 
-The order endpoints need `ROLE_ADMIN`, so issue tokens to staff users. See [Security: API Authentication](08-security.md#api-authentication).
+The schedule uses both: `X 1` every 30 minutes (today, plus the incremental summary), and at night `X 1 1` (yesterday, no summary) followed by `X-summary 1` (rebuild). To rebuild history by hand, run `X <days>` and then `X-summary 1`.
 
-### app:send-test-emails
+## Exit codes and locking
 
-**Purpose:** Send all customer email templates to Mailpit for visual preview. Dev environment only.
+| Code | When |
+|---|---|
+| 0 | All items processed, or nothing to do |
+| 1 | One or more items failed, or a backup found the lock held |
+| 2 | Invalid argument (for example a count below 1) |
 
-**File:** `src/Customer/UI/Console/SendTestEmailsCommand.php`
+- **Continue on failure.** The 11 batch commands (create orders, build, accept, ship, deliver, refund, update-stock, generate-reviews, the three `calculate-*-sales`) catch each item's exception, log it with the entity id, carry on, and finish with `N item(s) failed — see logs for details.` and exit 1.
+- **A scheduled run that exits non-zero** reaches Sentry ([13-monitoring.md](13-monitoring.md#error-tracking-sentry)).
+- **Locks** (`symfony/lock`, `LockableTrait`), and they differ on purpose:
+  - `app:backup-database` held → warning, exit **1**, so a skipped backup is reported. Where to run a manual backup: [11-runbook.md](11-runbook.md#42-manual-backup).
+  - `app:prune-status-change-log` held → note, exit **0**.
 
-**Arguments:** None
+## Dev-only commands
 
-**Example:**
-```bash
-symfony console app:send-test-emails
-```
+`app:restore-database` and `app:send-test-emails` are registered only in `dev` (`#[When('dev')]`), so they don't exist in the production image.
 
-**Side Effects:**
-- Sends three emails to Mailpit: Verify Email, Reset Password, Admin Access Granted
-- Uses `MailerHelper` with dummy data (no database interaction)
-- Only registered in the `dev` environment (`#[When('dev')]`)
+- `app:restore-database` overwrites the database in `DATABASE_URL` after a confirmation (`--force` skips it). Without `--file` it restores the newest file in `var/backups/`. `--from-s3` first downloads the latest backup from `AWS_S3_BUCKET`, asking for the production S3 keys at the prompt. Backup and restore in production: [11-runbook.md](11-runbook.md).
+- `app:send-test-emails` sends Verify Email, Reset Password and Admin Access Granted. Templates are under `templates/customer/`.
 
-**Emails sent:**
-| Email | Template |
-|-------|----------|
-| Verify Email | `customer/registration/verify-email.html.twig` |
-| Reset Password | `customer/reset_password/reset-password.html.twig` |
-| Admin Access Granted | `customer/admin-access-granted.html.twig` |
+## Setup order
 
----
+The fixtures already give each supplier product a catalog product, so after `doctrine:fixtures:load` go straight to the simulation commands ([06-operations.md](06-operations.md#simulation-bootstrap) has the sequence). `app:create-warehouse-products` and `app:create-supplier-products` are for supplier data loaded without the fixtures: run them in that order, warehouse first, so dropshipper products can map to the warehouse's products by part number.
 
-## Standard Symfony Commands
+## Gotchas
 
-### Database
+- **Running the chain straight through moves little.** Items accepted a moment ago won't ship (2-hour wait), and outside 09:00–18:00 UTC nothing ships at all. Use `--skip-timing` on ship and deliver when seeding data.
+- **One supplier per run** means `accept-purchase-orders 100` leaves the other suppliers' POs waiting. Repeat the command, or pass `--supplier` for each.
+- **Ship and deliver need the item's ACCEPTED / SHIPPED `StatusChangeLog` row.** An item that reached that status without one (data loaded without the audit event, or history deleted) never moves without `--skip-timing`. A rewind deletes the rows but also returns the items to PENDING, so the next acceptance writes a new row.
+- **Locked orders are skipped** by build and accept, so a lock left on an order stalls it.
+- **Simulated stock and cost changes don't reprice products**; only the audit listens to the stock event ([04](04-sourcing-and-pricing.md)).
+- **The auto-run summary is incremental.** After recomputing many days, run the summary with `rebuild` 1, or the 30-day and 12-month charts keep the old figures.
+- The simulations write real rows. Don't run them against a copy of production you care about.
 
-```bash
-# Run migrations
-symfony console doctrine:migrations:migrate
+## Related
 
-# Create migration
-symfony console doctrine:migrations:diff
-
-# Validate mappings
-symfony console doctrine:schema:validate
-
-# Load fixtures
-symfony console doctrine:fixtures:load
-```
-
-### Cache
-
-```bash
-# Clear all caches
-symfony console cache:clear
-
-# Clear specific pool
-symfony console cache:pool:clear <pool>
-```
-
-### Messenger
-
-```bash
-# Process async queue
-symfony console messenger:consume async
-
-# View queue stats
-symfony console messenger:stats
-
-# View failed messages
-symfony console messenger:failed:show
-
-# Retry failed messages
-symfony console messenger:failed:retry
-```
-
-### Debug
-
-```bash
-# List all routes
-symfony console debug:router
-
-# List all services
-symfony console debug:container
-
-# Show autowiring options
-symfony console debug:autowiring
-
-# Show event listeners
-symfony console debug:event-dispatcher
-```
-
----
-
-## Command Chaining (Typical Usage)
-
-### Initial Data Setup
-
-```bash
-# 1. Load fixtures
-symfony console doctrine:fixtures:load --no-interaction
-
-# 2. Create products from warehouse
-symfony console app:create-warehouse-products
-
-# 3. Map dropshipper products
-symfony console app:create-supplier-products
-```
-
-### Simulation Bootstrap
-
-```bash
-# 1. Create initial orders
-symfony console app:create-customer-orders 100
-
-# 2. Allocate to suppliers
-symfony console app:build-purchase-orders 200
-
-# 3. Progress through fulfillment
-symfony console app:accept-purchase-orders 100
-symfony console app:ship-purchase-order-items 200
-symfony console app:deliver-purchase-order-items 200
-
-# 4. Generate reporting data
-symfony console app:calculate-product-sales 30
-symfony console app:calculate-order-sales 30
-symfony console app:calculate-customer-sales 30
-```
-
-### Daily Operations
-
-```bash
-# Stock fluctuation
-symfony console app:update-supplier-stock 100
-
-# Order processing
-symfony console app:create-customer-orders 10
-symfony console app:build-purchase-orders 50
-symfony console app:accept-purchase-orders 30
-symfony console app:ship-purchase-order-items 50
-symfony console app:deliver-purchase-order-items 50
-
-# Reporting refresh
-symfony console app:calculate-product-sales 1
-symfony console app:calculate-order-sales 1
-symfony console app:calculate-customer-sales 1
-```
+- [ADR 003](adr/003-simulation-first-design.md): why the platform simulates
+- [06-operations.md](06-operations.md): the scheduler, the worker, the bootstrap sequence
+- [04-sourcing-and-pricing.md](04-sourcing-and-pricing.md): what allocation, refunds and stock changes do to orders and prices
+- [11-runbook.md](11-runbook.md): backups, restore, rebuilding reports in production
+- [UserManual/14-simulations.md](UserManual/14-simulations.md): what users see happen on its own
