@@ -596,8 +596,9 @@ The Audit context tracks significant changes to entities, particularly status tr
 1. `app:prune-status-change-log` runs daily at 03:30 on live (see [Scheduled Jobs](06-operations.md#scheduled-jobs))
 2. It deletes status change rows older than 12 months (`--months`) whose order, order item, purchase order or purchase order item is in a final status: delivered, cancelled or refunded
 3. Rows of an entity that is still open are kept however old they are: `ProcessingSimulator` times shipping and delivery from an item's `ACCEPTED` and `SHIPPED` rows
-4. It deletes in batches of 5,000 (`--batch-size`), each its own transaction, so no long lock is held beside the simulation
+4. It walks the old rows once, 5,000 ids at a time (`--batch-size`), each window its own transaction, so no long lock is held beside the simulation
 5. The playground keeps the same history: it is restored from live's backup each night
+6. Rewinding a purchase order reopens its order and order items. If they were finished more than 12 months ago, their history before the rewind is already gone
 
 **Stock Change Logging:**
 1. Supplier product stock/cost changes raise events

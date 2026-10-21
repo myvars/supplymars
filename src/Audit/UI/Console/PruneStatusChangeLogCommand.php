@@ -49,12 +49,7 @@ final class PruneStatusChangeLogCommand
         try {
             $before = new \DateTimeImmutable(sprintf('-%d months', $months));
 
-            // Small batches, each its own transaction, so no lock is held for long beside the simulation
-            $deleted = 0;
-            do {
-                $batch = $this->statusChangeLogs->deleteFinishedBefore($before, $batchSize);
-                $deleted += $batch;
-            } while ($batch === $batchSize);
+            $deleted = $this->statusChangeLogs->deleteFinishedBefore($before, $batchSize);
 
             $io->success(sprintf('Deleted %d status change log rows from before %s.', $deleted, $before->format('Y-m-d H:i')));
 

@@ -71,7 +71,7 @@ class StatusChangeLogDoctrineRepository extends ServiceEntityRepository implemen
             ->getOneOrNullResult();
     }
 
-    public function deleteFinishedBefore(\DateTimeImmutable $before, int $limit): int
+    public function deleteFinishedBefore(\DateTimeImmutable $before, int $batchSize): int
     {
         $finalOrderStatuses = array_column(array_filter(OrderStatus::cases(), fn (OrderStatus $status): bool => $status->isFinal()), 'value');
         $finalPurchaseOrderStatuses = array_column(array_filter(PurchaseOrderStatus::cases(), fn (PurchaseOrderStatus $status): bool => $status->isFinal()), 'value');
@@ -83,52 +83,76 @@ class StatusChangeLogDoctrineRepository extends ServiceEntityRepository implemen
             [DomainEventType::PURCHASE_ORDER_ITEM_STATUS_CHANGED, PurchaseOrderItem::class, $finalPurchaseOrderStatuses],
         ];
 
-        // Rows are written in time order, so every row before $before has a lower id than the first row after it.
-        // Bounding the search by that id keeps it to the old end of the table rather than scanning all of it.
-        $boundaryId = $this->createQueryBuilder('sc')
+        // Rows are written in time order, so the rows before $before all have lower ids than the first row after it.
+        // The search walks that old end of the table once, a window of ids at a time.
+        $firstId = $this->firstId();
+        if ($firstId === null) {
+            return 0;
+        }
+        $endId = $this->firstIdFrom($before) ?? $this->lastId() + 1;
+
+        $deleted = 0;
+        for ($fromId = $firstId; $fromId < $endId; $fromId += $batchSize) {
+            $toId = min($fromId + $batchSize, $endId);
+
+            $ids = [];
+            foreach ($entities as [$eventType, $entityClass, $finalStatuses]) {
+                array_push($ids, ...$this->createQueryBuilder('sc')
+                    ->select('sc.id')
+                    ->join($entityClass, 'e', 'WITH', 'e.id = sc.eventTypeId')
+                    ->where('sc.id >= :fromId')
+                    ->andWhere('sc.id < :toId')
+                    ->andWhere('sc.eventType = :eventType')
+                    ->andWhere('sc.eventTimestamp < :before')
+                    ->andWhere('e.status IN (:finalStatuses)')
+                    ->setParameter('fromId', $fromId)
+                    ->setParameter('toId', $toId)
+                    ->setParameter('eventType', $eventType)
+                    ->setParameter('before', $before)
+                    ->setParameter('finalStatuses', $finalStatuses)
+                    ->getQuery()
+                    ->getSingleColumnResult());
+            }
+
+            if ($ids !== []) {
+                // Each window is its own short transaction, so no lock is held for long beside the simulation
+                $deleted += $this->createQueryBuilder('sc')
+                    ->delete()
+                    ->where('sc.id IN (:ids)')
+                    ->setParameter('ids', $ids)
+                    ->getQuery()
+                    ->execute();
+            }
+        }
+
+        return $deleted;
+    }
+
+    private function firstId(): ?int
+    {
+        $id = $this->createQueryBuilder('sc')->select('MIN(sc.id)')->getQuery()->getSingleScalarResult();
+
+        return $id === null ? null : (int) $id;
+    }
+
+    private function lastId(): int
+    {
+        return (int) $this->createQueryBuilder('sc')->select('MAX(sc.id)')->getQuery()->getSingleScalarResult();
+    }
+
+    private function firstIdFrom(\DateTimeImmutable $from): ?int
+    {
+        // Reads the primary key in order and stops at the first match
+        $row = $this->createQueryBuilder('sc')
             ->select('sc.id')
-            ->where('sc.eventTimestamp >= :before')
-            ->setParameter('before', $before)
+            ->where('sc.eventTimestamp >= :from')
+            ->setParameter('from', $from)
             ->orderBy('sc.id', 'ASC')
             ->setMaxResults(1)
             ->getQuery()
-            ->getOneOrNullResult()['id'] ?? null;
+            ->getOneOrNullResult();
 
-        $ids = [];
-        foreach ($entities as [$eventType, $entityClass, $finalStatuses]) {
-            $remaining = $limit - count($ids);
-            if ($remaining === 0) {
-                break;
-            }
-
-            $qb = $this->createQueryBuilder('sc')
-                ->select('sc.id')
-                ->join($entityClass, 'e', 'WITH', 'e.id = sc.eventTypeId')
-                ->where('sc.eventType = :eventType')
-                ->andWhere('sc.eventTimestamp < :before')
-                ->andWhere('e.status IN (:finalStatuses)')
-                ->setParameter('eventType', $eventType)
-                ->setParameter('before', $before)
-                ->setParameter('finalStatuses', $finalStatuses)
-                ->setMaxResults($remaining);
-
-            if ($boundaryId !== null) {
-                $qb->andWhere('sc.id < :boundaryId')->setParameter('boundaryId', $boundaryId);
-            }
-
-            array_push($ids, ...$qb->getQuery()->getSingleColumnResult());
-        }
-
-        if ($ids === []) {
-            return 0;
-        }
-
-        return $this->createQueryBuilder('sc')
-            ->delete()
-            ->where('sc.id IN (:ids)')
-            ->setParameter('ids', $ids)
-            ->getQuery()
-            ->execute();
+        return $row === null ? null : (int) $row['id'];
     }
 
     /**
