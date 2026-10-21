@@ -1,310 +1,84 @@
 # Local Development Setup
 
-This guide covers getting SupplyMars running locally. The setup follows standard Symfony conventions.
+How to run SupplyMars on your machine, get a user and data, the local URLs and ports, and opt-ins such as RabbitMQ. Read it when setting up a checkout or when a local service will not start.
 
 ## Prerequisites
 
-Before setting up SupplyMars locally, ensure you have:
-
 | Requirement | Version | Notes |
 |-------------|---------|-------|
-| PHP | 8.5+ | With extensions: intl, pdo_mysql, bcmath, gd, redis, xsl, zip |
-| Composer | 2.x | Dependency management |
-| Symfony CLI | Latest | For `symfony serve` command |
-| Docker | Latest | For infrastructure services |
+| PHP | 8.5+ | Option A only. Extensions: intl, pdo_mysql, bcmath, gd, redis, xsl, zip |
+| Composer | 2.x | |
+| Symfony CLI | Latest | `symfony serve` |
+| Docker | Latest | MySQL, Redis, Mailpit, phpMyAdmin |
 
-### PHP Extensions Required
+Settings only your machine uses go in `.env.local`. The database name and ports are not such a setting: they are in `.env` ([below](#database-name-and-ports)).
 
-```bash
-# Check your PHP extensions
-php -m | grep -E "(intl|pdo_mysql|bcmath|gd|redis|xsl|zip)"
-```
+## Setup
 
-If missing, install via your package manager or compile from source.
+### Option A: Symfony server + Docker services (recommended)
 
-## Environment Configuration
+PHP runs on your machine; Docker provides the services.
 
-### 1. Clone and Install Dependencies
+1. Install and start the services:
 
-```bash
-git clone <repository-url> supplymars
-cd supplymars
-composer install
-```
+   ```bash
+   composer install                     # also runs importmap:install (auto-scripts)
+   make up-dev-tools                    # MySQL, Redis, Mailpit, the three phpMyAdmins
+   ```
 
-### 2. Environment Files
+   Check: `docker compose ps` shows `database`, `redis` and `mailer` healthy or running.
 
-The project uses multiple `.env` files:
+2. Create the schema and build the CSS:
 
-| File | Purpose |
-|------|---------|
-| `.env` | Default configuration (committed) |
-| `.env.dev` | Development overrides (APP_SECRET) |
-| `.env.local` | Local overrides (not committed) |
-| `.env.test` | Test environment settings |
+   ```bash
+   symfony console doctrine:database:create --if-not-exists    # the MySQL container already creates it
+   symfony console doctrine:migrations:migrate --no-interaction
+   symfony console tailwind:build       # needs assets/vendor/ from importmap:install
+   ```
 
-Create your local overrides if needed, for settings only your machine uses. The database name and ports are
-not such a setting: they are in the `docker` block of `.env` (see [Development URLs](#development-urls)).
+3. Start the server: `symfony serve -d`. Check: https://127.0.0.1:8000 shows the home page.
 
-```bash
-# .env.local (optional - for custom settings)
-DEV_MAIL_RECIPIENT=me@example.com
-```
+4. Load a user and data ([below](#a-user-and-data)).
 
-### 3. Key Environment Variables
+- Sessions are in Redis, so logging in needs `make up-dev-tools` running.
+- No queue worker runs under `symfony serve`. Start one when you need queued email or async events: `symfony console messenger:consume async`.
 
-```bash
-# Application
-APP_ENV=dev                          # Environment (dev, test, prod)
-APP_SECRET=your-secret-here          # Set in .env.dev
+### Option B: Full Docker stack
 
-# Database name and local ports, read by Docker Compose too (see Development URLs)
-DATABASE_NAME=app
-DATABASE_PORT=3306
-REDIS_PORT=6379
-MAILER_PORT=1025
+Everything runs in containers. The `php` container runs FrankenPHP and serves `https://localhost`; the `messenger` container is the queue worker.
 
-# Database
-DATABASE_URL=mysql://root:password@127.0.0.1:${DATABASE_PORT}/${DATABASE_NAME}?serverVersion=8.4&charset=utf8mb4
+1. `make up`. The `php` container's entrypoint runs `composer install` (when `vendor/` is missing), `importmap:install`, `tailwind:build` and the migrations. Check: the command returns once `php` is healthy (its healthcheck calls `/health`).
+2. Trust FrankenPHP's certificate, once per machine. It comes from its own local certificate authority, kept in the `caddy_data` volume (macOS shown; the volume keeps it across restarts):
 
-# Redis: the app cache and sessions. The password must match REDIS_PASSWORD in compose.override.yaml
-REDIS_URL=redis://default:password@127.0.0.1:${REDIS_PORT}
+   ```bash
+   docker compose cp php:/data/caddy/pki/authorities/local/root.crt /tmp/caddy-root.crt
+   sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain /tmp/caddy-root.crt
+   ```
 
-# Message queue (a table in the database)
-MESSENGER_TRANSPORT_DSN=doctrine://default
+3. Load a user and data ([below](#a-user-and-data)), running each command in the container: `docker compose exec php bin/console …`.
 
-# Mail (Mailpit in dev)
-MAILER_DSN=smtp://127.0.0.1:${MAILER_PORT}
-DEV_MAIL_RECIPIENT=your@email.com
-MAILER_FROM=no-reply@supplymars.com  # Sender address of all mail
+Both options use the same services and volumes: every service is defined once in `compose.yaml`, with development settings and published ports in `compose.override.yaml`. `make up` starts them all; `make up-dev-tools` starts only the ones it names. The database is the same whichever way you start it.
 
-# File Storage (local in dev)
-DEFAULT_URI=https://localhost:8000
-```
+### A user and data
 
-## First-Time Setup
+| Way | What you get |
+|-----|--------------|
+| `symfony console doctrine:fixtures:load --no-interaction` | Purges the database, then creates the staff user `admin@supplymars.com` / `password`, the VAT rates, a warehouse and three suppliers with products (`tests/Shared/DataFixtures/AppFixtures.php`). No orders |
+| The simulation commands, after the fixtures | Orders, purchase orders, reviews and report data. The order to run them in is in [06-operations.md](06-operations.md#simulation-bootstrap); each command is in [09-cli-reference.md](09-cli-reference.md) |
+| `symfony console app:restore-database` | A production backup from `var/backups/` (or `--from-s3`). Dev only. See [11-runbook.md](11-runbook.md) |
+| `/register` | A customer account, not staff. Staff is the "Member of Staff" box on the customer edit form; super admin is set by hand ([08-security.md](08-security.md)) |
 
-### Option A: Symfony Server + Docker Services (Recommended)
+The simulation and setup commands act as the user in `DEFAULT_STAFF_EMAIL` (`admin@supplymars.com` in `.env`, read by `DefaultUserAuthenticator`). They fail when that user does not exist, so load the fixtures, or restore a backup, first.
 
-This approach runs PHP locally for faster iteration while Docker provides infrastructure.
+### Email in dev
 
-```bash
-# 1. Start infrastructure services (MySQL, Redis, Mailpit, the phpMyAdmins). Sessions are in Redis, so logging in needs it
-make up-dev-tools
-
-# 2. Create database and run migrations
-symfony console doctrine:database:create --if-not-exists    # the MySQL container already creates it
-symfony console doctrine:migrations:migrate --no-interaction
-
-# 3. Load fixtures (optional - provides seed data)
-symfony console doctrine:fixtures:load --no-interaction
-
-# 4. Build Tailwind CSS
-symfony console tailwind:build
-
-# 5. Start Symfony server
-symfony serve -d
-
-# 6. Access the application
-open https://127.0.0.1:8000
-```
-
-### Option B: Full Docker Stack
-
-This approach runs everything in containers for complete isolation.
-
-```bash
-# 1. Start all services
-make up
-
-# 2. Access the application
-open https://localhost
-```
-
-The `php` container runs FrankenPHP, which serves `https://localhost` with a certificate from its own local certificate authority, kept in the `caddy_data` volume. Browsers warn about it until you trust that authority, once per machine (on macOS; the volume keeps it across restarts):
-
-```bash
-docker compose cp php:/data/caddy/pki/authorities/local/root.crt /tmp/caddy-root.crt
-sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain /tmp/caddy-root.crt
-```
-
-## Running Locally
-
-### Symfony Server Mode
-
-```bash
-# Start server (background)
-symfony serve -d
-
-# Stop server
-symfony server:stop
-
-# View logs
-symfony server:log
-
-# Start dev tools if not running
-make up-dev-tools
-```
-
-### Full Docker Mode
-
-```bash
-# Start all services
-make up
-
-# Stop all services
-make down
-
-# Shell into PHP container
-make bash
-
-# View logs
-make logs
-
-# View specific service logs
-make logs-php
-make logs-messenger
-```
-
-## Running Background Processes
-
-### Message Consumer (Async Events)
-
-For async domain events and email processing:
-
-```bash
-# Local (Symfony server mode)
-symfony console messenger:consume async --time-limit=3600
-
-# Docker mode - runs automatically via messenger service
-docker compose logs -f messenger
-```
-
-### Simulation Commands
-
-To populate realistic data, run simulation commands:
-
-```bash
-# Create customer orders
-symfony console app:create-customer-orders 5
-
-# Allocate orders to suppliers
-symfony console app:build-purchase-orders 100
-
-# Progress through fulfillment
-symfony console app:accept-purchase-orders 50
-symfony console app:ship-purchase-order-items 100
-symfony console app:deliver-purchase-order-items 100
-
-# Fluctuate stock levels
-symfony console app:update-supplier-stock 100
-
-# Generate reporting data
-symfony console app:calculate-product-sales 30
-symfony console app:calculate-order-sales 30
-symfony console app:calculate-customer-sales 30
-```
-
-## Common Setup Failures
-
-### Database Connection Refused
-
-**Symptom:** `SQLSTATE[HY000] [2002] Connection refused`
-
-**Causes:**
-1. MySQL container not running
-2. Wrong port/host in DATABASE_URL
-3. Container not healthy yet
-
-**Fixes:**
-```bash
-# Check container status
-docker compose ps
-
-# Verify MySQL is healthy
-docker compose logs database
-
-# Wait and retry
-docker compose up -d database && sleep 10
-```
-
-### Redis Connection Failed
-
-**Symptom:** `Connection refused [tcp://127.0.0.1:6379]`
-
-**Fixes:**
-```bash
-# Check Redis container
-docker compose ps redis
-
-# Verify connection
-docker compose exec redis sh -c 'REDISCLI_AUTH="$REDIS_PASSWORD" redis-cli ping'
-# Should return: PONG
-```
-
-### Queued Messages Not Processed
-
-**Symptom:** An email never arrives
-
-With `symfony serve` no worker runs unless you start one. With `make up` the `messenger` container is the worker.
-
-**Fixes:**
-```bash
-symfony console messenger:stats             # How many messages are waiting
-symfony console messenger:consume async -vv # Work through them
-symfony console messenger:failed:show       # Messages that failed after their retries
-```
-
-### Assets Not Loading
-
-**Symptom:** Styles missing, JavaScript errors
-
-**Fixes:**
-```bash
-# Rebuild assets (importmap first: the Tailwind build imports CSS from assets/vendor/)
-symfony console importmap:install
-symfony console tailwind:build
-
-# Clear cache
-symfony console cache:clear
-```
-
-### SSL Certificate Issues (Symfony Server)
-
-**Symptom:** Browser shows certificate warning
-
-**Fixes:**
-```bash
-# Install Symfony CA
-symfony server:ca:install
-
-# Restart server
-symfony server:stop
-symfony serve -d
-```
-
-### PHP Container Unhealthy
-
-**Symptom:** `make up` fails with `container ...-php-1 is unhealthy`
-
-The php healthcheck calls `/health`, so the container is reported unhealthy when the database, Redis or the queue is down, as well as when FrankenPHP itself does not answer. `curl -k https://localhost/health` shows which check failed, `docker compose logs php` shows FrankenPHP's own errors, and `docker compose exec php tail var/log/dev.log` shows the app's.
-
-### Test Database Not Found
-
-**Symptom:** Tests fail with database errors
-
-**Fixes:**
-```bash
-# Create test database
-symfony console doctrine:database:create --env=test
-symfony console doctrine:schema:create --env=test
-```
+In dev every email goes to `DEV_MAIL_RECIPIENT`, whatever its recipient (`config/packages/mailer.yaml`, `when@dev` envelope recipients), and lands in Mailpit (http://localhost:8025). Override `DEV_MAIL_RECIPIENT` in `.env.local` if you want another address. Queued email needs a worker: Option A only sends it while `messenger:consume async` runs.
 
 ## Switching to RabbitMQ
 
-The queue is a database table by default ([ADR 013](adr/013-database-queue-by-default.md)). RabbitMQ is still defined in the compose files, behind the `rabbitmq` profile, so it does not start unless asked for. To use it:
+The queue is a database table by default ([ADR 013](adr/013-database-queue-by-default.md)). RabbitMQ is defined in the compose files behind the `rabbitmq` profile, so it does not start unless asked for. To use it:
 
-1. **Require the transport package**, and add the PHP `sockets` extension it needs: to `docker-php-ext-install` in `docker/Dockerfile`, and to your local PHP if you use `symfony serve`.
+1. **Require the transport package**, and add the PHP `sockets` extension it needs: to the `install-php-extensions` list in `docker/Dockerfile` (the image does not have it today), and to your local PHP if you use `symfony serve`.
 
    ```bash
    composer require checkthiscloud/phpamqplib-messenger
@@ -331,10 +105,9 @@ The queue is a database table by default ([ADR 013](adr/013-database-queue-by-de
    MESSENGER_TRANSPORT_DSN="phpamqplib://app:<the same password>@rabbitmq:5672/%2f/messages"
    ```
 
-   The playground commands pass `--profile playground`, which replaces `COMPOSE_PROFILES`. Add `--profile rabbitmq` to them as well, in the `Makefile` and in the deploy job of `.github/workflows/ci.yml`.
+   The playground commands pass `--profile playground`, which replaces `COMPOSE_PROFILES`. Add `--profile rabbitmq` to the `PLAYGROUND` line of the `Makefile` as well.
 
-5. **Add `rabbitmq` to the `up-dev-tools` target** in the `Makefile`. It names the services it starts, and a
-   named service starts whether or not its profile is on, so it is not listed by default.
+5. **Add `rabbitmq` to the `up-dev-tools` target** in the `Makefile`. It names the services it starts, and a named service starts whether or not its profile is on, so it is not listed by default.
 
 `make up-dev-tools`, `make up` and the production targets then start RabbitMQ, and `php` waits for it to be healthy. The management UI is at http://localhost:15672 (guest / guest, port `RABBITMQ_UI_PORT`) in development. Tests are unaffected: the `test` environment always uses `in-memory://`.
 
@@ -344,46 +117,61 @@ Messages already waiting in the database queue are not moved. Let the worker emp
 
 | Service | URL | Port variable | Credentials |
 |---------|-----|---------------|-------------|
-| Application | https://localhost:8000 (Symfony) or https://localhost (Docker) | - | - |
-| PHPMyAdmin | http://localhost:8080 | `PHPMYADMIN_PORT` | root / password |
-| PHPMyAdmin (live) | http://localhost:8081 | `PHPMYADMIN_LIVE_PORT` | the live credentials |
-| PHPMyAdmin (playground) | http://localhost:8082 | `PHPMYADMIN_PLAYGROUND_PORT` | the playground credentials |
+| Application | https://127.0.0.1:8000 (Option A) or https://localhost (Option B) | - | see [A user and data](#a-user-and-data) |
+| phpMyAdmin | http://localhost:8080 | `PHPMYADMIN_PORT` | root / password |
+| phpMyAdmin (live) | http://localhost:8081 | `PHPMYADMIN_LIVE_PORT` | the live credentials |
+| phpMyAdmin (playground) | http://localhost:8082 | `PHPMYADMIN_PLAYGROUND_PORT` | the playground credentials |
 | Mailpit | http://localhost:8025 | `MAILPIT_PORT` | - |
 | MySQL | 127.0.0.1:3306 | `DATABASE_PORT` | root / password |
 | Redis | 127.0.0.1:6379 | `REDIS_PORT` | default / password |
 
-The port variables and `DATABASE_NAME` are in the `docker` block of `.env`. Docker Compose reads them from
-that file, and `DATABASE_URL`, `REDIS_URL` and `MAILER_DSN` are built from them, so a change is made in one
-place. Change them in `.env`, not `.env.local`: Symfony does not load `.env.local` in the `test`
-environment, so dev and test would point at different servers. The production targets read the env files
-in `../supplymars-secrets/` instead of `.env`, so none of this reaches production.
+### Database name and ports
 
-### One set of services, two ways to start them
+The database name and local ports are in the `docker` block at the top of `.env`. Docker Compose reads them from `.env`, and `DATABASE_URL`, `REDIS_URL` and `MAILER_DSN` are built from them, so a change is made in one place.
 
-Every service is defined once, in `compose.yaml`, with its development settings and published ports in
-`compose.override.yaml`. `make up` starts them all. `make up-dev-tools` starts only the services it names
-(MySQL, Redis, Mailpit and the three phpMyAdmins), for use with `symfony serve`. Both use the same
-containers and volumes, so the database is the same whichever way you start it. `make up-prod-local`
-reuses the development phpMyAdmin and Mailpit definitions.
+| Variable | Default | Used for |
+|----------|---------|----------|
+| `DATABASE_NAME` | `app` | The database. Tests append `_test` (and a process number under ParaTest) |
+| `DATABASE_PORT` | `3306` | MySQL |
+| `REDIS_PORT` | `6379` | Redis |
+| `MAILER_PORT` | `1025` | Mailpit SMTP |
+| `MAILPIT_PORT` | `8025` | Mailpit web UI |
+| `PHPMYADMIN_PORT` | `8080` | phpMyAdmin |
+| `PHPMYADMIN_LIVE_PORT` | `8081` | phpMyAdmin for the live database |
+| `PHPMYADMIN_PLAYGROUND_PORT` | `8082` | phpMyAdmin for the playground database |
+| `RABBITMQ_PORT` | `5672` | RabbitMQ, only with the `rabbitmq` profile |
+| `RABBITMQ_UI_PORT` | `15672` | RabbitMQ management UI |
+
+- Set them in `.env`, not `.env.local`: Symfony does not load `.env.local` in the `test` environment, so dev and test would point at different servers.
+- Production ignores these. The production targets read the env files in `../supplymars-secrets/` instead of `.env`.
+- `make up-prod-local` reads its own env file, so it uses the default ports, reuses the development phpMyAdmin and Mailpit, and serves the app on `127.0.0.1:8000`, the port `symfony serve` uses. Stop one before starting the other.
 
 ### phpMyAdmin for the production databases
 
-`phpmyadmin-prod-live` (http://localhost:8081) and `phpmyadmin-prod-playground` (http://localhost:8082)
-connect through SSH tunnels on local ports 3307 and 3308. Open the tunnel and the page works; without one
-it shows a connection error. Each has its own footer (`docker/phpmyadmin/`) so the two are not mixed up.
+`phpmyadmin-prod-live` (http://localhost:8081) and `phpmyadmin-prod-playground` (http://localhost:8082) start with `make up-dev-tools` and connect through SSH tunnels on local ports 3307 and 3308. Open the tunnel and the page works; without one it shows a connection error. Each has its own footer (`docker/phpmyadmin/`) so the two are not mixed up.
 
-## Useful Commands
+### Network exposure
 
-```bash
-# Database
-symfony console doctrine:migrations:migrate    # Run migrations
-symfony console doctrine:schema:validate       # Validate mappings
-symfony console doctrine:fixtures:load         # Load fixtures
+MySQL, Redis, Mailpit, RabbitMQ and phpMyAdmin are published on `127.0.0.1` only (`compose.override.yaml`). They use default passwords or none, so they must not be reachable from other machines; keep the `127.0.0.1:` prefix when adding a port. One exception today: `compose.prod.local.yaml` publishes the RabbitMQ UI as `15672:15672`, on all interfaces.
 
-# Cache
-symfony console cache:clear                    # Clear all caches
+The application is different: with `make up`, the php container publishes ports 80 and 443 on all interfaces (`compose.yaml`), so the dev site is reachable from the local network. The production files replace those with `127.0.0.1:8001` (`compose.prod.yaml`), which Caddy on the server proxies to.
 
-# Messenger
-symfony console messenger:consume async        # Process queue
-symfony console messenger:failed:show          # View failed messages
-symfony console messenger:failed:retry         # Retry failed messages
+## Troubleshooting
+
+| Symptom | Check |
+|---------|-------|
+| `SQLSTATE[HY000] [2002] Connection refused` | `docker compose ps`, `docker compose logs database`. MySQL takes a few seconds to accept connections after it starts |
+| `Connection refused [tcp://127.0.0.1:6379]` | `docker compose exec redis sh -c 'REDISCLI_AUTH="$REDIS_PASSWORD" redis-cli ping'` should print `PONG` |
+| An email or async event never arrives | See [Email in dev](#email-in-dev). Otherwise no worker is running (Option A), or it failed: `symfony console messenger:stats`, `messenger:consume async -vv`, `messenger:failed:show` |
+| Browser warns about the certificate (Option A) | `symfony server:ca:install`, then `symfony server:stop` and `symfony serve -d` |
+| Styles missing or JavaScript errors | Rerun `importmap:install`, then `tailwind:build` (`assets/vendor/` is not committed) |
+| A JS or CSS change never reaches the browser | Old compiled files in `public/assets/` (from `asset-map:compile` or an old checkout) are served before `assets/`. Delete them, clear `var/cache/dev` and hard-reload |
+| `make up` fails with `container ...-php-1 is unhealthy` | The healthcheck calls `/health`, so the database, Redis or the queue being down also fails it. `curl -k https://localhost/health` shows which check failed; `docker compose logs php` shows FrankenPHP's errors; `docker compose exec php tail var/log/dev.log` the app's |
+| A simulation command fails with `User "admin@supplymars.com" not found.` | The `DEFAULT_STAFF_EMAIL` user is missing ([above](#a-user-and-data)) |
+| Test database missing or out of date | See [07-testing.md](07-testing.md#locally) |
+
+## Related
+
+- [06-operations.md](06-operations.md): the worker, the scheduler and the simulator
+- [07-testing.md](07-testing.md): running the tests and `make check`
+- [11-runbook.md](11-runbook.md): production
