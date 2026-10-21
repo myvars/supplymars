@@ -81,7 +81,7 @@ final class UpdateCustomerFlowTest extends WebTestCase
             ->assertSeeIn('[data-slot="field-error"]', 'There is already an account with this email')
             ->assertNotSee('Object(');
 
-        self::assertSame('before@example.com', $customer->getEmail());
+        self::assertSame('before@example.com', UserFactory::repository()->find($customer->getId())?->getEmail());
     }
 
     public function testKeepingOwnEmailIsNotADuplicate(): void
