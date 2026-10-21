@@ -19,7 +19,7 @@ Each stack runs 4 containers (5 for playground, which includes `reset`). The que
 |---------|-------|---------|
 | php | `ghcr.io/myvars/supplymars/php` | FrankenPHP: web server and PHP in one, in worker mode (HTTP only — Caddy on the host handles TLS). Runs as `www-data` ([ADR 016](adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md)) |
 | messenger | `ghcr.io/myvars/supplymars/php` | Async message consumer, and the scheduled jobs (`src/Shared/Infrastructure/Scheduler/MainSchedule.php`; `PLAYGROUND_MODE` picks the stack's) |
-| database | mysql:8.4 | Primary data store |
+| database | mysql:8.4 | Primary data store, with settings sized for this small server (`docker/mysql/production.cnf`, [06-operations.md](06-operations.md#database-optimization)) |
 | redis | redis:8.8-alpine | Cache, sessions |
 | reset | `ghcr.io/myvars/supplymars/reset` | Nightly DB reset at 02:15, on its own cron (playground only) |
 
@@ -193,6 +193,13 @@ docker compose $LIVE logs --tail=50 messenger
 
 # MySQL process list (check for long-running queries)
 docker compose $LIVE exec -T database mysqladmin -u root -p processlist
+
+# MySQL settings in use: production.cnf's values, not the image's defaults
+docker compose $LIVE exec -T database mysql -u root -p -e "SHOW VARIABLES WHERE Variable_name IN ('performance_schema', 'max_connections', 'innodb_log_buffer_size', 'innodb_buffer_pool_size')"
+
+# Memory and swap: compare with Docs/06-operations.md#database-optimization
+free -m
+for p in $(pgrep -x mysqld); do grep VmSwap /proc/$p/status; done
 ```
 
 ---

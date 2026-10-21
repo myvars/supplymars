@@ -44,6 +44,8 @@ services:
       MYSQL_USER: app                               # App-specific DB user (never root in prod)
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}             # Secure, unique app password
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}   # Used for root access only (never in app)
+    volumes:
+      - ./docker/mysql/production.cnf:/etc/mysql/conf.d/production.cnf:ro   # Sized for the small server
 
 
   # --- Redis (Prod) ---
