@@ -84,12 +84,13 @@ class StatusChangeLogDoctrineRepository extends ServiceEntityRepository implemen
         ];
 
         // Rows are written in time order, so the rows before $before all have lower ids than the first row after it.
-        // The search walks that old end of the table once, $batchSize rows at a time.
-        $endId = $this->firstIdFrom($before) ?? $this->lastId() + 1;
-        $fromId = $this->firstId();
+        // The search walks that old end of the table once, a window of $batchSize rows at a time. A narrow id range
+        // keeps MySQL reading the primary key; given the whole range, it drives some joins from the entity table.
+        $endId = $this->firstIdFrom($before) ?? \PHP_INT_MAX;
+        $fromId = 0;
 
         $deleted = 0;
-        while ($fromId !== null && $fromId < $endId) {
+        while ($fromId < $endId) {
             $toId = min($this->idAfter($fromId, $batchSize) ?? $endId, $endId);
 
             $ids = [];
@@ -121,17 +122,10 @@ class StatusChangeLogDoctrineRepository extends ServiceEntityRepository implemen
                     ->execute();
             }
 
-            $fromId = $toId < $endId ? $toId : null;
+            $fromId = $toId;
         }
 
         return $deleted;
-    }
-
-    private function firstId(): ?int
-    {
-        $id = $this->createQueryBuilder('sc')->select('MIN(sc.id)')->getQuery()->getSingleScalarResult();
-
-        return $id === null ? null : (int) $id;
     }
 
     /** The id $count rows after $fromId, so that ids from $fromId up to it hold $count rows. */
@@ -148,11 +142,6 @@ class StatusChangeLogDoctrineRepository extends ServiceEntityRepository implemen
             ->getOneOrNullResult();
 
         return $row === null ? null : (int) $row['id'];
-    }
-
-    private function lastId(): int
-    {
-        return (int) $this->createQueryBuilder('sc')->select('MAX(sc.id)')->getQuery()->getSingleScalarResult();
     }
 
     private function firstIdFrom(\DateTimeImmutable $from): ?int
