@@ -101,7 +101,7 @@ SupplyMars is a **modular monolith** - bounded contexts are self-contained modul
 - **[adr/013-database-queue-by-default.md](adr/013-database-queue-by-default.md)** - Messenger on a database queue by default; RabbitMQ as an opt-in
 - **[adr/014-architecture-rules.md](adr/014-architecture-rules.md)** - Framework attributes allowed in the domain; contexts use each other's Domain only; Deptrac in CI
 - **[adr/015-symfony-scheduler-in-place-of-cron.md](adr/015-symfony-scheduler-in-place-of-cron.md)** - Scheduled jobs in the Messenger worker, one at a time; no cron image
-- **[adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md](adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md)** - One FrankenPHP image in place of nginx + PHP-FPM; rate limits and trusted proxies in the app
+- **[adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md](adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md)** - One FrankenPHP image in place of nginx + PHP-FPM; rate limits and trusted proxies in the app; worker mode in production
 
 ---
 

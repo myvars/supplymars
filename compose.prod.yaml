@@ -77,6 +77,10 @@ services:
       <<: *common-php-env
       RUN_MIGRATIONS: "true"  # Only php container runs migrations/messenger-setup
       SERVER_NAME: ":80"      # Plain HTTP; Caddy on the host terminates TLS
+      # Worker mode: the app stays in memory between requests, so services must keep no request's data
+      # in a property (Docs/03-architecture.md). Each worker restarts after 500 requests, Symfony's default
+      FRANKENPHP_CONFIG: "worker /app/public/index.php"
+      FRANKENPHP_LOOP_MAX: "500"
     # Localhost only; Caddy on the host proxies to this port (live 8001, playground 8002). Replaces dev's 80 and 443.
     ports: !override
       - "127.0.0.1:${HTTP_HOST_PORT:-8001}:80"

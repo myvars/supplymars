@@ -7,6 +7,12 @@
 	# The local CA cannot be added to the host's trust store from inside a container
 	skip_install_trust
 
+	# Empty in development: classic mode, each request starts the app afresh. Production sets
+	# "worker /app/public/index.php": the app starts once per worker and serves many requests. See ADR 016.
+	frankenphp {
+		{$FRANKENPHP_CONFIG}
+	}
+
 	servers {
 		# The host Caddy reaches the container through Docker's network. This only makes the access
 		# log show the visitor's IP: PHP still sees the proxy, and Symfony reads X-Forwarded-For itself.
