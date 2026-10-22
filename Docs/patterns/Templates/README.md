@@ -53,7 +53,7 @@ A Twig Component documents its props and blocks in the same header, above `{% pr
 ## Gotchas
 
 - `Search`'s `sort` and `list_item` blocks are empty by default, so an index page that does not fill them shows no sort links and an empty item per result. The shared `shared/form_flow/index.html.twig` fills both with the id only.
-- After `ux:install` replaces a template at an existing path, run `rm -rf var/cache/dev var/cache/test` (see `CLAUDE.md`).
+- After `ux:install` replaces a template at an existing path, run `rm -rf var/cache/dev var/cache/test` (see [ADR 012](../../adr/012-shadcn-ui-kit.md)).
 
 ## Related
 

@@ -1,59 +1,43 @@
 # SupplyMars
 
-A fully operational backend e-commerce platform, built as a portfolio project to demonstrate real-world architectural complexity beyond the checkout.
+[![CI](https://github.com/myvars/supplymars/actions/workflows/ci.yml/badge.svg)](https://github.com/myvars/supplymars/actions/workflows/ci.yml)
 
-PHP 8.5+ • Symfony 8 • Doctrine ORM • MySQL 8.4 • Redis • Tailwind CSS • Hotwire
+A fully operational backend e-commerce platform, built as a portfolio project to demonstrate real-world architectural complexity beyond the checkout.
 
 **[Live Demo →](https://www.supplymars.com)** · **[About the Developer →](https://www.supplymars.com/about)**
 
----
-
 ## What Is This?
 
-Most e-commerce demos stop at "add to cart." SupplyMars focuses on what comes after — when orders split across multiple suppliers, pricing responds to real supplier costs and margins, and fulfilment progresses through independent purchase-order lifecycles.
+Most e-commerce demos stop at "add to cart." SupplyMars focuses on what comes after: sourcing each order line from competing suppliers, pricing that follows supplier costs and margins, and fulfilment that moves through independent purchase-order lifecycles.
 
-The platform models real operational complexity: multi-source fulfilment, dynamic pricing, and margin tracking at scale across thousands of SKUs. The catalog — products, descriptions, and imagery — is fully AI-generated, and automated simulations keep orders flowing through the system in a realistic, end-to-end way.
+The catalog (products, descriptions and imagery) is AI-generated, and scheduled simulations keep orders flowing through the system end to end.
 
-This is not a commercial product. It is a working demonstration of how I approach complex problems — from domain modelling and architecture through to UI, testing, and deployment.
+This is not a commercial product. It is a working demonstration of how I approach complex problems, from domain modelling and architecture through to UI, testing and deployment.
 
 ## Key Features
 
-- **Multi-supplier sourcing** — Products can come from your own warehouse or external dropshippers, each with their own costs and stock levels
-- **Dynamic pricing** — Markups cascade from category to subcategory to product; prices recalculate automatically when supplier costs change
-- **Order allocation & splitting** — Customer orders split across suppliers based on availability and cost optimisation
-- **Purchase order lifecycle** — Track POs from creation through acceptance, shipping, and delivery (or rejection and refund)
-- **Simulation engine** — Console commands generate realistic orders, progress fulfilment, fluctuate stock, and populate reporting data
-- **Reporting dashboards** — Pre-aggregated sales and margin reports with filtering by product, category, supplier, and time period
-- **REST API** — OpenAPI-documented endpoints for catalog and order management
-- **Support tickets** — Pool-based internal ticketing with threaded messages and visibility controls
+- **Multi-supplier sourcing**: products come from your own warehouse or external dropshippers, each with its own cost and stock
+- **Dynamic pricing**: markups cascade from category to subcategory to product, with price-model rounding
+- **Order allocation**: each order line goes to the cheapest supplier that can supply it; staff can split a line across suppliers by hand
+- **Purchase order lifecycle**: from creation through acceptance, shipping and delivery, or rejection and refund
+- **Simulation engine**: console commands generate orders, progress fulfilment, change stock and build reporting data
+- **Reporting dashboards**: pre-aggregated sales, margin and customer reports, filtered by product, category, supplier and period
+- **REST API**: OpenAPI-documented endpoints for the catalog and orders
+- **Support tickets**: pool-based internal ticketing with threaded messages
+
+Built with PHP 8.5+, Symfony 8.1, Doctrine ORM, MySQL 8.4, Symfony Messenger (database queue), Redis, Tailwind CSS, Hotwire (Turbo + Stimulus) and AssetMapper, served by FrankenPHP in Docker, with GitHub Actions CI and AWS hosting.
 
 ## Getting Started
 
-1. Clone the repository
-2. Follow the [Local Development Setup](Docs/02-setup-local.md) guide
-
 ```bash
-# Quick start (Symfony server + Docker services)
-make up-dev-tools          # Start MySQL, Redis, Mailpit, phpMyAdmin
-symfony serve -d           # Start PHP server at https://127.0.0.1:8000
+make up-dev-tools          # MySQL, Redis, Mailpit, phpMyAdmin
+symfony serve -d           # the app at https://127.0.0.1:8000
 ```
+
+[Local Development Setup](Docs/02-setup-local.md) covers prerequisites, the full Docker stack, a user and data, and the local URLs.
 
 ## Documentation
 
-| Guide | Description |
-|-------|-------------|
-| [Technical Documentation](Docs/README.md) | Architecture, setup, features, operations, CLI reference |
-| [User Manual](Docs/UserManual/README.md) | Day-to-day operations guide for managing orders, suppliers, and products |
-| [Technical Review](Docs/12-technical-review.md) | Honest architectural review of the project as of V1.0 (31 March 2026) |
-
-## Tech Stack
-
-**Backend:** PHP 8.5+ • Symfony 8.1 • Doctrine ORM • MySQL 8.4 • Symfony Messenger (database queue) • Redis
-
-**Frontend:** Tailwind CSS • Hotwire (Turbo + Stimulus) • AssetMapper
-
-**Infrastructure:** Docker • GitHub Actions CI/CD • AWS
-
-## Build & Deploy
-
-[![Build and Deploy](https://github.com/myvars/supplymars/workflows/Build%20and%20Deploy/badge.svg)](https://github.com/myvars/supplymars/actions?query=workflow%3ABuild%20and%20Deploy)
+- [Docs/README.md](Docs/README.md): every technical doc and when to read it. AI agents start at [CLAUDE.md](CLAUDE.md).
+- [User Manual](Docs/UserManual/README.md): day-to-day use of the app, screen by screen.
+- [Technical Review](Docs/12-technical-review.md): an architectural review as of V1.0 (31 March 2026), a dated snapshot.
