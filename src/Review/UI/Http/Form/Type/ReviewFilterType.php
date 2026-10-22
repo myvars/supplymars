@@ -12,7 +12,6 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -65,10 +64,6 @@ final class ReviewFilterType extends AbstractType
 
         $builder->get('reviewStatus')
             ->addModelTransformer($this->stringToReviewStatusTransformer);
-
-        $builder->add('auto-update', SubmitType::class, [
-            'attr' => ['class' => 'hidden-submit-button', 'data-submit-form-target' => 'submit'],
-        ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void

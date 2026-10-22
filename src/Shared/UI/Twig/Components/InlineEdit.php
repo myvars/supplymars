@@ -10,7 +10,7 @@ use Symfony\UX\TwigComponent\Attribute\AsTwigComponent;
  * Inline Edit Component (Turbo-native pattern).
  *
  * The component is a turbo-frame. Clicking the edit link replaces
- * the frame content with a form. Uses native Turbo preloading.
+ * the frame content with a form.
  *
  * Usage:
  *   <twig:InlineEdit

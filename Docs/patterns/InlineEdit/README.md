@@ -93,7 +93,7 @@ Only text-like values are mirrored (string, int, float, `Stringable`), and the c
 | `editIcon` | `'bi:pencil-square'` | Icon name |
 | `editIconSize` | `'h-4 w-4'` | Icon size classes |
 
-The edit link is fetched on hover by Turbo 8's default link prefetch. Its `data-turbo-preload` attribute has no effect: Turbo does not preload links inside a `<turbo-frame>`.
+The edit link is fetched on hover by Turbo 8's default link prefetch.
 
 ### `formOptions`
 

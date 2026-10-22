@@ -5,9 +5,7 @@
             data-basic-modal-target="frame"
             data-action="turbo:before-fetch-request->basic-modal#frameBusy turbo:frame-render->basic-modal#frameIdle"
             class="peer block data-[loading]:opacity-30"
-        >
-            {{ include ('shared/turbo/_frame_success_stream.html.twig', { frame: 'modal' }) }}
-        </turbo-frame>
+        ></turbo-frame>
         <div class="pointer-events-none hidden peer-data-[loading]:flex absolute inset-0 items-center justify-center">
             <twig:Spinner class="size-8 text-gray-400"/>
         </div>

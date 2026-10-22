@@ -3,8 +3,7 @@ import debounce from 'debounce'
 
 export default class extends Controller {
     static values = {
-        basePath: String,
-        query: String
+        basePath: String
     }
     static targets = ["queryInput"];
 
