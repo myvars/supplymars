@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Accepted.
 
 ## Context
 
@@ -56,7 +56,7 @@ The playground is rebuilt each night from live's backup, which now holds live's 
 - **Keep the `sockets` extension in the image so opting in needs no image change**, as the skeleton does. Rejected here: this application runs in production, and an extension nothing uses is surface for no gain. Adding it back is one line in `docker/Dockerfile`.
 - **A dedicated test library** (`zenstruck/messenger-test`). Not needed: the built-in in-memory transport covers asserting on sent messages.
 
-## References
+## Related
 
 - [Switching to RabbitMQ](../02-setup-local.md#switching-to-rabbitmq)
 - [The Queue](../03-architecture.md#the-queue)

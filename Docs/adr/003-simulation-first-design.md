@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Accepted. Amended by ADR 015: the jobs run on Symfony Scheduler, not cron.
 
 ## Context
 

@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Accepted.
 
 ## Context
 
@@ -132,6 +132,6 @@ The context follows standard project patterns:
 - `FlusherInterface` for persistence
 - `TimestampableEntity` trait for `createdAt`/`updatedAt`
 
-## Related Documentation
+## Related
 
 - [ADR 006: FormFlow Controller Pattern](006-formflow-controller-pattern.md)

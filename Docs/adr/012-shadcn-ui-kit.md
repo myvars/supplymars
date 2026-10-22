@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted
+Accepted.
 
 ## Context
 
@@ -134,7 +134,7 @@ Updating a recipe offers to overwrite these; keep them when reviewing the diff:
 
 The `Label`, `Input`/`Textarea` `data-slot`, `AlertDialog` and toast close-button changes are kit bugs worth reporting upstream.
 
-## Differences in this application
+### Differences in this application
 
 The kit files were copied from the skeleton with the local changes above already applied. This application differs in the following ways:
 
@@ -160,7 +160,7 @@ The kit files were copied from the skeleton with the local changes above already
 
 ### Negative
 
-- `symfony/ux-toolkit` is marked experimental. Recipes can change, and two bugs were found in the versions installed here.
+- `symfony/ux-toolkit` is marked experimental. Recipes can change, and four bugs were found in the versions installed here (listed under local changes).
 - Upgrading a recipe means reconciling the local changes above by hand.
 - The form theme is ours to extend. Range and colour inputs and collections are not covered yet.
 - The kit `Button` does not shrink in a flex row and has a fixed height, so two `w-full` buttons side by side overflow (use `flex-1`), and padding alone does not make a button taller (add `h-auto`). Icons inside it are forced to 16px unless given a `size-*` class.
@@ -175,9 +175,10 @@ The kit files were copied from the skeleton with the local changes above already
 - Mobile inputs and selects use 16px text, larger than before, to avoid the iOS focus zoom.
 - `twig-tailwind-extra` moved from 0.6 to 1.x; its `tailwind_merge` filter is unchanged and `tailwind_classes` is new.
 
-## References
+## Related
 
 - [Symfony UX Toolkit](https://symfony.com/bundles/ux-toolkit/current/index.html)
 - [Shadcn kit](https://ux.symfony.com/toolkit/kits/shadcn)
-- ADR 007 (Turbo modal), ADR 008 (server-driven UI)
-- `Docs/patterns/UI/Forms.md` — form theme usage
+- [ADR 007: Turbo modal](007-turbo-frame-modal-architecture.md)
+- [ADR 008: Server-driven UI](008-server-driven-ui-architecture.md)
+- [UI forms](../patterns/UI/Forms.md) — form theme usage
