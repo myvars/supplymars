@@ -1,7 +1,7 @@
 import { Controller } from '@hotwired/stimulus';
 
 export default class extends Controller {
-    static targets = ['dialog', 'frame', 'loadingTemplate'];
+    static targets = ['dialog', 'frame'];
 
     mouseDownTarget = null;
 
@@ -55,14 +55,6 @@ export default class extends Controller {
             this.dialogTarget.close();
         }
         this.mouseDownTarget = null;
-    }
-
-    showLoading() {
-        if (this.dialogTarget.open) {
-            return;
-        }
-
-        this.frameTarget.innerHTML = this.loadingTemplateTarget.innerHTML;
     }
 
     frameBusy() {
