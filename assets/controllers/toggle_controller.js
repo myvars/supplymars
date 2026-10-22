@@ -6,12 +6,4 @@ export default class extends Controller {
     toggle() {
         this.toggleableTarget.classList.toggle('hidden');
     }
-
-    close() {
-        this.toggleableTarget.classList.add('hidden');
-    }
-
-    preventToggle(event) {
-        event.stopPropagation();
-    }
 }
