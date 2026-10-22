@@ -178,15 +178,7 @@ Product images are uploaded through a Dropzone control. Its limits run in the br
 Symfony forms and the login form (`enable_csrf: true`) carry tokens already. The rules below cover the rest. The REST API is stateless and uses bearer tokens instead.
 
 - **State changes are a `POST` with a token, never a `GET` link:** a link can be followed from an email or another page, or re-run by the browser when it restores a tab.
-- **`ActionFlow` checks the token only when the context names one with `->csrf()`;** an action without that call is not protected. Give the id in full, so each action on each entity has its own:
-
-  ```php
-  FlowContext::forAction('app_review_show', ['id' => $review->getPublicId()->value()])
-      ->csrf('approve' . $review->getPublicId()->value()),
-  ```
-
-- **`ConfirmFlow`** (delete and other confirm-then-act operations) uses the same check. Its token id is the action's confirm key (defaults to `'delete'`) followed by the command's `id`, so the command must have a public `id`.
-- A wrong or missing token gives an "Invalid CSRF token." flash and a redirect; the handler is not called.
+- **Flow actions** (`ActionFlow`, `ConfirmFlow`) check a token only when told which one, and each action on each entity gets its own token id. How each flow checks it, and what it skips: [FormFlow: CSRF in flows](patterns/FormFlow/README.md#csrf-in-flows).
 - **Requests sent from JavaScript** carry a token too, and the endpoint checks it with `isCsrfTokenValid()` before doing anything else, answering `403` when it fails (`ProductImageController`):
   - Image upload: the upload form renders a hidden `_token` field. Dropzone posts a form's other fields with the files, so the same field serves Dropzone and the plain form it falls back to.
   - Image reorder: the page renders the token into a Stimulus value, and the `sortable` controller sends it in the `X-CSRF-Token` header.

@@ -1,248 +1,145 @@
-# FormFlow Pattern
+# FormFlow
 
-This document describes the FormFlow pattern used in SupplyMars to keep controllers thin and provide consistent HTTP handling across all bounded contexts.
+How web controllers use the `myvars/form-flow` package: which flow fits which action, how handlers report back, and the rules the app adds. Read when writing or changing a web controller.
 
-## Intent
+The flows live in the package (namespace `MyVars\FormFlow\`, `^1.4` in `composer.json`). Its full reference is in the tagged docs: [flows](https://github.com/myvars/form-flow/blob/v1.4.0/docs/flows.md), [templates](https://github.com/myvars/form-flow/blob/v1.4.0/docs/templates.md), [adapters](https://github.com/myvars/form-flow/blob/v1.4.0/docs/adapters.md). `vendor/myvars/form-flow` holds only the package `README.md`, because `docs/` is excluded from the installed package. Bump these links when `composer.json` moves past 1.4.
 
-Controllers in a Symfony application tend to accumulate repetitive boilerplate:
-- Form creation and handling
-- Validation and error display
-- Flash messages
-- Redirects
-- CSRF validation (for deletes)
-- Pagination and out-of-range handling
+## Rules
 
-The FormFlow pattern extracts this boilerplate into reusable Flow classes, leaving controllers as simple coordinators that:
-1. Inject dependencies
-2. Configure the flow via `FlowContext`
-3. Return the flow's response
+| Flow | Use for | HTTP methods |
+|---|---|---|
+| `FormFlow` | Create, update and filter forms | GET, POST |
+| `ActionFlow` | A state change with no form (allocate, lock, approve) | POST (the flow doesn't enforce it; route it that way) |
+| `ConfirmFlow` | Confirm, then act (delete, cancel, rewind, remove), CSRF-checked | GET (`confirm()`), POST (`execute()`) |
+| `SearchFlow` | Paginated index pages | GET |
+| `InlineEditFlow` | One field edited in a Turbo Frame; see [InlineEdit](../InlineEdit/README.md) | GET, POST |
 
-This achieves:
-- **Thin controllers** — 5-15 lines per action
-- **Consistent UX** — All forms behave identically
-- **Turbo integration** — Automatic Turbo stream support
-- **Testability** — Flows are tested once; controllers test routing/auth
+These rules are for flow controllers. The exceptions: `RegistrationController`, `ResetPasswordController` and `PlaygroundLoginController` call `addFlash()` themselves, and `ProductImageController` checks the upload and reorder tokens in the controller, calls `ActionFlow::process()` there without `->csrf()`, returns JSON and has no `model()` ([Security: CSRF](../../08-security.md#csrf)).
 
-## Flow Classes
+- **Controllers orchestrate; handlers decide.** A flow action is a single `return $flow->...(...)`. Flow controllers never set flash messages or build redirects. Handlers never touch `Request`, the flash bag, `Response` or templates; they return a `Result`. Non-flow pages such as `show` may query repositories and render directly (`CustomerController::show()`).
+- **A state change is a POST with a CSRF token, never a GET link.** Use `->csrf($tokenId)` on the context; see [CSRF in flows](#csrf-in-flows). Why: [Security: CSRF](../../08-security.md#csrf).
+- **Call flows with named arguments**, as every controller does.
+- **Each flow controller has a private `model(): FlowModel` method**, not a class constant, because a constant cannot call the static factory `FlowModel::create('catalog', 'product')`.
+- **Mappers are `__invoke` callables, form DTO → command**, in `{Context}/UI/Http/Form/Mapper/`, named `{Action}{Entity}Mapper`. They pass fields through (`CategoryFilterMapper`): no repository lookups (the handler resolves ids), no side effects. Validation is on the form model and the entity ([Security: Validation](../../08-security.md#validation)). The package's generic `MyVars\FormFlow\Mapper\ObjectMapper` exists but nothing here uses it.
 
-| Class | Purpose | HTTP Methods |
-|-------|---------|--------------|
-| `FormFlow` | Create/update forms with validation | GET, POST |
-| `ActionFlow` | Direct command execution (state changes); CSRF-checked when the context calls `->csrf()` | POST |
-| `ConfirmFlow` | Confirm-then-act: delete & other confirmable actions (CSRF) | GET, POST |
-| `SearchFlow` | Paginated index/list pages | GET |
-| `InlineEditFlow` | Single-field inline editing via Turbo Frames | GET, POST |
+### The app's adapters
 
-All flows live in the external `myvars/form-flow` package (namespace `MyVars\FormFlow\`), installed at `vendor/myvars/form-flow/src/`. The app supplies the adapters (`Result`, `RedirectTarget`, `FlashMessenger`, `SearchCriteriaInterface`) and may override any of the package's default templates at `templates/shared/form_flow/*`.
+The package defines ports in `MyVars\FormFlow\Contract\`; the app implements them. Symfony autowires them, and `config/services.yaml` aliases `FlasherInterface`.
 
-## HTTP Lifecycle
+| Port | App class |
+|---|---|
+| `ResultInterface` | `src/Shared/Application/Result.php` |
+| `RedirectTargetInterface` | `src/Shared/Application/RedirectTarget.php` |
+| `FlasherInterface` | `src/Shared/UI/Http/FlashMessenger.php` |
+| `SearchCriteriaInterface` | `src/Shared/Application/Search/SearchCriteriaInterface.php` (extends the port) |
 
-### FormFlow (Create/Update)
+The package ships design-neutral templates. The app overrides them at the same path, `templates/shared/form_flow/*`; see [Overrides](Overrides.md).
 
-```
-GET /product/new
-  → Creates empty form
-  → Renders template with form
-  → Returns 200
+### CSRF in flows
 
-POST /product/new (valid data)
-  → Binds form data
-  → Validates form
-  → Calls mapper(formData) → Command
-  → Calls handler(Command) → Result
-  → If Result.ok: flash success, redirect 303
-  → If Result.fail: flash error, return 422
+| Flow | What it checks |
+|---|---|
+| `ActionFlow` | The posted `_token` against the id given to `->csrf()`. **Without `->csrf()` it checks nothing.** Give the id in full (`'allocate' . $publicId`), so each action on each entity has its own token. |
+| `ConfirmFlow::execute()` | Delegates to `ActionFlow` with the id `confirmKey . $command->id` (`confirmKey` is `'delete'` unless set with `forConfirm($model, $key)`). **The command needs a public `id`.** `DeleteMessage` has two ids, so it sets `$this->id` from the message id. |
 
-POST /product/new (invalid data)
-  → Binds form data
-  → Validates form (fails)
-  → Re-renders template with errors
-  → Returns 422
-```
+A wrong or missing token flashes `Invalid CSRF token.` and redirects to the success route; the handler does not run.
 
-### ActionFlow (State Transitions)
+## How to
 
-```
-POST /order/{id}/allocate
-  → Validates CSRF token when the context sets one with ->csrf('allocate' . id)
-  → If invalid: flash error, redirect 303 (handler not called)
-  → Calls handler(Command) → Result
-  → If Result.ok: flash success, redirect 303
-  → If Result.fail: flash error, redirect 303
-  → If Result.redirect: redirect to forced target
-```
+### Pick the flow and context
 
-### ConfirmFlow (delete & confirmable actions)
+`ProductController` (`src/Catalog/UI/Http/Controller/ProductController.php`) has index, filter, new, edit and delete. Copy the action from there, or from the controller named in the row.
 
-```
-GET /product/{id}/delete/confirm     (confirm())
-  → Renders confirmation template
-  → Returns 200
+| Action | Flow call | Context |
+|---|---|---|
+| `index` | `SearchFlow::search()` with `adapter: $repository->findByCriteria($criteria)` | `FlowContext::forSearch($model)` |
+| `searchFilter` | `FormFlow::form()` with the criteria as `data` | `forFilter($model)` |
+| `new` | `FormFlow::form()` | `forCreate($model)` |
+| `edit` | `FormFlow::form()` with `ProductForm::fromEntity($product)` | `forUpdate($model)->allowDelete(true)` |
+| `deleteConfirm` / `delete` | `ConfirmFlow::confirm()` / `execute()` | `forDelete($model)` |
+| allocate (`OrderController`) | `ActionFlow::process()` | `forAction('app_order_show', [...])->csrf(...)` |
+| cancel, rewind, remove (`OrderController`, `PurchaseOrderController`, `SupplierProductController`) | `ConfirmFlow::confirm()` / `execute()` | `forConfirm($model, 'rewind')->template(...)` |
 
-POST /product/{id}/delete            (execute())
-  → Delegates to ActionFlow.process() with the CSRF token id set to
-    confirmKey + the command's id (confirmKey defaults to 'delete')
-  → If invalid: flash error, redirect 303
-```
+Chainable methods on `FlowContext`:
 
-Non-delete confirmable actions use the same flow via `FlowContext::forConfirm($model, key)`, which
-namespaces the CSRF token to `key` so distinct actions on the same entity don't share a token. This
-application has three: `cancel` (orders), `rewind` (purchase orders) and `remove` (supplier products).
+| Method | Effect |
+|---|---|
+| `->template(string)` | Use this template instead of `{context}/{entity}/{operation}.html.twig` (ignored by `SearchFlow`) |
+| `->successRoute(route, params)` | Redirect here on success (default: `routes.index`; `forAction()` takes it as its arguments) |
+| `->allowDelete(bool)` | Sets `flowAllowDelete`; the app's update template then shows a delete link |
+| `->csrf(string $tokenId)` | `ActionFlow` checks the posted `_token` against this id before calling the handler |
 
-### SearchFlow (Index/List)
+`FlowModel::create($context, $entity, displayName:, displayNamePlural:)` derives the template directory, the route names (`app_{context}_{entity}_{action}`, with `_search_filter` for the filter) and the default success route (`_index`). `FlowModel::simple('order')` drops the context (`app_order_*`, `templates/order/`). Override the label with `displayName: 'VAT Rate'` (`VatRateController`) or, for one action, `$this->model()->withDisplayName('Product Cost')` (`PricingController`). The plural defaults to the display name plus `s`. Template variables are listed in [Templates](../Templates/README.md#formflow-variables).
 
-```
-GET /product/?page=1
-  → Paginates the Pagerfanta adapter the controller passes in ($repository->findByCriteria($criteria))
-  → Returns 200 with paginated results
+### A state change without a form
 
-GET /product/?page=999 (out of range)
-  → Catches OutOfRangeCurrentPageException
-  → Flashes warning "Page 999 not found"
-  → Redirects to page 1 (preserves other params)
-```
-
-## API Reference
-
-### FlowModel
-
-Typed value object that replaces the raw `MODEL` string constant in controllers. Derives display name, template directory, routes, and default success route from convention-based factories:
+Allocate on the order page (`OrderController`, route `app_order_allocate`):
 
 ```php
-// Entity within a bounded context:
-FlowModel::create('catalog', 'product')
-FlowModel::create('purchasing', 'supplier_product')
-FlowModel::create('pricing', 'vat_rate', displayName: 'VAT Rate')
-
-// Irregular plural (the default plural is the display name + 's'):
-FlowModel::create('demo', 'category', displayNamePlural: 'Categories')
-
-// Entity without bounded context:
-FlowModel::simple('customer')
-FlowModel::simple('order_item')
-
-// Override display name for specific actions:
-$model->withDisplayName('Product Cost')
+context: FlowContext::forAction('app_order_show', ['id' => $order->getPublicId()->value()])
+    ->csrf('allocate' . $order->getPublicId()->value()),
 ```
 
-### FlowContext
+The trigger is a one-button form carrying the same token id:
 
-Declarative configuration object for all flows. Created via factory methods that accept a `FlowModel`:
-
-```php
-$model = FlowModel::create('catalog', 'product');
-
-FlowContext::forCreate($model)
-FlowContext::forUpdate($model)
-FlowContext::forDelete($model)
-FlowContext::forFilter($model)
-FlowContext::forSearch($model)
-FlowContext::forAction('app_order_show', ['id' => $id])
-```
-
-Fluent methods:
-- `successRoute(string $route, array $params = [])` — Override redirect target (route + params)
-- `template(string $template)` — Override template path
-- `allowDelete(bool $allow)` — Show delete button on update forms
-
-### Result
-
-Return type for all command handlers:
-
-```php
-Result::ok(?string $message = null, mixed $payload = null, ?RedirectTarget $redirect = null)
-Result::fail(?string $message = null, mixed $payload = null)
-```
-
-Properties:
-- `$ok` — Boolean success indicator
-- `$message` — Flash message text
-- `$payload` — Optional data (rarely used)
-- `$redirect` — Optional forced redirect target
-
-### RedirectTarget
-
-Used when a handler needs to override the default success URL:
-
-```php
-new RedirectTarget(
-    route: 'app_order_show',
-    params: ['id' => $order->getPublicId()->value()],
-    redirectStatus: 303,
-)
-```
-
-## Template Variables
-
-All templates receive these variables from `TemplateContext`:
-
-| Variable | Example | Description |
-|----------|---------|-------------|
-| `flowModel` | `'Product'` | Capitalized model name |
-| `flowOperation` | `'create'` | Operation name |
-| `template` | `'catalog/product/create.html.twig'` | Full template path |
-| `routes` | `FlowRoutes` object | Typed route names (see below) |
-| `flowModelPlural` | `'Tasks'` | Plural display name (`FlowModel::plural()`) |
-
-The `routes` object (`FlowRoutes`) exposes named route properties instead of string concatenation:
-
-| Property | Example | Description |
-|----------|---------|-------------|
-| `routes.index` | `'app_catalog_product_index'` | Index/list page |
-| `routes.new` | `'app_catalog_product_new'` | Create form |
-| `routes.show` | `'app_catalog_product_show'` | Detail page |
-| `routes.delete` | `'app_catalog_product_delete'` | Delete action |
-| `routes.deleteConfirm` | `'app_catalog_product_delete_confirm'` | Delete confirmation |
-| `routes.filter` | `'app_catalog_product_search_filter'` | Search filter |
-
-Usage in Twig:
 ```twig
-{{ path(routes.new) }}
-{{ path(routes.delete, {'id': result.publicId.value}) }}
+{# templates/order/show.html.twig #}
+<form method="post" action="{{ path('app_order_allocate', {id: result.publicId.value}) }}" data-turbo-frame="body">
+    <input type="hidden" name="_token" value="{{ csrf_token('allocate' ~ result.publicId.value) }}">
+    <button type="submit" class="... focus-ring">Allocate</button>
+</form>
 ```
 
-Additional variables per flow:
-- `FormFlow`: `form`, `result`, `flowBackLink`, `flowAllowDelete`
-- `SearchFlow`: `results` (pagination object)
-- `ConfirmFlow`: `result` (entity to confirm), `confirmKey` (CSRF token key)
+Use `<twig:Button type="submit">` when the trigger looks like a button, and a plain `<button>` with the link's classes plus `focus-ring` when it looks like a link or an icon. Use `ConfirmFlow` instead when the action should ask first.
 
-## File Locations
+### A confirmation that is not a delete
 
-```
-vendor/myvars/form-flow/
-├── config/services.php
-├── templates/shared/form_flow/   # Design-neutral defaults (the app overrides at the same path)
-└── src/
-    ├── FormFlowBundle.php
-    ├── FormFlow.php              # Create/update forms
-    ├── ActionFlow.php            # Direct command execution (state transitions, actions)
-    ├── ConfirmFlow.php           # Confirm-then-act (delete & confirmable actions)
-    ├── SearchFlow.php            # Paginated lists
-    ├── Concerns/RedirectsResponses.php
-    ├── Contract/                 # ResultInterface, RedirectTargetInterface, FlasherInterface, SearchCriteriaInterface
-    ├── Guard/AutoUpdateGuard.php # Auto-update submit detection
-    ├── InlineEdit/               # InlineEditFlow, InlineEditContext, InlineFieldForm, InlineFieldType
-    ├── Mapper/ObjectMapper.php
-    ├── Redirect/                 # RedirectorInterface, TurboAwareRedirector (Turbo stream redirects)
-    └── View/
-        ├── FlowContext.php       # Flow configuration (forCreate, forUpdate, forDelete, forConfirm, forFilter, forSearch, forAction)
-        ├── FlowModel.php         # Typed model value object (create, simple, withDisplayName, plural, template)
-        ├── FlowRoutes.php        # Typed route name bag (fromPrefix, with)
-        ├── FormOperation.php     # Operation enum (Create, Update, Delete, Filter, Action, Index)
-        └── TemplateContext.php   # Template variable bag
+`forConfirm($model, $key)` scopes the CSRF token to `$key . $command->id`, so it never shares a token with delete (key `'delete'`). `SupplierProductController` has both `delete` and `remove`, which is why the key exists. Rewind (`PurchaseOrderController`):
 
-src/Shared/                       # The app's adapters for the package's Contract/ ports
-├── Application/Result.php                          # Handler result object
-├── Application/RedirectTarget.php                  # Forced redirect target
-├── Application/Search/SearchCriteriaInterface.php
-└── UI/Http/FlashMessenger.php
+```php
+// GET  rewindConfirm: ->confirm(entity: $purchaseOrder, context: FlowContext::forConfirm($this->model(), 'rewind')
+//          ->template('purchasing/purchase_order/rewind.html.twig'))
+// POST rewind: ->execute(request: $request, command: new RewindPurchaseOrder($purchaseOrder->getPublicId()),
+//          handler: $handler, context: FlowContext::forConfirm($this->model(), 'rewind')
+//              ->successRoute('app_purchasing_purchase_order_show', ['id' => $purchaseOrder->getPublicId()->value()]))
 ```
 
-## Related Documentation
+The confirm template receives `confirmKey`; render the token as `csrfId="{{ confirmKey }}{{ result.publicId.value }}"`. Always pass `->template()` for the confirm page; see the gotcha in [Overrides](Overrides.md#gotchas).
 
-- [Usage Patterns and Examples](Usage.md)
-- [Template Overrides Cookbook](Overrides.md) - How to customize default templates
-- [Embedded Forms](EmbeddedForms.md) - Inline forms within host pages
-- [Turbo Integration](../Turbo/README.md) - How FormFlow uses Turbo for SPA-like responses
-- [ADR 006: FormFlow Pattern](../../adr/006-formflow-controller-pattern.md) - Architecture decision
-- [ADR 007: Turbo Architecture](../../adr/007-turbo-frame-modal-architecture.md) - Frame and modal design
+### Report the outcome from a handler
+
+```php
+return Result::ok(
+    message: 'Order created',
+    payload: $order->getPublicId(),
+    redirect: new RedirectTarget(route: 'app_order_show', params: ['id' => $order->getPublicId()->value()]),
+);
+```
+
+From `CreateOrderHandler`. On failure a handler returns `Result::fail('Customer not found.')`. `payload` carries data for a non-HTTP caller (the API controller and `DemoOrderCreator` read the new id from it); the flows ignore it.
+
+**Redirect precedence:** a handler's `RedirectTarget` beats the controller's `successRoute()`. Use the handler target when the destination depends on the outcome (the new record's page); use `successRoute()` for a destination known up front. Inside a Turbo Frame, what each kind of success returns (refresh or navigate) is in [Turbo](../Turbo/README.md).
+
+| Scenario | Status |
+|---|---|
+| GET (form display, confirm page, index) | 200 |
+| Valid POST, handler `ok` | 303 redirect |
+| Valid POST, handler `fail` | 422, form re-rendered, error flash |
+| Invalid POST (validation) | 422 |
+| Any redirect inside a Turbo Frame | 200 with a Turbo Stream (`refresh` or `redirect`) |
+| `ActionFlow` / `ConfirmFlow::execute()`, any outcome | 303 redirect |
+
+**Flash keys** (`FlashMessenger`): `success()` → `success`, `warning()` → `warning`, `error()` → `danger`, rendered as `FlashToast`. The message comes from `Result::$message`; null means no flash. Only two flows add their own: `ActionFlow` (`Invalid CSRF token.`, also for `ConfirmFlow`, which delegates to it) and `SearchFlow` (`Page N not found.`, then a redirect to page 1 keeping the other query parameters).
+
+## Gotchas
+
+- **Auto-update forms** (a field change resubmits the form without saving): see [Submit on change](../UI/StimulusControllers.md#submit-on-change).
+- Flows are tested in the package's own suite. Test a context's controllers through HTTP (`tests/Order/UI/AllocateOrderFlowTest.php`) and its handlers directly (`tests/Order/Application/Handler/`); see [Testing](../../07-testing.md).
+
+## Related
+
+- [Overrides](Overrides.md): template resolution and how to replace a default template
+- [Embedded Forms](EmbeddedForms.md): a FormFlow form inside another page
+- [Turbo](../Turbo/README.md): layout detection, `formFrame`, refresh versus navigate after submit
+- [Templates](../Templates/README.md): naming and template variables
+- [ADR 006: FormFlow](../../adr/006-formflow-controller-pattern.md), [ADR 007: Turbo frames and modals](../../adr/007-turbo-frame-modal-architecture.md)
