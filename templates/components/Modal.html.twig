@@ -1,16 +1,14 @@
 {# Native <dialog> modal managed by the basic-modal Stimulus controller.
    Placed once in base.html.twig. Turbo loads content into the modal frame.
    - closeButton: Show an X close button in the top-right corner (default: false)
-   - padding: Tailwind padding for content area (default: p-5)
    - fixedTop: Position dialog near the top of viewport (default: false)
    Size is controlled by the loaded content's data-modal-size attribute (sm|md|lg|xl).
    ModalPanel.html.twig exposes a `size` prop; ConfirmDialog defaults to sm.
    The dialog is named by the loaded content's #modal-title heading, which ModalPanel provides.
    The Stimulus controller reads this attribute and applies it to the <dialog>.
-   Blocks: trigger, content, loading_template #}
+   Blocks: trigger, content #}
 {% props
     closeButton=false,
-    padding='p-5',
     fixedTop=false
 %}
 
@@ -42,10 +40,4 @@
             </twig:Button>
         {% endif %}
     </dialog>
-
-    {% if block('loading_template') %}
-        <template data-basic-modal-target="loadingTemplate">
-            {% block loading_template %}{% endblock %}
-        </template>
-    {% endif %}
 </div>
