@@ -1,203 +1,74 @@
 # Customers
 
-## What Customers Are For
+Customers are the user accounts that place orders. Staff accounts are customers too, with Member of Staff ticked.
 
-Customers are the user accounts that place orders in SupplyMars. Each customer has:
+Press `?` on this screen for a short summary.
 
-- Account credentials (email and password)
-- Profile information (name)
-- One or more addresses for shipping and billing
-- Order history
+**Where:** **Customers**
 
-## What You Can Do
+## Tasks
 
-- View all customers
-- Edit customer details
-- Delete customers (with restrictions)
-- View customer addresses
-- View customer order history
-- Mark accounts as verified
-- Grant or revoke administrator access
+### Find a customer
 
-## Screens and Actions
+1. Open **Customers**. Each card shows the name, email and Verified/Unverified status.
+2. Search, or sort by **Id**, **Name**, **Email** or **Verified**. This list has no filter.
 
-### Customer List
+There is no Create button: accounts come from the public registration page (see [Getting Started](01-getting-started.md)) or from the simulator.
 
-**Navigate to:** Customers
+### View a customer
 
-The customer list shows all customers with:
-- Full name
-- Email address
-- Verified/Unverified status
+Click a customer. The page has three cards:
 
-**Sorting options:** ID, Name, Email, Verified Status
+- **Customer:** name (with an Admin badge for staff), email, Verified/Unverified, and "Simulated account" (made by the simulator) or "Registered account" (signed up on the site).
+- **Customer Insights:** the segment badge and the figures below.
+- **Addresses:** street, city, post code and country, labelled Billing Address and Default Shipping Address. No screen edits addresses.
 
-### View Customer Details
+| Insight | Meaning |
+|---|---|
+| Total Revenue | Sum of the customer's order totals inc VAT |
+| Order Count | Number of orders |
+| Avg Order Value | Total Revenue divided by Order Count |
+| Customer Rank | Position by revenue among all customers; 1 is the highest spender |
+| First Order / Last Order | How long ago the first and latest orders were placed |
+| Published Reviews | Number of published reviews; shown only when above 0 |
 
-**Navigate to:** Click on any customer
+Cancelled orders are left out of every figure. Total Revenue, Order Count, Avg Order Value, First Order and Last Order link to the customer's orders.
 
-The detail page shows:
-- Customer information card (name, email, verification status)
-- Customer insights card (revenue, orders, segment)
-- All associated addresses with billing/shipping designation
-- Order history summary with link to filtered orders
-- Order count
+The segment badge follows the customer's order count; press `?` for the rules. **Lapsed** (last order more than 60 days ago) replaces the others. The Customer Insights report counts segments per period instead ([Reports and Dashboard](13-reports.md#read-a-report)).
 
-### Customer Insights Card
+### Edit a customer
 
-The customer detail page includes an insights card showing key metrics:
+1. Click the pencil icon on the card.
+2. Change **Full name**, **Email**, **Verified** or **Member of Staff** ("Grants full admin access.").
+3. Click **Update Customer**.
 
-| Metric | Description |
-|--------|-------------|
-| **Lifetime Revenue** | Total amount spent by this customer |
-| **Order Count** | Number of orders placed |
-| **Average Order Value** | Revenue divided by order count |
-| **First Order** | Date of first purchase |
-| **Last Order** | Date of most recent purchase |
-| **Days Since Last Order** | Recency indicator |
-| **Revenue Rank** | Position compared to other customers (e.g., "Top 5%") |
-| **Segment** | Customer classification (New, Returning, Loyal, or Lapsed) |
-| **Reviews** | Number of product reviews submitted |
+The full name can also be changed in place on the detail page ([inline editing](02-navigation.md#inline-editing)).
 
-**Customer Segments:**
-| Segment | Meaning |
-|---------|---------|
-| **New** | 0-1 lifetime orders |
-| **Returning** | 2-3 lifetime orders |
-| **Loyal** | 4+ lifetime orders |
-| **Lapsed** | No activity in 60+ days |
+### Delete a customer
 
-This information helps you understand customer value and engagement at a glance.
+1. Click the pencil icon to open the edit modal.
+2. Click **Delete Customer**. The confirm modal shows the name, "(Administrator)" for staff, and the order count.
+3. Click **Delete Customer** to confirm. For a customer who can't be deleted, the modal says why and offers only **Close**.
 
-### Edit a Customer
+## Rules and limits
 
-**Navigate to:** Customer detail > Click **Edit**
+| Action | Blocked when | Message |
+|---|---|---|
+| Edit | The customer is staff and you are not a super admin | "Staff accounts cannot be modified in the playground." (in every environment) |
+| Delete | The customer is staff | The confirm modal says "You cannot delete an admin user." |
+| Delete | The customer has any orders | The confirm modal says "You cannot delete a customer with order history." |
+| Save | The email is already used | "There is already an account with this email" |
 
-You can update:
-- **Full Name** - Customer's display name
-- **Email** - Login email (must be unique)
-- **Verified** (checkbox) - Mark email as verified
-- **Staff Member** (checkbox) - Grant administrator access
+- **Editing staff accounts is super admin only**, your own included. The exception is the full name: any staff user can change it in place. Any staff user can tick Member of Staff on an ordinary customer, but only a super admin can edit that account afterwards.
+- **Granting staff access** sends the customer an email telling them so.
+- **Customers without Member of Staff can't use the app;** what each role can do is in [Getting Started](01-getting-started.md#roles).
+- **Verified** is a label: ticking it marks the email as confirmed. Unverified customers can still sign in.
+- **Default addresses:** a new order takes the customer's default shipping and billing addresses automatically.
+- Full name takes up to 50 characters; email up to 180.
 
-### Delete a Customer
+## Related
 
-**Navigate to:** Customer detail > Edit > Click **Delete**
-
-A confirmation page shows:
-- Customer details
-- Order count
-- Reasons why deletion may be blocked
-
-**Deletion is blocked if:**
-- Customer is an administrator
-- Customer has any order history
-
-## Fields and Options
-
-### Customer Fields
-
-| Field | Required | Description |
-|-------|----------|-------------|
-| Full Name | Yes | Display name (max 50 characters) |
-| Email | Yes | Login email (must be unique) |
-| Verified | No | Whether email has been verified |
-| Staff Member | No | Whether user has administrator access |
-
-### Simulated vs Registered Accounts
-
-The customer detail card indicates whether an account is a **Simulated account** or a **Registered account**:
-
-- **Simulated account** — Created by the simulator (`app:create-customer-orders`). These are fake accounts used for demonstration and testing.
-- **Registered account** — Created via the public registration form by a real user.
-
-### Address Fields
-
-Each customer can have multiple addresses:
-
-| Field | Required | Description |
-|-------|----------|-------------|
-| Full Name | No | Name for this address |
-| Company Name | No | Business name |
-| Street | Yes | Primary street address |
-| Street 2 | No | Apartment, suite, etc. |
-| City | Yes | City name |
-| County | Yes | County/region |
-| Post Code | Yes | Postal code (max 10 characters) |
-| Country | Yes | Country name |
-| Phone Number | No | Contact phone (max 20 characters) |
-| Email | No | Address-specific email |
-| Default Shipping | No | Mark as default shipping address |
-| Default Billing | No | Mark as default billing address |
-
-## Status and Lifecycle
-
-### Verification Status
-
-| Status | Meaning |
-|--------|---------|
-| **Verified** (green) | Email has been confirmed |
-| **Unverified** (red) | Email not yet confirmed |
-
-New accounts start as unverified. Customers must click a verification link sent to their email, or an administrator can manually mark them as verified.
-
-### Staff/Administrator Status
-
-| Status | Meaning |
-|--------|---------|
-| **Administrator** | Full access to all SupplyMars features |
-| **Standard User** | Can view their own profile only |
-
-Setting "Staff Member" to true grants the customer `ROLE_ADMIN` access. When admin access is granted, the user receives an email notification informing them of their new access level.
-
-## Customer Registration
-
-Customers can register themselves through the public registration page:
-
-1. Enter full name
-2. Enter email address
-3. Create password (minimum 6 characters)
-4. Confirm password
-5. Accept Terms & Conditions
-6. Submit registration
-
-After registration:
-- A verification email is sent
-- Account remains unverified until email is confirmed
-- Customer can request a new verification email if needed
-
-## Password Reset
-
-Customers can reset forgotten passwords:
-
-1. Click "Forgot your password?" on login page
-2. Enter email address
-3. Check email for reset link
-4. Click link and enter new password (minimum 6 characters)
-5. Log in with new password
-
-**Note:** The system does not reveal whether an account exists for security reasons.
-
-## Addresses and Orders
-
-### Default Addresses
-
-- **Default Shipping Address:** Pre-selected when creating orders
-- **Default Billing Address:** Pre-selected for billing information
-
-Customers can have one default shipping and one default billing address.
-
-### Order History
-
-From the customer detail page, you can:
-- See the total order count
-- Click to view all orders from this customer
-- Orders are filtered by customer ID
-
-## Warnings
-
-- Customers with order history cannot be deleted
-- Administrator accounts cannot be deleted
-- Changing a customer's email may affect their ability to log in
-- Deleting a customer also deletes all their addresses
-- Staff status grants full administrative access - use carefully
-- Email addresses must be unique across the entire system
+- [Getting Started](01-getting-started.md): sign in, registration, password reset
+- [Orders](08-orders.md)
+- [Reviews](15-reviews.md)
+- [Reports and Dashboard](13-reports.md): the Customer Insights report

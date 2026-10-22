@@ -41,7 +41,7 @@ UI steps: [UserManual 07](UserManual/07-customers.md).
 - An order item copies the product's price when added. A product can be on two lines at two prices ([04 Prices on orders](04-sourcing-and-pricing.md#prices-on-orders)).
 - Items can be added or removed only while the order is PENDING or PROCESSING (`OrderStatus::allowEdit()`, checked in `CustomerOrder`). Editing an item is limited by the item's own status in the template only; `UpdateOrderItemHandler` doesn't check it.
 - An order can be cancelled only while PENDING, and only if no item has quantity on a purchase order (`CustomerOrder::cancelOrder()`, `CustomerOrderItem::allowCancel()`). `canTransitionTo()` would allow PROCESSING → CANCELLED, but `allowCancel()` doesn't.
-- **Lock:** a "someone is working on this" flag holding the user who set it. Nothing enforces it; any staff user can toggle it (`LockOrderHandler`).
+- **Lock:** a "someone is working on this" flag holding the user who set it. It doesn't stop anyone editing the order, and any staff user can toggle it (`LockOrderHandler`). The scheduled jobs skip locked orders: build, accept, ship and deliver all filter on `orderLock IS NULL`.
 - **Demo orders:** a random customer, shipping method and products, reference `DEMO-…`. At most 10 a day across all users, counted by the reference prefix (`CreateDemoOrderHandler::DAILY_LIMIT`).
 - Creating an order by hand (`/order/new`) is super admin only.
 - `OrderController` names are misleading: `delete()` cancels the order, `cancel()` toggles the lock, `process()` allocates.

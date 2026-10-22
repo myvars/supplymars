@@ -1,133 +1,52 @@
 # Suppliers
 
-## What Suppliers Are For
+Suppliers are the companies whose products fulfil customer orders, through purchase orders.
 
-Suppliers are the companies that provide products to fulfil customer orders. SupplyMars supports two types of suppliers:
+Press `?` on this screen for a short summary.
 
-- **Warehouse** - Your internal inventory/warehouse
-- **Dropshippers** - External suppliers who ship directly to customers
+**Where:** **Purchasing > Suppliers**
 
-When a customer places an order, the system can source items from multiple suppliers based on availability and cost.
+## Tasks
 
-## What You Can Do
+### Find a supplier
 
-- View all suppliers
-- Create new suppliers
-- Edit supplier details
-- Delete suppliers
-- View supplier's products
-- View supplier sales analytics
+1. Open **Purchasing > Suppliers**. Each card shows the supplier's colour dot, name and Active/Inactive badge.
+2. Search by name, or sort by **Id**, **Supplier** or **Status**. This list has no filter.
 
-## Screens and Actions
+### Create a supplier
 
-### Supplier List
+1. Click **Create Supplier**.
+2. Fill in **Supplier Name**, **Colour Scheme** (Violet, Amber, Teal or Rose; default Violet) and **Active**.
+3. Click **Create Supplier**.
 
-**Navigate to:** Purchasing > Suppliers
+### View the detail page
 
-The supplier list shows all suppliers with:
-- Supplier name
-- Active/Inactive status
-- Colour-coded cards for visual distinction
+Click a supplier. The card shows its colour, status and a link to its supplier products. Below it is a sales report for the supplier's products.
 
-**Sorting options:** ID, Name, Status
+### Edit a supplier
 
-### Create a Supplier
+1. Click the pencil icon on the card.
+2. Change the fields and click **Update Supplier**.
 
-**Navigate to:** Purchasing > Suppliers > Click **Create Supplier**
+The name can also be changed in place on the detail page ([inline editing](02-navigation.md#inline-editing)).
 
-1. Fill in the form:
-   - **Name** (required) - Supplier company name
-   - **Active** (checkbox) - Whether supplier can receive orders
+### Delete a supplier (super admin only)
 
-2. Click **Save**
+1. Click the pencil icon to open the edit modal.
+2. Click **Delete Supplier**, then confirm.
 
-### View Supplier Details
+## Rules and limits
 
-**Navigate to:** Click on any supplier
+- **Who can delete:** super admin only. Other staff see "Deleting is disabled for this user."
+- **A supplier in use can't be deleted.** While it has supplier products, purchase orders or sales history the delete fails with an error. Deactivate it instead.
+- **Inactive supplier:** none of its supplier products is used as a product's source, so its products move to another supplier, or have no source. See [Stock](11-stock.md) for how the source is chosen.
+- **An inactive supplier's existing purchase orders carry on:** they can still be accepted, shipped and delivered.
+- **Colour scheme** is the dot shown wherever the supplier appears: purchase order cards, supplier options on order items, and the product's Stock tab.
+- **Warehouse:** one supplier can be flagged as your own warehouse; no screen shows or changes this, and sourcing gives it no preference.
+- Supplier Name takes up to 255 characters. New suppliers are Inactive unless you tick Active.
 
-The detail page shows:
-- Supplier information card
-- Product count with link to supplier products
-- Sales dashboard showing analytics for this supplier's products
+## Related
 
-### Edit a Supplier
-
-**Navigate to:** Supplier detail > Click **Edit**
-
-You can update:
-- Supplier name
-- Active status
-
-### Delete a Supplier
-
-**Navigate to:** Supplier detail > Edit > Click **Delete**
-
-1. A confirmation dialog appears
-2. Click **Delete** to confirm
-
-**Warning:** Ensure the supplier has no active purchase orders before deleting.
-
-## Fields and Options
-
-| Field | Required | Default | Description |
-|-------|----------|---------|-------------|
-| Name | Yes | - | Supplier company name (max 255 characters) |
-| Colour Scheme | Yes | Violet | Visual colour used to identify this supplier (Violet, Amber, Teal, or Rose) |
-| Active | No | Inactive | Whether supplier can receive purchase orders |
-
-### Colour Scheme
-
-Each supplier is assigned a colour (Violet, Amber, Teal, or Rose) shown as a coloured dot on purchase order cards, order item supplier options, and pricing cards. This makes it easy to see at a glance which supplier is involved.
-
-## Status and Lifecycle
-
-### Active Status
-
-| Status | Meaning |
-|--------|---------|
-| **Active** (green) | Supplier can receive purchase orders |
-| **Inactive** (red) | Supplier cannot receive new orders |
-
-### Impact of Inactive Status
-
-When a supplier is set to inactive:
-- No new purchase orders will be created for this supplier
-- Existing purchase orders continue to be processed
-- Products from this supplier won't be selected for new orders
-- The system will choose alternative suppliers if available
-
-## Warehouse vs Dropshipper
-
-### Warehouse Supplier
-
-One supplier is designated as the "warehouse" - your internal inventory:
-- Products ship from your own stock
-- You control stock levels directly
-- Typically faster delivery times
-- Named "Turtle Inc" by default
-
-### Dropship Suppliers
-
-External suppliers that ship directly to customers:
-- You don't hold inventory
-- Supplier ships on your behalf
-- May have longer lead times
-- Cost and availability varies by supplier
-
-## Supplier Selection Logic
-
-When allocating orders, the system selects suppliers based on:
-
-1. **Stock availability** - Must have units in stock
-2. **Cost** - Lowest cost supplier preferred
-3. **Active status** - Both supplier and supplier product must be active
-
-If no single supplier can fulfil an entire order, items may be split across multiple suppliers.
-
-## Warnings
-
-- Setting a supplier to inactive affects all products sourced from them
-- Products may need alternative suppliers assigned if primary becomes inactive
-- Deleting a supplier with linked products may cause pricing issues
-- The warehouse supplier should generally remain active
-- Inactive suppliers cannot fulfil existing pending orders
+- [Supplier Products](06-supplier-products.md)
+- [Purchase Orders](10-purchase-orders.md)
+- [Stock](11-stock.md)

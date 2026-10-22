@@ -1,134 +1,57 @@
 # SupplyMars User Manual
 
-## What the System Does
+How to use SupplyMars day to day: the catalog, suppliers, customer orders, purchase orders, pricing, reports and support tickets. It is written for staff who sign in to the app. Most screens also have a short summary: press `?` or click **Help** in the header.
 
-SupplyMars is an e-commerce and supply chain operations platform that enables you to:
+New to the app? Read [Getting Started](01-getting-started.md), then [Navigation](02-navigation.md).
 
-- **Manage your product catalog** - Create and organise products into categories and subcategories, set pricing, and track stock levels
-- **Work with multiple suppliers** - Source products from your own warehouse and external dropship suppliers, each with their own costs and stock
-- **Process customer orders** - Create orders, add items, and track them through to delivery
-- **Fulfil through purchase orders** - Automatically or manually allocate orders to suppliers and track fulfilment progress
-- **Monitor pricing and margins** - Set markup percentages and VAT rates at category, subcategory, or product level
-- **Track business performance** - Use dashboards and reports to monitor sales, orders, and operational metrics
+## Pages
 
-The system handles the complexity of multi-supplier sourcing, where a single customer order might be fulfilled by multiple suppliers based on stock availability and cost.
+| Page | Covers |
+|------|--------|
+| [Getting Started](01-getting-started.md) | Signing in, staying signed in, password reset, registration, roles |
+| [Navigation](02-navigation.md) | Header, menu, badges, Help, lists, search and filters, forms, inline editing, toasts, keyboard |
+| [Products](03-products.md) | Catalog products, images, product tabs |
+| [Categories and Subcategories](04-categories.md) | Organising products, category and subcategory settings |
+| [Suppliers](05-suppliers.md) | Supplier records and colour schemes |
+| [Supplier Products](06-supplier-products.md) | What each supplier sells, mapping to catalog products |
+| [Customers](07-customers.md) | Customer accounts, insights, staff access |
+| [Orders](08-orders.md) | Creating, allocating and cancelling orders, demo orders, order statuses |
+| [Order Items](09-order-items.md) | Order lines, supplier choice per line, order item statuses |
+| [Purchase Orders](10-purchase-orders.md) | Supplier fulfilment, PO and PO item statuses |
+| [Stock](11-stock.md) | Product stock, the active source, the Stock tab |
+| [Pricing and VAT](12-pricing.md) | Markups, price models, VAT rates, how prices are worked out |
+| [Reports and Dashboard](13-reports.md) | The dashboard, sales and performance reports |
+| [Simulations](14-simulations.md) | The simulated order and supplier activity |
+| [Reviews](15-reviews.md) | Moderating reviews, review statuses |
+| [Manufacturers](16-manufacturers.md) | Manufacturer records |
+| [Notes and Tickets](17-notes.md) | Tickets, pools, My Queue, ticket statuses |
+| [Troubleshooting](troubleshooting.md) | Symptom, cause and fix, by area |
 
-## Who This Manual Is For
+## Conventions
 
-This manual is written for **operations staff and administrators** who use SupplyMars day-to-day to:
+- **Bold** is a button, menu item or field label, spelled as on screen.
+- `Monospace` is a value you type, or a number the system shows (such as `#000123`).
+- Menu paths read left to right: **Catalog > Products** means open the **Catalog** section, then click **Products**.
 
-- Manage the product catalog
-- Process and track orders
-- Work with suppliers
-- Monitor business performance
-- Configure system settings
-
-You should have admin access to the system (staff role) to perform most of the tasks described in this manual.
-
-## How to Use This Manual
-
-### Getting Started
-
-If you're new to SupplyMars, start with:
-
-1. **[Getting Started](01-getting-started.md)** - Learn how to log in and understand your role
-2. **[Navigation](02-navigation.md)** - Understand how to navigate the system
-
-### Feature Guides
-
-Once you're familiar with the basics, refer to these guides based on what you need to do:
-
-| I want to... | See... |
-|--------------|--------|
-| Add or edit products | [Products](03-products.md) |
-| Organise products into categories | [Categories & Subcategories](04-categories.md) |
-| Manage manufacturers | [Manufacturers](16-manufacturers.md) |
-| Manage suppliers | [Suppliers](05-suppliers.md) |
-| Link supplier products to the catalog | [Supplier Products](06-supplier-products.md) |
-| Manage customer accounts | [Customers](07-customers.md) |
-| Create and track orders | [Orders](08-orders.md) |
-| Manage order line items | [Order Items](09-order-items.md) |
-| Track supplier fulfilment | [Purchase Orders](10-purchase-orders.md) |
-| Monitor stock levels | [Stock Management](11-stock.md) |
-| Set up pricing and VAT | [Pricing & VAT](12-pricing.md) |
-| View reports and KPIs | [Reports & Dashboard](13-reports.md) |
-| Run simulations | [Simulations](14-simulations.md) |
-| Manage product reviews | [Product Reviews](15-reviews.md) |
-| Manage tickets and support | [Notes & Tickets](17-notes.md) |
-
-### Reference
-
-- **[Troubleshooting](troubleshooting.md)** - Common problems and solutions
-
-## Document Conventions
-
-Throughout this manual:
-
-- **Bold text** indicates buttons, menu items, or field labels you should click or look for
-- `Monospace text` indicates values you type or system-generated values like IDs
-- ⚠️ **Warning** boxes highlight actions that cannot be undone
-- 💡 **Tip** boxes provide helpful suggestions
-- Field names match what you see on screen
-
-## Support
-
-If you encounter issues not covered in this manual or the troubleshooting guide, contact your system administrator.
-
----
-
-## Quick Reference
-
-### Key Concepts
+## Glossary
 
 | Term | Meaning |
 |------|---------|
-| **Product** | An item in your catalog that customers can order |
-| **Supplier** | A company that provides products (your warehouse or external dropshippers) |
-| **Supplier Product** | A specific product offering from a supplier with its own cost and stock |
-| **Customer Order** | A purchase made by a customer |
-| **Purchase Order (PO)** | An order placed with a supplier to fulfil a customer order |
-| **Allocation** | The process of assigning customer order items to supplier purchase orders |
-| **Product Review** | Customer feedback on a delivered product, subject to moderation before publishing |
-| **Review Summary** | Aggregated review statistics for a product (average rating, distribution, counts) |
-| **Manufacturer** | The company that produces a product |
-| **Ticket** | A support case or conversation in the Notes module |
-| **Pool** | A shared inbox that groups tickets by topic or team |
-| **Dashboard** | Operational overview showing today's KPIs, action items, and recent activity |
-
-### Status Meanings
-
-**Order Status:**
-| Status | Meaning |
-|--------|---------|
-| Pending | Order created, not yet allocated to suppliers |
-| Processing | Items allocated to purchase orders |
-| Shipped | At least one item has shipped |
-| Delivered | All items delivered |
-| Cancelled | Order cancelled |
-
-**Purchase Order Status:**
-| Status | Meaning |
-|--------|---------|
-| Pending | PO created, awaiting processing |
-| Processing | Sent to supplier |
-| Accepted | Supplier confirmed they can fulfil |
-| Rejected | Supplier cannot fulfil |
-| Shipped | Supplier has dispatched |
-| Delivered | Items received |
-| Refunded | Rejected items refunded |
-| Cancelled | PO cancelled |
-
-**Review Status:**
-| Status | Meaning |
-|--------|---------|
-| Pending | Review submitted, awaiting moderation |
-| Published | Approved and visible on product page |
-| Rejected | Rejected by moderator (terminal) |
-| Hidden | Temporarily removed from product page |
-
-**Ticket Status:**
-| Status | Meaning |
-|--------|---------|
-| Open | New or customer-replied, needs attention |
-| Replied | Staff has replied, awaiting customer |
-| Closed | Issue resolved |
+| Product | An item in the catalog that customers can order. |
+| Category, Subcategory | The two levels that group products. Each sets a markup and price model that products can inherit. |
+| Manufacturer | The company that makes a product. |
+| Supplier | A company you buy products from. |
+| Supplier product | One supplier's offer for a product, with its own cost, stock and lead time. A product can have several. |
+| Mapping | Linking a supplier product to a catalog product. |
+| Active source | The supplier product a product currently takes its cost and stock from. See [Stock](11-stock.md). |
+| Markup | The percentage added to cost to make the sell price. See [Pricing and VAT](12-pricing.md). |
+| Price model | The rule that rounds a sell price to a "pretty" figure. See [Pricing and VAT](12-pricing.md). |
+| Customer order | A purchase by a customer, made of order items (lines). |
+| Purchase order (PO) | An order placed with one supplier to fulfil customer order items. |
+| Allocation | Assigning customer order items to supplier purchase orders. |
+| Status history | The log of status changes on an order, order item, PO or PO item; click the status badge to open it. |
+| Product review | Customer feedback on a delivered product, moderated before it is published. |
+| Ticket | A support conversation in Notes. |
+| Pool | A shared inbox that groups tickets; subscribe to a pool to see its tickets in My Queue. |
+| Staff | A user with access to the app (**Member of Staff** on the customer record). |
+| Super admin | A staff user who can also create orders by hand, delete some records and edit staff accounts. See [Getting Started](01-getting-started.md#roles). |

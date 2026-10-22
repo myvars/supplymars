@@ -1,186 +1,72 @@
 # Supplier Products
 
-## What Supplier Products Are For
+A supplier product is one supplier's offer of an item: its cost, stock and lead time. One catalog product can have several, one per supplier.
 
-Supplier products link your catalog products to specific suppliers. Each supplier product represents a single product offering from a supplier, including:
+Press `?` on this screen for a short summary.
 
-- The supplier's cost price
-- Stock level at the supplier
-- Lead time for delivery
-- Whether the offering is active
+**Where:** **Purchasing > Supplier Products**
 
-A single catalog product can have multiple supplier products, allowing you to source from different suppliers based on availability and cost.
+## Tasks
 
-## What You Can Do
+### Find a supplier product
 
-- View all supplier products
-- Create new supplier product offerings
-- Edit supplier product details (cost, stock, etc.)
-- Delete supplier products
-- Map supplier products to catalog products
-- Remove supplier products from catalog products
-- Toggle active/inactive status
+1. Open **Purchasing > Supplier Products**. Each card shows the name, supplier colour dot, supplier and product code, cost, stock ("N in stock", including "0 in stock") and Active/Inactive badge.
+2. Sort by **Id**, **Product**, **Supplier**, **Stock**, **Cost** or **Status**.
+3. To filter, click the funnel icon, set any of **Supplier**, the category, subcategory and manufacturer fields, **Product Code**, **Stock Level** or **Status**, then click **Apply Filter**. All the fields always show, but the category list (**Any Category**) is empty until you pick a Supplier, and the subcategory list (**Any Subcategory**) until you pick a category. The manufacturer list (**Any Manufacturer**) shows every supplier manufacturer until you narrow it with a supplier, category or subcategory. These are the supplier's own names, not the catalog's.
 
-## Screens and Actions
+### Create a supplier product
 
-### Supplier Product List
+1. Click **Add Supplier Product**.
+2. Fill in **Product Name**, **Product Code**, **Supplier**, **Category**, **Subcategory**, **Manufacturer**, **Manufacturer Part Number**, **Cost**, **Stock Level**, **Lead Time (days)**, **Weight (grams)**, **Mapped Product Id** (optional) and **Active**. Choosing a Category reloads the form to fill Subcategory.
+3. Click **Create Supplier Product**.
 
-**Navigate to:** Purchasing > Supplier Products
+**Mapped Product Id** is the catalog product's number (the `#000123` on its card, without the zeros). Leave it empty to map later.
 
-The list shows all supplier products with:
-- Product name
-- Supplier name and product code
-- Cost (in GBP)
-- Stock level
-- Active/Inactive status
+### Edit a supplier product
 
-**Sorting options:** ID, Name, Supplier, Cost, Stock, Status
+1. Click the pencil icon on the card.
+2. Change the fields and click **Update Supplier Product**.
 
-**Filtering options:**
-- By Supplier
-- By Supplier Category
-- By Supplier Subcategory
-- By Supplier Manufacturer
-- By Product Code
-- By Stock Level (Any, In Stock, Out of Stock)
-- By Status (Any, Active, Inactive)
+Changing **Mapped Product Id** moves the supplier product to another catalog product; clearing it unmaps it. Both products pick their active source again.
 
-### Create a Supplier Product
+### Map to a catalog product
 
-**Navigate to:** Purchasing > Supplier Products > Click **Add Supplier Product**
+1. Open an unmapped supplier product.
+2. Click **Map Product** on its card.
 
-1. Fill in the form:
-   - **Product Name** (required)
-   - **Product Code** (required) - Supplier's SKU
-   - **Supplier** (required) - Select supplier
-   - **Category** (required) - Supplier's category
-   - **Subcategory** (required) - Supplier's subcategory
-   - **Manufacturer** (required) - Supplier's manufacturer
-   - **Manufacturer Part Number** (required)
-   - **Cost** (required) - Unit cost in GBP
-   - **Stock Level** (required) - Current stock (0-10,000)
-   - **Lead Time** (required) - Days for delivery (0-1,000)
-   - **Weight** (required) - Product weight in grams
-   - **Mapped Product ID** (optional) - Link to catalog product
-   - **Active** (checkbox)
+The app looks for a catalog manufacturer, category, subcategory and product with the same names as the supplier's, creates any that don't exist, and links the supplier product to the product. Anything it creates is Active; new categories get the default VAT rate and you as manager.
 
-2. Click **Save**
+### Remove from a catalog product
 
-### View Supplier Product Details
+1. Open the catalog product's **Stock** tab.
+2. Click the Remove (trash) icon on the supplier's row, then **Remove**.
 
-**Navigate to:** Click on any supplier product
+The supplier product is unlinked, not deleted, and the product's source and price are recalculated. The Stock tab also has the toggle that switches a supplier product Active or Inactive; see [Stock](11-stock.md).
 
-The detail page shows:
-- Full supplier product information
-- Supplier name and category hierarchy
-- Cost and stock status
-- Mapped product link (if linked)
-- Edit button
+### Delete a supplier product (super admin only)
 
-### Edit a Supplier Product
+1. Click the pencil icon to open the edit modal.
+2. Click **Delete Supplier Product**, then confirm.
 
-**Navigate to:** Supplier product detail > Click **Edit**
+If it is mapped, it is unlinked first: the product moves to its next best source and is repriced. With no source left, the product's stock drops to 0.
 
-You can update:
-- All product information fields
-- Cost and stock levels
-- Product mapping
-- Active status
+## Rules and limits
 
-### Delete a Supplier Product
+| Action | Blocked when | Message |
+|---|---|---|
+| Delete | You are not a super admin | "Deleting is disabled for this user." |
+| Delete | It appears on any purchase order | "Used on purchase orders — deactivate it instead." |
+| Map Product | It is already mapped | "Supplier product already mapped." |
 
-**Navigate to:** Supplier product detail > Edit > Click **Delete**
+- **Ranges:** Cost 0 or more; Stock Level 0–10,000; Lead Time 0–1,000 days; Weight 0–100,000 grams. Names, codes and part numbers take up to 255 characters.
+- **Which supplier product becomes the source** (a cost of 0 never does): see [Stock](11-stock.md#how-the-active-source-is-chosen). You can't choose it by hand.
+- **Editing a mapped supplier product** works out the product's active source, cost, stock and price again, but only when you changed the supplier, stock, lead time, cost, mapped product or Active. Saving with none of those changed recalculates nothing ([Stock](11-stock.md)).
+- **Out of stock:** only the detail card shows "Out of stock (Y day lead time)"; the list card shows "0 in stock".
+- New supplier products are Inactive unless you tick Active.
 
-If the supplier product is mapped to a catalog product, it is unmapped first: the product moves to its next best source and its price is recalculated. If no other source is left, the product has no active source and its stock drops to 0.
+## Related
 
-**Requirements:** The supplier product must not appear on any purchase order. If it does, the delete is refused; set it to inactive instead.
-
-### Map to Catalog Product
-
-**Navigate to:** Supplier product detail > Click **Map Product**
-
-This automatically:
-1. Finds or creates a matching Manufacturer in the catalog
-2. Finds or creates a matching Category
-3. Finds or creates a matching Subcategory
-4. Finds or creates a matching Product
-5. Links the supplier product to the catalog product
-
-### Remove from Catalog Product
-
-**Navigate to:** Supplier product detail > Click **Remove**
-
-1. Confirm the removal
-2. The supplier product is unlinked but NOT deleted
-3. The catalog product recalculates its pricing
-
-### Toggle Status
-
-**Navigate to:** Product Stock page > Click toggle icon on supplier row
-
-Quickly toggle a supplier product between Active and Inactive.
-
-## Fields and Options
-
-| Field | Required | Range | Description |
-|-------|----------|-------|-------------|
-| Product Name | Yes | - | Supplier's product name |
-| Product Code | Yes | - | Supplier's SKU/code |
-| Supplier | Yes | - | Which supplier offers this |
-| Category | Yes | - | Supplier's category classification |
-| Subcategory | Yes | - | Supplier's subcategory |
-| Manufacturer | Yes | - | Supplier's manufacturer name |
-| Manufacturer Part Number | Yes | - | Manufacturer's part number |
-| Cost | Yes | 0+ | Unit cost in GBP |
-| Stock Level | Yes | 0-10,000 | Units available |
-| Lead Time | Yes | 0-1,000 | Days until available if out of stock |
-| Weight | Yes | 0-100,000 | Weight in grams |
-| Mapped Product ID | No | - | Link to catalog product |
-| Active | No | - | Whether offering is available |
-
-## Status and Lifecycle
-
-### Active Status
-
-| Status | Meaning |
-|--------|---------|
-| **Active** (green) | Can be selected for purchase orders |
-| **Inactive** (red) | Cannot be used for new orders |
-
-### Stock Status Display
-
-| Display | Meaning |
-|---------|---------|
-| **X in stock** | Has available inventory |
-| **Out of stock (Y day lead time)** | No stock, shows expected wait |
-
-## Active Source Selection
-
-When a catalog product has multiple supplier products, the system automatically selects the "active source" based on:
-
-1. **Stock availability** - Must have stock > 0
-2. **Cost** - Lowest cost wins
-3. **Active status** - Supplier product must be active
-4. **Supplier active** - Parent supplier must be active
-
-The active source determines the catalog product's displayed cost and stock level.
-
-## Stock Dashboard
-
-**Navigate to:** Product detail > **Stock** tab
-
-This screen shows:
-- Current inventory summary
-- All supplier products for this catalog product
-- Active source highlighted with green border
-- Quick actions to toggle status or remove suppliers
-
-## Warnings
-
-- Changing cost affects the catalog product's sell price
-- Setting to inactive may change which supplier is the active source
-- Removing from a catalog product recalculates pricing
-- Deleting a mapped supplier product recalculates the catalog product's source and price
-- Cannot delete supplier products that appear on purchase orders
-- Stock level changes trigger audit logging
-- The active source supplier is automatically selected - you cannot manually choose it
+- [Suppliers](05-suppliers.md)
+- [Products](03-products.md)
+- [Stock](11-stock.md)
+- [Pricing and VAT](12-pricing.md)

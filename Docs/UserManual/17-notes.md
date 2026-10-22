@@ -1,252 +1,94 @@
-# Notes & Tickets
+# Notes and Tickets
 
-## What Notes Are For
+Internal tickets: support cases and team conversations, grouped into pools that staff subscribe to.
 
-The Notes module provides an internal ticketing and messaging system for managing support requests and team communication. It consists of:
+Press `?` on this screen for a short summary.
 
-- **Tickets** - Individual support cases or conversations, each containing a threaded message history
-- **Pools** - Shared inboxes that group tickets by topic or team, with subscriber management
-- **Messages** - Threaded replies within tickets, supporting public and internal visibility
+**Where:** **Notes > My Queue**, **Notes > Tickets**, **Notes > Pools**.
 
-## What You Can Do
+## Tasks
 
-### Tickets
-- View all tickets in a filterable list
-- Create new tickets
-- Reply to tickets with messages
-- Close and reopen tickets
-- Reassign tickets to different pools
-- Snooze tickets to temporarily hide them
-- Delete individual messages
+### Work your queue
 
-### Pools
-- View all pools
-- Create and edit pools
-- Delete pools
-- Subscribe and unsubscribe from pools
-- Control customer visibility per pool
+**Notes > My Queue** lists tickets that are not closed (Open and Replied) in the pools you subscribe to, leaving out snoozed ones. The blue badge next to it counts the same tickets.
 
-## Screens and Actions
+To get a pool's tickets into your queue, subscribe to it (below).
 
-### My Queue
+### Find a ticket
 
-**Navigate to:** Notes > My Queue
+1. Go to **Notes > Tickets**.
+2. Sort by Id, Status, Last Message or Created.
+3. Click the filter icon in the search bar to filter by **Pool**, **Status** or **Show Snoozed**. Snoozed tickets are hidden from every list unless Show Snoozed is ticked.
 
-Shows open tickets in pools you are subscribed to. This is your personal inbox for tickets that need your attention.
+### Create a ticket
 
-A blue badge on the menu shows the count of open tickets in your subscribed pools.
+1. On **Notes > Tickets**, click **Create Ticket**.
+2. Choose a **Pool** (active pools only), enter **Customer ID**, **Subject** (max 255 characters) and **Message** (max 10,000). Customer ID is required ("Please choose a customer"); an unknown id gives "Customer not found."
+3. Click **Create Ticket**. The ticket starts as Open.
 
-### Ticket List
+The ticket's first message is always credited to the customer and is Public, even though a staff user wrote it.
 
-**Navigate to:** Notes > Tickets
+### Reply
 
-The ticket list shows all tickets with:
-- Subject line
-- Current status
-- Assigned pool
-- Customer name
-- Message count
-- Last message date
+1. Open the ticket. Messages are listed oldest first, with system events (closed, reopened, snoozed, unsnoozed, reassigned, and by whom) between them.
+2. Under **Reply**, write the **Message** and choose **Visibility**: Public, or Internal (staff only).
+3. Click **Send Reply**. Any reply sent from the app, Internal included, sets the ticket to Replied.
 
-**Sorting options:** ID, Subject, Status, Last Message
+The reply form is not shown on a closed ticket. Reopen it first.
 
-**Filtering options:**
-- By Status (Open, Replied, Closed)
-- By Pool
-- By My Pools (show only tickets in your subscribed pools)
+### Close, reopen, snooze or reassign
 
-### Create a Ticket
+The icon buttons at the top right of the ticket card:
 
-**Navigate to:** Notes > Tickets > Click **Create Ticket**
+| Button | Shown when | Result |
+|---|---|---|
+| Close | Not closed | Closed |
+| Reopen | Closed | Open |
+| Snooze / Unsnooze | Not closed, or snoozed | Snooze hides the ticket for 24 hours and adds a Snoozed label; Unsnooze brings it back now |
 
-1. Fill in the form:
-   - **Subject** (required) - Brief description of the issue (max 255 characters)
-   - **Pool** (required) - Assign to a shared inbox
-   - **Customer** (optional) - Link to a customer account
-   - **Message Body** (required) - Initial message content
+To reassign, click **Reassign** next to the pool name, choose a **New Pool** (active pools only) and click **Reassign**. Moving to the pool it is already in fails with "Ticket is already in this pool."
 
-2. Click **Save**
+### Delete a message
 
-The ticket is created with **Open** status.
+Click the trash icon on a message, then **Delete**. Deletion is permanent.
 
-### View Ticket Details
+### Manage pools
 
-**Navigate to:** Click on any ticket
+1. Go to **Notes > Pools** and click **Create Pool**.
+2. Enter **Pool Name** (max 255 characters) and **Description** (optional). Tick **Active** to offer the pool for new tickets (off by default). **Customer Visible** (on by default) is a label only: it shows on the pool card, and nothing else uses it.
+3. Click **Create Pool**.
+4. To change it, open the pool and click the pencil icon, then **Update Pool**. **Delete Pool** is in the same dialog.
 
-The detail page shows:
-- Ticket information card (subject, status, pool, customer)
-- Message thread in chronological order
-- Reply form (when ticket is not closed)
-- Action buttons based on current status
+### Subscribe to a pool
 
-Each message displays:
-- Author name and type (Staff, Customer, or System)
-- Message body
-- Timestamp
-- Delete button (for staff messages)
+Open the pool and click **Subscribe** on the Subscription card (or **Unsubscribe**). The pool page shows the pool's details and your own subscription. It does not list other subscribers.
 
-### Reply to a Ticket
+## Rules and limits
 
-**Navigate to:** Ticket detail > Use the reply form at the bottom
+- **Messages you cannot delete:** the original message of a ticket ("The original message cannot be deleted.") and system messages ("System messages cannot be deleted."). Any other message can be deleted, whoever wrote it.
+- **Deleting a pool is super admin only.** Others see "Deleting is disabled for this user." A pool that still has tickets cannot be deleted: the delete fails with an error. Reassign its tickets first.
+- An inactive pool is not offered when creating a ticket, in the Pool filter or in the Reassign list, but its existing tickets stay.
+- The My Queue badge can lag by up to 5 minutes.
 
-1. Enter your message in the **Body** field
-2. Click **Reply**
+## Statuses
 
-Replying as staff automatically changes the ticket status to **Replied**. Customer replies change the status back to **Open**.
+| Status | Badge | Meaning | Moves to |
+|---|---|---|---|
+| Open | Blue | New, or the customer replied; needs attention | Replied (staff reply), Closed (Close) |
+| Replied | Yellow | Staff replied; waiting for the customer | Open (customer reply), Closed (Close) |
+| Closed | Grey | Resolved | Open (Reopen) |
 
-### Close a Ticket
+Customers cannot reply from this app today, so a ticket moves from Replied back to Open only when it is closed and reopened.
 
-**Navigate to:** Ticket detail > Click **Close**
+**Messages:**
 
-Closes the ticket, indicating the issue is resolved. Closed tickets cannot receive new replies until reopened.
+| Author | Meaning |
+|---|---|
+| Staff | Written by a staff user in the app |
+| Customer | Written by the customer |
+| System | Recorded automatically on close, reopen, snooze, unsnooze and reassign |
 
-### Reopen a Ticket
+## Related
 
-**Navigate to:** Ticket detail > Click **Reopen**
-
-Reopens a closed ticket, changing the status back to **Open** and allowing new replies.
-
-### Reassign a Ticket
-
-**Navigate to:** Ticket detail > Click **Reassign**
-
-1. Select a new pool from the dropdown
-2. Click **Save**
-
-Use this to move a ticket to a different team or topic area.
-
-### Snooze a Ticket
-
-**Navigate to:** Ticket detail > Click **Snooze**
-
-Temporarily hides the ticket from your queue. The ticket reappears when the snooze period expires.
-
-### Delete a Message
-
-**Navigate to:** Ticket detail > Click **Delete** on a message
-
-1. A confirmation dialog appears
-2. Click **Delete** to confirm
-
-Message deletion is permanent. The ticket's message count updates automatically.
-
----
-
-### Pool List
-
-**Navigate to:** Notes > Pools
-
-The pool list shows all pools with:
-- Pool name
-- Active/Inactive status
-- Description
-
-### Create a Pool
-
-**Navigate to:** Notes > Pools > Click **Create Pool**
-
-1. Fill in the form:
-   - **Name** (required) - Pool name (max 255 characters)
-   - **Description** (optional) - Purpose of this pool
-   - **Active** (checkbox) - Whether the pool is available for use
-   - **Customer Visible** (checkbox) - Whether customers can see this pool
-
-2. Click **Save**
-
-### View Pool Details
-
-**Navigate to:** Click on any pool
-
-The detail page shows:
-- Pool information card
-- List of subscribed team members
-- Your subscription status
-- Subscribe/Unsubscribe button
-
-### Edit a Pool
-
-**Navigate to:** Pool detail > Click **Edit**
-
-You can update:
-- Pool name
-- Description
-- Active status
-- Customer visibility
-
-### Delete a Pool
-
-**Navigate to:** Pool detail > Edit > Click **Delete**
-
-1. A confirmation dialog appears
-2. Click **Delete** to confirm
-
-### Subscribe to a Pool
-
-**Navigate to:** Pool detail > Click **Subscribe** or **Unsubscribe**
-
-When subscribed to a pool:
-- Tickets in that pool appear in your **My Queue**
-- The blue badge count includes tickets from your subscribed pools
-
-## Fields and Options
-
-### Ticket Fields
-
-| Field | Required | Description |
-|-------|----------|-------------|
-| Subject | Yes | Brief description (max 255 characters) |
-| Pool | Yes | Shared inbox to assign the ticket to |
-| Customer | No | Linked customer account |
-| Message Body | Yes | Initial message content |
-
-### Pool Fields
-
-| Field | Required | Default | Description |
-|-------|----------|---------|-------------|
-| Name | Yes | - | Pool name (max 255 characters) |
-| Description | No | - | Purpose of this pool |
-| Active | No | Inactive | Whether pool is available for use |
-| Customer Visible | No | No | Whether customers can see this pool |
-
-## Status and Lifecycle
-
-### Ticket Status
-
-| Status | Meaning |
-|--------|---------|
-| **Open** (green) | New or customer-replied, needs attention |
-| **Replied** (blue) | Staff has replied, awaiting customer |
-| **Closed** (grey) | Issue resolved |
-
-### Status Transitions
-
-| From | To | Trigger |
-|------|----|---------|
-| Open | Replied | Staff replies |
-| Open | Closed | Click Close |
-| Replied | Open | Customer replies |
-| Replied | Closed | Click Close |
-| Closed | Open | Click Reopen |
-
-### Message Visibility
-
-| Type | Meaning |
-|------|---------|
-| **Public** | Visible to both staff and customers |
-| **Internal** | Visible to staff only |
-
-### Author Types
-
-| Type | Meaning |
-|------|---------|
-| **Staff** | Message from an administrator |
-| **Customer** | Message from the customer |
-| **System** | Automated system message |
-
-## Warnings
-
-- Closed tickets cannot receive replies until reopened
-- Deleting a message is permanent and cannot be undone
-- Deleting a pool may affect tickets assigned to it
-- Unsubscribing from a pool removes its tickets from your My Queue count
-- The My Queue badge count is cached and updates periodically
+- [Customers](07-customers.md): the customer a ticket links to.
+- [Navigation](02-navigation.md#badges): menu badges.

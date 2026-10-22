@@ -1,156 +1,70 @@
 # Getting Started
 
-## Logging In
+How to sign in, stay signed in, reset a password or register, and what each role can do.
 
-### Accessing the System
+Press `?` on this screen for a short summary.
 
-1. Open your web browser and navigate to the SupplyMars URL provided by your administrator
-2. You will see the login page
+**Where:** **Sign In** in the top right of the header, or the sign-in page you are sent to when you open a staff page while signed out.
 
-### Signing In
+## Tasks
 
-1. Enter your **Email** address
-2. Enter your **Password**
-3. Click **Sign In**
+### Sign in
 
-The system will remember you for 7 days, so you won't need to log in each time unless you explicitly sign out.
+1. Enter **Your email** and **Password**.
+2. Click **Sign in**.
 
-### First-Time Login
+You land on the page you asked for, or the home page. Open **Dashboard** from the menu for today's figures ([Reports and Dashboard](13-reports.md)).
 
-If you've just been given an account:
+On the playground, **Explore the Platform** signs you in to a shared demo account without a password and opens the **Dashboard**. Playground data and accounts reset every night.
 
-1. Check your email for a verification link
-2. Click the link to verify your email address
-3. Log in with your credentials
+### Sign out
 
-If you haven't received a verification email, contact your administrator to resend it.
+Open the user menu (your avatar, top right) and click **Sign Out**.
 
-### Forgot Your Password?
+### Reset a forgotten password
 
-1. On the login page, click **Forgot your password?**
-2. Enter your email address
-3. Click **Send password reset email**
-4. Check your email for a reset link
-5. Click the link and enter a new password (minimum 6 characters)
-6. Log in with your new password
+1. On the sign-in page, click **Forgot password?**
+2. Enter your email and click **Send Reset Link**.
+3. Open the email and follow the link within 1 hour.
+4. Enter **New password** and **Confirm Password** (at least 6 characters), then click **Reset password**.
+5. Sign in with the new password.
 
-## Understanding Roles
+The **Check Your Email** page looks the same whether or not the address has an account, so it never reveals who has one.
 
-SupplyMars has two user roles:
+### Register an account
 
-### Standard User (ROLE_USER)
+1. On the sign-in page, click **Sign up**.
+2. Enter **Full name**, **Email**, **Password** and **Confirm password** (at least 6 characters).
+3. Tick **I accept the Terms and Conditions**, complete the security check, and click **Create account**.
 
-- Can view their own profile
-- Limited access to the system
+You are signed in straight away and sent a verification email. A new account has no staff access: a staff member must tick **Member of Staff** on your customer record ([Customers](07-customers.md)).
 
-### Staff/Administrator (ROLE_ADMIN)
+## Rules and limits
 
-Staff members have full access to:
+- **Staying signed in:** every sign-in is remembered for 7 days. Each time the app signs you back in, the 7 days start again, so you are signed out only after 7 days away or when you click **Sign Out**. The **Remember me** box makes no difference.
+- **Login throttling:** after 5 failed attempts for the same email in 15 minutes, sign-in is refused with "Too many failed login attempts, please try again in N minutes." Wait, or reset the password.
+- **Sign-in page limit:** more than 10 requests a minute to the sign-in page from one connection shows a plain page saying "Too many requests. Try again later." Page loads and sign-in attempts both count.
+- **Reset emails:** one per account per hour. A second request within the hour shows the usual page but sends no email; use the first email.
+- **Sign-up and reset submissions:** from one connection, a burst of 3 submissions of the sign-up or password reset forms, then 1 every 30 seconds. Over that, a plain page says "Too many requests. Try again later."; wait a minute.
+- **Registration:** at most 5 submitted sign-ups from one connection per hour, counting ones that failed validation ("Too many attempts. Please try again later.").
+- **Email verification is not enforced.** An unverified account can sign in; verification only sets the **Verified** badge on the customer record. The page for requesting a new verification email (`/verify/resend`) is not linked from any screen.
 
-- ✅ Product management
-- ✅ Category and subcategory management
-- ✅ Manufacturer management
-- ✅ Customer management
-- ✅ Order creation and management
-- ✅ Purchase order tracking
-- ✅ Supplier management
-- ✅ Supplier product management
-- ✅ VAT rate configuration
-- ✅ Pricing management
-- ✅ Reports and dashboard
-- ✅ Notes, tickets, and pools
-- ✅ User registration (creating new accounts)
+## Roles
 
-Most of this manual assumes you have staff access. If you cannot access certain features, contact your administrator to check your permissions.
+| Role | Shown as | Can do |
+|------|----------|--------|
+| User | A customer with no staff access | Sign in, and open only the public pages (home, about, contact, privacy, terms, help). Every staff page shows "Unauthorized Access to Mars Colony Systems". |
+| Staff | **Member of Staff** ticked on the customer record | Everything in this manual, except the super admin actions below. |
+| Super admin | Not shown or set on any screen | Everything staff can do, plus: create orders by hand (the **Create Order** button), delete products, suppliers, supplier products, VAT rates and pools, and edit staff accounts. |
 
-## First Steps
+Staff who try a super admin action see "Deleting is disabled for this user." or "Staff accounts cannot be modified in the playground." (shown in every environment, not only the playground); **Create Order** is hidden from them.
 
-After logging in for the first time, here's a suggested path to familiarise yourself with the system:
+Editing a staff account is super admin only, your own included: a staff user who opens **Settings** and saves the edit form gets "Staff accounts cannot be modified in the playground." The one exception is the full name, which any staff user can change in place ([inline editing](02-navigation.md#inline-editing)).
 
-### 1. Explore the Dashboard
+The **Help** button and the `?` key work for everyone, signed in or not.
 
-Click **Dashboard** in the menu to see an overview of:
-- Today's order count and value
-- Sales metrics (cost, profit, margin)
-- Recent orders
-- Top-selling products
-- Items requiring attention (overdue orders, rejected POs)
+## Related
 
-### 2. Browse the Product Catalog
-
-Click **Catalog** > **Products** to see all products in the system:
-- Use the search box to find specific products
-- Click on a product to view its details
-- Notice how products show stock levels and prices
-
-### 3. Understand the Supply Chain
-
-Explore how products connect to suppliers:
-
-1. Click **Purchasing** > **Suppliers** to see your suppliers
-2. Click **Purchasing** > **Supplier Products** to see what each supplier offers
-3. Notice how multiple suppliers can offer the same product at different prices
-
-### 4. Review an Existing Order
-
-Click **Orders** to see customer orders:
-- Click on an order to see its details
-- Notice the order items and their status
-- See which purchase orders are fulfilling the order
-
-## System Layout Overview
-
-The SupplyMars interface consists of:
-
-### Header Bar
-
-- **Menu button** (☰) - Opens the navigation menu
-- **Logo** - Click to return to the homepage
-- **User menu** (top right) - Access settings and sign out
-
-### Navigation Menu
-
-A slide-out menu on the left containing all main sections:
-- Home
-- Dashboard (admin only)
-- Catalog (expandable)
-- Orders (expandable)
-- Purchasing (expandable)
-- Customers
-- Reviews (expandable)
-- Reporting (expandable)
-- Admin (expandable)
-- Notes (expandable)
-
-### Main Content Area
-
-Where screens, forms, and data are displayed. Most pages follow consistent patterns:
-- **List pages** - Show searchable, sortable tables of records
-- **Detail pages** - Show full information about a single record
-- **Form modals** - Pop up over the current page for creating/editing
-
-### Notifications
-
-Success and error messages appear briefly in the top-right corner and disappear automatically.
-
-## Getting Help
-
-### Within the System
-
-- Look for descriptive field labels and placeholder text
-- Pay attention to validation messages when forms don't submit
-- Check the status indicators on records
-
-### In This Manual
-
-- Use the table of contents in the README
-- Each section covers a specific feature area
-- The troubleshooting guide addresses common problems
-
-### From Your Administrator
-
-Contact your administrator if you:
-- Cannot access features you need
-- Encounter system errors
-- Need your password reset
-- Have questions about business processes
+- [Navigation](02-navigation.md): the header, menu and common screens.
+- [Customers](07-customers.md): granting staff access.
+- [Troubleshooting](troubleshooting.md#signing-in): sign-in problems.

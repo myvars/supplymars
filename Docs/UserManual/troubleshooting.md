@@ -1,367 +1,103 @@
 # Troubleshooting
 
-This guide covers common problems and their solutions.
-
-## Login Issues
-
-### Cannot Log In
-
-**Symptom:** Login fails with "Invalid credentials" error.
-
-**Solutions:**
-1. Check that you're using the correct email address
-2. Ensure Caps Lock is not on
-3. Try the "Forgot your password?" link to reset
-4. Contact your administrator if problems persist
-
-### Account Not Verified
-
-**Symptom:** Login fails with "Account not verified" error.
-
-**Solutions:**
-1. Check your email for a verification link
-2. Click "Resend verification email" on the login page
-3. Check your spam/junk folder
-4. Contact your administrator to manually verify your account
-
-### Forgot Password Email Not Received
-
-**Symptom:** No email arrives after requesting password reset.
-
-**Solutions:**
-1. Wait a few minutes; emails can be delayed
-2. Check spam/junk folder
-3. Verify you're using the correct email address
-4. Contact your administrator
-
-## Navigation Issues
-
-### Page Not Loading
-
-**Symptom:** Page shows spinner but never loads.
-
-**Solutions:**
-1. Wait a moment; the system may be processing
-2. Click the browser refresh button
-3. Check your internet connection
-4. Clear browser cache and try again
-5. Try a different browser
-
-### Menu Not Opening
-
-**Symptom:** Clicking the menu button does nothing.
-
-**Solutions:**
-1. Refresh the page
-2. Clear browser cache
-3. Disable browser extensions that might interfere
-4. Try a different browser
-
-### Back Button Not Working
-
-**Symptom:** Browser back button doesn't navigate as expected.
-
-**Solutions:**
-1. This can happen with Turbo navigation; refresh and try again
-2. Use the menu to navigate instead
-3. Clear browser cache
-
-## Product Issues
-
-### Cannot Create Product
-
-**Symptom:** Product creation fails or form won't submit.
-
-**Solutions:**
-1. Ensure all required fields are filled (marked with *)
-2. Select a category before selecting a subcategory
-3. Check that manufacturer is selected
-4. Verify manufacturer part number is entered
-
-### Subcategory Dropdown Empty
-
-**Symptom:** No subcategories appear in the dropdown.
-
-**Solutions:**
-1. Select a category first; subcategories depend on category selection
-2. Ensure the selected category has subcategories
-3. Refresh the page and try again
-
-### Product Not Appearing in Lists
-
-**Symptom:** Created product doesn't show in search results.
-
-**Solutions:**
-1. Check if product is set to Active
-2. Check your search filters; clear all filters
-3. Refresh the page
-4. Wait a moment; indexing may be delayed
-
-### Product Cannot Be Sold
-
-**Symptom:** Product shows as unavailable despite being active.
-
-**Solutions:**
-1. Ensure the product has a linked supplier product
-2. Check that the supplier product is active
-3. Verify the supplier is active
-4. Check that category and subcategory are active
-5. Ensure there is stock available
-
-## Order Issues
-
-### Cannot Create Order
-
-**Symptom:** Order creation fails.
-
-**Solutions:**
-1. Verify the customer ID is valid
-2. Ensure the customer has a default shipping address
-3. Select a shipping method
-4. Check for validation errors in the form
-
-### Cannot Add Item to Order
-
-**Symptom:** Adding items fails.
-
-**Solutions:**
-1. Verify the product ID is correct
-2. Ensure the product is active and has stock
-3. Check that quantity is between 1 and 10,000
-4. Verify the order status allows editing (PENDING or PROCESSING)
-
-### Cannot Cancel Order
-
-**Symptom:** Cancel button doesn't work or shows error.
-
-**Solutions:**
-1. Orders can only be cancelled in PENDING status
-2. If items are allocated, cancel individual purchase orders instead
-3. Check if order is locked by another user
-
-### Order Locked by Another User
-
-**Symptom:** Cannot edit order; shows locked message.
-
-**Solutions:**
-1. Wait for the other user to finish and unlock
-2. Contact the user who locked it
-3. An administrator can unlock the order if needed
-
-## Purchase Order Issues
-
-### Cannot Edit PO Item Quantity
-
-**Symptom:** Quantity field is disabled or changes don't save.
-
-**Solutions:**
-1. PO must be in PENDING status to edit quantities
-2. Check that you're not exceeding the original order quantity
-3. Refresh the page and try again
-
-### Cannot Change PO Item Status
-
-**Symptom:** Status dropdown doesn't show expected options.
-
-**Solutions:**
-1. Only valid status transitions are available
-2. DELIVERED and CANCELLED items cannot be changed
-3. Review the status lifecycle in the Purchase Orders documentation
-
-### Allocation Fails
-
-**Symptom:** Order allocation returns an error.
-
-**Solutions:**
-1. Check that products have active supplier products
-2. Verify suppliers have stock available
-3. Ensure suppliers are marked as active
-4. Review which items failed and their supplier options
-
-## Supplier Issues
-
-### Supplier Products Not Showing
-
-**Symptom:** Product stock dashboard shows no supplier options.
-
-**Solutions:**
-1. Ensure supplier products are linked to the catalog product
-2. Check supplier product active status
-3. Verify supplier is active
-4. Use "Map Product" on unlinked supplier products
-
-### Cannot Delete Supplier
-
-**Symptom:** Delete fails or is blocked.
-
-**Solutions:**
-1. Check for active purchase orders with this supplier
-2. Remove or reassign supplier products first
-3. Complete or cancel pending orders
-
-## Pricing Issues
-
-### Prices Not Updating
-
-**Symptom:** Product prices don't reflect recent changes.
-
-**Solutions:**
-1. Pricing changes can take a moment to propagate
-2. Refresh the page
-3. Check that all pricing levels are saved (product, subcategory, category)
-4. Verify the active supplier product hasn't changed
-
-### VAT Not Applied Correctly
-
-**Symptom:** VAT amount seems wrong.
-
-**Solutions:**
-1. Check the category's VAT rate setting
-2. Verify the correct VAT rate is selected
-3. Remember that VAT is applied after price model rounding
-
-### Markup Not Applying
-
-**Symptom:** Sell price equals cost (no markup).
-
-**Solutions:**
-1. Check product-level markup setting
-2. Check subcategory markup setting
-3. Check category markup setting
-4. Ensure at least one level has a markup > 0
-
-## Report Issues
-
-### Dashboard Shows No Data
-
-**Symptom:** Dashboard KPIs are all zero.
-
-**Solutions:**
-1. Ensure there is order and sales data in the system
-2. Check date filters; data may not exist for selected period
-3. Wait for report calculations to run (hourly/daily)
-4. Contact administrator to verify reporting jobs are running
-
-### Charts Not Displaying
-
-**Symptom:** Chart area is blank.
-
-**Solutions:**
-1. Refresh the page
-2. Ensure JavaScript is enabled
-3. Try a different browser
-4. Clear browser cache
-
-### Data Seems Stale
-
-**Symptom:** Today's data doesn't reflect recent activity.
-
-**Solutions:**
-1. Report data updates approximately hourly
-2. Refresh the page
-3. Wait and check again later
-4. Historical data is calculated overnight
-
-## Ticket Issues
-
-### Cannot Reply to Ticket
-
-**Symptom:** Reply form is not visible or reply fails.
-
-**Solutions:**
-1. Check that the ticket is not in Closed status (reopen it first)
-2. Refresh the page
-3. Verify you have administrator access
-
-### Tickets Not Appearing in My Queue
-
-**Symptom:** My Queue shows no tickets despite open tickets existing.
-
-**Solutions:**
-1. Check that you are subscribed to the relevant pools
-2. Navigate to Notes > Pools and subscribe to pools you need
-3. The badge count is cached; wait a moment and refresh
-
-### Cannot Delete a Pool
-
-**Symptom:** Pool deletion fails.
-
-**Solutions:**
-1. Check for tickets still assigned to this pool
-2. Reassign or close tickets in the pool first
-
-## General Issues
-
-### Form Won't Submit
-
-**Symptom:** Clicking Save does nothing.
-
-**Solutions:**
-1. Check for validation errors (red highlighted fields)
-2. Ensure all required fields are filled
-3. Check browser console for JavaScript errors
-4. Refresh the page and re-enter data
-
-### Changes Not Saving
-
-**Symptom:** Edits revert after leaving the page.
-
-**Solutions:**
-1. Ensure you clicked Save before navigating away
-2. Check for error messages (notifications)
-3. Verify you have permission to make changes
-4. Refresh and check if changes actually saved
-
-### Session Expired
-
-**Symptom:** Suddenly logged out or seeing login page.
-
-**Solutions:**
-1. Sessions expire after 7 days of inactivity
-2. Log in again
-3. If happening frequently, contact administrator
-
-### Error Messages
-
-**Symptom:** Red error notification appears.
-
-**Solutions:**
-1. Read the error message carefully
-2. The message usually explains what went wrong
-3. Address the issue mentioned
-4. If unclear, note the error and contact administrator
-
-## Getting Help
-
-If these solutions don't resolve your issue:
-
-1. Note the exact error message
-2. Note what action you were trying to perform
-3. Take a screenshot if possible
-4. Contact your system administrator
-
-## Browser Compatibility
-
-SupplyMars works best with:
-- Chrome (recommended)
-- Firefox
-- Safari
-- Edge
-
-Ensure your browser is up to date for the best experience.
-
-## Keyboard Shortcuts
-
-| Key | Action |
-|-----|--------|
-| Escape | Close modal/form |
-| Enter | Submit form (when in a field) |
-| Tab | Move between form fields |
-
-## Mobile Usage
-
-On mobile devices:
-- Tap the menu button (☰) to open navigation
-- Forms may require scrolling
-- Some features work better in landscape orientation
-- For best experience, use a desktop/laptop for administrative tasks
+What a problem usually means and how to fix it, by area. Each row links to the page that explains the rule. Quoted text is the message you see on screen.
+
+Press `?` on any screen for a short summary of that screen.
+
+## Signing in
+
+| Symptom | Cause | Fix | See |
+|---------|-------|-----|-----|
+| "Invalid credentials." | Wrong email or password. | Check the email and Caps Lock, or reset the password. | [Getting Started](01-getting-started.md#reset-a-forgotten-password) |
+| "Too many failed login attempts, please try again in N minutes." | 5 failed attempts for this email in 15 minutes. | Wait the minutes shown, or reset the password. | [Getting Started](01-getting-started.md#rules-and-limits) |
+| "Too many requests. Try again later." on a plain page | More than 10 requests a minute to the sign-in page from your connection (page loads and sign-in attempts both count), or more than 3 quick sign-up or password reset submissions (then 1 every 30 seconds). | Wait a minute and try again. | [Getting Started](01-getting-started.md#rules-and-limits) |
+| No reset email arrives | No account has that email, or a reset email was already sent in the last hour (one per hour; the page looks the same either way). | Check spam, use the earlier email, or wait an hour. | [Getting Started](01-getting-started.md#reset-a-forgotten-password) |
+| "This reset link is invalid or has expired." | Reset links last 1 hour and work once. | Request a new link. | [Getting Started](01-getting-started.md#reset-a-forgotten-password) |
+| "Unauthorized Access to Mars Colony Systems" after signing in | Your account has no staff access. | Ask a staff member to tick **Member of Staff** on your customer record. | [Customers](07-customers.md) |
+| "Too many attempts. Please try again later." when registering | 5 submitted sign-ups from your connection in the last hour, failed ones included. | Try again later. | [Getting Started](01-getting-started.md#register-an-account) |
+| Signed out unexpectedly | 7 days passed without a visit, or someone used **Sign Out** in this browser. | Sign in again. | [Getting Started](01-getting-started.md#rules-and-limits) |
+
+Email verification never blocks sign-in, so an unverified account is not the cause of a sign-in problem.
+
+## Screens and forms
+
+| Symptom | Cause | Fix | See |
+|---------|-------|-----|-----|
+| A menu badge count is out of date | Badges are counted when the whole page loads, not when you move between screens; **Overdue Orders** and **My Queue** can lag 5 more minutes. | Reload the browser. | [Navigation](02-navigation.md#badges) |
+| The form does not close when you submit | A field has an error. Required fields are not marked. | Read the message under each field, correct it, submit again. | [Navigation](02-navigation.md#forms) |
+| No create button on a list | Customers and Purchase Orders have none; **Create Order** is super admin only. | Customers come from registration and the simulator; POs from allocation. | [Navigation](02-navigation.md#list-pages) |
+| No filter icon on a list | Suppliers, Manufacturers, VAT Rates, Customers and Pools have no filter. | Use the search box. | [Navigation](02-navigation.md#list-pages) |
+| A list shows fewer results than expected | A filter is still applied: the funnel is yellow, or you came from the **Pending Orders**, **Moderation Queue** or **Rejected POs** menu link (these filter without turning the funnel yellow). | Open the filter, clear the fields, click **Apply Filter**; or open the full list from the menu. | [Navigation](02-navigation.md#list-pages) |
+| Help says "No help is available for this page." | That screen has no help topic. | Use this manual. | [Navigation](02-navigation.md#help) |
+| "Deleting is disabled for this user." | Deleting products, suppliers, supplier products, VAT rates and pools is super admin only. | Ask a super admin, or deactivate the record instead. | [Getting Started](01-getting-started.md#roles) |
+| A delete ends on "System Malfunction in the Mars Colony" | The record is still in use: a product with images, supplier products or order items; a supplier with supplier products or purchase orders; a VAT rate in use; a pool with tickets. Nothing was deleted. | Deactivate it instead, or remove what uses it first. | The record's page |
+
+## Catalog
+
+| Symptom | Cause | Fix | See |
+|---------|-------|-----|-----|
+| **Subcategory** list is empty on the product form | It lists only the chosen category's subcategories. | Choose the **Category** first; add a subcategory to it if it has none. | [Products](03-products.md) |
+| The Stock or Cost tab shows "Incomplete Product" | The product is not complete: it must be Active, have an active supplier product, and sit in an Active category and subcategory. Staff can still add it to an order; demo and simulated orders skip it unless it is active, in stock and has an active supplier product. | Read the line under the heading ("No active supplier" or "Inactive category, subcategory or product") and fix that. | [Products](03-products.md#rules-and-limits), [Stock](11-stock.md) |
+| "Has subcategories — remove them first." | A category with subcategories can't be deleted. | Delete or move its subcategories. | [Categories and Subcategories](04-categories.md) |
+| "Has products — move or remove them first." | A subcategory with products can't be deleted. | Move its products to another subcategory. | [Categories and Subcategories](04-categories.md) |
+| "Has products — reassign them first." | A manufacturer with products can't be deleted. | Give the products another manufacturer. | [Manufacturers](16-manufacturers.md) |
+
+## Suppliers and stock
+
+| Symptom | Cause | Fix | See |
+|---------|-------|-----|-----|
+| A supplier product is never the active source | It, or its supplier, is inactive; it has no stock; its cost is 0; or another source is cheaper (on equal cost, the one with more stock wins). | Activate it, or correct stock and cost. | [Stock](11-stock.md) |
+| Product stock or price doesn't match its supplier product | Simulated stock and cost changes don't update the product. Saving a supplier product with no changed value doesn't either. | On the product's Stock tab, click a source's toggle off and on again; or change a value on the supplier product and save. | [Stock](11-stock.md), [Simulations](14-simulations.md) |
+| "Used on purchase orders — deactivate it instead." | A supplier product on a purchase order can't be deleted. | Deactivate it on the product's Stock tab. | [Supplier Products](06-supplier-products.md) |
+| A supplier product has no Stock tab entry | It isn't mapped to a catalog product. | Use **Map Product** on the supplier product. | [Supplier Products](06-supplier-products.md) |
+
+## Orders
+
+| Symptom | Cause | Fix | See |
+|---------|-------|-----|-----|
+| No **Create Order** button | Creating orders by hand is super admin only. | Ask a super admin, or use **Create Demo Order**. | [Orders](08-orders.md) |
+| Creating an order ends on an error page | The customer has no default shipping or billing address (newly registered customers have none). | Choose a customer with addresses. | [Orders](08-orders.md), [Customers](07-customers.md) |
+| The demo dialog says "You have reached the daily limit of 10 demo orders." | 10 demo orders a day in total, for everyone. | Try again tomorrow. | [Orders](08-orders.md#create-a-demo-order) |
+| "Cannot allocate all items" | Automatic allocation needs one supplier that can supply a line's whole outstanding quantity; lines without one are skipped. | Choose suppliers for those lines by hand from the item's supplier options. | [Order Items](09-order-items.md), [Stock](11-stock.md) |
+| "No items to allocate." | Every line is already on a purchase order. If you chose every line's supplier by hand, the purchase order items are still Pending and no supplier will act on them. | Set each item to Processing on its purchase order page. | [Order Items](09-order-items.md#allocate-an-item-to-a-supplier) |
+| "Order cannot be cancelled" | Only Pending orders can be cancelled. The X icon also shows on Processing orders, but the cancel always fails there. | Work on the individual items instead. | [Orders](08-orders.md), [Order Items](09-order-items.md) |
+| "Items cannot be cancelled" | At least one item has gone too far to cancel. | Check each item's status. | [Order Items](09-order-items.md) |
+| "minimum quantity is N" | An item's quantity can't go below what is already on purchase orders (N), so it can't be set to 0 either. | Reduce the PO items first. | [Order Items](09-order-items.md#rules-and-limits) |
+| Someone else edited a locked order | The lock is a "someone is working on this" note; it blocks no one, and anyone can unlock it. Only the scheduled jobs skip locked orders. | Agree who is working on the order. | [Orders](08-orders.md#rules-and-limits) |
+| A locked order never moves on its own | Allocation, supplier acceptance, shipping and delivery jobs skip locked orders. | Unlock it. | [Orders](08-orders.md#rules-and-limits) |
+
+## Purchase orders
+
+| Symptom | Cause | Fix | See |
+|---------|-------|-----|-----|
+| "Purchase order item cannot be edited" | Quantities can change only while the PO item is Pending. | Rewind the PO to Pending with the arrow icon on its card. | [Purchase Orders](10-purchase-orders.md) |
+| "Quantity cannot be greater than N" | A PO item can't exceed what the order item still needs. | Enter N or less. | [Purchase Orders](10-purchase-orders.md) |
+| "Status can not be set to X." | The status list shows every status, but only some moves are allowed; Refunded, Delivered and Cancelled are final. | Choose the next valid status. | [Purchase Orders](10-purchase-orders.md) |
+
+## Pricing
+
+| Symptom | Cause | Fix | See |
+|---------|-------|-----|-----|
+| A markup change has no effect | The product uses the first markup above zero: product, then subcategory, then category. A lower level replaces a higher one; they never add up. | Change the level that is in use, or set the lower levels to 0. | [Pricing and VAT](12-pricing.md) |
+| The sell price is not cost plus markup plus VAT | The price model rounds the price including VAT. | Check the price model in use. | [Pricing and VAT](12-pricing.md) |
+
+## Reports and dashboard
+
+| Symptom | Cause | Fix | See |
+|---------|-------|-----|-----|
+| Today's figures lag recent orders | Today's sales figures are recalculated every 30 minutes; earlier days are finalised just after midnight. | Check again after the next half hour. | [Reports and Dashboard](13-reports.md) |
+| A report is empty | No sales in the chosen period. | Choose a longer period. | [Reports and Dashboard](13-reports.md) |
+
+## Customers
+
+| Symptom | Cause | Fix | See |
+|---------|-------|-----|-----|
+| "Staff accounts cannot be modified in the playground." | Editing a staff account, your own included, is super admin only, in every environment. | Ask a super admin. To change only the full name, click it on the customer page. | [Customers](07-customers.md) |
+| The delete dialog says "You cannot delete an admin user." or "You cannot delete a customer with order history." and offers only **Close** | Staff accounts and customers with orders can't be deleted. | Leave the account in place. | [Customers](07-customers.md) |
+
+## Notes and tickets
+
+| Symptom | Cause | Fix | See |
+|---------|-------|-----|-----|
+| No reply box on a ticket | The ticket is Closed. | Reopen it with the reopen icon on the ticket card. | [Notes and Tickets](17-notes.md) |
+| My Queue is empty | It shows only tickets that are not closed or snoozed, in pools you subscribe to. | Subscribe on the pool's page (**Notes > Pools**). | [Notes and Tickets](17-notes.md) |
