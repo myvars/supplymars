@@ -1,313 +1,78 @@
-# Playground Infrastructure
-
-The playground is a full copy of the live site where users can experiment freely. Both stacks run on the same Lightsail instance, isolated by Docker Compose project names.
-
-## Architecture
-
-```
-                        ┌─────────┐
-            Internet ──▶│  Caddy  │ (auto TLS)
-                        └────┬────┘
-                ┌────────────┼────────────┐
-                ▼                         ▼
-        localhost:8001            localhost:8002
-   ┌─────────────────────┐  ┌───────────────────────┐
-   │   supplymars-live   │  │ supplymars-playground │
-   │       (live.        │  │ (www.supplymars.com,  │
-   │   supplymars.com)   │  │  supplymars.com)      │
-   └─────────────────────┘  └───────────────────────┘
-```
-
-The names read the wrong way round: `www.supplymars.com` is the public playground, the address visitors are given, and `live.supplymars.com` is the live site, the source of truth that the playground is reset from each night.
-
-Each stack has its own database, Redis, and PHP containers, and its own queue (a table in its database). They share nothing at the Docker level — no shared networks.
-
-### Nightly Reset
-
-At **02:00 UTC**, the live messenger container runs `app:backup-database --local-copy=/backups/latest.sql.gz` as a scheduled job, first of the jobs due then. This uploads the backup to S3 and saves a copy to `/home/ubuntu/supplymars-backups/` on the host.
-
-At **02:15 UTC**, the playground reset container runs `playground-reset.sh`, which:
-
-1. Restores the database from `/backups/latest.sql.gz` (read-only volume mount), leaving out the rows of `messenger_messages`: they are live's queue, and the playground worker would send live's pending emails. The table is recreated empty, which also clears the playground's own queue
-2. Redacts staff credentials and creates the demo user (via `playground-redact-staff.sql`, immediately after restore — no window where real credentials are exposed)
-3. Syncs S3 uploads/media from the live prefix to the playground prefix
-4. Flushes playground Redis
-
-The credential redaction runs as raw SQL in the reset container (which has no PHP) for zero-gap security. See `scripts/playground-redact-staff.sql` for details.
-
-### Key Files
-
-| File | Purpose |
-|------|---------|
-| `compose.prod.yaml` | Production overrides (both stacks), naming the images CI publishes to GHCR |
-| `compose.publish.yaml` | Build cache for the CI job that publishes the images |
-| `src/Shared/Infrastructure/Scheduler/MainSchedule.php` | Both stacks' scheduled jobs, run by the messenger container. `PLAYGROUND_MODE` leaves out the refund and the backup on playground |
-| `docker/php/cron/reset-crontab` | Reset container cron (02:15 UTC) |
-| `scripts/playground-reset.sh` | Reset script (DB restore, credential redaction, S3 sync, cache flush) |
-| `scripts/playground-redact-staff.sql` | Staff credential scrambling and demo user creation |
-| `Docs/infrastructure/Caddyfile` | Reference copy of the Caddyfile |
-
----
-
-## Environment Files
-
-Both stacks use env files stored at `/home/ubuntu/supplymars-secrets/` on the server (not in the repo).
-
-### live.env
-
-```env
-APP_SECRET=<secret>
-DEFAULT_DOMAIN=supplymars
-DEFAULT_URI=https://live.supplymars.com
-DATABASE_URL=mysql://app:<password>@database:3306/app
-REDIS_URL=redis://default:<password>@redis:6379
-REDIS_PASSWORD=<password>
-MAILER_DSN=<mailer-dsn>
-MAILER_FROM=no-reply@supplymars.com
-AWS_S3_REGION=eu-west-2
-AWS_S3_BUCKET=unicorn-bucket-two
-AWS_S3_ACCESS_ID=<access-id>
-AWS_S3_SECRET_ACCESS_KEY=<secret-key>
-AWS_S3_PRODUCTS_PREFIX=
-UPLOADS_BASE_URL=https://unicorn-bucket-two.s3.eu-west-2.amazonaws.com
-TURNSTILE_SITE_KEY=<key>
-TURNSTILE_SECRET_KEY=<key>
-MYSQL_PASSWORD=<password>
-MYSQL_ROOT_PASSWORD=<password>
-PLAYGROUND_MODE=false   # Also picks the scheduled jobs: true leaves out the refund and the backup
-SENTRY_DSN=<dsn>
-HTTP_HOST_PORT=8001
-DB_HOST_PORT=3307
-```
-
-### playground.env
-
-Same structure with **different passwords** for all services, plus playground-specific values:
-
-```env
-# ... same keys as live.env, with different passwords ...
-DEFAULT_URI=https://www.supplymars.com
-AWS_S3_PRODUCTS_PREFIX=playground
-UPLOADS_BASE_URL=https://unicorn-bucket-two.s3.eu-west-2.amazonaws.com/playground
-PLAYGROUND_MODE=true
-SENTRY_ENVIRONMENT=playground
-HTTP_HOST_PORT=8002
-DB_HOST_PORT=3308
-```
-
-`REDIS_PASSWORD` is required: Redis will not start without it, and `REDIS_URL` must carry the same password, since sessions and the cache both connect through it.
-
-`MESSENGER_TRANSPORT_DSN` is not set: the queue defaults to the database (`compose.prod.yaml`). An env file must not keep an old AMQP DSN, which would override the default and stop the worker, since the AMQP transport is no longer installed.
-
-Both stacks use the same `SENTRY_DSN`; `SENTRY_ENVIRONMENT` (`live` unless set) separates their events in Sentry. Leave `SENTRY_DSN` empty to send nothing. See [13-monitoring.md](../13-monitoring.md).
-
-Generate passwords: `openssl rand -base64 24`
-Generate APP_SECRET: `openssl rand -hex 16`
-
----
-
-## Fresh Server Setup
-
-### Prerequisites
-
-- Ubuntu on AWS Lightsail
-- Ports 80, 443 open in Lightsail firewall
-- DNS A records for `supplymars.com`, `www.supplymars.com`, `live.supplymars.com` pointing to the instance IP
-- Docker Engine with the Compose plugin, `git` and `make` installed (`sudo apt install -y git make`), and the `ubuntu` user in the `docker` group
-
-### 1. Install Caddy
-
-```bash
-sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https curl
-curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
-curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
-sudo apt update
-sudo apt install -y caddy
-```
-
-Write the Caddyfile:
-
-```bash
-sudo tee /etc/caddy/Caddyfile > /dev/null << 'EOF'
-supplymars.com, www.supplymars.com {
-    reverse_proxy localhost:8002
-}
-
-live.supplymars.com {
-    reverse_proxy localhost:8001
-}
-EOF
-
-sudo systemctl enable caddy
-sudo systemctl start caddy
-```
-
-### 2. Upload env files
-
-```bash
-mkdir -p /home/ubuntu/supplymars-secrets
-chmod 700 /home/ubuntu/supplymars-secrets
-# scp live.env and playground.env from local machine
-chmod 600 /home/ubuntu/supplymars-secrets/*.env
-```
-
-### 3. Create backups directory
-
-```bash
-mkdir -p /home/ubuntu/supplymars-backups
-```
-
-### 4. Log in to the registry
-
-CI publishes the images to GHCR as private packages, so the server needs a read token: a classic personal access token with only the `read:packages` scope. Note its expiry date: pulls, and so deploys, fail once it expires.
-
-```bash
-echo <token> | docker login ghcr.io -u <github-user> --password-stdin
-```
-
-The token is stored in `~/.docker/config.json`.
-
-### 5. Clone and deploy
-
-```bash
-cd /home/ubuntu
-git clone <repo-url> supplymars
-cd supplymars
-```
-
-Start the live stack (it pulls the images CI published for the checked-out commit):
-
-```bash
-make up-prod-live
-```
-
-Seed the backup file (required before playground can start):
-
-```bash
-docker compose --env-file ../supplymars-secrets/live.env \
-    -p supplymars-live \
-    -f compose.yaml -f compose.prod.yaml \
-    exec -T messenger php bin/console app:backup-database --local-copy=/backups/latest.sql.gz
-```
-
-Start the playground stack:
-
-```bash
-make up-prod-playground
-```
-
-Trigger the initial playground reset:
-
-```bash
-docker compose --env-file ../supplymars-secrets/playground.env \
-    -p supplymars-playground --profile playground \
-    -f compose.yaml -f compose.prod.yaml \
-    exec -T reset /usr/local/bin/playground-reset.sh
-```
-
-### 6. Verify
-
-```bash
-make verify-prod-live
-make verify-prod-playground
-
-curl -sf -o /dev/null -w "%{http_code}" https://supplymars.com       # 200
-curl -sf -o /dev/null -w "%{http_code}" https://live.supplymars.com   # 200
-
-# The playground banner shows on www only
-curl -s https://www.supplymars.com/login | grep -c "Welcome to the Playground"    # 1
-curl -s https://live.supplymars.com/login | grep -c "Welcome to the Playground"   # 0
-```
-
----
-
-## Common Commands
-
-```bash
-# --- Start / Stop ---
-make up-prod-live
-make down-prod-live
-make up-prod-playground
-make down-prod-playground
-
-# --- Logs ---
-# Live
-docker compose --env-file ../supplymars-secrets/live.env \
-    -p supplymars-live -f compose.yaml -f compose.prod.yaml logs -f
-
 # Playground
-docker compose --env-file ../supplymars-secrets/playground.env \
-    -p supplymars-playground -f compose.yaml -f compose.prod.yaml logs -f
 
-# --- Shell access ---
-docker compose --env-file ../supplymars-secrets/live.env \
-    -p supplymars-live -f compose.yaml -f compose.prod.yaml exec php bash
+What makes the public playground (`www.supplymars.com`, `supplymars.com`) differ from the live site (`live.supplymars.com`), and how its nightly reset works. Read it before changing anything gated on `PLAYGROUND_MODE`, the reset scripts, or the redaction. Running both stacks (deploy, env files, set-up, backups) is in [11-runbook.md](../11-runbook.md).
 
-# --- Manual playground reset ---
-docker compose --env-file ../supplymars-secrets/playground.env \
-    -p supplymars-playground --profile playground \
-    -f compose.yaml -f compose.prod.yaml \
-    exec -T reset /usr/local/bin/playground-reset.sh
+The names read the wrong way round: `www` is the playground, the demo visitors are given; `live` is the source of truth that the playground is restored from each night.
 
-# --- Manual backup with local copy ---
-docker compose --env-file ../supplymars-secrets/live.env \
-    -p supplymars-live -f compose.yaml -f compose.prod.yaml \
-    exec -T messenger php bin/console app:backup-database --local-copy=/backups/latest.sql.gz
+## What differs from live
 
-# --- Container health ---
-docker compose --env-file ../supplymars-secrets/live.env \
-    -p supplymars-live -f compose.yaml -f compose.prod.yaml ps
-docker compose --env-file ../supplymars-secrets/playground.env \
-    -p supplymars-playground -f compose.yaml -f compose.prod.yaml ps
+Both stacks run the same images on the same server, from the same `compose.yaml` + `compose.prod.yaml`. They differ only in their env files and in the `playground` Compose profile:
 
-# --- SSH tunnels for DB access (run locally) ---
-ssh -L 3307:localhost:3307 ubuntu@<server-ip>   # live DB
-ssh -L 3308:localhost:3308 ubuntu@<server-ip>   # playground DB
+| | Live | Playground |
+|---|---|---|
+| Compose project, port | `supplymars-live`, 8001 | `supplymars-playground`, 8002 (`--profile playground`) |
+| Extra container | none | `reset` (cron, MySQL client, Redis client, AWS CLI; no PHP) |
+| Data | the real history | live's last backup, restored at 02:15 UTC, staff redacted |
+| Uploads | S3 root | S3 prefix `playground/`, re-synced from live nightly |
+| Backups directory | written by `messenger` | read-only in `reset` |
+| Sentry environment | `live` | `playground` |
 
-# --- Caddy ---
-sudo systemctl status caddy
-sudo journalctl -u caddy --no-pager -n 50
+Each stack has its own database, Redis and queue, and its own Docker network. The only thing they share on the host is `/home/ubuntu/supplymars-backups`.
+
+## What PLAYGROUND_MODE changes
+
+`PLAYGROUND_MODE=true` in `playground.env`:
+
+| Where | Effect |
+|-------|--------|
+| `/login` (`templates/customer/security/login.html.twig`) | "Welcome to the Playground" banner and an "Explore the Platform" button, which signs in as `demo@supplymars.com` after a Turnstile check (`PlaygroundLoginController`, route `app_playground_login`, POST only; 404 on live). Sign-up notes "Accounts reset nightly" |
+| `templates/base.html.twig` | Hides the amber "This is the live site." strip, which live shows on every page |
+| `UploadHelper` | File uploads throw: the playground's uploads are replaced each night |
+| `MainSchedule` | Leaves out the live-only jobs: the 02:00 backup, the 01:30 refund and the 03:30 `app:prune-status-change-log` (why: [06-operations.md](../06-operations.md#scheduled-jobs)) |
+
+The flag reaches PHP as `%env(bool:PLAYGROUND_MODE)%` and Twig as `playground_mode` (`config/packages/twig.yaml`).
+
+## Nightly reset
+
+1. **02:00 UTC, live:** the backup job writes `/home/ubuntu/supplymars-backups/latest.sql.gz` ([11-runbook.md](../11-runbook.md#41-automated-daily-backup)).
+2. **02:15 UTC, playground:** the `reset` container's cron (`docker/php/cron/reset-crontab`) runs `scripts/playground-reset.sh`:
+   1. Restores `latest.sql.gz` into the `app` database, leaving out the rows of `messenger_messages`: they are live's queue, and the playground worker would send live's pending emails. The table is recreated empty, which also clears the playground's own queue.
+   2. Runs `scripts/playground-redact-staff.sql` straight after, as raw SQL, so there is no window where real staff logins work:
+      - every staff user's email and password are scrambled, except `demo@supplymars.com` and `admin@supplymars.com`
+      - `admin@supplymars.com` keeps its password and gets `ROLE_ADMIN` + `ROLE_SUPER_ADMIN`. It is kept because it is the `DEFAULT_STAFF_EMAIL` user the simulation commands need ([09-cli-reference.md](../09-cli-reference.md#simulation-behaviour)), and the playground's scheduled jobs would fail without it
+      - `demo@supplymars.com` is created or reset with `ROLE_ADMIN` and the public password `demo`
+   3. Syncs S3 `uploads/` and `media/` from live's root to the `playground/` prefix (`--delete`).
+   4. `FLUSHALL` on the playground Redis: the cache, and every playground session, so everyone is signed out.
+
+The script hard-codes the database `app`, which is why the env files leave `DATABASE_NAME` unset ([11-runbook.md](../11-runbook.md#production-env-files)).
+
+Run a reset by hand (with `$PLAYGROUND` from [11-runbook.md](../11-runbook.md#compose-command-prefix)):
+
+```bash
+docker compose $PLAYGROUND exec -T reset /usr/local/bin/playground-reset.sh
 ```
-
----
 
 ## Troubleshooting
 
-### Reset fails: "Backup file not found"
-
-The live backup hasn't run yet, or the volume mount is misconfigured.
+`reset` exists only with `--profile playground`, which `$PLAYGROUND` includes; without it, `ps` and `logs` leave it out.
 
 ```bash
-# Check the file exists on the host
-ls -lh /home/ubuntu/supplymars-backups/latest.sql.gz
-
-# Run backup manually
-docker compose --env-file ../supplymars-secrets/live.env \
-    -p supplymars-live -f compose.yaml -f compose.prod.yaml \
-    exec -T messenger php bin/console app:backup-database --local-copy=/backups/latest.sql.gz
+docker compose $PLAYGROUND ps reset              # healthy while cron runs
+docker compose $PLAYGROUND logs --tail=100 reset # the script's output goes to the container log
+ls -l /home/ubuntu/supplymars-backups/           # latest.sql.gz from today, owned by uid 33
 ```
 
-### Caddy won't provision certificates
+| Symptom | Cause and fix |
+|---------|---------------|
+| `ERROR: Backup file not found at /backups/latest.sql.gz` | Live's backup has not run yet on a new server, or the mount is wrong. Run the backup by hand ([11-runbook.md](../11-runbook.md#42-manual-backup)), then the reset |
+| Playground data is days old | The local copy fails: the backups directory is not owned by uid 33, so live's backup fails after the S3 upload and the reset keeps restoring the old file. `sudo chown -R 33:33 /home/ubuntu/supplymars-backups` |
+| Demo login says "Demo account is not available." | The redaction did not run (reset failed partway). Run the reset by hand and read its log |
+| Demo login says "Verification failed." | Turnstile keys missing or wrong in `playground.env` |
+| Uploads fail on the playground | Expected: uploads are off in playground mode |
 
-Ensure ports 80 and 443 are open in the Lightsail firewall and DNS A records point to the instance IP.
+## Related
 
-```bash
-# Check Caddy logs
-sudo journalctl -u caddy --no-pager -n 100 | grep -i "error\|fail\|challenge"
-
-# Restart after fixing
-sudo systemctl restart caddy
-```
-
-### Reset container not running
-
-```bash
-docker compose --env-file ../supplymars-secrets/playground.env \
-    -p supplymars-playground --profile playground \
-    -f compose.yaml -f compose.prod.yaml ps reset
-
-# Check logs
-docker compose --env-file ../supplymars-secrets/playground.env \
-    -p supplymars-playground --profile playground \
-    -f compose.yaml -f compose.prod.yaml logs reset
-```
+- [11-runbook.md](../11-runbook.md): both stacks, env files, fresh-server set-up, backups
+- `Docs/infrastructure/Caddyfile`: the host Caddy config (`www` and the bare domain to 8002, `live` to 8001)
+- [08-security.md](../08-security.md): Turnstile
+- [ADR 015](../adr/015-symfony-scheduler-in-place-of-cron.md): the schedule, and why `reset` keeps its own cron

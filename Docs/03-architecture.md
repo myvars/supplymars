@@ -122,7 +122,7 @@ The other events (`OrderItemWasChangedEvent`, `OrderItemWasCreatedEvent`, `Purch
 
 Outgoing email and async events are routed to the `async` Messenger transport (`config/packages/messenger.yaml`). By default that is the Doctrine transport: messages are rows in the `messenger_messages` table, in the application's own database, and the `messenger` container (or `symfony console messenger:consume async`) works through them. Failed messages go to the `failed` transport, in the same table. No domain event is async today, so the queue carries email only.
 
-In the `test` environment the transport is `in-memory://`: nothing is stored, no worker runs, and a test can read what was sent ([07-testing.md](07-testing.md)).
+In the `test` environment the transport is `in-memory://`: nothing is stored, no worker runs, and a test can read what was sent ([07-testing.md](07-testing.md#assert-a-message-was-queued)).
 
 RabbitMQ is kept as an opt-in for when the database queue is outgrown. See [ADR 013](adr/013-database-queue-by-default.md) for the decision and [Switching to RabbitMQ](02-setup-local.md#switching-to-rabbitmq) for the steps.
 

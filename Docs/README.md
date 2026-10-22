@@ -74,7 +74,6 @@ SupplyMars is a **modular monolith** - bounded contexts are self-contained modul
 
 ### Reference
 - **[09-cli-reference.md](09-cli-reference.md)** - All console commands with examples
-- **[10-code-reference.md](10-code-reference.md)** - Navigational map of the codebase
 
 ### Patterns
 - **[patterns/FormFlow/](patterns/FormFlow/README.md)** - Thin controller orchestration for CRUD operations

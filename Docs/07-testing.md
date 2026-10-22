@@ -1,687 +1,133 @@
-# Testing Guide
+# Testing
 
-This document covers the testing strategy, test types, and how to write effective tests for SupplyMars.
+How tests are run, written and checked here. Read it before adding a feature, and when a test fails only under `make test` or in CI.
 
-## Test Strategy
+## Rules
 
-### Philosophy
-
-SupplyMars follows a **testing pyramid** approach:
-
-```
-           ┌─────────┐
-          /  E2E/UI   \       Few, slow, high confidence
-         /─────────────\
-        /  Integration  \     Moderate, test boundaries
-       /─────────────────\
-      /       Unit        \   Many, fast, focused
-     └─────────────────────┘
-```
-
-### Test Distribution
-
-| Type | Purpose | Execution Speed | Coverage Focus |
-|------|---------|-----------------|----------------|
-| Unit | Domain logic | Fast | Business rules |
-| Integration | Handler/Repository | Medium | Data flow |
-| Functional | HTTP endpoints | Slow | User journeys |
-
-### Key Principles
-
-1. **Test behavior, not implementation:** Focus on what code does, not how
-2. **Use factories for data:** Foundry factories ensure consistent test data
-3. **Transaction rollback:** DAMA bundle isolates each test
-4. **Clean up side effects:** File uploads (via `UploadHelper`) persist outside DB transactions — delete them at the end of each test that uploads. In the test environment they are written to `var/cache/test/storage/`, not `public/`, so a missed one never shows up in the dev app
-5. **Meaningful assertions:** Test outcomes, not internal state
-
-## Test Types
-
-### Unit Tests
-
-**Purpose:** Test domain logic in isolation without database or services.
-
-**Location:** `tests/{Context}/Domain/`
-
-**Characteristics:**
-- Extend `PHPUnit\Framework\TestCase`
-- Use stubs/mocks for dependencies
-- No database access
-- Fastest execution
-
-**Example:**
-```php
-// tests/Order/Domain/OrderDomainTest.php
-
-class OrderDomainTest extends TestCase
-{
-    public function testCreateFromCustomerSetsDefaultStatus(): void
-    {
-        $order = CustomerOrder::createFromCustomer(
-            customer: $this->stubUser(),
-            shippingMethod: ShippingMethod::THREE_DAY,
-            vatRate: $this->stubVatRate(),
-            customerOrderRef: 'TEST-001',
-        );
-
-        self::assertSame(OrderStatus::PENDING, $order->getStatus());
-    }
-
-    private function stubUser(): User
-    {
-        $user = $this->createStub(User::class);
-        $user->method('getDefaultShippingAddress')
-            ->willReturn($this->createStub(Address::class));
-        return $user;
-    }
-}
-```
-
-### Integration Tests
-
-**Purpose:** Test application services with real database transactions.
-
-**Location:** `tests/{Context}/Application/Handler/`
-
-**Characteristics:**
-- Extend `Symfony\Bundle\FrameworkBundle\Test\KernelTestCase`
-- Use `Factories` trait for test data
-- Real database operations (rolled back after test)
-- Test handler → repository → database flow
-
-**Example:**
-```php
-// tests/Order/Application/Handler/CreateOrderHandlerTest.php
-
-class CreateOrderHandlerTest extends KernelTestCase
-{
-    use Factories;
-
-    private CreateOrderHandler $handler;
-
-    protected function setUp(): void
-    {
-        self::bootKernel();
-        $this->handler = self::getContainer()->get(CreateOrderHandler::class);
-    }
-
-    public function testHandleCreatesOrder(): void
-    {
-        $customer = UserFactory::createOne();
-        $vatRate = VatRateFactory::new()->withStandardRate()->create();
-
-        $command = new CreateOrder(
-            customerId: $customer->getId(),
-            shippingMethod: ShippingMethod::THREE_DAY,
-            customerOrderRef: 'TEST-001'
-        );
-
-        $result = $this->handler->handle($command);
-
-        self::assertTrue($result->ok);
-        self::assertNotNull($result->payload);
-    }
-}
-```
-
-### Functional Tests (HTTP)
-
-**Purpose:** Test complete request/response cycles through controllers.
-
-**Location:** `tests/{Context}/UI/`
-
-**Characteristics:**
-- Extend `Symfony\Bundle\FrameworkBundle\Test\WebTestCase`
-- Use `HasBrowser` trait for fluent assertions
-- Test form submissions, redirects, flash messages
-- Slowest but highest confidence
-
-**Example:**
-```php
-// tests/Catalog/UI/ManufacturerFlowTest.php
-
-class ManufacturerFlowTest extends WebTestCase
-{
-    use HasBrowser;
-    use Factories;
-
-    #[WithStory(StaffUserStory::class)]
-    public function testCreateManufacturer(): void
-    {
-        $this->browser()
-            ->visit('/catalog/manufacturer/new')
-            ->fillField('manufacturer[name]', 'Test Manufacturer')
-            ->check('manufacturer[isActive]')
-            ->click('Save')
-            ->assertOn('/catalog/manufacturer/')
-            ->assertSuccessful()
-            ->assertSee('Manufacturer created');
-    }
-
-    #[WithStory(StaffUserStory::class)]
-    public function testEditManufacturer(): void
-    {
-        $manufacturer = ManufacturerFactory::createOne(['name' => 'Original']);
-
-        $this->browser()
-            ->visit("/catalog/manufacturer/{$manufacturer->getPublicId()}/edit")
-            ->fillField('manufacturer[name]', 'Updated Name')
-            ->click('Save')
-            ->assertOn('/catalog/manufacturer/')
-            ->assertSee('Manufacturer updated');
-    }
-}
-```
-
-### API Tests
-
-**Purpose:** Test JSON API endpoints, authentication, error handling, and response structure.
-
-**Location:** `tests/{Context}/UI/Api/` and `tests/Shared/UI/Http/Api/`
-
-**Characteristics:**
-- Extend `WebTestCase` with `HasBrowser` and `Factories` traits
-- Public endpoints (Catalog) tested without authentication
-- Authenticated endpoints use `->actingAs($user, 'api')` to attach the API firewall
-- Assert JSON structure, status codes, pagination meta, and RFC 7807 error responses
-- Named `{Context}ApiTest.php`
-
-**Example:**
-```php
-// tests/Order/UI/Api/OrderApiTest.php
-
-final class OrderApiTest extends WebTestCase
-{
-    use HasBrowser;
-    use Factories;
-
-    public function testOrderIndexRequiresAuthentication(): void
-    {
-        $this->browser()
-            ->get('/api/v1/orders')
-            ->assertStatus(401);
-    }
-
-    public function testCreateOrderReturns201(): void
-    {
-        $user = UserFactory::new()->asStaff()->create();
-        $customer = UserFactory::createOne();
-        AddressFactory::createOne([
-            'customer' => $customer,
-            'isDefaultBillingAddress' => true,
-            'isDefaultShippingAddress' => true,
-        ]);
-        VatRateFactory::new()->withStandardRate()->create();
-
-        $this->browser()
-            ->actingAs($user, 'api')
-            ->post('/api/v1/orders', HttpOptions::json([
-                'customer' => $customer->getPublicId()->value(),
-                'shippingMethod' => 'THREE_DAY',
-            ]))
-            ->assertStatus(201)
-            ->assertJson()
-            ->assertJsonMatches('"data"."id" != null', true);
-    }
-}
-```
-
-**Key test files:**
-- `tests/Catalog/UI/Api/CatalogApiTest.php` — Public catalog API (products, categories, subcategories, manufacturers)
-- `tests/Order/UI/Api/OrderApiTest.php` — Authenticated order CRUD and item management
-- `tests/Shared/UI/Http/Api/ApiAuthenticationTest.php` — Token auth, error format (RFC 7807), validation errors
-
-## How to Run Tests
-
-### Via Docker (Recommended)
-
-```bash
-# Run all tests
-make test
-
-# Run filtered tests
-make test-ManufacturerFlowTest
-make test-CreateOrder
-```
+- **A feature is not done until a test exercises it the way a caller would:** an HTTP request for a controller, a handler call for a handler, a flush for a listener on a domain event, a message read from the transport for anything queued. A test that only shows the code did not throw does not count.
+- **Good coverage** means the failure cases as well as the success case: not found, invalid input, a refused user, a bad CSRF token. Nothing measures a coverage percentage.
+- **Clean up uploads.** Files stored through `UploadHelper` are outside the database transaction, so DAMA does not roll them back: delete them at the end of each test that uploads. In the test environment they go to `var/cache/test/storage/`, not `public/`, so a missed one never shows in the dev app.
+- **No deprecations, notices or warnings from `src/`.** `phpunit.xml.dist` sets `failOnDeprecation`, `failOnNotice` and `failOnWarning`, and its `<source>` block (`restrictNotices`, `restrictWarnings`, `ignoreIndirectDeprecations`) limits them to ones triggered from `src/`, so any of those fails the run.
+- **Final classes can be mocked:** `DG\BypassFinals` runs as a PHPUnit extension (`phpunit.xml.dist`).
+- **A test must not depend on another's files, cache or order** (next section).
 
 ### In Parallel
 
-`make test`, `make check` and CI run the suite through `scripts/run-tests.sh`, which uses [ParaTest](https://github.com/paratestphp/paratest) to start one PHPUnit process per CPU. ParaTest reads the same `phpunit.xml.dist`, so the extensions and the fail-on-deprecation settings apply to every process. It gives each process a `TEST_TOKEN` (1, 2, 3…), and `config/packages/doctrine.yaml` appends it to the test database name, so each process has its own database (`app_test1`, `app_test2`…) and DAMA rolls back inside it as usual. The script creates and resets these databases before each run.
+`make test`, `make check` and CI run the suite through `scripts/run-tests.sh`, which uses ParaTest to start one PHPUnit process per CPU. ParaTest reads the same `phpunit.xml.dist`, so the extensions and the fail-on-deprecation settings apply to every process. It gives each process a `TEST_TOKEN` (1, 2, 3…), and `config/packages/doctrine.yaml` appends it to the test database name (`dbname_suffix`), so each process has its own database (`app_test1`, `app_test2`…) and DAMA rolls back inside it as usual. The script creates and resets these databases before each run.
 
 `TEST_PROCESSES` sets the number of processes, e.g. `TEST_PROCESSES=2 make test`. Lower it if the Docker VM runs short of memory.
 
 Tests run in separate processes at the same time, so a test must not rely on anything another test leaves behind or changes outside the database:
+
 - **Files:** the upload storage folder is shared by all processes, so each file needs a unique name. `UploadHelper` adds a random suffix to each stored file. The backups folder is per process (`test_backups_dir` in `config/packages/oneup_flysystem.yaml`), because the backup tests empty it in `setUp()`; a test that clears a folder needs the same.
-- **Cache:** in the test environment the app cache is in memory (`cache.adapter.array`, `config/packages/cache.yaml`), not Redis. Each process, and each kernel boot, starts with an empty cache, so cached values such as the sidebar badge counts and the login throttling counts never pass from one test to another.
+- **Cache:** in the test environment the app cache is in memory (`cache.adapter.array`, `config/packages/cache.yaml`), not Redis, so each process and each kernel boot starts empty and cached values such as the sidebar badge counts never pass between tests. Rate-limit and login-throttling counts are in a separate pool, `cache.rate_limiter`, an `ArrayAdapter` in test (same file, `when@test`): it is not cleared between the requests of one test, and is empty on each kernel boot.
 - **Locks:** a command test that takes a lock (e.g. `BackupDatabaseCommandTest`) runs its tests one after another, because a test class stays in one process.
 
 A failure that only appears in parallel usually means two tests share one of these, or that a test depends on the order tests run in. Plain `vendor/bin/phpunit` runs serially against `app_test` (below), which helps tell the two apart.
 
+## How to
+
+### Run the tests
+
+```bash
+make test                          # all tests, in parallel, in Docker
+make test-CreateManufacturerFlowTest   # filtered (passed to --filter)
+```
+
 ### Locally
 
 ```bash
-# Reset the serial test database (again after any entity change; make test resets only app_test1…N)
+# Create a fresh app_test (rerun all three after an entity change; make test resets only app_test1…N)
 symfony console doctrine:database:drop --if-exists --force --env=test
 symfony console doctrine:database:create --env=test
 symfony console doctrine:schema:create --env=test
 
-# Run all tests
-vendor/bin/phpunit
-
-# Run specific test file
-vendor/bin/phpunit tests/Catalog/UI/ManufacturerFlowTest.php
-
-# Run specific test method
-vendor/bin/phpunit --filter testCreateManufacturer
-
-# Run tests in a directory
-vendor/bin/phpunit tests/Order/
+vendor/bin/phpunit                                            # all, serially
+vendor/bin/phpunit tests/Catalog/UI/CreateManufacturerFlowTest.php   # one file
+vendor/bin/phpunit --filter testSuccessfulCreationViaForm     # one method
 ```
 
-### Test Configuration
+### Write a test
 
-**phpunit.xml.dist:**
-```xml
-<phpunit colors="true"
-         failOnDeprecation="true"
-         failOnNotice="true"
-         failOnWarning="true"
-         bootstrap="tests/bootstrap.php">
-    <php>
-        <server name="APP_ENV" value="test" force="true"/>
-        <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled"/>
-    </php>
+Tests mirror `src/`. Copy the nearest existing test.
 
-    <extensions>
-        <bootstrap class="Zenstruck\Foundry\PHPUnit\FoundryExtension"/>
-        <bootstrap class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension"/>
-        <bootstrap class="DG\BypassFinals\PHPUnitExtension"/>
-    </extensions>
-</phpunit>
-```
+| Type | Base class | Location | Example |
+|------|-----------|----------|---------|
+| Unit (entity rules, events raised) | `TestCase` | `tests/{Context}/Domain/` | `tests/Order/Domain/OrderDomainTest.php` |
+| Handler | `KernelTestCase` + `Factories` | `tests/{Context}/Application/Handler/` | `tests/Order/Application/Handler/CreateOrderHandlerTest.php`: invokes the handler (`($this->handler)($command)`), reads the order back through `OrderRepository` and checks its fields, and covers the customer-not-found and missing-VAT-rate failures |
+| Listener | `KernelTestCase` + `Factories` | `tests/{Context}/Application/Listener/` | `tests/Pricing/Application/Listener/CategoryPricingWasChangedListenerTest.php` |
+| Service | `KernelTestCase` + `Factories` | `tests/{Context}/Application/Service/` | `tests/Purchasing/Application/Service/OrderAllocatorTest.php`, `OrderItemAllocatorTest.php` (sourcing) |
+| Flow (web) | `WebTestCase` + `HasBrowser` | `tests/{Context}/UI/`, named `{Action}{Entity}FlowTest` | `tests/Catalog/UI/CreateManufacturerFlowTest.php`, `UpdateManufacturerFlowTest.php` |
+| API | as flow | `tests/{Context}/UI/Api/` | `tests/Order/UI/Api/OrderApiTest.php`; token handling and error format in `tests/Shared/UI/Http/Api/ApiAuthenticationTest.php` |
 
-## Test Factories (Foundry)
+For pricing cascades, see `tests/Pricing/Application/Handler/UpdateCategoryCostHandlerTest.php` and the listener tests beside the one above.
 
-### Location
+An API test logs in with `->actingAs($user, 'api')`, which attaches the user to the `api` firewall. Public catalog endpoints need no login (`CatalogApiTest`). The API itself is described in [patterns/API/README.md](patterns/API/README.md).
 
-All factories are in `tests/Shared/Factory/`.
+### Factories and stories
 
-### Available Factories
+Factories are in `tests/Shared/Factory/` (Zenstruck Foundry), one per entity; most create the related entities they need. States worth knowing:
 
-| Factory | Entity | Notable Methods |
-|---------|--------|-----------------|
-| `UserFactory` | User | `asStaff()` - creates admin user; `withApiToken()` - stores the hash of a Bearer token for API tests (send the plain token) |
-| `VatRateFactory` | VatRate | `withStandardRate()` - 20% VAT |
-| `CategoryFactory` | Category | Auto-creates VAT rate |
-| `SubcategoryFactory` | Subcategory | Auto-creates Category |
-| `ManufacturerFactory` | Manufacturer | - |
-| `ProductFactory` | Product | `withActiveSource()` - adds supplier product |
-| `SupplierFactory` | Supplier | `asWarehouse()` - marks as warehouse |
-| `SupplierProductFactory` | SupplierProduct | Auto-creates Supplier |
-| `CustomerOrderFactory` | CustomerOrder | Auto-creates Customer |
-| `CustomerOrderItemFactory` | CustomerOrderItem | Auto-creates Order, Product |
-| `PurchaseOrderFactory` | PurchaseOrder | Auto-creates Order, Supplier |
-| `PurchaseOrderItemFactory` | PurchaseOrderItem | Auto-creates PO, OrderItem |
-| `ProductReviewFactory` | ProductReview | `published()` - approved review, `hidden()` - hidden review |
-| `ProductReviewSummaryFactory` | ProductReviewSummary | - |
+| Factory | State | Gives |
+|---------|-------|-------|
+| `UserFactory` | `asStaff()` | Staff user (`setStaff(true)` adds `ROLE_ADMIN`) |
+| `UserFactory` | `asSuperAdmin()` | Staff user with `ROLE_ADMIN` and `ROLE_SUPER_ADMIN` |
+| `UserFactory` | `withApiToken()` | Stores the hash of a Bearer token for API tests; send the plain token (default `test-api-token`) |
+| `VatRateFactory` | `withStandardRate()` | The standard rate, which order creation looks up |
+| `ProductFactory` | `withActiveSource(?SupplierProduct)` | Adds a supplier product (a new one if none given) after persist (`afterPersist`), so the product has an active source |
+| `SupplierFactory` | `asWarehouse()` | Marks the supplier as the warehouse |
+| `ProductReviewFactory` | `published()`, `hidden()` | A review in that status |
 
-### Factory Usage
+Shared related entities are created lazily with `LazyValue::memoize()`, so one is made only when the test does not pass its own; see `tests/Shared/Factory/CategoryFactory.php`.
 
-**Basic creation:**
-```php
-// Create single entity
-$manufacturer = ManufacturerFactory::createOne();
+Log in with `->actingAs(UserFactory::new()->asStaff()->create())` in a flow test, or with a story on the test method: `#[WithStory(StaffUserStory::class)]` or `#[WithStory(SuperAdminUserStory::class)]` (`tests/Shared/Story/`). Each creates the `DefaultUserAuthenticator` default user with that role and logs it in, which is what a handler test needs when the handler reads the current user. The delete handlers that require `ROLE_SUPER_ADMIN` ([08-security.md](08-security.md#what-only-a-super-admin-can-do)) need the super-admin story or state; other deletes need only staff.
 
-// Create with custom attributes
-$manufacturer = ManufacturerFactory::createOne([
-    'name' => 'Custom Name',
-    'isActive' => false,
-]);
+### Assert a message was queued
 
-// Create multiple
-$manufacturers = ManufacturerFactory::createMany(5);
-```
-
-**Using factory states:**
-```php
-// Staff user
-$admin = UserFactory::new()->asStaff()->create();
-
-// Warehouse supplier
-$warehouse = SupplierFactory::new()->asWarehouse()->create();
-
-// Standard VAT rate
-$vatRate = VatRateFactory::new()->withStandardRate()->create();
-```
-
-**Lazy values (deferred creation):**
-```php
-// Category created only if not provided
-protected function defaults(): array
-{
-    return [
-        'category' => LazyValue::memoize(
-            fn () => CategoryFactory::createOne()
-        ),
-    ];
-}
-```
-
-**After instantiate hooks:**
-```php
-public function withActiveSource(): self
-{
-    return $this->afterInstantiate(function (Product $product): void {
-        $sp = SupplierProductFactory::createOne(['product' => null]);
-        $product->addSupplierProduct($this->markupCalculator, $sp);
-    });
-}
-```
-
-## Test Stories
-
-### Purpose
-
-Stories are reusable test narratives that set up common scenarios.
-
-### Location
-
-`tests/Shared/Story/`
-
-### StaffUserStory
-
-The most commonly used story - creates an authenticated admin user:
+The `async` transport is `in-memory://` in test (`config/packages/messenger.yaml`, `when@test`), so nothing is stored and no worker runs. Read what was sent from the test container:
 
 ```php
-// tests/Shared/Story/StaffUserStory.php
+$transport = self::getContainer()->get('messenger.transport.async');
+self::assertInstanceOf(InMemoryTransport::class, $transport);
 
-final class StaffUserStory extends Story
-{
-    public function __construct(
-        private readonly DefaultUserAuthenticator $authenticator
-    ) {}
-
-    public function build(): void
-    {
-        UserFactory::new(['email' => $this->authenticator->getDefaultEmail()])
-            ->asStaff()
-            ->create();
-
-        $this->authenticator->ensureAuthenticated();
-    }
-}
+$sent = $transport->getSent();
+self::assertCount(1, $sent);
+self::assertInstanceOf(SendEmailMessage::class, $sent[0]->getMessage());
 ```
 
-### Using Stories
-
-**Via attribute (preferred):**
-```php
-#[WithStory(StaffUserStory::class)]
-public function testAdminOnlyFeature(): void
-{
-    // Test runs with authenticated admin user
-}
-```
-
-**Programmatically:**
-```php
-public function testSomething(): void
-{
-    StaffUserStory::load();
-    // User is now authenticated
-}
-```
-
-## Testing Sourcing/Pricing Logic
-
-### Testing Price Calculation
-
-```php
-class PriceCalculationTest extends KernelTestCase
-{
-    use Factories;
-
-    public function testProductPriceCalculation(): void
-    {
-        // Setup: Create category with known markup
-        $vatRate = VatRateFactory::new()->withStandardRate()->create(); // 20%
-        $category = CategoryFactory::createOne([
-            'vatRate' => $vatRate,
-            'defaultMarkup' => '25.000', // 25%
-            'priceModel' => PriceModel::PRETTY_99,
-        ]);
-
-        // Create product with known cost
-        $supplier = SupplierFactory::createOne();
-        $supplierProduct = SupplierProductFactory::createOne([
-            'supplier' => $supplier,
-            'cost' => '10.00',
-            'stock' => 100,
-        ]);
-
-        $product = ProductFactory::new([
-            'category' => $category,
-        ])->withActiveSource($supplierProduct)->create();
-
-        // Expected: 10.00 * 1.25 * 1.20 = 15.00, rounded to 15.99
-        self::assertSame('15.99', $product->getSellPriceIncVat());
-    }
-}
-```
-
-### Testing Order Allocation
-
-```php
-class OrderAllocationTest extends KernelTestCase
-{
-    use Factories;
-
-    public function testOrderSplitsAcrossSuppliers(): void
-    {
-        // Setup suppliers with limited stock
-        $warehouse = SupplierFactory::new()->asWarehouse()->create();
-        $dropshipper = SupplierFactory::createOne();
-
-        $product = ProductFactory::createOne();
-
-        SupplierProductFactory::createOne([
-            'supplier' => $warehouse,
-            'product' => $product,
-            'stock' => 5,
-            'cost' => '10.00',
-        ]);
-
-        SupplierProductFactory::createOne([
-            'supplier' => $dropshipper,
-            'product' => $product,
-            'stock' => 10,
-            'cost' => '9.00', // Cheaper
-        ]);
-
-        // Create order for 12 units
-        $order = CustomerOrderFactory::createOne();
-        $orderItem = CustomerOrderItemFactory::createOne([
-            'customerOrder' => $order,
-            'product' => $product,
-            'quantity' => 12,
-        ]);
-
-        // Run allocation
-        $allocator = self::getContainer()->get(OrderAllocator::class);
-        $allocator->process($order);
-
-        // Verify: Dropshipper gets 10 (cheaper), warehouse gets 2
-        $purchaseOrders = $order->getPurchaseOrders();
-        self::assertCount(2, $purchaseOrders);
-
-        // Check outstanding is 0
-        self::assertSame(0, $orderItem->getOutstandingQty());
-    }
-}
-```
-
-### Testing Price Cascades
-
-```php
-class PriceCascadeTest extends KernelTestCase
-{
-    use Factories;
-
-    public function testCategoryMarkupChangeAffectsProducts(): void
-    {
-        $category = CategoryFactory::createOne([
-            'defaultMarkup' => '20.000',
-        ]);
-
-        $product = ProductFactory::new([
-            'category' => $category,
-        ])->withActiveSource()->create();
-
-        $originalPrice = $product->getSellPriceIncVat();
-
-        // Change category markup
-        $handler = self::getContainer()->get(UpdateCategoryCostHandler::class);
-        $handler->handle(new UpdateCategoryCost(
-            id: $category->getPublicId(),
-            defaultMarkup: '30.000',
-            priceModel: $category->getPriceModel(),
-            isActive: true,
-        ));
-
-        // Refresh product from database
-        self::getContainer()->get('doctrine')->getManager()->refresh($product);
-
-        // Price should have increased
-        self::assertGreaterThan($originalPrice, $product->getSellPriceIncVat());
-    }
-}
-```
-
-## What "Good Coverage" Means
-
-### What to Test
-
-**Always test:**
-- Domain entity creation and state changes
-- Business rule enforcement
-- Status transitions and validations
-- Price calculations
-- Event raising
-
-**Test selectively:**
-- CRUD operations (via functional tests)
-- Form validation (via functional tests)
-- Repository queries (integration tests)
-
-**Skip testing:**
-- Doctrine generated code
-- Symfony form types (unless custom logic)
-- Getter/setter only methods
-
-### Test Quality Indicators
-
-1. **Tests are fast:** Unit tests < 10ms, integration < 100ms
-2. **Tests are independent:** Run in any order
-3. **Tests are readable:** Clear arrange/act/assert
-4. **Tests have one reason to fail:** Single assertion focus
-5. **Tests use factories:** Not raw SQL or fixtures
-
-## Code Quality Tools
-
-SupplyMars enforces code quality through four complementary tools: PHPStan, PHP-CS-Fixer, Rector and Deptrac. CI runs all four (as dry runs where they would change code), along with the other checks under [Running All Checks](#running-all-checks).
-
-### PHPStan (Static Analysis)
-
-**Level:** 7 (strict)
-
-PHPStan catches type errors, undefined methods, and other issues before runtime.
-
-```bash
-# Run analysis
-vendor/bin/phpstan analyse
-
-# With memory limit for large codebases
-vendor/bin/phpstan analyse --memory-limit=512M
-```
-
-**Configuration:** `phpstan.dist.neon`
-
-Key settings:
-- Level 7 analysis (strict type checking)
-- Symfony extension enabled
-- Doctrine extension enabled for entity analysis
-
-### PHP-CS-Fixer (Code Style)
-
-Enforces consistent code formatting across the codebase.
-
-```bash
-# Fix all files
-vendor/bin/php-cs-fixer fix
-
-# Dry run (show what would change)
-vendor/bin/php-cs-fixer fix --dry-run --diff
-```
-
-**Configuration:** `.php-cs-fixer.dist.php`
-
-Key rules:
-- `@Symfony` ruleset as base
-- `yoda_style: false` - use `$value === null`, not `null === $value`
-- Single space around concatenation operators
-- `declare_strict_types` - every PHP file starts with `declare(strict_types=1);`. `importmap.php` is excluded, because `importmap:require` rewrites it
-
-### Rector (Automated Refactoring)
-
-Rector applies automated code improvements and keeps the codebase modern.
-
-```bash
-# Apply changes
-vendor/bin/rector process
-
-# Dry run (show what would change)
-vendor/bin/rector process --dry-run
-```
-
-**Configuration:** `rector.php`
-
-Active rule sets:
-- Dead code removal
-- Code quality improvements
-- Type declaration additions
-- Doctrine-specific rules
-- Symfony-specific rules
-
-### Deptrac (Dependencies Between Contexts)
-
-```bash
-vendor/bin/deptrac analyse
-```
-
-**Configuration:** `deptrac.yaml`. Fails when a class imports something the [rules between contexts](03-architecture.md#rules-between-contexts) do not allow.
+In a flow test, call `->interceptRedirects()` before the action and don't follow the redirect: the next request starts a new kernel with an empty transport. Full example: `ResetPasswordFlowTest::testRequestingAResetQueuesTheEmail` (`tests/Customer/UI/ResetPasswordFlowTest.php`).
 
 ### Running All Checks
 
-`make check` runs every check CI runs, with the same commands. Both call `scripts/check.sh` in the `php` container, after `prod-config`, which runs on the host (`make check-prod-config`; it is not a `scripts/check.sh` step). Locally, keep `vendor/` in step with `composer.lock`: CI installs it fresh, and the container only installs when `vendor/` is missing. Run it before opening a pull request.
-
-```bash
-make check               # every step
-make check-phpstan       # one step: prod-config, cs, rector, phpstan, deptrac, lint, audit, migrations or tests
-```
+`make check` runs every check CI runs, with the same commands; `make check-<step>` runs one. Run it before opening a pull request. Every step but `prod-config` runs `scripts/check.sh` in the `php` container; `prod-config` runs on the host, with Docker.
 
 | Step | What it runs |
 |------|--------------|
-| `prod-config` | `docker compose config` on the production compose files (`compose.prod.yaml` and `compose.publish.yaml`), for the live stack and the `playground` profile, and `frankenphp validate` on `docker/frankenphp/Caddyfile` in both its modes (`SERVER_NAME` `localhost` and `:80`), then in production's worker mode with the `FRANKENPHP_CONFIG` from `compose.prod.yaml`, so a wrong worker path fails here. These are otherwise used only by the publish and deploy jobs, so a mistake in them would first show there. Runs on the host, with Docker |
-| `cs` | `php-cs-fixer fix --dry-run --diff` |
-| `rector` | `rector process --dry-run` |
-| `phpstan` | `phpstan analyse` (after warming the dev container it reads) |
-| `deptrac` | `deptrac analyse`: the rules between bounded contexts in `deptrac.yaml` (see [Architecture](03-architecture.md#rules-between-contexts)) |
+| `prod-config` | `docker compose config` on the production compose files (`compose.prod.yaml`, `compose.publish.yaml`), for the live stack and the `playground` profile; `frankenphp validate` on `docker/frankenphp/Caddyfile` with `SERVER_NAME` `localhost` and `:80`, and again in worker mode with the `FRANKENPHP_CONFIG` from `compose.prod.yaml`. Only the publish and deploy jobs otherwise use these files, so a mistake would first show on a deploy |
+| `cs` | `php-cs-fixer fix --dry-run --diff` (`.php-cs-fixer.dist.php`) |
+| `rector` | `rector process --dry-run` (sets and paths in `rector.php`) |
+| `phpstan` | `phpstan analyse`, level 7 (`phpstan.dist.neon`), after warming the dev container it reads |
+| `deptrac` | `deptrac analyse`: the [rules between contexts](03-architecture.md#rules-between-contexts) in `deptrac.yaml` |
 | `lint` | `lint:container` (test and dev), `lint:twig templates/`, `lint:yaml config/` |
-| `audit` | `composer audit`: known vulnerabilities and abandoned packages. A new advisory fails the next run whatever it changes. Between runs, GitHub's Dependabot security alerts (turned on for this repository; no update pull requests) report a new advisory for a locked package |
-| `migrations` | Runs every migration on an empty database (`app_test_migrations`), then `doctrine:schema:validate`. Fails when the migrations do not produce the schema the entities describe, e.g. an entity change with no migration |
-| `tests` | `scripts/run-tests.sh`: resets one test database per CPU and runs PHPUnit through ParaTest (see [In Parallel](#in-parallel)) |
-
-The tests build their schema with `doctrine:schema:create`, not the migrations, so the `migrations` step is what proves the migration files work. The first migration creates the whole schema; on a database that already has it (live and playground) it adds no SQL and is only recorded.
+| `audit` | `composer audit`: known vulnerabilities and abandoned packages. Between runs, GitHub's Dependabot security alerts (on for this repository, no update pull requests) report a new advisory for a locked package |
+| `migrations` | Runs every migration on an empty database (`app_test_migrations`), then `doctrine:schema:validate` |
+| `tests` | `scripts/run-tests.sh` (see [In Parallel](#in-parallel)) |
 
 When a step fails, fix the code rather than the check: `php-cs-fixer fix` and `rector process` (without `--dry-run`) apply their own changes, and `make:migration` generates a missing migration.
 
 CI (`.github/workflows/ci.yml`) runs each step as its own `make check-<step>`, so a failure names the step. It keeps the `php` image's layers in the GitHub Actions cache (`compose.ci.yaml`), so a run rebuilds only the layers that changed: after an edit to `docker/Dockerfile` or a file it copies, or when GitHub has evicted the cache (unused for 7 days).
+
+## Gotchas
+
+- **The tests build their schema with `doctrine:schema:create`, not the migrations,** so the `migrations` step is what proves the migration files work. An entity change with no migration passes the tests and fails there. The first migration creates the whole schema; on a database that already has it (live and playground) it adds no SQL and is only recorded.
+- **Keep `vendor/` in step with `composer.lock`.** CI installs it fresh; the container installs only when `vendor/` is missing, so a stale local `vendor/` passes checks CI fails.
+- **`composer audit` can fail a run that changed nothing:** a new advisory fails the next run.
+- **A local `app_test` goes stale** after an entity change; recreate it ([Locally](#locally)). `make test` resets only `app_test1…N`.
+- **A state leak between requests passes ordinary flow tests,** which boot a fresh kernel per request. `StateBetweenRequestsTest` guards it; see [State Between Requests](03-architecture.md#state-between-requests).
+- **`importmap.php` is excluded from PHP-CS-Fixer and Rector,** because `importmap:require` rewrites it.
+
+## Related
+
+- [Architecture](03-architecture.md): layers, events, the queue, state between requests
+- [API](patterns/API/README.md): endpoints and authentication the API tests cover
+- [Local setup](02-setup-local.md)

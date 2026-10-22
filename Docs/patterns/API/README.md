@@ -1,331 +1,140 @@
-# API Pattern
+# REST API
 
-Standardised approach for building JSON REST endpoints that reuse existing domain logic.
+The JSON API under `/api/v1/`: authentication, response format, endpoints and how to add one. Read before adding or changing an endpoint, or calling the API. API controllers call the same handlers and repositories as the web controllers and add no domain logic; [ADR 011](../../adr/011-rest-api-layer.md) records the design and why.
 
-## Intent
+## How a request runs
 
-Provide a consistent, lightweight structure for API endpoints that complements the server-rendered UI without duplicating business logic. API controllers delegate to the same handlers and repositories as web controllers, but return JSON responses instead of HTML.
+| Step | What happens | Where |
+|------|--------------|-------|
+| Firewall | `api` firewall on `^/api/`: stateless, bearer token, no session or cookie | `config/packages/security.yaml` |
+| Input | Body into a Payload with `#[MapRequestPayload]` (deserialised and validated); query into a `SearchCriteria` with `#[MapQueryString]`; route ids through `#[ValueResolver('public_id')]` | the controller |
+| Read | Repository → `Paginator::searchPagination()` → Resource → `ApiResponse::collection()` / `item()` | `src/Shared/Infrastructure/Persistence/Search/Paginator.php` |
+| Write | Payload → command → the web flow's handler → `handleResult()` | `src/Shared/UI/Http/Api/AbstractApiController.php` |
+| Errors | Any exception under `/api/` → RFC 7807 Problem Details | `ApiExceptionListener` |
 
-## Architecture
+## Authentication
 
-```
-HTTP Request (JSON)
-    │
-    ▼
-API Controller (extends AbstractApiController)
-    │
-    ├── Reads: Repository → Resource::fromEntity() → ApiResponse::item/collection
-    │
-    └── Writes: Request DTO → Command → Handler → handleResult() → ApiResponse
-```
+The `api` firewall takes a bearer token. Each user can have one token, stored as a hash (`User.apiTokenHash`, column `api_token_hash`). `ApiTokenHandler` hashes the incoming token and looks the user up by that hash (`UserRepository::findByApiTokenHash()`).
 
-**Key principle:** API controllers are thin. Domain logic stays in handlers and entities.
-
-## Components
-
-### AbstractApiController
-
-Base controller providing `handleResult()` for write operations and `resolveFilterId()` for ULID query-param filters:
-
-```php
-// src/Shared/UI/Http/Api/AbstractApiController.php
-
-abstract class AbstractApiController extends AbstractController
-{
-    public function __construct(
-        private readonly PublicIdResolverRegistry $publicIdResolver,
-    ) {}
-
-    protected function handleResult(
-        Result $result,
-        int $successStatus = 200,
-        ApiResourceInterface|callable|null $onSuccess = null,
-    ): JsonResponse {
-        if (!$result->ok) {
-            return ApiResponse::error($result->message ?? 'Operation failed.', 422);
-        }
-
-        $data = match (true) {
-            $onSuccess instanceof ApiResourceInterface => $onSuccess->toArray(),
-            $onSuccess !== null => $onSuccess($result),
-            default => ['message' => $result->message],
-        };
-
-        return ApiResponse::item($data, $successStatus);
-    }
-
-    protected function resolveFilterId(Request $request, string $param, string $publicIdClass): ?int
-    {
-        if (!$request->query->has($param)) {
-            return null;
-        }
-
-        return $this->publicIdResolver->resolve(
-            $publicIdClass::fromString($request->query->getString($param))
-        );
-    }
-}
+```bash
+symfony console app:user:issue-token admin@supplymars.com
+curl -H "Authorization: Bearer <token>" https://127.0.0.1:8000/api/v1/orders
 ```
 
-`handleResult()` accepts an `ApiResourceInterface` directly (preferred for commands on existing entities) or a callable for custom response shaping. `resolveFilterId()` converts a ULID query parameter to an internal int ID via `PublicIdResolverRegistry`, returning null if the parameter is absent or the entity is not found.
+- What the command prints, and why the token cannot be shown again: [09-cli-reference.md](../../09-cli-reference.md#appuserissue-token).
+- Running it again replaces the user's token, and the old one stops working. There is no revoke command: to revoke without issuing a new one, call `$user->setApiToken(null)` and flush.
+- The order endpoints need `ROLE_ADMIN`, so issue tokens to staff users ([08-security.md](../../08-security.md#users-and-roles)).
 
-### ApiResponse
+### Access
 
-Static factory for consistent JSON response formatting:
+| Path | Access |
+|------|--------|
+| `/api/doc` (Swagger UI), `/api/doc.json` (OpenAPI spec) | Public, in every environment |
+| `/api/v1/catalog/*` | Public, no token needed |
+| `/api/v1/orders*` | `ROLE_ADMIN`: `access_control` and `#[IsGranted('ROLE_ADMIN')]` on `OrderApiController` and `OrderItemApiController` |
 
-| Method | Purpose | HTTP Status |
-|--------|---------|-------------|
-| `ApiResponse::item($data, $status)` | Single resource | 200 (default) or 201 |
-| `ApiResponse::collection($pager, $resource, $request)` | Paginated list with meta + links | 200 |
-| `ApiResponse::error($detail, $status)` | RFC 7807 error | 400/404/422/etc. |
-| `ApiResponse::noContent()` | Empty response | 204 |
+| Status | When | `detail` | Sent by |
+|--------|------|----------|---------|
+| `401` | No `Authorization` header on a protected route | `"Authentication required."` | `ApiAuthenticationFailureHandler::start()` (firewall entry point) |
+| `401` | A token that matches no user | `"Invalid API token."` | `ApiAuthenticationFailureHandler::onAuthenticationFailure()` |
+| `403` | A valid token for a user without `ROLE_ADMIN` | | `ApiExceptionListener` |
 
-### Resource Classes (Output DTOs)
+Gotchas:
 
-Readonly classes that transform entities into arrays for JSON serialization. All resource classes implement `ApiResourceInterface` which formalizes the `toArray()` contract.
+- **A bad token is refused even on a public route.** The firewall checks any `Authorization: Bearer` header it is sent, so `/api/v1/catalog/products` with a wrong token is a `401`, not the public list.
+- In tests, `->actingAs($user, 'api')` attaches the user to the `api` firewall, so no token is needed; `tests/Shared/UI/Http/Api/ApiAuthenticationTest.php` tests the header itself. See [07-testing.md](../../07-testing.md).
 
-```php
-// src/Shared/UI/Http/Api/ApiResourceInterface.php
+## Response format
 
-interface ApiResourceInterface
-{
-    /** @return array<string, mixed> */
-    public function toArray(): array;
-}
-```
+| Kind | Body |
+|------|------|
+| Single resource | `{"data": {...}}`, `200`, or `201` on create |
+| Collection | `{"data": [...], "meta": {"page", "limit", "total"}, "links": {"self", "next", "prev"}}` (`next`/`prev` are `null` at the ends) |
+| No content | `204`, empty body (remove an order item) |
+| Error | RFC 7807 Problem Details, `Content-Type: application/problem+json`, with `type`, `title`, `status`, `detail` |
 
-```php
-// src/Catalog/UI/Http/Api/Resource/ManufacturerResource.php
+- Every resource exposes the ULID `publicId` as `id`, never the auto-increment id. Related records are nested with their own `id`.
+- Dates are ISO 8601 (`DateTimeInterface::ATOM`).
 
-#[OA\Schema(schema: 'Manufacturer', description: 'A manufacturer resource')]
-final readonly class ManufacturerResource implements ApiResourceInterface
-{
-    public function __construct(
-        #[OA\Property(description: 'Manufacturer ULID')]
-        public string $id,
-        #[OA\Property(description: 'Manufacturer name')]
-        public string $name,
-        public bool $isActive,
-        public ?string $createdAt,
-    ) {}
+### Errors
 
-    public static function fromEntity(Manufacturer $manufacturer): self
-    {
-        return new self(
-            id: $manufacturer->getPublicId()->value(),
-            name: $manufacturer->getName(),
-            isActive: $manufacturer->isActive(),
-            createdAt: $manufacturer->getCreatedAt()?->format(\DateTimeInterface::ATOM),
-        );
-    }
-
-    /** @return array<string, mixed> */
-    public function toArray(): array
-    {
-        return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'isActive' => $this->isActive,
-            'createdAt' => $this->createdAt,
-        ];
-    }
-}
-```
-
-**Conventions:**
-- One Resource per entity; optionally a `ListResource` for index views (fewer fields)
-- Implement `ApiResourceInterface` so `ApiResponse::collection()` can accept the class-string directly
-- Use `fromEntity()` static factory to map from domain entity
-- Use `toArray()` to produce the JSON-serializable output
-- Use `#[OA\Schema]` and `#[OA\Property]` attributes for Swagger documentation
-- Always expose `publicId` as `id`, never the internal auto-increment ID
-- Format dates as ISO 8601 (`DateTimeInterface::ATOM`)
-
-### Request Classes (Input DTOs)
-
-Readonly classes for write operations, validated via Symfony Validator attributes:
-
-```php
-// src/Order/UI/Http/Api/Payload/CreateOrderPayload.php
-
-final readonly class CreateOrderPayload
-{
-    public function __construct(
-        #[Assert\NotBlank(message: 'Customer is required.')]
-        public string $customer,
-
-        #[Assert\NotBlank(message: 'Shipping method is required.')]
-        #[Assert\Choice(choices: ['THREE_DAY', 'NEXT_DAY'], message: 'Invalid shipping method.')]
-        public string $shippingMethod,
-
-        public ?string $customerOrderRef = null,
-    ) {}
-}
-```
-
-Used in controllers via `#[MapRequestPayload]`:
-
-```php
-public function create(
-    #[MapRequestPayload] CreateOrderPayload $payload,
-    // ...
-): JsonResponse {
-    // $payload is already validated
-}
-```
-
-### ApiExceptionListener
-
-Intercepts all exceptions for `/api/` routes and converts them to RFC 7807 `application/problem+json`:
-
-| Exception Type | Status | Behaviour |
-|---|---|---|
-| `ValidationFailedException` (wrapped in `HttpException`) | 422 | Includes `violations` array |
-| `HttpExceptionInterface` | Varies | Uses exception's status code |
-| Any other exception | 500 | Generic message in prod, exception message in dev |
-
-### Error Response Format
+| Status | When | `title` / `detail` | Sent by |
+|--------|------|--------------------|---------|
+| `404` | No record with that ULID | `"Not Found"` / e.g. `Product "…" not found.` | `ApiExceptionListener` |
+| `422` | The payload fails validation | `"Validation Failed"` / `"One or more fields are invalid."`, plus `violations: [{propertyPath, title}]` | `ApiExceptionListener` |
+| `422` | The handler returned `Result::fail()`, or a ULID in the payload matches nothing | `"Unprocessable Content"` / the result's message, or e.g. `"Customer not found."` | `AbstractApiController::handleResult()`, `ApiResponse::error()` |
+| `500` | Anything else | `"Internal Server Error"` / the exception message, hidden in `prod` | `ApiExceptionListener` |
 
 ```json
 {
     "type": "about:blank",
-    "title": "Unprocessable Content",
+    "title": "Validation Failed",
     "status": 422,
     "detail": "One or more fields are invalid.",
-    "violations": [
-        { "propertyPath": "customer", "title": "Customer is required." },
-        { "propertyPath": "shippingMethod", "title": "Invalid shipping method." }
-    ]
+    "violations": [{"propertyPath": "shippingMethod", "title": "Invalid shipping method."}]
 }
 ```
 
-## Adding a New API Endpoint
+`ApiExceptionListener` runs at priority `-1`, only for paths starting `/api/`, and leaves a response another listener already set alone.
 
-### Read-Only Endpoint (Index + Show)
+## Endpoints
 
-1. Create Resource class in `src/{Context}/UI/Http/Api/Resource/`:
+| Method | Path | Body | Status |
+|--------|------|------|--------|
+| `GET` | `/api/v1/catalog/{categories,subcategories,manufacturers,products}` | | 200 |
+| `GET` | `/api/v1/catalog/{categories,subcategories,manufacturers,products}/{id}` | | 200 |
+| `GET` | `/api/v1/orders` | | 200 |
+| `GET` | `/api/v1/orders/{id}` | | 200 |
+| `POST` | `/api/v1/orders` | `{"customer": "<user ULID>", "shippingMethod": "THREE_DAY" \| "NEXT_DAY", "customerOrderRef": "…"}` | 201 |
+| `POST` | `/api/v1/orders/{id}/cancel` | | 200 |
+| `POST` | `/api/v1/orders/{id}/allocate` | | 200 |
+| `POST` | `/api/v1/orders/{orderId}/items` | `{"product": "<product ULID>", "quantity": 2}` | 201 |
+| `PUT` | `/api/v1/orders/{orderId}/items/{itemId}` | `{"quantity": 3}` | 200 |
+| `DELETE` | `/api/v1/orders/{orderId}/items/{itemId}` | (cancels the item) | 204 |
 
-```php
-#[OA\Schema(schema: 'Widget')]
-final readonly class WidgetResource implements ApiResourceInterface
-{
-    public function __construct(
-        public string $id,
-        public string $name,
-    ) {}
+List query parameters are the web search criteria's: `page`, `limit` (default 5, max 50, `SearchCriteria`), `sort` (the criteria's `SORT_OPTIONS`), `sortDirection` (`ASC`/`DESC`), `query`, the criteria's own filters, and ULID filters: `category`, `subcategory`, `manufacturer` on products, `category` on subcategories, `customer` on orders. `symfony console debug:router | grep api_` lists the routes; `/api/doc` shows the fields.
 
-    public static function fromEntity(Widget $widget): self { ... }
-    public function toArray(): array { ... }
-}
+Gotchas:
+
+- **A filter ULID that matches nothing is ignored**, so the list comes back unfiltered: `resolveFilterId()` returns `null` for it. An unknown `sort` falls back to the default the same way.
+- **A malformed id (not a ULID), in the path or a filter, gives a `500`**, not a `404` or `422`.
+- **The order item routes do not check that the item belongs to the order in the path.** They check that both exist, then act on the item.
+
+## Adding an endpoint
+
+```text
+src/{Context}/UI/Http/Api/
+├── {Entity}ApiController.php   extends AbstractApiController
+├── Resource/                   {Entity}Resource, {Entity}ListResource (fewer fields, for lists)
+└── Payload/                    {Action}{Entity}Payload: request body DTOs
 ```
 
-2. Create controller in `src/{Context}/UI/Http/Api/`:
+1. Create a Resource: a `final readonly` class implementing `ApiResourceInterface`, with `fromEntity()` and `toArray()`, and `#[OA\Schema]`/`#[OA\Property]` attributes. `ApiResponse::collection()` takes its class-string.
+2. Create the controller with `#[Route('/api/v1/…')]` and `#[OA\Tag]`. Route names are the web route's with `api_` for `app_`: `api_catalog_product_index`, `api_order_create`, `api_order_item_add`.
+3. For a list, take a `SearchCriteria` with `#[MapQueryString]`, set ULID filters with `resolveFilterId()`, and paginate with `Paginator::searchPagination()`.
+4. For a write, take a Payload with `#[MapRequestPayload]`. Payload fields are what the client sends, ULIDs included; the controller resolves them to entities (answering `422` "… not found." when one matches nothing), builds the command and calls the existing handler. Return `handleResult($result, onSuccess: $resource)`, or `ApiResponse::item(…, 201)` on create.
+5. Repeat on the Payload the entity rules a client can break, so they come back as `violations` ([08-security.md](../../08-security.md#validation)).
+6. A route that needs a login: add `#[IsGranted('ROLE_ADMIN')]`. A public one: add a `PUBLIC_ACCESS` rule above `^/api/` in `access_control`.
+7. Add `#[OA\Get]`/`#[OA\Post]`… so it appears in `/api/doc`, and write tests in `tests/{Context}/UI/Api/`.
 
-```php
-#[Route('/api/v1/widgets')]
-#[OA\Tag(name: 'Widgets')]
-class WidgetApiController extends AbstractApiController
-{
-    #[Route('', name: 'api_widget_index', methods: ['GET'])]
-    public function index(
-        Request $request,
-        WidgetRepository $widgets,
-        Paginator $paginator,
-        #[MapQueryString] WidgetSearchCriteria $criteria = new WidgetSearchCriteria(),
-    ): JsonResponse {
-        $criteria->categoryId = $this->resolveFilterId($request, 'category', CategoryPublicId::class);
+## Shared classes
 
-        $pager = $paginator->searchPagination($widgets, $criteria);
-
-        return ApiResponse::collection(
-            pager: $pager,
-            resource: WidgetResource::class,
-            request: $request,
-        );
-    }
-
-    #[Route('/{id}', name: 'api_widget_show', methods: ['GET'])]
-    public function show(
-        #[ValueResolver('public_id')] Widget $widget,
-    ): JsonResponse {
-        $resource = WidgetResource::fromEntity($widget);
-
-        return ApiResponse::item($resource->toArray());
-    }
-}
-```
-
-3. Add access control rule in `config/packages/security.yaml` if the endpoint should be public.
-
-### Write Endpoint
-
-1. Create Payload DTO in `src/{Context}/UI/Http/Api/Payload/`
-2. Add controller action using `#[MapRequestPayload]` and `$this->handleResult()`
-3. Reuse existing handler — no new domain logic needed
-
-## Route Naming
-
-API routes follow the pattern `api_{context}_{entity}_{action}`:
-
-| Route Name | Path |
-|---|---|
-| `api_catalog_product_index` | `GET /api/v1/catalog/products` |
-| `api_catalog_product_show` | `GET /api/v1/catalog/products/{id}` |
-| `api_order_create` | `POST /api/v1/orders` |
-| `api_order_item_add` | `POST /api/v1/orders/{orderId}/items` |
-
-## Authentication
-
-- **Public endpoints** (e.g., Catalog): Controlled via `access_control` in `security.yaml`, no token needed
-- **Authenticated endpoints** (e.g., Orders): Require `ROLE_ADMIN`, enforced via `#[IsGranted('ROLE_ADMIN')]` on the controller class and `access_control` rules
-- **Token format**: `Authorization: Bearer <64-char-hex-token>`
-- **Issuing a token**: `symfony console app:user:issue-token <email>` prints it once; only its hash is stored
-
-See [Security Documentation](../../08-security.md#api-authentication) for full details.
+| Class | Purpose |
+|-------|---------|
+| `AbstractApiController` | `handleResult()`: `Result` → `200`/`201` with the resource, or a `422` problem; `resolveFilterId()`: ULID query parameter → internal id |
+| `ApiResponse` | Static factory: `item()`, `collection()`, `error()`, `noContent()` |
+| `ApiResourceInterface` | Contract for resources (`toArray()`) |
+| `ApiExceptionListener` | Exceptions → Problem Details under `/api/` |
+| `ApiAuthenticationFailureHandler` | The two JSON `401` responses |
+| `ApiTokenHandler` | Hashes the bearer token and finds its user |
 
 ## Swagger / OpenAPI
 
-NelmioApiDoc generates OpenAPI documentation from `#[OA\...]` attributes:
+NelmioApiDoc builds the spec from the `#[OA\...]` attributes. `/api/doc` and `/api/doc.json` are routed (`config/routes.yaml`) and public in every environment, production included. The title, the Bearer scheme (so the UI's "Authorize" button can call order endpoints) and the `^/api/` area are configured under `when@dev` in `config/packages/nelmio_api_doc.yaml`, so only development has them. Swagger UI's files are inlined, not loaded from a CDN ([08-security.md](../../08-security.md#content-security-policy)).
 
-- **Swagger UI**: `/api/doc` (development only)
-- **JSON spec**: `/api/doc.json`
-- **Configuration**: `config/packages/nelmio_api_doc.yaml`
+## Related
 
-The Swagger UI is configured with Bearer token authentication, so you can test authenticated endpoints directly.
-
-## File Locations
-
-```
-src/Shared/UI/Http/Api/
-├── AbstractApiController.php                # Base controller
-├── ApiResourceInterface.php                 # Resource contract (toArray)
-├── ApiResponse.php                          # Response factory
-└── EventListener/
-    └── ApiExceptionListener.php             # RFC 7807 error handling
-
-src/Shared/Infrastructure/Security/
-└── ApiAuthenticationFailureHandler.php      # 401 JSON responses
-
-src/Customer/Infrastructure/Security/
-└── ApiTokenHandler.php                      # Bearer token validation
-
-src/{Context}/UI/Http/Api/
-├── {Entity}ApiController.php                # Route handlers
-├── Resource/
-│   ├── {Entity}Resource.php                 # Detail view DTO
-│   └── {Entity}ListResource.php             # List view DTO
-└── Payload/
-    ├── Create{Entity}Payload.php            # Write input DTO
-    └── Update{Entity}Payload.php            # Write input DTO
-
-config/packages/nelmio_api_doc.yaml          # Swagger configuration
-config/packages/security.yaml                # API firewall + access control
-config/routes.yaml                           # Swagger UI route
-```
-
-## Related Documentation
-
-- [ADR 011: REST API Layer](../../adr/011-rest-api-layer.md) — Architectural decision and rationale
-- [ADR 008: Server-Driven UI](../../adr/008-server-driven-ui-architecture.md) — Why the web UI doesn't use JSON
-- [Security](../../08-security.md) — Authentication and authorization
-- [FormFlow Pattern](../FormFlow/README.md) — The web UI equivalent of this pattern
+- [ADR 011](../../adr/011-rest-api-layer.md): why the API reuses the handlers and uses bearer tokens
+- [08-security.md](../../08-security.md): roles, `access_control`, rate limits
+- [09-cli-reference.md](../../09-cli-reference.md): `app:user:issue-token`
+- [FormFlow](../FormFlow/README.md): the web equivalent
