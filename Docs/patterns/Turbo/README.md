@@ -147,13 +147,18 @@ The test queue serializes its messages (`in-memory://?serialize=true`, `config/p
 
 A page can change for everyone looking at it when something on it changes. The example: everyone with an order open sees its items, purchase orders, statuses, totals and lock change, whether a staff user or the simulation changed them ([ADR 017](../../adr/017-live-updates-with-mercure.md)).
 
+| Live page | Topic |
+|-----------|-------|
+| The order page (`OrderController::show`) | `order/{id}` |
+| A purchase order's page (`PurchaseOrderController::show`) | its order's, so it refreshes with the order page: a change to another purchase order on the same order refreshes it too |
+
 ### Declare the page's topic
 
-Name the topic `{resource}/{id}` in one static method, pass it to the page's template as `live_topics`, and mark the action `#[Cache(noStore: true)]`:
+Name the topic `{resource}/{id}` in one static method, pass it to the page's template as `live_topics`, and mark the action `#[Cache(noStore: true)]`. Put the method in the context's `Domain/`, so a page in another context can subscribe to it under Deptrac:
 
 ```php
-// src/Order/Application/Listener/RefreshOrderPageForViewers.php
-public static function topic(OrderPublicId $orderId): string
+// src/Order/Domain/Model/Order/CustomerOrder.php
+public static function liveTopic(OrderPublicId $orderId): string
 {
     return 'order/' . $orderId->value();
 }
@@ -161,7 +166,7 @@ public static function topic(OrderPublicId $orderId): string
 // OrderController::show, under #[Route] and #[Cache(noStore: true)]
 return $this->render('/order/show.html.twig', [
     'result' => $order,
-    'live_topics' => [RefreshOrderPageForViewers::topic($order->getPublicId())],
+    'live_topics' => [CustomerOrder::liveTopic($order->getPublicId())],
 ]);
 ```
 
@@ -184,7 +189,7 @@ $this->bus->dispatch(new RefreshOrderPage($orderId), [
 #[AsMessageHandler]
 public function refresh(RefreshOrderPage $message): void
 {
-    $this->publisher->refresh(self::topic(OrderPublicId::fromString($message->orderId)));
+    $this->publisher->refresh(CustomerOrder::liveTopic(OrderPublicId::fromString($message->orderId)));
 }
 ```
 
