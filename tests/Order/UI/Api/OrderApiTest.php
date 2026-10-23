@@ -6,6 +6,7 @@ namespace App\Tests\Order\UI\Api;
 
 use App\Tests\Shared\Factory\AddressFactory;
 use App\Tests\Shared\Factory\CustomerOrderFactory;
+use App\Tests\Shared\Factory\CustomerOrderItemFactory;
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Factory\VatRateFactory;
@@ -172,5 +173,51 @@ final class OrderApiTest extends WebTestCase
             ->assertStatus(404)
             ->assertJsonMatches('type', 'about:blank')
             ->assertJsonMatches('status', 404);
+    }
+
+    public function testUpdateOrderItemReturns200(): void
+    {
+        $user = UserFactory::new()->asStaff()->create();
+        $item = CustomerOrderItemFactory::createOne(['product' => ProductFactory::new()->withActiveSource()->create(), 'quantity' => 2]);
+
+        $this->browser()
+            ->actingAs($user, 'api')
+            ->put($this->itemPath($item->getCustomerOrder()->getPublicId()->value(), $item->getPublicId()->value()), HttpOptions::json(['quantity' => 4]))
+            ->assertSuccessful()
+            ->assertJsonMatches('"data"."quantity"', 4);
+    }
+
+    public function testUpdateOrderItemOfAnotherOrderReturns404(): void
+    {
+        $user = UserFactory::new()->asStaff()->create();
+        $item = CustomerOrderItemFactory::createOne(['product' => ProductFactory::new()->withActiveSource()->create(), 'quantity' => 2]);
+        $otherOrder = CustomerOrderFactory::createOne();
+
+        $this->browser()
+            ->actingAs($user, 'api')
+            ->put($this->itemPath($otherOrder->getPublicId()->value(), $item->getPublicId()->value()), HttpOptions::json(['quantity' => 4]))
+            ->assertStatus(404)
+            ->assertJsonMatches('detail', 'Order item not found.');
+
+        self::assertSame(2, CustomerOrderItemFactory::repository()->find($item->getId())?->getQuantity());
+    }
+
+    public function testRemoveOrderItemOfAnotherOrderReturns404(): void
+    {
+        $user = UserFactory::new()->asStaff()->create();
+        $item = CustomerOrderItemFactory::createOne(['product' => ProductFactory::new()->withActiveSource()->create()]);
+        $otherOrder = CustomerOrderFactory::createOne();
+
+        $this->browser()
+            ->actingAs($user, 'api')
+            ->delete($this->itemPath($otherOrder->getPublicId()->value(), $item->getPublicId()->value()))
+            ->assertStatus(404);
+
+        self::assertFalse(CustomerOrderItemFactory::repository()->find($item->getId())?->isCancelled());
+    }
+
+    private function itemPath(string $orderId, string $itemId): string
+    {
+        return '/api/v1/orders/' . $orderId . '/items/' . $itemId;
     }
 }
