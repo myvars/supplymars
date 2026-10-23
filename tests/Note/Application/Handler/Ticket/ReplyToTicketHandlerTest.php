@@ -77,4 +77,21 @@ final class ReplyToTicketHandlerTest extends KernelTestCase
         self::assertSame('Max 10000 characters', (string) $result->message);
         MessageFactory::assert()->count(1);
     }
+
+    public function testHandleRefusesReplyToClosedTicket(): void
+    {
+        $ticket = TicketFactory::new()->closed()->create();
+
+        $result = ($this->handler)(new ReplyToTicket(
+            ticketId: $ticket->getPublicId(),
+            authorId: UserFactory::new()->asStaff()->create()->getId(),
+            authorType: AuthorType::STAFF,
+            body: 'Too late.',
+            visibility: MessageVisibility::PUBLIC,
+        ));
+
+        self::assertFalse($result->ok);
+        self::assertSame('Ticket is closed. Reopen it to reply.', $result->message);
+        MessageFactory::assert()->notExists(['body' => 'Too late.']);
+    }
 }

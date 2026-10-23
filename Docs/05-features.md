@@ -133,7 +133,7 @@ UI steps: [UserManual 15](UserManual/15-reviews.md).
 Why pools, statuses and visibility work as they do: [ADR 009](adr/009-support-ticket-system.md).
 
 - Ticket statuses: OPEN → REPLIED or CLOSED; REPLIED → OPEN or CLOSED; CLOSED → OPEN only (reopen).
-- A staff reply sets REPLIED, a customer reply OPEN. A reply to a CLOSED ticket leaves it CLOSED (`Ticket::transitionStatusForReply()`).
+- A staff reply sets REPLIED, a customer reply OPEN. `ReplyToTicketHandler` refuses a reply to a CLOSED ticket; reopen it first. The system messages added on close, reopen, snooze and reassign do not go through it.
 - Close, reopen and reassign add a system message. System messages and the first message of a ticket can't be deleted (`DeleteMessageHandler`).
 - Messages are PUBLIC (staff and customer) or INTERNAL (staff only).
 - Snooze needs a future date. Snoozed tickets are hidden from the index unless "show snoozed" is set.
