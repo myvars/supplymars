@@ -10,6 +10,7 @@ use App\Customer\Application\Handler\UpdateCustomerHandler;
 use App\Customer\Application\Search\CustomerSearchCriteria;
 use App\Customer\Domain\Model\User\User;
 use App\Customer\Domain\Repository\UserRepository;
+use App\Customer\Infrastructure\Security\CustomerVoter;
 use App\Customer\UI\Http\Form\Mapper\UpdateCustomerMapper;
 use App\Customer\UI\Http\Form\Model\CustomerForm;
 use App\Customer\UI\Http\Form\Type\CustomerType;
@@ -110,6 +111,7 @@ class CustomerController extends AbstractController
     }
 
     #[Route(path: '/customer/{id}/inline/fullname', name: 'app_customer_inline_fullname', methods: ['GET', 'POST'])]
+    #[IsGranted(CustomerVoter::EDIT, subject: 'customer')]
     public function inlineFullName(
         Request $request,
         #[ValueResolver('public_id')] User $customer,

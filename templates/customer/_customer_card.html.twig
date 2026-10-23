@@ -1,6 +1,6 @@
 {# Customer detail card with name, email, verification status, and order count.
    Used on: customer show page. Variable: customer (User) #}
-<twig:EntityCard editLink="{{ path('app_customer_edit', {id: customer.publicId.value})}}" title="Customer" statusHighlight="{{ customer.isVerified ? 'VERIFIED' : 'UNVERIFIED' }}">
+<twig:EntityCard editLink="{{ is_granted('CUSTOMER_EDIT', customer) ? path('app_customer_edit', {id: customer.publicId.value}) : null }}" title="Customer" statusHighlight="{{ customer.isVerified ? 'VERIFIED' : 'UNVERIFIED' }}">
     <div class="mb-3 flex items-center gap-2">
         {{ include('customer/_inline_fullname.html.twig', {customer: customer}) }}
         {% if result.isAdmin %}

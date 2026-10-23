@@ -27,7 +27,7 @@ UI steps: [UserManual 03](UserManual/03-products.md), [04](UserManual/04-categor
 - A user is staff when `isStaff` is set, which adds `ROLE_ADMIN`. Everything except the routes marked `PUBLIC_ACCESS` in `access_control` (`config/packages/security.yaml`: public pages, login, registration, password reset, verify, help, health, the public catalog API and `/api/doc`) needs `ROLE_ADMIN`. `ROLE_SUPER_ADMIN` includes `ROLE_ADMIN`.
 - `/register` creates a non-staff user, who can sign in but can't open any back-office page.
 - Email verification is not enforced at login. `/verify/resend` exists, but nothing links to it.
-- Only a super admin can edit a staff account (`UpdateCustomerHandler`). Making a user staff sends the Admin Access Granted email.
+- Only a super admin can edit a staff account (`CustomerVoter`, asked by `UpdateCustomerHandler`, the inline name route and the templates). Making a user staff sends the Admin Access Granted email.
 - Email is unique (`UniqueEntity` on `User`).
 - **Emails:** Inky templates with inline CSS (`templates/shared/email/emailBase.html.twig`, `assets/styles/email.css`). `MailerHelper` has one method per email: verify email, reset password, admin access granted. `app:send-test-emails` (dev only) sends each one to Mailpit.
 

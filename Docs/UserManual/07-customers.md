@@ -54,12 +54,12 @@ The full name can also be changed in place on the detail page ([inline editing](
 
 | Action | Blocked when | Message |
 |---|---|---|
-| Edit | The customer is staff and you are not a super admin | "Staff accounts cannot be modified in the playground." (in every environment) |
+| Edit | The customer is staff and you are not a super admin | The edit button and inline name edit are hidden |
 | Delete | The customer is staff | The confirm modal says "You cannot delete an admin user." |
 | Delete | The customer has any orders | The confirm modal says "You cannot delete a customer with order history." |
 | Save | The email is already used | "There is already an account with this email" |
 
-- **Editing staff accounts is super admin only**, your own included. The exception is the full name: any staff user can change it in place. Any staff user can tick Member of Staff on an ordinary customer, but only a super admin can edit that account afterwards.
+- **Editing staff accounts is super admin only**, your own included, full name too. Any staff user can tick Member of Staff on an ordinary customer, but only a super admin can edit that account afterwards.
 - **Granting staff access** sends the customer an email telling them so.
 - **Customers without Member of Staff can't use the app;** what each role can do is in [Getting Started](01-getting-started.md#roles).
 - **Verified** is a label: ticking it marks the email as confirmed. Unverified customers can still sign in.

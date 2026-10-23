@@ -92,7 +92,7 @@ Email verification never blocks sign-in, so an unverified account is not the cau
 
 | Symptom | Cause | Fix | See |
 |---------|-------|-----|-----|
-| "Staff accounts cannot be modified in the playground." | Editing a staff account, your own included, is super admin only, in every environment. | Ask a super admin. To change only the full name, click it on the customer page. | [Customers](07-customers.md) |
+| No edit button on a customer, and the name can't be clicked | The customer is staff. Editing a staff account, your own included, is super admin only, in every environment. | Ask a super admin. | [Customers](07-customers.md) |
 | The delete dialog says "You cannot delete an admin user." or "You cannot delete a customer with order history." and offers only **Close** | Staff accounts and customers with orders can't be deleted. | Leave the account in place. | [Customers](07-customers.md) |
 
 ## Notes and tickets

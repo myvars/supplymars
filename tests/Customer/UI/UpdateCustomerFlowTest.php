@@ -128,4 +128,47 @@ final class UpdateCustomerFlowTest extends WebTestCase
 
         self::assertSame('Old Value', $entity->getFullName());
     }
+
+    public function testInlineEditOfStaffNameIsForbiddenForStaffUser(): void
+    {
+        $staff = UserFactory::new()->asStaff()->create(['fullName' => 'Old Value']);
+        $url = '/customer/' . $staff->getPublicId()->value() . '/inline/fullname';
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get($url . '?edit=1')
+            ->assertStatus(403)
+            ->post($url, ['body' => ['inline_field' => ['value' => 'New Value']]])
+            ->assertStatus(403);
+
+        self::assertSame('Old Value', UserFactory::repository()->find($staff->getId())?->getFullName());
+    }
+
+    public function testStaffAccountShowsNoEditControlsToStaffUser(): void
+    {
+        $staff = UserFactory::new()->asStaff()->create(['fullName' => 'Staff Member']);
+        $customer = UserFactory::createOne(['fullName' => 'Plain Customer']);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/customer/' . $staff->getPublicId()->value())
+            ->assertSee('Staff Member')
+            ->assertElementCount('a[href$="/inline/fullname"], a[href$="/edit"]', 0)
+            ->get('/customer/' . $customer->getPublicId()->value())
+            ->assertElementCount('a[href$="/edit"]', 1);
+    }
+
+    public function testInlineEditOfStaffNameIsAllowedForSuperAdmin(): void
+    {
+        $staff = UserFactory::new()->asStaff()->create(['fullName' => 'Old Value']);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asSuperAdmin()->create())
+            ->get('/customer/' . $staff->getPublicId()->value() . '/inline/fullname?edit=1')
+            ->fillField('inline_field[value]', 'New Value')
+            ->click('Save (Enter)')
+            ->assertSuccessful();
+
+        self::assertSame('New Value', UserFactory::repository()->find($staff->getId())?->getFullName());
+    }
 }

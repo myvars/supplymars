@@ -8,6 +8,7 @@ use App\Customer\Application\Command\UpdateCustomer;
 use App\Customer\Domain\Model\User\User;
 use App\Customer\Domain\Repository\UserRepository;
 use App\Customer\Infrastructure\Mailer\MailerHelper;
+use App\Customer\Infrastructure\Security\CustomerVoter;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Application\Result;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -31,7 +32,7 @@ final readonly class UpdateCustomerHandler
             return Result::fail('Customer not found.');
         }
 
-        if (!$this->security->isGranted('ROLE_SUPER_ADMIN') && $customer->isStaff()) {
+        if (!$this->security->isGranted(CustomerVoter::EDIT, $customer)) {
             return Result::fail('Staff accounts cannot be modified in the playground.');
         }
 
