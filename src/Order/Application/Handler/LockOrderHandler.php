@@ -28,17 +28,14 @@ final readonly class LockOrderHandler
             return Result::fail('Order not found.');
         }
 
-        if (!$order->getOrderLock() instanceof User) {
-            try {
-                $user = $this->userProvider->get();
-            } catch (\RuntimeException) {
-                return Result::fail('User not found.');
-            }
-
-            $order->lockOrder($user);
-        } else {
-            $order->lockOrder(null);
+        try {
+            $user = $this->userProvider->get();
+        } catch (\RuntimeException) {
+            return Result::fail('User not found.');
         }
+
+        // A toggle: it takes a free lock, and releases a held one, whoever holds it
+        $order->lockOrder($order->getOrderLock() instanceof User ? null : $user, $user);
 
         $this->flusher->flush();
 

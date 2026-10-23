@@ -6,6 +6,8 @@ namespace App\Order\Domain\Model\Order;
 
 use App\Catalog\Domain\Model\Product\Product;
 use App\Order\Domain\Model\Order\Event\OrderItemStatusWasChangedEvent;
+use App\Order\Domain\Model\Order\Event\OrderItemWasChangedEvent;
+use App\Order\Domain\Model\Order\Event\OrderItemWasCreatedEvent;
 use App\Order\Infrastructure\Persistence\Doctrine\CustomerOrderItemDoctrineRepository;
 use App\Pricing\Domain\Model\VatRate\VatRate;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItem;
@@ -108,6 +110,8 @@ class CustomerOrderItem implements DomainEventProviderInterface
         $static->recalculateTotal();
         $static->generateStatus();
 
+        $static->raiseDomainEvent(new OrderItemWasCreatedEvent($static->getPublicId()));
+
         return $static;
     }
 
@@ -133,6 +137,8 @@ class CustomerOrderItem implements DomainEventProviderInterface
 
         $this->recalculateTotal();
         $this->generateStatus();
+
+        $this->raiseDomainEvent(new OrderItemWasChangedEvent($this->getPublicId()));
 
         // $this->customerOrder->recalculateTotal();
     }

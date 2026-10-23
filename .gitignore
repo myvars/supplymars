@@ -19,9 +19,6 @@ phpunit.cache/
 .phpunit.result.cache
 ###< phpunit/phpunit ###
 
-# Symfony local config
-.symfony.local.yaml
-
 # Auto-generated config array-shape reference (regenerated on cache warmup)
 /config/reference.php
 

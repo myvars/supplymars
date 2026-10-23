@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted. Amended in #82: worker mode in production, after classic mode in #80, as planned in #68.
+Accepted. Amended in #82: worker mode in production, after classic mode in #80, as planned in #68. Its Mercure hub is used since #116: [ADR 017](017-live-updates-with-mercure.md).
 
 ## Context
 
@@ -46,6 +46,7 @@ The skeleton made this change first (myvars/skeleton#83, its ADR 015) and found,
   - **Development stays in classic mode**, so a code change takes effect on the next request, as before. `symfony serve`, the preferred dev server, has no worker mode, and FrankenPHP's `watch` was not tested on a Docker Desktop bind mount. `make up-prod-local` runs worker mode locally.
   - `make check-prod-config` validates the Caddyfile with the worker line from `compose.prod.yaml` and the app's `public/`, so a wrong worker path fails CI, not the deploy.
 - **The FrankenPHP hot-reload block in `base.html.twig` is removed.** It needs Mercure and loads scripts from jsdelivr, which the CSP blocks. `symfony serve` stays the preferred dev server.
+- **The built-in Mercure hub is left unused** until a feature needs live updates. #116 uses it: a `mercure` block in the Caddyfile, and `SERVER_NAME` `localhost, php:80` in development so `messenger` can publish to it ([ADR 017](017-live-updates-with-mercure.md)).
 
 ## Consequences
 

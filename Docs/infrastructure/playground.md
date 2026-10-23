@@ -17,7 +17,9 @@ Both stacks run the same images on the same server, from the same `compose.yaml`
 | Backups directory | written by `messenger` | read-only in `reset` |
 | Sentry environment | `live` | `playground` |
 
-Each stack has its own database, Redis and queue, and its own Docker network. The only thing they share on the host is `/home/ubuntu/supplymars-backups`.
+Each stack has its own database, Redis and queue, its own Mercure hub (in its `php` container), and its own Docker network. The only thing they share on the host is `/home/ubuntu/supplymars-backups`.
+
+**Live updates.** The order page updates while open on both stacks ([ADR 017](../adr/017-live-updates-with-mercure.md)). The lock-release toast never shows on the playground: everyone shares the `demo@supplymars.com` login, so whoever releases a lock is its holder, and releasing your own lock sends nothing. That is correct, not a fault.
 
 ## What PLAYGROUND_MODE changes
 

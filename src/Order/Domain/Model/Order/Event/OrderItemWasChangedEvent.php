@@ -12,7 +12,7 @@ final class OrderItemWasChangedEvent extends AbstractDomainEvent
 {
     public function __construct(private readonly OrderItemPublicId $id)
     {
-        parent::__construct(DomainEventType::ORDER_ITEM_CREATED);
+        parent::__construct(DomainEventType::ORDER_ITEM_CHANGED);
     }
 
     public function getId(): OrderItemPublicId

@@ -26,7 +26,7 @@
                     </twig:Button>
                 </div>
                 {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
-                    <twig:DropdownMenu id="user" align="end">
+                    <twig:DropdownMenu id="user" align="end" data-controller="live-open">
                         <twig:DropdownMenu:Trigger>
                             <twig:Button variant="ghost" size="icon-sm" class="rounded-full hover:bg-gray-700/70 aria-expanded:bg-gray-700/70 dark:hover:bg-gray-700/70" {{ ...dropdown_menu_trigger_attrs }}>
                                 <span class="sr-only">Open user menu</span>

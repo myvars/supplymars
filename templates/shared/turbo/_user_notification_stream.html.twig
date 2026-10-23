@@ -1,0 +1,7 @@
+{# A toast for one user, published by MercureUserNotifier and appended to the toaster in base.html.twig.
+   Rendered with no request or current user: use only the variables passed in. #}
+<turbo-stream action="append" target="flash-container">
+    <template>
+        <twig:FlashToast type="{{ type }}" :message="message" :url="url"/>
+    </template>
+</turbo-stream>

@@ -52,6 +52,15 @@ services:
                   key: "%env(AWS_S3_ACCESS_ID)%"
                   secret: "%env(AWS_S3_SECRET_ACCESS_KEY)%"
 
+    # Messenger's deduplication locks in Redis, shared by php and messenger (config/packages/lock.yaml). The other
+    # locks (the scheduler, the backup and prune commands, the rate limiter) stay on the default store
+    messenger.middleware.deduplicate_middleware:
+        class: Symfony\Component\Messenger\Middleware\DeduplicateMiddleware
+        arguments: ['@lock.deduplication.factory']
+    messenger.failure.release_deduplication_lock_on_failure_listener:
+        class: Symfony\Component\Messenger\EventListener\ReleaseDeduplicationLockOnFailureListener
+        arguments: ['@lock.deduplication.factory']
+
     Faker\Generator:
         factory: [ 'Faker\Factory', 'create' ]
         arguments: [ 'en_GB' ]
@@ -59,3 +68,11 @@ services:
 when@prod:
     parameters:
         app.uploads_base_url: '%env(UPLOADS_BASE_URL)%'
+
+when@test:
+    services:
+        # Records published updates instead of sending them (tests/Shared/Mercure/RecordingHub.php)
+        App\Tests\Shared\Mercure\RecordingHub:
+            decorates: mercure.hub.default
+            arguments: ['@.inner']
+            public: true

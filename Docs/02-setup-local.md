@@ -9,7 +9,7 @@ How to run SupplyMars on your machine, get a user and data, the local URLs and p
 | PHP | 8.5+ | Option A only. Extensions: intl, pdo_mysql, bcmath, gd, redis, xsl, zip |
 | Composer | 2.x | |
 | Symfony CLI | Latest | `symfony serve` |
-| Docker | Latest | MySQL, Redis, Mailpit, phpMyAdmin |
+| Docker | Latest | MySQL, Redis, Mailpit, the Mercure hub, phpMyAdmin |
 
 Settings only your machine uses go in `.env.local`. The database name and ports are not such a setting: they are in `.env` ([below](#database-name-and-ports)).
 
@@ -23,7 +23,7 @@ PHP runs on your machine; Docker provides the services.
 
    ```bash
    composer install                     # also runs importmap:install (auto-scripts)
-   make up-dev-tools                    # MySQL, Redis, Mailpit, the three phpMyAdmins
+   make up-dev-tools                    # MySQL, Redis, Mailpit, the Mercure hub, the three phpMyAdmins
    ```
 
    Check: `docker compose ps` shows `database`, `redis` and `mailer` healthy or running.
@@ -41,7 +41,8 @@ PHP runs on your machine; Docker provides the services.
 4. Load a user and data ([below](#a-user-and-data)).
 
 - Sessions are in Redis, so logging in needs `make up-dev-tools` running.
-- No queue worker runs under `symfony serve`. Start one when you need queued email or async events: `symfony console messenger:consume async`.
+- No queue worker runs under `symfony serve`. Start one when you need queued email, live updates on the order page or lock-release toasts: `symfony console messenger:consume async`.
+- Live updates need the `mercure` container of `make up-dev-tools`. `.symfony.local.yaml` (committed) sets `proxy_mercure`, so `symfony serve` serves the hub on the site's own origin (`/.well-known/mercure`) and sets `MERCURE_URL` and `MERCURE_PUBLIC_URL` itself. See [Turbo](patterns/Turbo/README.md#live-updates-with-mercure).
 
 ### Option B: Full Docker stack
 
@@ -122,6 +123,7 @@ Messages already waiting in the database queue are not moved. Let the worker emp
 | phpMyAdmin (live) | http://localhost:8081 | `PHPMYADMIN_LIVE_PORT` | the live credentials |
 | phpMyAdmin (playground) | http://localhost:8082 | `PHPMYADMIN_PLAYGROUND_PORT` | the playground credentials |
 | Mailpit | http://localhost:8025 | `MAILPIT_PORT` | - |
+| Mercure hub (Option A) | 127.0.0.1:3001, where the app publishes; browsers reach it through `symfony serve` | `MERCURE_PORT` | signed with `MERCURE_JWT_SECRET` (`.env`) |
 | MySQL | 127.0.0.1:3306 | `DATABASE_PORT` | root / password |
 | Redis | 127.0.0.1:6379 | `REDIS_PORT` | default / password |
 
@@ -141,6 +143,7 @@ The database name and local ports are in the `docker` block at the top of `.env`
 | `PHPMYADMIN_PLAYGROUND_PORT` | `8082` | phpMyAdmin for the playground database |
 | `RABBITMQ_PORT` | `5672` | RabbitMQ, only with the `rabbitmq` profile |
 | `RABBITMQ_UI_PORT` | `15672` | RabbitMQ management UI |
+| `MERCURE_PORT` | `3001` | The Mercure hub of `make up-dev-tools` (Option B uses FrankenPHP's own) |
 
 - Set them in `.env`, not `.env.local`: Symfony does not load `.env.local` in the `test` environment, so dev and test would point at different servers.
 - Production ignores these. The production targets read the env files in `../supplymars-secrets/` instead of `.env`.
@@ -162,6 +165,7 @@ The application is different: with `make up`, the php container publishes ports 
 |---------|-------|
 | `SQLSTATE[HY000] [2002] Connection refused` | `docker compose ps`, `docker compose logs database`. MySQL takes a few seconds to accept connections after it starts |
 | `Connection refused [tcp://127.0.0.1:6379]` | `docker compose exec redis sh -c 'REDISCLI_AUTH="$REDIS_PASSWORD" redis-cli ping'` should print `PONG` |
+| The order page does not update, or a lock toast never shows | A worker must run (`symfony console messenger:consume async`) and, under Option A, the `mercure` container (`make up-dev-tools`). Updates arrive up to 5 seconds late |
 | An email or async event never arrives | See [Email in dev](#email-in-dev). Otherwise no worker is running (Option A), or it failed: `symfony console messenger:stats`, `messenger:consume async -vv`, `messenger:failed:show` |
 | Browser warns about the certificate (Option A) | `symfony server:ca:install`, then `symfony server:stop` and `symfony serve -d` |
 | Styles missing or JavaScript errors | Rerun `importmap:install`, then `tailwind:build` (`assets/vendor/` is not committed) |

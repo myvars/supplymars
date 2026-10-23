@@ -31,5 +31,6 @@ when@test:
     framework:
         messenger:
             transports:
-                # Messages are kept in memory, so tests need no queue and can assert on what was sent
-                async: 'in-memory://'
+                # Messages are kept in memory, so tests need no queue and can assert on what was sent.
+                # Serialized, as the real queue does, so a message or stamp that cannot be stored fails here
+                async: 'in-memory://?serialize=true'

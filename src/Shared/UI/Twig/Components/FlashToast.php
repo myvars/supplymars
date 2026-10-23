@@ -13,6 +13,19 @@ final class FlashToast
 
     public string $message;
 
+    /** Shown as a "View" link, for a toast about something on another page. */
+    public ?string $url = null;
+
+    /**
+     * The kit toast's action link.
+     *
+     * @return array{label: string, url: string}|null
+     */
+    public function getAction(): ?array
+    {
+        return $this->url === null ? null : ['label' => 'View', 'url' => $this->url];
+    }
+
     /** The kit toast's type for this flash type. */
     public function getToastType(): string
     {

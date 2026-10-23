@@ -14,6 +14,7 @@ use App\Order\Application\Handler\CreateDemoOrderHandler;
 use App\Order\Application\Handler\CreateOrderHandler;
 use App\Order\Application\Handler\LockOrderHandler;
 use App\Order\Application\Handler\OrderFilterHandler;
+use App\Order\Application\Listener\RefreshOrderPageForViewers;
 use App\Order\Application\Search\OrderSearchCriteria;
 use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Order\Domain\Repository\OrderRepository;
@@ -31,6 +32,7 @@ use MyVars\FormFlow\View\FlowModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\HttpKernel\Attribute\ValueResolver;
 use Symfony\Component\Routing\Attribute\Route;
@@ -182,9 +184,14 @@ class OrderController extends AbstractController
         );
     }
 
+    /** Live: refreshes for everyone viewing it (RefreshOrderPageForViewers). Not stored, so Back requests it again. */
     #[Route(path: '/order/{id}', name: 'app_order_show', methods: ['GET'])]
+    #[Cache(noStore: true)]
     public function show(#[ValueResolver('public_id')] CustomerOrder $order): Response
     {
-        return $this->render('/order/show.html.twig', ['result' => $order]);
+        return $this->render('/order/show.html.twig', [
+            'result' => $order,
+            'live_topics' => [RefreshOrderPageForViewers::topic($order->getPublicId())],
+        ]);
     }
 }

@@ -14,7 +14,7 @@
 
 <div {{ attributes.defaults({
     'data-controller': 'basic-modal',
-    'data-action': 'turbo:before-cache@window->basic-modal#close turbo:submit-end->basic-modal#submitEnd turbo:frame-load->basic-modal#frameLoaded',
+    'data-action': 'turbo:before-cache@window->basic-modal#close turbo:submit-end->basic-modal#submitEnd turbo:frame-load->basic-modal#frameLoaded turbo:before-morph-attribute@document->basic-modal#keepScrollLock',
 }) }}
 >
     {% block trigger %}{% endblock %}

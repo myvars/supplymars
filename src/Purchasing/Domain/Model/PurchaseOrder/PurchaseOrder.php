@@ -8,6 +8,7 @@ use App\Customer\Domain\Model\Address\Address;
 use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Order\Domain\Model\Order\ShippingMethod;
 use App\Purchasing\Domain\Model\PurchaseOrder\Event\PurchaseOrderStatusWasChangedEvent;
+use App\Purchasing\Domain\Model\PurchaseOrder\Event\PurchaseOrderWasCreatedEvent;
 use App\Purchasing\Domain\Model\Supplier\Supplier;
 use App\Purchasing\Infrastructure\Persistence\Doctrine\PurchaseOrderDoctrineRepository;
 use App\Shared\Domain\Event\DomainEventProviderInterface;
@@ -108,6 +109,8 @@ class PurchaseOrder implements DomainEventProviderInterface
 
         $static->getCustomerOrder()->addPurchaseOrder($static);
         $static->recalculateTotal();
+
+        $static->raiseDomainEvent(new PurchaseOrderWasCreatedEvent($static->getPublicId()));
 
         return $static;
     }

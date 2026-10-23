@@ -33,6 +33,13 @@ x-common-php-env: &common-php-env
   PLAYGROUND_MODE: ${PLAYGROUND_MODE:-false}               # Show playground banner and behavior
   SENTRY_DSN: ${SENTRY_DSN:-}                             # Sentry error tracking (optional: empty sends nothing)
   SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-live}         # Sentry environment: "live" or "playground"
+  # Mercure hub, inside php (docker/frankenphp/Caddyfile); each stack has its own. messenger publishes over the
+  # internal network; the browser subscribes on the site's origin, through the host Caddy
+  MERCURE_JWT_SECRET: ${MERCURE_JWT_SECRET}                # Signs publisher and subscriber tokens (32+ characters)
+  MERCURE_JWT_ISSUER: ${DEFAULT_URI}                       # The tokens' iss claim, which the hub trusts
+  MERCURE_URL: http://php/.well-known/mercure
+  MERCURE_PUBLIC_URL: ${DEFAULT_URI}/.well-known/mercure
+  MERCURE_COOKIE_NAME: ${MERCURE_COOKIE_NAME:-__Secure-mercure_access_token}
 
 services:
   # --- MySQL Database (Prod) ---

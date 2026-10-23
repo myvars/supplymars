@@ -21,6 +21,14 @@
             <meta name="turbo-refresh-method" content="replace">
             <meta name="turbo-refresh-scroll" content="preserve">
         {% endif %}
+        {% if live_topics|default([]) is not empty %}
+            {# Back requests the page again rather than restoring a copy: a copy would reconnect with the last
+               page's cookie, which no longer grants these topics #}
+            <meta name="turbo-cache-control" content="no-cache">
+            {# No hover prefetch: a prefetched page's response replaces the cookie, and when this page's connection
+               next reconnects it would no longer be granted these topics #}
+            <meta name="turbo-prefetch" content="false">
+        {% endif %}
         <title>{% block title %}SupplyMars{% endblock %}</title>
         {% block stylesheets %}{% endblock %}
         {% block javascripts %}
@@ -44,6 +52,12 @@
             <main id="main-content" class="{% block main_class %}grow bg-gray-100 dark:bg-gray-900{% endblock %}">
                 <turbo-frame id="body" data-turbo-action="advance" refresh="morph">
                     {% block body %}{% endblock %}
+
+                    {# Live updates for this page's topics (live_topics, from its controller). Inside the frame, so a
+                       visit that changes the frame closes it. Its cookie is set by the element below #}
+                    {% if app.user and live_topics|default([]) is not empty %}
+                        <turbo-mercure-stream-source src="{{ mercure(live_topics) }}" private></turbo-mercure-stream-source>
+                    {% endif %}
                 </turbo-frame>
             </main>
 
@@ -55,12 +69,26 @@
         <!-- Modal -->
         {{ include('shared/turbo/_modal.html.twig') }}
 
-        <!-- Toaster: flash messages on page load, and those appended to #flash-container by Turbo Streams -->
-        <twig:Sonner id="flash-container" position="top-right" class="top-4 right-4" :closeButton="true" :expand="true">
-            {% if not app.request.headers.has('Turbo-Frame') %}
-                {{ include('_flashes.html.twig') }}
-            {% endif %}
-        </twig:Sonner>
+        <!-- Toaster: flash messages on page load, and those appended to #flash-container by Turbo Streams. A live
+             refresh's morph keeps it, adding any new flash (live-toaster) -->
+        <div data-controller="live-toaster" data-action="turbo:before-morph-element->live-toaster#keep">
+            <twig:Sonner id="flash-container" position="top-right" class="top-4 right-4" :closeButton="true" :expand="true">
+                {% if not app.request.headers.has('Turbo-Frame') %}
+                    {{ include('_flashes.html.twig') }}
+                {% endif %}
+            </twig:Sonner>
+        </div>
+
+        <!-- Live toasts for this user (UserNotifierInterface). The topic is MercureUserNotifier::topic(). Rendering it
+             sets the one cookie a request may set, which lets this browser read this user's topic and this page's
+             live_topics, nothing else. Permanent, so Turbo visits keep it; the id names the user, so a visit that
+             finds another user logged in (in another tab) replaces it -->
+        {% if app.user %}
+            {% set user_topic = 'user/' ~ app.user.publicId %}
+            <div id="user-notifications-{{ app.user.publicId }}" data-turbo-permanent>
+                <turbo-mercure-stream-source src="{{ mercure(user_topic, {subscribe: [user_topic]|merge(live_topics|default([]))}) }}" private></turbo-mercure-stream-source>
+            </div>
+        {% endif %}
 
     </body>
 </html>

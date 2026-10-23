@@ -59,6 +59,7 @@ Records of decisions; later amendments are noted in each ADR's Status line.
 - [014](adr/014-architecture-rules.md): framework attributes allowed in the domain; contexts use each other's `Domain/` only; Deptrac in CI. Read before adding a dependency between contexts.
 - [015](adr/015-symfony-scheduler-in-place-of-cron.md): scheduled jobs run by Symfony Scheduler in the Messenger worker, one at a time; no cron. Read before adding a scheduled job.
 - [016](adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md): one FrankenPHP image in place of nginx and PHP-FPM; rate limits and trusted proxies in the app. Read before changing the web server or the image.
+- [017](adr/017-live-updates-with-mercure.md): live order page and private user toasts through FrankenPHP's Mercure hub; one queued refresh per order, deduplicated with locks in Redis. Read before making another page live or notifying a user.
 
 ## Records
 

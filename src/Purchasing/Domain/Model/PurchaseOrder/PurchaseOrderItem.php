@@ -6,6 +6,7 @@ namespace App\Purchasing\Domain\Model\PurchaseOrder;
 
 use App\Order\Domain\Model\Order\CustomerOrderItem;
 use App\Purchasing\Domain\Model\PurchaseOrder\Event\PurchaseOrderItemStatusWasChangedEvent;
+use App\Purchasing\Domain\Model\PurchaseOrder\Event\PurchaseOrderItemWasCreatedEvent;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
 use App\Purchasing\Infrastructure\Persistence\Doctrine\PurchaseOrderItemDoctrineRepository;
 use App\Shared\Domain\Event\DomainEventProviderInterface;
@@ -98,6 +99,8 @@ class PurchaseOrderItem implements DomainEventProviderInterface
         $static->getPurchaseOrder()->addPurchaseOrderItem($static);
         $static->getCustomerOrderItem()->addPurchaseOrderItem($static);
         $static->recalculateTotal();
+
+        $static->raiseDomainEvent(new PurchaseOrderItemWasCreatedEvent($static->getPublicId()));
 
         return $static;
     }

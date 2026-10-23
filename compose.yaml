@@ -73,7 +73,9 @@ services:
         required: false   # Only waited for when the rabbitmq profile is on
     environment:
       RUN_MIGRATIONS: "true"  # Only php container runs migrations/messenger-setup
-      SERVER_NAME: localhost  # HTTPS from Caddy's local certificate authority (docker/frankenphp/Caddyfile)
+      # HTTPS from Caddy's local certificate authority (docker/frankenphp/Caddyfile); php:80 is plain HTTP inside
+      # Docker's network, where messenger publishes to the Mercure hub
+      SERVER_NAME: "localhost, php:80"
     ports:
       - "80:80"         # HTTP, redirects to HTTPS
       - "443:443"       # HTTPS
