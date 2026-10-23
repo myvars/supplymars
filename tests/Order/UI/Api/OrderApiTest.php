@@ -10,6 +10,7 @@ use App\Tests\Shared\Factory\CustomerOrderItemFactory;
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Factory\VatRateFactory;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\HttpOptions;
 use Zenstruck\Browser\Test\HasBrowser;
@@ -214,6 +215,42 @@ final class OrderApiTest extends WebTestCase
             ->assertStatus(404);
 
         self::assertFalse(CustomerOrderItemFactory::repository()->find($item->getId())?->isCancelled());
+    }
+
+    public function testMalformedOrderIdReturns404(): void
+    {
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create(), 'api')
+            ->get('/api/v1/orders/not-a-ulid')
+            ->assertStatus(404)
+            ->assertJsonMatches('status', 404);
+    }
+
+    /**
+     * @return iterable<string, array{string, bool, bool}>
+     */
+    public static function malformedItemPaths(): iterable
+    {
+        // method, malformed order id, malformed item id
+        yield 'remove, malformed order id' => ['DELETE', true, false];
+        yield 'remove, malformed item id' => ['DELETE', false, true];
+        yield 'update, malformed order id' => ['PUT', true, false];
+        yield 'update, malformed item id' => ['PUT', false, true];
+    }
+
+    #[DataProvider('malformedItemPaths')]
+    public function testMalformedOrderItemPathIdReturns404(string $method, bool $badOrderId, bool $badItemId): void
+    {
+        $item = CustomerOrderItemFactory::createOne();
+        $path = $this->itemPath(
+            $badOrderId ? 'not-a-ulid' : $item->getCustomerOrder()->getPublicId()->value(),
+            $badItemId ? 'not-a-ulid' : $item->getPublicId()->value(),
+        );
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create(), 'api')
+            ->request($method, $path, HttpOptions::json(['quantity' => 4]))
+            ->assertStatus(404);
     }
 
     private function itemPath(string $orderId, string $itemId): string

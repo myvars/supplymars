@@ -60,7 +60,7 @@ Gotchas:
 
 | Status | When | `title` / `detail` | Sent by |
 |--------|------|--------------------|---------|
-| `404` | No record with that ULID | `"Not Found"` / e.g. `Product "…" not found.` | `ApiExceptionListener` |
+| `404` | No record with that ULID in the path, or the id is not a ULID | `"Not Found"` / e.g. `Product "…" not found.` | `ApiExceptionListener` |
 | `422` | The payload fails validation | `"Validation Failed"` / `"One or more fields are invalid."`, plus `violations: [{propertyPath, title}]` | `ApiExceptionListener` |
 | `422` | The handler returned `Result::fail()`, or a ULID in the payload matches nothing | `"Unprocessable Content"` / the result's message, or e.g. `"Customer not found."` | `AbstractApiController::handleResult()`, `ApiResponse::error()` |
 | `500` | Anything else | `"Internal Server Error"` / the exception message, hidden in `prod` | `ApiExceptionListener` |
@@ -97,8 +97,8 @@ List query parameters are the web search criteria's: `page`, `limit` (default 5,
 Gotchas:
 
 - **A filter ULID that matches nothing is ignored**, so the list comes back unfiltered: `resolveFilterId()` returns `null` for it. An unknown `sort` falls back to the default the same way.
-- **A malformed id (not a ULID), in the path or a filter, gives a `500`**, not a `404` or `422`.
-- **The order item routes do not check that the item belongs to the order in the path.** They check that both exist, then act on the item.
+- **A malformed id (not a ULID) in a filter or the payload gives a `500`**, not a `422`. In the path it is a `404`: `PublicIdResolver` checks it before querying.
+- **An order item on another order is a `404`**: the item routes look the item up within the order in the path.
 
 ## Adding an endpoint
 

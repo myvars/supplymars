@@ -11,6 +11,7 @@ use Symfony\Component\HttpKernel\Attribute\AsTargetedValueResolver;
 use Symfony\Component\HttpKernel\Controller\ValueResolverInterface;
 use Symfony\Component\HttpKernel\ControllerMetadata\ArgumentMetadata;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Uid\Ulid;
 
 #[AsTargetedValueResolver('public_id')]
 final readonly class PublicIdResolver implements ValueResolverInterface
@@ -39,8 +40,10 @@ final readonly class PublicIdResolver implements ValueResolverInterface
             return [];
         }
 
-        $repo = $em->getRepository($class);
-        $entity = $repo->findOneBy(['publicId' => (string) $id]);
+        // A malformed id matches nothing; querying the ulid column with it would throw
+        $entity = Ulid::isValid((string) $id, Ulid::FORMAT_BASE_32)
+            ? $em->getRepository($class)->findOneBy(['publicId' => (string) $id])
+            : null;
 
         if ($entity === null) {
             $short = new \ReflectionClass($class)->getShortName();
