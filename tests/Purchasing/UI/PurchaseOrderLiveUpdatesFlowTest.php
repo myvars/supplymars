@@ -1,0 +1,103 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tests\Purchasing\UI;
+
+use App\Order\Application\Message\RefreshOrderPage;
+use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItem;
+use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
+use App\Shared\Infrastructure\Notification\MercureLiveUpdatePublisher;
+use App\Tests\Shared\Factory\CustomerOrderFactory;
+use App\Tests\Shared\Factory\CustomerOrderItemFactory;
+use App\Tests\Shared\Factory\ProductFactory;
+use App\Tests\Shared\Factory\PurchaseOrderItemFactory;
+use App\Tests\Shared\Factory\SupplierFactory;
+use App\Tests\Shared\Factory\SupplierProductFactory;
+use App\Tests\Shared\Factory\UserFactory;
+use App\Tests\Shared\Mercure\MercureCookie;
+use App\Tests\Shared\Mercure\QueuedNotifications;
+use App\Tests\Shared\Story\StaffUserStory;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Mercure\Update;
+use Zenstruck\Browser\Test\HasBrowser;
+use Zenstruck\Foundry\Attribute\WithStory;
+use Zenstruck\Foundry\Test\Factories;
+
+/**
+ * A purchase order's page refreshes with its order's page: it subscribes to the order's topic, which every change
+ * to the order, its purchase orders and their items refreshes (RefreshOrderPageForViewers).
+ */
+#[WithStory(StaffUserStory::class)]
+final class PurchaseOrderLiveUpdatesFlowTest extends WebTestCase
+{
+    use HasBrowser;
+    use Factories;
+
+    public function testPurchaseOrderPageSubscribesToItsOrdersTopic(): void
+    {
+        $user = UserFactory::new()->asStaff()->create();
+        $purchaseOrder = $this->purchaseOrderItem()->getPurchaseOrder();
+        $topic = 'order/' . $purchaseOrder->getCustomerOrder()->getPublicId()->value();
+
+        $browser = $this->browser()
+            ->actingAs($user)
+            ->visit('/purchase/order/' . $purchaseOrder->getPublicId()->value())
+            ->assertSuccessful()
+            ->assertElementCount('turbo-frame#body turbo-mercure-stream-source[private][src*="' . rawurlencode($topic) . '"]', 1)
+            ->assertElementCount('head meta[name="turbo-cache-control"][content="no-cache"]', 1)
+            ->assertElementCount('head meta[name="turbo-prefetch"][content="false"]', 1)
+            ->assertHeaderContains('Cache-Control', 'no-store');
+
+        self::assertSame(['subscribe' => ['user/' . $user->getPublicId(), $topic]], MercureCookie::grantedTopics($browser));
+    }
+
+    public function testChangingAnItemsStatusRefreshesThePurchaseOrderPage(): void
+    {
+        $user = UserFactory::new()->asStaff()->create();
+        $poItem = $this->purchaseOrderItem();
+        $poItem->updateItemStatus(PurchaseOrderStatus::PROCESSING);
+        self::getContainer()->get(EntityManagerInterface::class)->flush();
+        // The setup's own refresh: handled now, so the form's is not dropped as its duplicate
+        QueuedNotifications::handle(self::getContainer());
+
+        $browser = $this->browser()
+            ->actingAs($user)
+            ->visit('/purchase/order/' . $poItem->getPurchaseOrder()->getPublicId()->value());
+        $pageTopic = MercureCookie::grantedTopics($browser)['subscribe'][1];
+
+        $browser
+            ->visit('/purchase/order/item/' . $poItem->getPublicId()->value() . '/edit/status')
+            ->fillField('purchase_order_item_status[purchaseOrderItemStatus]', PurchaseOrderStatus::REJECTED->value)
+            ->interceptRedirects()
+            ->click('Update')
+            ->assertRedirected();
+
+        $handled = QueuedNotifications::handle(self::getContainer());
+        self::assertCount(1, $handled);
+        self::assertInstanceOf(RefreshOrderPage::class, $handled[0]);
+
+        $updates = QueuedNotifications::published(self::getContainer());
+        self::assertCount(1, $updates);
+        self::assertInstanceOf(Update::class, $updates[0]);
+        self::assertSame(MercureLiveUpdatePublisher::REFRESH_STREAM, $updates[0]->getData());
+        self::assertSame([$pageTopic], $updates[0]->getTopics());
+    }
+
+    private function purchaseOrderItem(): PurchaseOrderItem
+    {
+        $product = ProductFactory::new()->withActiveSource()->create();
+        $supplier = SupplierFactory::createOne(['isActive' => true]);
+        $order = CustomerOrderFactory::createOne();
+
+        return PurchaseOrderItemFactory::createOne([
+            'customerOrderItem' => CustomerOrderItemFactory::createOne(['customerOrder' => $order, 'product' => $product, 'quantity' => 10]),
+            'supplierProduct' => SupplierProductFactory::createOne(['supplier' => $supplier, 'product' => $product, 'stock' => 100]),
+            'supplier' => $supplier,
+            'product' => $product,
+            'customerOrder' => $order,
+            'quantity' => 3,
+        ]);
+    }
+}

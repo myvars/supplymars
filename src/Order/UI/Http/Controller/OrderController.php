@@ -14,7 +14,6 @@ use App\Order\Application\Handler\CreateDemoOrderHandler;
 use App\Order\Application\Handler\CreateOrderHandler;
 use App\Order\Application\Handler\LockOrderHandler;
 use App\Order\Application\Handler\OrderFilterHandler;
-use App\Order\Application\Listener\RefreshOrderPageForViewers;
 use App\Order\Application\Search\OrderSearchCriteria;
 use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Order\Domain\Repository\OrderRepository;
@@ -191,7 +190,7 @@ class OrderController extends AbstractController
     {
         return $this->render('/order/show.html.twig', [
             'result' => $order,
-            'live_topics' => [RefreshOrderPageForViewers::topic($order->getPublicId())],
+            'live_topics' => [CustomerOrder::liveTopic($order->getPublicId())],
         ]);
     }
 }

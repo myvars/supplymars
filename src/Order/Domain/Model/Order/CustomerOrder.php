@@ -133,6 +133,15 @@ class CustomerOrder implements DomainEventProviderInterface
         return $self;
     }
 
+    /**
+     * The Mercure topic of the order's live pages: the order page and its purchase order pages subscribe to it
+     * (live_topics), and RefreshOrderPageForViewers refreshes it.
+     */
+    public static function liveTopic(OrderPublicId $orderId): string
+    {
+        return 'order/' . $orderId->value();
+    }
+
     public function assignCustomer(User $customer): void
     {
         $this->customer = $customer;

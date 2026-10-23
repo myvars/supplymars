@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Purchasing\UI\Http\Controller;
 
+use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Purchasing\Application\Command\PurchaseOrder\RewindPurchaseOrder;
 use App\Purchasing\Application\Handler\PurchaseOrder\PurchaseOrderFilterHandler;
 use App\Purchasing\Application\Handler\PurchaseOrder\RewindPurchaseOrderHandler;
@@ -20,6 +21,7 @@ use MyVars\FormFlow\View\FlowModel;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\Cache;
 use Symfony\Component\HttpKernel\Attribute\MapQueryString;
 use Symfony\Component\HttpKernel\Attribute\ValueResolver;
 use Symfony\Component\Routing\Attribute\Route;
@@ -66,10 +68,15 @@ class PurchaseOrderController extends AbstractController
         );
     }
 
+    /** Live: refreshes with its order's page (RefreshOrderPageForViewers). Not stored, so Back requests it again. */
     #[Route(path: '/purchase/order/{id}', name: 'app_purchasing_purchase_order_show', methods: ['GET'])]
+    #[Cache(noStore: true)]
     public function show(#[ValueResolver('public_id')] PurchaseOrder $purchaseOrder): Response
     {
-        return $this->render('/purchasing/purchase_order/show.html.twig', ['result' => $purchaseOrder]);
+        return $this->render('/purchasing/purchase_order/show.html.twig', [
+            'result' => $purchaseOrder,
+            'live_topics' => [CustomerOrder::liveTopic($purchaseOrder->getCustomerOrder()->getPublicId())],
+        ]);
     }
 
     #[Route(path: '/purchase/order/{id}/rewind/confirm', name: 'app_purchasing_purchase_order_rewind_confirm', methods: ['GET'])]

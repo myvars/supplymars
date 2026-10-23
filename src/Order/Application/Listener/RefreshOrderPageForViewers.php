@@ -59,12 +59,6 @@ final readonly class RefreshOrderPageForViewers
     ) {
     }
 
-    /** The order page subscribes to it (OrderController::show, as live_topics). */
-    public static function topic(OrderPublicId $orderId): string
-    {
-        return 'order/' . $orderId->value();
-    }
-
     /**
      * @throws ExceptionInterface
      */
@@ -100,7 +94,7 @@ final readonly class RefreshOrderPageForViewers
     #[AsMessageHandler]
     public function refresh(RefreshOrderPage $message): void
     {
-        $this->publisher->refresh(self::topic(OrderPublicId::fromString($message->orderId)));
+        $this->publisher->refresh(CustomerOrder::liveTopic(OrderPublicId::fromString($message->orderId)));
     }
 
     /**
