@@ -102,7 +102,7 @@ Check the values in use with `SHOW VARIABLES` and memory with the commands in [1
 ## Gotchas
 
 - **Stock oversell.** Allocation checks that a supplier has the stock (`OrderAllocator`) but never lowers it, so any number of orders can be allocated against the same units until `app:update-supplier-stock` or an edit changes the figure.
-- **Order lock** doesn't stop editing, but the simulation jobs skip locked orders, so a forgotten lock stalls an order ([05 Orders](05-features.md#orders)).
+- **Order lock** doesn't stop editing, but the simulation jobs skip locked orders, so a forgotten lock stalls an order ([05 Orders](05-features.md#orders)). Any staff user can release it; the holder then gets a toast ([ADR 017](adr/017-live-updates-with-mercure.md)).
 - **The simulation grows the database.** Orders arrive around the clock on both stacks; `status_change_log` is most of live's data, which is why `app:prune-status-change-log` runs nightly.
 - **One worker does everything.** While it is down or busy with a long job, emails and async events wait in the queue (they are not lost), and scheduled runs are made up once when it returns.
 

@@ -68,7 +68,7 @@ ssh ubuntu@<server-ip> 'cd /home/ubuntu/supplymars && make up-prod-live'
 
 `make up-prod-live` reads `live.env`, `make up-prod-playground` reads `playground.env`. `make up-prod-local` reads `prod-local.env`, the same variables with throwaway values, to run the production build on your own machine (http://127.0.0.1:8000, `compose.prod.local.yaml`; no scheduled jobs run there).
 
-An env file only reaches the app through `compose.prod.yaml`: the variables listed in its `x-common-php-env` block go into the containers, and the others are used by Compose itself. Anything else the app reads comes from `.env`, baked into the image by `composer dump-env prod` (`docker/Dockerfile`): `DEFAULT_STAFF_EMAIL` (`admin@supplymars.com`), `LOCK_DSN` (`flock`), `TRUSTED_PROXIES` (`private_ranges`, which covers Caddy reaching the container). Setting one of those in an env file has no effect.
+An env file only reaches the app through `compose.prod.yaml`: the variables listed in its `x-common-php-env` block go into the containers, and the others are used by Compose itself. Anything else the app reads comes from `.env`, baked into the image by `composer dump-env prod` (`docker/Dockerfile`): `DEFAULT_STAFF_EMAIL` (`admin@supplymars.com`), `LOCK_DSN` (`flock`), `MERCURE_COOKIE_NAME` (`__Secure-mercure_access_token`; `compose.prod.local.yaml` sets the unprefixed name for plain HTTP), `TRUSTED_PROXIES` (`private_ranges`, which covers Caddy reaching the container). Setting one of those in an env file has no effect.
 
 | Variable | Live | Playground | Notes |
 |----------|------|------------|-------|
@@ -87,6 +87,7 @@ An env file only reaches the app through `compose.prod.yaml`: the variables list
 | `PLAYGROUND_MODE` | `false` | `true` | Also picks the scheduled jobs ([playground.md](infrastructure/playground.md#what-playground_mode-changes)) |
 | `SENTRY_DSN` | shared | shared | Empty sends nothing ([13-monitoring.md](13-monitoring.md)) |
 | `SENTRY_ENVIRONMENT` | unset (`live`) | `playground` | Separates the two stacks' events |
+| `MERCURE_JWT_SECRET` | own | own | Signs the tokens of the stack's Mercure hub, which runs in its `php` container (live updates, [ADR 017](adr/017-live-updates-with-mercure.md)). At least 32 characters: `openssl rand -base64 32`. `make up-prod-live`, `make up-prod-playground` and `make up-prod-local` refuse to start without it, because FrankenPHP cannot parse its Caddyfile. The hub's issuer is `DEFAULT_URI` and its URLs follow from it (`compose.prod.yaml`) |
 | `HTTP_HOST_PORT` | `8001` | `8002` | The localhost port Caddy proxies to |
 | `DB_HOST_PORT` | `3307` | `3308` | MySQL on localhost, for SSH tunnels (`ssh -L 3307:localhost:3307 ubuntu@<server-ip>`; `make up-dev-tools` starts a phpMyAdmin for each) |
 
@@ -248,7 +249,8 @@ mysql_live -e "SHOW FULL PROCESSLIST"
 # MySQL settings in use: production.cnf's values, not the image's defaults
 mysql_live -e "SHOW VARIABLES WHERE Variable_name IN ('performance_schema', 'max_connections', 'innodb_log_buffer_size', 'innodb_buffer_pool_size')"
 
-# Memory and swap: compare with 06-operations.md#database-optimization
+# Memory and swap: compare with 06-operations.md#database-optimization. Each open logged-in tab holds one
+# connection to the stack's Mercure hub, in php (FrankenPHP's Go side, not a PHP worker)
 free -m
 for p in $(pgrep -x mysqld); do grep VmSwap /proc/$p/status; done
 ```
@@ -386,7 +388,19 @@ docker compose $LIVE logs --tail=100 php    # the entrypoint's lines (migrations
 
 Usual causes: the php container is restarting (OOM or a fatal error), a migration failed on startup, or the database is down. Restart the database first if it is the cause, wait until it is healthy, then `docker compose $LIVE restart php`.
 
-### 6.2 Queue Backlog or Failed Messages
+### 6.2 Live Updates or Toasts Not Arriving
+
+An order page does not change while open, or a lock-release toast never shows ([ADR 017](adr/017-live-updates-with-mercure.md)). Both are published by the `messenger` worker from the `async` queue, up to a few seconds after the change, and after any scheduled job it is running.
+
+```bash
+docker compose $LIVE exec -T php php bin/console messenger:stats              # async backlog: see 6.3
+docker compose $LIVE logs --tail=100 messenger | grep 'Live update not published'   # the hub refused or was down
+curl -sN -o /dev/null -w "%{http_code}\n" --max-time 3 https://live.supplymars.com/.well-known/mercure   # 401 without a cookie: the hub answers through Caddy
+```
+
+The host Caddy streams `text/event-stream` responses without buffering by default. If updates arrive only in bursts, or when the page is left, something between the browser and the `php` container is buffering `/.well-known/mercure`. Check once after the first deploy with live updates, with an order page open while the hourly shipping job runs.
+
+### 6.3 Queue Backlog or Failed Messages
 
 The `async` count in `messenger:stats` keeps growing and emails are late. The same worker runs the scheduled jobs, so a long job (the 02:00 backup) delays emails until it ends.
 
@@ -400,7 +414,7 @@ docker compose $LIVE exec -T php php bin/console messenger:failed:retry [<id>]
 docker compose $LIVE exec -T php php bin/console messenger:failed:remove <id>
 ```
 
-### 6.3 Scheduled Jobs Not Running
+### 6.4 Scheduled Jobs Not Running
 
 No new orders, reports not updating.
 
@@ -414,7 +428,7 @@ docker compose $LIVE restart messenger
 
 Simulation jobs failing with a user-not-found error: the `DEFAULT_STAFF_EMAIL` user is missing ([09-cli-reference.md](09-cli-reference.md#simulation-behaviour); creating it: [Fresh Server Setup](#fresh-server-setup), step 7).
 
-### 6.4 Deploy Timed Out
+### 6.5 Deploy Timed Out
 
 The deploy job fails with `Run Command Timeout`; the site may return 502. When the SSH session ends, a `docker compose up` already started keeps running on the server, but nothing after it does (the other stack, the verify steps). It can leave containers `Created` and never started: the old ones removed, the new ones not running.
 
@@ -427,7 +441,7 @@ make verify-prod-live && make verify-prod-playground
 
 Compose waits up to `stop_grace_period` for each container it replaces, and the messenger worker always uses all of it ([06-operations.md](06-operations.md#messenger-worker)). A longer grace period could push a deploy past the job's 10-minute timeout.
 
-### 6.5 Signed-In Users Get a 500 After a Deploy
+### 6.6 Signed-In Users Get a 500 After a Deploy
 
 Every page fails for users who were signed in before the deploy; new visitors are fine. The log shows a `TypeError` from `unserialize()` on a `User` property.
 
@@ -439,7 +453,7 @@ docker compose $LIVE exec redis sh -c 'export REDISCLI_AUTH="$REDIS_PASSWORD"; r
 docker compose $PLAYGROUND exec redis sh -c 'export REDISCLI_AUTH="$REDIS_PASSWORD"; redis-cli --scan --pattern "sf_s*" | xargs -r redis-cli unlink'
 ```
 
-### 6.6 Slow Pages
+### 6.7 Slow Pages
 
 ```bash
 mysql_live -e "SHOW FULL PROCESSLIST"
@@ -449,7 +463,7 @@ docker compose $LIVE exec redis sh -c 'REDISCLI_AUTH="$REDIS_PASSWORD" redis-cli
 
 Look for a report calculation or the backup running, a missing index after a schema change, or swap use (3.2).
 
-### 6.7 Disk Space
+### 6.8 Disk Space
 
 ```bash
 df -h && docker system df
@@ -459,7 +473,7 @@ docker image prune -a -f --filter "until=720h"     # images not used by a contai
 
 Every deploy leaves its images on the server, so a rollback starts without a download. A pruned version can still be rolled back to: `make up-prod-live` pulls it again from GHCR.
 
-### 6.8 Playground Reset Failed
+### 6.9 Playground Reset Failed
 
 See [infrastructure/playground.md](infrastructure/playground.md#troubleshooting).
 
@@ -521,4 +535,4 @@ docker compose $LIVE exec -T messenger php bin/console app:calculate-customer-sa
 - [09-cli-reference.md](09-cli-reference.md): what each command does and when it runs
 - [13-monitoring.md](13-monitoring.md): Sentry, `/health`, `/health/backup`, the uptime monitor
 - [infrastructure/playground.md](infrastructure/playground.md): what the playground changes, the nightly reset
-- [ADR 015](adr/015-symfony-scheduler-in-place-of-cron.md), [ADR 016](adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md)
+- [ADR 015](adr/015-symfony-scheduler-in-place-of-cron.md), [ADR 016](adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md), [ADR 017](adr/017-live-updates-with-mercure.md)

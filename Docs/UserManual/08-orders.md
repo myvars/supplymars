@@ -38,6 +38,8 @@ Click an order. The page has:
 - **Items:** "N lines (M items)", **Add Item**, and one card per item that still has quantity not yet on a purchase order. Editing, removing, cancelling and allocating an item by hand are in [Order Items](09-order-items.md).
 - **Purchase Orders:** the purchase orders made for this order.
 
+The page updates by itself while you have it open: when someone else, or a scheduled job, changes an item, a purchase order, a status, the totals or the lock, you see the change within a few seconds without reloading. An open dialog or menu stays open while it does.
+
 ### Add an item
 
 1. Click **Add Item**.
@@ -62,6 +64,8 @@ Every item is cancelled and the order becomes Cancelled.
 ### Lock or unlock an order
 
 Click the lock icon on the order card. While locked, the card shows "Locked by {name}". Click it again to unlock.
+
+If you unlock an order someone else locked, they see a message on whatever page they have open, "{your name} released your lock on order #000123", with a **View** link to the order. Nothing is sent when you lock an order or unlock your own. On the playground everyone shares one login, so this message never appears there.
 
 ## Rules and limits
 

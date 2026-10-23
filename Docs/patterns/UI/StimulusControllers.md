@@ -11,7 +11,7 @@ Every Stimulus controller in use in `assets/controllers/`, what it does and wher
 | `alert_dialog` | Kit. Confirmation dialog for content already on the page | targets `trigger`, `dialog` | `AlertDialog` component; no page uses it yet |
 | `aos` | Animate On Scroll; loads `aos` lazily, skipped under reduced motion | none | `home/` pages (index, about, contact, privacy, terms) |
 | `bar_chart` | Axis and tooltip formatting for a Chart.js bar chart; a click visits `linkUrl` + `?` + `options.linkParams[index]` | value `linkUrl` | `reporting/order_summary`, `product_sales`, `customer_insights` |
-| `basic_modal` | The Turbo modal: opens on frame load, closes on a successful submit | targets `dialog`, `frame` | `Modal` component; see [Turbo](../Turbo/README.md) |
+| `basic_modal` | The Turbo modal: opens on frame load, closes on a successful submit. While open, a live refresh leaves it and the page's scroll lock alone | targets `dialog`, `frame` | `Modal` component; see [Turbo](../Turbo/README.md) |
 | `calendar` | Kit. Month grid for `Calendar` | targets `month`, `previous`, `next`, `input` | `Calendar`, via `DatePicker` |
 | `card_link` | Makes a whole element navigate with Turbo `visit()`, ignoring clicks on inner links and buttons | value `url` | `purchasing/purchase_order/_order_po_card.html.twig` |
 | `date_picker` | Kit. Input plus popover calendar | targets `trigger`, `value`, `input` | `DatePicker` (`DatePickerType`, see [Forms](Forms.md#pick-a-date-from-a-calendar)) |
@@ -23,6 +23,8 @@ Every Stimulus controller in use in `assets/controllers/`, what it does and wher
 | `help_drawer` | Loads the current page's help into the help `Sheet`; `?` shortcut | target `frame` | `_help_drawer.html.twig` |
 | `inline_edit` | Focuses the field; Enter submits (Cmd/Ctrl+Enter in a textarea), Escape cancels, click outside submits; input grows to fit | targets `cancel`, `sizer` | `InlineEdit` component; see [InlineEdit](../InlineEdit/README.md) |
 | `line_chart` | Axis and tooltip formatting for a Chart.js line chart | none | `audit/product_history.html.twig` |
+| `live_open` | While a kit `Sheet` or `DropdownMenu` is open, marks its root `data-turbo-permanent`, so a live refresh keeps it open with what was loaded into it; never in the server's HTML | none | `_menu.html.twig`, `_help_drawer.html.twig`, `_header.html.twig` (user menu); see [Turbo](../Turbo/README.md#what-a-refresh-keeps) |
+| `live_toaster` | Keeps the toaster as it is through a live refresh, then adds any new flash the refreshed page brings | action `keep` on `turbo:before-morph-element` | the wrapper round `<twig:Sonner id="flash-container">` in `base.html.twig` |
 | `new_item_highlight` | One-shot glow (`.new-item-highlight`) on an item created less than `threshold` ms ago | values `createdAt` (ISO 8601), `threshold` (default 3000) | `order/index.html.twig` |
 | `popover` | Kit. Floating content anchored to a trigger | targets `trigger`, `content` | `Popover`, `DatePicker` |
 | `searchbox` | Debounced (250 ms) search input that reloads the results frame and replaces the URL | value `basePath`; target `queryInput` | `Search` component |
@@ -78,6 +80,7 @@ The sidebar menu (`_menu.html.twig`) and the help panel (`_help_drawer.html.twig
 - `turbo:before-cache@window->dialog#close` on the `Sheet` closes it before Turbo caches the page, so a back navigation does not restore it open.
 - Links inside close the panel as they navigate with `data-action="dialog#close"`.
 - A panel that needs more behaviour puts its own controller on the same element and calls `dialog` (as `help_drawer` does).
+- `live_open` sits on both panels, beside `dialog`, so a live refresh does not close an open one ([Turbo](../Turbo/README.md#what-a-refresh-keeps)). The kit's files stay as installed: it is added where the `Sheet` is used.
 
 ## Gotchas
 

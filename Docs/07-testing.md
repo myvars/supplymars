@@ -97,6 +97,10 @@ self::assertInstanceOf(SendEmailMessage::class, $sent[0]->getMessage());
 
 In a flow test, call `->interceptRedirects()` before the action and don't follow the redirect: the next request starts a new kernel with an empty transport. Full example: `ResetPasswordFlowTest::testRequestingAResetQueuesTheEmail` (`tests/Customer/UI/ResetPasswordFlowTest.php`).
 
+The transport serializes each message (`in-memory://?serialize=true`), as the doctrine queue does, so a message or stamp that cannot be stored fails here rather than in production. `getSent()` counts every message, so changing an order also queues a `RefreshOrderPage`: filter by class rather than assume one message.
+
+To run what was queued, as the worker would, and see what reached the Mercure hub, use `tests/Shared/Mercure/QueuedNotifications` ([Turbo](patterns/Turbo/README.md#testing)).
+
 ### Running All Checks
 
 `make check` runs every check CI runs, with the same commands; `make check-<step>` runs one. Run it before opening a pull request. Every step but `prod-config` runs `scripts/check.sh` in the `php` container; `prod-config` runs on the host, with Docker.
