@@ -1,8 +1,9 @@
 {# Sidebar navigation: the header's menu button and the panel it opens, as a kit Sheet
    (a modal <dialog> sliding in from the left). Links close it as they navigate.
    Active link state and the collapsible sections are managed by the sidebar-active controller.
+   live-open keeps it open through a live refresh.
    Sections: Home, Catalog, Orders, Purchasing, Customers, Reviews, Reporting, Admin, Notes #}
-<twig:Sheet id="menu" side="left" data-action="turbo:before-cache@window->dialog#close">
+<twig:Sheet id="menu" side="left" data-controller="live-open" data-action="turbo:before-cache@window->dialog#close">
     <twig:Sheet:Trigger>
         {# The header bar is dark in both modes, so the ghost button's colours are pinned. #}
         <twig:Button id="navigationButton" variant="ghost" size="icon" class="size-9 text-gray-400 hover:bg-gray-700/70 hover:text-gray-200 aria-expanded:bg-gray-700/70 aria-expanded:text-gray-200 dark:hover:bg-gray-700/70" {{ ...sheet_trigger_attrs }}>

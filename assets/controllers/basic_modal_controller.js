@@ -14,18 +14,28 @@ export default class extends Controller {
     open() {
         this.dialogTarget.showModal();
         document.body.classList.add('overflow-hidden');
+        // A live refresh's morph leaves the open modal alone. Not in the server's HTML, so other renders replace it
+        this.dialogTarget.setAttribute('data-turbo-permanent', '');
     }
 
     close() {
         if (this.hasDialogTarget) {
             this.dialogTarget.close();
             this.dialogTarget.dataset.modalSize = 'md';
+            this.dialogTarget.removeAttribute('data-turbo-permanent');
         }
         if (this.hasFrameTarget) {
             this.frameTarget.removeAttribute('src');
             this.frameTarget.innerHTML = '';
         }
         document.body.classList.remove('overflow-hidden');
+    }
+
+    // A live refresh morphs <body>: keep the scroll lock while the modal is open
+    keepScrollLock(event) {
+        if (event.target === document.body && event.detail.attributeName === 'class' && this.dialogTarget.open) {
+            event.preventDefault();
+        }
     }
 
     frameLoaded(event) {

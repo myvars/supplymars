@@ -2,8 +2,8 @@
 # Docker Compose: Development configuration
 # ===============================
 # Overrides for local development: mounts, Xdebug, Mailer, PHPMyAdmin, etc.
-# `make up` starts every service; `make up-dev-tools` starts the ones it names (database, redis, mailer and
-# the three phpMyAdmins). Published ports and the database name come from the docker block in .env.
+# `make up` starts every service; `make up-dev-tools` starts the ones it names (database, redis, mailer,
+# mercure and the three phpMyAdmins). Published ports and the database name come from the docker block in .env.
 
 x-common-php-env: &common-php-env
   DEFAULT_URI: "https://localhost"
@@ -11,6 +11,12 @@ x-common-php-env: &common-php-env
   REDIS_URL: "redis://default:password@redis:6379"
   MAILER_DSN: "smtp://mailer:1025"
   MESSENGER_TRANSPORT_DSN: "doctrine://default"
+  # FrankenPHP's own hub (docker/frankenphp/Caddyfile). messenger publishes over the internal network, which
+  # compose.yaml's SERVER_NAME answers on; the browser subscribes on the site's origin
+  MERCURE_URL: "http://php/.well-known/mercure"
+  MERCURE_PUBLIC_URL: "https://localhost/.well-known/mercure"
+  MERCURE_JWT_SECRET: ${MERCURE_JWT_SECRET}
+  MERCURE_JWT_ISSUER: ${MERCURE_JWT_ISSUER}
 
 services:
   # --- MySQL Database (Dev) ---
@@ -115,6 +121,32 @@ services:
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_AUTH_ALLOW_INSECURE: 1
   ###< symfony/mailer ###
+
+
+  # --- Mercure hub for symfony serve (Dev Tool) ---
+  # make up uses FrankenPHP's own hub instead. symfony serve serves this one on the site's origin
+  # (/.well-known/mercure; proxy_mercure in .symfony.local.yaml), so the cookie and the CSP need nothing extra.
+  # Same version as the hub inside docker/Dockerfile's FrankenPHP image; no history, as there.
+  mercure:
+    image: dunglas/mercure:v1.1.4
+    ports:
+      - "127.0.0.1:${MERCURE_PORT:-3001}:80"   # Where the app publishes (MERCURE_URL in .env)
+    environment:
+      SERVER_NAME: ":80"
+      MERCURE_PUBLISHER_JWT_KEY: ${MERCURE_JWT_SECRET}
+      MERCURE_SUBSCRIBER_JWT_KEY: ${MERCURE_JWT_SECRET}
+      MERCURE_TRUSTED_ISSUERS: ${MERCURE_JWT_ISSUER}   # The iss claim config/packages/mercure.yaml signs
+      # No resource_identifier, unlike FrankenPHP's hub: the hub derives the audience from each request, so it
+      # accepts both the publish to 127.0.0.1 and the subscribe through the proxy, on whichever port it serves
+      MERCURE_EXTRA_DIRECTIVES: |
+        transport local
+        cookie_name ${MERCURE_COOKIE_NAME}
+      # symfony serve's proxy sends X-Forwarded-* from the host
+      GLOBAL_OPTIONS: |
+        servers {
+          trusted_proxies static private_ranges
+        }
+    restart: unless-stopped
 
 
 # --- Dev Cache/Log Volumes for each container ---

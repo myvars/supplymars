@@ -1,0 +1,18 @@
+# Live updates through a Mercure hub, published by App\Shared\Infrastructure\Notification\MercureLiveUpdatePublisher
+# (live pages) and MercureUserNotifier (toasts), which uses it.
+# One secret signs both tokens; the hub's issuer block (docker/frankenphp/Caddyfile) checks it and the iss claim.
+# See Docs/patterns/Turbo/README.md#live-updates-with-mercure and ADR 017.
+mercure:
+    hubs:
+        default:
+            url: '%env(MERCURE_URL)%'
+            public_url: '%env(MERCURE_PUBLIC_URL)%'
+            # Set, so debug mode does not switch to the playground's unprefixed name
+            cookie_name: '%env(MERCURE_COOKIE_NAME)%'
+            jwt:
+                secret: '%env(MERCURE_JWT_SECRET)%'
+                publish: '*'
+                claims:
+                    iss: '%env(MERCURE_JWT_ISSUER)%'
+                    sub: 'app'
+                    client_id: 'app'

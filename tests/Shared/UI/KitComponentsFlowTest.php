@@ -197,9 +197,9 @@ final class KitComponentsFlowTest extends WebTestCase
             ->actingAs($user)
             ->get('/manufacturer/')
             ->assertSuccessful()
-            ->assertSeeElement('[data-controller="dropdown-menu"] [data-dropdown-menu-target="trigger"][aria-haspopup="menu"][aria-expanded="false"]')
-            ->assertSeeIn('[data-controller="dropdown-menu"] [role="menu"] [data-slot="dropdown-menu-label"]', $user->getFullName())
-            ->assertSeeIn('[data-controller="dropdown-menu"] [role="menu"] a[role="menuitem"][href^="/customer/"][data-turbo-frame="body"]', 'Settings')
-            ->assertSeeIn('[data-controller="dropdown-menu"] [role="menu"] a[role="menuitem"][href="/logout"][data-turbo-prefetch="false"]', 'Sign Out');
+            ->assertSeeElement('[data-controller~="dropdown-menu"] [data-dropdown-menu-target="trigger"][aria-haspopup="menu"][aria-expanded="false"]')
+            ->assertSeeIn('[data-controller~="dropdown-menu"] [role="menu"] [data-slot="dropdown-menu-label"]', $user->getFullName())
+            ->assertSeeIn('[data-controller~="dropdown-menu"] [role="menu"] a[role="menuitem"][href^="/customer/"][data-turbo-frame="body"]', 'Settings')
+            ->assertSeeIn('[data-controller~="dropdown-menu"] [role="menu"] a[role="menuitem"][href="/logout"][data-turbo-prefetch="false"]', 'Sign Out');
     }
 }

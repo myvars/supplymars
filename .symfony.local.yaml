@@ -1,0 +1,6 @@
+# Settings for symfony serve, shared by everyone working on the project.
+http:
+    # Serves the Mercure hub of make up-dev-tools on the site's origin (/.well-known/mercure), so the browser's
+    # cookie works and the CSP needs nothing extra. Without it, logged-in pages fail: the Symfony CLI points
+    # MERCURE_PUBLIC_URL at the hub's plain-HTTP port. See Docs/02-setup-local.md.
+    proxy_mercure: true

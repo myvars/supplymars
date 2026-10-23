@@ -55,6 +55,26 @@
 		@config path_regexp \.env|composer\.(json|lock)
 		respond @config 403
 
+		# Mercure hub at /.well-known/mercure, for live updates (ADR 017). Before the rewrite below, which would
+		# send it to index.php. The app signs the tokens with MERCURE_JWT_SECRET, as MERCURE_JWT_ISSUER.
+		# Updates are fire-and-forget: no history. resource_identifier is the public URL, which behind the
+		# host Caddy the hub cannot work out itself (it sees http://). In development the site has two
+		# addresses (localhost and php:80), so two hubs; the shared name gives them one transport.
+		mercure {
+			name app
+			issuer {$MERCURE_JWT_ISSUER} {
+				publisher {
+					jwt {$MERCURE_JWT_SECRET}
+				}
+				subscriber {
+					jwt {$MERCURE_JWT_SECRET}
+				}
+			}
+			resource_identifier {$MERCURE_PUBLIC_URL}
+			cookie_name {$MERCURE_COOKIE_NAME:__Secure-mercure_access_token}
+			transport local
+		}
+
 		# Only the front controller runs. Anything that is not a file goes to index.php, and any other
 		# .php file is hidden from the file server, so it returns 404 rather than running or downloading
 		@notFile not file {path}

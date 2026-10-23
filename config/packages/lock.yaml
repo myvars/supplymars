@@ -1,2 +1,14 @@
 framework:
-    lock: '%env(LOCK_DSN)%'
+    lock:
+        default: '%env(LOCK_DSN)%'
+        # Messenger's deduplication only (services.yaml): a refresh message is locked where it is sent and released
+        # where it is handled, in production two containers, and the key is stored on the queue with the message.
+        # flock can do neither. See Docs/patterns/Turbo/README.md#queue-one-refresh-per-page.
+        deduplication: 'snc_redis.default'
+
+when@test:
+    framework:
+        lock:
+            default: '%env(LOCK_DSN)%'
+            # Each ParaTest process has its own, as it has its own cache
+            deduplication: 'in-memory'

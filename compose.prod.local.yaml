@@ -4,8 +4,10 @@
 # This file is used for overrides during local production builds/testing
 # It is NOT used in "real" production (e.g. on the actual production server)
 
-x-mailer-env: &mailer-env
+x-local-env: &local-env
   MAILER_DSN: smtp://mailer:1025
+  # Browsers refuse a __Secure- cookie from plain HTTP, and the Mercure bundle refuses to set one
+  MERCURE_COOKIE_NAME: mercure_access_token
 
 services:
   # --- RabbitMQ Message Broker (Prod local, only with the rabbitmq profile) ---
@@ -17,7 +19,7 @@ services:
   # --- PHP Application (Prod local) ---
   php:
     environment:
-      <<: *mailer-env
+      <<: *local-env
     ports: !override
       - "127.0.0.1:8000:80"   # Fixed port for local testing
 
@@ -25,7 +27,7 @@ services:
   # --- Messenger Worker (Prod local) ---
   messenger:
     environment:
-      <<: *mailer-env
+      <<: *local-env
     # Only the async queue, so the scheduled jobs (simulation, a real backup) never run on a local machine
     command: sh -c "php bin/console messenger:consume async --time-limit=3600 --sleep=5"
     # No backup runs here, and the server's backups directory does not exist on a local machine
