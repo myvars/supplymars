@@ -6,6 +6,7 @@ namespace App\Tests\Shared\UI\Http;
 
 use App\Audit\Domain\Model\StatusChange\StatusChangeLog;
 use App\Customer\Domain\Model\User\User;
+use App\Order\Application\Listener\RefreshOrderPageForViewers;
 use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Shared\Domain\Event\DomainEventType;
 use App\Tests\Shared\Factory\CustomerOrderFactory;
@@ -14,6 +15,7 @@ use App\Tests\Shared\Factory\PoolFactory;
 use App\Tests\Shared\Factory\StatusChangeLogFactory;
 use App\Tests\Shared\Factory\TicketFactory;
 use App\Tests\Shared\Factory\UserFactory;
+use App\Tests\Shared\Mercure\MercureCookie;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 use Zenstruck\Browser\KernelBrowser;
@@ -59,16 +61,20 @@ class StateBetweenRequestsTest extends WebTestCase
         for ($round = 1; $round <= 3; ++$round) {
             $this->switchTo($browser, $adaCookies);
             $this->assertPageAs($browser, 'Ada Lovelace', 'ada@example.com', 'Alan Turing', 'alan@example.com', 2);
+            $this->assertOrderPageAs($browser, $ada, $alan, $adaOrder);
 
             $this->switchTo($browser, null);
             $browser
                 ->get('/order/')
                 ->assertOn('/login')
                 ->assertNotSee('ada@example.com')
-                ->assertNotSee('alan@example.com');
+                ->assertNotSee('alan@example.com')
+                ->assertElementCount('turbo-mercure-stream-source', 0);
+            self::assertNull(MercureCookie::find($browser));
 
             $this->switchTo($browser, $alanCookies);
             $this->assertPageAs($browser, 'Alan Turing', 'alan@example.com', 'Ada Lovelace', 'ada@example.com', 5);
+            $this->assertOrderPageAs($browser, $alan, $ada, $alanOrder);
         }
     }
 
@@ -149,5 +155,21 @@ class StateBetweenRequestsTest extends WebTestCase
             ->assertNotSee($otherName)
             ->assertNotSee($otherEmail)
             ->assertSeeIn('a[href$="myPools=1"] span', (string) $myQueue);
+    }
+
+    private function assertOrderPageAs(KernelBrowser $browser, User $viewer, User $other, CustomerOrder $order): void
+    {
+        $browser
+            ->get('/order/' . $order->getPublicId()->value())
+            ->assertSuccessful()
+            // The page subscribes to the viewer's own toasts only
+            ->assertElementCount('#user-notifications-' . $viewer->getPublicId(), 1)
+            ->assertElementCount('#user-notifications-' . $other->getPublicId(), 0);
+
+        // Its cookie lets the browser read the viewer's own topic and this order's, nothing else
+        self::assertSame(
+            ['subscribe' => ['user/' . $viewer->getPublicId(), RefreshOrderPageForViewers::topic($order->getPublicId())]],
+            MercureCookie::grantedTopics($browser),
+        );
     }
 }

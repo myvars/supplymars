@@ -6,6 +6,8 @@ namespace App\Order\Domain\Model\Order;
 
 use App\Customer\Domain\Model\Address\Address;
 use App\Customer\Domain\Model\User\User;
+use App\Order\Domain\Model\Order\Event\OrderItemWasRemovedEvent;
+use App\Order\Domain\Model\Order\Event\OrderLockWasChangedEvent;
 use App\Order\Domain\Model\Order\Event\OrderStatusWasChangedEvent;
 use App\Order\Infrastructure\Persistence\Doctrine\CustomerOrderDoctrineRepository;
 use App\Pricing\Domain\Model\VatRate\VatRate;
@@ -216,9 +218,25 @@ class CustomerOrder implements DomainEventProviderInterface
         return $this->status->allowCancel();
     }
 
-    public function lockOrder(?User $user): void
+    /**
+     * Locks the order to $holder, or releases it when null. $changedBy is who did it, which may not be the
+     * holder: any staff user can release any lock.
+     */
+    public function lockOrder(?User $holder, User $changedBy): void
     {
-        $this->orderLock = $user;
+        $previous = $this->orderLock;
+        if ($previous === $holder) {
+            return;
+        }
+
+        $this->orderLock = $holder;
+
+        $this->raiseDomainEvent(new OrderLockWasChangedEvent(
+            $this->getPublicId(),
+            $previous?->getPublicId(),
+            $holder?->getPublicId(),
+            $changedBy->getPublicId(),
+        ));
     }
 
     public function getId(): ?int
@@ -416,6 +434,8 @@ class CustomerOrder implements DomainEventProviderInterface
         }
 
         $this->recalculateTotal();
+
+        $this->raiseDomainEvent(new OrderItemWasRemovedEvent($this->getPublicId()));
 
         return $this;
     }

@@ -44,7 +44,7 @@ final class OrderUpdateDeleteMappingTest extends KernelTestCase
         self::assertNull($loaded->getOrderLock());
 
         $staffUser = $this->em->getRepository(User::class)->find($staff->getId());
-        $loaded->lockOrder($staffUser);
+        $loaded->lockOrder($staffUser, $staffUser);
 
         $this->em->flush();
         $this->em->clear();

@@ -9,7 +9,10 @@ enum DomainEventType: string
     case ORDER_CREATED = 'order.created';
     case ORDER_STATUS_CHANGED = 'order.status.changed';
     case ORDER_ITEM_CREATED = 'order.item.created';
+    case ORDER_ITEM_CHANGED = 'order.item.changed';
+    case ORDER_ITEM_REMOVED = 'order.item.removed';
     case ORDER_ITEM_STATUS_CHANGED = 'order.item.status.changed';
+    case ORDER_LOCK_CHANGED = 'order.lock.changed';
     case PURCHASE_ORDER_CREATED = 'purchase.order.created';
     case PURCHASE_ORDER_STATUS_CHANGED = 'purchase.order.status.changed';
     case PURCHASE_ORDER_ITEM_CREATED = 'purchase.order.item.created';

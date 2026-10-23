@@ -6,8 +6,10 @@ namespace App\Tests\Order\Domain;
 
 use App\Customer\Domain\Model\Address\Address;
 use App\Customer\Domain\Model\User\User;
+use App\Customer\Domain\Model\User\UserPublicId;
 use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Order\Domain\Model\Order\CustomerOrderItem;
+use App\Order\Domain\Model\Order\Event\OrderLockWasChangedEvent;
 use App\Order\Domain\Model\Order\Event\OrderStatusWasChangedEvent;
 use App\Order\Domain\Model\Order\OrderStatus;
 use App\Order\Domain\Model\Order\ShippingMethod;
@@ -158,6 +160,78 @@ class OrderDomainTest extends TestCase
         );
 
         self::assertNotEmpty($statusEvents);
+    }
+
+    public function testLockingRaisesAnEventWithWhoHoldsItAndWhoActed(): void
+    {
+        $order = $this->order();
+        $sam = $this->stubStaff();
+
+        $order->lockOrder($sam, $sam);
+
+        $event = $this->lockEvent($order);
+        self::assertTrue($event->getId()->equals($order->getPublicId()));
+        self::assertNull($event->getPreviousHolderId());
+        self::assertTrue($event->getHolderId()?->equals($sam->getPublicId()));
+        self::assertTrue($event->getChangedById()->equals($sam->getPublicId()));
+        self::assertFalse($event->isReleasedByAnotherUser());
+    }
+
+    public function testReleasingAnotherUsersLockIsMarkedAsSuch(): void
+    {
+        $order = $this->order();
+        $holder = $this->stubStaff();
+        $releaser = $this->stubStaff();
+        $order->lockOrder($holder, $holder);
+        $order->releaseDomainEvents();
+
+        $order->lockOrder(null, $releaser);
+
+        $event = $this->lockEvent($order);
+        self::assertNull($order->getOrderLock());
+        self::assertTrue($event->getPreviousHolderId()?->equals($holder->getPublicId()));
+        self::assertNull($event->getHolderId());
+        self::assertTrue($event->isReleasedByAnotherUser());
+    }
+
+    public function testTakingALockFromItsHolderIsMarkedAsReleased(): void
+    {
+        $order = $this->order();
+        $holder = $this->stubStaff();
+        $other = $this->stubStaff();
+        $order->lockOrder($holder, $holder);
+        $order->releaseDomainEvents();
+
+        $order->lockOrder($other, $other);
+
+        self::assertTrue($this->lockEvent($order)->isReleasedByAnotherUser());
+    }
+
+    public function testReleasingYourOwnLockIsNotMarkedAsReleasedByAnother(): void
+    {
+        $order = $this->order();
+        $holder = $this->stubStaff();
+        $order->lockOrder($holder, $holder);
+        $order->releaseDomainEvents();
+
+        $order->lockOrder(null, $holder);
+
+        self::assertFalse($this->lockEvent($order)->isReleasedByAnotherUser());
+    }
+
+    public function testLockingToTheCurrentHolderRaisesNothing(): void
+    {
+        $order = $this->order();
+        $holder = $this->stubStaff();
+        $order->lockOrder($holder, $holder);
+        $order->releaseDomainEvents();
+
+        $order->lockOrder($holder, $holder);
+        $order->lockOrder(null, $holder);
+        $order->releaseDomainEvents();
+        $order->lockOrder(null, $holder);
+
+        self::assertSame([], $order->releaseDomainEvents());
     }
 
     public function testNextDayShippingSetsCorrectPricesAndDueDate(): void
@@ -325,5 +399,35 @@ class OrderDomainTest extends TestCase
 
         self::assertSame(OrderStatus::PROCESSING, $order->getStatus());
         self::assertTrue($order->allowEdit());
+    }
+
+    private function order(): CustomerOrder
+    {
+        $order = CustomerOrder::createFromCustomer(
+            customer: $this->stubUser(),
+            shippingMethod: ShippingMethod::THREE_DAY,
+            vatRate: $this->stubVatRate(),
+            customerOrderRef: null,
+        );
+        $order->releaseDomainEvents();
+
+        return $order;
+    }
+
+    private function stubStaff(): User
+    {
+        $user = $this->createStub(User::class);
+        $user->method('getPublicId')->willReturn(UserPublicId::new());
+
+        return $user;
+    }
+
+    private function lockEvent(CustomerOrder $order): OrderLockWasChangedEvent
+    {
+        $events = $order->releaseDomainEvents();
+        self::assertCount(1, $events);
+        self::assertInstanceOf(OrderLockWasChangedEvent::class, $events[0]);
+
+        return $events[0];
     }
 }
