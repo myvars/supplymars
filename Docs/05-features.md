@@ -27,7 +27,7 @@ UI steps: [UserManual 03](UserManual/03-products.md), [04](UserManual/04-categor
 - A user is staff when `isStaff` is set, which adds `ROLE_ADMIN`. Everything except the routes marked `PUBLIC_ACCESS` in `access_control` (`config/packages/security.yaml`: public pages, login, registration, password reset, verify, help, health, the public catalog API and `/api/doc`) needs `ROLE_ADMIN`. `ROLE_SUPER_ADMIN` includes `ROLE_ADMIN`.
 - `/register` creates a non-staff user, who can sign in but can't open any back-office page.
 - Email verification is not enforced at login. `/verify/resend` exists, but nothing links to it.
-- Only a super admin can edit a staff account (`UpdateCustomerHandler`). Making a user staff sends the Admin Access Granted email.
+- Only a super admin can edit a staff account (`CustomerVoter`, asked by `UpdateCustomerHandler`, the inline name route and the templates). Making a user staff sends the Admin Access Granted email.
 - Email is unique (`UniqueEntity` on `User`).
 - **Emails:** Inky templates with inline CSS (`templates/shared/email/emailBase.html.twig`, `assets/styles/email.css`). `MailerHelper` has one method per email: verify email, reset password, admin access granted. `app:send-test-emails` (dev only) sends each one to Mailpit.
 
@@ -119,7 +119,7 @@ Key files: `src/Reporting/Application/Handler/Report/CustomerInsightsReportHandl
 ## Reviews
 
 - Eligibility: the order is DELIVERED, belongs to the customer and contains the product. One review per customer and product (unique constraint). Rating 1–5.
-- Eligibility is checked by the form's `ValidReviewEligibility` constraint, **not by `CreateReviewHandler`**. A caller that skips the form (`app:generate-reviews` picks eligible orders itself) must check it.
+- The rule is `ProductReview::ineligibility()`. `CreateReviewHandler` asks it, so every caller is held to it; the form's `ValidReviewEligibility` asks it too, only to show the message on the field. `app:generate-reviews` picks orders with its own query and asks it before creating each review. `ProductReview::create()` does not check, so fixtures can review any order.
 - Statuses: PENDING → PUBLISHED or REJECTED; PUBLISHED ↔ HIDDEN; REJECTED is final.
 - Only PENDING and PUBLISHED reviews can be edited. Delete is on the edit page, so REJECTED and HIDDEN reviews can't be deleted from the UI.
 - `ReviewSummaryUpdater` recalculates the product's summary (average, distribution) when a review is created, deleted, or changes status or rating.
@@ -133,7 +133,7 @@ UI steps: [UserManual 15](UserManual/15-reviews.md).
 Why pools, statuses and visibility work as they do: [ADR 009](adr/009-support-ticket-system.md).
 
 - Ticket statuses: OPEN → REPLIED or CLOSED; REPLIED → OPEN or CLOSED; CLOSED → OPEN only (reopen).
-- A staff reply sets REPLIED, a customer reply OPEN. A reply to a CLOSED ticket leaves it CLOSED (`Ticket::transitionStatusForReply()`).
+- A staff reply sets REPLIED, a customer reply OPEN. `ReplyToTicketHandler` refuses a reply to a CLOSED ticket; reopen it first. The system messages added on close, reopen, snooze and reassign do not go through it.
 - Close, reopen and reassign add a system message. System messages and the first message of a ticket can't be deleted (`DeleteMessageHandler`).
 - Messages are PUBLIC (staff and customer) or INTERNAL (staff only).
 - Snooze needs a future date. Snoozed tickets are hidden from the index unless "show snoozed" is set.

@@ -29,10 +29,11 @@ The demo user on the playground has `ROLE_ADMIN`; the owner has `ROLE_SUPER_ADMI
 | Action | Where it is checked | What `ROLE_ADMIN` gets |
 |--------|---------------------|------------------------|
 | Delete a product, supplier, supplier product, VAT rate or pool | The handler (`DeleteProductHandler`, `DeleteSupplierHandler`, `DeleteSupplierProductHandler`, `DeleteVatRateHandler`, `DeletePoolHandler`) | Error flash "Deleting is disabled for this user." |
-| Edit a staff account | `UpdateCustomerHandler` | Error flash "Staff accounts cannot be modified in the playground." |
+| Edit a staff account | `CustomerVoter` (`CUSTOMER_EDIT`), asked by `UpdateCustomerHandler`, the inline name route (`#[IsGranted]`) and the templates | No edit button or inline edit on a staff account; `403` on the inline route; error flash "Staff accounts cannot be modified in the playground." from the edit form |
 | Create an order by hand | `OrderController::new`, `#[IsGranted('ROLE_SUPER_ADMIN')]` | `403`; the button is hidden |
 
 - The other delete handlers (category, subcategory, manufacturer, product image, review, customer, message) do not check, so any staff user can delete those records.
+- A rule about who may change a given record belongs in a voter, so the handler, the route and the template ask the same question (`CustomerVoter`).
 - The check is in the handler, not the flow, because `ConfirmFlow` also runs confirmed actions every staff user may do (cancel an order, remove a supplier product mapping, rewind a purchase order).
 - File uploads are refused on the playground whatever the role: `UploadHelper` throws `CannotWriteFileException` when `PLAYGROUND_MODE` is true.
 - The nightly reset and the demo account are in [infrastructure/playground.md](infrastructure/playground.md).

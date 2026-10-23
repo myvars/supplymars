@@ -7,6 +7,7 @@ namespace App\Tests\Order\Application\Handler;
 use App\Order\Application\Command\UpdateOrderItem;
 use App\Order\Application\Handler\UpdateOrderItemHandler;
 use App\Order\Domain\Model\Order\OrderItemPublicId;
+use App\Order\Domain\Model\Order\OrderStatus;
 use App\Order\Domain\Repository\OrderItemRepository;
 use App\Tests\Shared\Factory\CustomerOrderItemFactory;
 use App\Tests\Shared\Factory\ProductFactory;
@@ -197,5 +198,29 @@ class UpdateOrderItemHandlerTest extends KernelTestCase
 
         $persisted = $this->orderItems->getByPublicId($orderItem->getPublicId());
         self::assertSame(3, $persisted->getQuantity());
+    }
+
+    #[WithStory(StaffUserStory::class)]
+    public function testUpdateFailsWhenOrderItemIsCancelled(): void
+    {
+        $product = ProductFactory::new()->withActiveSource()->create();
+        $orderItem = CustomerOrderItemFactory::createOne([
+            'product' => $product,
+            'quantity' => 5,
+        ]);
+        $orderItem->cancelItem();
+
+        $command = new UpdateOrderItem(
+            orderItemId: $orderItem->getPublicId(),
+            quantity: 10,
+            priceIncVat: '30.00',
+        );
+
+        $result = ($this->handler)($command);
+
+        self::assertFalse($result->ok);
+        self::assertSame('Order item not editable', $result->message);
+        self::assertSame(OrderStatus::CANCELLED, $orderItem->getStatus());
+        self::assertSame(5, $this->orderItems->getByPublicId($orderItem->getPublicId())?->getQuantity());
     }
 }

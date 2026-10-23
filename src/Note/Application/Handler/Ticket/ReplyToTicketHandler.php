@@ -32,6 +32,10 @@ final readonly class ReplyToTicketHandler
             return Result::fail('Ticket not found.');
         }
 
+        if ($ticket->getStatus()->isClosed()) {
+            return Result::fail('Ticket is closed. Reopen it to reply.');
+        }
+
         $author = $this->users->get(UserId::fromInt($command->authorId));
         if (!$author instanceof User) {
             return Result::fail('Author not found.');

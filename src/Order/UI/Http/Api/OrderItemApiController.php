@@ -81,8 +81,8 @@ class OrderItemApiController extends AbstractApiController
         UpdateOrderItemHandler $handler,
         #[MapRequestPayload] UpdateOrderItemPayload $payload,
     ): JsonResponse {
-        $this->resolveOrder($orders, $orderId);
-        $orderItem = $this->resolveOrderItem($orderItems, $itemId);
+        $order = $this->resolveOrder($orders, $orderId);
+        $orderItem = $this->resolveOrderItem($orderItems, $order, $itemId);
 
         $result = ($handler)(
             new UpdateOrderItem(
@@ -106,8 +106,8 @@ class OrderItemApiController extends AbstractApiController
         OrderItemRepository $orderItems,
         CancelOrderItemHandler $handler,
     ): JsonResponse {
-        $this->resolveOrder($orders, $orderId);
-        $orderItem = $this->resolveOrderItem($orderItems, $itemId);
+        $order = $this->resolveOrder($orders, $orderId);
+        $orderItem = $this->resolveOrderItem($orderItems, $order, $itemId);
 
         $result = ($handler)(new CancelOrderItem($orderItem->getPublicId()));
 
@@ -120,7 +120,8 @@ class OrderItemApiController extends AbstractApiController
 
     private function resolveOrder(OrderRepository $orders, string $orderId): CustomerOrder
     {
-        $order = $orders->getByPublicId(OrderPublicId::fromString($orderId));
+        $publicId = OrderPublicId::tryFromString($orderId);
+        $order = $publicId instanceof OrderPublicId ? $orders->getByPublicId($publicId) : null;
 
         if (!$order instanceof CustomerOrder) {
             throw new NotFoundHttpException('Order not found.');
@@ -129,11 +130,13 @@ class OrderItemApiController extends AbstractApiController
         return $order;
     }
 
-    private function resolveOrderItem(OrderItemRepository $orderItems, string $itemId): CustomerOrderItem
+    private function resolveOrderItem(OrderItemRepository $orderItems, CustomerOrder $order, string $itemId): CustomerOrderItem
     {
-        $orderItem = $orderItems->getByPublicId(OrderItemPublicId::fromString($itemId));
+        $publicId = OrderItemPublicId::tryFromString($itemId);
+        $orderItem = $publicId instanceof OrderItemPublicId ? $orderItems->getByPublicId($publicId) : null;
 
-        if (!$orderItem instanceof CustomerOrderItem) {
+        // An item of another order is not found here, so the path cannot reach it through this one
+        if (!$orderItem instanceof CustomerOrderItem || $orderItem->getCustomerOrder() !== $order) {
             throw new NotFoundHttpException('Order item not found.');
         }
 

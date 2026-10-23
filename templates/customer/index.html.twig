@@ -19,7 +19,7 @@
 
         <twig:block name="list_item">
             <twig:EntityCard
-                editLink="{{ path('app_customer_edit', {'id': result.publicId.value }) }}"
+                editLink="{{ is_granted('CUSTOMER_EDIT', result) ? path('app_customer_edit', {'id': result.publicId.value }) : null }}"
                 showLink="{{ path('app_customer_show', {'id': result.publicId.value }) }}"
                 statusHighlight="{{ result.isVerified ? 'VERIFIED' : 'UNVERIFIED' }}"
             >

@@ -57,9 +57,9 @@ You are signed in straight away and sent a verification email. A new account has
 | Staff | **Member of Staff** ticked on the customer record | Everything in this manual, except the super admin actions below. |
 | Super admin | Not shown or set on any screen | Everything staff can do, plus: create orders by hand (the **Create Order** button), delete products, suppliers, supplier products, VAT rates and pools, and edit staff accounts. |
 
-Staff who try a super admin action see "Deleting is disabled for this user." or "Staff accounts cannot be modified in the playground." (shown in every environment, not only the playground); **Create Order** is hidden from them.
+Staff who try a super admin delete see "Deleting is disabled for this user." (in every environment, not only the playground). **Create Order**, and the edit controls on a staff account, are hidden from them.
 
-Editing a staff account is super admin only, your own included: a staff user who opens **Settings** and saves the edit form gets "Staff accounts cannot be modified in the playground." The one exception is the full name, which any staff user can change in place ([inline editing](02-navigation.md#inline-editing)).
+Editing a staff account is super admin only, your own included, and that covers the full name too. A staff user who opens **Settings** sees no edit button and cannot click the name to change it.
 
 The **Help** button and the `?` key work for everyone, signed in or not.
 

@@ -137,7 +137,7 @@ Reading order for the areas whose logic spans several files.
 | Pricing | `src/Shared/Domain/Service/Pricing/MarkupCalculator.php`, `src/Shared/Domain/ValueObject/PriceModel.php`, `src/Catalog/Domain/Model/Product/Product.php` (`getActiveMarkup()`, `recalculatePrice()`), `src/Pricing/Application/Listener/` |
 | Order allocation | `src/Purchasing/Application/Service/OrderAllocator.php`, `src/Purchasing/Application/Service/OrderItemAllocator.php`, `Product::getBestSourceWithMinQuantity()`, `src/Order/Domain/Model/Order/CustomerOrderItem.php` (`getOutstandingQty()`) |
 | Status flows | `src/Order/Domain/Model/Order/OrderStatus.php`, `src/Purchasing/Domain/Model/PurchaseOrder/PurchaseOrderStatus.php` (`canTransitionTo()`), then `generateStatus()` on `CustomerOrder`, `CustomerOrderItem` and `PurchaseOrder` |
-| Reviews | `src/Review/Domain/Model/Review/ProductReview.php`, `ReviewStatus.php`, `src/Review/Application/Listener/ReviewSummaryUpdater.php`, `src/Review/UI/Http/Validation/ValidReviewEligibilityValidator.php` (who may review) |
+| Reviews | `src/Review/Domain/Model/Review/ProductReview.php`, `ReviewStatus.php`, `src/Review/Application/Listener/ReviewSummaryUpdater.php`, `ProductReview::ineligibility()` (who may review) |
 | Support tickets | `src/Note/Domain/Model/Ticket/Ticket.php` (transitions, snooze), `TicketStatus.php`, `src/Note/Domain/Model/Message/Message.php` (visibility, author type), `src/Note/Domain/Model/Pool/Pool.php` |
 | REST API | `src/Shared/UI/Http/Api/AbstractApiController.php`, `ApiResponse.php`, `src/Shared/UI/Http/Api/EventListener/ApiExceptionListener.php`, `src/Customer/Infrastructure/Security/ApiTokenHandler.php`, then `src/{Context}/UI/Http/Api/` |
 

@@ -6,14 +6,12 @@ namespace App\Tests\Customer\Application\Handler;
 
 use App\Customer\Application\Command\UpdateCustomer;
 use App\Customer\Application\Handler\UpdateCustomerHandler;
+use App\Customer\Domain\Model\User\User;
 use App\Customer\Domain\Model\User\UserPublicId;
 use App\Customer\Domain\Repository\UserRepository;
-use App\Customer\Infrastructure\Mailer\MailerHelper;
-use App\Shared\Application\FlusherInterface;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Zenstruck\Foundry\Test\Factories;
 
 final class UpdateCustomerHandlerTest extends KernelTestCase
@@ -34,7 +32,7 @@ final class UpdateCustomerHandlerTest extends KernelTestCase
     public function testHandleUpdatesCustomer(): void
     {
         $user = UserFactory::new()->asStaff()->create();
-        $handler = $this->handlerWithSecurity(isSuperAdmin: true);
+        $handler = $this->handlerActingAs(UserFactory::new()->asSuperAdmin()->create());
 
         $command = new UpdateCustomer(
             id: $user->getPublicId(),
@@ -155,24 +153,18 @@ final class UpdateCustomerHandlerTest extends KernelTestCase
         self::assertSame('There is already an account with this email', $result->message);
     }
 
-    private function handlerWithSecurity(bool $isSuperAdmin): UpdateCustomerHandler
+    private function handlerActingAs(User $actor): UpdateCustomerHandler
     {
-        $security = $this->createStub(Security::class);
-        $security->method('isGranted')->willReturn($isSuperAdmin);
+        self::getContainer()->get('security.token_storage')
+            ->setToken(new UsernamePasswordToken($actor, 'main', $actor->getRoles()));
 
-        return new UpdateCustomerHandler(
-            self::getContainer()->get(UserRepository::class),
-            self::getContainer()->get(FlusherInterface::class),
-            self::getContainer()->get(ValidatorInterface::class),
-            self::getContainer()->get(MailerHelper::class),
-            $security,
-        );
+        return $this->handler;
     }
 
     public function testNonSuperAdminCannotEditStaffAccount(): void
     {
         $staffUser = UserFactory::new()->asStaff()->create();
-        $handler = $this->handlerWithSecurity(isSuperAdmin: false);
+        $handler = $this->handlerActingAs(UserFactory::new()->asStaff()->create());
 
         $command = new UpdateCustomer(
             id: $staffUser->getPublicId(),
@@ -194,7 +186,7 @@ final class UpdateCustomerHandlerTest extends KernelTestCase
     public function testNonSuperAdminCanEditNonStaffAccount(): void
     {
         $regularUser = UserFactory::createOne(['fullName' => 'Regular User']);
-        $handler = $this->handlerWithSecurity(isSuperAdmin: false);
+        $handler = $this->handlerActingAs(UserFactory::new()->asStaff()->create());
 
         $command = new UpdateCustomer(
             id: $regularUser->getPublicId(),
@@ -215,7 +207,7 @@ final class UpdateCustomerHandlerTest extends KernelTestCase
     public function testSuperAdminCanEditStaffAccount(): void
     {
         $staffUser = UserFactory::new()->asStaff()->create();
-        $handler = $this->handlerWithSecurity(isSuperAdmin: true);
+        $handler = $this->handlerActingAs(UserFactory::new()->asSuperAdmin()->create());
 
         $command = new UpdateCustomer(
             id: $staffUser->getPublicId(),

@@ -59,6 +59,10 @@ final readonly class UpdateOrderItemHandler
 
     private function handleUpdate(CustomerOrderItem $orderItem, UpdateOrderItem $command): Result
     {
+        if (!$orderItem->allowEdit() || !$orderItem->getCustomerOrder()->allowEdit()) {
+            return Result::fail('Order item not editable');
+        }
+
         $priceBeforeVat = $this->markupCalculator->calculateSellPriceBeforeVat(
             $command->priceIncVat,
             $orderItem->getVatRate()->getRate()

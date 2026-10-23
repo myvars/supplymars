@@ -68,7 +68,7 @@ final class PublicIdResolverTest extends TestCase
     public function testResolvesEntityWhenFound(): void
     {
         $entity = new class {
-            public string $publicId = 'abc';
+            public string $publicId = '01J9ZQ6Y8V4K3M2N1P0R5S7T9W';
         };
 
         $registry = $this->createStub(ManagerRegistry::class);
@@ -80,10 +80,10 @@ final class PublicIdResolverTest extends TestCase
 
         $repo->expects(self::once())
             ->method('findOneBy')
-            ->with(['publicId' => 'abc'])
+            ->with(['publicId' => '01J9ZQ6Y8V4K3M2N1P0R5S7T9W'])
             ->willReturn($entity);
 
-        $request = new Request([], [], ['id' => 'abc']);
+        $request = new Request([], [], ['id' => '01J9ZQ6Y8V4K3M2N1P0R5S7T9W']);
         $resolver = new PublicIdResolver($registry);
 
         $result = $resolver->resolve($request, $this->makeArgument(\stdClass::class));
@@ -100,11 +100,28 @@ final class PublicIdResolverTest extends TestCase
         $manager->method('getRepository')->willReturn($repo);
         $repo->method('findOneBy')->willReturn(null);
 
-        $request = new Request([], [], ['id' => 'xyz']);
+        $request = new Request([], [], ['id' => '01J9ZQ6Y8V4K3M2N1P0R5S7T9X']);
         $resolver = new PublicIdResolver($registry);
 
         $this->expectException(NotFoundHttpException::class);
-        $this->expectExceptionMessageIsOrContains('stdClass "xyz" not found.');
+        $this->expectExceptionMessageIsOrContains('stdClass "01J9ZQ6Y8V4K3M2N1P0R5S7T9X" not found.');
+
+        iterator_to_array($resolver->resolve($request, $this->makeArgument(\stdClass::class)));
+    }
+
+    public function testThrowsNotFoundWithoutQueryingWhenIdIsNotAUlid(): void
+    {
+        $registry = $this->createStub(ManagerRegistry::class);
+        $manager = $this->createMock(ObjectManager::class);
+
+        $registry->method('getManagerForClass')->willReturn($manager);
+        $manager->expects(self::never())->method('getRepository');
+
+        $request = new Request([], [], ['id' => 'not-a-ulid']);
+        $resolver = new PublicIdResolver($registry);
+
+        $this->expectException(NotFoundHttpException::class);
+        $this->expectExceptionMessageIsOrContains('stdClass "not-a-ulid" not found.');
 
         iterator_to_array($resolver->resolve($request, $this->makeArgument(\stdClass::class)));
     }
