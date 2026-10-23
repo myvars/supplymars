@@ -15,6 +15,7 @@ use App\Order\Domain\Model\Order\OrderId;
 use App\Order\Domain\Repository\OrderRepository;
 use App\Review\Application\Command\CreateReview;
 use App\Review\Domain\Model\Review\ProductReview;
+use App\Review\Domain\Model\Review\ReviewIneligibility;
 use App\Review\Domain\Repository\ReviewRepository;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Application\Result;
@@ -47,6 +48,15 @@ final readonly class CreateReviewHandler
         $order = $this->orders->get(OrderId::fromInt($command->orderId));
         if (!$order instanceof CustomerOrder) {
             return Result::fail('Order not found.');
+        }
+
+        $ineligibility = ProductReview::ineligibility($customer, $product, $order);
+        if ($ineligibility instanceof ReviewIneligibility) {
+            return Result::fail($ineligibility->message());
+        }
+
+        if ($this->reviews->findByCustomerAndProduct($customer, $product) instanceof ProductReview) {
+            return Result::fail('A review already exists for this customer and product.');
         }
 
         $review = ProductReview::create(

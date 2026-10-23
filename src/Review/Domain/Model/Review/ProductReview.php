@@ -7,6 +7,7 @@ namespace App\Review\Domain\Model\Review;
 use App\Catalog\Domain\Model\Product\Product;
 use App\Customer\Domain\Model\User\User;
 use App\Order\Domain\Model\Order\CustomerOrder;
+use App\Order\Domain\Model\Order\OrderStatus;
 use App\Review\Domain\Model\Review\Event\ReviewRatingWasChangedEvent;
 use App\Review\Domain\Model\Review\Event\ReviewStatusWasChangedEvent;
 use App\Review\Domain\Model\Review\Event\ReviewWasCreatedEvent;
@@ -80,6 +81,31 @@ class ProductReview implements DomainEventProviderInterface
     private function __construct()
     {
         $this->initializePublicId();
+    }
+
+    /**
+     * Why the customer may not review the product from this order, or null when they may: the order
+     * must be theirs, delivered, and contain the product. One review per customer and product is a
+     * separate check, against the repository. Callers ask before create(); it does not check again,
+     * so fixtures can build reviews on any order.
+     */
+    public static function ineligibility(User $customer, Product $product, CustomerOrder $order): ?ReviewIneligibility
+    {
+        if ($order->getCustomer() !== $customer) {
+            return ReviewIneligibility::ORDER_NOT_OWNED;
+        }
+
+        if ($order->getStatus() !== OrderStatus::DELIVERED) {
+            return ReviewIneligibility::ORDER_NOT_DELIVERED;
+        }
+
+        foreach ($order->getCustomerOrderItems() as $item) {
+            if ($item->getProduct() === $product) {
+                return null;
+            }
+        }
+
+        return ReviewIneligibility::PRODUCT_NOT_IN_ORDER;
     }
 
     public static function create(

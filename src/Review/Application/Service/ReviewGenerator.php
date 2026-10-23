@@ -14,6 +14,7 @@ use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Order\Domain\Model\Order\OrderId;
 use App\Order\Domain\Repository\OrderRepository;
 use App\Review\Domain\Model\Review\ProductReview;
+use App\Review\Domain\Model\Review\ReviewIneligibility;
 use App\Review\Domain\Repository\ReviewRepository;
 use App\Review\Infrastructure\Persistence\Doctrine\ReviewDoctrineRepository;
 use Psr\Log\LoggerInterface;
@@ -90,6 +91,11 @@ class ReviewGenerator
                 }
 
                 if (!$order instanceof CustomerOrder) {
+                    continue;
+                }
+
+                // The query picks likely orders; the entity has the final say
+                if (ProductReview::ineligibility($customer, $product, $order) instanceof ReviewIneligibility) {
                     continue;
                 }
 

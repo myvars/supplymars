@@ -119,7 +119,7 @@ Key files: `src/Reporting/Application/Handler/Report/CustomerInsightsReportHandl
 ## Reviews
 
 - Eligibility: the order is DELIVERED, belongs to the customer and contains the product. One review per customer and product (unique constraint). Rating 1–5.
-- Eligibility is checked by the form's `ValidReviewEligibility` constraint, **not by `CreateReviewHandler`**. A caller that skips the form (`app:generate-reviews` picks eligible orders itself) must check it.
+- The rule is `ProductReview::ineligibility()`. `CreateReviewHandler` asks it, so every caller is held to it; the form's `ValidReviewEligibility` asks it too, only to show the message on the field. `app:generate-reviews` picks orders with its own query and asks it before creating each review. `ProductReview::create()` does not check, so fixtures can review any order.
 - Statuses: PENDING → PUBLISHED or REJECTED; PUBLISHED ↔ HIDDEN; REJECTED is final.
 - Only PENDING and PUBLISHED reviews can be edited. Delete is on the edit page, so REJECTED and HIDDEN reviews can't be deleted from the UI.
 - `ReviewSummaryUpdater` recalculates the product's summary (average, distribution) when a review is created, deleted, or changes status or rating.
