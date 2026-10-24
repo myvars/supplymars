@@ -36,7 +36,7 @@ class HomeControllerTest extends WebTestCase
         $this->browser()
             ->get('/about')
             ->assertSuccessful()
-            ->assertSee('The Developer')
+            ->assertSee('lifelong coder')
             ->assertSee('Ebuyer');
     }
 
