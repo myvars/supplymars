@@ -9,11 +9,11 @@
 
     <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">What You Can Do</h3>
     <ul class="list-disc pl-5 space-y-1">
-        <li>Create orders and add items</li>
+        <li>Add items to an order (creating an order by hand is super admin only)</li>
         <li>Create demo orders for testing (max 10/day)</li>
         <li>Allocate orders to suppliers</li>
         <li>Cancel pending orders</li>
-        <li>Lock orders to prevent concurrent editing</li>
+        <li>Lock an order so the scheduled allocation, acceptance, shipping and delivery jobs skip it (it does not block edits)</li>
     </ul>
 
     <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Order Status</h3>
@@ -26,7 +26,7 @@
     </ul>
 
     <twig:Callout type="warning">
-        Orders can only be cancelled in Pending status. Once allocated, cancel individual purchase orders instead.
+        Orders can only be cancelled in Pending status, with nothing on a purchase order. After that, change the status of the purchase order items instead.
     </twig:Callout>
 
     <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Shipping Methods</h3>

@@ -18,7 +18,7 @@
     <p>Each supplier is assigned a colour (Violet, Amber, Teal, or Rose) shown as a dot on PO cards and order items for quick visual identification.</p>
 
     <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Supplier Selection</h3>
-    <p>When allocating orders, the system picks suppliers by: stock availability first, then lowest cost, then active status.</p>
+    <p>Allocation considers only active supplier products from active suppliers, with stock for the whole quantity and a cost above 0. The lowest cost wins; on equal cost, the one with more stock.</p>
 
     <twig:Callout type="info">
         Inactive suppliers won't receive new orders but existing purchase orders continue to be processed.

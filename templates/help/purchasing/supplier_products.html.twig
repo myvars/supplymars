@@ -16,10 +16,10 @@
     </ul>
 
     <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Active Source</h3>
-    <p>The system automatically selects the best supplier for each product based on: stock > 0, lowest cost, active status. You cannot manually choose the active source.</p>
+    <p>Only active supplier products from active suppliers, with stock and a cost above 0, count. Lowest cost wins; on a tie, most stock. You cannot choose the active source by hand.</p>
 
     <twig:Callout type="info">
-        Mapped supplier products cannot be deleted. Unmap them first using the Remove action.
+        Only a super admin can delete a supplier product. Deleting a mapped one unmaps it first. A supplier product on any purchase order cannot be deleted; deactivate it instead.
     </twig:Callout>
 
     <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Related</h3>

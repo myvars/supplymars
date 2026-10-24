@@ -15,10 +15,10 @@
     </ul>
 
     <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">How VAT Is Applied</h3>
-    <p>VAT is added after markup and price model rounding. The formula is: sell price &times; (1 + VAT rate). For example, £16.99 at 20% VAT = £20.39.</p>
+    <p>VAT is added after markup, then the price model rounds the price inc VAT. For example, £11.00 at 20% VAT = £13.20, which Pretty 99 rounds to £13.99.</p>
 
     <twig:Callout type="warning">
-        Changing a VAT rate recalculates sell prices for all products in categories using that rate. Rates in use cannot be deleted.
+        Changing a VAT rate recalculates sell prices for all products in categories using that rate. Only a super admin can delete a rate, and deleting one still used by a category fails with an error.
     </twig:Callout>
 
     <h3 class="text-xs font-semibold uppercase tracking-wide text-gray-400 dark:text-gray-500">Related</h3>

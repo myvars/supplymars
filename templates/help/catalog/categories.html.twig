@@ -22,12 +22,12 @@
         <li>Category markup % applied</li>
         <li>Subcategory markup % overrides category (if set)</li>
         <li>Product markup % overrides subcategory (if set)</li>
-        <li>Price model rounding applied</li>
         <li>VAT added (from category's VAT rate)</li>
+        <li>Price model rounding applied to the price inc VAT</li>
     </ol>
 
     <twig:Callout type="warning">
-        Changing a category's VAT rate or markup recalculates prices for all products in that category immediately.
+        Changing a category's VAT rate reprices its active products immediately. A markup or price model change reprices only the active products whose markup or price model it decides.
     </twig:Callout>
 
     <twig:Callout type="info">
