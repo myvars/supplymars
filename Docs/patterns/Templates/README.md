@@ -18,7 +18,7 @@ How templates under `templates/` are named and documented, and the variables For
 - Templates mirror the bounded contexts: `{context}/{entity}/...`, or `{entity}/...` for a `FlowModel::simple()` controller (`order/`, `customer/`).
 - `shared/form_flow/` holds the app's overrides of the `myvars/form-flow` default templates. Which one a flow renders: [Overrides](../FormFlow/Overrides.md).
 - `shared/turbo/` holds the modal and frame layouts: [Turbo](../Turbo/README.md).
-- `bundles/TwigBundle/Exception/` holds the error pages (`error.html.twig`, `error403`, `error404`, `error500`).
+- `bundles/TwigBundle/Exception/` holds the error pages (`error.html.twig`, `error403`, `error404`, `error500`). Each fills the `code`, `heading`, `message` and optional `note` blocks of `_layout.html.twig`, which renders them as a full page, or as a `ModalPanel` when the request came from the `modal` frame ([Turbo](../Turbo/README.md#gotchas)).
 - Help topics in `help/` extend `help/_layout.html.twig`.
 
 ## FormFlow variables
