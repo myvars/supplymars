@@ -41,6 +41,26 @@ final class ErrorPageFlowTest extends WebTestCase
             ->assertSeeIn('turbo-frame#modal', 'Full access may be available once your account has been approved by an admin.');
     }
 
+    public function testOtherErrorsInTheModalFrameUseTheGenericErrorPage(): void
+    {
+        // 405: a POST-only route requested with GET; error.html.twig answers codes without their own page
+        $this->browser(['debug' => false])
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/manufacturer/' . new Ulid() . '/delete', ['headers' => ['Turbo-Frame' => 'modal']])
+            ->assertStatus(405)
+            ->assertSeeIn('turbo-frame#modal h3#modal-title', 'Unexpected Problem on Mars')
+            ->assertSeeIn('turbo-frame#modal', 'Mars is unpredictable');
+    }
+
+    public function testNotFoundInTheBodyFrameIsAFullPage(): void
+    {
+        $this->browser(['debug' => false])
+            ->get('/no-such-page', ['headers' => ['Turbo-Frame' => 'body']])
+            ->assertStatus(404)
+            ->assertSeeIn('turbo-frame#body h2', 'Lost in the Martian Dust')
+            ->assertNotSeeElement('h3#modal-title');
+    }
+
     public function testNotFoundOutsideTheModalIsAFullPage(): void
     {
         $this->browser(['debug' => false])

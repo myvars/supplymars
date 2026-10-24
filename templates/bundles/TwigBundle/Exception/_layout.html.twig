@@ -1,13 +1,12 @@
 {# Error pages. A request from the modal frame gets the error inside that frame, so the dialog shows it; any other
    request gets the full page, whose #body frame also answers body-frame navigation.
    Blocks: code, heading, message, note (optional) #}
-{% extends app.request.headers.get('turbo-frame') == 'modal' ? 'shared/turbo/modal_frame.html.twig' : 'base.html.twig' %}
-
-{% block title %}Error{% endblock %}
+{% set _in_modal = app.request.headers.get('turbo-frame') == 'modal' %}
+{% extends _in_modal ? 'shared/turbo/modal_frame.html.twig' : 'base.html.twig' %}
 
 {% block body %}
     {% set note %}{% block note %}{% endblock %}{% endset %}
-    {% if app.request.headers.get('turbo-frame') == 'modal' %}
+    {% if _in_modal %}
         {# Captured here: the ModalPanel's content cannot call block() #}
         {% set message %}{{ block('message') }}{% endset %}
         <twig:ModalPanel title="{{ block('heading') }}" size="sm">
