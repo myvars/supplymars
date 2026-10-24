@@ -54,6 +54,8 @@ class HelpController extends AbstractController
         'app_reports_order_summary' => 'reporting/reports',
         'app_reports_product_sales' => 'reporting/reports',
         'app_reports_customer_insights' => 'reporting/reports',
+        'app_reports_customer_geographic' => 'reporting/reports',
+        'app_reports_customer_segments' => 'reporting/reports',
         'app_reports_overdue_orders' => 'reporting/reports',
         'app_reports_po_performance' => 'reporting/reports',
         'app_note_ticket_index' => 'notes/tickets',

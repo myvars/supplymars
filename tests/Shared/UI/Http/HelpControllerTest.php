@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Shared\UI\Http;
 
 use App\Tests\Shared\Factory\UserFactory;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
@@ -61,6 +62,23 @@ class HelpControllerTest extends WebTestCase
             ->get('/help?page=/login')
             ->assertSuccessful()
             ->assertSee('Account');
+    }
+
+    #[DataProvider('customerInsightsTabs')]
+    public function testHelpCustomerInsightsTabsLoadReports(string $page): void
+    {
+        $this->browser()
+            ->get('/help?page=' . $page)
+            ->assertSuccessful()
+            ->assertSee('Available Reports')
+            ->assertNotContains('No help is available');
+    }
+
+    /** @return iterable<string, array{string}> */
+    public static function customerInsightsTabs(): iterable
+    {
+        yield 'geographic' => ['/reports/customer/geographic'];
+        yield 'segments' => ['/reports/customer/segments'];
     }
 
     public function testHelpRelatedLinksWork(): void
