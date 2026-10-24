@@ -1,24 +1,13 @@
-{% extends 'base.html.twig' %}
+{% extends '@Twig/Exception/_layout.html.twig' %}
 
 {% block title %}403 Forbidden{% endblock %}
-
-{% block body %}
-        <section class="relative mx-auto flex items-center justify-center bg-white dark:bg-orange-400/10 md:h-screen" style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
-            <div class="absolute inset-0 bg-gradient-to-b from-gray-950/60 via-gray-950/30 to-gray-950/80 pointer-events-none"></div>
-            <div data-turbo-temporary class="relative mx-auto max-w-(--breakpoint-xl) px-4 py-8 sm:py-12 lg:px-6">
-                <div class="mb-10 max-w-(--breakpoint-md)">
-                    <p class="mb-4 text-7xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-500 lg:text-9xl">403</p>
-                    <h2 class="mb-4 text-3xl font-bold tracking-tight text-white md:text-4xl">Unauthorized Access to Mars Colony Systems</h2>
-                    <p class="mb-4 text-lg font-light text-gray-300">
-                        Oops! It looks like your clearance level isn't high enough to explore this part of the Martian colony.
-                        Our systems have detected an attempt to access restricted areas without the proper credentials.
-                        Don't worry — no airlocks were breached in the process!
-                    </p>
-                    <p class="mb-8 text-sm text-gray-400">
-                        Full access may be available once your account has been approved by an admin.
-                    </p>
-                    <twig:Button as="a" href="{{ path('app_homepage') }}" data-turbo-frame="body">Back to Colony HQ</twig:Button>
-                </div>
-            </div>
-        </section>
+{% block code %}403{% endblock %}
+{% block heading %}Unauthorized Access to Mars Colony Systems{% endblock %}
+{% block message %}
+    Oops! It looks like your clearance level isn't high enough to explore this part of the Martian colony.
+    Our systems have detected an attempt to access restricted areas without the proper credentials.
+    Don't worry — no airlocks were breached in the process!
+{% endblock %}
+{% block note %}
+    Full access may be available once your account has been approved by an admin.
 {% endblock %}

@@ -1,0 +1,39 @@
+{# Error pages. A request from the modal frame gets the error inside that frame, so the dialog shows it; any other
+   request gets the full page, whose #body frame also answers body-frame navigation.
+   Blocks: code, heading, message, note (optional) #}
+{% extends app.request.headers.get('turbo-frame') == 'modal' ? 'shared/turbo/modal_frame.html.twig' : 'base.html.twig' %}
+
+{% block title %}Error{% endblock %}
+
+{% block body %}
+    {% set note %}{% block note %}{% endblock %}{% endset %}
+    {% if app.request.headers.get('turbo-frame') == 'modal' %}
+        {# Captured here: the ModalPanel's content cannot call block() #}
+        {% set message %}{{ block('message') }}{% endset %}
+        <twig:ModalPanel title="{{ block('heading') }}" size="sm">
+            <p>{{ message }}</p>
+            {% if note|trim %}
+                <p class="mt-3 text-xs text-muted-foreground">{{ note }}</p>
+            {% endif %}
+        </twig:ModalPanel>
+    {% else %}
+        <section class="relative mx-auto flex items-center justify-center bg-white dark:bg-orange-400/10 md:h-screen" style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
+            <div class="absolute inset-0 bg-gradient-to-b from-gray-950/60 via-gray-950/30 to-gray-950/80 pointer-events-none"></div>
+            <div data-turbo-temporary class="relative mx-auto max-w-(--breakpoint-xl) px-4 py-8 sm:py-12 lg:px-6">
+                <div class="mb-10 max-w-(--breakpoint-md)">
+                    <p class="mb-4 text-7xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-500 lg:text-9xl">{{ block('code') }}</p>
+                    <h2 class="mb-4 text-3xl font-bold tracking-tight text-white md:text-4xl">{{ block('heading') }}</h2>
+                    <p class="{{ note|trim ? 'mb-4' : 'mb-8' }} text-lg font-light text-gray-300">
+                        {{ block('message') }}
+                    </p>
+                    {% if note|trim %}
+                        <p class="mb-8 text-sm text-gray-400">
+                            {{ note }}
+                        </p>
+                    {% endif %}
+                    <twig:Button as="a" href="{{ path('app_homepage') }}" data-turbo-frame="body">Back to Colony HQ</twig:Button>
+                </div>
+            </div>
+        </section>
+    {% endif %}
+{% endblock %}
