@@ -9,6 +9,7 @@ use App\Customer\Domain\Model\User\User;
 use App\Order\Domain\Model\Order\Event\OrderItemWasRemovedEvent;
 use App\Order\Domain\Model\Order\Event\OrderLockWasChangedEvent;
 use App\Order\Domain\Model\Order\Event\OrderStatusWasChangedEvent;
+use App\Order\Domain\Model\Order\Event\OrderWasCreatedEvent;
 use App\Order\Infrastructure\Persistence\Doctrine\CustomerOrderDoctrineRepository;
 use App\Pricing\Domain\Model\VatRate\VatRate;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrder;
@@ -129,6 +130,8 @@ class CustomerOrder implements DomainEventProviderInterface
         $self->dueDate = $shippingMethod->getDueDate();
 
         $self->recalculateTotal();
+
+        $self->raiseDomainEvent(new OrderWasCreatedEvent($self->getPublicId()));
 
         return $self;
     }
