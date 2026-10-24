@@ -6,7 +6,6 @@ namespace App\Tests\Shared\UI\Http;
 
 use App\Audit\Domain\Model\StatusChange\StatusChangeLog;
 use App\Customer\Domain\Model\User\User;
-use App\Order\Application\Listener\RefreshOrderPageForViewers;
 use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Shared\Domain\Event\DomainEventType;
 use App\Tests\Shared\Factory\CustomerOrderFactory;
@@ -168,7 +167,7 @@ class StateBetweenRequestsTest extends WebTestCase
 
         // Its cookie lets the browser read the viewer's own topic and this order's, nothing else
         self::assertSame(
-            ['subscribe' => ['user/' . $viewer->getPublicId(), RefreshOrderPageForViewers::topic($order->getPublicId())]],
+            ['subscribe' => ['user/' . $viewer->getPublicId(), CustomerOrder::liveTopic($order->getPublicId())]],
             MercureCookie::grantedTopics($browser),
         );
     }
