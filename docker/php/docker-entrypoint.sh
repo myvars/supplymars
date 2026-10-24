@@ -25,7 +25,7 @@ if [ "$APP_ENV" = "prod" ]; then
     # PHP 8.5 workaround: Preloader::preload() breaks a grown app when preloading 900+ classes recursively.
     # Under PHP-FPM it crashed at startup; under FrankenPHP the server starts and reports healthy, then
     # every request fails with "Call to undefined function dirname()". Never remove this in a cleanup.
-    # The require statements in the preload file already provide the bulk of OPcache preloading benefit.
+    # opcache.preload itself is off in production (20-app.prod.ini, ADR 016); this keeps the file safe if it returns.
     PRELOAD_FILE="var/cache/prod/App_KernelProdContainer.preload.php"
     if [ -f "$PRELOAD_FILE" ]; then
         sed -i '/Preloader::preload/d' "$PRELOAD_FILE"

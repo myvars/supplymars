@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted. Amended in #82: worker mode in production, after classic mode in #80, as planned in #68. Its Mercure hub is used since #116: [ADR 017](017-live-updates-with-mercure.md).
+Accepted. Amended in #82: worker mode in production, after classic mode in #80, as planned in #68. Amended after #116: no OPcache preload in production. Its Mercure hub is used since #116: [ADR 017](017-live-updates-with-mercure.md).
 
 ## Context
 
@@ -38,7 +38,7 @@ The skeleton made this change first (myvars/skeleton#83, its ADR 015) and found,
   - the body limit through `post_max_size` and `upload_max_filesize` (4M).
 - **PHP runs as `www-data` in production**, as the FPM workers did, and cannot write to its own configuration. This includes the Messenger worker, which ran as root: the host's backups directory, where the nightly backup leaves `latest.sql.gz` for the playground reset, is owned by uid 33.
 - **`NGINX_HOST_PORT` is renamed `HTTP_HOST_PORT`.** Both stacks share the server, so each env file must set it, or both fall back to 8001.
-- **The preload workaround stays** in the Dockerfile and the entrypoint, with its comment.
+- **No OPcache preload in production** (amended after #116). The image first kept `opcache.preload` with the PHP 8.5 workaround (the Dockerfile and the entrypoint delete the `Preloader::preload()` line from the container's preload file). After #116 put a `LazyClosure` adapter into the compiled Mercure hub (an anonymous class implementing `TokenFactoryInterface`), the first worker restart broke every page: PHP reused the preloaded class without its interface, and `HubFactory::createPublisherTokenProvider()` failed with a TypeError, from then until the container restarted. Reproduced with the production image and `FRANKENPHP_LOOP_MAX=50`: requests fail from the 50th, and none fail with preload off. Symfony's error controller compiles one such adapter too. In worker mode the app stays loaded between requests, so preload gained little; `docker/php/conf.d/20-app.prod.ini` no longer sets it. The workaround's `sed` lines stay, harmless, until preload is reconsidered.
 - **Worker mode in production, classic mode in development** (#82). The Caddyfile's global `frankenphp` block takes `FRANKENPHP_CONFIG`, which only `compose.prod.yaml` sets (`worker /app/public/index.php`). The `php` directive still runs only `index.php`; the worker serves it. `symfony/runtime` switches to its FrankenPHP runner by itself, so the app code does not change. The `messenger` service is unaffected.
   - **Each worker restarts after 500 requests** (`FRANKENPHP_LOOP_MAX`, Symfony's default, set explicitly), a safety net against slow leaks. With no restarts at all, memory was already flat (below), so 500 costs little and is not tuned further.
   - **The rule:** a service keeps no data from one request in a property; one that caches on purpose implements `ResetInterface` (`Docs/03-architecture.md#state-between-requests`). `StateBetweenRequestsTest` keeps one kernel across requests and interleaves two staff users and a visitor: the header user, the "My Queue" count and the author of a status change. It fails if `CurrentUserProvider` keeps the user in a property. The audit of `src/` for #68 found one such service, `PublicIdResolverRegistry`, fixed in #67; the audit again for #82 found none.
