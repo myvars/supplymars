@@ -15,7 +15,10 @@ enum DomainEventType: string
     case ORDER_LOCK_CHANGED = 'order.lock.changed';
     case PURCHASE_ORDER_CREATED = 'purchase.order.created';
     case PURCHASE_ORDER_STATUS_CHANGED = 'purchase.order.status.changed';
+    case PURCHASE_ORDER_REWOUND = 'purchase.order.rewound';
     case PURCHASE_ORDER_ITEM_CREATED = 'purchase.order.item.created';
+    case PURCHASE_ORDER_ITEM_CHANGED = 'purchase.order.item.changed';
+    case PURCHASE_ORDER_ITEM_REMOVED = 'purchase.order.item.removed';
     case PURCHASE_ORDER_ITEM_STATUS_CHANGED = 'purchase.order.item.status.changed';
     case USER_CREATED = 'user.created';
     case USER_LOGGED_IN = 'user.logged_in';

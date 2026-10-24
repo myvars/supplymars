@@ -7,8 +7,10 @@ namespace App\Purchasing\Domain\Model\PurchaseOrder;
 use App\Customer\Domain\Model\Address\Address;
 use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Order\Domain\Model\Order\ShippingMethod;
+use App\Purchasing\Domain\Model\PurchaseOrder\Event\PurchaseOrderItemWasRemovedEvent;
 use App\Purchasing\Domain\Model\PurchaseOrder\Event\PurchaseOrderStatusWasChangedEvent;
 use App\Purchasing\Domain\Model\PurchaseOrder\Event\PurchaseOrderWasCreatedEvent;
+use App\Purchasing\Domain\Model\PurchaseOrder\Event\PurchaseOrderWasRewoundEvent;
 use App\Purchasing\Domain\Model\Supplier\Supplier;
 use App\Purchasing\Infrastructure\Persistence\Doctrine\PurchaseOrderDoctrineRepository;
 use App\Shared\Domain\Event\DomainEventProviderInterface;
@@ -142,6 +144,8 @@ class PurchaseOrder implements DomainEventProviderInterface
         }
 
         $this->status = PurchaseOrderStatus::PENDING;
+
+        $this->raiseDomainEvent(new PurchaseOrderWasRewoundEvent($this->getPublicId()));
     }
 
     public function recalculateTotal(): void
@@ -374,11 +378,8 @@ class PurchaseOrder implements DomainEventProviderInterface
 
     public function removePurchaseOrderItem(PurchaseOrderItem $purchaseOrderItem): static
     {
-        // set the owning side to null (unless already changed)
-        if (
-            $this->purchaseOrderItems->removeElement($purchaseOrderItem)
-            && $purchaseOrderItem->getPurchaseOrder() === $this
-        ) {
+        if ($this->purchaseOrderItems->removeElement($purchaseOrderItem)) {
+            $this->raiseDomainEvent(new PurchaseOrderItemWasRemovedEvent($this->getCustomerOrder()->getPublicId()));
         }
 
         $this->recalculateTotal();

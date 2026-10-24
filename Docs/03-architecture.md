@@ -115,8 +115,8 @@ Who listens (`#[AsEventListener]`):
 | `ReviewSummaryUpdater` (`src/Review/Application/Listener/`) | The four `Review*` events | Recalculates the product's review summary |
 | `SidebarBadgeCacheInvalidator` (`src/Home/Listener/`) | Review created, status changed, deleted; PO status changed; order created, status changed | Deletes the sidebar badge counts that changed |
 | `ProductImageWasDeleted` (`src/Catalog/Application/Listener/`) | `ProductImageWasDeletedEvent` | Deletes the image file and its cached thumbnails |
-
-The other events (`OrderItemWasChangedEvent`, `OrderItemWasCreatedEvent`, `PurchaseOrderWasCreatedEvent`, `PurchaseOrderItemWasCreatedEvent`) have no listener yet.
+| `RefreshOrderPageForViewers` (`src/Order/Application/Listener/`) | Order status and lock changes; order items created, changed, removed or with a status change; POs created, rewound or with a status change; PO items created, changed, removed or with a status change | Queues one live refresh of the order's page, and its purchase orders' pages: see [ADR 017](adr/017-live-updates-with-mercure.md) |
+| `NotifyLockHolderOfRelease` (`src/Order/Application/Listener/`) | `OrderLockWasChangedEvent` | Queues a toast for a user who lost their lock to someone else |
 
 ## The Queue
 

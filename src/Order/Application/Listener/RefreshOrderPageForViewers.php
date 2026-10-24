@@ -16,9 +16,12 @@ use App\Order\Domain\Model\Order\OrderPublicId;
 use App\Order\Domain\Repository\OrderItemRepository;
 use App\Order\Domain\Repository\OrderRepository;
 use App\Purchasing\Domain\Model\PurchaseOrder\Event\PurchaseOrderItemStatusWasChangedEvent;
+use App\Purchasing\Domain\Model\PurchaseOrder\Event\PurchaseOrderItemWasChangedEvent;
 use App\Purchasing\Domain\Model\PurchaseOrder\Event\PurchaseOrderItemWasCreatedEvent;
+use App\Purchasing\Domain\Model\PurchaseOrder\Event\PurchaseOrderItemWasRemovedEvent;
 use App\Purchasing\Domain\Model\PurchaseOrder\Event\PurchaseOrderStatusWasChangedEvent;
 use App\Purchasing\Domain\Model\PurchaseOrder\Event\PurchaseOrderWasCreatedEvent;
+use App\Purchasing\Domain\Model\PurchaseOrder\Event\PurchaseOrderWasRewoundEvent;
 use App\Purchasing\Domain\Repository\PurchaseOrderItemRepository;
 use App\Purchasing\Domain\Repository\PurchaseOrderRepository;
 use App\Shared\Application\LiveUpdatePublisherInterface;
@@ -40,12 +43,15 @@ use Symfony\Component\Messenger\Stamp\DeduplicateStamp;
 #[AsEventListener(event: OrderStatusWasChangedEvent::class, method: 'onOrderChanged')]
 #[AsEventListener(event: OrderLockWasChangedEvent::class, method: 'onOrderChanged')]
 #[AsEventListener(event: OrderItemWasRemovedEvent::class, method: 'onOrderChanged')]
+#[AsEventListener(event: PurchaseOrderItemWasRemovedEvent::class, method: 'onOrderChanged')]
 #[AsEventListener(event: OrderItemWasCreatedEvent::class, method: 'onOrderItemChanged')]
 #[AsEventListener(event: OrderItemWasChangedEvent::class, method: 'onOrderItemChanged')]
 #[AsEventListener(event: OrderItemStatusWasChangedEvent::class, method: 'onOrderItemChanged')]
 #[AsEventListener(event: PurchaseOrderWasCreatedEvent::class, method: 'onPurchaseOrderChanged')]
 #[AsEventListener(event: PurchaseOrderStatusWasChangedEvent::class, method: 'onPurchaseOrderChanged')]
+#[AsEventListener(event: PurchaseOrderWasRewoundEvent::class, method: 'onPurchaseOrderChanged')]
 #[AsEventListener(event: PurchaseOrderItemWasCreatedEvent::class, method: 'onPurchaseOrderItemChanged')]
+#[AsEventListener(event: PurchaseOrderItemWasChangedEvent::class, method: 'onPurchaseOrderItemChanged')]
 #[AsEventListener(event: PurchaseOrderItemStatusWasChangedEvent::class, method: 'onPurchaseOrderItemChanged')]
 final readonly class RefreshOrderPageForViewers
 {
@@ -62,8 +68,9 @@ final readonly class RefreshOrderPageForViewers
     /**
      * @throws ExceptionInterface
      */
-    public function onOrderChanged(OrderStatusWasChangedEvent|OrderLockWasChangedEvent|OrderItemWasRemovedEvent $event): void
-    {
+    public function onOrderChanged(
+        OrderStatusWasChangedEvent|OrderLockWasChangedEvent|OrderItemWasRemovedEvent|PurchaseOrderItemWasRemovedEvent $event,
+    ): void {
         $this->queueRefresh($this->orders->getByPublicId($event->getId()));
     }
 
@@ -78,16 +85,18 @@ final readonly class RefreshOrderPageForViewers
     /**
      * @throws ExceptionInterface
      */
-    public function onPurchaseOrderChanged(PurchaseOrderWasCreatedEvent|PurchaseOrderStatusWasChangedEvent $event): void
-    {
+    public function onPurchaseOrderChanged(
+        PurchaseOrderWasCreatedEvent|PurchaseOrderStatusWasChangedEvent|PurchaseOrderWasRewoundEvent $event,
+    ): void {
         $this->queueRefresh($this->purchaseOrders->getByPublicId($event->getId())?->getCustomerOrder());
     }
 
     /**
      * @throws ExceptionInterface
      */
-    public function onPurchaseOrderItemChanged(PurchaseOrderItemWasCreatedEvent|PurchaseOrderItemStatusWasChangedEvent $event): void
-    {
+    public function onPurchaseOrderItemChanged(
+        PurchaseOrderItemWasCreatedEvent|PurchaseOrderItemWasChangedEvent|PurchaseOrderItemStatusWasChangedEvent $event,
+    ): void {
         $this->queueRefresh($this->purchaseOrderItems->getByPublicId($event->getId())?->getPurchaseOrder()->getCustomerOrder());
     }
 
