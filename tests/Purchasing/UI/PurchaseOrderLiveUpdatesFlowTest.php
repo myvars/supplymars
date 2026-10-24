@@ -7,11 +7,13 @@ namespace App\Tests\Purchasing\UI;
 use App\Order\Application\Message\RefreshOrderPage;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItem;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
+use App\Shared\Domain\Event\DomainEventType;
 use App\Shared\Infrastructure\Notification\MercureLiveUpdatePublisher;
 use App\Tests\Shared\Factory\CustomerOrderFactory;
 use App\Tests\Shared\Factory\CustomerOrderItemFactory;
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\PurchaseOrderItemFactory;
+use App\Tests\Shared\Factory\StatusChangeLogFactory;
 use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Factory\UserFactory;
@@ -83,6 +85,41 @@ final class PurchaseOrderLiveUpdatesFlowTest extends WebTestCase
         self::assertInstanceOf(Update::class, $updates[0]);
         self::assertSame(MercureLiveUpdatePublisher::REFRESH_STREAM, $updates[0]->getData());
         self::assertSame([$pageTopic], $updates[0]->getTopics());
+    }
+
+    public function testRewindingRefreshesThePurchaseOrderPage(): void
+    {
+        $poItem = $this->purchaseOrderItem();
+        $poItem->updateItemStatus(PurchaseOrderStatus::PROCESSING);
+        self::getContainer()->get(EntityManagerInterface::class)->flush();
+        QueuedNotifications::handle(self::getContainer());
+        $purchaseOrderId = $poItem->getPurchaseOrder()->getPublicId()->value();
+
+        $browser = $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->visit('/purchase/order/' . $purchaseOrderId);
+        $pageTopic = MercureCookie::grantedTopics($browser)['subscribe'][1];
+
+        // Processing and pending both leave the order item processing, so only the rewind raises an event
+        $browser
+            ->visit('/purchase/order/' . $purchaseOrderId . '/rewind/confirm')
+            ->interceptRedirects()
+            ->click('Rewind to Pending')
+            ->assertRedirected();
+
+        $handled = QueuedNotifications::handle(self::getContainer());
+        self::assertCount(1, $handled);
+        self::assertInstanceOf(RefreshOrderPage::class, $handled[0]);
+
+        $updates = QueuedNotifications::published(self::getContainer());
+        self::assertCount(1, $updates);
+        self::assertInstanceOf(Update::class, $updates[0]);
+        self::assertSame([$pageTopic], $updates[0]->getTopics());
+
+        // Forced, not a status change: the rewind leaves no purchase order status log behind
+        foreach ([DomainEventType::PURCHASE_ORDER_STATUS_CHANGED, DomainEventType::PURCHASE_ORDER_ITEM_STATUS_CHANGED] as $type) {
+            self::assertSame(0, StatusChangeLogFactory::count(['eventType' => $type]));
+        }
     }
 
     private function purchaseOrderItem(): PurchaseOrderItem

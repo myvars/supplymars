@@ -6,6 +6,7 @@ namespace App\Purchasing\Domain\Model\PurchaseOrder;
 
 use App\Order\Domain\Model\Order\CustomerOrderItem;
 use App\Purchasing\Domain\Model\PurchaseOrder\Event\PurchaseOrderItemStatusWasChangedEvent;
+use App\Purchasing\Domain\Model\PurchaseOrder\Event\PurchaseOrderItemWasChangedEvent;
 use App\Purchasing\Domain\Model\PurchaseOrder\Event\PurchaseOrderItemWasCreatedEvent;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
 use App\Purchasing\Infrastructure\Persistence\Doctrine\PurchaseOrderItemDoctrineRepository;
@@ -117,6 +118,8 @@ class PurchaseOrderItem implements DomainEventProviderInterface
 
         $this->changeQuantity($quantity);
         $this->recalculateTotal();
+
+        $this->raiseDomainEvent(new PurchaseOrderItemWasChangedEvent($this->getPublicId()));
     }
 
     public function updateItemStatus(PurchaseOrderStatus $newStatus): void

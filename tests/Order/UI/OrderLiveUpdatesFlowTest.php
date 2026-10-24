@@ -12,6 +12,7 @@ use App\Shared\Infrastructure\Notification\MercureLiveUpdatePublisher;
 use App\Tests\Shared\Factory\CustomerOrderFactory;
 use App\Tests\Shared\Factory\CustomerOrderItemFactory;
 use App\Tests\Shared\Factory\ProductFactory;
+use App\Tests\Shared\Factory\PurchaseOrderFactory;
 use App\Tests\Shared\Factory\PurchaseOrderItemFactory;
 use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
@@ -181,6 +182,70 @@ class OrderLiveUpdatesFlowTest extends WebTestCase
             ->assertRedirected();
 
         $this->assertOneRefreshOf($poItem->getPurchaseOrder()->getCustomerOrder());
+    }
+
+    public function testEditingAPurchaseOrderItemsQuantityRefreshesItsOrderPage(): void
+    {
+        // 5 of the order item's 10 stay outstanding, so its status does not change and raises nothing
+        $poItem = $this->purchaseOrderItem();
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->visit('/purchase/order/item/' . $poItem->getPublicId()->value() . '/edit')
+            ->fillField('purchase_order_item_quantity[quantity]', '5')
+            ->interceptRedirects()
+            ->click('Update')
+            ->assertRedirected();
+
+        $this->assertOneRefreshOf($poItem->getPurchaseOrder()->getCustomerOrder());
+    }
+
+    public function testRemovingAPurchaseOrderItemRefreshesItsOrderPage(): void
+    {
+        $poItem = $this->purchaseOrderItem();
+        $order = $poItem->getPurchaseOrder()->getCustomerOrder();
+        // The order item keeps a purchase order item on the same purchase order, so neither changes status
+        PurchaseOrderItemFactory::createOne([
+            'customerOrderItem' => $poItem->getCustomerOrderItem(),
+            'supplierProduct' => $poItem->getSupplierProduct(),
+            'purchaseOrder' => $poItem->getPurchaseOrder(),
+            'quantity' => 2,
+        ]);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->visit('/purchase/order/item/' . $poItem->getPublicId()->value() . '/edit')
+            ->fillField('purchase_order_item_quantity[quantity]', '0')
+            ->interceptRedirects()
+            ->click('Update')
+            ->assertRedirected();
+
+        $this->assertOneRefreshOf($order);
+    }
+
+    public function testRemovingAPurchaseOrdersLastItemRefreshesItsOrderPage(): void
+    {
+        $poItem = $this->purchaseOrderItem();
+        $order = $poItem->getPurchaseOrder()->getCustomerOrder();
+        $purchaseOrderId = $poItem->getPurchaseOrder()->getId();
+        // On another purchase order, so the order item's status does not change
+        PurchaseOrderItemFactory::createOne([
+            'customerOrderItem' => $poItem->getCustomerOrderItem(),
+            'supplierProduct' => $poItem->getSupplierProduct(),
+            'customerOrder' => $order,
+            'quantity' => 2,
+        ]);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->visit('/purchase/order/item/' . $poItem->getPublicId()->value() . '/edit')
+            ->fillField('purchase_order_item_quantity[quantity]', '0')
+            ->interceptRedirects()
+            ->click('Update')
+            ->assertRedirected();
+
+        self::assertNull(PurchaseOrderFactory::repository()->find($purchaseOrderId));
+        $this->assertOneRefreshOf($order);
     }
 
     public function testHubFailureKeepsTheChangeAndDoesNotFailTheMessage(): void
