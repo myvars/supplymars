@@ -29,7 +29,7 @@
                                     Qty: {{ orderItem.outstandingQty }} of {{ orderItem.quantity }}
                                 {% endif %}
                             </span>
-                            <span class="hidden text-gray-400 md:inline dark:text-gray-500">#{{ '%05d'|format(orderItem.product.id) }}</span>
+                            <span class="hidden text-gray-400 md:inline dark:text-gray-500">#{{ '%06d'|format(orderItem.product.id) }}</span>
                         </div>
                         <a href="{{ path('app_order_item_status_log', {'id':orderItem.publicId.value }) }}"
                            data-turbo-frame="modal"

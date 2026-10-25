@@ -9,7 +9,7 @@
     <div class="m-3 space-y-4">
         <twig:PageBreadcrumb :href="path('app_order_index')" label="Orders" current="Order #{{ '%06d'|format(result.id) }}"/>
 
-        <twig:EntityCard editLink="{{ result.allowEdit ? path('app_order_cancel_confirm', {id: result.publicId.value}) : null }}"
+        <twig:EntityCard editLink="{{ result.allowCancel ? path('app_order_cancel_confirm', {id: result.publicId.value}) : null }}"
                    editIcon="bi:x-lg"
                    statusHighlight="{{ result.status.value }}"
                    data-customer-id="{{ result.customer.id }}">
