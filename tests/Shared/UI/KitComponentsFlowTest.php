@@ -202,4 +202,15 @@ final class KitComponentsFlowTest extends WebTestCase
             ->assertSeeIn('[data-controller~="dropdown-menu"] [role="menu"] a[role="menuitem"][href^="/customer/"][data-turbo-frame="body"]', 'Settings')
             ->assertSeeIn('[data-controller~="dropdown-menu"] [role="menu"] a[role="menuitem"][href="/logout"][data-turbo-prefetch="false"]', 'Sign Out');
     }
+
+    public function testHeaderUserMenuOffersNoSettingsToACustomer(): void
+    {
+        // The customer pages are staff only, so a customer's Settings link would be a 403
+        $this->browser()
+            ->actingAs(UserFactory::createOne())
+            ->get('/')
+            ->assertSuccessful()
+            ->assertSeeIn('[data-controller~="dropdown-menu"] [role="menu"] a[href="/logout"]', 'Sign Out')
+            ->assertNotSeeElement('[data-controller~="dropdown-menu"] [role="menu"] a[href^="/customer/"]');
+    }
 }
