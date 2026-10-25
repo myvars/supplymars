@@ -39,7 +39,7 @@ class CategoryController extends AbstractController
 {
     private function model(): FlowModel
     {
-        return FlowModel::create('catalog', 'category');
+        return FlowModel::create('catalog', 'category', displayNamePlural: 'Categories');
     }
 
     #[Route(path: '/category/', name: 'app_catalog_category_index', methods: ['GET'])]

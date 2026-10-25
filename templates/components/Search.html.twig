@@ -1,17 +1,18 @@
 {# Search/list page layout with searchbox, filter, sort headers, result list, and pagination.
-   - flowModel: Entity name string (e.g., "Product") — used for headings and turbo-frame IDs
+   - flowModel: Entity name string (e.g., "Product") — used for turbo-frame IDs and "Create Product"
+   - flowModelPlural: Its plural (e.g., "Categories") — used for the heading, search box and empty state
    - routes: FlowRoutes object (.index, .new, .filter)
    - results: Pagerfanta paginated result set
    - showFilter: Show the filter icon in the search bar (default: true)
    - showAdd: Show the "Create" button (default: true)
    Blocks: result_count, filter, add, sort (column headers), list_item (single result card) #}
-{% props flowModel, routes, results, showFilter = true, showAdd = true %}
+{% props flowModel, flowModelPlural, routes, results, showFilter = true, showAdd = true %}
 
 <div class="mx-auto max-w-(--breakpoint-xl) p-3">
     {% block result_count %}
         <div id="{{ flowModel|slug }}-result-count">
             <h1 class="flex items-baseline gap-3 text-xl font-semibold text-gray-900 dark:text-white">
-                {{ flowModel }}s
+                {{ flowModelPlural }}
                 <span class="text-sm font-normal tabular-nums text-gray-400 dark:text-gray-500">
                     {{ results|length }} {% if results|length == 1 %}result{% else %}results{% endif %}
                 </span>
@@ -31,7 +32,7 @@
                         <a href="{{ path(routes.filter, app.request.query.all) }}"
                            class="flex items-center rounded-sm transition-colors focus-ring"
                            data-turbo-frame="modal"
-                           aria-label="Filter {{ flowModel|lower }}s"
+                           aria-label="Filter {{ flowModelPlural|lower }}"
                            id="{{ flowModel|slug }}-search-filter">
                             {% if app.request.query.get('filter') %}
                                 <twig:ux:icon name="bi:funnel" class="size-5 text-yellow-500 hover:text-yellow-600 dark:text-yellow-400 dark:hover:text-yellow-200"/>
@@ -54,7 +55,7 @@
                         aria-label="Search"
                         autocomplete="off"
                         autofocus
-                        placeholder="Search {{ flowModel|lower }}s..."
+                        placeholder="Search {{ flowModelPlural|lower }}..."
                     />
                     {% if showFilter %}
                         <twig:InputGroup:Addon align="inline-end" class="pe-3">{{ filterLink }}</twig:InputGroup:Addon>
@@ -91,7 +92,7 @@
                 <li>{% block list_item %}{% endblock %}</li>
             {% else %}
                 <li class="mt-3">
-                    <twig:EmptyState icon="flowbite:search-outline" message="No {{ flowModel|lower }}s found" subtitle="Try adjusting your search or filters"/>
+                    <twig:EmptyState icon="flowbite:search-outline" message="No {{ flowModelPlural|lower }} found" subtitle="Try adjusting your search or filters"/>
                 </li>
             {% endfor %}
         </ul>

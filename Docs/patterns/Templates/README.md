@@ -26,7 +26,7 @@ How templates under `templates/` are named and documented, and the variables For
 | Variable | Type | Available in | Description |
 |---|---|---|---|
 | `flowModel` | `string` | All | Display name ("Product", "VAT Rate") |
-| `flowModelPlural` | `string` | All | Plural display name (display name + "s" unless `displayNamePlural:` is set); no app template uses it yet |
+| `flowModelPlural` | `string` | All | Plural display name (display name + "s" unless `displayNamePlural:` is set). Pass it to `<twig:Search>` with `flowModel`; it heads the index page |
 | `flowOperation` | `string` | All | `create`, `update`, `delete`, `filter`, `action`, `index` |
 | `template` | `string` | All | First template the include chain tries |
 | `routes` | `FlowRoutes` | All | Route names: `.index`, `.new`, `.show`, `.delete`, `.deleteConfirm`, `.filter` |
