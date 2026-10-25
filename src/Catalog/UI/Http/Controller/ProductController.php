@@ -174,7 +174,7 @@ class ProductController extends AbstractController
     ): Response {
         return $flow->handleField(
             request: $request,
-            value: fn (): string => $product->getName(),
+            value: fn (): ?string => $product->getName(),
             onSave: function ($value) use ($product, $flusher): bool {
                 $product->rename((string) $value);
 

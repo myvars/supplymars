@@ -132,7 +132,7 @@ class ManufacturerController extends AbstractController
     ): Response {
         return $flow->handleField(
             request: $request,
-            value: fn (): string => $manufacturer->getName(),
+            value: fn (): ?string => $manufacturer->getName(),
             onSave: function ($value) use ($manufacturer, $flusher): bool {
                 $manufacturer->update((string) $value, $manufacturer->isActive());
 

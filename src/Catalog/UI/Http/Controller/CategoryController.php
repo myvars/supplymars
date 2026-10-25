@@ -153,7 +153,7 @@ class CategoryController extends AbstractController
     ): Response {
         return $flow->handleField(
             request: $request,
-            value: fn (): string => $category->getName(),
+            value: fn (): ?string => $category->getName(),
             onSave: function ($value) use ($category, $flusher): bool {
                 $category->rename((string) $value);
 
