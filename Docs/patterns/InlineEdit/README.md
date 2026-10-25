@@ -65,7 +65,7 @@ The success response replaces only the field's frame. To update the same value e
 - pass `value` as a Closure (`value: fn (): string => $product->getName()`) — the flow calls it again after `onSave` and sends what was stored, not what was typed;
 - mark each copy with the frame id: `<twig:PageBreadcrumb … mirrors="inline-edit-product-{{ result.publicId }}-name"/>`, or `data-inline-edit-mirror="<frameId>"` on any element.
 
-Only text-like values are mirrored (string, int, float, `Stringable`), and the copy shows the stored value as escaped text. With a plain (non-Closure) value nothing extra is sent. No controller in the app uses this yet: every inline controller passes a plain value and no `PageBreadcrumb` sets `mirrors`, so after an inline rename the breadcrumb keeps the old name until the page reloads.
+Only text-like values are mirrored (string, int, float, `Stringable`), and the copy shows the stored value as escaped text. With a plain (non-Closure) value nothing extra is sent. Every inline name edit whose show page has a breadcrumb does both; a new one should too.
 
 ## Reference
 

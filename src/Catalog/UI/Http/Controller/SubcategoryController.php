@@ -153,7 +153,7 @@ class SubcategoryController extends AbstractController
     ): Response {
         return $flow->handleField(
             request: $request,
-            value: $subcategory->getName(),
+            value: fn (): string => $subcategory->getName(),
             onSave: function ($value) use ($subcategory, $flusher): bool {
                 $subcategory->rename((string) $value);
 

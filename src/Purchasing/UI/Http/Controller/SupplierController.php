@@ -132,7 +132,7 @@ class SupplierController extends AbstractController
     ): Response {
         return $flow->handleField(
             request: $request,
-            value: $supplier->getName(),
+            value: fn (): string => $supplier->getName(),
             onSave: function ($value) use ($supplier, $flusher): bool {
                 $supplier->update((string) $value, $supplier->isActive());
 
