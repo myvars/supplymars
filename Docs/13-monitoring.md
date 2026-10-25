@@ -57,7 +57,7 @@ It catches every way backups stop: a failed run (also reported to Sentry), and a
 Nothing in the code. Point an external uptime monitor (Sentry Uptime) at these and alert on a timeout or any status other than 200:
 
 - `https://live.supplymars.com/health`
-- `https://supplymars.com/health` (playground)
+- `https://www.supplymars.com/health` (playground)
 - `https://live.supplymars.com/health/backup`: hourly is enough, with a failure tolerance of 2. Both stacks use the same bucket, so monitor it on live only
 
 ## Gotchas
