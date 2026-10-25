@@ -11,7 +11,7 @@ Press `?` on this screen for a short summary.
 ### Find a purchase order
 
 1. Go to **Purchasing > Purchase Orders**. Each row shows the PO number, order number, supplier, customer, date, total inc VAT and status.
-2. Sort by **PO**, **Created**, **Total** or **Status**. (The **Order** sort currently has no effect.)
+2. Sort by **PO**, **Created**, **Order**, **Total** or **Status**.
 3. To filter, click the filter icon in the search bar, fill in any of **Supplier**, **Purchase Order Id**, **Customer Order Id**, **Customer Id**, **with Product Id**, **Purchase Order Status**, **Start Date** and **End Date**, and click **Apply Filter**.
 
 POs are created by allocation (see [Orders](08-orders.md#allocate-an-order) and [Order Items](09-order-items.md#allocate-an-item-to-a-supplier)), not from this list.
