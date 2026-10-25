@@ -6,8 +6,10 @@ How to run the two production stacks on the Lightsail server: what runs where, t
 
 ```
 visitor ──https──▶ Caddy (host, 80/443, TLS) ──http──▶ 127.0.0.1:8001  supplymars-live        live.supplymars.com
-                                                └────▶ 127.0.0.1:8002  supplymars-playground  supplymars.com, www.supplymars.com
+                                                └────▶ 127.0.0.1:8002  supplymars-playground  www.supplymars.com
 ```
+
+`supplymars.com` redirects to `www.supplymars.com` (301): each stack has one origin, its `DEFAULT_URI`, or the CSP blocks its Mercure hub ([6.2](#62-live-updates-or-toasts-not-arriving)).
 
 The names read the wrong way round: `www.supplymars.com` is the public playground (the demo visitors are given) and `live.supplymars.com` is the live site, which the playground is restored from each night.
 
@@ -226,7 +228,8 @@ This goes through FrankenPHP's admin API, which listens inside the container onl
 ```bash
 docker compose $LIVE ps && docker compose $PLAYGROUND ps                 # every service healthy
 curl -s -w " %{http_code}\n" https://live.supplymars.com/health          # 200 through Caddy; a 503 names the failed check
-curl -s -w " %{http_code}\n" https://supplymars.com/health
+curl -s -w " %{http_code}\n" https://www.supplymars.com/health
+curl -sI https://supplymars.com/login | grep -i -E "^HTTP|^location"   # 301 to https://www.supplymars.com/login
 docker compose $LIVE exec -T php php bin/console messenger:stats
 docker compose $LIVE logs --tail=50 php
 ```
@@ -398,6 +401,8 @@ docker compose $LIVE logs --tail=100 messenger | grep 'Live update not published
 curl -sN -o /dev/null -w "%{http_code}\n" --max-time 3 https://live.supplymars.com/.well-known/mercure   # 401 without a cookie: the hub answers through Caddy
 ```
 
+If the browser console shows `Connecting to '…/.well-known/mercure…' violates the following Content Security Policy directive: "connect-src 'self' …"`, the page was loaded from a host other than the one in the stack's `DEFAULT_URI`, where its hub is. Every other host must redirect to it in the host Caddy ([section 1](#1-how-it-fits-together)).
+
 The host Caddy streams `text/event-stream` responses without buffering by default. If updates arrive only in bursts, or when the page is left, something between the browser and the `php` container is buffering `/.well-known/mercure`. Check once after the first deploy with live updates, with an order page open while the hourly shipping job runs.
 
 ### 6.3 Queue Backlog or Failed Messages
@@ -488,6 +493,13 @@ curl -vI https://live.supplymars.com 2>&1 | grep "subject:"
 ```
 
 If a certificate is not issued: check that ports 80 and 443 are open in the Lightsail firewall and the DNS A records point at the instance, then `sudo systemctl restart caddy`.
+
+After a change to `Docs/infrastructure/Caddyfile`, copy it over and reload; a reload keeps the certificates and open connections:
+
+```bash
+sudo cp /home/ubuntu/supplymars/Docs/infrastructure/Caddyfile /etc/caddy/Caddyfile
+sudo caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile && sudo systemctl reload caddy
+```
 
 ## 8. Database Maintenance
 

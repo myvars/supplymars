@@ -88,9 +88,9 @@ The app sends the security headers, through `nelmio/security-bundle` (`config/pa
 | `X-Frame-Options` | `SAMEORIGIN` | the app |
 | `X-Content-Type-Options` | `nosniff` | the app |
 | `Referrer-Policy` | `strict-origin-when-cross-origin` | the app |
-| `Strict-Transport-Security` | `max-age=63072000; includeSubDomains` | FrankenPHP (`docker/frankenphp/Caddyfile`) |
+| `Strict-Transport-Security` | `max-age=63072000; includeSubDomains` | FrankenPHP (`docker/frankenphp/Caddyfile`); on the bare domain's redirect, the host Caddy (`Docs/infrastructure/Caddyfile`) |
 
-- HSTS stays in the container's Caddyfile, and the host Caddy passes it on. In the bundle it comes with `forced_ssl`, which also redirects to HTTPS, and Caddy already does that.
+- HSTS stays in the container's Caddyfile, and the host Caddy passes it on. The one exception is `supplymars.com`, which the host Caddy redirects to `www` without reaching the container, so it sends the same header there; without it, `includeSubDomains` would not reach `live.supplymars.com` for a visitor who only saw the bare domain. In the bundle it comes with `forced_ssl`, which also redirects to HTTPS, and Caddy already does that.
 - There is no `preload`: submitting the domain to the browsers' preload list is slow to undo. `includeSubDomains` means every subdomain of `supplymars.com` must serve HTTPS.
 - The app adds its headers only to responses that go through Symfony, including its 429s. What FrankenPHP answers itself carries only HSTS: static files (`public/assets/`, `public/bundles/`, and in development `public/uploads/` and `public/media/`) and its own refusals (403 for dotfiles and config files, 404 for a `.php` file other than `index.php`, 405 for `TRACE`). A missing file goes to Symfony, which answers 404 (or, under `/media/cache/resolve/`, generates the thumbnail). Production images are in S3 and never served by the container.
 - Redirects carry no CSP, `X-Frame-Options` or `nosniff`: the bundle leaves them out, as they have no body.

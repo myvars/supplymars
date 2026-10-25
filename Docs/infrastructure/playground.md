@@ -1,6 +1,6 @@
 # Playground
 
-What makes the public playground (`www.supplymars.com`, `supplymars.com`) differ from the live site (`live.supplymars.com`), and how its nightly reset works. Read it before changing anything gated on `PLAYGROUND_MODE`, the reset scripts, or the redaction. Running both stacks (deploy, env files, set-up, backups) is in [11-runbook.md](../11-runbook.md).
+What makes the public playground (`www.supplymars.com`; `supplymars.com` redirects to it) differ from the live site (`live.supplymars.com`), and how its nightly reset works. Read it before changing anything gated on `PLAYGROUND_MODE`, the reset scripts, or the redaction. Running both stacks (deploy, env files, set-up, backups) is in [11-runbook.md](../11-runbook.md).
 
 The names read the wrong way round: `www` is the playground, the demo visitors are given; `live` is the source of truth that the playground is restored from each night.
 
@@ -75,6 +75,6 @@ ls -l /home/ubuntu/supplymars-backups/           # latest.sql.gz from today, own
 ## Related
 
 - [11-runbook.md](../11-runbook.md): both stacks, env files, fresh-server set-up, backups
-- `Docs/infrastructure/Caddyfile`: the host Caddy config (`www` and the bare domain to 8002, `live` to 8001)
+- `Docs/infrastructure/Caddyfile`: the host Caddy config (`www` to 8002, the bare domain redirected to `www`, `live` to 8001)
 - [08-security.md](../08-security.md): Turnstile
 - [ADR 015](../adr/015-symfony-scheduler-in-place-of-cron.md): the schedule, and why `reset` keeps its own cron

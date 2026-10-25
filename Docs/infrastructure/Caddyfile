@@ -3,7 +3,15 @@
 # Caddy auto-provisions Let's Encrypt certificates.
 # www.supplymars.com is the public playground (8002); live.supplymars.com is the live site (8001).
 
-supplymars.com, www.supplymars.com {
+# One origin per stack: the playground's Mercure hub is on its DEFAULT_URI (www), and the CSP's
+# connect-src 'self' blocks it from any other host, so the bare domain redirects rather than serving.
+# The redirect never reaches FrankenPHP, so it sends the HSTS header itself (Docs/08-security.md)
+supplymars.com {
+    header Strict-Transport-Security "max-age=63072000; includeSubDomains"
+    redir https://www.supplymars.com{uri} permanent
+}
+
+www.supplymars.com {
     reverse_proxy localhost:8002
 }
 
