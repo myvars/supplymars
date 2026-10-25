@@ -24,10 +24,10 @@ A response must contain a `<turbo-frame>` with the id the request targeted. A li
 |----|-----|
 | Show another page in the main content | `data-turbo-frame="body"` (or no attribute inside `body`) |
 | Open a form, confirmation or action in a modal | `data-turbo-frame="modal"` |
-| A GET link with a side effect (only logout today) | also `data-turbo-prefetch="false"` |
+| A GET link with a side effect (logout, which has no CSRF: a prefetch signs the user out) | also `data-turbo-prefetch="false"` |
 | Log in or out | `data-turbo-frame="_top"` |
 
-State-changing actions are a POST form, never a link (see [FormFlow](../FormFlow/README.md)). So hover prefetch of a link that opens a modal or confirm page only GETs a page with no side effect; such a link needs no `data-turbo-prefetch="false"`, though some still have it. A live page turns prefetch off for the whole page ([Live updates](#live-updates-with-mercure)).
+State-changing actions are a POST form, never a link (see [FormFlow](../FormFlow/README.md)). So hover prefetch of a link that opens a modal or confirm page only GETs a page with no side effect; such a link needs no `data-turbo-prefetch="false"`, though some still have it. A prefetch of `/login`, or of a protected page by a signed-out visitor (it redirects to `/login`), counts against the login rate limit ([08-security.md](../../08-security.md#rate-limiting)). The homepage and About page links opt out; others need not. A live page turns prefetch off for the whole page ([Live page updates](#live-page-updates)).
 
 ### Modal-capable templates
 
@@ -57,8 +57,7 @@ State-changing actions are a POST form, never a link (see [FormFlow](../FormFlow
 {# the link (templates/note/ticket/_ticket_card.html.twig) #}
 <a href="{{ path('app_note_ticket_reassign', {'id': ticket.publicId.value}) }}"
    class="…"
-   data-turbo-frame="modal"
-   data-turbo-prefetch="false">
+   data-turbo-frame="modal">
     <twig:ux:icon name="bi:arrow-left-right" class="h-3 w-3"/>
     Reassign
 </a>
