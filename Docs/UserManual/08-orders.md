@@ -75,7 +75,7 @@ If you unlock an order someone else locked, they see a message on whatever page 
 | Create a demo order | 10 demo orders already made today (by anyone) | The dialog says "You have reached the daily limit of 10 demo orders." and offers only **Close** |
 | Allocate | No line has outstanding quantity (including when every line was allocated by hand) | "No items to allocate." |
 | Allocate | A line has no single supplier with enough stock | "Cannot allocate all items" (the other lines are still allocated) |
-| Create Order | The customer has no default shipping or billing address (newly registered customers have none) | "Customer has no default shipping and billing address." |
+| Create Order | The customer has no default shipping or billing address (newly registered customers have none) | "Customer has no default shipping or billing address." |
 | Cancel order | The order is not Pending, or an item has quantity on a purchase order | "Order cannot be cancelled" / "Items cannot be cancelled" |
 
 Item rules and messages (quantity, price, cancel) are in [Order Items](09-order-items.md#rules-and-limits).

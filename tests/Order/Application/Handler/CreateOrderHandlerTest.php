@@ -109,7 +109,7 @@ class CreateOrderHandlerTest extends KernelTestCase
         ));
 
         self::assertFalse($result->ok);
-        self::assertSame('Customer has no default shipping and billing address.', $result->message);
+        self::assertSame('Customer has no default shipping or billing address.', $result->message);
     }
 
     public function testHandleFailsWhenDefaultVatRateNotFound(): void

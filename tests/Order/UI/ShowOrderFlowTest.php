@@ -61,7 +61,8 @@ final class ShowOrderFlowTest extends WebTestCase
             ->actingAs(UserFactory::new()->asStaff()->create())
             ->get('/order/' . $order->getPublicId()->value())
             ->assertSuccessful()
-            ->assertSee('#' . sprintf('%06d', $item->getProduct()->getId()));
+            // The card's own span: the page also shows "Order #" with the order's id
+            ->assertContains('>#' . sprintf('%06d', $item->getProduct()->getId()) . '</span>');
     }
 
     // The status change it causes is logged against the current user

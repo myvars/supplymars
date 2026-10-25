@@ -39,7 +39,7 @@ final readonly class CreateOrderHandler
         }
 
         if (!$customer->getShippingAddress() instanceof Address || !$customer->getBillingAddress() instanceof Address) {
-            return Result::fail('Customer has no default shipping and billing address.');
+            return Result::fail('Customer has no default shipping or billing address.');
         }
 
         $vatRate = $this->vatRates->getDefaultVatRate();

@@ -87,7 +87,7 @@ class CreateOrderFlowTest extends WebTestCase
             ->fillField('order[shippingMethod]', ShippingMethod::THREE_DAY->value)
             ->click('Create Order')
             ->assertOn('/order/new')
-            ->assertSee('Customer has no default shipping and billing address.');
+            ->assertSee('Customer has no default shipping or billing address.');
 
         CustomerOrderFactory::assert()->empty();
     }

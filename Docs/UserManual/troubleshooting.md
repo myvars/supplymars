@@ -56,7 +56,7 @@ Email verification never blocks sign-in, so an unverified account is not the cau
 | Symptom | Cause | Fix | See |
 |---------|-------|-----|-----|
 | No **Create Order** button | Creating orders by hand is super admin only. | Ask a super admin, or use **Create Demo Order**. | [Orders](08-orders.md) |
-| "Customer has no default shipping and billing address." | The customer has no default shipping or billing address (newly registered customers have none). | Choose a customer with addresses. | [Orders](08-orders.md), [Customers](07-customers.md) |
+| "Customer has no default shipping or billing address." | The customer has no default shipping or billing address (newly registered customers have none). | Choose a customer with addresses. | [Orders](08-orders.md), [Customers](07-customers.md) |
 | The demo dialog says "You have reached the daily limit of 10 demo orders." | 10 demo orders a day in total, for everyone. | Try again tomorrow. | [Orders](08-orders.md#create-a-demo-order) |
 | "Cannot allocate all items" | Automatic allocation needs one supplier that can supply a line's whole outstanding quantity; lines without one are skipped. | Choose suppliers for those lines by hand from the item's supplier options. | [Order Items](09-order-items.md), [Stock](11-stock.md) |
 | "No items to allocate." | Every line is already on a purchase order. If you chose every line's supplier by hand, the purchase order items are still Pending and no supplier will act on them. | Set each item to Processing on its purchase order page. | [Order Items](09-order-items.md#allocate-an-item-to-a-supplier) |
