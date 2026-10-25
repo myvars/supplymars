@@ -44,6 +44,19 @@ class CalculateCustomerSalesHandlerTest extends KernelTestCase
         self::assertSame($date, $customerSales[0]->getDateString());
     }
 
+    public function testOrderValueIsExVatLikeTheOrderReports(): void
+    {
+        $order = CustomerOrderFactory::createOne();
+        CustomerOrderItemFactory::createOne(['customerOrder' => $order]);
+        self::assertNotSame($order->getTotalPrice(), $order->getTotalPriceIncVat());
+
+        $this->handler->process(new \DateTime()->format('Y-m-d'));
+
+        $customerSales = $this->em->getRepository(CustomerSales::class)->findAll();
+        self::assertCount(1, $customerSales);
+        self::assertSame((float) $order->getTotalPrice(), (float) $customerSales[0]->getOrderValue());
+    }
+
     public function testProcessWithNoOrdersCreatesNoCustomerSalesRecords(): void
     {
         $date = '2000-01-01';

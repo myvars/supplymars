@@ -273,7 +273,7 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
             SELECT
                 co.customer_id AS customerId,
                 COUNT(co.id) AS orderCount,
-                SUM(co.total_price_inc_vat) AS orderValue,
+                SUM(co.total_price) AS orderValue,
                 COALESCE((
                     SELECT SUM(coi.quantity)
                     FROM customer_order_item coi
@@ -346,8 +346,8 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
                 u.full_name AS fullName,
                 u.public_id AS publicId,
                 COUNT(co.id) AS orderCount,
-                SUM(co.total_price_inc_vat) AS totalRevenue,
-                SUM(co.total_price_inc_vat) / COUNT(co.id) AS averageOrderValue
+                SUM(co.total_price) AS totalRevenue,
+                SUM(co.total_price) / COUNT(co.id) AS averageOrderValue
             FROM customer_order co
             INNER JOIN user u ON u.id = co.customer_id
             WHERE co.status != :status
@@ -387,8 +387,8 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
                 a.city,
                 COUNT(DISTINCT co.customer_id) AS customerCount,
                 COUNT(co.id) AS orderCount,
-                SUM(co.total_price_inc_vat) AS orderValue,
-                CASE WHEN COUNT(co.id) > 0 THEN SUM(co.total_price_inc_vat) / COUNT(co.id) ELSE 0 END AS averageOrderValue
+                SUM(co.total_price) AS orderValue,
+                CASE WHEN COUNT(co.id) > 0 THEN SUM(co.total_price) / COUNT(co.id) ELSE 0 END AS averageOrderValue
             FROM customer_order co
             INNER JOIN address a ON a.id = co.shipping_address_id
             WHERE co.status != :status
@@ -423,7 +423,7 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
                 SELECT
                     co.customer_id,
                     COUNT(co.id) AS order_count,
-                    SUM(co.total_price_inc_vat) AS order_value,
+                    SUM(co.total_price) AS order_value,
                     (SELECT COALESCE(SUM(coi.quantity), 0) FROM customer_order_item coi WHERE coi.customer_order_id IN (
                         SELECT co2.id FROM customer_order co2
                         WHERE co2.customer_id = co.customer_id
@@ -488,9 +488,9 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
 
         $sql = '
             SELECT
-                COALESCE(SUM(co.total_price_inc_vat), 0) AS totalRevenue,
+                COALESCE(SUM(co.total_price), 0) AS totalRevenue,
                 COUNT(co.id) AS orderCount,
-                CASE WHEN COUNT(co.id) > 0 THEN SUM(co.total_price_inc_vat) / COUNT(co.id) ELSE 0 END AS averageAov
+                CASE WHEN COUNT(co.id) > 0 THEN SUM(co.total_price) / COUNT(co.id) ELSE 0 END AS averageAov
             FROM customer_order co
             WHERE co.status != :cancelledStatus
             AND co.created_at BETWEEN :startDate AND :endDate
@@ -510,7 +510,7 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
         $conn = $this->getEntityManager()->getConnection();
 
         $sql = '
-            SELECT COALESCE(SUM(co.total_price_inc_vat), 0) AS lifetimeRevenue
+            SELECT COALESCE(SUM(co.total_price), 0) AS lifetimeRevenue
             FROM customer_order co
             WHERE co.status != :cancelledStatus
         ';
