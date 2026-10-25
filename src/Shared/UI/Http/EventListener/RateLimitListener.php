@@ -60,7 +60,7 @@ final readonly class RateLimitListener
             if (!$limit->isAccepted()) {
                 $retryAfter = (string) max(1, $limit->getRetryAfter()->getTimestamp() - time());
                 $event->setResponse(in_array('text/html', $request->getAcceptableContentTypes(), true)
-                    ? new Response($this->twig->render('bundles/TwigBundle/Exception/error429.html.twig'), Response::HTTP_TOO_MANY_REQUESTS, [
+                    ? new Response($this->twig->render('bundles/TwigBundle/Exception/error429.html.twig', ['show_flashes' => false]), Response::HTTP_TOO_MANY_REQUESTS, [
                         'Retry-After' => $retryAfter,
                     ])
                     : new Response('Too many requests. Try again later.', Response::HTTP_TOO_MANY_REQUESTS, [

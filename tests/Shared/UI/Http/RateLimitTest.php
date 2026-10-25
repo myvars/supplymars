@@ -52,8 +52,8 @@ class RateLimitTest extends WebTestCase
             ->assertHeaderContains('Content-Type', 'text/html')
             ->assertSee('Too Many Requests to Mars Colony Systems');
         self::assertGreaterThan(0, (int) $browser->client()->getResponse()->headers->get('Retry-After'));
-        // Rendered before the firewall: the refusal starts no session
-        self::assertSame([], $browser->client()->getResponse()->headers->getCookies());
+        // Rendered before the firewall, without the flashes: a session in use would add must-revalidate
+        self::assertStringNotContainsString('must-revalidate', (string) $browser->client()->getResponse()->headers->get('Cache-Control'));
     }
 
     public function testHealthIsRefusedAfterTenCallsFromOneAddressButNotForTheContainer(): void

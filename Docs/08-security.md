@@ -142,7 +142,7 @@ The request limits catch high-volume automated traffic; `login_throttling` catch
 
 Gotchas:
 
-- A `429` carries `Retry-After`, so a rate limit is not mistaken for an outage. A client that accepts `text/html` (a browser) gets the styled error page, `error429.html.twig`, rendered without a session; any other (curl, an uptime monitor) gets plain text.
+- A `429` carries `Retry-After`, so a rate limit is not mistaken for an outage. A client that accepts `text/html` (a browser) gets the styled error page, `error429.html.twig`; any other (curl, an uptime monitor) gets plain text. The page is rendered before the firewall, with `show_flashes: false` so that it reads no session, so its header shows a signed-in user as signed out.
 - The form rule counts only POSTs, so loading a form, a Turbo prefetch of it, or the page a submit redirects to uses none of the allowance. When every request counted, Turbo's hover prefetch and the form load used it up, so a submit within half a minute was refused. The burst of 3 lets a submit and two resubmissions after validation errors through at once.
 - Every `/login` request counts: a failed login is a POST and the redirect back to the form, so about four failed attempts a minute reach `login_throttling`.
 - The counts are in the `cache.rate_limiter` pool, which uses the app cache (Redis outside tests, `config/packages/cache.yaml`). When Redis is down the counts read as missing and every request goes through. Tests use an in-memory pool that keeps its counts between the requests of one test (`config/packages/cache.yaml`); `tests/Shared/UI/Http/RateLimitTest.php` checks each rule.
