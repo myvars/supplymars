@@ -41,11 +41,11 @@ You are signed in straight away and sent a verification email. A new account has
 
 ## Rules and limits
 
-- **Staying signed in:** every sign-in is remembered for 7 days. Each time the app signs you back in, the 7 days start again, so you are signed out only after 7 days away or when you click **Sign Out**. The **Remember me** box makes no difference.
+- **Staying signed in:** every sign-in is remembered for 7 days. Each time the app signs you back in, the 7 days start again, so you are signed out only after 7 days away or when you click **Sign Out**.
 - **Login throttling:** after 5 failed attempts for the same email in 15 minutes, sign-in is refused with "Too many failed login attempts, please try again in N minutes." Wait, or reset the password.
-- **Sign-in page limit:** more than 10 requests a minute to the sign-in page from one connection shows a plain page saying "Too many requests. Try again later." Page loads and sign-in attempts both count.
+- **Sign-in page limit:** more than 10 requests a minute to the sign-in page from one connection shows a "Too Many Requests" page (error 429) Page loads and sign-in attempts both count.
 - **Reset emails:** one per account per hour. A second request within the hour shows the usual page but sends no email; use the first email.
-- **Sign-up and reset submissions:** from one connection, a burst of 3 submissions of the sign-up or password reset forms, then 1 every 30 seconds. Over that, a plain page says "Too many requests. Try again later."; wait a minute.
+- **Sign-up and reset submissions:** from one connection, a burst of 3 submissions of the sign-up or password reset forms, then 1 every 30 seconds. Over that, a "Too Many Requests" page (error 429) is shown; wait a minute.
 - **Registration:** at most 5 submitted sign-ups from one connection per hour, counting ones that failed validation ("Too many attempts. Please try again later.").
 - **Email verification is not enforced.** An unverified account can sign in; verification only sets the **Verified** badge on the customer record. The page for requesting a new verification email (`/verify/resend`) is not linked from any screen.
 

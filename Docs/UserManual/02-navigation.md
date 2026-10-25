@@ -12,7 +12,7 @@ How the screens fit together: the header, the menu and its badges, Help, list pa
 | Logo | Goes to the home page. |
 | **Help** (a `?` icon on small screens) | Opens help for the current screen. |
 | Sun / moon icon | Switches between light and dark mode. Your choice is kept in this browser. |
-| Avatar (signed in) | User menu: your name and email, **Settings** (your customer record), **Sign Out**. |
+| Avatar (signed in) | User menu: your name and email, **Settings** (your customer record; staff only), **Sign Out**. |
 | **Sign In** (signed out) | Goes to the sign-in page ([Getting Started](01-getting-started.md)). |
 
 ## The menu
