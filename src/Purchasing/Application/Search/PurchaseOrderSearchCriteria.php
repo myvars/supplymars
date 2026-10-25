@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[DateRange]
 final class PurchaseOrderSearchCriteria extends SearchCriteria implements DateRangeSearchCriteriaInterface
 {
-    protected const array SORT_OPTIONS = ['id', 'createdAt', 'order.id', 'totalPriceIncVat', 'status'];
+    protected const array SORT_OPTIONS = ['id', 'createdAt', 'customerOrder.id', 'totalPriceIncVat', 'status'];
 
     protected const string SORT_DIRECTION_DEFAULT = 'DESC';
 
