@@ -41,7 +41,7 @@ PHP runs on your machine; Docker provides the services.
 4. Load a user and data ([below](#a-user-and-data)).
 
 - Sessions are in Redis, so logging in needs `make up-dev-tools` running.
-- No queue worker runs under `symfony serve`. Start one when you need queued email, live updates on the order page or lock-release toasts: `symfony console messenger:consume async`.
+- `symfony serve` starts a queue worker for `async` (the `workers` block of `.symfony.local.yaml`), for queued email, live updates on the order page and lock-release toasts. It restarts when `config/`, `src/`, `templates/` or the installed packages change, and stops with the server. `symfony server:status` lists it and `symfony server:log` shows its output. The block is read only when the server starts, and `.env` files are not watched: after changing either, `symfony server:stop` and `symfony serve -d`.
 - Live updates need the `mercure` container of `make up-dev-tools`. `.symfony.local.yaml` (committed) sets `proxy_mercure`, so `symfony serve` serves the hub on the site's own origin (`/.well-known/mercure`) and sets `MERCURE_URL` and `MERCURE_PUBLIC_URL` itself. See [Turbo](patterns/Turbo/README.md#live-updates-with-mercure).
 
 ### Option B: Full Docker stack
@@ -73,7 +73,7 @@ The simulation and setup commands act as the user in `DEFAULT_STAFF_EMAIL` (`adm
 
 ### Email in dev
 
-In dev every email goes to `DEV_MAIL_RECIPIENT`, whatever its recipient (`config/packages/mailer.yaml`, `when@dev` envelope recipients), and lands in Mailpit (http://localhost:8025). Override `DEV_MAIL_RECIPIENT` in `.env.local` if you want another address. Queued email needs a worker: Option A only sends it while `messenger:consume async` runs.
+In dev every email goes to `DEV_MAIL_RECIPIENT`, whatever its recipient (`config/packages/mailer.yaml`, `when@dev` envelope recipients), and lands in Mailpit (http://localhost:8025). Override `DEV_MAIL_RECIPIENT` in `.env.local` if you want another address. Queued email needs a worker; under Option A it is the one `symfony serve` starts.
 
 ## Switching to RabbitMQ
 
@@ -165,8 +165,8 @@ The application is different: with `make up`, the php container publishes ports 
 |---------|-------|
 | `SQLSTATE[HY000] [2002] Connection refused` | `docker compose ps`, `docker compose logs database`. MySQL takes a few seconds to accept connections after it starts |
 | `Connection refused [tcp://127.0.0.1:6379]` | `docker compose exec redis sh -c 'REDISCLI_AUTH="$REDIS_PASSWORD" redis-cli ping'` should print `PONG` |
-| The order page does not update, or a lock toast never shows | A worker must run (`symfony console messenger:consume async`) and, under Option A, the `mercure` container (`make up-dev-tools`). Updates arrive up to 5 seconds late |
-| An email or async event never arrives | See [Email in dev](#email-in-dev). Otherwise no worker is running (Option A), or it failed: `symfony console messenger:stats`, `messenger:consume async -vv`, `messenger:failed:show` |
+| The order page does not update, or a lock toast never shows | Under Option A, `symfony server:status` must list the worker (restart the server if not) and the `mercure` container must run (`make up-dev-tools`); under Option B, the `messenger` container. Updates arrive within 5 seconds |
+| An email or async event never arrives | See [Email in dev](#email-in-dev). Otherwise the worker is not running or failed: `symfony server:status`, `symfony server:log`, `symfony console messenger:stats`, `messenger:failed:show`. `symfony console messenger:consume async -vv` runs a second, verbose worker beside it; each message goes to whichever takes it first |
 | Browser warns about the certificate (Option A) | `symfony server:ca:install`, then `symfony server:stop` and `symfony serve -d` |
 | Styles missing or JavaScript errors | Rerun `importmap:install`, then `tailwind:build` (`assets/vendor/` is not committed) |
 | A JS or CSS change never reaches the browser | Old compiled files in `public/assets/` (from `asset-map:compile` or an old checkout) are served before `assets/`. Delete them, clear `var/cache/dev` and hard-reload |

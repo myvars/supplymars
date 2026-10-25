@@ -29,8 +29,8 @@ symfony console doctrine:migrations:migrate  # Run pending migrations
 # Docker (alternative to symfony serve)
 make up / make down / make bash
 
-# Async messaging
-symfony console messenger:consume async
+# Async messaging: symfony serve starts the async worker (.symfony.local.yaml); symfony server:log shows it
+symfony console messenger:consume async -vv   # A second, verbose worker, for debugging
 ```
 
 Local URLs and ports: [Docs/02-setup-local.md](Docs/02-setup-local.md#development-urls). What each `app:` command does: [Docs/09-cli-reference.md](Docs/09-cli-reference.md).

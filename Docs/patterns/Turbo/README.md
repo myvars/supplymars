@@ -232,7 +232,7 @@ The rules for anything new:
 - **Fire-and-forget.** No history: a tab whose connection drops misses what was sent meanwhile, and the next visit shows the current state. The cookie is per browser and lasts an hour from the last page load, so if another tab loads a different page, or the hour passes, and this tab's connection then drops, this tab stops receiving its page's updates until its next visit.
 - **No hover prefetch on a live page.** A prefetched response sets the cookie too, without this page's topics, so `base.html.twig` adds `turbo-prefetch: false` to a page with `live_topics`.
 - **The actor's tab refreshes too.** Locking or allocating POSTs into the body frame and re-renders the page; the live refresh that follows finds nothing new.
-- **Latency.** The worker sleeps up to 5 seconds between polls, and in production handles `async` after the scheduled job that caused the refresh. Under `symfony serve`, run `symfony console messenger:consume async`.
+- **Latency.** The worker sleeps up to 5 seconds between polls, and in production handles `async` after the scheduled job that caused the refresh. Under `symfony serve`, the worker is the one the server starts (`.symfony.local.yaml`); `symfony server:status` lists it and `symfony server:log` shows its output.
 
 ### Testing
 
