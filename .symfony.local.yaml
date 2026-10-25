@@ -4,3 +4,11 @@ http:
     # cookie works and the CSP needs nothing extra. Without it, logged-in pages fail: the Symfony CLI points
     # MERCURE_PUBLIC_URL at the hub's plain-HTTP port. See Docs/02-setup-local.md.
     proxy_mercure: true
+
+# Started and stopped with the server, and restarted when the code or the dependencies change, so queued email,
+# live updates and lock toasts work without a worker started by hand. Only async: no scheduled job runs locally
+# (ADR 015). Its output: symfony server:log. Read only when the server starts.
+workers:
+    messenger_consume_async:
+        cmd: ['symfony', 'console', 'messenger:consume', 'async']
+        watch: ['config', 'src', 'templates', 'vendor/composer/installed.json']

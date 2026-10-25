@@ -38,6 +38,8 @@ One container, `messenger`, runs the queue and the schedule from the same image 
 | Command | `messenger:consume scheduler_default async --time-limit=3600 --memory-limit=192M --sleep=5` | `messenger:consume async --time-limit=3600 --sleep=5` |
 | Receivers | `scheduler_default` first, then `async` | `async` only |
 
+Under `symfony serve` there is no `messenger` container: the server starts `messenger:consume async` itself (`.symfony.local.yaml`), with no time limit and the default 1-second sleep, and restarts it when the code changes.
+
 - **Order of receivers.** The worker goes back to the first receiver after each message, and the scheduler only returns jobs that are due, so jobs are not starved by a long queue.
 - **Restarts.** After an hour, or between jobs once above 192M (under PHP's 256M), the worker stops cleanly and the container restarts it.
 - **Stops.** The worker cannot catch SIGTERM (no `pcntl`), so a stop or deploy kills it after 30 s (`stop_grace_period`). A job cut short has not advanced the schedule and runs again; a message cut short is redelivered.

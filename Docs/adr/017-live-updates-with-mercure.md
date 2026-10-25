@@ -41,7 +41,7 @@ FrankenPHP includes a Mercure hub ([ADR 016](016-frankenphp-in-place-of-nginx-an
 ## Consequences
 
 - Up to about 5 seconds between a change and the refresh: the worker's `--sleep=5`. In production a refresh caused by a scheduled job runs after that job, because one worker consumes `scheduler_default` and then `async` (`compose.prod.yaml`).
-- Under `symfony serve`, live refreshes and toasts need `symfony console messenger:consume async`, as queued email does.
+- Under `symfony serve`, live refreshes and toasts need the queue worker, as queued email does; `symfony serve` starts it (`.symfony.local.yaml`, #134).
 - Each event costs the request or job one repository lookup and one Redis call; a duplicate is dropped there, before it reaches the queue. If Redis is down, sending fails, as sessions and the cache already do.
 - A refresh dropped as a duplicate is not lost: the one queued before it has not been received yet, so the page it triggers shows both changes.
 - If the worker is down, each order's lock frees itself after its TTL (300 s), so at most one refresh per order per five minutes queues up.
