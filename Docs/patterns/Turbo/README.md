@@ -24,10 +24,10 @@ A response must contain a `<turbo-frame>` with the id the request targeted. A li
 |----|-----|
 | Show another page in the main content | `data-turbo-frame="body"` (or no attribute inside `body`) |
 | Open a form, confirmation or action in a modal | `data-turbo-frame="modal"` |
-| A link that opens a confirm page or the modal | also `data-turbo-prefetch="false"` |
+| A GET link with a side effect (only logout today) | also `data-turbo-prefetch="false"` |
 | Log in or out | `data-turbo-frame="_top"` |
 
-State-changing actions are a POST form, never a link (see [FormFlow](../FormFlow/README.md)).
+State-changing actions are a POST form, never a link (see [FormFlow](../FormFlow/README.md)). So hover prefetch of a link that opens a modal or confirm page only GETs a page with no side effect; such a link needs no `data-turbo-prefetch="false"`, though some still have it. A live page turns prefetch off for the whole page ([Live updates](#live-updates-with-mercure)).
 
 ### Modal-capable templates
 
