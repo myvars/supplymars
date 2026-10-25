@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Order\Application\Handler;
 
+use App\Customer\Domain\Model\Address\Address;
 use App\Customer\Domain\Model\User\User;
 use App\Customer\Domain\Model\User\UserId;
 use App\Customer\Domain\Repository\UserRepository;
@@ -35,6 +36,10 @@ final readonly class CreateOrderHandler
         $customer = $this->users->get(UserId::fromInt($command->customerId));
         if (!$customer instanceof User) {
             return Result::fail('Customer not found.');
+        }
+
+        if (!$customer->getShippingAddress() instanceof Address || !$customer->getBillingAddress() instanceof Address) {
+            return Result::fail('Customer has no default shipping and billing address.');
         }
 
         $vatRate = $this->vatRates->getDefaultVatRate();

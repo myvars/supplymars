@@ -75,6 +75,23 @@ class CreateOrderFlowTest extends WebTestCase
             ->assertSee('Customer with Id "-1" not found');
     }
 
+    public function testRefusesCustomerWithNoDefaultAddress(): void
+    {
+        $customer = UserFactory::createOne();
+        VatRateFactory::new()->withStandardRate()->create();
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asSuperAdmin()->create())
+            ->get('/order/new')
+            ->fillField('order[customerId]', (string) $customer->getId())
+            ->fillField('order[shippingMethod]', ShippingMethod::THREE_DAY->value)
+            ->click('Create Order')
+            ->assertOn('/order/new')
+            ->assertSee('Customer has no default shipping and billing address.');
+
+        CustomerOrderFactory::assert()->empty();
+    }
+
     public function testRejectsOverLengthCustomerOrderRefAsFieldError(): void
     {
         $customer = UserFactory::createOne();
