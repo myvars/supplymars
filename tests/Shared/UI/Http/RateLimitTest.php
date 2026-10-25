@@ -36,6 +36,26 @@ class RateLimitTest extends WebTestCase
         $browser->get('/login')->assertSuccessful();
     }
 
+    public function testABrowserIsShownTheStyledPage(): void
+    {
+        $browser = $this->browser()->disableReboot();
+        $browser->client()->setServerParameter('HTTP_ACCEPT', 'text/html,application/xhtml+xml,*/*;q=0.8');
+
+        $this->from($browser, '81.2.69.112');
+        for ($i = 1; $i <= 10; ++$i) {
+            $browser->get('/login')->assertSuccessful();
+        }
+
+        $browser
+            ->get('/login')
+            ->assertStatus(429)
+            ->assertHeaderContains('Content-Type', 'text/html')
+            ->assertSee('Too Many Requests to Mars Colony Systems');
+        self::assertGreaterThan(0, (int) $browser->client()->getResponse()->headers->get('Retry-After'));
+        // Rendered before the firewall: the refusal starts no session
+        self::assertSame([], $browser->client()->getResponse()->headers->getCookies());
+    }
+
     public function testHealthIsRefusedAfterTenCallsFromOneAddressButNotForTheContainer(): void
     {
         $browser = $this->browser()->disableReboot();
