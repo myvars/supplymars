@@ -2,7 +2,7 @@
     Inline Edit Component (Turbo-native pattern)
 
     The entire component is a turbo-frame. Clicking the content or icon
-    loads the edit form. Cancel reloads the display. Submit returns a turbo-stream.
+    loads the edit form. Cancel reloads the display. A save refreshes the page.
 
     Minimal JS for: Escape to cancel, auto-focus, auto-select text.
 
@@ -16,7 +16,7 @@
 <turbo-frame id="{{ frameId }}" {{ attributes.defaults({
     'class': 'inline-edit group inline-flex items-center gap-1.5 ' ~ displayClass,
     'data-controller': 'inline-edit',
-    'data-action': 'keydown->inline-edit#keydown',
+    'data-action': 'keydown->inline-edit#keydown turbo:frame-load->inline-edit#onFrameLoad turbo:submit-end->inline-edit#onSubmitEnd',
 }) }}>
     <a href="{{ editUrl }}?edit=1"
        class="inline-flex items-center gap-1.5 rounded-md px-1.5 py-1 -mx-1.5 -my-1 transition-all focus-ring hover:bg-gray-100 dark:hover:bg-white/[0.05]"

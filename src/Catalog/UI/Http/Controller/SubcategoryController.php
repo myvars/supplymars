@@ -39,7 +39,7 @@ class SubcategoryController extends AbstractController
 {
     private function model(): FlowModel
     {
-        return FlowModel::create('catalog', 'subcategory');
+        return FlowModel::create('catalog', 'subcategory', displayNamePlural: 'Subcategories');
     }
 
     #[Route(path: '/subcategory/', name: 'app_catalog_subcategory_index', methods: ['GET'])]

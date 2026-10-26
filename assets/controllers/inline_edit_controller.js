@@ -8,14 +8,17 @@ import { Controller } from "@hotwired/stimulus"
  * - Click outside to submit (auto-save)
  * - Auto-focus and place cursor at end when form loads
  * - Enter to submit for text inputs
+ * - An unchanged value cancels instead of submitting: a save answers with a page refresh,
+ *   which would cut short whatever the click outside started (opening the modal)
+ * - A sent form is not sent again: it stays on screen until the page refresh lands
  * - Auto-grow input to fit content
  */
 export default class extends Controller {
     static targets = ["cancel", "sizer"]
 
     connect() {
-        // When frame content changes, check if it's a form and set up behavior
-        this.element.addEventListener("turbo:frame-load", this.onFrameLoad.bind(this))
+        // turbo:frame-load and turbo:submit-end reach onFrameLoad and onSubmitEnd through the frame's
+        // data-action, so Stimulus removes them on disconnect
         this.boundClickOutside = this.clickOutside.bind(this)
     }
 
@@ -32,6 +35,17 @@ export default class extends Controller {
             this.setupEditMode(form, input)
         } else {
             // We're in display mode - clean up
+            document.removeEventListener("click", this.boundClickOutside)
+        }
+    }
+
+    /**
+     * A saved form stays on screen until the page refresh lands; a second Enter must not save again.
+     * A 422 re-renders the form, which starts afresh
+     */
+    onSubmitEnd({ target, detail: { success } }) {
+        if (success) {
+            target.dataset.saved = ""
             document.removeEventListener("click", this.boundClickOutside)
         }
     }
@@ -54,7 +68,7 @@ export default class extends Controller {
             input.addEventListener("keydown", (e) => {
                 if (e.key === "Enter") {
                     e.preventDefault()
-                    form.requestSubmit()
+                    this.save(form, input)
                 }
             })
         }
@@ -64,7 +78,7 @@ export default class extends Controller {
             input.addEventListener("keydown", (e) => {
                 if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
                     e.preventDefault()
-                    form.requestSubmit()
+                    this.save(form, input)
                 }
             })
         }
@@ -101,10 +115,28 @@ export default class extends Controller {
         }
 
         const form = this.element.querySelector("form")
-        if (form) {
+        const input = this.element.querySelector("input, textarea, select")
+        if (form && input) {
             document.removeEventListener("click", this.boundClickOutside)
-            form.requestSubmit()
+            // Next tick: a cancel click nested in this click would stop Turbo handling the link clicked
+            setTimeout(() => this.save(form, input), 0)
         }
+    }
+
+    /**
+     * Submit the form, or cancel when the value is as it was loaded
+     */
+    save(form, input) {
+        if (form.hasAttribute("aria-busy") || "saved" in form.dataset) {
+            return
+        }
+
+        if (input.value === input.defaultValue && this.hasCancelTarget) {
+            this.cancelTarget.click()
+            return
+        }
+
+        form.requestSubmit()
     }
 
     /**

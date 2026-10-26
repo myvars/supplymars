@@ -58,14 +58,9 @@ The Product name, as it is in the app.
 
 The existing inline fields are listed by `symfony console debug:router | grep inline`.
 
-### Keep other copies of the value in step (optional)
+### After a save
 
-The success response replaces only the field's frame. To update the same value elsewhere on the page (a breadcrumb, a heading):
-
-- pass `value` as a Closure (`value: fn (): string => $product->getName()`) — the flow calls it again after `onSave` and sends what was stored, not what was typed;
-- mark each copy with the frame id: `<twig:PageBreadcrumb … mirrors="inline-edit-product-{{ result.publicId }}-name"/>`, or `data-inline-edit-mirror="<frameId>"` on any element.
-
-Only text-like values are mirrored (string, int, float, `Stringable`), and the copy shows the stored value as escaped text. With a plain (non-Closure) value nothing extra is sent. No controller in the app uses this yet: every inline controller passes a plain value and no `PageBreadcrumb` sets `mirrors`, so after an inline rename the breadcrumb keeps the old name until the page reloads.
+The success response is the package's default, `<turbo-stream action="refresh" scroll="preserve">`: Turbo requests the page again, so the field comes back in display mode, every other copy of the value (the breadcrumb, a heading) shows what was stored, and the toast comes from the page load (`base.html.twig`). It replaces the page, as after a modal save (`turbo-refresh-method` is `replace`), and keeps the scroll position. The app has no override of `inline_edit_success.stream.html.twig`. Pass `value` as a plain value: a Closure is deprecated since form-flow 1.5.
 
 ## Reference
 
@@ -74,7 +69,7 @@ Only text-like values are mirrored (string, int, float, `Stringable`), and the c
 | Parameter | Default | Purpose |
 |-----------|---------|---------|
 | `frameId` | required | Frame id; must equal the component's `frameId` |
-| `displayTemplate` | required | Partial rendered for display and after a save |
+| `displayTemplate` | required | Partial rendered for display and on cancel (after a save, the refreshed page renders the field) |
 | `entity` | required | The record being edited |
 | `cancelUrl` | request path | URL the cancel button loads |
 | `entityVarName` | class short name, lower-camel | Variable name of the entity in `displayTemplate` |
@@ -115,10 +110,13 @@ The edit link is fetched on hover by Turbo 8's default link prefetch.
 
 - **`property:` checks only that property's own constraints** (`validatePropertyValue()`: Default group, the value as submitted). Class-level rules (`UniqueEntity`, `Callback`, rules in other groups) do not run, so an inline edit can save a value the handler path would reject. Check those in `onSave`, or don't offer the field inline. Today the only class-level rule on an inline-edited entity is `User`'s `UniqueEntity(email)`, and the inline field there is `fullName`.
 - **Exceptions thrown in `onSave` show as a form-level error, below the buttons**, not next to the field, with the exception message as written. E.g. `Product::rename('   ')` passes `NotBlank` but throws "Product name cannot be empty".
-- **The frame id is written twice**, in the partial's `frameId` and in the context's `frameId`. If they differ, the form and the success stream miss the frame.
+- **The frame id is written twice**, in the partial's `frameId` and in the context's `frameId`. If they differ, the form and the cancel miss the frame.
 - **`editUrl` must have no query string.** The component appends `?edit=1` literally.
 - **The route needs GET and POST.** GET without `edit` renders the display (cancel), GET with `edit` renders the form, POST saves.
-- **The toast and mirrors come from the app's success template.** The package's default `inline_edit_success.stream.html.twig` sends no flash stream. The app's override, `templates/shared/form_flow/inline_edit_success.stream.html.twig`, appends `_flashes.html.twig` (`FlashToast`, timed by `FlashToast::getDuration()`) to the `flash-container` toaster in `base.html.twig`, and keeps the mirror stream; keep both when editing it.
+- **The refresh reloads the browser's current URL.** An inline edit inside the modal would close it with the page behind, and one whose value is in the URL would reload an address that no longer exists. Neither exists today; either needs an app override of `inline_edit_success.stream.html.twig` that replaces only the frame ([form-flow `docs/templates.md`](https://github.com/myvars/form-flow/blob/main/docs/templates.md#inline-edit-templates); the package's `docs/` is not installed in `vendor/`).
+- **A refresh loses anything typed into another open inline edit** on the same page.
+- **An unchanged value cancels rather than saves** (Enter, or a click outside), so it sends no request and no refresh: `inline_edit` compares the input with the value it loaded. A click outside acts on the next tick, so the link or button clicked works as usual. A changed value clicked away from by a link to the modal is saved, and the refresh then closes the modal before it opens; click the link again.
+- **A sent form is not sent again.** It stays on screen until the refresh lands, so `inline_edit` ignores Enter and clicks outside once the save has succeeded (`turbo:submit-end`) or while it is in flight (`aria-busy`). A 422 re-renders the form, which can be sent again.
 - **The form skips the global form theme.** `templates/shared/form_flow/inline_edit_form.html.twig` uses `form_div_layout.html.twig` only, so the input blends into the text. Changes to `shadcn_theme.html.twig` do not reach it.
 - **Errors return 422** and keep the form open in the frame.
 - **Customer passes `entityVarName: 'customer'`** (`CustomerController::inlineFullName`): the entity class is `User`, so the derived name would be `user`.

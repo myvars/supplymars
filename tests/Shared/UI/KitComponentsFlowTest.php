@@ -61,19 +61,23 @@ final class KitComponentsFlowTest extends WebTestCase
             ->assertSeeIn('#flash-container[data-controller="sonner"] li[data-slot="toast"][data-type="success"][data-sonner-target="toast"] [data-slot="toast-title"]', 'Manufacturer created');
     }
 
-    public function testFlashFromAnInlineEditIsStreamedIntoThePageToaster(): void
+    public function testFlashFromAnInlineEditShowsInThePageToasterAfterTheRefresh(): void
     {
         $manufacturer = ManufacturerFactory::createOne(['name' => 'Old Name']);
+        $publicId = $manufacturer->getPublicId()->value();
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/manufacturer/' . $manufacturer->getPublicId()->value() . '/inline/name?edit=1')
+            ->get('/manufacturer/' . $publicId . '/inline/name?edit=1')
             // The inline form opts out of the kit theme: its field is a bare input, not a kit Input.
             ->assertSeeElement('input[name="inline_field[value]"]:not([data-slot])')
             ->fillField('inline_field[value]', 'New Name')
             ->click('Save (Enter)')
             ->assertSuccessful()
-            ->assertSeeIn('turbo-stream[action="append"][target="flash-container"] template li[data-slot="toast"][data-sonner-target="toast"] [data-slot="toast-title"]', 'Updated successfully');
+            ->assertContains('<turbo-stream action="refresh" scroll="preserve"></turbo-stream>')
+            // The refresh is a page load, which renders the flash into the toaster.
+            ->get('/manufacturer/' . $publicId)
+            ->assertSeeIn('#flash-container[data-controller="sonner"] li[data-slot="toast"][data-type="success"][data-sonner-target="toast"] [data-slot="toast-title"]', 'Updated successfully');
     }
 
     public function testSearchBoxIsAKitInputGroupWithTheFilterLinkAndEmptyState(): void

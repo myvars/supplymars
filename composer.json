@@ -20,7 +20,7 @@
         "knplabs/knp-time-bundle": "^2.5",
         "league/flysystem-aws-s3-v3": "^3.35.3",
         "liip/imagine-bundle": "^2.18.1",
-        "myvars/form-flow": "^1.4",
+        "myvars/form-flow": "^1.5",
         "nelmio/api-doc-bundle": "^5.13.1",
         "nelmio/security-bundle": "^3.9",
         "oneup/flysystem-bundle": "^4.14.1",

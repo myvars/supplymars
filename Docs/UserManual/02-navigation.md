@@ -95,7 +95,7 @@ On a detail page, a record's name can be edited in place. This works for product
 
 1. Click the name (a pencil appears on hover).
 2. Type the new value.
-3. Press Enter, or click elsewhere, to save. Press Escape to cancel.
+3. Press Enter, or click elsewhere, to save. Press Escape to cancel. If you changed nothing, the field just closes.
 
 A toast confirms the change only when the value actually changed. An invalid value shows its message beside the field.
 

@@ -171,4 +171,21 @@ final class UpdateCustomerFlowTest extends WebTestCase
 
         self::assertSame('New Value', UserFactory::repository()->find($staff->getId())?->getFullName());
     }
+
+    public function testInlineRenameRefreshesThePage(): void
+    {
+        $entity = UserFactory::createOne(['fullName' => 'Old Value']);
+        $publicId = $entity->getPublicId()->value();
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/customer/' . $publicId . '/inline/fullname?edit=1')
+            ->fillField('inline_field[value]', 'Renamed Value')
+            ->click('Save (Enter)')
+            ->assertSuccessful()
+            ->assertContains('<turbo-stream action="refresh" scroll="preserve"></turbo-stream>')
+            ->assertNotContains('Renamed Value')
+            ->get('/customer/' . $publicId)
+            ->assertSeeIn('nav[aria-label="breadcrumb"]', 'Renamed Value');
+    }
 }

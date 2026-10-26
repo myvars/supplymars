@@ -24,4 +24,21 @@ final class CategoryIndexFlowTest extends WebTestCase
             ->assertSee('Category')
             ->assertSee('Markup');
     }
+
+    public function testIndexPagesSpellThePlurals(): void
+    {
+        $browser = $this->browser()->actingAs(UserFactory::new()->asStaff()->create());
+
+        $browser->get('/category/')
+            ->assertSeeIn('h1', 'Categories')
+            ->assertSeeElement('input[placeholder="Search categories..."]')
+            ->assertSee('No categories found')
+            ->assertNotSee('Categorys');
+
+        $browser->get('/subcategory/')
+            ->assertSeeIn('h1', 'Subcategories')
+            ->assertSeeElement('input[placeholder="Search subcategories..."]')
+            ->assertSee('No subcategories found')
+            ->assertNotSee('Subcategorys');
+    }
 }
