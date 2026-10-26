@@ -17,9 +17,8 @@ export default class extends Controller {
     static targets = ["cancel", "sizer"]
 
     connect() {
-        // When frame content changes, check if it's a form and set up behavior
-        this.element.addEventListener("turbo:frame-load", this.onFrameLoad.bind(this))
-        this.element.addEventListener("turbo:submit-end", this.onSubmitEnd.bind(this))
+        // turbo:frame-load and turbo:submit-end reach onFrameLoad and onSubmitEnd through the frame's
+        // data-action, so Stimulus removes them on disconnect
         this.boundClickOutside = this.clickOutside.bind(this)
     }
 
