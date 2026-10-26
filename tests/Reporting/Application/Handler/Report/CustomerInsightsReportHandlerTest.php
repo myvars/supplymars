@@ -8,6 +8,8 @@ use App\Reporting\Application\Handler\Report\CustomerInsightsReportHandler;
 use App\Reporting\Application\Report\CustomerInsightsReportCriteria;
 use App\Reporting\Domain\Metric\SalesDuration;
 use App\Reporting\Domain\Model\SalesType\CustomerSalesType;
+use App\Tests\Shared\Factory\CustomerOrderFactory;
+use App\Tests\Shared\Factory\CustomerOrderItemFactory;
 use App\Tests\Shared\Factory\CustomerSalesSummaryFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
@@ -81,5 +83,21 @@ class CustomerInsightsReportHandlerTest extends KernelTestCase
 
         self::assertTrue($result->ok);
         self::assertIsArray($result->payload['topCustomers']);
+    }
+
+    public function testTopCustomersRevenueIsExVatLikeTheOrderReports(): void
+    {
+        $order = CustomerOrderFactory::createOne();
+        CustomerOrderItemFactory::createOne(['customerOrder' => $order]);
+        self::assertNotSame($order->getTotalPrice(), $order->getTotalPriceIncVat());
+
+        $criteria = new CustomerInsightsReportCriteria();
+        $criteria->setDuration(SalesDuration::TODAY->value);
+
+        $result = ($this->handler)($criteria);
+
+        self::assertTrue($result->ok);
+        self::assertSame((float) $order->getTotalPrice(), (float) $result->payload['topCustomers'][0]['totalRevenue']);
+        self::assertSame((float) $order->getTotalPrice(), (float) $result->payload['topCustomers'][0]['averageOrderValue']);
     }
 }

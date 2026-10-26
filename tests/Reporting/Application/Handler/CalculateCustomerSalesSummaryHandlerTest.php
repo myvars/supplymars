@@ -179,4 +179,27 @@ class CalculateCustomerSalesSummaryHandlerTest extends KernelTestCase
         self::assertCount(1, $summaries);
         self::assertNotSame('0.00', $summaries[0]->getTotalRevenue());
     }
+
+    public function testRevenueIsExVatLikeTheOrderReports(): void
+    {
+        $order = CustomerOrderFactory::createOne();
+        CustomerOrderItemFactory::createOne(['customerOrder' => $order]);
+        self::assertNotSame($order->getTotalPrice(), $order->getTotalPriceIncVat());
+
+        $this->handler->process();
+
+        $summary = $this->em->getRepository(CustomerSalesSummary::class)->findOneBy(['duration' => SalesDuration::TODAY]);
+        self::assertNotNull($summary);
+        self::assertSame((float) $order->getTotalPrice(), (float) $summary->getTotalRevenue());
+        self::assertSame((float) $order->getTotalPrice(), (float) $summary->getAverageAov());
+        // Average CLV is lifetime revenue over every customer
+        self::assertEqualsWithDelta((float) $order->getTotalPrice() / $summary->getTotalCustomers(), (float) $summary->getAverageClv(), 0.01);
+
+        $geographic = $this->em->getRepository(CustomerGeographicSummary::class)->findOneBy(['duration' => SalesDuration::TODAY]);
+        self::assertNotNull($geographic);
+        self::assertSame((float) $order->getTotalPrice(), (float) $geographic->getOrderValue());
+
+        $segments = $this->em->getRepository(CustomerSegmentSummary::class)->findBy(['duration' => SalesDuration::TODAY]);
+        self::assertSame((float) $order->getTotalPrice(), array_sum(array_map(fn (CustomerSegmentSummary $s): float => (float) $s->getOrderValue(), $segments)));
+    }
 }

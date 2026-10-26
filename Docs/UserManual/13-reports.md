@@ -60,7 +60,7 @@ Open **Dashboard** from the menu. It shows today's figures against the same week
 ## Rules and limits
 
 - **What counts as a sale.** Product Sales counts delivered PO items, on the day they were delivered. An item ordered but not yet delivered is not a sale.
-- **Order values are ex VAT.** Order Revenue, AOV, Overdue Order Value, the Overdue Total column and the Dashboard's Revenue are order totals before VAT. Customer Insights revenue figures (Revenue, AOV, Avg CLV) include VAT, so they will not match Order Summary.
+- **Order values are ex VAT.** Order Revenue, AOV, Overdue Order Value, the Overdue Total column, the Dashboard's Revenue and the Customer Insights revenue figures (Revenue, AOV, Avg CLV, top customers, by city and by segment) are order totals before VAT.
 - **Cancelled orders are left out** of every order and customer figure. PO Item Performance leaves out cancelled and refunded PO items.
 - **Overdue** means the due date has passed and the order is neither delivered nor cancelled. The period picks orders created since its start.
 - **PO Item Performance** counts PO items created in the period.
