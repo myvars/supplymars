@@ -8,7 +8,7 @@ use PHPUnit\Framework\Assert;
 use Symfony\Component\HttpFoundation\Cookie;
 use Zenstruck\Browser\KernelBrowser;
 
-/** Reads the subscriber cookie that base.html.twig sets, and what its token grants. */
+/** Reads the subscriber cookie that base.html.twig sets, what its token grants and when it expires. */
 final class MercureCookie
 {
     public const string NAME = '__Secure-mercure_access_token';
@@ -32,11 +32,7 @@ final class MercureCookie
      */
     public static function grantedTopics(KernelBrowser $browser): array
     {
-        $cookie = self::find($browser);
-        Assert::assertNotNull($cookie, 'No Mercure cookie was set');
-
-        $payload = json_decode((string) base64_decode(strtr(explode('.', (string) $cookie->getValue())[1], '-_', '+/'), true), true, 512, \JSON_THROW_ON_ERROR);
-        Assert::assertIsArray($payload);
+        $payload = self::payload($browser);
         Assert::assertIsArray($payload['authorization_details'] ?? null);
 
         $granted = [];
@@ -49,5 +45,26 @@ final class MercureCookie
         }
 
         return $granted;
+    }
+
+    /** When the last response's token expires (its exp claim), as a Unix time. */
+    public static function expiresAt(KernelBrowser $browser): int
+    {
+        $exp = self::payload($browser)['exp'] ?? null;
+        Assert::assertIsNumeric($exp);
+
+        return (int) $exp;
+    }
+
+    /** @return array<mixed> */
+    private static function payload(KernelBrowser $browser): array
+    {
+        $cookie = self::find($browser);
+        Assert::assertNotNull($cookie, 'No Mercure cookie was set');
+
+        $payload = json_decode((string) base64_decode(strtr(explode('.', (string) $cookie->getValue())[1], '-_', '+/'), true), true, 512, \JSON_THROW_ON_ERROR);
+        Assert::assertIsArray($payload);
+
+        return $payload;
     }
 }

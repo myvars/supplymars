@@ -27,7 +27,7 @@ A response must contain a `<turbo-frame>` with the id the request targeted. A li
 | A GET link with a side effect (logout, which has no CSRF: a prefetch signs the user out) | also `data-turbo-prefetch="false"` |
 | Log in or out | `data-turbo-frame="_top"` |
 
-State-changing actions are a POST form, never a link (see [FormFlow](../FormFlow/README.md)). So hover prefetch of a link that opens a modal or confirm page only GETs a page with no side effect; such a link needs no `data-turbo-prefetch="false"`, though some still have it. A prefetch of `/login`, or of a protected page by a signed-out visitor (it redirects to `/login`), counts against the login rate limit ([08-security.md](../../08-security.md#rate-limiting)). The homepage and About page links opt out; others need not. A live page turns prefetch off for the whole page ([Live page updates](#live-page-updates)).
+State-changing actions are a POST form, never a link (see [FormFlow](../FormFlow/README.md)). So hover prefetch of a link that opens a modal or confirm page only GETs a page with no side effect; such a link needs no `data-turbo-prefetch="false"`, though some still have it. A prefetch of `/login`, or of a protected page by a signed-out visitor (it redirects to `/login`), counts against the login rate limit ([08-security.md](../../08-security.md#rate-limiting)). The homepage and About page links opt out; others need not.
 
 ### Modal-capable templates
 
@@ -123,15 +123,15 @@ $this->notifier->notify(
 | Piece | Where |
 |-------|-------|
 | `MercureUserNotifier` renders a Turbo Stream that appends a `<twig:FlashToast>` (with its optional `url`, a View link) to `#flash-container`, and publishes it through `LiveUpdatePublisherInterface` as a **private** update on the topic `user/{publicId}` | `src/Shared/Infrastructure/Notification/`, `templates/shared/turbo/_user_notification_stream.html.twig` |
-| Every logged-in page subscribes to its own user's topic with a `<turbo-mercure-stream-source private>`. Rendering it sets the cookie (`__Secure-mercure_access_token`, path `/.well-known/mercure`) whose token allows that topic, plus the page's [live topics](#live-page-updates), and nothing else | `templates/base.html.twig`, outside `<turbo-frame id="body">`, in a `data-turbo-permanent` element, so Turbo visits keep it. Its id names the user: a visit that finds another user logged in (from another tab) replaces it |
-| Logging out clears the cookie, so a shared browser stops receiving the previous user's toasts | `ClearMercureCookieOnLogout` |
+| Every staff page subscribes to its own user's topic with a `<turbo-mercure-stream-source private>`. Rendering it sets the cookie (`__Secure-mercure_access_token`, path `/.well-known/mercure`) whose token allows that topic and nothing else, the same on every page. A customer's pages set none, and a customer's login clears one left by a previous user, so the hub refuses them every topic | `templates/base.html.twig`, outside `<turbo-frame id="body">`, in a `data-turbo-permanent` element, so Turbo visits keep it. Its id names the user: a visit that finds another user logged in (from another tab) replaces it |
+| Logging out clears the cookie, so a shared browser stops receiving the previous user's toasts. So does a customer logging in over a staff user who didn't log out | `ClearMercureCookieOnLogout`, `ClearMercureCookieOnCustomerLogin` |
 | The hub: FrankenPHP's own under `make up` and in production; the `mercure` container of `make up-dev-tools` under `symfony serve`, served on the site's origin by its proxy | `docker/frankenphp/Caddyfile`, `compose.override.yaml`, `.symfony.local.yaml` |
 
 The hub is on the site's own origin in every environment, so `connect-src 'self'` covers it and the cookie needs no domain.
 
 ### Rules
 
-- **Fire-and-forget.** The hub keeps no history (`transport local`). A user with no page open never sees the toast, and one whose connection drops misses what was sent meanwhile. The cookie's token lasts an hour from the last page load, so a tab left on one page longer stops receiving once its connection drops, until the next visit. Anything that must not be lost belongs in an email or a stored record.
+- **Fire-and-forget.** The hub keeps no history (`transport local`). A user with no page open never sees the toast, and one whose connection drops misses what was sent meanwhile. The cookie and its token last a week from the last page load (`app.login_lifetime`, shared with remember-me): the hub closes a connection when its token expires and refuses the reconnect. Anything that must not be lost belongs in an email or a stored record.
 - **Never throws.** `notify()` and `publish()` catch and log a hub failure (`Live update not published`). A toast is worth nothing a minute late, so a hub outage should not fail the message: it would be retried for no use and end in the `failed` transport. A broken template still throws: that is a bug, not an outage.
 - **Notify from the worker, not the request.** Queue a message on `async` (`#[AsMessage('async')]`) and notify from its handler, so a slow or down hub never slows a page or a scheduled job. Do not make a domain event async for this: other listeners rely on it being sync.
 - **Render only what you pass.** The update is rendered in the worker, with no request and no current user. Put nothing in the stream beyond the message for that one user.
@@ -171,9 +171,9 @@ return $this->render('/order/show.html.twig', [
 ]);
 ```
 
-`base.html.twig` does the rest. The request's one subscriber cookie (set by the permanent per-user element) grants the user's topic and the page's. A second element, inside `<turbo-frame id="body">`, subscribes to the page's topics and goes when the page does: the order page is opened in that frame, so outside it a frame visit would keep the previous page's subscription. Do not call `turbo_stream_from(…, private: true)` in a page: the cookie is already set, and a second call throws.
+`base.html.twig` does the rest. A refresh is public, so the cookie (set by the permanent per-user element) grants only the user's topic, the same on every page, and nothing loaded later can take a live page's updates away. A second element, inside `<turbo-frame id="body">`, subscribes to the page's topics and goes when the page does: the order page is opened in that frame, so outside it a frame visit would keep the previous page's subscription. Do not call `turbo_stream_from(…, private: true)` in a page: the cookie is already set, and a second call throws.
 
-**Back must request the page again.** The cookie is set only by loading the page, and the last page loaded has replaced it. A copy restored without a request would reconnect without this page's topics and receive nothing, while looking live. Two things prevent it:
+**Back requests the page again**, so it shows what is current. A copy restored without a request would show what the page held when it was left, until the next update. Two things prevent it:
 
 - Turbo's own cache: `base.html.twig` adds `<meta name="turbo-cache-control" content="no-cache">` to a page with `live_topics`.
 - The browser's cache, which serves Back across full page loads even for a page that must be revalidated: `#[Cache(noStore: true)]` on the action. This one is yours to add.
@@ -228,18 +228,17 @@ The rules for anything new:
 
 ### Rules
 
-- **The page's access check is its subscription check.** A browser gets the cookie for `order/X` only by loading a page the user may see, so `#[IsGranted]` decides who receives updates. Put `live_topics` only on a page that checks access to that resource.
-- **Private only.** Every update is private.
-- **Fire-and-forget.** No history: a tab whose connection drops misses what was sent meanwhile, and the next visit shows the current state. The cookie is per browser and lasts an hour from the last page load, so if another tab loads a different page, or the hour passes, and this tab's connection then drops, this tab stops receiving its page's updates until its next visit.
-- **No hover prefetch on a live page.** A prefetched response sets the cookie too, without this page's topics, so `base.html.twig` adds `turbo-prefetch: false` to a page with `live_topics`.
+- **Refreshes are public, and carry no data.** Any staff browser may receive any page's refreshes, by topic, `*` or a URL pattern, and learn when an order changes, never what. What a refresh loads comes through the page's own `#[IsGranted]` under each viewer's login, so put `live_topics` only on a page that checks access to that resource. A page whose very timing must stay hidden from some staff needs the hub to check access ([ADR 017](../../adr/017-live-updates-with-mercure.md)).
+- **No content on a page topic.** `publish()` is private and the cookie grants only the user's own topic, so rendered HTML on a page topic reaches nobody. Send content to each viewer's user topic, as toasts do.
+- **Fire-and-forget.** No history: a tab whose connection drops misses what was sent meanwhile, and the next visit shows the current state.
 - **The actor's tab refreshes too.** Locking or allocating POSTs into the body frame and re-renders the page; the live refresh that follows finds nothing new.
 - **Latency.** The worker sleeps up to 5 seconds between polls, and in production handles `async` after the scheduled job that caused the refresh. Under `symfony serve`, the worker is the one the server starts (`.symfony.local.yaml`); `symfony server:status` lists it and `symfony server:log` shows its output.
 
 ### Testing
 
-- **Subscription:** visit the page and check its stream sources, its `no-cache` meta and `no-store` header, and that the cookie grants exactly `user/{ownPublicId}` and the page's topics (`MercureCookie::grantedTopics()`). See `tests/Order/UI/OrderLiveUpdatesFlowTest.php`. `StateBetweenRequestsTest` checks that each order page's cookie grants only its own viewer's topic and its own order's.
+- **Subscription:** visit the page and check its stream sources, its `no-cache` meta and `no-store` header, that it has no `turbo-prefetch` meta, and that the cookie grants only `user/{ownPublicId}` (`MercureCookie::grantedTopics()`). Check a refresh is public. See `tests/Order/UI/OrderLiveUpdatesFlowTest.php`. `StateBetweenRequestsTest` checks that each order page's cookie grants only its own viewer's topic.
 - **Publishing:** make the change as a caller would, then `QueuedNotifications::handle()` and read `QueuedNotifications::published()`. Compare a refresh with `MercureLiveUpdatePublisher::REFRESH_STREAM`. Check the count of handled messages to prove one refresh per order (`tests/Order/UI/Console/SimulationRefreshesOrderPagesTest.php` runs the simulation's commands).
-- **In a browser:** what a refresh keeps runs in the browser, which PHPUnit does not see. With two staff users, check that a change appears for the other, that a live toast stays on screen, that an open item modal, the sidebar menu, the help panel (with its help) and the user menu survive, and that the page still updates after Back.
+- **In a browser:** what a refresh keeps runs in the browser, which PHPUnit does not see. With two staff users, check that a change appears for the other, that a live toast stays on screen, that an open item modal, the sidebar menu, the help panel (with its help) and the user menu survive, and that the page still updates after Back, after hovering its links, and after another tab loads a page.
 
 ## Gotchas
 

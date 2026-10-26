@@ -93,7 +93,7 @@ class SimulationRefreshesOrderPagesTest extends KernelTestCase
             array_map(static fn (Update $update): array => $update->getTopics(), $updates),
         );
         foreach ($updates as $update) {
-            self::assertTrue($update->isPrivate());
+            self::assertFalse($update->isPrivate());
             self::assertSame(MercureLiveUpdatePublisher::REFRESH_STREAM, $update->getData());
         }
     }

@@ -9,6 +9,8 @@
 parameters:
     app.product_uploads: 'uploads/products/'
     app.uploads_base_url: '%env(DEFAULT_URI)%'
+    # A week, in seconds: the remember-me cookie, and the Mercure subscriber cookie that follows it
+    app.login_lifetime: 604800
 
 services:
     # default configuration for services in *this* file

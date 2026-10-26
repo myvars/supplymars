@@ -3,6 +3,10 @@
 # One secret signs both tokens; the hub's issuer block (docker/frankenphp/Caddyfile) checks it and the iss claim.
 # See Docs/patterns/Turbo/README.md#live-updates-with-mercure and ADR 017.
 mercure:
+    # The subscriber cookie and its token last a week from the last page load, remember_me's lifetime in
+    # security.yaml. The hub closes a connection when its token expires and refuses the reconnect, so a shorter
+    # token would silence a tab left open on one page. Only logout clears it (ClearMercureCookieOnLogout). ADR 017.
+    default_cookie_lifetime: '%app.login_lifetime%'
     hubs:
         default:
             url: '%env(MERCURE_URL)%'
