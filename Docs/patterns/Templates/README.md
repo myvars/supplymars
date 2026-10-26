@@ -12,7 +12,7 @@ How templates under `templates/` are named and documented, and the variables For
 | `_*_card.html.twig` | Card partial | `catalog/product/_product_card.html.twig` |
 | `_inline_*.html.twig` | Inline edit display partial | `catalog/product/_inline_name.html.twig` |
 | `components/PascalCase.html.twig` | Twig Component, used as `<twig:Name>` | `EntityCard.html.twig`, `Search.html.twig` |
-| `*.stream.html.twig` | Turbo Stream template | `shared/form_flow/inline_edit_success.stream.html.twig` |
+| `*.stream.html.twig` | Turbo Stream template | `shared/form_flow/inline_edit_success.stream.html.twig` (the package's; the app has none of its own) |
 
 - An underscore prefix means a partial: included by other templates, never rendered directly. No prefix means a routed page or flow template.
 - Templates mirror the bounded contexts: `{context}/{entity}/...`, or `{entity}/...` for a `FlowModel::simple()` controller (`order/`, `customer/`).

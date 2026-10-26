@@ -105,4 +105,21 @@ final class UpdateCategoryFlowTest extends WebTestCase
 
         self::assertSame('Old Value', $entity->getName());
     }
+
+    public function testInlineRenameRefreshesThePage(): void
+    {
+        $entity = CategoryFactory::createOne(['name' => 'Old Value']);
+        $publicId = $entity->getPublicId()->value();
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/category/' . $publicId . '/inline/name?edit=1')
+            ->fillField('inline_field[value]', 'Renamed Value')
+            ->click('Save (Enter)')
+            ->assertSuccessful()
+            ->assertContains('<turbo-stream action="refresh" scroll="preserve"></turbo-stream>')
+            ->assertNotContains('Renamed Value')
+            ->get('/category/' . $publicId)
+            ->assertSeeIn('nav[aria-label="breadcrumb"]', 'Renamed Value');
+    }
 }
