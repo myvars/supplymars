@@ -25,10 +25,10 @@ Click a customer. The page has three cards:
 
 | Insight | Meaning |
 |---|---|
-| Total Revenue | Sum of the customer's order totals inc VAT |
+| Total Revenue | Sum of the customer's order totals ex VAT, the same basis as the Customer Insights report |
 | Order Count | Number of orders |
 | Avg Order Value | Total Revenue divided by Order Count |
-| Customer Rank | Position by revenue among all customers; 1 is the highest spender |
+| Customer Rank | Position by ex VAT revenue among all customers; 1 is the highest spender |
 | First Order / Last Order | How long ago the first and latest orders were placed |
 | Published Reviews | Number of published reviews; shown only when above 0 |
 

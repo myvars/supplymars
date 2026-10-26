@@ -151,9 +151,9 @@ class UserDoctrineRepository extends ServiceEntityRepository implements Password
 
         $sql = '
             SELECT
-                COALESCE(SUM(co.total_price_inc_vat), 0) AS totalRevenue,
+                COALESCE(SUM(co.total_price), 0) AS totalRevenue,
                 COUNT(co.id) AS orderCount,
-                CASE WHEN COUNT(co.id) > 0 THEN SUM(co.total_price_inc_vat) / COUNT(co.id) ELSE 0 END AS averageOrderValue,
+                CASE WHEN COUNT(co.id) > 0 THEN SUM(co.total_price) / COUNT(co.id) ELSE 0 END AS averageOrderValue,
                 MIN(co.created_at) AS firstOrderDate,
                 MAX(co.created_at) AS lastOrderDate,
                 DATEDIFF(NOW(), MAX(co.created_at)) AS daysSinceLastOrder,
@@ -167,8 +167,8 @@ class UserDoctrineRepository extends ServiceEntityRepository implements Password
                      FROM customer_order
                      WHERE status != :cancelledStatus
                      GROUP BY customer_id
-                     HAVING SUM(total_price_inc_vat) > (
-                         SELECT COALESCE(SUM(total_price_inc_vat), 0)
+                     HAVING SUM(total_price) > (
+                         SELECT COALESCE(SUM(total_price), 0)
                          FROM customer_order
                          WHERE customer_id = :customerId AND status != :cancelledStatus
                      )
