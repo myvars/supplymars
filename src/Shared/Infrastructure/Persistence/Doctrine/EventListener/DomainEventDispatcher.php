@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Persistence\Doctrine\EventListener;
 
+use App\Shared\Domain\Event\AbstractDomainEvent;
 use App\Shared\Domain\Event\AsyncDomainEventInterface;
 use App\Shared\Domain\Event\DomainEventInterface;
 use App\Shared\Domain\Event\DomainEventProviderInterface;
@@ -53,8 +54,12 @@ final class DomainEventDispatcher
         $deletedEntities = $this->deletedEntities;
         $this->deletedEntities = [];
 
+        // Release every entity's events before dispatching any. A listener that flushes runs postFlush
+        // again; with the events already released, that nested run has nothing left to dispatch, so a
+        // flush of many entities doesn't nest one level deeper per entity.
+        $events = [];
         foreach ($deletedEntities as $entity) {
-            $this->dispatchDomainEvents($entity);
+            array_push($events, ...$entity->releaseDomainEvents());
         }
 
         $unitOfWork = $args->getObjectManager()->getUnitOfWork();
@@ -63,18 +68,22 @@ final class DomainEventDispatcher
                 // Removed since this flush began, so its row still exists: hold its events. A listener
                 // that removes an entity here must flush; Doctrine drops a removal left unflushed.
                 if ($entity instanceof DomainEventProviderInterface && !$unitOfWork->isScheduledForDelete($entity)) {
-                    $this->dispatchDomainEvents($entity);
+                    array_push($events, ...$entity->releaseDomainEvents());
                 }
             }
         }
+
+        $this->dispatchDomainEvents($events);
     }
 
     /**
+     * @param list<AbstractDomainEvent> $events
+     *
      * @throws ExceptionInterface
      */
-    private function dispatchDomainEvents(DomainEventProviderInterface $entity): void
+    private function dispatchDomainEvents(array $events): void
     {
-        foreach ($entity->releaseDomainEvents() as $event) {
+        foreach ($events as $event) {
             if (!$event instanceof DomainEventInterface) {
                 continue;
             }
