@@ -250,7 +250,7 @@ docker compose $LIVE logs --tail=50 messenger
 mysql_live -e "SHOW FULL PROCESSLIST"
 
 # MySQL settings in use: production.cnf's values, not the image's defaults
-mysql_live -e "SHOW VARIABLES WHERE Variable_name IN ('performance_schema', 'max_connections', 'innodb_log_buffer_size', 'innodb_buffer_pool_size')"
+mysql_live -e "SHOW VARIABLES WHERE Variable_name IN ('performance_schema', 'max_connections', 'innodb_log_buffer_size', 'innodb_buffer_pool_size', 'log_bin')"
 
 # Memory and swap: compare with 06-operations.md#database-optimization. Each open logged-in tab holds one
 # connection to the stack's Mercure hub, in php (FrankenPHP's Go side, not a PHP worker)
@@ -477,6 +477,15 @@ docker image prune -a -f --filter "until=720h"     # images not used by a contai
 ```
 
 Every deploy leaves its images on the server, so a rollback starts without a download. A pruned version can still be rolled back to: `make up-prod-live` pulls it again from GHCR.
+
+On 2026-10-26 most of the used space was MySQL's binary logs, 24 GB in the playground's volume (#143). `production.cnf` now turns them off (`log_bin` is `OFF` in the 3.2 settings check). If a database volume grows well past its data, look for `binlog.*` files. MySQL does not delete the ones left from before logging was turned off:
+
+```bash
+docker system df -v | grep db-data
+docker compose $LIVE exec database sh -c 'ls -lh /var/lib/mysql/binlog.*'
+docker compose $LIVE exec database sh -c 'rm /var/lib/mysql/binlog.*'   # only once log_bin is OFF
+# The same two with $PLAYGROUND
+```
 
 ### 6.9 Playground Reset Failed
 

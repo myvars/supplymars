@@ -80,7 +80,9 @@ The commands fail until the `DEFAULT_STAFF_EMAIL` user exists ([09](09-cli-refer
 
 ### Database Optimization
 
-`docker/mysql/production.cnf` is mounted into `database` by `compose.prod.yaml` only, so `make up-prod-local` uses it and `make up` keeps the image's defaults. One 2 GB server runs both stacks, each with its own MySQL, and the defaults are sized for a bigger machine. On 2026-10-21 the two `mysqld` processes held 1.4 GB of the server's 2 GB of swap (#86).
+`docker/mysql/production.cnf` is mounted into `database` by `compose.prod.yaml` only, so `make up-prod-local` uses it and `make up` keeps the image's defaults. One 2 GB server runs both stacks, each with its own MySQL, and the defaults are sized for a bigger machine. On 2026-10-21 the two `mysqld` processes held 1.4 GB of the server's 2 GB of swap (#86), and on 2026-10-26 their binary logs held 24 GB of its 58 GB disk (#143).
+
+MySQL reads the file only when it starts, and a deploy does not recreate `database` for a change to it: after one, run `docker compose $LIVE restart database` and the same for `$PLAYGROUND` ([11-runbook.md](11-runbook.md#compose-command-prefix)), a few seconds of 503s each.
 
 | Setting | Value | Why |
 |---------|-------|-----|
@@ -88,9 +90,10 @@ The commands fail until the `DEFAULT_STAFF_EMAIL` user exists ([09](09-cli-refer
 | `max_connections` | 50 (default 151) | FrankenPHP threads, the worker, the playground reset and the odd console or phpMyAdmin session |
 | `innodb_log_buffer_size` | 16M (default 64M) | Allocated up front; the app's transactions are small |
 | `mysqlx` | `OFF` | Nothing uses the X Protocol |
+| `disable_log_bin` | binary logging off (default on, kept 30 days) | Nothing reads the logs: no replica, and the backup is `mysqldump`. The playground's nightly restore logged 1–2 GB a night |
 | `innodb_buffer_pool_size` | default 128M | Live's data (about 1.8 GB, mostly `status_change_log`) would not fit on this host anyway, and the pages the app reads do: 99.98% of reads hit the pool |
 
-Measured locally on `mysql:8.4`, the same instance with and without the file:
+Measured locally on `mysql:8.4`, the same instance with and without the file, before `disable_log_bin` was added:
 
 | | Defaults | `production.cnf` |
 |---|---|---|
