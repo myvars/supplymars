@@ -112,8 +112,14 @@ final class MarkupCalculatorDomainTest extends TestCase
     public function testInvalidSellPriceForMarkupFromSellPrice(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessageIsOrContains('Sell price must be greater than cost.');
-        $this->calculator->calculateMarkupFromSellPrice('100', '0');
+        $this->expectExceptionMessageIsOrContains('Sell price must not be less than cost.');
+        $this->calculator->calculateMarkupFromSellPrice('100', '99.99');
+    }
+
+    public function testSellPriceAtCostGivesZeroMarkup(): void
+    {
+        self::assertSame('0.000', $this->calculator->calculateMarkupFromSellPrice('100', '100'));
+        self::assertSame('0.000', $this->calculator->calculateCustomMarkup('45.67', '54.80', '20'));
     }
 
     public function testInvalidVatForSellPriceIncVat(): void

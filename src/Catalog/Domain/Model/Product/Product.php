@@ -234,6 +234,11 @@ class Product
 
     public function recalculatePrice(MarkupCalculator $calculator): void
     {
+        // Never sourced: there is no cost to price from, so the price stays as it is.
+        if (1 !== bccomp($this->getCost() ?? '0', '0', 2)) {
+            return;
+        }
+
         $prettyPriceIncVat = $calculator->calculatePrettyPrice(
             $this->getCost(),
             $this->getActiveMarkup(),

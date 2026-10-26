@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace App\Tests\Purchasing\UI\Console;
 
+use App\Catalog\Domain\Model\Product\Product;
+use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
+use App\Shared\Domain\Service\Pricing\MarkupCalculator;
+use App\Shared\Domain\ValueObject\PriceModel;
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Story\StaffUserStory;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Command\Command;
@@ -73,6 +78,45 @@ class UpdateSupplierStockCommandTest extends KernelTestCase
         self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
         // Stock should have increased (replenished)
         self::assertGreaterThanOrEqual($initialStock, $supplierProduct->getStock());
+    }
+
+    #[WithStory(StaffUserStory::class)]
+    public function testReplenishmentRepricesTheProduct(): void
+    {
+        $supplier = SupplierFactory::createOne(['isActive' => true]);
+        $products = ProductFactory::createMany(3);
+        foreach ($products as $product) {
+            SupplierProductFactory::createOne([
+                'supplier' => $supplier,
+                'product' => $product,
+                'stock' => 10, // At or below the replenish level: stock and cost both move
+                'cost' => '50.00',
+            ]);
+        }
+
+        $this->commandTester->execute(['product-count' => 10, '--supplier' => $supplier->getId()]);
+        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
+
+        self::getContainer()->get(EntityManagerInterface::class)->clear();
+        $calculator = self::getContainer()->get(MarkupCalculator::class);
+        foreach ($products as $product) {
+            $reloaded = ProductFactory::repository()->find($product->getId());
+            self::assertInstanceOf(Product::class, $reloaded);
+            $source = $reloaded->getActiveProductSource();
+            self::assertInstanceOf(SupplierProduct::class, $source);
+
+            self::assertSame($source->getStock(), $reloaded->getStock());
+            self::assertSame($source->getCost(), $reloaded->getCost());
+            self::assertSame(
+                $calculator->calculatePrettyPrice(
+                    $source->getCost() ?? '0',
+                    $reloaded->getActiveMarkup() ?? '0',
+                    $reloaded->getCategory()->getVatRate()->getRate(),
+                    $reloaded->getActivePriceModel() ?? PriceModel::DEFAULT,
+                ),
+                $reloaded->getSellPriceIncVat(),
+            );
+        }
     }
 
     #[WithStory(StaffUserStory::class)]

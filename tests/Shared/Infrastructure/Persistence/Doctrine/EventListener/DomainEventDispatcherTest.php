@@ -137,6 +137,41 @@ final class DomainEventDispatcherTest extends TestCase
         $this->listener->postFlush(new PostFlushEventArgs($em));
     }
 
+    public function testPostFlushReleasesEveryEntitysEventsBeforeDispatchingAny(): void
+    {
+        // A listener that flushes runs postFlush again. If the other entities' events were still
+        // waiting, that nested run would dispatch them, one level deeper per entity.
+        $calls = [];
+        $first = $this->createStub(DomainEventInterface::class);
+        $second = $this->createStub(DomainEventInterface::class);
+
+        $firstProvider = $this->createStub(DomainEventProviderInterface::class);
+        $firstProvider->method('releaseDomainEvents')->willReturnCallback(static function () use (&$calls, $first): array {
+            $calls[] = 'release first';
+
+            return [$first];
+        });
+        $secondProvider = $this->createStub(DomainEventProviderInterface::class);
+        $secondProvider->method('releaseDomainEvents')->willReturnCallback(static function () use (&$calls, $second): array {
+            $calls[] = 'release second';
+
+            return [$second];
+        });
+
+        $this->eventDispatcher->expects(self::exactly(2))->method('dispatch')->willReturnCallback(static function (object $event) use (&$calls, $first): object {
+            $calls[] = $event === $first ? 'dispatch first' : 'dispatch second';
+
+            return $event;
+        });
+        $this->messageBus->expects(self::never())->method('dispatch');
+
+        $this->listener->postFlush($this->makeArgs(identityMap: [
+            'App\Entity\Anything' => ['id1' => $firstProvider, 'id2' => $secondProvider],
+        ]));
+
+        self::assertSame(['release first', 'release second', 'dispatch first', 'dispatch second'], $calls);
+    }
+
     public function testPostFlushHoldsEventsFromEntitiesRemovedButNotYetFlushed(): void
     {
         // A listener removed the entity during this postFlush; a later flush deletes it.

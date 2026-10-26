@@ -15,7 +15,7 @@ Times are UTC.
 | Suppliers accept or reject POs | At :01, :16, :31 and :46 | Each run picks one supplier. About 1 PO in 50 is rejected, every item in it |
 | Items shipped | On the hour, 09:00–17:00 | Each run picks one supplier at random. Its items accepted at least 2 hours ago are shipped, about 19 in 20 of them |
 | Items delivered | On the hour, 07:00–20:00 | Each run picks one supplier at random. Its items shipped at least 12 hours ago are delivered, about 19 in 20 of them |
-| Supplier stock and cost change | Every 15 minutes | One supplier's stock rises when low and falls otherwise; costs move up to 10% either way. Product prices do not follow these changes |
+| Supplier stock and cost change | Every 15 minutes | One supplier's stock rises when low and falls otherwise; costs move up to 10% either way. Products pick their source and are repriced to match |
 | Rejected POs refunded and re-allocated | 01:30, live site only | Each PO whose overall status is Rejected has its Rejected items set to Refunded, and the order is allocated again, possibly to the same supplier. A Rejected item on a PO whose overall status is not Rejected (another item is less far along, such as Accepted) is skipped |
 | Reports refreshed | Every 30 minutes, finalised after midnight | See [Reports and Dashboard](13-reports.md) |
 

@@ -97,7 +97,7 @@ Development (`symfony serve`, `make up`) runs in classic mode, where every reque
 ## Domain Events
 
 - An entity records events with `DomainEventProviderTrait` (`raiseDomainEvent()`) in a domain method; nothing is dispatched then.
-- After each flush, `DomainEventDispatcher` (`src/Shared/Infrastructure/Persistence/Doctrine/EventListener/`) releases the events of every managed entity that records them, and of entities the flush deleted, and dispatches each to the event dispatcher (sync listeners).
+- After each flush, `DomainEventDispatcher` (`src/Shared/Infrastructure/Persistence/Doctrine/EventListener/`) releases the events of every managed entity that records them, and of entities the flush deleted, and then dispatches each to the event dispatcher (sync listeners). All are released before any is dispatched: a listener that flushes runs this again, and must find nothing left, or a flush of many entities nests one level per entity (the stock commands hit Xdebug's 512-frame limit that way). So an event a listener raises and flushes is dispatched, in that nested run, before the rest of the outer flush's events.
 - Events implementing `AsyncDomainEventInterface` are also sent to the `async` Messenger transport. No event does today.
 
 | Interface | Runs | Use when |
@@ -111,7 +111,7 @@ Who listens (`#[AsEventListener]`):
 |----------|--------|------|
 | `src/Pricing/Application/Listener/` (one class per event) | `CategoryPricingWasChangedEvent`, `SubcategoryPricingWasChangedEvent`, `VatRateWasChangedEvent`, `SupplierStatusWasChangedEvent`, `SupplierProductStatusWasChangedEvent`, `SupplierProductPricingWasChangedEvent` | Reprices the affected products: see [04-sourcing-and-pricing.md](04-sourcing-and-pricing.md) |
 | `StatusChangeLogger` (`src/Audit/Application/EventListener/`) | Order, order item, PO and PO item status changes | Writes the status change log |
-| `SupplierStockChangeLogger` (same directory) | `SupplierProductStockWasChangedEvent` | Writes the stock change log. Nothing else listens: a stock change does not reprice the product |
+| `SupplierStockChangeLogger` (same directory) | `SupplierProductStockWasChangedEvent` | Writes the stock change log. Repricing comes from the `SupplierProductPricingWasChangedEvent` raised beside it |
 | `ReviewSummaryUpdater` (`src/Review/Application/Listener/`) | The four `Review*` events | Recalculates the product's review summary |
 | `SidebarBadgeCacheInvalidator` (`src/Home/Listener/`) | Review created, status changed, deleted; PO status changed; order created, status changed | Deletes the sidebar badge counts that changed |
 | `ProductImageWasDeleted` (`src/Catalog/Application/Listener/`) | `ProductImageWasDeletedEvent` | Deletes the image file and its cached thumbnails |

@@ -70,9 +70,10 @@ Rounding is applied to the price inc VAT and never goes down.
 
 - A category must have a price model: None gives "A category must have a price model".
 - Markups can't be negative ("Please enter a positive or zero … markup %").
-- Keep the category markup above 0. With an effective markup of 0 and no rounding, the price can't be worked out and saving the product, category or VAT rate fails with an error.
+- An effective markup of 0 sells at cost: the price is the cost plus VAT, rounded by the price model.
+- A product with no supplier source yet has no price. Pricing changes leave it at 0.00 until it gets a source.
 - Changes apply straight away to the affected products: editing a VAT rate to every product in the categories using it; choosing another VAT rate for a category to its active products; a category or subcategory markup or price model change to its active products that take their markup or price model from that level; a product change to that product; a supplier product edit that changes a value to the product it is mapped to.
-- Simulated stock and cost changes do not reprice products ([Stock](11-stock.md#rules-and-limits)).
+- Stock and cost changes from the stock simulation reprice the mapped product, as an edit does ([Stock](11-stock.md#rules-and-limits)).
 - Prices on existing orders never change. An order item keeps the price it was added at.
 - The **Active** box on the cost forms turns the category, subcategory or product on or off. A product is complete only when all three are active and it has an active supplier product ([Products](03-products.md#rules-and-limits)).
 

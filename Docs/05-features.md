@@ -70,7 +70,7 @@ UI steps: [UserManual 05](UserManual/05-suppliers.md), [06](UserManual/06-suppli
 `app:update-supplier-stock` stands in for supplier stock feeds (every 15 minutes, see [06 Scheduled Jobs](06-operations.md#scheduled-jobs)). For each supplier product:
 
 - Low stock is replenished and its cost moved; otherwise stock falls a little. The numbers are in [09-cli-reference.md](09-cli-reference.md).
-- **Products are not repriced** by these changes ([04 Stock](04-sourcing-and-pricing.md#stock)).
+- The mapped product's active source, stock, cost and price follow each change ([04 Stock](04-sourcing-and-pricing.md#stock)).
 
 `app:reset-supplier-stock` and `app:activate-supplier-products` are in [09-cli-reference.md](09-cli-reference.md). Why the platform simulates: [ADR 003](adr/003-simulation-first-design.md).
 

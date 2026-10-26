@@ -59,8 +59,8 @@ Automatic allocation (the order's **Allocate** button and the scheduled job) use
 ## Rules and limits
 
 - **Stock is never reserved or deducted.** Allocation, acceptance, shipping and delivery leave supplier stock as it is. Stock changes only when someone edits a supplier product, or when the stock simulation runs. Many orders can be allocated against the same stock.
-- **Simulated stock changes do not update the product.** The stock simulation changes supplier stock and cost and logs it, but the product's active source, stock, cost and price stay as they were until a supplier product or supplier is changed or toggled. The **Supplier Sources** rows always show the supplier's current stock; the inventory card may be behind. Automatic allocation reads the current supplier stock.
-- **To bring a product up to date,** click the toggle on one of its sources twice (off, then on again), or change a value on a supplier product and save. Saving a supplier product with nothing changed does not recalculate anything.
+- **Simulated stock changes update the product.** When the stock simulation changes a supplier product's stock or cost, the product picks its active source again and is repriced, as after an edit.
+- **To bring a product up to date** after a change that did not reach it (data from before simulated changes were applied), click the toggle on one of its sources twice (off, then on again), or change a value on a supplier product and save. Saving a supplier product with nothing changed does not recalculate anything.
 - Turning a supplier on or off in **Purchasing > Suppliers** also recalculates the products it supplies ([Suppliers](05-suppliers.md)).
 - The Stock tab never shows lead time. It shows on the supplier product's own page, and in the order item's supplier list for a supplier product with no stock.
 
