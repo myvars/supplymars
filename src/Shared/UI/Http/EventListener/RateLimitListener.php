@@ -12,10 +12,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
+use Twig\Environment;
 
 /**
  * Applies the rules in app.rate_limits (config/packages/rate_limiter.yaml). Runs before the router
- * (priority 32) and the firewall, so a refused request does no other work.
+ * (priority 32) and the firewall, so a refused request does no other work. A browser gets the styled
+ * error page; any other caller (an uptime monitor, curl) plain text.
  */
 #[AsEventListener(event: KernelEvents::REQUEST, priority: 48)]
 final readonly class RateLimitListener
@@ -31,6 +33,7 @@ final readonly class RateLimitListener
         private array $rules,
         #[AutowireLocator('rate_limiter', indexAttribute: 'name')]
         private ServiceLocator $limiters,
+        private Environment $twig,
     ) {
     }
 
@@ -55,10 +58,15 @@ final readonly class RateLimitListener
             $limit = $this->limiters->get($rule['limiter'])->create($clientIp)->consume();
 
             if (!$limit->isAccepted()) {
-                $event->setResponse(new Response('Too many requests. Try again later.', Response::HTTP_TOO_MANY_REQUESTS, [
-                    'Retry-After' => (string) max(1, $limit->getRetryAfter()->getTimestamp() - time()),
-                    'Content-Type' => 'text/plain; charset=UTF-8',
-                ]));
+                $retryAfter = (string) max(1, $limit->getRetryAfter()->getTimestamp() - time());
+                $event->setResponse(in_array('text/html', $request->getAcceptableContentTypes(), true)
+                    ? new Response($this->twig->render('bundles/TwigBundle/Exception/error429.html.twig', ['show_flashes' => false]), Response::HTTP_TOO_MANY_REQUESTS, [
+                        'Retry-After' => $retryAfter,
+                    ])
+                    : new Response('Too many requests. Try again later.', Response::HTTP_TOO_MANY_REQUESTS, [
+                        'Retry-After' => $retryAfter,
+                        'Content-Type' => 'text/plain; charset=UTF-8',
+                    ]));
 
                 return;
             }

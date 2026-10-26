@@ -177,7 +177,7 @@ final class UpdateCustomerHandlerTest extends KernelTestCase
         $result = ($handler)($command);
 
         self::assertFalse($result->ok);
-        self::assertStringContainsString('Staff accounts cannot be modified', $result->message);
+        self::assertSame('Staff accounts can be edited only by a super admin.', $result->message);
 
         $persisted = $this->users->getByPublicId($staffUser->getPublicId());
         self::assertSame($staffUser->getFullName(), $persisted->getFullName());

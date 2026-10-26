@@ -42,10 +42,13 @@
                                 <p class="mt-0.5 truncate text-xs font-normal text-muted-foreground">{{ app.user.userIdentifier }}</p>
                             </twig:DropdownMenu:Label>
                             <twig:DropdownMenu:Separator />
-                            <twig:DropdownMenu:Item as="a" href="{{ path('app_customer_show', { id: app.user.publicId }) }}" data-turbo-frame="body">
-                                <twig:ux:icon name="flowbite:cog-solid" class="text-muted-foreground"/>
-                                Settings
-                            </twig:DropdownMenu:Item>
+                            {# The customer pages are staff only #}
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <twig:DropdownMenu:Item as="a" href="{{ path('app_customer_show', { id: app.user.publicId }) }}" data-turbo-frame="body">
+                                    <twig:ux:icon name="flowbite:cog-solid" class="text-muted-foreground"/>
+                                    Settings
+                                </twig:DropdownMenu:Item>
+                            {% endif %}
                             <twig:DropdownMenu:Item as="a" href="{{ path('app_logout') }}" data-turbo-prefetch="false" data-turbo-frame="_top">
                                 <twig:ux:icon name="flowbite:arrow-right-to-bracket-outline" class="text-muted-foreground"/>
                                 Sign Out

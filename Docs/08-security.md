@@ -29,7 +29,7 @@ The demo user on the playground has `ROLE_ADMIN`; the owner has `ROLE_SUPER_ADMI
 | Action | Where it is checked | What `ROLE_ADMIN` gets |
 |--------|---------------------|------------------------|
 | Delete a product, supplier, supplier product, VAT rate or pool | The handler (`DeleteProductHandler`, `DeleteSupplierHandler`, `DeleteSupplierProductHandler`, `DeleteVatRateHandler`, `DeletePoolHandler`) | Error flash "Deleting is disabled for this user." |
-| Edit a staff account | `CustomerVoter` (`CUSTOMER_EDIT`), asked by `UpdateCustomerHandler`, the inline name route (`#[IsGranted]`) and the templates | No edit button or inline edit on a staff account; `403` on the inline route; error flash "Staff accounts cannot be modified in the playground." from the edit form |
+| Edit a staff account | `CustomerVoter` (`CUSTOMER_EDIT`), asked by `UpdateCustomerHandler`, the inline name route (`#[IsGranted]`) and the templates | No edit button or inline edit on a staff account; `403` on the inline route; error flash "Staff accounts can be edited only by a super admin." from the edit form |
 | Create an order by hand | `OrderController::new`, `#[IsGranted('ROLE_SUPER_ADMIN')]` | `403`; the button is hidden |
 
 - The other delete handlers (category, subcategory, manufacturer, product image, review, customer, message) do not check, so any staff user can delete those records.
@@ -142,7 +142,7 @@ The request limits catch high-volume automated traffic; `login_throttling` catch
 
 Gotchas:
 
-- A `429` carries `Retry-After`, so a rate limit is not mistaken for an outage.
+- A `429` carries `Retry-After`, so a rate limit is not mistaken for an outage. A client that accepts `text/html` (a browser) gets the styled error page, `error429.html.twig`; any other (curl, an uptime monitor) gets plain text. The page is rendered before the firewall, with `show_flashes: false` so that it reads no session, so its header shows a signed-in user as signed out.
 - The form rule counts only POSTs, so loading a form, a Turbo prefetch of it, or the page a submit redirects to uses none of the allowance. When every request counted, Turbo's hover prefetch and the form load used it up, so a submit within half a minute was refused. The burst of 3 lets a submit and two resubmissions after validation errors through at once.
 - Every `/login` request counts: a failed login is a POST and the redirect back to the form, so about four failed attempts a minute reach `login_throttling`.
 - The counts are in the `cache.rate_limiter` pool, which uses the app cache (Redis outside tests, `config/packages/cache.yaml`). When Redis is down the counts read as missing and every request goes through. Tests use an in-memory pool that keeps its counts between the requests of one test (`config/packages/cache.yaml`); `tests/Shared/UI/Http/RateLimitTest.php` checks each rule.

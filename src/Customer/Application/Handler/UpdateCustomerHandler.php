@@ -33,7 +33,7 @@ final readonly class UpdateCustomerHandler
         }
 
         if (!$this->security->isGranted(CustomerVoter::EDIT, $customer)) {
-            return Result::fail('Staff accounts cannot be modified in the playground.');
+            return Result::fail('Staff accounts can be edited only by a super admin.');
         }
 
         $wasStaff = $customer->isStaff();

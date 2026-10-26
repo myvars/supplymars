@@ -73,7 +73,8 @@
              refresh's morph keeps it, adding any new flash (live-toaster) -->
         <div data-controller="live-toaster" data-action="turbo:before-morph-element->live-toaster#keep">
             <twig:Sonner id="flash-container" position="top-right" class="top-4 right-4" :closeButton="true" :expand="true">
-                {% if not app.request.headers.has('Turbo-Frame') %}
+                {# show_flashes: false for a page rendered before the firewall, as reading flashes starts the session #}
+                {% if not app.request.headers.has('Turbo-Frame') and (show_flashes ?? true) %}
                     {{ include('_flashes.html.twig') }}
                 {% endif %}
             </twig:Sonner>
