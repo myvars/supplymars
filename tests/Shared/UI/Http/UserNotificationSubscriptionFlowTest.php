@@ -64,6 +64,51 @@ class UserNotificationSubscriptionFlowTest extends WebTestCase
         self::assertNull(MercureCookie::find($browser));
     }
 
+    public function testCustomerLoginClearsACookieLeftByStaff(): void
+    {
+        UserFactory::createOne(['email' => 'customer@example.com', 'password' => 'customer-password']);
+
+        // Staff use the browser and leave without logging out, so their cookie stays
+        $staff = UserFactory::new()->asStaff()->create();
+        $browser = $this->browser()
+            ->actingAs($staff)
+            ->visit('/');
+        self::assertSame(['subscribe' => ['user/' . $staff->getPublicId()]], MercureCookie::grantedTopics($browser));
+
+        // A customer then signs in on it: their pages set no cookie, so the login must clear the staff one
+        $browser
+            ->visit('/login')
+            ->fillField('email', 'customer@example.com')
+            ->fillField('password', 'customer-password')
+            ->interceptRedirects()
+            ->click('Sign in')
+            ->assertRedirected();
+
+        $cookie = MercureCookie::find($browser);
+        self::assertNotNull($cookie);
+        self::assertTrue($cookie->isCleared());
+    }
+
+    public function testStaffRememberMeLoginSetsTheCookie(): void
+    {
+        $staff = UserFactory::new()->asStaff()->create(['password' => 'staff-password']);
+        $remembered = $this->browser()
+            ->visit('/login')
+            ->fillField('email', $staff->getEmail())
+            ->fillField('password', 'staff-password')
+            ->click('Sign in')
+            ->client()->getCookieJar()->get('REMEMBERME');
+        self::assertNotNull($remembered);
+
+        // A new visit with only the remember-me cookie logs in and renders the page in one request, which sets the
+        // cookie: the login listener must leave it alone, or setting it would throw
+        $browser = $this->browser();
+        $browser->client()->getCookieJar()->set($remembered);
+        $browser->visit('/')->assertSuccessful();
+
+        self::assertSame(['subscribe' => ['user/' . $staff->getPublicId()]], MercureCookie::grantedTopics($browser));
+    }
+
     public function testAnonymousPageHasNoSubscription(): void
     {
         $browser = $this->browser()

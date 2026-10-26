@@ -82,7 +82,8 @@
              sets the one cookie a request may set, which lets this browser read this user's topic, nothing else. Every
              page sets the same, so no other page or tab can take a live page's updates away. Staff only: a customer
              receives no toasts and views no live page, and without the cookie the hub refuses them every topic,
-             including the public page refreshes. Permanent, so Turbo visits keep it; the id names the user, so a
+             including the public page refreshes. A customer's login clears a cookie left by a previous user
+             (ClearMercureCookieOnCustomerLogin). Permanent, so Turbo visits keep it; the id names the user, so a
              visit that finds another user logged in (in another tab) replaces it -->
         {% if is_granted('ROLE_ADMIN') %}
             {% set user_topic = 'user/' ~ app.user.publicId %}
