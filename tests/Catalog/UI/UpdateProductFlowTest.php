@@ -32,6 +32,21 @@ class UpdateProductFlowTest extends WebTestCase
             ->assertSee('Flow Updated Product');
     }
 
+    public function testUpdateOfNeverSourcedProduct(): void
+    {
+        $user = UserFactory::new()->asStaff()->create();
+        $product = ProductFactory::createOne();
+        $publicId = $product->getPublicId()->value();
+
+        $this->browser()
+            ->actingAs($user)
+            ->get('/product/' . $publicId . '/edit')
+            ->fillField('product[name]', 'Unsourced Product')
+            ->click('Update Product')
+            ->assertOn('/product/' . $publicId)
+            ->assertSee('Unsourced Product');
+    }
+
     public function testValidationErrorsOnEmptySubmission(): void
     {
         $user = UserFactory::new()->asStaff()->create();

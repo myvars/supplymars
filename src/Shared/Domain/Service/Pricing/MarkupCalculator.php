@@ -22,8 +22,8 @@ final class MarkupCalculator
             throw new \InvalidArgumentException('Cost must be greater than 0.');
         }
 
-        if (1 !== bccomp($sellPrice, $cost, 2)) {
-            throw new \InvalidArgumentException('Sell price must be greater than cost.');
+        if (-1 === bccomp($sellPrice, $cost, 2)) {
+            throw new \InvalidArgumentException('Sell price must not be less than cost.');
         }
 
         $markupDecimal = bcdiv(bcsub($sellPrice, $cost, 2), $cost, 8);

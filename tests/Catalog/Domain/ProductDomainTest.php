@@ -132,6 +132,7 @@ class ProductDomainTest extends TestCase
         );
 
         $calc = $this->stubCalculator(pretty: '123.45', customMarkup: '7.500', sell: '100.00');
+        $product->addSupplierProduct($calc, $this->stubSupplierProduct(cost: '90.00', stock: 5, leadTimeDays: 2));
 
         $product->update(
             markupCalculator: $calc,
@@ -166,6 +167,7 @@ class ProductDomainTest extends TestCase
         );
 
         $calc = $this->stubCalculator(pretty: '199.99', customMarkup: '12.000', sell: '160.00');
+        $product->addSupplierProduct($calc, $this->stubSupplierProduct(cost: '140.00', stock: 5, leadTimeDays: 2));
 
         $product->changePricing(
             markupCalculator: $calc,
@@ -180,6 +182,28 @@ class ProductDomainTest extends TestCase
         self::assertSame('12.000', $product->getMarkup());
         self::assertSame('160.00', $product->getSellPrice());
         self::assertSame('199.99', $product->getSellPriceIncVat());
+    }
+
+    public function testRecalculatePriceLeavesNeverSourcedProductUnpriced(): void
+    {
+        $product = Product::create(
+            name: 'Widget',
+            description: 'Desc',
+            category: $this->stubCategory(),
+            subcategory: $this->stubSubcategory(),
+            manufacturer: $this->stubManufacturer(),
+            mfrPartNumber: 'MFR-1',
+            owner: $this->stubUser(),
+            isActive: true,
+        );
+
+        $before = $product->getSellPriceIncVat();
+
+        // The real calculator throws on a cost of 0, so this passes only if it is not called.
+        $product->recalculatePrice(new MarkupCalculator());
+
+        self::assertSame('0.00', $product->getCost());
+        self::assertSame($before, $product->getSellPriceIncVat());
     }
 
     public function testInvalidNameThrows(): void
