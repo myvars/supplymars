@@ -71,8 +71,8 @@ Each PO item status change makes its parents derive their status again:
 ### Stock
 
 - `Product::$stock`, `$cost` and `$leadTimeDays` are stored copies of the active source's values. They are not a sum over suppliers, and not computed on read.
-- They change only when `recalculateActiveSource()` runs. That happens through the Pricing listeners below: when a supplier product is created, edited, mapped or toggled in the UI, or when a supplier is toggled.
-- `app:update-supplier-stock` and `app:reset-supplier-stock` call `SupplierProduct::updateStock()` / `updateCost()`. These raise `SupplierProductStockWasChangedEvent`, and only the audit log listens (`SupplierStockChangeLogger`). So **simulated stock and cost changes do not reprice products**: product stock, cost and price stay as they were until something above runs. Allocation reads supplier stock live, so sourcing is not affected. What the commands do is in [09-cli-reference.md](09-cli-reference.md).
+- They change only when `recalculateActiveSource()` runs, through the Pricing listeners below: when a supplier product is created, edited, mapped or toggled, when its stock or cost changes, or when a supplier is toggled.
+- `app:update-supplier-stock` and `app:reset-supplier-stock` call `SupplierProduct::updateStock()` / `updateCost()`. A change raises `SupplierProductStockWasChangedEvent` (the audit log, `SupplierStockChangeLogger`) and, for a mapped supplier product, `SupplierProductPricingWasChangedEvent`, so the product's active source and price follow. `update()` uses private helpers and raises its one pricing event itself. What the commands do is in [09-cli-reference.md](09-cli-reference.md).
 
 ### Pricing cascade
 
@@ -80,7 +80,7 @@ All listeners are in `src/Pricing/Application/Listener/` and run synchronously.
 
 | Event (raised when) | Listener | Recalculates |
 |---|---|---|
-| `SupplierProductPricingWasChangedEvent` (create or `update()` changes supplier, stock, lead time, cost, product or active) | `SupplierProductPricingWasChanged` | new mapping: adds to the product. Unmapped: removes from the old product. Moved: removes from the old product, flushes, adds to the new one. Same product: active source. Each runs `recalculateActiveSource()` |
+| `SupplierProductPricingWasChangedEvent` (create, `update()` changing supplier, stock, lead time, cost, product or active, or `updateStock()` / `updateCost()` on a mapped supplier product) | `SupplierProductPricingWasChanged` | new mapping: adds to the product. Unmapped: removes from the old product. Moved: removes from the old product, flushes, adds to the new one. Same product: active source. Each runs `recalculateActiveSource()` |
 | `SupplierProductStatusWasChangedEvent` (toggle, mapped products only) | `SupplierProductStatusWasChanged` | the mapped product's active source |
 | `SupplierStatusWasChangedEvent` | `SupplierStatusWasChanged` | activated: every mapped product. Deactivated: only products whose active source is this supplier's |
 | `CategoryPricingWasChangedEvent` (VAT rate, markup, price model or active changed) | `CategoryPricingWasChanged` | the category's active products: all of them for a VAT change, otherwise those whose markup or price model comes from the category |
@@ -136,7 +136,9 @@ A product in a category with markup 25%, VAT 20% and `PRETTY_99`. The product an
 
 - **Allocate can fail and still save.** `AllocateOrderHandler` flushes what it could allocate, then returns "Cannot allocate all items" if any line is still outstanding. Those PO items stay PENDING.
 - **A product with no viable source keeps its last cost and price.** `removeActiveSource()` only clears the source and sets stock to 0.
-- **`recalculatePrice()` throws on a cost of 0** (a product never sourced has cost 0.00) and when the ex-VAT price isn't above cost ("Sell price must be greater than cost."). That happens with an effective markup of 0 under `DEFAULT`/`NONE`. Nothing catches either, so a product edit or a category/VAT change that reaches such a product fails.
+- **A product never sourced is not priced.** Its cost is 0.00, and `recalculatePrice()` returns without changing the price. `MarkupCalculator` still throws on a cost of 0, so call it through `recalculatePrice()`.
+- **An effective markup of 0 sells at cost.** The price is cost plus VAT and `markup` is 0.000. Rounding only goes up, so the worked-back price is never below cost; `calculateMarkupFromSellPrice()` throws only if it is.
+- **The stock commands flush once per change.** Each `updateStock()` or `updateCost()` on a mapped supplier product raises its own pricing event, and the listener flushes for each. A replenished product (stock and cost) is recalculated twice; the result is the same.
 - **Moving a supplier product between products needs the extra flush.** The active source is unique and Doctrine orders UPDATEs by id, so the listener flushes the old product first (comment in `SupplierProductPricingWasChanged`). Keep it.
 - **Tests reprice too.** `SupplierProductFactory` adds the supplier product to its product, and its pricing event fires on flush. So a factory-made product has an active source, cost and price.
 
