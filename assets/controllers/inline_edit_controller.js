@@ -10,6 +10,7 @@ import { Controller } from "@hotwired/stimulus"
  * - Enter to submit for text inputs
  * - An unchanged value cancels instead of submitting: a save answers with a page refresh,
  *   which would cut short whatever the click outside started (opening the modal)
+ * - A sent form is not sent again: it stays on screen until the page refresh lands
  * - Auto-grow input to fit content
  */
 export default class extends Controller {
@@ -18,6 +19,7 @@ export default class extends Controller {
     connect() {
         // When frame content changes, check if it's a form and set up behavior
         this.element.addEventListener("turbo:frame-load", this.onFrameLoad.bind(this))
+        this.element.addEventListener("turbo:submit-end", this.onSubmitEnd.bind(this))
         this.boundClickOutside = this.clickOutside.bind(this)
     }
 
@@ -34,6 +36,17 @@ export default class extends Controller {
             this.setupEditMode(form, input)
         } else {
             // We're in display mode - clean up
+            document.removeEventListener("click", this.boundClickOutside)
+        }
+    }
+
+    /**
+     * A saved form stays on screen until the page refresh lands; a second Enter must not save again.
+     * A 422 re-renders the form, which starts afresh
+     */
+    onSubmitEnd({ target, detail: { success } }) {
+        if (success) {
+            target.dataset.saved = ""
             document.removeEventListener("click", this.boundClickOutside)
         }
     }
@@ -115,6 +128,10 @@ export default class extends Controller {
      * Submit the form, or cancel when the value is as it was loaded
      */
     save(form, input) {
+        if (form.hasAttribute("aria-busy") || "saved" in form.dataset) {
+            return
+        }
+
         if (input.value === input.defaultValue && this.hasCancelTarget) {
             this.cancelTarget.click()
             return
