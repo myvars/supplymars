@@ -28,6 +28,7 @@ Times are UTC. Which stacks run the schedule ("live only" jobs are left out of t
 | `app:create-supplier-products` | Purchasing | no | Setup: maps each active, unmapped dropshipper product to a product with the same manufacturer part number, else creates one | — |
 | `app:activate-supplier-products` | Purchasing | no | Activates inactive supplier products (through the status toggle) | `product-count` (50) |
 | `app:reset-supplier-stock` | Purchasing | no | Sets every product of one supplier to random stock 0–300 | `supplierId` (required, internal id) |
+| `app:resync-product-pricing` | Pricing | no | Runs `recalculateActiveSource()` on every product, so its stored source, stock, cost and price match its supplier products (a product with no viable source gets stock 0 and keeps its last cost and price). Run once after #106's fix; safe to repeat. A product that fails is left as it was and listed | `--batch-size` (200), `--dry-run`, `-v` lists each change |
 | `app:rewind-mixed-status-purchase-orders` | Purchasing | no | Finds POs whose items disagree (some rejected) and rewinds them to PENDING, deleting their status history | `--limit` (100), `--days-back` (30), `--dry-run` |
 | `app:backfill-ulids` | Shared | no | Fills a null `publicId` on every `HasPublicUlid` entity | `batch-size` (200), `--limit` |
 | `app:user:issue-token` | Customer | no | New API token for a user; replaces the old one | `email` |
