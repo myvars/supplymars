@@ -9,7 +9,11 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Mercure\HubInterface;
 use Symfony\Component\Mercure\Update;
 
-/** Publishes each update as a private update, so the hub sends it only to browsers whose cookie grants the topic. */
+/**
+ * A refresh is public: it carries no data, so any staff browser may receive it, and each viewer's reload goes
+ * through the page's access check. Rendered HTML is private, so the hub sends it only to browsers whose cookie
+ * grants the topic: the user's own. See ADR 017.
+ */
 final readonly class MercureLiveUpdatePublisher implements LiveUpdatePublisherInterface
 {
     /**
@@ -26,16 +30,21 @@ final readonly class MercureLiveUpdatePublisher implements LiveUpdatePublisherIn
 
     public function refresh(string $topic): void
     {
-        $this->publish($topic, self::REFRESH_STREAM);
+        $this->send(new Update($topic, self::REFRESH_STREAM, private: false));
     }
 
     public function publish(string $topic, string $turboStream): void
     {
+        $this->send(new Update($topic, $turboStream, private: true));
+    }
+
+    private function send(Update $update): void
+    {
         try {
-            $this->hub->publish(new Update($topic, $turboStream, private: true));
+            $this->hub->publish($update);
         } catch (\Throwable $throwable) {
             $this->logger->error('Live update not published', [
-                'topic' => $topic,
+                'topic' => $update->getTopics()[0],
                 'exception' => $throwable,
             ]);
         }

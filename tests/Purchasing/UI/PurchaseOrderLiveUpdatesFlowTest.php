@@ -23,6 +23,7 @@ use App\Tests\Shared\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Mercure\Update;
+use Zenstruck\Browser\KernelBrowser;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
@@ -47,12 +48,12 @@ final class PurchaseOrderLiveUpdatesFlowTest extends WebTestCase
             ->actingAs($user)
             ->visit('/purchase/order/' . $purchaseOrder->getPublicId()->value())
             ->assertSuccessful()
-            ->assertElementCount('turbo-frame#body turbo-mercure-stream-source[private][src*="' . rawurlencode($topic) . '"]', 1)
+            ->assertElementCount('turbo-frame#body turbo-mercure-stream-source[private][src$="?match=' . rawurlencode($topic) . '"]', 1)
             ->assertElementCount('head meta[name="turbo-cache-control"][content="no-cache"]', 1)
-            ->assertElementCount('head meta[name="turbo-prefetch"][content="false"]', 1)
-            ->assertHeaderContains('Cache-Control', 'no-store');
+            ->assertHeaderContains('Cache-Control', 'no-store')
+            ->assertElementCount('head meta[name="turbo-prefetch"]', 0);
 
-        self::assertSame(['subscribe' => ['user/' . $user->getPublicId(), $topic]], MercureCookie::grantedTopics($browser));
+        self::assertSame(['subscribe' => ['user/' . $user->getPublicId()]], MercureCookie::grantedTopics($browser));
     }
 
     public function testChangingAnItemsStatusRefreshesThePurchaseOrderPage(): void
@@ -67,7 +68,7 @@ final class PurchaseOrderLiveUpdatesFlowTest extends WebTestCase
         $browser = $this->browser()
             ->actingAs($user)
             ->visit('/purchase/order/' . $poItem->getPurchaseOrder()->getPublicId()->value());
-        $pageTopic = MercureCookie::grantedTopics($browser)['subscribe'][1];
+        $pageTopic = $this->pageTopic($browser);
 
         $browser
             ->visit('/purchase/order/item/' . $poItem->getPublicId()->value() . '/edit/status')
@@ -98,7 +99,7 @@ final class PurchaseOrderLiveUpdatesFlowTest extends WebTestCase
         $browser = $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
             ->visit('/purchase/order/' . $purchaseOrderId);
-        $pageTopic = MercureCookie::grantedTopics($browser)['subscribe'][1];
+        $pageTopic = $this->pageTopic($browser);
 
         // Processing and pending both leave the order item processing, so only the rewind raises an event
         $browser
@@ -120,6 +121,17 @@ final class PurchaseOrderLiveUpdatesFlowTest extends WebTestCase
         foreach ([DomainEventType::PURCHASE_ORDER_STATUS_CHANGED, DomainEventType::PURCHASE_ORDER_ITEM_STATUS_CHANGED] as $type) {
             self::assertSame(0, StatusChangeLogFactory::count(['eventType' => $type]));
         }
+    }
+
+    /** The topic the page's own stream source subscribes to, so a refresh is checked against what the page listens on. */
+    private function pageTopic(KernelBrowser $browser): string
+    {
+        $src = $browser->crawler()->filter('turbo-frame#body turbo-mercure-stream-source')->attr('src');
+        self::assertIsString($src);
+        parse_str((string) parse_url($src, \PHP_URL_QUERY), $query);
+        self::assertIsString($query['match'] ?? null);
+
+        return $query['match'];
     }
 
     private function purchaseOrderItem(): PurchaseOrderItem

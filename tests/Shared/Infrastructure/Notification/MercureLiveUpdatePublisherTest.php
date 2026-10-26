@@ -36,12 +36,12 @@ class MercureLiveUpdatePublisherTest extends TestCase
         self::assertSame('<turbo-stream action="remove" target="x"></turbo-stream>', $this->published[0]->getData());
     }
 
-    public function testRefreshMorphsAndKeepsTheScrollPosition(): void
+    public function testRefreshIsPublicAndMorphsKeepingTheScrollPosition(): void
     {
         $this->publisher(fn (Update $update): string => $this->record($update))->refresh('order/01ORDER');
 
         self::assertSame(['order/01ORDER'], $this->published[0]->getTopics());
-        self::assertTrue($this->published[0]->isPrivate());
+        self::assertFalse($this->published[0]->isPrivate());
         self::assertSame('<turbo-stream action="refresh" method="morph" scroll="preserve"></turbo-stream>', $this->published[0]->getData());
     }
 

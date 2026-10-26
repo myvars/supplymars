@@ -22,12 +22,9 @@
             <meta name="turbo-refresh-scroll" content="preserve">
         {% endif %}
         {% if live_topics|default([]) is not empty %}
-            {# Back requests the page again rather than restoring a copy: a copy would reconnect with the last
-               page's cookie, which no longer grants these topics #}
+            {# Back requests the page again rather than restoring a copy, which would show what it held when it was
+               left until the next update arrived #}
             <meta name="turbo-cache-control" content="no-cache">
-            {# No hover prefetch: a prefetched page's response replaces the cookie, and when this page's connection
-               next reconnects it would no longer be granted these topics #}
-            <meta name="turbo-prefetch" content="false">
         {% endif %}
         <title>{% block title %}SupplyMars{% endblock %}</title>
         {% block stylesheets %}{% endblock %}
@@ -53,9 +50,10 @@
                 <turbo-frame id="body" data-turbo-action="advance" refresh="morph">
                     {% block body %}{% endblock %}
 
-                    {# Live updates for this page's topics (live_topics, from its controller). Inside the frame, so a
-                       visit that changes the frame closes it. Its cookie is set by the element below #}
-                    {% if app.user and live_topics|default([]) is not empty %}
+                    {# Live updates for this page's topics (live_topics, from its controller). Their refreshes are public,
+                       so the cookie need not grant them. Private, so the browser sends the cookie the element below sets:
+                       the hub admits no one without one. Inside the frame, so a visit that changes the frame closes it #}
+                    {% if is_granted('ROLE_ADMIN') and live_topics|default([]) is not empty %}
                         <turbo-mercure-stream-source src="{{ mercure(live_topics) }}" private></turbo-mercure-stream-source>
                     {% endif %}
                 </turbo-frame>
@@ -81,13 +79,15 @@
         </div>
 
         <!-- Live toasts for this user (UserNotifierInterface). The topic is MercureUserNotifier::topic(). Rendering it
-             sets the one cookie a request may set, which lets this browser read this user's topic and this page's
-             live_topics, nothing else. Permanent, so Turbo visits keep it; the id names the user, so a visit that
-             finds another user logged in (in another tab) replaces it -->
-        {% if app.user %}
+             sets the one cookie a request may set, which lets this browser read this user's topic, nothing else. Every
+             page sets the same, so no other page or tab can take a live page's updates away. Staff only: a customer
+             receives no toasts and views no live page, and without the cookie the hub refuses them every topic,
+             including the public page refreshes. Permanent, so Turbo visits keep it; the id names the user, so a
+             visit that finds another user logged in (in another tab) replaces it -->
+        {% if is_granted('ROLE_ADMIN') %}
             {% set user_topic = 'user/' ~ app.user.publicId %}
             <div id="user-notifications-{{ app.user.publicId }}" data-turbo-permanent>
-                <turbo-mercure-stream-source src="{{ mercure(user_topic, {subscribe: [user_topic]|merge(live_topics|default([]))}) }}" private></turbo-mercure-stream-source>
+                <turbo-mercure-stream-source src="{{ mercure(user_topic, {subscribe: [user_topic]}) }}" private></turbo-mercure-stream-source>
             </div>
         {% endif %}
 

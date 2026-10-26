@@ -165,10 +165,7 @@ class StateBetweenRequestsTest extends WebTestCase
             ->assertElementCount('#user-notifications-' . $viewer->getPublicId(), 1)
             ->assertElementCount('#user-notifications-' . $other->getPublicId(), 0);
 
-        // Its cookie lets the browser read the viewer's own topic and this order's, nothing else
-        self::assertSame(
-            ['subscribe' => ['user/' . $viewer->getPublicId(), CustomerOrder::liveTopic($order->getPublicId())]],
-            MercureCookie::grantedTopics($browser),
-        );
+        // Its cookie lets the browser read the viewer's own topic, nothing else
+        self::assertSame(['subscribe' => ['user/' . $viewer->getPublicId()]], MercureCookie::grantedTopics($browser));
     }
 }

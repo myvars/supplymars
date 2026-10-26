@@ -50,8 +50,9 @@ class OrderLiveUpdatesFlowTest extends WebTestCase
             ->visit('/order/' . $order->getPublicId()->value())
             ->assertSuccessful()
             ->assertElementCount('#user-notifications-' . $user->getPublicId() . ' turbo-mercure-stream-source', 1)
-            // Not permanent, and inside the frame a visit replaces, so it goes with the page
-            ->assertElementCount('turbo-frame#body turbo-mercure-stream-source[private][src*="' . rawurlencode($topic) . '"]', 1)
+            // Private, so the browser sends its cookie, without which the hub refuses it. Not permanent, and inside the
+            // frame a visit replaces, so it goes with the page
+            ->assertElementCount('turbo-frame#body turbo-mercure-stream-source[private][src$="?match=' . rawurlencode($topic) . '"]', 1)
             ->assertElementCount('turbo-mercure-stream-source', 2)
             // A live refresh's morph leaves an open sidebar menu, help panel or user menu alone (live-open)
             ->assertElementCount('[data-slot="sheet"][data-controller~="dialog"][data-controller~="live-open"] dialog#sheet-menu', 1)
@@ -63,14 +64,14 @@ class OrderLiveUpdatesFlowTest extends WebTestCase
             // data-turbo-permanent is set from JavaScript while the viewer is busy, never sent by the server, except
             // on the per-user subscription, which must survive every visit
             ->assertElementCount('[data-turbo-permanent]', 1)
-            // Back requests the page again, from Turbo's cache and from the browser's, so its cookie is set again
+            // Back requests the page again, from Turbo's cache and from the browser's, so it shows what is current
             ->assertElementCount('head meta[name="turbo-cache-control"][content="no-cache"]', 1)
-            // Hovering a link would prefetch a page whose response replaces the cookie
-            ->assertElementCount('head meta[name="turbo-prefetch"][content="false"]', 1)
-            ->assertHeaderContains('Cache-Control', 'no-store');
+            ->assertHeaderContains('Cache-Control', 'no-store')
+            // Links prefetch on hover as on any other page: the response that comes back sets the same cookie
+            ->assertElementCount('head meta[name="turbo-prefetch"]', 0);
 
-        // One cookie, set once, for both
-        self::assertSame(['subscribe' => ['user/' . $user->getPublicId(), $topic]], MercureCookie::grantedTopics($browser));
+        // The cookie grants the viewer's own topic only, as on every page, so no later response can narrow it
+        self::assertSame(['subscribe' => ['user/' . $user->getPublicId()]], MercureCookie::grantedTopics($browser));
     }
 
     public function testTogglingTheLockRefreshesTheOrderPage(): void
@@ -278,6 +279,7 @@ class OrderLiveUpdatesFlowTest extends WebTestCase
         $this->assertRefreshedOnce($order);
     }
 
+    /** Public, on the topic the order page subscribes to: it carries no data, and each viewer's reload checks access. */
     private function assertRefreshedOnce(CustomerOrder $order): void
     {
         $updates = QueuedNotifications::published(self::getContainer());
@@ -285,7 +287,7 @@ class OrderLiveUpdatesFlowTest extends WebTestCase
         self::assertCount(1, $updates);
         self::assertInstanceOf(Update::class, $updates[0]);
         self::assertSame(['order/' . $order->getPublicId()->value()], $updates[0]->getTopics());
-        self::assertTrue($updates[0]->isPrivate());
+        self::assertFalse($updates[0]->isPrivate());
         self::assertSame(MercureLiveUpdatePublisher::REFRESH_STREAM, $updates[0]->getData());
     }
 

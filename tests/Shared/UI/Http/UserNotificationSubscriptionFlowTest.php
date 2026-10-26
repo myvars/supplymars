@@ -10,7 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
 
-/** Each logged-in page subscribes to its own user's toasts, and only to those (base.html.twig). */
+/** Each staff page subscribes to its own user's toasts, and only to those (base.html.twig). A customer's subscribes to nothing. */
 class UserNotificationSubscriptionFlowTest extends WebTestCase
 {
     use HasBrowser;
@@ -42,9 +42,26 @@ class UserNotificationSubscriptionFlowTest extends WebTestCase
         self::assertTrue($cookie->isHttpOnly());
         self::assertTrue($cookie->isSecure());
         self::assertSame('/.well-known/mercure', $cookie->getPath());
+        // It lasts a week (app.login_lifetime), not an hour: the hub closes a connection when its token expires,
+        // which would silence a tab left on one page
+        self::assertEqualsWithDelta(time() + 604800, $cookie->getExpiresTime(), 60);
+        self::assertEqualsWithDelta(time() + 604800, MercureCookie::expiresAt($browser), 60);
 
         // The token lets this browser subscribe to this user's topic and nothing else, and publish nothing
         self::assertSame(['subscribe' => ['user/' . $user->getPublicId()]], MercureCookie::grantedTopics($browser));
+    }
+
+    public function testCustomerPageHasNoSubscription(): void
+    {
+        // A customer receives no toasts and views no live page. Without a cookie the hub refuses every topic,
+        // including the public refreshes of the order pages
+        $browser = $this->browser()
+            ->actingAs(UserFactory::createOne())
+            ->visit('/')
+            ->assertSuccessful()
+            ->assertElementCount('turbo-mercure-stream-source', 0);
+
+        self::assertNull(MercureCookie::find($browser));
     }
 
     public function testAnonymousPageHasNoSubscription(): void

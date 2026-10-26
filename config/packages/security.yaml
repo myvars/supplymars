@@ -43,7 +43,7 @@ security:
 
             remember_me:
                 secret: '%kernel.secret%'
-                lifetime: 604800
+                lifetime: '%app.login_lifetime%'
                 path: /
                 always_remember_me: true
 
