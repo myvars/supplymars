@@ -15,5 +15,9 @@ innodb_log_buffer_size = 16M
 # The X Protocol (port 33060), which nothing uses
 mysqlx = OFF
 
+# Binary logging, on by default with 30 days' retention. Nothing reads the logs (no replica; the backup is
+# mysqldump), and the playground's nightly restore logs 1-2 GB a night: 24 GB had built up by 2026-10-26 (#143)
+disable_log_bin
+
 # innodb_buffer_pool_size stays at the default 128M. Live's data (about 1.8 GB, mostly status_change_log)
 # cannot fit in memory on this host anyway, and the pages the app reads do: 99.98% of reads hit the pool
