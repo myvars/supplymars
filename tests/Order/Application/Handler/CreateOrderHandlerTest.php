@@ -97,6 +97,21 @@ class CreateOrderHandlerTest extends KernelTestCase
         self::assertStringContainsString('Customer not found', $result->message);
     }
 
+    public function testHandleFailsWhenCustomerHasNoDefaultAddress(): void
+    {
+        $customer = UserFactory::createOne();
+        VatRateFactory::new()->withStandardRate()->create();
+
+        $result = ($this->handler)(new CreateOrder(
+            customerId: $customer->getId(),
+            shippingMethod: ShippingMethod::THREE_DAY,
+            customerOrderRef: null,
+        ));
+
+        self::assertFalse($result->ok);
+        self::assertSame('Customer has no default shipping or billing address.', $result->message);
+    }
+
     public function testHandleFailsWhenDefaultVatRateNotFound(): void
     {
         $customer = UserFactory::createOne();

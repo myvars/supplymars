@@ -33,7 +33,7 @@ A toast confirms "Demo order #000123 created." The demo order has 1 to 5 lines o
 
 Click an order. The page has:
 
-- **Order card:** order number, lock icon, created date, reference, **Allocate** (while the order can be edited), status (click it for the status history) and an X icon to cancel.
+- **Order card:** order number, lock icon, created date, reference, **Allocate** (while the order can be edited), status (click it for the status history) and, while the order is Pending, an X icon to cancel.
 - **Delivery Address** and **Order Summary:** Item(s) subtotal, Shipping, VAT, Total.
 - **Items:** "N lines (M items)", **Add Item**, and one card per item that still has quantity not yet on a purchase order. Editing, removing, cancelling and allocating an item by hand are in [Order Items](09-order-items.md).
 - **Purchase Orders:** the purchase orders made for this order.
@@ -75,12 +75,13 @@ If you unlock an order someone else locked, they see a message on whatever page 
 | Create a demo order | 10 demo orders already made today (by anyone) | The dialog says "You have reached the daily limit of 10 demo orders." and offers only **Close** |
 | Allocate | No line has outstanding quantity (including when every line was allocated by hand) | "No items to allocate." |
 | Allocate | A line has no single supplier with enough stock | "Cannot allocate all items" (the other lines are still allocated) |
+| Create Order | The customer has no default shipping or billing address (newly registered customers have none) | "Customer has no default shipping or billing address." |
 | Cancel order | The order is not Pending, or an item has quantity on a purchase order | "Order cannot be cancelled" / "Items cannot be cancelled" |
 
 Item rules and messages (quantity, price, cancel) are in [Order Items](09-order-items.md#rules-and-limits).
 
 - **The demo limit is shared:** 10 per day for everyone together, not per user. The count starts again at midnight.
-- **The X icon also shows on Processing orders,** but only Pending orders can be cancelled. To stop work on a Processing order, change its purchase order items; there is no action that cancels a whole purchase order. See [Purchase Orders](10-purchase-orders.md).
+- **Only Pending orders can be cancelled.** To stop work on a Processing order, change its purchase order items; there is no action that cancels a whole purchase order. See [Purchase Orders](10-purchase-orders.md).
 - **The lock is a note for people, but the scheduled jobs respect it.** Nothing stops anyone editing a locked order, and anyone can unlock it. The scheduled allocation, supplier acceptance, shipping and delivery jobs skip a locked order until it is unlocked.
 - **Items and Allocate** are available while the order is Pending or Processing.
 - Nothing checks that a product is active, complete or in stock when you add it.
