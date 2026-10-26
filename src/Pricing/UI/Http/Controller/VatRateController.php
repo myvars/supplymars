@@ -132,7 +132,7 @@ class VatRateController extends AbstractController
     ): Response {
         return $flow->handleField(
             request: $request,
-            value: fn (): ?string => $vatRate->getName(),
+            value: $vatRate->getName(),
             onSave: function ($value) use ($vatRate, $flusher): bool {
                 $vatRate->update((string) $value, $vatRate->getRate());
 

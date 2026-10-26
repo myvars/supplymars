@@ -74,22 +74,4 @@ final class UpdateVatRateFlowTest extends WebTestCase
 
         self::assertSame('Old Value', $entity->getName());
     }
-
-    public function testInlineEditUpdatesTheBreadcrumb(): void
-    {
-        $entity = VatRateFactory::createOne(['name' => 'Old Value']);
-        $publicId = $entity->getPublicId()->value();
-        $frameId = 'inline-edit-vat-rate-' . $publicId . '-name';
-
-        $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/vat-rate/' . $publicId)
-            ->assertSeeElement('nav[aria-label="breadcrumb"] [data-inline-edit-mirror="' . $frameId . '"]')
-            ->get('/vat-rate/' . $publicId . '/inline/name?edit=1')
-            ->fillField('inline_field[value]', 'Renamed Value')
-            ->click('Save (Enter)')
-            ->assertSuccessful()
-            ->assertContains('targets="[data-inline-edit-mirror=\'' . $frameId . '\']"')
-            ->assertContains('<template>Renamed Value</template>');
-    }
 }

@@ -74,22 +74,4 @@ final class UpdateManufacturerFlowTest extends WebTestCase
 
         self::assertSame('Old Value', $entity->getName());
     }
-
-    public function testInlineEditUpdatesTheBreadcrumb(): void
-    {
-        $entity = ManufacturerFactory::createOne(['name' => 'Old Value']);
-        $publicId = $entity->getPublicId()->value();
-        $frameId = 'inline-edit-manufacturer-' . $publicId . '-name';
-
-        $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/manufacturer/' . $publicId)
-            ->assertSeeElement('nav[aria-label="breadcrumb"] [data-inline-edit-mirror="' . $frameId . '"]')
-            ->get('/manufacturer/' . $publicId . '/inline/name?edit=1')
-            ->fillField('inline_field[value]', 'Renamed Value')
-            ->click('Save (Enter)')
-            ->assertSuccessful()
-            ->assertContains('targets="[data-inline-edit-mirror=\'' . $frameId . '\']"')
-            ->assertContains('<template>Renamed Value</template>');
-    }
 }

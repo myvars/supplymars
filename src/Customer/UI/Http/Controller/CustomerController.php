@@ -120,7 +120,7 @@ class CustomerController extends AbstractController
     ): Response {
         return $flow->handleField(
             request: $request,
-            value: fn (): ?string => $customer->getFullName(),
+            value: $customer->getFullName(),
             onSave: function ($value) use ($customer, $flusher): bool {
                 $customer->setFullName((string) $value);
 

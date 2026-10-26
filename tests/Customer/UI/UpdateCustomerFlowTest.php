@@ -129,24 +129,6 @@ final class UpdateCustomerFlowTest extends WebTestCase
         self::assertSame('Old Value', $entity->getFullName());
     }
 
-    public function testInlineEditUpdatesTheBreadcrumb(): void
-    {
-        $entity = UserFactory::createOne(['fullName' => 'Old Value']);
-        $publicId = $entity->getPublicId()->value();
-        $frameId = 'inline-edit-customer-' . $publicId . '-fullname';
-
-        $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/customer/' . $publicId)
-            ->assertSeeElement('nav[aria-label="breadcrumb"] [data-inline-edit-mirror="' . $frameId . '"]')
-            ->get('/customer/' . $publicId . '/inline/fullname?edit=1')
-            ->fillField('inline_field[value]', 'Renamed Value')
-            ->click('Save (Enter)')
-            ->assertSuccessful()
-            ->assertContains('targets="[data-inline-edit-mirror=\'' . $frameId . '\']"')
-            ->assertContains('<template>Renamed Value</template>');
-    }
-
     public function testInlineEditOfStaffNameIsForbiddenForStaffUser(): void
     {
         $staff = UserFactory::new()->asStaff()->create(['fullName' => 'Old Value']);

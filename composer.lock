@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "05b5197b1f00858c3296b08969ba0301",
+    "content-hash": "e8365513c8455c20afed920ae1873915",
     "packages": [
         {
             "name": "async-aws/core",
@@ -3352,16 +3352,16 @@
         },
         {
             "name": "myvars/form-flow",
-            "version": "v1.4.0",
+            "version": "v1.5.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myvars/form-flow.git",
-                "reference": "70fedbfd0b741bb8b7d35a8cf3b3d0fcea4f3f0f"
+                "reference": "fe79837cdaffb6c808a3aa32a99bc67b8def165f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myvars/form-flow/zipball/70fedbfd0b741bb8b7d35a8cf3b3d0fcea4f3f0f",
-                "reference": "70fedbfd0b741bb8b7d35a8cf3b3d0fcea4f3f0f",
+                "url": "https://api.github.com/repos/myvars/form-flow/zipball/fe79837cdaffb6c808a3aa32a99bc67b8def165f",
+                "reference": "fe79837cdaffb6c808a3aa32a99bc67b8def165f",
                 "shasum": ""
             },
             "require": {
@@ -3369,6 +3369,7 @@
                 "php": ">=8.5",
                 "symfony/config": "^8.1",
                 "symfony/dependency-injection": "^8.1",
+                "symfony/deprecation-contracts": "^3",
                 "symfony/form": "^8.1",
                 "symfony/http-foundation": "^8.1",
                 "symfony/http-kernel": "^8.1",
@@ -3392,7 +3393,7 @@
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "1.4.x-dev"
+                    "dev-main": "1.5.x-dev"
                 }
             },
             "autoload": {
@@ -3422,9 +3423,9 @@
             ],
             "support": {
                 "issues": "https://github.com/myvars/form-flow/issues",
-                "source": "https://github.com/myvars/form-flow/tree/v1.4.0"
+                "source": "https://github.com/myvars/form-flow/tree/v1.5.0"
             },
-            "time": "2026-10-17T15:22:05+00:00"
+            "time": "2026-10-26T14:56:17+00:00"
         },
         {
             "name": "nelmio/api-doc-bundle",
