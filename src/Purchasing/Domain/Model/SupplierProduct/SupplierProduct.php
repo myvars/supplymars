@@ -183,9 +183,9 @@ class SupplierProduct implements DomainEventProviderInterface
         }
 
         $this->assignSupplier($supplier);
-        $this->updateStock($stock);
+        $this->applyStock($stock);
         $this->changeLeadTimeDays($leadTimeDays);
-        $this->updateCost($cost);
+        $this->applyCost($cost);
         $this->assignProduct($product);
         $this->setActive($isActive);
 
@@ -224,9 +224,26 @@ class SupplierProduct implements DomainEventProviderInterface
 
     public function updateStock(int $newStock): void
     {
+        if ($this->applyStock($newStock)) {
+            $this->raisePricingChangedForMappedProduct();
+        }
+    }
+
+    /**
+     * @param numeric-string $newCost
+     */
+    public function updateCost(string $newCost): void
+    {
+        if ($this->applyCost($newCost)) {
+            $this->raisePricingChangedForMappedProduct();
+        }
+    }
+
+    private function applyStock(int $newStock): bool
+    {
         $stockChange = StockChange::from($this->getStock() ?? 0, $newStock);
         if (!$stockChange->hasChanged()) {
-            return;
+            return false;
         }
 
         $this->stock = $newStock;
@@ -237,16 +254,18 @@ class SupplierProduct implements DomainEventProviderInterface
                 CostChange::from($this->getCost() ?? '0.00', $this->getCost() ?? '0.00')
             )
         );
+
+        return true;
     }
 
     /**
      * @param numeric-string $newCost
      */
-    public function updateCost(string $newCost): void
+    private function applyCost(string $newCost): bool
     {
         $costChange = CostChange::from($this->getCost() ?? '0.00', $newCost);
         if (!$costChange->hasChanged()) {
-            return;
+            return false;
         }
 
         $this->cost = $newCost;
@@ -255,6 +274,25 @@ class SupplierProduct implements DomainEventProviderInterface
                 $this->getPublicId(),
                 StockChange::from($this->getStock() ?? 0, $this->getStock() ?? 0),
                 $costChange,
+            )
+        );
+
+        return true;
+    }
+
+    /**
+     * A stock or cost change outside update() can move the mapped product's active source and price.
+     */
+    private function raisePricingChangedForMappedProduct(): void
+    {
+        if (!$this->getProduct() instanceof Product) {
+            return;
+        }
+
+        $this->raiseDomainEvent(
+            new SupplierProductPricingWasChangedEvent(
+                $this->getPublicId(),
+                ProductId::fromInt($this->getProduct()->getId()),
             )
         );
     }

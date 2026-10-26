@@ -63,8 +63,12 @@ final class SupplierStockChangeLoggerTest extends KernelTestCase
             logger: $logger
         );
 
+        // A mapped supplier product also raises SupplierProductPricingWasChangedEvent, for the Pricing listener.
         foreach ($events as $event) {
-            self::assertInstanceOf(SupplierProductStockWasChangedEvent::class, $event);
+            if (!$event instanceof SupplierProductStockWasChangedEvent) {
+                continue;
+            }
+
             $listener($event);
         }
 
