@@ -73,6 +73,7 @@ Each PO item status change makes its parents derive their status again:
 - `Product::$stock`, `$cost` and `$leadTimeDays` are stored copies of the active source's values. They are not a sum over suppliers, and not computed on read.
 - They change only when `recalculateActiveSource()` runs, through the Pricing listeners below: when a supplier product is created, edited, mapped or toggled, when its stock or cost changes, or when a supplier is toggled.
 - `app:update-supplier-stock` and `app:reset-supplier-stock` call `SupplierProduct::updateStock()` / `updateCost()`. A change raises `SupplierProductStockWasChangedEvent` (the audit log, `SupplierStockChangeLogger`) and, for a mapped supplier product, `SupplierProductPricingWasChangedEvent`, so the product's active source and price follow. `update()` uses private helpers and raises its one pricing event itself. What the commands do is in [09-cli-reference.md](09-cli-reference.md).
+- Products that went stale before that (or after any change made outside the entities, such as SQL) are brought back in step by `app:resync-product-pricing`.
 
 ### Pricing cascade
 

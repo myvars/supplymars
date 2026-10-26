@@ -52,6 +52,17 @@ class ProductDoctrineRepository extends ServiceEntityRepository implements FindB
     }
 
     /**
+     * @return iterable<Product>
+     */
+    public function iterateAll(): iterable
+    {
+        return $this->createQueryBuilder('p')
+            ->orderBy('p.id', 'ASC')
+            ->getQuery()
+            ->toIterable();
+    }
+
+    /**
      * @return AdapterInterface<Product>
      */
     public function findByCriteria(SearchCriteriaInterface $criteria): AdapterInterface

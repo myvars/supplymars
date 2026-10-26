@@ -27,5 +27,8 @@ interface ProductRepository extends FindByCriteriaInterface
 
     public function findByMfrPartNumber(string $mfrPartNumber): ?Product;
 
+    /** @return iterable<Product> streamed by id, for batch jobs that clear the entity manager */
+    public function iterateAll(): iterable;
+
     public function count(): int;
 }
