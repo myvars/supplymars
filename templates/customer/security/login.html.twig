@@ -56,7 +56,7 @@
                 {% if app.user %}
                     <twig:Callout type="info">
                         You are logged in as {{ app.user.fullName }}.
-                        <a href="{{ path('app_logout') }}" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Logout?</a>
+                        <a href="{{ path('app_logout') }}" data-turbo-prefetch="false" data-turbo-frame="_top" class="font-medium text-primary-600 hover:underline dark:text-primary-500">Logout?</a>
                     </twig:Callout>
                 {% endif %}
                 {% if error %}
