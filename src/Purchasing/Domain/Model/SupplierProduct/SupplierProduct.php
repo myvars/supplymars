@@ -224,9 +224,12 @@ class SupplierProduct implements DomainEventProviderInterface
 
     public function updateStock(int $newStock): void
     {
-        if ($this->applyStock($newStock)) {
-            $this->raisePricingChangedForMappedProduct();
+        if (!StockChange::from($this->getStock() ?? 0, $newStock)->hasChanged()) {
+            return;
         }
+
+        $this->applyStock($newStock);
+        $this->raisePricingChangedForMappedProduct();
     }
 
     /**
@@ -234,16 +237,19 @@ class SupplierProduct implements DomainEventProviderInterface
      */
     public function updateCost(string $newCost): void
     {
-        if ($this->applyCost($newCost)) {
-            $this->raisePricingChangedForMappedProduct();
+        if (!CostChange::from($this->getCost() ?? '0.00', $newCost)->hasChanged()) {
+            return;
         }
+
+        $this->applyCost($newCost);
+        $this->raisePricingChangedForMappedProduct();
     }
 
-    private function applyStock(int $newStock): bool
+    private function applyStock(int $newStock): void
     {
         $stockChange = StockChange::from($this->getStock() ?? 0, $newStock);
         if (!$stockChange->hasChanged()) {
-            return false;
+            return;
         }
 
         $this->stock = $newStock;
@@ -254,18 +260,16 @@ class SupplierProduct implements DomainEventProviderInterface
                 CostChange::from($this->getCost() ?? '0.00', $this->getCost() ?? '0.00')
             )
         );
-
-        return true;
     }
 
     /**
      * @param numeric-string $newCost
      */
-    private function applyCost(string $newCost): bool
+    private function applyCost(string $newCost): void
     {
         $costChange = CostChange::from($this->getCost() ?? '0.00', $newCost);
         if (!$costChange->hasChanged()) {
-            return false;
+            return;
         }
 
         $this->cost = $newCost;
@@ -276,8 +280,6 @@ class SupplierProduct implements DomainEventProviderInterface
                 $costChange,
             )
         );
-
-        return true;
     }
 
     /**
