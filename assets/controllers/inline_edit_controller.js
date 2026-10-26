@@ -8,6 +8,8 @@ import { Controller } from "@hotwired/stimulus"
  * - Click outside to submit (auto-save)
  * - Auto-focus and place cursor at end when form loads
  * - Enter to submit for text inputs
+ * - An unchanged value cancels instead of submitting: a save answers with a page refresh,
+ *   which would cut short whatever the click outside started (opening the modal)
  * - Auto-grow input to fit content
  */
 export default class extends Controller {
@@ -54,7 +56,7 @@ export default class extends Controller {
             input.addEventListener("keydown", (e) => {
                 if (e.key === "Enter") {
                     e.preventDefault()
-                    form.requestSubmit()
+                    this.save(form, input)
                 }
             })
         }
@@ -64,7 +66,7 @@ export default class extends Controller {
             input.addEventListener("keydown", (e) => {
                 if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
                     e.preventDefault()
-                    form.requestSubmit()
+                    this.save(form, input)
                 }
             })
         }
@@ -101,10 +103,24 @@ export default class extends Controller {
         }
 
         const form = this.element.querySelector("form")
-        if (form) {
+        const input = this.element.querySelector("input, textarea, select")
+        if (form && input) {
             document.removeEventListener("click", this.boundClickOutside)
-            form.requestSubmit()
+            // Next tick: a cancel click nested in this click would stop Turbo handling the link clicked
+            setTimeout(() => this.save(form, input), 0)
         }
+    }
+
+    /**
+     * Submit the form, or cancel when the value is as it was loaded
+     */
+    save(form, input) {
+        if (input.value === input.defaultValue && this.hasCancelTarget) {
+            this.cancelTarget.click()
+            return
+        }
+
+        form.requestSubmit()
     }
 
     /**
