@@ -67,7 +67,7 @@ The rewound items stay Pending until you click **Allocate** on the order (or set
 2. On live, a nightly job at 01:30 takes each purchase order whose overall status is Rejected, sets its Rejected items to Refunded and allocates the order again. A Rejected item on a PO whose overall status is not Rejected (another item is less far along, such as Accepted) is skipped. Don't refund it by hand while the PO's other items are still in progress: the PO's status would then have to move from Accepted to Refunded when they ship, which is not allowed, so they can never be shipped, and a PO with a Refunded item can't be rewound. Refund it only once the other items are Delivered. The playground does not run the job.
 3. The new allocation picks the best source again, so it can be the same supplier.
 
-You can do the same by hand: set the item to Refunded, then click **Allocate** on the order.
+You can do the same by hand: set the item to Refunded, then click **Allocate** on the order. If you don't click Allocate, the scheduled allocation (every 15 minutes on live and the playground) reallocates the line itself, unless the order is locked.
 
 ## Statuses
 
