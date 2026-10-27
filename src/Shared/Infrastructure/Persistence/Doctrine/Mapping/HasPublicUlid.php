@@ -9,12 +9,13 @@ use Symfony\Component\Uid\Ulid;
 
 /**
  * Drop-in for any Doctrine entity that needs a ULID publicId.
+ *
+ * Adding it to a table that already has rows: make the migration's new column nullable, run
+ * app:backfill-ulids, then generate a second migration for NOT NULL.
  */
-// #[ORM\HasLifecycleCallbacks]
 trait HasPublicUlid
 {
-    // During backfill: set nullable:true; after backfill flip to false and run a new migration.
-    #[ORM\Column(type: 'ulid', unique: true, nullable: true)]
+    #[ORM\Column(type: 'ulid', unique: true)]
     private ?Ulid $publicId = null;
 
     /** Call from your entity constructor. */
@@ -23,18 +24,11 @@ trait HasPublicUlid
         $this->publicId ??= new Ulid();
     }
 
-    /** Ensures a value exists for new rows even if constructor initialization was skipped. */
-    // #[ORM\PrePersist]
-    public function ensurePublicId(): void
-    {
-        $this->publicId ??= new Ulid();
-    }
-
     /** Internal helper for entity-specific VO getter. */
     protected function publicIdString(): string
     {
         if (null === $this->publicId) {
-            throw new \LogicException('publicId is not set (are you mid-backfill or missing initialization?)');
+            throw new \LogicException('publicId is not set (does the constructor call initializePublicId()?)');
         }
 
         return (string) $this->publicId;
