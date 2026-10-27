@@ -10,8 +10,10 @@ use Symfony\Component\Uid\Ulid;
 /**
  * Drop-in for any Doctrine entity that needs a ULID publicId.
  *
- * Adding it to a table that already has rows: make the migration's new column nullable, run
- * app:backfill-ulids, then generate a second migration for NOT NULL.
+ * Adding it to a table that already has rows takes two deploys. First, edit the generated
+ * migration so the new column is nullable (NOT NULL would fill every row with the same zero bytes
+ * and break the unique index), deploy, and run app:backfill-ulids. Then generate a second
+ * migration, which makes it NOT NULL. Between the two, the schema and mapping disagree on purpose.
  */
 trait HasPublicUlid
 {

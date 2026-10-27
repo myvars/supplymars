@@ -9,6 +9,32 @@ use Doctrine\Migrations\AbstractMigration;
 
 final class Version20261027144029 extends AbstractMigration
 {
+    private const array TABLES = [
+        'address',
+        'category',
+        'customer_order',
+        'customer_order_item',
+        'manufacturer',
+        'message',
+        'pool',
+        'product',
+        'product_image',
+        'product_review',
+        'product_review_summary',
+        'purchase_order',
+        'purchase_order_item',
+        'reset_password_request',
+        'subcategory',
+        'supplier',
+        'supplier_category',
+        'supplier_manufacturer',
+        'supplier_product',
+        'supplier_subcategory',
+        'ticket',
+        'user',
+        'vat_rate',
+    ];
+
     public function getDescription(): string
     {
         return 'Make publicId NOT NULL, and drop the unused one from status_change_log';
@@ -16,6 +42,12 @@ final class Version20261027144029 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
+        // Each ALTER commits on its own, so check every table before changing any
+        foreach (self::TABLES as $table) {
+            $nulls = (int) $this->connection->fetchOne(sprintf('SELECT COUNT(*) FROM `%s` WHERE public_id IS NULL', $table));
+            $this->abortIf($nulls > 0, sprintf('%s has %d rows without a public_id: run app:backfill-ulids first', $table, $nulls));
+        }
+
         $this->addSql('ALTER TABLE address CHANGE public_id public_id BINARY(16) NOT NULL');
         $this->addSql('ALTER TABLE category CHANGE public_id public_id BINARY(16) NOT NULL');
         $this->addSql('ALTER TABLE customer_order CHANGE public_id public_id BINARY(16) NOT NULL');
