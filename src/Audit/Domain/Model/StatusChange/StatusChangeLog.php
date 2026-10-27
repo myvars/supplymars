@@ -7,7 +7,6 @@ namespace App\Audit\Domain\Model\StatusChange;
 use App\Audit\Infrastructure\Persistence\Doctrine\StatusChangeLogDoctrineRepository;
 use App\Customer\Domain\Model\User\User;
 use App\Shared\Domain\Event\DomainEventType;
-use App\Shared\Infrastructure\Persistence\Doctrine\Mapping\HasPublicUlid;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -15,8 +14,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Index(columns: ['event_type_id', 'event_type', 'status'])]
 class StatusChangeLog
 {
-    use HasPublicUlid;
-
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

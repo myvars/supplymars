@@ -6,7 +6,6 @@ namespace App\Audit\Infrastructure\Persistence\Doctrine;
 
 use App\Audit\Domain\Model\StatusChange\StatusChangeLog;
 use App\Audit\Domain\Model\StatusChange\StatusChangeLogId;
-use App\Audit\Domain\Model\StatusChange\StatusChangeLogPublicId;
 use App\Audit\Domain\Repository\StatusChangeLogRepository;
 use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Order\Domain\Model\Order\CustomerOrderItem;
@@ -41,11 +40,6 @@ class StatusChangeLogDoctrineRepository extends ServiceEntityRepository implemen
     public function get(StatusChangeLogId $id): ?StatusChangeLog
     {
         return $this->find($id);
-    }
-
-    public function getByPublicId(StatusChangeLogPublicId $publicId): ?StatusChangeLog
-    {
-        return $this->findOneBy(['publicId' => $publicId]);
     }
 
     public function findByEvent(DomainEventType $eventType, int $eventTypeId): array
