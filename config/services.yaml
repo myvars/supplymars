@@ -33,10 +33,6 @@ services:
         bind:
             $registrationLimiter: '@limiter.registration'
 
-    App\Customer\UI\Http\Controller\PlaygroundLoginController:
-        bind:
-            $playgroundMode: '%env(bool:PLAYGROUND_MODE)%'
-
     App\Shared\UI\Http\Validation\TurnstileValidator:
         arguments:
             $turnstileSecretKey: '%env(TURNSTILE_SECRET_KEY)%'
