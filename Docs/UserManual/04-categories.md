@@ -57,7 +57,7 @@ The name can also be changed in place on the detail page ([inline editing](02-na
 | Action | Blocked when | Message |
 |---|---|---|
 | Delete a category | It still has subcategories | "Has subcategories — remove them first." |
-| Delete a subcategory | It still has products | "Has products — move or remove them first." |
+| Delete a subcategory | It still has products or supplier mappings | "Has products or supplier mappings — move or remove them first." |
 | Save a category | Price Model is None | "A category must have a price model" |
 | Save a category | No Category Manager chosen | "Please choose a category owner" |
 

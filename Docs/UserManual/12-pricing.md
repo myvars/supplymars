@@ -29,7 +29,7 @@ The category and subcategory cards edit the whole category or subcategory, so ev
 
 To edit, click the pencil icon on the row (or on the detail page) and click **Update VAT Rate**. On the detail page you can also click the name to rename it in place, and follow the link to the categories using the rate. A category's VAT rate is chosen in the category form.
 
-To delete, open the edit modal and click **Delete VAT Rate**. Super admin only; other users see "Deleting is disabled for this user." A rate still used by a category can't be deleted: the delete fails with an error.
+To delete, open the edit modal and click **Delete VAT Rate**. Super admin only; other users see "Deleting is disabled for this user." A rate still used by a category can't be deleted: "Used by categories — move them to another rate first."
 
 ## How a price is worked out
 

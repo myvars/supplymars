@@ -66,7 +66,7 @@ Open the pool and click **Subscribe** on the Subscription card (or **Unsubscribe
 ## Rules and limits
 
 - **Messages you cannot delete:** the original message of a ticket ("The original message cannot be deleted.") and system messages ("System messages cannot be deleted."). Any other message can be deleted, whoever wrote it.
-- **Deleting a pool is super admin only.** Others see "Deleting is disabled for this user." A pool that still has tickets cannot be deleted: the delete fails with an error. Reassign its tickets first.
+- **Deleting a pool is super admin only.** Others see "Deleting is disabled for this user." A pool that still has tickets cannot be deleted: "Has tickets — deactivate it instead."
 - An inactive pool is not offered when creating a ticket, in the Pool filter or in the Reassign list, but its existing tickets stay.
 - The My Queue badge can lag by up to 5 minutes.
 
