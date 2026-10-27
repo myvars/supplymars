@@ -7,10 +7,13 @@ namespace App\Order\Infrastructure\Persistence\Doctrine;
 use App\Order\Application\Search\OrderSearchCriteria;
 use App\Order\Application\Service\DemoOrderCreator;
 use App\Order\Domain\Model\Order\CustomerOrder;
+use App\Order\Domain\Model\Order\CustomerOrderItem;
 use App\Order\Domain\Model\Order\OrderId;
 use App\Order\Domain\Model\Order\OrderPublicId;
 use App\Order\Domain\Model\Order\OrderStatus;
 use App\Order\Domain\Repository\OrderRepository;
+use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItem;
+use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use App\Review\Domain\Model\Review\ReviewStatus;
 use App\Shared\Application\Search\SearchCriteriaInterface;
 use App\Shared\Infrastructure\Persistence\Search\FindByCriteriaInterface;
@@ -133,13 +136,62 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
      */
     public function findNextOrdersToBeProcessed(int $orderCount = 1): ?array
     {
-        return $this->createQueryBuilder('co')
+        /** @var array<int, CustomerOrder> $newOrders */
+        $newOrders = $this->createQueryBuilder('co')
             ->leftJoin('co.purchaseOrders', 'po')
             ->andWhere('co.status = :status')
             ->andWhere('co.orderLock IS NULL')
             ->andWhere('po.id IS NULL')
             ->setParameter('status', OrderStatus::PENDING)
             ->orderBy('co.createdAt', 'ASC')
+            ->setMaxResults($orderCount)
+            ->getQuery()
+            ->getResult();
+
+        // New orders first, so orders that can never be allocated don't hold them up
+        $remaining = $orderCount - count($newOrders);
+        if ($remaining <= 0) {
+            return $newOrders;
+        }
+
+        return [...$newOrders, ...$this->findOrdersWithOutstandingQuantity($remaining)];
+    }
+
+    /**
+     * Orders already on a PO with a line still outstanding, as CustomerOrderItem::getOutstandingQty() works it out.
+     *
+     * @return array<int, CustomerOrder>
+     */
+    private function findOrdersWithOutstandingQuantity(int $orderCount): array
+    {
+        $em = $this->getEntityManager();
+
+        $onPurchaseOrders = $em->createQueryBuilder()
+            ->select('COALESCE(SUM(poi.quantity), 0)')
+            ->from(PurchaseOrderItem::class, 'poi')
+            ->andWhere('poi.customerOrderItem = coi')
+            ->andWhere('poi.status NOT IN (:releasedStatuses)')
+            ->getDQL();
+
+        $outstandingItems = $em->createQueryBuilder()
+            ->select('coi.id')
+            ->from(CustomerOrderItem::class, 'coi')
+            ->andWhere('coi.customerOrder = co')
+            ->andWhere('coi.status <> :cancelled')
+            ->andWhere(sprintf('coi.quantity > (%s)', $onPurchaseOrders))
+            ->getDQL();
+
+        return $this->createQueryBuilder('co')
+            // An order with an outstanding line is never further along than PROCESSING
+            ->andWhere('co.status IN (:statuses)')
+            ->andWhere('co.orderLock IS NULL')
+            ->andWhere('co.purchaseOrders IS NOT EMPTY')
+            ->andWhere(sprintf('EXISTS (%s)', $outstandingItems))
+            ->setParameter('statuses', [OrderStatus::PENDING, OrderStatus::PROCESSING])
+            ->setParameter('cancelled', OrderStatus::CANCELLED)
+            ->setParameter('releasedStatuses', [PurchaseOrderStatus::CANCELLED, PurchaseOrderStatus::REFUNDED])
+            ->orderBy('co.createdAt', 'ASC')
+            ->addOrderBy('co.id', 'ASC')
             ->setMaxResults($orderCount)
             ->getQuery()
             ->getResult();
