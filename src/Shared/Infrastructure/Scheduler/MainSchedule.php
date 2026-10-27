@@ -68,8 +68,9 @@ final readonly class MainSchedule implements ScheduleProviderInterface
         }
 
         return $schedule
-            // The last run time is kept in the app cache, so a run missed while the worker restarts
-            // happens when it comes back. Only the latest missed run of each job is made up.
+            // The last run time is kept in the cache.scheduler pool (Redis, like the app cache), so a run
+            // missed while the worker restarts happens when it comes back. Only the latest missed run of
+            // each job is made up.
             ->stateful($this->cache)
             ->processOnlyLastMissedRun(true)
             // Two workers consuming scheduler_default in this container never run the same job twice

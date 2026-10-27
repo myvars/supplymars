@@ -8,7 +8,8 @@ framework:
     trusted_headers: ['x-forwarded-for', 'x-forwarded-proto']
 
     # Note that the session will be started ONLY if you read or write from it.
-    # Sessions are in Redis in every environment, symfony serve included (make up-dev-tools starts it)
+    # Sessions are in Redis in dev and prod, symfony serve included (make up-dev-tools starts it);
+    # tests use mock_file storage (when@test below)
     session:
         handler_id: '%env(REDIS_URL)%'
 
