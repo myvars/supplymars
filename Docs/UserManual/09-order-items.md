@@ -35,7 +35,7 @@ Set **Quantity** to 0 and click **Update Order Item**. The item is deleted from 
 1. Click the pencil icon on the item card.
 2. Click **Cancel Order Item** at the bottom of the modal. There is no confirm step.
 
-The link shows only when nothing is on a purchase order and the item is Pending or Processing. A cancelled item stays in the list with a Cancelled badge, is left out of the order total, and cannot be reinstated.
+The link shows only when nothing is on a purchase order and the item is Pending or Processing. A cancelled item stays in the list with a Cancelled badge, is left out of the order total, is never allocated, and cannot be reinstated.
 
 ### Allocate an item to a supplier
 
@@ -43,10 +43,7 @@ The link shows only when nothing is on a purchase order and the item is Pending 
 2. Each row is an active supplier product for this product, with the supplier, product code, cost, and either "N in stock" or "Nd lead time". The list does not mark the cheapest source.
 3. Click a row. **All** the outstanding quantity goes on that supplier's Pending purchase order for this order, or on a new one. There is no quantity field and no stock check.
 
-The new purchase order item is Pending, and stays Pending until something moves it: suppliers never see a Pending item. **Allocate** moves the order's Pending items to Processing only in a run that itself leaves nothing outstanding. So if you allocate **every** line by hand, **Allocate** then says "No items to allocate." and changes nothing, and the scheduled allocation job never picks the order up (it takes only orders with no purchase order). Either:
-
-- leave at least one line for **Allocate** to finish, so its run ends with nothing outstanding and moves every Pending item to Processing; or
-- open each purchase order and set each item's **PO Item Status** to Processing ([Purchase Orders](10-purchase-orders.md#change-an-items-status)).
+The new purchase order item is Pending, and stays Pending until something moves it: suppliers never see a Pending item. When you have allocated every line, click **Allocate** on the order. With nothing left outstanding, it moves the order's Pending items to Processing. You can also set each item's **PO Item Status** to Processing on its purchase order ([Purchase Orders](10-purchase-orders.md#change-an-items-status)).
 
 **Allocate** on its own picks suppliers automatically; see [Orders](08-orders.md#allocate-an-order).
 
@@ -62,7 +59,7 @@ To split an item across suppliers, lower the quantity on the first purchase orde
 | Only Pending and Processing items can be edited, cancelled or allocated | No pencil icon, no supplier list |
 | Cancel and remove need nothing on purchase orders | No **Cancel Order Item** link |
 
-- Outstanding quantity = item quantity minus the quantity on its purchase order items. Cancelled and refunded purchase order items do not count, so a refunded quantity becomes outstanding again.
+- Outstanding quantity = item quantity minus the quantity on its purchase order items. Cancelled and refunded purchase order items do not count, so a refunded quantity becomes outstanding again. A cancelled item has no outstanding quantity.
 - Example: quantity 10 with 5 on purchase orders can be edited to 5 or more. Quantity 10 with all 10 on purchase orders can't be lowered.
 
 ## Statuses

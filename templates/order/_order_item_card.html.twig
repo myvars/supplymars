@@ -23,7 +23,7 @@
                         <div class="flex items-center gap-3 text-sm">
                             <span class="font-medium tabular-nums text-gray-900 dark:text-white">{{ orderItem.priceIncVat|format_currency('GBP') }}</span>
                             <span class="text-gray-500 dark:text-gray-400">
-                                {% if orderItem.outstandingQty is same as orderItem.quantity %}
+                                {% if orderItem.cancelled or orderItem.outstandingQty is same as orderItem.quantity %}
                                     Qty: {{ orderItem.quantity }}
                                 {% else %}
                                     Qty: {{ orderItem.outstandingQty }} of {{ orderItem.quantity }}

@@ -59,7 +59,7 @@ UI steps: [UserManual 08](UserManual/08-orders.md), [09](UserManual/09-order-ite
 - Only PENDING PO items can change quantity. A PO item can't exceed its line's outstanding quantity ([04 Allocation](04-sourcing-and-pricing.md#allocation)).
 - PO statuses are an enum with `canTransitionTo()`, not Symfony Workflow. The table is in [04 Statuses](04-sourcing-and-pricing.md#statuses).
 - Rejected items are refunded and reallocated by `app:refund-purchase-orders` (live only, nightly).
-- **Rewind** (any status, confirm page on the PO): every item goes back to PENDING, the PO's and its items' status change logs are deleted, and the order's status is derived again. Stock is not touched, and the erased history can't be recovered. `app:rewind-mixed-status-purchase-orders` rewinds POs whose items have mixed statuses.
+- **Rewind** (confirm page on the PO; refused when an item is REFUNDED or CANCELLED): every item goes back to PENDING, the PO's and its items' status change logs are deleted, and the order's status is derived again. Stock is not touched, and the erased history can't be recovered. `app:rewind-mixed-status-purchase-orders` rewinds POs whose items have mixed statuses, skipping those it may not rewind.
 
 Key files: `src/Purchasing/Domain/Model/PurchaseOrder/PurchaseOrder.php`, `src/Purchasing/Application/Service/EditablePurchaseOrderProvider.php`, `src/Purchasing/Application/Service/PurchaseOrderRewindService.php`, `src/Purchasing/Domain/Model/SupplierProduct/SupplierProduct.php`.
 

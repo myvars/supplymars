@@ -282,6 +282,10 @@ class CustomerOrderItem implements DomainEventProviderInterface
 
     public function getOutstandingQty(): int
     {
+        if ($this->isCancelled()) {
+            return 0;
+        }
+
         return max($this->getQuantity() - $this->getQtyAddedToPurchaseOrders(), 0);
     }
 

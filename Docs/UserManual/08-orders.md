@@ -35,7 +35,7 @@ Click an order. The page has:
 
 - **Order card:** order number, lock icon, created date, reference, **Allocate** (while the order can be edited), status (click it for the status history) and, while the order is Pending, an X icon to cancel.
 - **Delivery Address** and **Order Summary:** Item(s) subtotal, Shipping, VAT, Total.
-- **Items:** "N lines (M items)", **Add Item**, and one card per item that still has quantity not yet on a purchase order. Editing, removing, cancelling and allocating an item by hand are in [Order Items](09-order-items.md).
+- **Items:** "N lines (M items)", **Add Item**, and one card per item that still has quantity not yet on a purchase order, or is cancelled. Editing, removing, cancelling and allocating an item by hand are in [Order Items](09-order-items.md).
 - **Purchase Orders:** the purchase orders made for this order.
 
 The page updates by itself while you have it open: when someone else, or a scheduled job, changes an item, a purchase order, a status, the totals or the lock, you see the change within a few seconds without reloading. An open dialog or menu stays open while it does.
@@ -52,7 +52,7 @@ The item's price is the product's current sell price. To change, remove or cance
 
 Click **Allocate**. The app gives each line with outstanding quantity to one supplier that can supply all of it, and creates or adds to that supplier's purchase order. When nothing is left outstanding, it also moves every Pending purchase order item on the order to Processing. How the supplier is chosen: [Stock](11-stock.md#how-the-active-source-is-chosen).
 
-If you allocated every line by hand from the supplier lists, Allocate has nothing to do ("No items to allocate.") and the purchase order items stay Pending; see [Order Items](09-order-items.md#allocate-an-item-to-a-supplier) for the way out.
+If you allocated every line by hand from the supplier lists, Allocate has no lines to allocate but still moves the Pending purchase order items to Processing, which sends them to the suppliers. Cancelled lines are never allocated.
 
 ### Cancel an order
 
@@ -73,7 +73,7 @@ If you unlock an order someone else locked, they see a message on whatever page 
 |---|---|---|
 | Create Order | You are not a super admin | Button not shown |
 | Create a demo order | 10 demo orders already made today (by anyone) | The dialog says "You have reached the daily limit of 10 demo orders." and offers only **Close** |
-| Allocate | No line has outstanding quantity (including when every line was allocated by hand) | "No items to allocate." |
+| Allocate | No line has outstanding quantity and no purchase order item is Pending | "No items to allocate." |
 | Allocate | A line has no single supplier with enough stock | "Cannot allocate all items" (the other lines are still allocated) |
 | Create Order | The customer has no default shipping or billing address (newly registered customers have none) | "Customer has no default shipping or billing address." |
 | Cancel order | The order is not Pending, or an item has quantity on a purchase order | "Order cannot be cancelled" / "Items cannot be cancelled" |

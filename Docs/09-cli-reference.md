@@ -29,7 +29,7 @@ Times are UTC. Which stacks run the schedule ("live only" jobs are left out of t
 | `app:activate-supplier-products` | Purchasing | no | Activates inactive supplier products (through the status toggle) | `product-count` (50) |
 | `app:reset-supplier-stock` | Purchasing | no | Sets every product of one supplier to random stock 0–300 | `supplierId` (required, internal id) |
 | `app:resync-product-pricing` | Pricing | no | Runs `recalculateActiveSource()` on every product, so its stored source, stock, cost and price match its supplier products (a product with no viable source gets stock 0 and keeps its last cost and price). Run once after #106's fix; safe to repeat. A product that fails is left as it was and listed | `--batch-size` (200), `--dry-run`, `-v` lists each change |
-| `app:rewind-mixed-status-purchase-orders` | Purchasing | no | Finds POs whose items disagree (some rejected) and rewinds them to PENDING, deleting their status history | `--limit` (100), `--days-back` (30), `--dry-run` |
+| `app:rewind-mixed-status-purchase-orders` | Purchasing | no | Finds POs whose items disagree (some rejected) and rewinds them to PENDING, deleting their status history; skips (and counts) any with a REFUNDED or CANCELLED item | `--limit` (100), `--days-back` (30), `--dry-run` |
 | `app:backfill-ulids` | Shared | no | Fills a null `publicId` on every `HasPublicUlid` entity | `batch-size` (200), `--limit` |
 | `app:user:issue-token` | Customer | no | New API token for a user; replaces the old one | `email` |
 | `app:restore-database` | Shared | no, dev only | Restores a `.sql.gz` from `var/backups/` into the local database | `--from-s3`, `--file`, `--force` |

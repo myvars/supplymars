@@ -75,6 +75,22 @@ final readonly class OrderAllocator
     }
 
     /**
+     * Returns true when any purchase order item for this order is still PENDING (not yet sent to the supplier).
+     */
+    public function hasPendingItems(CustomerOrder $order): bool
+    {
+        foreach ($order->getPurchaseOrders() as $purchaseOrder) {
+            foreach ($purchaseOrder->getPurchaseOrderItems() as $purchaseOrderItem) {
+                if (PurchaseOrderStatus::PENDING === $purchaseOrderItem->getStatus()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Moves purchase order items from PENDING to PROCESSING for this order.
      */
     private function updateItemStatus(CustomerOrder $order): void

@@ -48,7 +48,9 @@ Quantity is edited from the **order page**, not the PO page.
 1. On the PO page, click the counter-clockwise arrow icon at the top right of the PO card.
 2. Click **Rewind to Pending**.
 
-Every item goes back to Pending, delivered dates are cleared, and the status history of the PO and its items is deleted. The order item and order statuses are worked out again, which adds new entries to the order's history. The arrow is always offered, even on a Pending PO. It cannot be undone.
+Every item goes back to Pending, delivered dates are cleared, and the status history of the PO and its items is deleted. The order item and order statuses are worked out again, which adds new entries to the order's history. The arrow is always offered, even on a Pending PO. A PO with a Refunded or Cancelled item is refused with "Cannot rewind: the purchase order has refunded or cancelled items.": that item's quantity has been released, and usually allocated again, so resetting it would put the order item on purchase orders twice. It cannot be undone.
+
+The rewound items stay Pending until you click **Allocate** on the order (or set them to Processing here).
 
 ## Rules and limits
 
@@ -56,7 +58,6 @@ Every item goes back to Pending, delivered dates are cleared, and the status his
 - Each item change also updates the order item and the order ([Order Items](09-order-items.md#statuses)).
 - PO items use the supplier's **cost**. The customer pays the **sell** price. The profit badges show the difference.
 - A Refunded item still shows the pencil icon and the list of every status, but each one is refused with "Status can not be set to X."
-- Rewind resets Cancelled and Refunded items to Pending too, so their quantity counts as allocated again. Check the order afterwards.
 - No PO action changes supplier stock ([Stock](11-stock.md)).
 - Old status history is pruned on live ([Navigation](02-navigation.md#detail-pages)).
 

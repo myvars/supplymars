@@ -22,16 +22,20 @@ class CancelOrderItemFlowTest extends WebTestCase
     public function testCancelOrderItemViaFlow(): void
     {
         $order = CustomerOrderFactory::createOne();
-        $orderItem = CustomerOrderItemFactory::createOne(['customerOrder' => $order]);
+        $orderItem = CustomerOrderItemFactory::createOne(['customerOrder' => $order, 'quantity' => 3]);
         $orderItemPublicId = $orderItem->getPublicId()->value();
         $orderPublicId = $order->getPublicId()->value();
 
+        // A cancelled item has nothing outstanding, but stays in the order's item list
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
             ->get('/order/item/' . $orderItemPublicId . '/edit')
             ->click('Cancel Order Item')
             ->assertOn('/order/' . $orderPublicId)
-            ->assertSee('Order item cancelled');
+            ->assertSee('Order item cancelled')
+            ->assertSee($orderItem->getProduct()->getName())
+            ->assertSee('Qty: 3')
+            ->assertNotSee('Qty: 0 of 3');
     }
 
     public function testCancelIsNotReachableWithGet(): void
