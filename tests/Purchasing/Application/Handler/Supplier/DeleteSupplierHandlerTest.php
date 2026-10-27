@@ -12,7 +12,9 @@ use App\Purchasing\Domain\Repository\SupplierRepository;
 use App\Tests\Shared\Factory\PurchaseOrderFactory;
 use App\Tests\Shared\Factory\SupplierCategoryFactory;
 use App\Tests\Shared\Factory\SupplierFactory;
+use App\Tests\Shared\Factory\SupplierManufacturerFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
+use App\Tests\Shared\Factory\SupplierSubcategoryFactory;
 use App\Tests\Shared\Story\StaffUserStory;
 use App\Tests\Shared\Story\SuperAdminUserStory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -106,5 +108,23 @@ final class DeleteSupplierHandlerTest extends KernelTestCase
         self::assertFalse($result->ok);
         self::assertStringContainsString('deactivate it instead', $result->message);
         self::assertNotNull($this->suppliers->getByPublicId($supplier->getPublicId()));
+    }
+
+    #[WithStory(SuperAdminUserStory::class)]
+    public function testFailsWhenSupplierHasSubcategoryMappings(): void
+    {
+        $supplier = SupplierFactory::createOne();
+        SupplierSubcategoryFactory::createOne(['supplier' => $supplier]);
+
+        $this->assertRefusedAsInUse($supplier);
+    }
+
+    #[WithStory(SuperAdminUserStory::class)]
+    public function testFailsWhenSupplierHasManufacturerMappings(): void
+    {
+        $supplier = SupplierFactory::createOne();
+        SupplierManufacturerFactory::createOne(['supplier' => $supplier]);
+
+        $this->assertRefusedAsInUse($supplier);
     }
 }
