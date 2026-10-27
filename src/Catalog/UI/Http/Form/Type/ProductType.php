@@ -12,7 +12,7 @@ use App\Catalog\UI\Http\Form\Model\ProductForm;
 use App\Catalog\UI\Http\Form\Type\Field\SubcategoryIdType;
 use App\Customer\Domain\Model\User\User;
 use App\Customer\Domain\Repository\UserRepository;
-use App\Shared\UI\Form\DataTransformer\IdToEntityTransformerFactory;
+use App\Shared\UI\Http\Form\DataTransformer\IdToEntityTransformerFactory;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;

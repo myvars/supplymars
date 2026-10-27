@@ -27,7 +27,7 @@ A form that must not look like standard controls (the inline edit form, which bl
 
 ### Map an entity field to an id
 
-`App\Shared\UI\Form\DataTransformer\IdToEntityTransformer` turns the form model's int id into the entity for the `EntityType` field, and the chosen entity back into its `getId()`. An id that no longer exists throws `TransformationFailedException`. Get one per entity class from `IdToEntityTransformerFactory::for()` (optionally with a finder closure) and add it as a model transformer:
+`App\Shared\UI\Http\Form\DataTransformer\IdToEntityTransformer` turns the form model's int id into the entity for the `EntityType` field, and the chosen entity back into its `getId()`. An id that no longer exists throws `TransformationFailedException`. Get one per entity class from `IdToEntityTransformerFactory::for()` (optionally with a finder closure) and add it as a model transformer:
 
 ```php
 ->add('category', EntityType::class, [

@@ -7,8 +7,8 @@ namespace App\Purchasing\UI\Http\Form\Type;
 use App\Purchasing\Application\Search\PurchaseOrderSearchCriteria;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use App\Purchasing\Domain\Model\Supplier\Supplier;
-use App\Purchasing\UI\Http\Form\DataTransformer\stringToPurchaseOrderStatusTransformer;
-use App\Shared\UI\Form\DataTransformer\IdToEntityTransformerFactory;
+use App\Purchasing\UI\Http\Form\DataTransformer\StringToPurchaseOrderStatusTransformer;
+use App\Shared\UI\Http\Form\DataTransformer\IdToEntityTransformerFactory;
 use App\Shared\UI\Http\Form\Type\DatePickerType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -23,7 +23,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 final class PurchaseOrderFilterType extends AbstractType
 {
     public function __construct(
-        private readonly stringToPurchaseOrderStatusTransformer $stringToPurchaseOrderStatusTransformer,
+        private readonly StringToPurchaseOrderStatusTransformer $stringToPurchaseOrderStatusTransformer,
         private readonly IdToEntityTransformerFactory $transformer,
     ) {
     }

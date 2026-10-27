@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace App\Tests\Purchasing\UI\Http\Form\DataTransformer;
 
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
-use App\Purchasing\UI\Http\Form\DataTransformer\stringToPurchaseOrderStatusTransformer;
+use App\Purchasing\UI\Http\Form\DataTransformer\StringToPurchaseOrderStatusTransformer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 
-final class stringToPurchaseOrderStatusTransformerTest extends TestCase
+final class StringToPurchaseOrderStatusTransformerTest extends TestCase
 {
-    private stringToPurchaseOrderStatusTransformer $transformer;
+    private StringToPurchaseOrderStatusTransformer $transformer;
 
     protected function setUp(): void
     {
-        $this->transformer = new stringToPurchaseOrderStatusTransformer();
+        $this->transformer = new StringToPurchaseOrderStatusTransformer();
     }
 
     public function testTransformReturnsNullOnNullValue(): void

@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Shared\UI\Form\DataTransformer;
+namespace App\Tests\Shared\UI\Http\Form\DataTransformer;
 
-use App\Shared\UI\Form\DataTransformer\IdToEntityTransformer;
+use App\Shared\UI\Http\Form\DataTransformer\IdToEntityTransformer;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\TestCase;

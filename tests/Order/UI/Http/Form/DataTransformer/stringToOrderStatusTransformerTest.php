@@ -5,17 +5,17 @@ declare(strict_types=1);
 namespace App\Tests\Order\UI\Http\Form\DataTransformer;
 
 use App\Order\Domain\Model\Order\OrderStatus;
-use App\Order\UI\Http\Form\DataTransformer\stringToOrderStatusTransformer;
+use App\Order\UI\Http\Form\DataTransformer\StringToOrderStatusTransformer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 
-final class stringToOrderStatusTransformerTest extends TestCase
+final class StringToOrderStatusTransformerTest extends TestCase
 {
-    private stringToOrderStatusTransformer $transformer;
+    private StringToOrderStatusTransformer $transformer;
 
     protected function setUp(): void
     {
-        $this->transformer = new stringToOrderStatusTransformer();
+        $this->transformer = new StringToOrderStatusTransformer();
     }
 
     public function testTransformReturnsNullOnNullValue(): void
