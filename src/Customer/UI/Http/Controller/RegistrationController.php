@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace App\Customer\UI\Http\Controller;
 
 use App\Customer\Application\Handler\RegisterUserHandler;
-use App\Customer\Domain\Model\User\EmailVerifier;
 use App\Customer\Domain\Model\User\User;
 use App\Customer\Domain\Model\User\UserId;
 use App\Customer\Domain\Repository\UserRepository;
 use App\Customer\Infrastructure\Mailer\MailerHelper;
+use App\Customer\Infrastructure\Security\EmailVerifier;
 use App\Customer\UI\Http\Form\Mapper\RegisterUserMapper;
 use App\Customer\UI\Http\Form\Model\RegistrationForm;
 use App\Customer\UI\Http\Form\Model\ResendVerificationForm;
