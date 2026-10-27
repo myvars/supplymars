@@ -37,7 +37,7 @@ It is used two ways:
 A line ends up split across suppliers in two ways:
 
 - **By staff.** Lower a PENDING PO item's quantity (`UpdatePurchaseOrderItemQuantityHandler`; 0 removes it), then add a PO item on another supplier product from the order screen (`CreatePurchaseOrderItemHandler`). That puts the whole remaining outstanding quantity on the chosen supplier, with no stock check.
-- **After a refund.** A rejected PO item that is refunded no longer counts. The refund command then reallocates the line, using the same one-source rule. It takes only POs whose own status is REJECTED.
+- **After a refund.** A rejected PO item that is refunded no longer counts. The refund command then reallocates the line, using the same one-source rule. It takes only POs whose own status is REJECTED. Refunding a rejected item next to items still ACCEPTED or SHIPPED is not supported: the derived PO status would need ACCEPTED → REFUNDED or REJECTED → SHIPPED, which `PurchaseOrder::generateStatus()` refuses. Only staff can make that mix, by rejecting one item of an accepted PO, so it is left as a known limit (#151).
 
 **Rewind** (`PurchaseOrderRewindService`) returns every item of a PO to PENDING. A PO with a REFUNDED or CANCELLED item can't be rewound (`PurchaseOrder::allowRewind()`): that item's quantity has been released, and usually allocated again elsewhere, so resetting it would put the line on POs twice.
 
