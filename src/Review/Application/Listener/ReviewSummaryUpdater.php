@@ -15,7 +15,6 @@ use App\Review\Domain\Model\Review\ReviewPublicId;
 use App\Review\Domain\Model\ReviewSummary\ProductReviewSummary;
 use App\Review\Domain\Repository\ReviewRepository;
 use App\Review\Domain\Repository\ReviewSummaryRepository;
-use App\Review\Infrastructure\Persistence\Doctrine\ReviewDoctrineRepository;
 use App\Shared\Application\FlusherInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
@@ -76,7 +75,6 @@ final readonly class ReviewSummaryUpdater
             $this->summaries->add($summary);
         }
 
-        assert($this->reviews instanceof ReviewDoctrineRepository);
         $stats = $this->reviews->getProductReviewStats($product);
 
         $summary->recalculate(
