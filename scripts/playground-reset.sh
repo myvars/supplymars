@@ -16,6 +16,7 @@ echo "$(date '+%Y-%m-%d %H:%M:%S') Starting playground reset..."
 #    would otherwise send live's pending emails. The table is still recreated, so it starts empty.
 #    LC_ALL=C: the dump holds binary columns, so sed must read bytes rather than text.
 BACKUP_FILE="/backups/latest.sql.gz"
+DATABASE_NAME="${DATABASE_NAME:-app}"
 if [ ! -f "$BACKUP_FILE" ]; then
     echo "ERROR: Backup file not found at $BACKUP_FILE"
     exit 1
@@ -23,11 +24,11 @@ fi
 echo "Restoring database from $BACKUP_FILE..."
 gunzip < "$BACKUP_FILE" | LC_ALL=C sed '/^INSERT INTO `messenger_messages`/d' | mysql -h database -P 3306 \
     -u root -p"${MYSQL_ROOT_PASSWORD}" \
-    --skip-ssl app
+    --skip-ssl "$DATABASE_NAME"
 
 # 2. Redact staff credentials and create demo user (immediately, no gap)
 echo "Redacting staff credentials and creating demo user..."
-mysql -h database -P 3306 -u root -p"${MYSQL_ROOT_PASSWORD}" --skip-ssl app \
+mysql -h database -P 3306 -u root -p"${MYSQL_ROOT_PASSWORD}" --skip-ssl "$DATABASE_NAME" \
     < /usr/local/bin/playground-redact-staff.sql
 
 # 3. Sync S3 uploads and media from live (root) to playground prefix

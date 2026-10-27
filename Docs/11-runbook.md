@@ -79,7 +79,7 @@ An env file only reaches the app through `compose.prod.yaml`: the variables list
 | `DEFAULT_URI` | `https://live.supplymars.com` | `https://www.supplymars.com` | URLs generated outside a request: emails sent by the worker, commands |
 | `DATABASE_URL` | `mysql://app:<MYSQL_PASSWORD>@database:3306/app` | same shape | The app connects as `MYSQL_USER` `app`, which has rights on one database only |
 | `MYSQL_PASSWORD`, `MYSQL_ROOT_PASSWORD` | own | own | Read by the database container; the root one also by `reset` and the commands below. `openssl rand -base64 24` |
-| `DATABASE_NAME` | unset | unset | Leave it unset, so the database is `app` (`compose.yaml`). `scripts/playground-reset.sh` and the table queries in section 8 assume `app`, and `DATABASE_URL` must name the same database |
+| `DATABASE_NAME` | unset | unset | Leave it unset, so the database is `app` (`compose.yaml`). The table queries in section 8 assume `app`, and `DATABASE_URL` must name the same database |
 | `REDIS_PASSWORD`, `REDIS_URL` | own | own | Redis refuses to start without the password; `REDIS_URL` (`redis://default:<password>@redis:6379`) carries the same one, for sessions and the cache |
 | `MAILER_DSN`, `MAILER_FROM` | real | real | `MAILER_FROM=no-reply@supplymars.com` |
 | `AWS_S3_REGION`, `AWS_S3_BUCKET`, `AWS_S3_ACCESS_ID`, `AWS_S3_SECRET_ACCESS_KEY` | `eu-west-2`, `unicorn-bucket-two` | same | Uploads and backups; the reset container uses them for the S3 sync |
