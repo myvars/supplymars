@@ -6,11 +6,11 @@ namespace App\Catalog\UI\Http\Form\Type;
 
 use App\Catalog\Application\Search\SubcategorySearchCriteria;
 use App\Catalog\Domain\Model\Category\Category;
-use App\Catalog\UI\Http\Form\DataTransformer\stringToPriceModelTransformer;
+use App\Catalog\UI\Http\Form\DataTransformer\StringToPriceModelTransformer;
 use App\Customer\Domain\Model\User\User;
 use App\Customer\Domain\Repository\UserRepository;
 use App\Shared\Domain\ValueObject\PriceModel;
-use App\Shared\UI\Form\DataTransformer\IdToEntityTransformerFactory;
+use App\Shared\UI\Http\Form\DataTransformer\IdToEntityTransformerFactory;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
@@ -25,7 +25,7 @@ final class SubcategoryFilterType extends AbstractType
 {
     public function __construct(
         private readonly UserRepository $users,
-        private readonly stringToPriceModelTransformer $stringToPriceModelTransformer,
+        private readonly StringToPriceModelTransformer $stringToPriceModelTransformer,
         private readonly IdToEntityTransformerFactory $transformer,
     ) {
     }

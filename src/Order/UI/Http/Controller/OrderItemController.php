@@ -38,12 +38,6 @@ class OrderItemController extends AbstractController
         return FlowModel::simple('order_item');
     }
 
-    #[Route(path: '/order/', name: 'app_order_item_index', methods: ['GET'])]
-    public function index(): Response
-    {
-        return $this->redirectToRoute('app_order_index');
-    }
-
     #[Route(path: '/order/{id}/item/new', name: 'app_order_item_new', methods: ['GET', 'POST'])]
     public function new(
         Request $request,

@@ -11,7 +11,7 @@ use Symfony\Component\Form\Exception\TransformationFailedException;
 /**
  * @implements DataTransformerInterface<string|null, OrderStatus|null>
  */
-final readonly class stringToOrderStatusTransformer implements DataTransformerInterface
+final readonly class StringToOrderStatusTransformer implements DataTransformerInterface
 {
     // Transforms a string (status) to an enum (OrderStatus)
     public function transform(mixed $value): ?OrderStatus

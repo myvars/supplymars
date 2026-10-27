@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Tests\Catalog\UI\Http\Form\DataTransformer;
 
-use App\Catalog\UI\Http\Form\DataTransformer\stringToPriceModelTransformer;
+use App\Catalog\UI\Http\Form\DataTransformer\StringToPriceModelTransformer;
 use App\Shared\Domain\ValueObject\PriceModel;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 
-final class stringToPriceModelTransformerTest extends TestCase
+final class StringToPriceModelTransformerTest extends TestCase
 {
-    private stringToPriceModelTransformer $transformer;
+    private StringToPriceModelTransformer $transformer;
 
     protected function setUp(): void
     {
-        $this->transformer = new stringToPriceModelTransformer();
+        $this->transformer = new StringToPriceModelTransformer();
     }
 
     public function testTransformReturnsNullOnNullValue(): void

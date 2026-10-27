@@ -2,20 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Order\UI\Http\Form\DataTransformer;
+namespace App\Tests\Purchasing\UI\Http\Form\DataTransformer;
 
-use App\Order\Domain\Model\Order\OrderStatus;
-use App\Order\UI\Http\Form\DataTransformer\stringToOrderStatusTransformer;
+use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
+use App\Purchasing\UI\Http\Form\DataTransformer\StringToPurchaseOrderStatusTransformer;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 
-final class stringToOrderStatusTransformerTest extends TestCase
+final class StringToPurchaseOrderStatusTransformerTest extends TestCase
 {
-    private stringToOrderStatusTransformer $transformer;
+    private StringToPurchaseOrderStatusTransformer $transformer;
 
     protected function setUp(): void
     {
-        $this->transformer = new stringToOrderStatusTransformer();
+        $this->transformer = new StringToPurchaseOrderStatusTransformer();
     }
 
     public function testTransformReturnsNullOnNullValue(): void
@@ -25,7 +25,7 @@ final class stringToOrderStatusTransformerTest extends TestCase
 
     public function testTransformReturnsEnumFromLowercaseString(): void
     {
-        self::assertSame(OrderStatus::PENDING, $this->transformer->transform('pending'));
+        self::assertSame(PurchaseOrderStatus::PENDING, $this->transformer->transform('pending'));
     }
 
     public function testTransformThrowsOnInvalidValue(): void
@@ -49,13 +49,13 @@ final class stringToOrderStatusTransformerTest extends TestCase
 
     public function testReverseTransformReturnsLowercaseString(): void
     {
-        self::assertSame('pending', $this->transformer->reverseTransform(OrderStatus::PENDING));
+        self::assertSame('pending', $this->transformer->reverseTransform(PurchaseOrderStatus::PENDING));
     }
 
-    public function testReverseTransformThrowsOnNonOrderStatus(): void
+    public function testReverseTransformThrowsOnNonPurchaseOrderStatus(): void
     {
         $this->expectException(TransformationFailedException::class);
-        $this->expectExceptionMessageIsOrContains('Expected an OrderStatus.');
+        $this->expectExceptionMessageIsOrContains('Expected a PurchaseOrderStatus.');
 
         // @phpstan-ignore argument.type (intentionally testing wrong type handling)
         $this->transformer->reverseTransform(new \stdClass());

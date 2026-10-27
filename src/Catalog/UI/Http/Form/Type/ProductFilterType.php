@@ -10,7 +10,7 @@ use App\Catalog\Domain\Model\Category\CategoryId;
 use App\Catalog\Domain\Model\Manufacturer\Manufacturer;
 use App\Catalog\Domain\Repository\CategoryRepository;
 use App\Catalog\UI\Http\Form\Type\Field\SubcategoryIdType;
-use App\Shared\UI\Form\DataTransformer\IdToEntityTransformerFactory;
+use App\Shared\UI\Http\Form\DataTransformer\IdToEntityTransformerFactory;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;

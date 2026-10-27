@@ -139,8 +139,6 @@ class CustomerOrderItem implements DomainEventProviderInterface
         $this->generateStatus();
 
         $this->raiseDomainEvent(new OrderItemWasChangedEvent($this->getPublicId()));
-
-        // $this->customerOrder->recalculateTotal();
     }
 
     public function assignCustomerOrder(CustomerOrder $customerOrder): void

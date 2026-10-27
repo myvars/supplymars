@@ -22,7 +22,7 @@ A context has only the directories it needs. Where the tree differs:
 | `Domain/Service/` | Only `src/Reporting/Domain/Service/` (`SalesDateRangeResolver`) and `src/Shared/Domain/Service/Pricing/` (`MarkupCalculator`). Add one only for a rule that belongs to no single entity |
 | `Infrastructure/` | `Security/` (Customer: `CurrentUserProvider`, `ApiTokenHandler`; Shared), `Mailer/` (Customer), `Factory/` (Customer's demo-customer factories), `Logging/` (Audit). `Shared` also has `FileStorage/`, `Health/` and `Scheduler/` |
 | `UI/Http/Api/` | Catalog and Order (`Resource/`; Order also `Payload/` for input), base classes in `src/Shared/UI/Http/Api/`. See [API](patterns/API/README.md) |
-| Odd ones | Reporting has `Application/Report/` and `Domain/Metric/`. Audit's listeners are in `Application/EventListener/`, not `Listener/` |
+| Odd ones | Reporting has `Application/Report/` and `Domain/Metric/` |
 | `Home` | No `Application/` or `Domain/`: just `Listener/`, `Service/` and `UI/`. One Deptrac layer, `Home internals`, that nothing else may use |
 
 | Layer | May depend on | Rule |
@@ -110,7 +110,7 @@ Who listens (`#[AsEventListener]`):
 | Listener | Events | Does |
 |----------|--------|------|
 | `src/Pricing/Application/Listener/` (one class per event) | `CategoryPricingWasChangedEvent`, `SubcategoryPricingWasChangedEvent`, `VatRateWasChangedEvent`, `SupplierStatusWasChangedEvent`, `SupplierProductStatusWasChangedEvent`, `SupplierProductPricingWasChangedEvent` | Reprices the affected products: see [04-sourcing-and-pricing.md](04-sourcing-and-pricing.md) |
-| `StatusChangeLogger` (`src/Audit/Application/EventListener/`) | Order, order item, PO and PO item status changes | Writes the status change log |
+| `StatusChangeLogger` (`src/Audit/Application/Listener/`) | Order, order item, PO and PO item status changes | Writes the status change log |
 | `SupplierStockChangeLogger` (same directory) | `SupplierProductStockWasChangedEvent` | Writes the stock change log. Repricing comes from the `SupplierProductPricingWasChangedEvent` raised beside it |
 | `ReviewSummaryUpdater` (`src/Review/Application/Listener/`) | The four `Review*` events | Recalculates the product's review summary |
 | `SidebarBadgeCacheInvalidator` (`src/Home/Listener/`) | Review created, status changed, deleted; PO status changed; order created, status changed | Deletes the sidebar badge counts that changed |

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Audit\Application\Listener;
 
-use App\Audit\Application\EventListener\StatusChangeLogger;
+use App\Audit\Application\Listener\StatusChangeLogger;
 use App\Audit\Infrastructure\Logging\StatusChangeLogWriter;
 use App\Customer\Domain\Model\User\User;
 use App\Customer\Infrastructure\Security\CurrentUserProvider;

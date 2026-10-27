@@ -6,7 +6,7 @@ namespace App\Order\UI\Http\Form\Type;
 
 use App\Order\Application\Search\OrderSearchCriteria;
 use App\Order\Domain\Model\Order\OrderStatus;
-use App\Order\UI\Http\Form\DataTransformer\stringToOrderStatusTransformer;
+use App\Order\UI\Http\Form\DataTransformer\StringToOrderStatusTransformer;
 use App\Shared\UI\Http\Form\Type\DatePickerType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
@@ -19,7 +19,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  */
 final class OrderFilterType extends AbstractType
 {
-    public function __construct(private readonly stringToOrderStatusTransformer $stringToOrderStatusTransformer)
+    public function __construct(private readonly StringToOrderStatusTransformer $stringToOrderStatusTransformer)
     {
     }
 

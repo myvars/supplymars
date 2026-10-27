@@ -7,7 +7,7 @@ namespace App\Note\UI\Http\Form\Type;
 use App\Note\Domain\Model\Pool\Pool;
 use App\Note\Domain\Repository\PoolRepository;
 use App\Note\UI\Http\Form\Model\ReassignForm;
-use App\Shared\UI\Form\DataTransformer\IdToEntityTransformerFactory;
+use App\Shared\UI\Http\Form\DataTransformer\IdToEntityTransformerFactory;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;

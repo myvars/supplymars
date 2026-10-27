@@ -11,7 +11,7 @@ use App\Purchasing\Domain\Model\SupplierProduct\SupplierManufacturer;
 use App\Purchasing\Domain\Repository\SupplierCategoryRepository;
 use App\Purchasing\UI\Http\Form\Model\SupplierProductForm;
 use App\Purchasing\UI\Http\Form\Type\Field\SupplierSubcategoryIdType;
-use App\Shared\UI\Form\DataTransformer\IdToEntityTransformerFactory;
+use App\Shared\UI\Http\Form\DataTransformer\IdToEntityTransformerFactory;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;

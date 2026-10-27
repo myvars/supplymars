@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Purchasing\UI\Http\Form\Type\Field;
 
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierSubcategory;
-use App\Shared\UI\Form\DataTransformer\IdToEntityTransformerFactory;
+use App\Shared\UI\Http\Form\DataTransformer\IdToEntityTransformerFactory;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
