@@ -109,7 +109,7 @@ class OrderController extends AbstractController
     }
 
     #[Route(path: '/order/{id}/cancel', name: 'app_order_cancel', methods: ['POST'])]
-    public function delete(
+    public function cancel(
         Request $request,
         #[ValueResolver('public_id')] CustomerOrder $order,
         CancelOrderHandler $handler,
@@ -124,7 +124,7 @@ class OrderController extends AbstractController
     }
 
     #[Route(path: '/order/{id}/allocate', name: 'app_order_allocate', methods: ['POST'])]
-    public function process(
+    public function allocate(
         Request $request,
         #[ValueResolver('public_id')] CustomerOrder $order,
         AllocateOrderHandler $handler,
@@ -141,7 +141,7 @@ class OrderController extends AbstractController
     }
 
     #[Route(path: '/order/{id}/lock/toggle', name: 'app_order_lock_toggle_status', methods: ['POST'])]
-    public function cancel(
+    public function toggleLock(
         Request $request,
         #[ValueResolver('public_id')] CustomerOrder $order,
         LockOrderHandler $handler,
