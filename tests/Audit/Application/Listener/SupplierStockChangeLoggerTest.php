@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Audit\Application\Listener;
 
-use App\Audit\Application\EventListener\SupplierStockChangeLogger;
+use App\Audit\Application\Listener\SupplierStockChangeLogger;
 use App\Audit\Domain\Model\StockChange\SupplierStockChangeLog;
 use App\Audit\Domain\Repository\SupplierStockChangeLogRepository;
 use App\Audit\Infrastructure\Logging\SupplierStockChangeLogWriter;

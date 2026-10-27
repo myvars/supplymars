@@ -164,7 +164,7 @@ UI steps: [UserManual 17](UserManual/17-notes.md).
 - Rewinding a PO reopens its order and items. If they finished more than 12 months ago, their history before the rewind is already gone.
 - Stock change history is kept in full; the charts' ALL reads it.
 
-Key files: `src/Audit/Application/EventListener/StatusChangeLogger.php`, `src/Audit/Application/EventListener/SupplierStockChangeLogger.php`, `src/Audit/UI/Console/PruneStatusChangeLogCommand.php`, `src/Audit/UI/Http/Chart/StockHistoryChartBuilder.php`.
+Key files: `src/Audit/Application/Listener/StatusChangeLogger.php`, `src/Audit/Application/Listener/SupplierStockChangeLogger.php`, `src/Audit/UI/Console/PruneStatusChangeLogCommand.php`, `src/Audit/UI/Http/Chart/StockHistoryChartBuilder.php`.
 
 ## API
 

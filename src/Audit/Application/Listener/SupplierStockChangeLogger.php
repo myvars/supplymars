@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Audit\Application\EventListener;
+namespace App\Audit\Application\Listener;
 
 use App\Audit\Infrastructure\Logging\SupplierStockChangeLogWriter;
 use App\Purchasing\Domain\Model\SupplierProduct\Event\SupplierProductStockWasChangedEvent;
