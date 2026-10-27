@@ -8,6 +8,7 @@ use App\Catalog\Domain\Model\Category\Category;
 use App\Catalog\Domain\Model\Manufacturer\Manufacturer;
 use App\Catalog\Domain\Model\Product\Product;
 use App\Catalog\Domain\Model\Subcategory\Subcategory;
+use App\Customer\Infrastructure\Security\DefaultUserAuthenticator;
 use App\Purchasing\Application\Service\SupplierProductMappingService;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
 use App\Tests\Shared\Factory\CategoryFactory;
@@ -16,7 +17,9 @@ use App\Tests\Shared\Factory\SubcategoryFactory;
 use App\Tests\Shared\Factory\SupplierCategoryFactory;
 use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Factory\SupplierManufacturerFactory;
+use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Factory\SupplierSubcategoryFactory;
+use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Factory\VatRateFactory;
 use App\Tests\Shared\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
@@ -111,6 +114,27 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
 
         // Verify supplier product is now mapped
         self::assertSame($product, $supplierProduct->getProduct());
+
+        // And that the mappings were saved, not just set in memory
+        $this->em->clear();
+        $saved = $this->em->find(SupplierProduct::class, $supplierProduct->getId());
+        self::assertSame($product->getId(), $saved?->getProduct()?->getId());
+        self::assertSame($manufacturer->getId(), $saved->getSupplierManufacturer()?->getMappedManufacturer()?->getId());
+        self::assertSame($subcategory->getId(), $saved->getSupplierSubcategory()?->getMappedSubcategory()?->getId());
+    }
+
+    public function testRefusesADefaultOwnerWhoIsNotStaff(): void
+    {
+        // No one is signed in, so a new category falls back to the default staff account
+        UserFactory::createOne(['email' => self::getContainer()->get(DefaultUserAuthenticator::class)->getDefaultEmail()]);
+        VatRateFactory::new()->withStandardRate()->create();
+
+        $supplierProduct = SupplierProductFactory::createOne(['product' => null]);
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessageIsOrContains('Default owner not found');
+
+        $this->service->map($supplierProduct);
     }
 
     #[WithStory(StaffUserStory::class)]
