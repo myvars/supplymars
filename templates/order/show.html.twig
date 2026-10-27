@@ -137,7 +137,7 @@
                 </div>
                 <ul class="mt-2 w-full space-y-3">
                     {% for orderItem in result.customerOrderItems %}
-                        {% if orderItem.outstandingQty > 0 %}
+                        {% if orderItem.outstandingQty > 0 or orderItem.cancelled %}
                             {{ include('order/_order_item_card.html.twig', {orderItem: orderItem}) }}
                         {% endif %}
                     {% endfor %}
