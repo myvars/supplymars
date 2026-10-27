@@ -22,7 +22,7 @@
     <p>If a supplier rejects, the item moves to Rejected. Set it to Refunded and allocate the order again; the best source is picked again, so it can be the same supplier. On live, a nightly job does this for POs whose status is Rejected.</p>
 
     <twig:Callout type="warning">
-        Delivered, Cancelled and Refunded are final, except that Rewind resets them to Pending. Rewind clears the status history permanently.
+        Delivered, Cancelled and Refunded are final. Rewind resets Delivered items to Pending, but a PO with a Cancelled or Refunded item can't be rewound. Rewind clears the status history permanently.
     </twig:Callout>
 
     <twig:Callout type="info">

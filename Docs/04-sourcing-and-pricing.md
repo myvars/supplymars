@@ -31,15 +31,17 @@ It is used two ways:
 
 - For each line with outstanding quantity, it asks for one source with stock for the **whole** outstanding quantity. If none has it, the line is skipped and stays outstanding. **Automatic allocation never splits a line.**
 - The PO item goes on the order's editable (PENDING) PO for that supplier, or a new one (`EditablePurchaseOrderProvider`). A second PO item for the same line on the same PO is not created. The existing one grows to its maximum instead (`OrderItemAllocator`).
-- PO items are created PENDING. They move to PROCESSING only once **every** line on the order has nothing outstanding.
+- PO items are created PENDING. They move to PROCESSING only once **every** line on the order has nothing outstanding. When nothing is outstanding but PENDING PO items remain (every line allocated by hand, or a rewound PO), the Allocate button still runs `process()` to move them (`AllocateOrderHandler`, `OrderAllocator::hasPendingItems()`); it answers "No items to allocate." only when there is neither.
 - Supplier stock is read live and never reserved or reduced by allocation, shipping or delivery. Only the stock commands and editing a supplier product change it (see [Stock](#stock)).
 
 A line ends up split across suppliers in two ways:
 
 - **By staff.** Lower a PENDING PO item's quantity (`UpdatePurchaseOrderItemQuantityHandler`; 0 removes it), then add a PO item on another supplier product from the order screen (`CreatePurchaseOrderItemHandler`). That puts the whole remaining outstanding quantity on the chosen supplier, with no stock check.
-- **After a refund.** A rejected PO item that is refunded no longer counts. The refund command then reallocates the line, using the same one-source rule.
+- **After a refund.** A rejected PO item that is refunded no longer counts. The refund command then reallocates the line, using the same one-source rule. It takes only POs whose own status is REJECTED.
 
-**Outstanding quantity** = line quantity − the quantity on its PO items that are not CANCELLED or REFUNDED (`CustomerOrderItem::getOutstandingQty()`). A PO item's quantity can't go above its current quantity plus the line's outstanding quantity (`PurchaseOrderItem::getMaxQuantity()`). The line's quantity can't be edited below what is on POs.
+**Rewind** (`PurchaseOrderRewindService`) returns every item of a PO to PENDING. A PO with a REFUNDED or CANCELLED item can't be rewound (`PurchaseOrder::allowRewind()`): that item's quantity has been released, and usually allocated again elsewhere, so resetting it would put the line on POs twice.
+
+**Outstanding quantity** = line quantity − the quantity on its PO items that are not CANCELLED or REFUNDED (`CustomerOrderItem::getOutstandingQty()`). A CANCELLED line has none, so allocation never puts it on a PO. A PO item's quantity can't go above its current quantity plus the line's outstanding quantity (`PurchaseOrderItem::getMaxQuantity()`). The line's quantity can't be edited below what is on POs.
 
 ### Statuses
 
