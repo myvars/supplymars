@@ -56,13 +56,13 @@ class Supplier implements DomainEventProviderInterface
     private Collection $supplierManufacturers;
 
     /** @var Collection<int, SupplierProduct> */
-    #[ORM\OneToMany(targetEntity: SupplierProduct::class, mappedBy: 'supplier')]
+    #[ORM\OneToMany(targetEntity: SupplierProduct::class, mappedBy: 'supplier', fetch: 'EXTRA_LAZY')]
     private Collection $supplierProducts;
 
     /**
      * @var Collection<int, PurchaseOrder>
      */
-    #[ORM\OneToMany(targetEntity: PurchaseOrder::class, mappedBy: 'supplier')]
+    #[ORM\OneToMany(targetEntity: PurchaseOrder::class, mappedBy: 'supplier', fetch: 'EXTRA_LAZY')]
     private Collection $purchaseOrders;
 
     #[ORM\Column]
@@ -313,5 +313,14 @@ class Supplier implements DomainEventProviderInterface
         }
 
         return $this;
+    }
+
+    public function isDeletable(): bool
+    {
+        return $this->supplierProducts->isEmpty()
+            && $this->purchaseOrders->isEmpty()
+            && $this->supplierCategories->isEmpty()
+            && $this->supplierSubcategories->isEmpty()
+            && $this->supplierManufacturers->isEmpty();
     }
 }

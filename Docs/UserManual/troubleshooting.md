@@ -39,8 +39,10 @@ Email verification never blocks sign-in, so an unverified account is not the cau
 | **Subcategory** list is empty on the product form | It lists only the chosen category's subcategories. | Choose the **Category** first; add a subcategory to it if it has none. | [Products](03-products.md) |
 | The Stock or Cost tab shows "Incomplete Product" | The product is not complete: it must be Active, have an active supplier product, and sit in an Active category and subcategory. Staff can still add it to an order; demo and simulated orders skip it unless it is active, in stock and has an active supplier product. | Read the line under the heading ("No active supplier" or "Inactive category, subcategory or product") and fix that. | [Products](03-products.md#rules-and-limits), [Stock](11-stock.md) |
 | "Has subcategories — remove them first." | A category with subcategories can't be deleted. | Delete or move its subcategories. | [Categories and Subcategories](04-categories.md) |
-| "Has products — move or remove them first." | A subcategory with products can't be deleted. | Move its products to another subcategory. | [Categories and Subcategories](04-categories.md) |
-| "Has products — reassign them first." | A manufacturer with products can't be deleted. | Give the products another manufacturer. | [Manufacturers](16-manufacturers.md) |
+| "Has products or supplier mappings — move or remove them first." | A subcategory with products, or mapped from a supplier subcategory, can't be deleted. | Move its products to another subcategory. | [Categories and Subcategories](04-categories.md) |
+| "Has products or supplier mappings — reassign or remove them first." | A manufacturer with products, or mapped from a supplier manufacturer, can't be deleted. | Give the products another manufacturer. | [Manufacturers](16-manufacturers.md) |
+| "Has images, supplier products or orders — deactivate it instead." | A product in use can't be deleted. | Deactivate the product. | [Products](03-products.md) |
+| "Used by categories — move them to another rate first." | A VAT rate a category uses can't be deleted. | Give those categories another rate. | [Pricing](12-pricing.md) |
 
 ## Suppliers and stock
 
@@ -49,6 +51,7 @@ Email verification never blocks sign-in, so an unverified account is not the cau
 | A supplier product is never the active source | It, or its supplier, is inactive; it has no stock; its cost is 0; or another source is cheaper (on equal cost, the one with more stock wins). | Activate it, or correct stock and cost. | [Stock](11-stock.md) |
 | Product stock or price doesn't match its supplier product | Simulated stock and cost changes don't update the product. Saving a supplier product with no changed value doesn't either. | On the product's Stock tab, click a source's toggle off and on again; or change a value on the supplier product and save. | [Stock](11-stock.md), [Simulations](14-simulations.md) |
 | "Used on purchase orders — deactivate it instead." | A supplier product on a purchase order can't be deleted. | Deactivate it on the product's Stock tab. | [Supplier Products](06-supplier-products.md) |
+| "Has products, mappings or purchase orders — deactivate it instead." | A supplier in use can't be deleted. | Deactivate the supplier. | [Suppliers](05-suppliers.md) |
 | A supplier product has no Stock tab entry | It isn't mapped to a catalog product. | Use **Map Product** on the supplier product. | [Supplier Products](06-supplier-products.md) |
 
 ## Orders

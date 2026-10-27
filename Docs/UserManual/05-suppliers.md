@@ -38,7 +38,7 @@ The name can also be changed in place on the detail page ([inline editing](02-na
 ## Rules and limits
 
 - **Who can delete:** super admin only. Other staff see "Deleting is disabled for this user."
-- **A supplier in use can't be deleted.** While it has supplier products, purchase orders or sales history the delete fails with an error. Deactivate it instead.
+- **A supplier in use can't be deleted.** While it has supplier products, purchase orders or category, subcategory or manufacturer mappings: "Has products, mappings or purchase orders — deactivate it instead."
 - **Inactive supplier:** none of its supplier products is used as a product's source, so its products move to another supplier, or have no source. See [Stock](11-stock.md) for how the source is chosen.
 - **An inactive supplier's existing purchase orders carry on:** they can still be accepted, shipped and delivered.
 - **Colour scheme** is the dot shown wherever the supplier appears: purchase order cards, supplier options on order items, and the product's Stock tab.

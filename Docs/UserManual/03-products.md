@@ -55,7 +55,7 @@ Click a product to open it. Its tabs are Details, Stock, Cost, Images, Sales, Hi
 ## Rules and limits
 
 - **Who can delete:** super admin only. Other staff see "Deleting is disabled for this user."
-- **Delete fails** while the product has images, supplier products or order items. Nothing checks first; the delete ends in an error.
+- **Delete is refused** while the product has images, supplier products or order items: "Has images, supplier products or orders — deactivate it instead."
 - **Complete product:** the Stock and Cost tabs show figures, instead of "Incomplete Product" with "No active supplier" or "Inactive category, subcategory or product", only when the product is Active, it has an active supplier product, and its category and subcategory are both Active.
 - **Incomplete products can still be ordered.** Nothing stops staff adding an incomplete product to an order. Demo and simulated orders pick only products that are active, in stock and with an active supplier product.
 - **Images:** at most 2 MB each; JPG, PNG, GIF or WebP; up to 10 files per upload. There is no limit per product.

@@ -7,6 +7,7 @@ namespace App\Note\Application\Handler\Pool;
 use App\Note\Application\Command\Pool\DeletePool;
 use App\Note\Domain\Model\Pool\Pool;
 use App\Note\Domain\Repository\PoolRepository;
+use App\Note\Domain\Repository\TicketRepository;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Application\Result;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -15,6 +16,7 @@ final readonly class DeletePoolHandler
 {
     public function __construct(
         private PoolRepository $pools,
+        private TicketRepository $tickets,
         private FlusherInterface $flusher,
         private Security $security,
     ) {
@@ -29,6 +31,10 @@ final readonly class DeletePoolHandler
         $pool = $this->pools->getByPublicId($command->id);
         if (!$pool instanceof Pool) {
             return Result::fail('Pool not found.');
+        }
+
+        if ($this->tickets->existsForPool($pool)) {
+            return Result::fail('Has tickets — deactivate it instead.');
         }
 
         $this->pools->remove($pool);

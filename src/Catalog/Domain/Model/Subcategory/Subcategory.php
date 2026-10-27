@@ -242,7 +242,7 @@ class Subcategory implements DomainEventProviderInterface
 
     public function isDeletable(): bool
     {
-        return $this->products->isEmpty();
+        return $this->products->isEmpty() && $this->supplierSubcategories->isEmpty();
     }
 
     /**

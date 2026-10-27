@@ -10,8 +10,11 @@ use App\Catalog\Domain\Model\Manufacturer\ManufacturerPublicId;
 use App\Catalog\Domain\Repository\ManufacturerRepository;
 use App\Tests\Shared\Factory\ManufacturerFactory;
 use App\Tests\Shared\Factory\ProductFactory;
+use App\Tests\Shared\Factory\SupplierManufacturerFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
+
+use function Zenstruck\Foundry\Persistence\save;
 
 final class DeleteManufacturerHandlerTest extends KernelTestCase
 {
@@ -65,6 +68,19 @@ final class DeleteManufacturerHandlerTest extends KernelTestCase
 
         self::assertFalse($result->ok);
         self::assertStringContainsString('Has products', $result->message);
+        self::assertNotNull($this->manufacturers->getByPublicId($manufacturer->getPublicId()));
+    }
+
+    public function testFailsWhenManufacturerHasSupplierMappings(): void
+    {
+        $manufacturer = ManufacturerFactory::createOne();
+        $manufacturer->addSupplierManufacturer(SupplierManufacturerFactory::createOne());
+        save($manufacturer);
+
+        $result = ($this->handler)(new DeleteManufacturer($manufacturer->getPublicId()));
+
+        self::assertFalse($result->ok);
+        self::assertStringContainsString('supplier mappings', $result->message);
         self::assertNotNull($this->manufacturers->getByPublicId($manufacturer->getPublicId()));
     }
 }

@@ -18,7 +18,7 @@ Gotchas:
 
 - **Ask with `isGranted()`, never `getRoles()`.** The hierarchy applies to the logged-in token, not to the stored roles. Handlers inject `Security` and call `$this->security->isGranted('ROLE_SUPER_ADMIN')`; templates use `is_granted()`.
 - **Store both roles on a super admin**, as `setStaff()` would. `User::isAdmin()` reads stored roles, so it checks for either role itself. The playground reset (`scripts/playground-redact-staff.sql`) sets both on `admin@supplymars.com`.
-- Admin accounts (either role) and customers with orders cannot be deleted: `User::isDeletable()`.
+- Admin accounts (either role) cannot be deleted, nor customers with orders, tickets or status changes, or who own a category, subcategory or product: `User::isDeletable()` and `DeleteCustomerHandler`.
 - Granting staff access sends the user an email (`UpdateCustomerHandler` → `MailerHelper::sendAdminAccessGrantedMessage()`, template `templates/customer/admin-access-granted.html.twig`).
 - There is no 2FA, and no log of who did what beyond the status and stock change logs (Audit context).
 

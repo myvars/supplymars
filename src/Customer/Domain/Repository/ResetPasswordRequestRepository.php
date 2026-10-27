@@ -20,4 +20,6 @@ interface ResetPasswordRequestRepository
     public function get(ResetPasswordRequestId $id): ?ResetPasswordRequest;
 
     public function getByPublicId(ResetPasswordRequestPublicId $publicId): ?ResetPasswordRequest;
+
+    public function removeRequests(object $user): void;
 }

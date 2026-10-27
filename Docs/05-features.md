@@ -6,7 +6,7 @@ The business rules of each feature, with the files that hold them. Read it befor
 
 
 - **Delete rights.** Five delete handlers check `ROLE_SUPER_ADMIN`: product, supplier, supplier product, VAT rate and pool. Every other delete is open to any staff user.
-- **Deletes that hit a foreign key fail.** Nothing checks for or cascades to dependent rows, so the flush throws. A product can't be deleted while it has images, supplier products or order items, a VAT rate while a category uses it, a pool while it has tickets.
+- **A record in use can't be deleted.** The handler checks for dependent rows before removing anything and returns an error flash; nothing cascades. A product can't be deleted while it has images, supplier products or order items (`Product::isDeletable()`, `OrderItemRepository::existsForProduct()`); a supplier while it has supplier products, purchase orders or category, subcategory or manufacturer mappings (`Supplier::isDeletable()`); a VAT rate while a category uses it; a pool while it has tickets; a category while it has subcategories; a subcategory or manufacturer while it has products or supplier mappings; a customer while they hold an admin role, or have orders, tickets or status changes, or own a category, subcategory or product (`User::isDeletable()`, `DeleteCustomerHandler`); a customer's password reset requests are removed with them. Deactivate a product, supplier or pool instead.
 - **Inline editing.** Names (and a customer's `fullName`) are edited in place on show pages. The list is `symfony console debug:router | grep inline`; the pattern is in [patterns/InlineEdit/README.md](patterns/InlineEdit/README.md).
 
 ## Catalog
@@ -141,7 +141,7 @@ Why pools, statuses and visibility work as they do: [ADR 009](adr/009-support-ti
 - Subscribing to a pool counts its tickets that are not closed (OPEN or REPLIED) and not snoozed in the My Queue badge and includes them in the index's "my pools" filter.
 - A pool's "customer visible" flag is shown as a label; nothing filters on it.
 - `messageCount` and `lastMessageAt` are kept on the ticket for sorting.
-- A pool with tickets can't be deleted (foreign key, see the top of this page).
+- A pool with tickets can't be deleted (see the top of this page).
 
 Key files: `src/Note/Domain/Model/Ticket/Ticket.php`, `src/Note/Domain/Model/Ticket/TicketStatus.php`, `src/Note/Domain/Model/Pool/Pool.php`, `src/Note/Application/Handler/Ticket/DeleteMessageHandler.php`.
 

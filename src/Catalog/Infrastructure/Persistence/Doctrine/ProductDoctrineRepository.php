@@ -9,6 +9,7 @@ use App\Catalog\Domain\Model\Product\Product;
 use App\Catalog\Domain\Model\Product\ProductId;
 use App\Catalog\Domain\Model\Product\ProductPublicId;
 use App\Catalog\Domain\Repository\ProductRepository;
+use App\Customer\Domain\Model\User\User;
 use App\Shared\Application\Search\SearchCriteriaInterface;
 use App\Shared\Infrastructure\Persistence\Search\FindByCriteriaInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -144,5 +145,10 @@ class ProductDoctrineRepository extends ServiceEntityRepository implements FindB
     public function findByMfrPartNumber(string $mfrPartNumber): ?Product
     {
         return $this->findOneBy(['mfrPartNumber' => $mfrPartNumber]);
+    }
+
+    public function existsForOwner(User $owner): bool
+    {
+        return $this->count(['owner' => $owner]) > 0;
     }
 }

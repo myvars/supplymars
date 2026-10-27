@@ -31,6 +31,10 @@ final readonly class DeleteVatRateHandler
             return Result::fail('VAT rate not found.');
         }
 
+        if (!$vatRate->isDeletable()) {
+            return Result::fail('Used by categories — move them to another rate first.');
+        }
+
         $this->vatRates->remove($vatRate);
         $this->flusher->flush();
 

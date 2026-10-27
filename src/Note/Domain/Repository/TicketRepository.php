@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Note\Domain\Repository;
 
+use App\Customer\Domain\Model\User\User;
+use App\Note\Domain\Model\Pool\Pool;
 use App\Note\Domain\Model\Ticket\Ticket;
 use App\Note\Domain\Model\Ticket\TicketId;
 use App\Note\Domain\Model\Ticket\TicketPublicId;
@@ -23,4 +25,8 @@ interface TicketRepository extends FindByCriteriaInterface
     public function getByPublicId(TicketPublicId $publicId): ?Ticket;
 
     public function countOpenTicketsForUser(int $userId): int;
+
+    public function existsForPool(Pool $pool): bool;
+
+    public function existsForCustomer(User $customer): bool;
 }

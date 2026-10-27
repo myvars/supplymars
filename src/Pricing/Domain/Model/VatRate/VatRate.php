@@ -166,4 +166,9 @@ class VatRate implements DomainEventProviderInterface
 
         return $this;
     }
+
+    public function isDeletable(): bool
+    {
+        return $this->categories->isEmpty();
+    }
 }

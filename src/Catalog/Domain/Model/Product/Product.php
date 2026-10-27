@@ -730,4 +730,9 @@ class Product
             $this->reorderProductImages();
         }
     }
+
+    public function isDeletable(): bool
+    {
+        return $this->supplierProducts->isEmpty() && $this->productImages->isEmpty();
+    }
 }

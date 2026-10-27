@@ -36,7 +36,7 @@ The name can also be changed in place on the detail page ([inline editing](02-na
 
 ## Rules and limits
 
-- **Delete is refused** while any product uses the manufacturer: "Has products — reassign them first."
+- **Delete is refused** while any product or supplier mapping uses the manufacturer: "Has products or supplier mappings — reassign or remove them first."
 - **Active is a label only.** An inactive manufacturer still appears in the product form, and its products can still be sold.
 - **Names aren't checked for duplicates.** Map Product on a supplier product matches manufacturers by name, so a duplicate name may link to the wrong one; see [Supplier Products](06-supplier-products.md#map-to-a-catalog-product).
 

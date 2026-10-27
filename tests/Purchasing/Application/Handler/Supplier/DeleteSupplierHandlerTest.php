@@ -6,10 +6,19 @@ namespace App\Tests\Purchasing\Application\Handler\Supplier;
 
 use App\Purchasing\Application\Command\Supplier\DeleteSupplier;
 use App\Purchasing\Application\Handler\Supplier\DeleteSupplierHandler;
+use App\Purchasing\Domain\Model\Supplier\Supplier;
 use App\Purchasing\Domain\Model\Supplier\SupplierPublicId;
 use App\Purchasing\Domain\Repository\SupplierRepository;
+use App\Tests\Shared\Factory\PurchaseOrderFactory;
+use App\Tests\Shared\Factory\SupplierCategoryFactory;
 use App\Tests\Shared\Factory\SupplierFactory;
+use App\Tests\Shared\Factory\SupplierManufacturerFactory;
+use App\Tests\Shared\Factory\SupplierProductFactory;
+use App\Tests\Shared\Factory\SupplierSubcategoryFactory;
+use App\Tests\Shared\Story\StaffUserStory;
 use App\Tests\Shared\Story\SuperAdminUserStory;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\PersistentCollection;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
@@ -53,5 +62,85 @@ final class DeleteSupplierHandlerTest extends KernelTestCase
 
         self::assertFalse($result->ok);
         self::assertStringContainsString('Supplier not found', $result->message);
+    }
+
+    #[WithStory(StaffUserStory::class)]
+    public function testRefusesStaffUser(): void
+    {
+        $supplier = SupplierFactory::createOne();
+
+        $result = ($this->handler)(new DeleteSupplier($supplier->getPublicId()));
+
+        self::assertFalse($result->ok);
+        self::assertSame('Deleting is disabled for this user.', $result->message);
+        self::assertNotNull($this->suppliers->getByPublicId($supplier->getPublicId()));
+    }
+
+    #[WithStory(SuperAdminUserStory::class)]
+    public function testFailsWhenSupplierHasSupplierProducts(): void
+    {
+        $supplier = SupplierFactory::createOne();
+        SupplierProductFactory::createOne(['supplier' => $supplier]);
+
+        $this->assertRefusedAsInUse($supplier);
+    }
+
+    #[WithStory(SuperAdminUserStory::class)]
+    public function testFailsWhenSupplierHasPurchaseOrders(): void
+    {
+        $supplier = SupplierFactory::createOne();
+        PurchaseOrderFactory::createOne(['supplier' => $supplier]);
+
+        $this->assertRefusedAsInUse($supplier);
+    }
+
+    #[WithStory(SuperAdminUserStory::class)]
+    public function testFailsWhenSupplierHasCategoryMappings(): void
+    {
+        $supplier = SupplierFactory::createOne();
+        SupplierCategoryFactory::createOne(['supplier' => $supplier]);
+
+        $this->assertRefusedAsInUse($supplier);
+    }
+
+    private function assertRefusedAsInUse(Supplier $supplier): void
+    {
+        $result = ($this->handler)(new DeleteSupplier($supplier->getPublicId()));
+
+        self::assertFalse($result->ok);
+        self::assertStringContainsString('deactivate it instead', $result->message);
+        self::assertNotNull($this->suppliers->getByPublicId($supplier->getPublicId()));
+    }
+
+    #[WithStory(SuperAdminUserStory::class)]
+    public function testFailsWhenSupplierHasSubcategoryMappings(): void
+    {
+        $supplier = SupplierFactory::createOne();
+        SupplierSubcategoryFactory::createOne(['supplier' => $supplier]);
+
+        $this->assertRefusedAsInUse($supplier);
+    }
+
+    #[WithStory(SuperAdminUserStory::class)]
+    public function testFailsWhenSupplierHasManufacturerMappings(): void
+    {
+        $supplier = SupplierFactory::createOne();
+        SupplierManufacturerFactory::createOne(['supplier' => $supplier]);
+
+        $this->assertRefusedAsInUse($supplier);
+    }
+
+    #[WithStory(SuperAdminUserStory::class)]
+    public function testRefusalCountsPurchaseOrdersWithoutLoadingThem(): void
+    {
+        $supplier = SupplierFactory::createOne();
+        PurchaseOrderFactory::createMany(3, ['supplier' => $supplier]);
+        self::getContainer()->get(EntityManagerInterface::class)->clear();
+
+        $this->assertRefusedAsInUse($supplier);
+
+        $loaded = $this->suppliers->getByPublicId($supplier->getPublicId());
+        self::assertInstanceOf(PersistentCollection::class, $loaded?->getPurchaseOrders());
+        self::assertFalse($loaded->getPurchaseOrders()->isInitialized());
     }
 }

@@ -9,6 +9,7 @@ use App\Purchasing\Application\Handler\SupplierProduct\DeleteSupplierProductHand
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProductPublicId;
 use App\Purchasing\Domain\Repository\SupplierProductRepository;
 use App\Tests\Shared\Factory\SupplierProductFactory;
+use App\Tests\Shared\Story\StaffUserStory;
 use App\Tests\Shared\Story\SuperAdminUserStory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
@@ -55,5 +56,17 @@ final class DeleteSupplierProductHandlerTest extends KernelTestCase
 
         self::assertFalse($result->ok);
         self::assertStringContainsString('Supplier product not found', $result->message);
+    }
+
+    #[WithStory(StaffUserStory::class)]
+    public function testRefusesStaffUser(): void
+    {
+        $supplierProduct = SupplierProductFactory::createOne();
+
+        $result = ($this->handler)(new DeleteSupplierProduct($supplierProduct->getPublicId()));
+
+        self::assertFalse($result->ok);
+        self::assertSame('Deleting is disabled for this user.', $result->message);
+        self::assertNotNull($this->supplierProducts->getByPublicId($supplierProduct->getPublicId()));
     }
 }

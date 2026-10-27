@@ -57,6 +57,7 @@ The full name can also be changed in place on the detail page ([inline editing](
 | Edit | The customer is staff and you are not a super admin | The edit button and inline name edit are hidden |
 | Delete | The customer is staff | The confirm modal says "You cannot delete an admin user." |
 | Delete | The customer has any orders | The confirm modal says "You cannot delete a customer with order history." |
+| Delete | The customer has support tickets | The delete fails: "Customer cannot be deleted." |
 | Save | The email is already used | "There is already an account with this email" |
 
 - **Editing staff accounts is super admin only**, your own included, full name too. Any staff user can tick Member of Staff on an ordinary customer, but only a super admin can edit that account afterwards.
