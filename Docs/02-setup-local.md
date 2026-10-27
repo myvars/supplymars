@@ -155,7 +155,7 @@ The database name and local ports are in the `docker` block at the top of `.env`
 
 ### Network exposure
 
-MySQL, Redis, Mailpit, RabbitMQ and phpMyAdmin are published on `127.0.0.1` only (`compose.override.yaml`). They use default passwords or none, so they must not be reachable from other machines; keep the `127.0.0.1:` prefix when adding a port. One exception today: `compose.prod.local.yaml` publishes the RabbitMQ UI as `15672:15672`, on all interfaces.
+MySQL, Redis, Mailpit, RabbitMQ and phpMyAdmin are published on `127.0.0.1` only (`compose.override.yaml`). They use default passwords or none, so they must not be reachable from other machines; keep the `127.0.0.1:` prefix when adding a port, `compose.prod.local.yaml` included.
 
 The application is different: with `make up`, the php container publishes ports 80 and 443 on all interfaces (`compose.yaml`), so the dev site is reachable from the local network. The production files replace those with `127.0.0.1:8001` (`compose.prod.yaml`), which Caddy on the server proxies to.
 

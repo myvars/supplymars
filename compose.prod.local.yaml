@@ -13,7 +13,7 @@ services:
   # --- RabbitMQ Message Broker (Prod local, only with the rabbitmq profile) ---
   rabbitmq:
     ports:
-      - "15672:15672"    # RabbitMQ Management UI (dev)
+      - "127.0.0.1:${RABBITMQ_UI_PORT:-15672}:15672"    # RabbitMQ Management UI (localhost only)
 
 
   # --- PHP Application (Prod local) ---
