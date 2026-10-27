@@ -80,6 +80,7 @@ readonly class BuildPOsCommand
 
             try {
                 $poCountBefore = $customerOrder->getPurchaseOrders()->count();
+                $poItemCountBefore = $this->countPurchaseOrderItems($customerOrder);
 
                 if (!$dryRun) {
                     $this->orderAllocator->process($customerOrder);
@@ -89,10 +90,8 @@ readonly class BuildPOsCommand
                 $newPosCount = $poCountAfter - $poCountBefore;
                 $posCreated += $newPosCount;
 
-                // Count allocated items across all new POs
-                foreach ($customerOrder->getPurchaseOrders() as $po) {
-                    $itemsAllocated += $po->getPurchaseOrderItems()->count();
-                }
+                // A retried order already has PO items, so count only the ones this run added
+                $itemsAllocated += $this->countPurchaseOrderItems($customerOrder) - $poItemCountBefore;
 
                 $processedIds[] = sprintf(
                     'Order #%d: %d PO(s)',
@@ -137,6 +136,16 @@ readonly class BuildPOsCommand
         }
 
         return $failed > 0 ? Command::FAILURE : Command::SUCCESS;
+    }
+
+    private function countPurchaseOrderItems(CustomerOrder $customerOrder): int
+    {
+        $count = 0;
+        foreach ($customerOrder->getPurchaseOrders() as $purchaseOrder) {
+            $count += $purchaseOrder->getPurchaseOrderItems()->count();
+        }
+
+        return $count;
     }
 
     /**

@@ -9,7 +9,7 @@ Times are UTC. Which stacks run the schedule ("live only" jobs are left out of t
 | Command | Context | Scheduled | Purpose | Notable arguments / options |
 |---|---|---|---|---|
 | `app:create-customer-orders` | Order | `1 --random`, twice every 5 min with jitter (about 12 orders an hour) | Random orders of 1–5 lines, quantity 1–5, ref `TEST-` + zero-padded customer id | `order-count` (1), `--random` (0 to `order-count`), `--dry-run` |
-| `app:build-purchase-orders` | Purchasing | `20`, every 15 min | Allocates PENDING, unlocked orders with no PO yet to suppliers ([04](04-sourcing-and-pricing.md)) | `order-count` (50), `--dry-run` |
+| `app:build-purchase-orders` | Purchasing | `20`, every 15 min | Allocates PENDING, unlocked orders with no PO yet to suppliers, then retries unlocked orders with outstanding quantity in the slots left ([04](04-sourcing-and-pricing.md)) | `order-count` (50), `--dry-run` |
 | `app:accept-purchase-orders` | Purchasing | `20`, at :01, :16, :31, :46 | Accepts or rejects PROCESSING POs of unlocked orders | `po-count` (50), `--supplier`, `--dry-run` |
 | `app:ship-purchase-order-items` | Purchasing | `100`, hourly | Ships ACCEPTED items that pass the timing check | `po-item-count` (50), `--supplier`, `--skip-timing`, `--dry-run` |
 | `app:deliver-purchase-order-items` | Purchasing | `100`, hourly | Delivers SHIPPED items that pass the timing check | `po-item-count` (50), `--supplier`, `--skip-timing`, `--dry-run` |

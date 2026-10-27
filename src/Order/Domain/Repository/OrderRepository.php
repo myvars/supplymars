@@ -23,7 +23,11 @@ interface OrderRepository extends FindByCriteriaInterface
 
     public function getByPublicId(OrderPublicId $publicId): ?CustomerOrder;
 
-    /** @return CustomerOrder[]|null */
+    /**
+     * Unlocked orders with no PO yet, then unlocked orders on a PO that still have outstanding quantity.
+     *
+     * @return CustomerOrder[]|null
+     */
     public function findNextOrdersToBeProcessed(int $orderCount = 1): ?array;
 
     public function countOverdueOrders(): int;

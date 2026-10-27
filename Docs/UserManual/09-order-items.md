@@ -45,9 +45,11 @@ The link shows only when nothing is on a purchase order and the item is Pending 
 
 The new purchase order item is Pending, and stays Pending until something moves it: suppliers never see a Pending item. When you have allocated every line, click **Allocate** on the order. With nothing left outstanding, it moves the order's Pending items to Processing. You can also set each item's **PO Item Status** to Processing on its purchase order ([Purchase Orders](10-purchase-orders.md#change-an-items-status)).
 
+Lock the order while you allocate it by hand ([Orders](08-orders.md#lock-or-unlock-an-order)). On live and the playground, the scheduled allocation runs every 15 minutes. It picks up an unlocked order that has a purchase order and outstanding quantity, gives the rest to the best supplier, and then moves every Pending item on the order to Processing, including the ones you allocated, so they go to the suppliers.
+
 **Allocate** on its own picks suppliers automatically; see [Orders](08-orders.md#allocate-an-order).
 
-To split an item across suppliers, lower the quantity on the first purchase order item (pencil on its card in the order's Purchase Orders section, see [Purchase Orders](10-purchase-orders.md#change-an-items-quantity)), then allocate the rest from the supplier list.
+To split an item across suppliers, lower the quantity on the first purchase order item (pencil on its card in the order's Purchase Orders section, see [Purchase Orders](10-purchase-orders.md#change-an-items-quantity)), then allocate the rest from the supplier list. Lock the order first: once you have lowered the quantity, the scheduled allocation can give the rest back to the best supplier, which may be the same one, and undo the split.
 
 ## Rules and limits
 

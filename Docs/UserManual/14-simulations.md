@@ -22,7 +22,7 @@ Times are UTC.
 Things that follow from this:
 
 - A locked order is skipped by allocation, acceptance, shipping and delivery until it is unlocked.
-- Allocation takes the oldest unlocked Pending orders that have no purchase order yet. A line that no single supplier can supply in full is skipped. An order with no PO at all is tried again next run; an order where some lines got a PO and others did not is not picked up again, so allocate the rest by hand ([Order Items](09-order-items.md#allocate-an-item-to-a-supplier)).
+- Allocation takes the oldest unlocked Pending orders that have no purchase order yet. A line that no single supplier can supply in full is skipped. Any room left in the run goes to the oldest unlocked orders that already have a purchase order but still have outstanding quantity, so a skipped line is tried again every run until a supplier has the stock.
 - Because one supplier is picked per run, a given supplier's items can wait several hours to ship or be delivered.
 - Nothing ships at night, so overnight orders stay Processing until the morning.
 - On the public playground, all data is replaced each night at 02:15 with a copy of the live site, so anything you change there is gone the next day.
