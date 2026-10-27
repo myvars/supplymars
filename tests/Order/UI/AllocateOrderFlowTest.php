@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Order\UI;
 
 use App\Order\Domain\Model\Order\CustomerOrder;
+use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use App\Tests\Shared\Factory\CustomerOrderFactory;
 use App\Tests\Shared\Factory\CustomerOrderItemFactory;
 use App\Tests\Shared\Factory\ProductFactory;
@@ -12,9 +13,12 @@ use App\Tests\Shared\Factory\PurchaseOrderItemFactory;
 use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Factory\UserFactory;
+use App\Tests\Shared\Story\StaffUserStory;
 use App\Tests\Shared\UI\ActionFormToken;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
+use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
 class AllocateOrderFlowTest extends WebTestCase
@@ -35,6 +39,7 @@ class AllocateOrderFlowTest extends WebTestCase
             ->assertSee('Order processed.');
     }
 
+    #[WithStory(StaffUserStory::class)]
     public function testAllocateOrderShowsErrorWhenAlreadyAllocated(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -52,8 +57,41 @@ class AllocateOrderFlowTest extends WebTestCase
             'quantity' => 5,
         ]);
 
-        // Pre-allocate the order item
-        PurchaseOrderItemFactory::createOne([
+        // Pre-allocate the order item, already sent to the supplier
+        $poItem = PurchaseOrderItemFactory::createOne([
+            'customerOrder' => $order,
+            'customerOrderItem' => $orderItem,
+            'supplier' => $supplier,
+            'product' => $product,
+            'quantity' => 5,
+        ]);
+        $poItem->updateItemStatus(PurchaseOrderStatus::PROCESSING);
+        self::getContainer()->get(EntityManagerInterface::class)->flush();
+
+        $publicId = $order->getPublicId()->value();
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/order/' . $publicId)
+            ->click('Allocate')
+            ->assertOn('/order/' . $publicId)
+            ->assertSee('No items to allocate.');
+    }
+
+    public function testAllocateOrderSendsHandAllocatedItemsToSuppliers(): void
+    {
+        $supplier = SupplierFactory::createOne(['isActive' => true]);
+        $product = ProductFactory::createOne(['isActive' => true]);
+
+        $order = CustomerOrderFactory::createOne();
+        $orderItem = CustomerOrderItemFactory::createOne([
+            'customerOrder' => $order,
+            'product' => $product,
+            'quantity' => 5,
+        ]);
+
+        // Allocated by hand: nothing outstanding, the PO item still Pending
+        $poItem = PurchaseOrderItemFactory::createOne([
             'customerOrder' => $order,
             'customerOrderItem' => $orderItem,
             'supplier' => $supplier,
@@ -68,7 +106,12 @@ class AllocateOrderFlowTest extends WebTestCase
             ->get('/order/' . $publicId)
             ->click('Allocate')
             ->assertOn('/order/' . $publicId)
-            ->assertSee('No items to allocate.');
+            ->assertSee('Order processed.');
+
+        self::assertSame(
+            PurchaseOrderStatus::PROCESSING,
+            PurchaseOrderItemFactory::repository()->find($poItem->getId())?->getStatus()
+        );
     }
 
     public function testAllocateOrderShowsErrorWhenCannotAllocate(): void

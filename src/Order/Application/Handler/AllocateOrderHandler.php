@@ -27,7 +27,8 @@ final readonly class AllocateOrderHandler
             return Result::fail('Order not found.');
         }
 
-        if ($this->orderAllocator->allItemsAllocated($order)) {
+        // Nothing outstanding still sends PENDING PO items (e.g. allocated by hand) to their suppliers
+        if ($this->orderAllocator->allItemsAllocated($order) && !$this->orderAllocator->hasPendingItems($order)) {
             return Result::fail('No items to allocate.');
         }
 
