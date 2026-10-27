@@ -6,7 +6,6 @@ namespace App\Audit\Infrastructure\Persistence\Doctrine;
 
 use App\Audit\Domain\Model\StockChange\SupplierStockChangeLog;
 use App\Audit\Domain\Model\StockChange\SupplierStockChangeLogId;
-use App\Audit\Domain\Model\StockChange\SupplierStockChangeLogPublicId;
 use App\Audit\Domain\Repository\SupplierStockChangeLogRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -34,11 +33,6 @@ class SupplierStockChangeLogDoctrineRepository extends ServiceEntityRepository i
     public function get(SupplierStockChangeLogId $id): ?SupplierStockChangeLog
     {
         return $this->find($id);
-    }
-
-    public function getByPublicId(SupplierStockChangeLogPublicId $publicId): ?SupplierStockChangeLog
-    {
-        return $this->findOneBy(['publicId' => $publicId]);
     }
 
     public function findBySupplierProductIds(array $supplierProductIds, ?\DateTimeImmutable $since = null): array
