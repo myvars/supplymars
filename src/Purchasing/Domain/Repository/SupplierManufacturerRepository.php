@@ -20,4 +20,11 @@ interface SupplierManufacturerRepository
     public function get(SupplierManufacturerId $id): ?SupplierManufacturer;
 
     public function getByPublicId(SupplierManufacturerPublicId $publicId): ?SupplierManufacturer;
+
+    /** @return array<int, SupplierManufacturer> */
+    public function findSupplierManufacturers(
+        ?int $supplierId,
+        ?int $supplierCategoryId,
+        ?int $supplierSubcategoryId,
+    ): array;
 }

@@ -16,7 +16,6 @@ use App\Order\Domain\Repository\OrderRepository;
 use App\Review\Domain\Model\Review\ProductReview;
 use App\Review\Domain\Model\Review\ReviewIneligibility;
 use App\Review\Domain\Repository\ReviewRepository;
-use App\Review\Infrastructure\Persistence\Doctrine\ReviewDoctrineRepository;
 use Psr\Log\LoggerInterface;
 
 class ReviewGenerator
@@ -71,7 +70,6 @@ class ReviewGenerator
      */
     public function generate(int $maxCount, ?int $productId = null, bool $dryRun = false): array
     {
-        assert($this->reviews instanceof ReviewDoctrineRepository);
         $eligibleItems = $this->reviews->findEligibleOrderIds($maxCount, $productId);
 
         $created = 0;

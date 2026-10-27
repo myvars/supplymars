@@ -51,6 +51,11 @@ class ManufacturerDoctrineRepository extends ServiceEntityRepository implements 
         return $this->findOneBy(['publicId' => $publicId->value()]);
     }
 
+    public function getByName(string $name): ?Manufacturer
+    {
+        return $this->findOneBy(['name' => $name]);
+    }
+
     /**
      * @return AdapterInterface<Manufacturer>
      */

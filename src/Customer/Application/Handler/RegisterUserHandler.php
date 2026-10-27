@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Customer\Application\Handler;
 
 use App\Customer\Application\Command\RegisterUser;
-use App\Customer\Domain\Model\User\EmailVerifier;
 use App\Customer\Domain\Model\User\User;
 use App\Customer\Domain\Repository\UserRepository;
 use App\Customer\Infrastructure\Mailer\MailerHelper;
+use App\Customer\Infrastructure\Security\EmailVerifier;
 use App\Shared\Application\FlusherInterface;
 use App\Shared\Application\Result;
 use Symfony\Bundle\SecurityBundle\Security;

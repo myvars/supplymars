@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Customer\Domain\Model\User;
+namespace App\Customer\Infrastructure\Security;
 
-use Doctrine\ORM\EntityManagerInterface;
+use App\Customer\Domain\Model\User\User;
+use App\Shared\Application\FlusherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 use SymfonyCasts\Bundle\VerifyEmail\VerifyEmailHelperInterface;
@@ -13,7 +14,7 @@ final readonly class EmailVerifier
 {
     public function __construct(
         private VerifyEmailHelperInterface $verifyEmailHelper,
-        private EntityManagerInterface $em,
+        private FlusherInterface $flusher,
     ) {
     }
 
@@ -47,7 +48,6 @@ final readonly class EmailVerifier
 
         $user->setVerified(true);
 
-        $this->em->persist($user);
-        $this->em->flush();
+        $this->flusher->flush();
     }
 }

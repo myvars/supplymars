@@ -7,10 +7,10 @@ namespace App\Catalog\UI\Http\Form\Type;
 use App\Catalog\Application\Search\CategorySearchCriteria;
 use App\Catalog\UI\Http\Form\DataTransformer\stringToPriceModelTransformer;
 use App\Customer\Domain\Model\User\User;
+use App\Customer\Domain\Repository\UserRepository;
 use App\Pricing\Domain\Model\VatRate\VatRate;
 use App\Shared\Domain\ValueObject\PriceModel;
 use App\Shared\UI\Form\DataTransformer\IdToEntityTransformerFactory;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
@@ -24,7 +24,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 final class CategoryFilterType extends AbstractType
 {
     public function __construct(
-        private readonly EntityManagerInterface $em,
+        private readonly UserRepository $users,
         private readonly stringToPriceModelTransformer $stringToPriceModelTransformer,
         private readonly IdToEntityTransformerFactory $transformer,
     ) {
@@ -49,7 +49,7 @@ final class CategoryFilterType extends AbstractType
             ->add('manager', EntityType::class, [
                 'label' => 'Category Manager',
                 'class' => User::class,
-                'choices' => $this->em->getRepository(User::class)->findBy(['isStaff' => true]),
+                'choices' => $this->users->findStaff(),
                 'choice_label' => 'fullName',
                 'placeholder' => 'Any Manager',
                 'property_path' => 'managerId',

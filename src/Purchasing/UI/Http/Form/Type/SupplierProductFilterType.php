@@ -6,14 +6,15 @@ namespace App\Purchasing\UI\Http\Form\Type;
 
 use App\Purchasing\Application\Search\SupplierProductSearchCriteria;
 use App\Purchasing\Domain\Model\Supplier\Supplier;
-use App\Purchasing\Domain\Model\SupplierProduct\SupplierCategory;
-use App\Purchasing\Domain\Model\SupplierProduct\SupplierManufacturer;
-use App\Purchasing\Domain\Model\SupplierProduct\SupplierSubcategory;
+use App\Purchasing\Domain\Model\Supplier\SupplierId;
+use App\Purchasing\Domain\Model\SupplierProduct\SupplierCategoryId;
+use App\Purchasing\Domain\Repository\SupplierCategoryRepository;
+use App\Purchasing\Domain\Repository\SupplierManufacturerRepository;
+use App\Purchasing\Domain\Repository\SupplierRepository;
 use App\Purchasing\UI\Http\Form\Type\Field\SupplierCategoryIdType;
 use App\Purchasing\UI\Http\Form\Type\Field\SupplierManufacturerIdType;
 use App\Purchasing\UI\Http\Form\Type\Field\SupplierSubcategoryIdType;
 use App\Shared\UI\Form\DataTransformer\IdToEntityTransformerFactory;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -30,7 +31,9 @@ use Symfonycasts\DynamicForms\DynamicFormBuilder;
 final class SupplierProductFilterType extends AbstractType
 {
     public function __construct(
-        private readonly EntityManagerInterface $em,
+        private readonly SupplierRepository $suppliers,
+        private readonly SupplierCategoryRepository $supplierCategories,
+        private readonly SupplierManufacturerRepository $supplierManufacturers,
         private readonly IdToEntityTransformerFactory $transformer,
     ) {
     }
@@ -86,8 +89,11 @@ final class SupplierProductFilterType extends AbstractType
                 DependentField $field,
                 ?int $supplierId,
             ): void {
+                $supplier = $supplierId !== null
+                    ? $this->suppliers->get(SupplierId::fromInt($supplierId))
+                    : null;
                 $field->add(SupplierCategoryIdType::class, [
-                    'choices' => $this->em->getRepository(SupplierCategory::class)->findBy(['supplier' => $supplierId]),
+                    'choices' => $supplier?->getSupplierCategories() ?? [],
                     'placeholder' => 'Any Category',
                     'attr' => ['data-action' => 'change->submit-form#submitForm'],
                     'priority' => 4,
@@ -101,8 +107,11 @@ final class SupplierProductFilterType extends AbstractType
                 DependentField $field,
                 ?int $supplierCategoryId,
             ): void {
+                $supplierCategory = $supplierCategoryId !== null
+                    ? $this->supplierCategories->get(SupplierCategoryId::fromInt($supplierCategoryId))
+                    : null;
                 $field->add(SupplierSubcategoryIdType::class, [
-                    'choices' => $this->em->getRepository(SupplierSubcategory::class)->findBy(['supplierCategory' => $supplierCategoryId]),
+                    'choices' => $supplierCategory?->getSupplierSubcategories() ?? [],
                     'placeholder' => 'Any Subcategory',
                     'attr' => ['data-action' => 'change->submit-form#submitForm'],
                     'priority' => 3,
@@ -119,7 +128,7 @@ final class SupplierProductFilterType extends AbstractType
                 ?int $supplierSubcategoryId,
             ): void {
                 $field->add(SupplierManufacturerIdType::class, [
-                    'choices' => $this->em->getRepository(SupplierManufacturer::class)->findSupplierManufacturers(
+                    'choices' => $this->supplierManufacturers->findSupplierManufacturers(
                         $supplierId,
                         $supplierCategoryId,
                         $supplierSubcategoryId

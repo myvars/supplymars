@@ -21,4 +21,6 @@ interface SubcategoryRepository extends FindByCriteriaInterface
     public function get(SubcategoryId $id): ?Subcategory;
 
     public function getByPublicId(SubcategoryPublicId $publicId): ?Subcategory;
+
+    public function getByName(string $name): ?Subcategory;
 }

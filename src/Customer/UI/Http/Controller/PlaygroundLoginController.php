@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Customer\UI\Http\Controller;
 
 use App\Customer\Domain\Model\User\User;
+use App\Customer\Domain\Repository\UserRepository;
 use App\Shared\UI\Http\Validation\Turnstile;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -21,9 +22,10 @@ class PlaygroundLoginController extends AbstractController
     #[Route(path: '/playground/login', name: 'app_playground_login', methods: ['POST'])]
     public function __invoke(
         Request $request,
-        EntityManagerInterface $entityManager,
+        UserRepository $users,
         ValidatorInterface $validator,
         Security $security,
+        #[Autowire(env: 'bool:PLAYGROUND_MODE')]
         bool $playgroundMode,
     ): Response {
         if (!$playgroundMode) {
@@ -39,9 +41,9 @@ class PlaygroundLoginController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
 
-        $user = $entityManager->getRepository(User::class)->findOneBy(['email' => self::DEMO_EMAIL]);
+        $user = $users->getByEmail(self::DEMO_EMAIL);
 
-        if ($user === null) {
+        if (!$user instanceof User) {
             $this->addFlash('danger', 'Demo account is not available.');
 
             return $this->redirectToRoute('app_login');
