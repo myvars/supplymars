@@ -17,6 +17,8 @@ use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Factory\SupplierSubcategoryFactory;
 use App\Tests\Shared\Story\StaffUserStory;
 use App\Tests\Shared\Story\SuperAdminUserStory;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\PersistentCollection;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
@@ -126,5 +128,19 @@ final class DeleteSupplierHandlerTest extends KernelTestCase
         SupplierManufacturerFactory::createOne(['supplier' => $supplier]);
 
         $this->assertRefusedAsInUse($supplier);
+    }
+
+    #[WithStory(SuperAdminUserStory::class)]
+    public function testRefusalCountsPurchaseOrdersWithoutLoadingThem(): void
+    {
+        $supplier = SupplierFactory::createOne();
+        PurchaseOrderFactory::createMany(3, ['supplier' => $supplier]);
+        self::getContainer()->get(EntityManagerInterface::class)->clear();
+
+        $this->assertRefusedAsInUse($supplier);
+
+        $loaded = $this->suppliers->getByPublicId($supplier->getPublicId());
+        self::assertInstanceOf(PersistentCollection::class, $loaded?->getPurchaseOrders());
+        self::assertFalse($loaded->getPurchaseOrders()->isInitialized());
     }
 }
