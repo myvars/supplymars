@@ -8,22 +8,32 @@ use App\Catalog\Domain\Model\Category\Category;
 use App\Catalog\Domain\Model\Manufacturer\Manufacturer;
 use App\Catalog\Domain\Model\Product\Product;
 use App\Catalog\Domain\Model\Subcategory\Subcategory;
+use App\Catalog\Domain\Repository\CategoryRepository;
+use App\Catalog\Domain\Repository\ManufacturerRepository;
+use App\Catalog\Domain\Repository\ProductRepository;
+use App\Catalog\Domain\Repository\SubcategoryRepository;
 use App\Customer\Domain\Model\User\User;
+use App\Customer\Domain\Repository\UserRepository;
 use App\Customer\Infrastructure\Security\CurrentUserProvider;
 use App\Pricing\Domain\Model\VatRate\VatRate;
+use App\Pricing\Domain\Repository\VatRateRepository;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierCategory;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierManufacturer;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierSubcategory;
 use App\Shared\Domain\Service\Pricing\MarkupCalculator;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final readonly class SupplierProductMappingService
 {
     public function __construct(
-        private EntityManagerInterface $em,
+        private ManufacturerRepository $manufacturers,
+        private CategoryRepository $categories,
+        private SubcategoryRepository $subcategories,
+        private ProductRepository $products,
+        private UserRepository $users,
+        private VatRateRepository $vatRates,
         private MarkupCalculator $markupCalculator,
         private ValidatorInterface $validator,
         private CurrentUserProvider $currentUserProvider,
@@ -58,7 +68,7 @@ final readonly class SupplierProductMappingService
 
     private function getOrCreateManufacturer(SupplierManufacturer $sm): Manufacturer
     {
-        $manufacturer = $this->em->getRepository(Manufacturer::class)->findOneBy(['name' => $sm->getName()]);
+        $manufacturer = $this->manufacturers->getByName($sm->getName());
         if (!$manufacturer instanceof Manufacturer) {
             $manufacturer = Manufacturer::create(
                 name: $sm->getName(),
@@ -66,13 +76,12 @@ final readonly class SupplierProductMappingService
             );
 
             $this->validate($manufacturer);
-            $this->em->persist($manufacturer);
+            $this->manufacturers->add($manufacturer);
         }
 
         $mappedManufacturer = $sm->getMappedManufacturer();
         if (!$mappedManufacturer instanceof Manufacturer) {
             $manufacturer->addSupplierManufacturer($sm);
-            $this->em->persist($sm);
         }
 
         return $manufacturer;
@@ -80,7 +89,7 @@ final readonly class SupplierProductMappingService
 
     private function getOrCreateCategory(SupplierCategory $sc): Category
     {
-        $category = $this->em->getRepository(Category::class)->findOneBy(['name' => $sc->getName()]);
+        $category = $this->categories->getByName($sc->getName());
         if ($category instanceof Category) {
             return $category;
         }
@@ -98,14 +107,14 @@ final readonly class SupplierProductMappingService
         );
 
         $this->validate($category);
-        $this->em->persist($category);
+        $this->categories->add($category);
 
         return $category;
     }
 
     private function getOrCreateSubcategory(SupplierSubcategory $ss, Category $category): Subcategory
     {
-        $subcategory = $this->em->getRepository(Subcategory::class)->findOneBy(['name' => $ss->getName()]);
+        $subcategory = $this->subcategories->getByName($ss->getName());
         if (!$subcategory instanceof Subcategory) {
             $subcategory = Subcategory::create(
                 name: $ss->getName(),
@@ -117,13 +126,12 @@ final readonly class SupplierProductMappingService
             );
 
             $this->validate($subcategory);
-            $this->em->persist($subcategory);
+            $this->subcategories->add($subcategory);
         }
 
         $mappedSubcategory = $ss->getMappedSubcategory();
         if (!$mappedSubcategory instanceof Subcategory) {
             $subcategory->addSupplierSubcategory($ss);
-            $this->em->persist($ss);
         }
 
         return $subcategory;
@@ -134,7 +142,7 @@ final readonly class SupplierProductMappingService
         Manufacturer $manufacturer,
         Subcategory $subcategory,
     ): Product {
-        $product = $this->em->getRepository(Product::class)->findOneBy(['name' => $sp->getName()]);
+        $product = $this->products->getByName($sp->getName());
         if (!$product instanceof Product) {
             $product = Product::create(
                 name: $sp->getName(),
@@ -148,13 +156,12 @@ final readonly class SupplierProductMappingService
             );
 
             $this->validate($product);
-            $this->em->persist($product);
+            $this->products->add($product);
         }
 
         $mappedProduct = $sp->getProduct();
         if (!$mappedProduct instanceof Product) {
             $product->addSupplierProduct($this->markupCalculator, $sp);
-            $this->em->persist($sp);
         }
 
         return $product;
@@ -162,11 +169,8 @@ final readonly class SupplierProductMappingService
 
     private function getDefaultOwner(): User
     {
-        $owner = $this->em->getRepository(User::class)->findOneBy([
-            'email' => $this->defaultStaffEmail,
-            'isStaff' => true,
-        ]);
-        if (!$owner instanceof User) {
+        $owner = $this->users->getByEmail($this->defaultStaffEmail);
+        if (!$owner instanceof User || !$owner->isStaff()) {
             throw new \RuntimeException('Default owner not found');
         }
 
@@ -175,7 +179,7 @@ final readonly class SupplierProductMappingService
 
     private function getDefaultVatRate(): VatRate
     {
-        $rate = $this->em->getRepository(VatRate::class)->findOneBy(['isDefaultVatRate' => true]);
+        $rate = $this->vatRates->getDefaultVatRate();
         if (!$rate instanceof VatRate) {
             throw new \RuntimeException('Default VAT rate not found');
         }

@@ -51,6 +51,11 @@ class CategoryDoctrineRepository extends ServiceEntityRepository implements Find
         return $this->findOneBy(['publicId' => $publicId->value()]);
     }
 
+    public function getByName(string $name): ?Category
+    {
+        return $this->findOneBy(['name' => $name]);
+    }
+
     /**
      * @return AdapterInterface<Category>
      */

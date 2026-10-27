@@ -8,9 +8,9 @@ use App\Catalog\Application\Search\SubcategorySearchCriteria;
 use App\Catalog\Domain\Model\Category\Category;
 use App\Catalog\UI\Http\Form\DataTransformer\stringToPriceModelTransformer;
 use App\Customer\Domain\Model\User\User;
+use App\Customer\Domain\Repository\UserRepository;
 use App\Shared\Domain\ValueObject\PriceModel;
 use App\Shared\UI\Form\DataTransformer\IdToEntityTransformerFactory;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\EnumType;
@@ -24,7 +24,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 final class SubcategoryFilterType extends AbstractType
 {
     public function __construct(
-        private readonly EntityManagerInterface $em,
+        private readonly UserRepository $users,
         private readonly stringToPriceModelTransformer $stringToPriceModelTransformer,
         private readonly IdToEntityTransformerFactory $transformer,
     ) {
@@ -49,7 +49,7 @@ final class SubcategoryFilterType extends AbstractType
             ->add('manager', EntityType::class, [
                 'label' => 'Subcategory Manager',
                 'class' => User::class,
-                'choices' => $this->em->getRepository(User::class)->findBy(['isStaff' => true]),
+                'choices' => $this->users->findStaff(),
                 'choice_label' => 'fullName',
                 'placeholder' => 'Any Manager',
                 'property_path' => 'managerId',

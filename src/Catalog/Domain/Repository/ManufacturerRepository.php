@@ -21,4 +21,6 @@ interface ManufacturerRepository extends FindByCriteriaInterface
     public function get(ManufacturerId $id): ?Manufacturer;
 
     public function getByPublicId(ManufacturerPublicId $publicId): ?Manufacturer;
+
+    public function getByName(string $name): ?Manufacturer;
 }

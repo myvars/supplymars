@@ -7,9 +7,9 @@ namespace App\Catalog\UI\Http\Form\Type;
 use App\Catalog\Domain\Model\Category\Category;
 use App\Catalog\UI\Http\Form\Model\SubcategoryForm;
 use App\Customer\Domain\Model\User\User;
+use App\Customer\Domain\Repository\UserRepository;
 use App\Shared\Domain\ValueObject\PriceModel;
 use App\Shared\UI\Form\DataTransformer\IdToEntityTransformerFactory;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -25,7 +25,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 final class SubcategoryType extends AbstractType
 {
     public function __construct(
-        private readonly EntityManagerInterface $em,
+        private readonly UserRepository $users,
         private readonly IdToEntityTransformerFactory $transformer,
     ) {
     }
@@ -63,7 +63,7 @@ final class SubcategoryType extends AbstractType
                 'choice_label' => 'fullName',
                 'label' => 'Subcategory Manager',
                 'placeholder' => 'No subcategory manager',
-                'choices' => $this->em->getRepository(User::class)->findStaff(),
+                'choices' => $this->users->findStaff(),
                 'property_path' => 'ownerId',
                 'required' => false,
             ])

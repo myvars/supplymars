@@ -95,9 +95,9 @@ class UserDoctrineRepository extends ServiceEntityRepository implements Password
     }
 
     /**
-     * @return array<int, User>|null
+     * @return array<int, User>
      */
-    public function findStaff(): ?array
+    public function findStaff(): array
     {
         return $this->createQueryBuilder('u')
             ->where('u.isStaff = :isStaff')

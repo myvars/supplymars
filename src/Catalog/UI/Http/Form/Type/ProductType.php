@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Catalog\UI\Http\Form\Type;
 
 use App\Catalog\Domain\Model\Category\Category;
+use App\Catalog\Domain\Model\Category\CategoryId;
 use App\Catalog\Domain\Model\Manufacturer\Manufacturer;
+use App\Catalog\Domain\Repository\CategoryRepository;
 use App\Catalog\UI\Http\Form\Model\ProductForm;
 use App\Catalog\UI\Http\Form\Type\Field\SubcategoryIdType;
 use App\Customer\Domain\Model\User\User;
+use App\Customer\Domain\Repository\UserRepository;
 use App\Shared\UI\Form\DataTransformer\IdToEntityTransformerFactory;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -27,7 +29,8 @@ use Symfonycasts\DynamicForms\DynamicFormBuilder;
 final class ProductType extends AbstractType
 {
     public function __construct(
-        private readonly EntityManagerInterface $em,
+        private readonly UserRepository $users,
+        private readonly CategoryRepository $categories,
         private readonly IdToEntityTransformerFactory $transformer,
     ) {
     }
@@ -70,7 +73,7 @@ final class ProductType extends AbstractType
                 'choice_label' => 'fullName',
                 'label' => 'Product Manager',
                 'placeholder' => 'No product manager',
-                'choices' => $this->em->getRepository(User::class)->findStaff(),
+                'choices' => $this->users->findStaff(),
                 'required' => false,
                 'property_path' => 'ownerId',
             ])
@@ -87,7 +90,7 @@ final class ProductType extends AbstractType
         // Dependent subcategory field filtered by selected category
         $builder->addDependent('subcategory', 'category', function (DependentField $field, ?int $categoryId): void {
             $category = $categoryId !== null
-                ? $this->em->getRepository(Category::class)->find($categoryId)
+                ? $this->categories->get(CategoryId::fromInt($categoryId))
                 : null;
             $field->add(SubcategoryIdType::class, [
                 'choices' => $category?->getSubcategories() ?? [],

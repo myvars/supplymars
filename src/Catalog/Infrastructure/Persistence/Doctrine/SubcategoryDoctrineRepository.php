@@ -51,6 +51,11 @@ class SubcategoryDoctrineRepository extends ServiceEntityRepository implements F
         return $this->findOneBy(['publicId' => $publicId->value()]);
     }
 
+    public function getByName(string $name): ?Subcategory
+    {
+        return $this->findOneBy(['name' => $name]);
+    }
+
     /**
      * @return AdapterInterface<Subcategory>
      */

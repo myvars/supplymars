@@ -47,13 +47,13 @@ class SupplierManufacturerDoctrineRepository extends ServiceEntityRepository imp
     }
 
     /**
-     * @return array<int, SupplierManufacturer>|null
+     * @return array<int, SupplierManufacturer>
      */
     public function findSupplierManufacturers(
         ?int $supplierId,
         ?int $supplierCategoryId,
         ?int $supplierSubcategoryId,
-    ): ?array {
+    ): array {
         $qb = $this->createQueryBuilder('sm')
             ->leftJoin('sm.supplierProducts', 'sp');
 

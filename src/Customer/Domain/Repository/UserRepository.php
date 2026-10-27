@@ -24,6 +24,9 @@ interface UserRepository extends FindByCriteriaInterface
 
     public function getStaffById(UserId $id): ?User;
 
+    /** @return array<int, User> */
+    public function findStaff(): array;
+
     public function getRandomUser(): ?User;
 
     public function findByApiTokenHash(string $apiTokenHash): ?User;

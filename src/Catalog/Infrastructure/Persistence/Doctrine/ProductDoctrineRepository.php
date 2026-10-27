@@ -52,6 +52,11 @@ class ProductDoctrineRepository extends ServiceEntityRepository implements FindB
         return $this->findOneBy(['publicId' => $publicId->value()]);
     }
 
+    public function getByName(string $name): ?Product
+    {
+        return $this->findOneBy(['name' => $name]);
+    }
+
     /**
      * @return iterable<Product>
      */

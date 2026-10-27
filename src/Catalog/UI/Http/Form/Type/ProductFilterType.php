@@ -6,10 +6,11 @@ namespace App\Catalog\UI\Http\Form\Type;
 
 use App\Catalog\Application\Search\ProductSearchCriteria;
 use App\Catalog\Domain\Model\Category\Category;
+use App\Catalog\Domain\Model\Category\CategoryId;
 use App\Catalog\Domain\Model\Manufacturer\Manufacturer;
+use App\Catalog\Domain\Repository\CategoryRepository;
 use App\Catalog\UI\Http\Form\Type\Field\SubcategoryIdType;
 use App\Shared\UI\Form\DataTransformer\IdToEntityTransformerFactory;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -26,7 +27,7 @@ use Symfonycasts\DynamicForms\DynamicFormBuilder;
 final class ProductFilterType extends AbstractType
 {
     public function __construct(
-        private readonly EntityManagerInterface $em,
+        private readonly CategoryRepository $categories,
         private readonly IdToEntityTransformerFactory $transformer,
     ) {
     }
@@ -77,7 +78,7 @@ final class ProductFilterType extends AbstractType
         // Dependent subcategory field filtered by selected category
         $builder->addDependent('subcategory', 'category', function (DependentField $field, ?int $categoryId): void {
             $category = $categoryId !== null
-                ? $this->em->getRepository(Category::class)->find($categoryId)
+                ? $this->categories->get(CategoryId::fromInt($categoryId))
                 : null;
             $field->add(SubcategoryIdType::class, [
                 'choices' => $category?->getSubcategories() ?? [],
