@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Order\Domain\Repository;
 
+use App\Catalog\Domain\Model\Product\Product;
 use App\Order\Domain\Model\Order\CustomerOrderItem;
 use App\Order\Domain\Model\Order\OrderItemId;
 use App\Order\Domain\Model\Order\OrderItemPublicId;
@@ -20,4 +21,6 @@ interface OrderItemRepository
     public function get(OrderItemId $id): ?CustomerOrderItem;
 
     public function getByPublicId(OrderItemPublicId $publicId): ?CustomerOrderItem;
+
+    public function existsForProduct(Product $product): bool;
 }

@@ -26,7 +26,7 @@ final readonly class DeleteManufacturerHandler
         }
 
         if (!$manufacturer->isDeletable()) {
-            return Result::fail('Has products — reassign them first.');
+            return Result::fail('Has products or supplier mappings — reassign or remove them first.');
         }
 
         $this->manufacturers->remove($manufacturer);

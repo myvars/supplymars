@@ -26,7 +26,7 @@ final readonly class DeleteSubcategoryHandler
         }
 
         if (!$subcategory->isDeletable()) {
-            return Result::fail('Has products — move or remove them first.');
+            return Result::fail('Has products or supplier mappings — move or remove them first.');
         }
 
         $this->subcategories->remove($subcategory);

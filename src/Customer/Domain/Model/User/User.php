@@ -289,7 +289,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
 
     public function isDeletable(): bool
     {
-        return !$this->isAdmin() && $this->getCustomerOrders()->isEmpty();
+        return !$this->isAdmin()
+            && $this->customerOrders->isEmpty()
+            && $this->statusChangeLogs->isEmpty()
+            && $this->categories->isEmpty()
+            && $this->subcategories->isEmpty();
     }
 
     public function isAdmin(): bool

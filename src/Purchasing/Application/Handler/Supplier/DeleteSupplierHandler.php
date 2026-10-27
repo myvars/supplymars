@@ -31,6 +31,10 @@ final readonly class DeleteSupplierHandler
             return Result::fail('Supplier not found.');
         }
 
+        if (!$supplier->isDeletable()) {
+            return Result::fail('Has products, mappings or purchase orders — deactivate it instead.');
+        }
+
         $this->suppliers->remove($supplier);
         $this->flusher->flush();
 

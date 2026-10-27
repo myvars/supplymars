@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Note\Infrastructure\Persistence\Doctrine;
 
+use App\Customer\Domain\Model\User\User;
 use App\Customer\Infrastructure\Security\CurrentUserProvider;
 use App\Note\Application\Search\TicketSearchCriteria;
+use App\Note\Domain\Model\Pool\Pool;
 use App\Note\Domain\Model\Ticket\Ticket;
 use App\Note\Domain\Model\Ticket\TicketId;
 use App\Note\Domain\Model\Ticket\TicketPublicId;
@@ -121,5 +123,15 @@ class TicketDoctrineRepository extends ServiceEntityRepository implements FindBy
             ->setParameter('now', new \DateTimeImmutable())
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    public function existsForPool(Pool $pool): bool
+    {
+        return $this->count(['pool' => $pool]) > 0;
+    }
+
+    public function existsForCustomer(User $customer): bool
+    {
+        return $this->count(['customer' => $customer]) > 0;
     }
 }

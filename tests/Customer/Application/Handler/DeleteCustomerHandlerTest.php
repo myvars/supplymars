@@ -8,6 +8,8 @@ use App\Customer\Application\Command\DeleteCustomer;
 use App\Customer\Application\Handler\DeleteCustomerHandler;
 use App\Customer\Domain\Model\User\UserPublicId;
 use App\Customer\Domain\Repository\UserRepository;
+use App\Tests\Shared\Factory\StatusChangeLogFactory;
+use App\Tests\Shared\Factory\TicketFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
@@ -61,5 +63,29 @@ final class DeleteCustomerHandlerTest extends KernelTestCase
         self::assertFalse($result->ok);
         self::assertStringContainsString('Customer cannot be deleted', $result->message);
         self::assertNotNull($this->customers->getByPublicId($publicId));
+    }
+
+    public function testFailsWhenCustomerHasTickets(): void
+    {
+        $customer = UserFactory::createOne();
+        TicketFactory::createOne(['customer' => $customer]);
+
+        $result = ($this->handler)(new DeleteCustomer($customer->getPublicId()));
+
+        self::assertFalse($result->ok);
+        self::assertStringContainsString('Customer cannot be deleted', $result->message);
+        self::assertNotNull($this->customers->getByPublicId($customer->getPublicId()));
+    }
+
+    public function testFailsWhenCustomerHasStatusChanges(): void
+    {
+        $customer = UserFactory::createOne();
+        StatusChangeLogFactory::createOne(['user' => $customer]);
+
+        $result = ($this->handler)(new DeleteCustomer($customer->getPublicId()));
+
+        self::assertFalse($result->ok);
+        self::assertStringContainsString('Customer cannot be deleted', $result->message);
+        self::assertNotNull($this->customers->getByPublicId($customer->getPublicId()));
     }
 }

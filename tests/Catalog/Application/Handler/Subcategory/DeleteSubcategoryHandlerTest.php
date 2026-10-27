@@ -10,8 +10,11 @@ use App\Catalog\Domain\Model\Subcategory\SubcategoryPublicId;
 use App\Catalog\Domain\Repository\SubcategoryRepository;
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\SubcategoryFactory;
+use App\Tests\Shared\Factory\SupplierSubcategoryFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
+
+use function Zenstruck\Foundry\Persistence\save;
 
 final class DeleteSubcategoryHandlerTest extends KernelTestCase
 {
@@ -65,6 +68,19 @@ final class DeleteSubcategoryHandlerTest extends KernelTestCase
 
         self::assertFalse($result->ok);
         self::assertStringContainsString('Has products', $result->message);
+        self::assertNotNull($this->subcategories->getByPublicId($subcategory->getPublicId()));
+    }
+
+    public function testFailsWhenSubcategoryHasSupplierMappings(): void
+    {
+        $subcategory = SubcategoryFactory::createOne();
+        $subcategory->addSupplierSubcategory(SupplierSubcategoryFactory::createOne());
+        save($subcategory);
+
+        $result = ($this->handler)(new DeleteSubcategory($subcategory->getPublicId()));
+
+        self::assertFalse($result->ok);
+        self::assertStringContainsString('supplier mappings', $result->message);
         self::assertNotNull($this->subcategories->getByPublicId($subcategory->getPublicId()));
     }
 }

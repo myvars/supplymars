@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Order\Infrastructure\Persistence\Doctrine;
 
+use App\Catalog\Domain\Model\Product\Product;
 use App\Order\Domain\Model\Order\CustomerOrderItem;
 use App\Order\Domain\Model\Order\OrderItemId;
 use App\Order\Domain\Model\Order\OrderItemPublicId;
@@ -44,5 +45,10 @@ class CustomerOrderItemDoctrineRepository extends ServiceEntityRepository implem
     public function getByPublicId(OrderItemPublicId $publicId): ?CustomerOrderItem
     {
         return $this->findOneBy(['publicId' => $publicId->value()]);
+    }
+
+    public function existsForProduct(Product $product): bool
+    {
+        return $this->count(['product' => $product]) > 0;
     }
 }

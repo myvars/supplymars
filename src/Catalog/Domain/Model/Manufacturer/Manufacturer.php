@@ -85,7 +85,7 @@ class Manufacturer
 
     public function isDeletable(): bool
     {
-        return $this->products->isEmpty();
+        return $this->products->isEmpty() && $this->supplierManufacturers->isEmpty();
     }
 
     private function rename(string $name): void

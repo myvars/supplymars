@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Customer\UI;
 
+use App\Tests\Shared\Factory\TicketFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\UI\ActionFormToken;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -59,6 +60,22 @@ final class DeleteCustomerFlowTest extends WebTestCase
 
         $browser
             ->post('/customer/' . $publicId . '/delete', ['body' => ['_token' => $token]])
+            ->assertSee('Customer cannot be deleted.');
+
+        self::assertNotNull(UserFactory::repository()->find($customer->getId()));
+    }
+
+    public function testDeletingACustomerWithATicketShowsAnError(): void
+    {
+        $customer = UserFactory::createOne();
+        TicketFactory::createOne(['customer' => $customer]);
+        $publicId = $customer->getPublicId()->value();
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/customer/' . $publicId . '/delete/confirm')
+            ->click('Delete Customer')
+            ->assertSuccessful()
             ->assertSee('Customer cannot be deleted.');
 
         self::assertNotNull(UserFactory::repository()->find($customer->getId()));

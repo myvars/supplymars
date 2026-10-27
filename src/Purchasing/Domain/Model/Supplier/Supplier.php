@@ -314,4 +314,13 @@ class Supplier implements DomainEventProviderInterface
 
         return $this;
     }
+
+    public function isDeletable(): bool
+    {
+        return $this->supplierProducts->isEmpty()
+            && $this->purchaseOrders->isEmpty()
+            && $this->supplierCategories->isEmpty()
+            && $this->supplierSubcategories->isEmpty()
+            && $this->supplierManufacturers->isEmpty();
+    }
 }
