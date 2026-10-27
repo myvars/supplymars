@@ -25,6 +25,10 @@ final readonly class RewindPurchaseOrderHandler
             return Result::fail('Purchase order not found.');
         }
 
+        if (!$purchaseOrder->allowRewind()) {
+            return Result::fail('Cannot rewind: the purchase order has refunded or cancelled items.');
+        }
+
         $this->rewindService->rewind($purchaseOrder);
 
         return Result::ok('Purchase order rewound to pending.');

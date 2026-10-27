@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Purchasing\Application\Handler\PurchaseOrder;
 
+use App\Audit\Domain\Model\StatusChange\StatusChangeLog;
+use App\Audit\Domain\Repository\StatusChangeLogRepository;
 use App\Purchasing\Application\Command\PurchaseOrder\RewindPurchaseOrder;
 use App\Purchasing\Application\Handler\PurchaseOrder\RewindPurchaseOrderHandler;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderPublicId;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
+use App\Shared\Domain\Event\DomainEventType;
 use App\Tests\Shared\Factory\CustomerOrderFactory;
 use App\Tests\Shared\Factory\CustomerOrderItemFactory;
 use App\Tests\Shared\Factory\ProductFactory;
@@ -86,6 +89,100 @@ final class RewindPurchaseOrderHandlerTest extends KernelTestCase
         self::assertTrue($result->ok);
         self::assertSame('Purchase order rewound to pending.', $result->message);
         self::assertSame(PurchaseOrderStatus::PENDING, $purchaseOrder->getStatus());
+    }
+
+    #[WithStory(StaffUserStory::class)]
+    public function testRefusesPurchaseOrderWithRefundedItem(): void
+    {
+        $supplier = SupplierFactory::createOne(['isActive' => true]);
+        $product = ProductFactory::createOne(['isActive' => true]);
+
+        $order = CustomerOrderFactory::createOne();
+        $orderItem = CustomerOrderItemFactory::createOne([
+            'customerOrder' => $order,
+            'product' => $product,
+            'quantity' => 5,
+        ]);
+
+        $purchaseOrder = PurchaseOrderFactory::createOne([
+            'customerOrder' => $order,
+            'supplier' => $supplier,
+        ]);
+
+        // Rejected and refunded, then the line allocated again on another supplier's PO
+        $refundedItem = PurchaseOrderItemFactory::createOne([
+            'customerOrder' => $order,
+            'customerOrderItem' => $orderItem,
+            'purchaseOrder' => $purchaseOrder,
+            'product' => $product,
+            'supplier' => $supplier,
+            'quantity' => 5,
+        ]);
+        $refundedItem->updateItemStatus(PurchaseOrderStatus::PROCESSING);
+        $refundedItem->updateItemStatus(PurchaseOrderStatus::REJECTED);
+        $refundedItem->updateItemStatus(PurchaseOrderStatus::REFUNDED);
+
+        PurchaseOrderItemFactory::createOne([
+            'customerOrder' => $order,
+            'customerOrderItem' => $orderItem,
+            'product' => $product,
+            'supplier' => SupplierFactory::createOne(['isActive' => true]),
+            'quantity' => 5,
+        ]);
+
+        $this->em->flush();
+        $logsBefore = count($this->statusLogs($refundedItem->getId()));
+
+        $result = ($this->handler)(new RewindPurchaseOrder($purchaseOrder->getPublicId()));
+
+        self::assertFalse($result->ok);
+        self::assertSame('Cannot rewind: the purchase order has refunded or cancelled items.', $result->message);
+        self::assertSame(PurchaseOrderStatus::REFUNDED, $refundedItem->getStatus());
+        self::assertSame(PurchaseOrderStatus::REFUNDED, $purchaseOrder->getStatus());
+        // The line stays on POs once, and the history is kept
+        self::assertSame(5, $orderItem->getQtyAddedToPurchaseOrders());
+        self::assertGreaterThan(0, $logsBefore);
+        self::assertCount($logsBefore, $this->statusLogs($refundedItem->getId()));
+    }
+
+    #[WithStory(StaffUserStory::class)]
+    public function testRefusesPurchaseOrderWithCancelledItem(): void
+    {
+        $supplier = SupplierFactory::createOne(['isActive' => true]);
+        $product = ProductFactory::createOne(['isActive' => true]);
+
+        $order = CustomerOrderFactory::createOne();
+        $purchaseOrder = PurchaseOrderFactory::createOne([
+            'customerOrder' => $order,
+            'supplier' => $supplier,
+        ]);
+
+        $cancelledItem = PurchaseOrderItemFactory::createOne([
+            'customerOrder' => $order,
+            'purchaseOrder' => $purchaseOrder,
+            'product' => $product,
+            'supplier' => $supplier,
+            'quantity' => 1,
+        ]);
+        $cancelledItem->updateItemStatus(PurchaseOrderStatus::CANCELLED);
+
+        $this->em->flush();
+
+        $result = ($this->handler)(new RewindPurchaseOrder($purchaseOrder->getPublicId()));
+
+        self::assertFalse($result->ok);
+        self::assertSame('Cannot rewind: the purchase order has refunded or cancelled items.', $result->message);
+        self::assertSame(PurchaseOrderStatus::CANCELLED, $cancelledItem->getStatus());
+        self::assertSame(PurchaseOrderStatus::CANCELLED, $purchaseOrder->getStatus());
+    }
+
+    /** @return StatusChangeLog[] */
+    private function statusLogs(?int $purchaseOrderItemId): array
+    {
+        return self::getContainer()->get(StatusChangeLogRepository::class)->findByEvent(
+            DomainEventType::PURCHASE_ORDER_ITEM_STATUS_CHANGED,
+            (int) $purchaseOrderItemId
+        );
     }
 
     #[WithStory(StaffUserStory::class)]

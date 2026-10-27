@@ -62,10 +62,17 @@ readonly class RewindMixedStatusPurchaseOrdersCommand
         $progress->start();
 
         $processed = 0;
+        $skipped = 0;
         $processedItems = [];
 
         foreach ($purchaseOrders as $purchaseOrder) {
             if (!$purchaseOrder instanceof PurchaseOrder) {
+                continue;
+            }
+
+            if (!$purchaseOrder->allowRewind()) {
+                ++$skipped;
+                $progress->advance();
                 continue;
             }
 
@@ -92,6 +99,10 @@ readonly class RewindMixedStatusPurchaseOrdersCommand
 
         $progress->finish();
         $io->newLine(2);
+
+        if ($skipped > 0) {
+            $io->note(sprintf('Skipped %d purchase order(s) with refunded or cancelled items.', $skipped));
+        }
 
         $io->success(sprintf(
             '%sProcessed %d purchase order(s).',

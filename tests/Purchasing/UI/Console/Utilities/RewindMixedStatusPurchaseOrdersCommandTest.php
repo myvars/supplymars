@@ -127,6 +127,50 @@ class RewindMixedStatusPurchaseOrdersCommandTest extends KernelTestCase
     }
 
     #[WithStory(StaffUserStory::class)]
+    public function testSkipsPurchaseOrderWithRefundedItem(): void
+    {
+        $supplier = SupplierFactory::createOne(['isActive' => true]);
+        $product = ProductFactory::createOne(['isActive' => true]);
+
+        $order = CustomerOrderFactory::createOne();
+        $po = PurchaseOrderFactory::createOne([
+            'customerOrder' => $order,
+            'supplier' => $supplier,
+        ]);
+
+        $rejectedItem = PurchaseOrderItemFactory::createOne([
+            'purchaseOrder' => $po,
+            'customerOrder' => $order,
+            'supplier' => $supplier,
+            'product' => $product,
+            'quantity' => 2,
+        ]);
+        $refundedItem = PurchaseOrderItemFactory::createOne([
+            'purchaseOrder' => $po,
+            'customerOrder' => $order,
+            'supplier' => $supplier,
+            'product' => $product,
+            'quantity' => 3,
+        ]);
+
+        // Mixed statuses including REJECTED, so the query matches; the REFUNDED item blocks the rewind
+        $rejectedItem->updateItemStatus(PurchaseOrderStatus::PROCESSING);
+        $refundedItem->updateItemStatus(PurchaseOrderStatus::PROCESSING);
+        $rejectedItem->updateItemStatus(PurchaseOrderStatus::REJECTED);
+        $refundedItem->updateItemStatus(PurchaseOrderStatus::REJECTED);
+        $refundedItem->updateItemStatus(PurchaseOrderStatus::REFUNDED);
+
+        $this->em->flush();
+
+        $this->commandTester->execute(['--limit' => 10]);
+
+        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
+        self::assertStringContainsString('Skipped 1 purchase order(s) with refunded or cancelled items', $this->commandTester->getDisplay());
+        self::assertSame(PurchaseOrderStatus::REJECTED, $rejectedItem->getStatus());
+        self::assertSame(PurchaseOrderStatus::REFUNDED, $refundedItem->getStatus());
+    }
+
+    #[WithStory(StaffUserStory::class)]
     public function testDryRunDoesNotPersistChanges(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);

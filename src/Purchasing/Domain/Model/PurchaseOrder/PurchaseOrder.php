@@ -137,8 +137,23 @@ class PurchaseOrder implements DomainEventProviderInterface
         return $this->status->allowEdit();
     }
 
+    /**
+     * A refunded or cancelled item's quantity has been released, and usually allocated again elsewhere:
+     * rewinding it to PENDING would put the order line on POs twice.
+     */
+    public function allowRewind(): bool
+    {
+        return !$this->purchaseOrderItems->exists(
+            static fn (int $key, PurchaseOrderItem $item): bool => $item->isRefunded() || $item->isCancelled()
+        );
+    }
+
     public function forceRewindToPending(): void
     {
+        if (!$this->allowRewind()) {
+            throw new \LogicException('Cannot rewind a purchase order with refunded or cancelled items');
+        }
+
         foreach ($this->purchaseOrderItems as $item) {
             $item->forceRewindToPending();
         }

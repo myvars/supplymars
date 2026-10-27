@@ -19,6 +19,9 @@ final readonly class PurchaseOrderRewindService
 
     public function rewind(PurchaseOrder $purchaseOrder): void
     {
+        // First, so a refused rewind leaves the status history untouched
+        $purchaseOrder->forceRewindToPending();
+
         $this->removeStatusLogs(
             DomainEventType::PURCHASE_ORDER_STATUS_CHANGED,
             $purchaseOrder->getId()
@@ -30,8 +33,6 @@ final readonly class PurchaseOrderRewindService
                 $item->getId()
             );
         }
-
-        $purchaseOrder->forceRewindToPending();
 
         $purchaseOrder->getCustomerOrder()->generateStatus();
 
