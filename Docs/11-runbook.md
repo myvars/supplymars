@@ -295,7 +295,7 @@ Before a risky deploy (a migration that alters or drops columns, a large schema 
 
 `app:restore-database` is dev only (`#[When(env: 'dev')]`), so production uses `mysql` in the database container. No set-up step installs the AWS CLI on the host, and the S3 keys are only in the env files (the CLI is in the playground's `reset` image, for its S3 sync).
 
-**This procedure has not been run in production yet.** Rehearse steps 3 and 4 on your own machine before you need it ([below](#rehearsing-the-restore-locally)), and fix this section if they fail.
+**Last rehearsed 2026-10-29**: steps 2–5 on the server against the playground, and steps 3–5 locally with two live backups (2026-04-28 and 2026-10-06), both migrated to the current schema. Steps 0 and 1 were not rehearsed: step 0 is the nightly backup's command. Rehearse again after a change to the backup command, the database image or the entrypoint's migrations ([below](#rehearsing-the-restore)), and fix this section if a step fails.
 
 ```bash
 # 0. Take an S3-only backup of the current state (4.2), so a wrong restore can be undone
@@ -328,21 +328,60 @@ Gotchas:
 
 - **Restoring over a database that was not emptied can stop php from starting.** `app:backup-database` runs `mysqldump` without `--add-drop-database`, so loading a dump drops and recreates only the tables in it. Restore a backup older than a migration that created a table, and that table stays while `doctrine_migration_versions` loses the migration's row. On start, php runs the migration again, it fails on the existing table, and the entrypoint stops (`set -euo pipefail` in `docker/php/docker-entrypoint.sh`), so php never comes up. Step 3 prevents it.
 - **Dropping the database keeps the app's access.** The `mysql` image grants `app` its rights on the database by name (`GRANT ALL ON app.*`, in the image's entrypoint), and MySQL keeps a database-level grant when the database is dropped, so the recreated `app` is usable by the app straight away.
+- **The dump is MariaDB's.** The php image's client (`default-mysql-client` in `docker/Dockerfile`) is MariaDB's `mysqldump`, so a backup starts with a `/*M!999999\- enable the sandbox mode */` line. MySQL 8.4's `mysql` loads it as it is (rehearsed with both backups above).
 - **The queue is a table in the same database**, so the restore brings back the emails that were waiting when the backup was taken, and the worker sends them when it starts. If they were already sent, delete them before step 5: `mysql_live -e "DELETE FROM messenger_messages WHERE queue_name = 'default'"` (`messenger:stats` shows how many there are).
 
-#### Rehearsing the restore locally
+#### Rehearsing the restore
 
-`make up-prod-local` is not a throwaway stack. It passes no `-p`, so it uses the same default project (`supplymars`, the checkout's folder name) and the same `db-data` volume as the development stack: restoring into it overwrites your local database. Its compose prefix, from the Makefile:
+This rehearses the procedure above. [4.6](#46-restore-rehearsal) is the monthly check that a backup is good.
+
+**On the server, use the playground and a dump of its own database.** Not live's `latest.sql.gz`: until the nightly reset redacts them, the playground would have live's staff credentials, and its worker would send live's queued emails. Not `app:backup-database` for step 0 either: the playground's backups go to the same S3 folder as live's, so its dump would become "the newest backup". Keep clear of 01:55–02:30 UTC (the 02:00 backup and the 02:15 reset), and paste one line at a time:
 
 ```bash
-PROD_LOCAL="--env-file ../supplymars-secrets/prod-local.env -f compose.yaml -f compose.prod.yaml -f compose.prod.local.yaml"
+mysql_pg() { docker compose $PLAYGROUND exec -T database sh -c 'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE" "$@"' sh "$@"; }
+umask 077   # The dump holds customer data
+
+# 2. Stop the writers first, so the counts and the dump match
+docker compose $PLAYGROUND stop php messenger
+mysql_pg -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE(); SELECT COUNT(*), MAX(id) FROM customer_order; SELECT MAX(version) FROM doctrine_migration_versions"
+
+# 0. The playground's own dump. Go on only if the test passes and the size is plausible (about 110 MB)
+docker compose $PLAYGROUND exec -T database sh -c 'exec mysqldump -uroot -p"$MYSQL_ROOT_PASSWORD" --single-transaction --quick --routines "$MYSQL_DATABASE"' | gzip > /tmp/pg-rehearsal.sql.gz
+gunzip -t /tmp/pg-rehearsal.sql.gz && ls -lh /tmp/pg-rehearsal.sql.gz
+
+# 3–5 as above, with $PLAYGROUND and mysql_pg. Step 3 runs only on the playground's container
+if [ "$(docker compose $PLAYGROUND ps --format '{{.Name}}' database)" = "supplymars-playground-database-1" ]; then mysql_pg -e "DROP DATABASE app; CREATE DATABASE app"; else echo "NOT the playground database: stopped"; fi
+gunzip < /tmp/pg-rehearsal.sql.gz | docker compose $PLAYGROUND exec -T database sh -c 'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"'
+mysql_pg -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema=DATABASE(); SELECT COUNT(*), MAX(id) FROM customer_order; SELECT MAX(version) FROM doctrine_migration_versions"
+make up-prod-playground
+make verify-prod-playground
+rm /tmp/pg-rehearsal.sql.gz
 ```
 
-Root's password is the one the volume was first created with, normally development's `password` (`compose.override.yaml`), not `MYSQL_ROOT_PASSWORD` from `prod-local.env`. MySQL reads that variable only when it initialises an empty volume. Steps 3 and 4 locally:
+**Locally, use a scratch container, not `make up-prod-local`.** That stack passes no `-p`, so it shares the development stack's project (`supplymars`) and `db-data` volume: restoring into it overwrites your local database. A container with production's database environment and settings, and a volume of its own:
 
 ```bash
-docker compose $PROD_LOCAL exec -T database mysql -uroot -ppassword -e "DROP DATABASE app; CREATE DATABASE app"
-gunzip < var/backups/supplymars-2026-10-20-020001.sql.gz | docker compose $PROD_LOCAL exec -T database mysql -uroot -ppassword app
+docker run -d --name restore-rehearsal -e MYSQL_ROOT_PASSWORD=rootpw -e MYSQL_USER=app -e MYSQL_PASSWORD=apppw \
+    -e MYSQL_DATABASE=app -p 127.0.0.1:3399:3306 \
+    -v "$PWD/docker/mysql/production.cnf:/etc/mysql/conf.d/production.cnf:ro" mysql:8.4
+# Wait for the real server: the image first runs a socket-only one to create app and its grant
+until docker exec restore-rehearsal mysql -h127.0.0.1 -uroot -prootpw -e 'SELECT 1' >/dev/null 2>&1; do sleep 2; done
+
+# 3 and 4, as above. The DROP on an empty database is there to show app keeps its grant (step 5 runs as app)
+docker exec -i restore-rehearsal sh -c 'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE" "$@"' sh -e "DROP DATABASE app; CREATE DATABASE app"
+gunzip < var/backups/supplymars-2026-10-20-020001.sql.gz | \
+    docker exec -i restore-rehearsal sh -c 'exec mysql -uroot -p"$MYSQL_ROOT_PASSWORD" "$MYSQL_DATABASE"'
+
+# 5. The entrypoint's migrate, as the app user. php bin/console, not symfony console, which can
+#    swap in the dev database's URL: check the hostname is the container's ID before migrating
+export DATABASE_URL='mysql://app:apppw@127.0.0.1:3399/app?serverVersion=8.4&charset=utf8mb4'
+php bin/console dbal:run-sql "SELECT @@hostname"
+php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
+php bin/console doctrine:schema:validate --skip-mapping
+
+docker rm -f -v restore-rehearsal
+unset DATABASE_URL
+rm var/backups/supplymars-2026-10-20-020001.sql.gz   # A full copy of production
 ```
 
 ### 4.5 Verify a Backup
