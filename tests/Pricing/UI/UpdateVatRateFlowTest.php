@@ -6,6 +6,8 @@ namespace App\Tests\Pricing\UI;
 
 use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Factory\VatRateFactory;
+use App\Tests\Shared\UI\PostedRecordId;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
@@ -14,6 +16,27 @@ final class UpdateVatRateFlowTest extends WebTestCase
 {
     use HasBrowser;
     use Factories;
+    use PostedRecordId;
+
+    #[DataProvider('postedRecordIds')]
+    public function testEditRefusesAVatRateIdPostedInTheForm(string $postedId): void
+    {
+        $other = VatRateFactory::createOne(['name' => 'Other']);
+        $vatRate = VatRateFactory::createOne(['name' => 'Before Edit']);
+
+        $this->assertRefusesPostedRecordId(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/vat-rate/' . $vatRate->getPublicId()->value() . '/edit',
+            'Update VAT Rate',
+            'id',
+            $postedId,
+            $other->getPublicId()->value(),
+            ['name' => 'Renamed'],
+        );
+
+        VatRateFactory::assert()->exists(['id' => $other->getId(), 'name' => 'Other']);
+        VatRateFactory::assert()->exists(['id' => $vatRate->getId(), 'name' => 'Before Edit']);
+    }
 
     public function testSuccessfulEditViaForm(): void
     {

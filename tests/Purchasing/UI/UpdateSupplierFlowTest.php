@@ -6,6 +6,8 @@ namespace App\Tests\Purchasing\UI;
 
 use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Factory\UserFactory;
+use App\Tests\Shared\UI\PostedRecordId;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
@@ -14,6 +16,27 @@ final class UpdateSupplierFlowTest extends WebTestCase
 {
     use HasBrowser;
     use Factories;
+    use PostedRecordId;
+
+    #[DataProvider('postedRecordIds')]
+    public function testEditRefusesASupplierIdPostedInTheForm(string $postedId): void
+    {
+        $other = SupplierFactory::createOne(['name' => 'Other']);
+        $supplier = SupplierFactory::createOne(['name' => 'Before Edit']);
+
+        $this->assertRefusesPostedRecordId(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/supplier/' . $supplier->getPublicId()->value() . '/edit',
+            'Update Supplier',
+            'id',
+            $postedId,
+            $other->getPublicId()->value(),
+            ['name' => 'Renamed'],
+        );
+
+        SupplierFactory::assert()->exists(['id' => $other->getId(), 'name' => 'Other']);
+        SupplierFactory::assert()->exists(['id' => $supplier->getId(), 'name' => 'Before Edit']);
+    }
 
     public function testSuccessfulEditViaForm(): void
     {

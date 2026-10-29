@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Customer\UI;
 
 use App\Tests\Shared\Factory\UserFactory;
+use App\Tests\Shared\UI\PostedRecordId;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
@@ -13,6 +15,27 @@ final class UpdateCustomerFlowTest extends WebTestCase
 {
     use HasBrowser;
     use Factories;
+    use PostedRecordId;
+
+    #[DataProvider('postedRecordIds')]
+    public function testEditRefusesACustomerIdPostedInTheForm(string $postedId): void
+    {
+        $other = UserFactory::createOne(['fullName' => 'Other']);
+        $customer = UserFactory::createOne(['fullName' => 'Before Edit']);
+
+        $this->assertRefusesPostedRecordId(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/customer/' . $customer->getPublicId()->value() . '/edit',
+            'Update Customer',
+            'id',
+            $postedId,
+            $other->getPublicId()->value(),
+            ['fullName' => 'Renamed', 'email' => 'renamed@example.com'],
+        );
+
+        UserFactory::assert()->exists(['id' => $other->getId(), 'fullName' => 'Other']);
+        UserFactory::assert()->exists(['id' => $customer->getId(), 'fullName' => 'Before Edit']);
+    }
 
     public function testSuccessfulEditViaForm(): void
     {
