@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace App\Tests\Order\UI;
 
 use App\Tests\Shared\Factory\CustomerOrderFactory;
+use App\Tests\Shared\Factory\CustomerOrderItemFactory;
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\UserFactory;
+use App\Tests\Shared\UI\PostedRecordId;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
@@ -15,6 +18,27 @@ class CreateOrderItemFlowTest extends WebTestCase
 {
     use HasBrowser;
     use Factories;
+    use PostedRecordId;
+
+    #[DataProvider('postedRecordIds')]
+    public function testCreateRefusesAnOrderIdPostedInTheForm(string $postedId): void
+    {
+        $other = CustomerOrderFactory::createOne();
+        $order = CustomerOrderFactory::createOne();
+        $product = ProductFactory::new()->withActiveSource()->create();
+
+        $this->assertRefusesPostedRecordId(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/order/' . $order->getPublicId()->value() . '/item/new',
+            'Create Order Item',
+            'orderId',
+            $postedId,
+            $other->getPublicId()->value(),
+            ['productId' => (string) $product->getId(), 'quantity' => '5'],
+        );
+
+        CustomerOrderItemFactory::assert()->count(0);
+    }
 
     public function testSuccessfulCreationViaForm(): void
     {

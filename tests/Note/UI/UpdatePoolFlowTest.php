@@ -6,6 +6,8 @@ namespace App\Tests\Note\UI;
 
 use App\Tests\Shared\Factory\PoolFactory;
 use App\Tests\Shared\Factory\UserFactory;
+use App\Tests\Shared\UI\PostedRecordId;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
@@ -14,6 +16,27 @@ final class UpdatePoolFlowTest extends WebTestCase
 {
     use HasBrowser;
     use Factories;
+    use PostedRecordId;
+
+    #[DataProvider('postedRecordIds')]
+    public function testEditRefusesAPoolIdPostedInTheForm(string $postedId): void
+    {
+        $other = PoolFactory::createOne(['name' => 'Other']);
+        $pool = PoolFactory::createOne(['name' => 'Before Edit']);
+
+        $this->assertRefusesPostedRecordId(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/note/pool/' . $pool->getPublicId()->value() . '/edit',
+            'Update Pool',
+            'id',
+            $postedId,
+            $other->getPublicId()->value(),
+            ['name' => 'Renamed'],
+        );
+
+        PoolFactory::assert()->exists(['id' => $other->getId(), 'name' => 'Other']);
+        PoolFactory::assert()->exists(['id' => $pool->getId(), 'name' => 'Before Edit']);
+    }
 
     public function testSuccessfulUpdateViaForm(): void
     {

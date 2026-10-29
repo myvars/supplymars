@@ -16,7 +16,6 @@ use App\Shared\UI\Http\Form\DataTransformer\IdToEntityTransformerFactory;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -40,9 +39,6 @@ final class ProductType extends AbstractType
         $builder = new DynamicFormBuilder($builder);
 
         $builder
-            ->add('id', HiddenType::class, [
-                'required' => false,
-            ])
             ->add('name', null, [
                 'label' => 'Product Name',
                 'priority' => 5,

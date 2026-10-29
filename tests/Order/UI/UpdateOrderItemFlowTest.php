@@ -10,6 +10,8 @@ use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\PurchaseOrderItemFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Story\StaffUserStory;
+use App\Tests\Shared\UI\PostedRecordId;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Attribute\WithStory;
@@ -19,6 +21,28 @@ class UpdateOrderItemFlowTest extends WebTestCase
 {
     use HasBrowser;
     use Factories;
+    use PostedRecordId;
+
+    #[DataProvider('postedRecordIds')]
+    public function testEditRefusesAnOrderItemIdPostedInTheForm(string $postedId): void
+    {
+        $product = ProductFactory::new()->withActiveSource()->create();
+        $other = CustomerOrderItemFactory::createOne(['product' => $product, 'quantity' => 5]);
+        $orderItem = CustomerOrderItemFactory::createOne(['product' => $product, 'quantity' => 5]);
+
+        $this->assertRefusesPostedRecordId(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/order/item/' . $orderItem->getPublicId()->value() . '/edit',
+            'Update Order Item',
+            'orderItemId',
+            $postedId,
+            $other->getPublicId()->value(),
+            ['quantity' => '10'],
+        );
+
+        CustomerOrderItemFactory::assert()->exists(['id' => $other->getId(), 'quantity' => 5]);
+        CustomerOrderItemFactory::assert()->exists(['id' => $orderItem->getId(), 'quantity' => 5]);
+    }
 
     public function testSuccessfulEditViaForm(): void
     {

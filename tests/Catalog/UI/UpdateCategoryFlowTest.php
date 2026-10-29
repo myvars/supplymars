@@ -8,6 +8,8 @@ use App\Shared\Domain\ValueObject\PriceModel;
 use App\Tests\Shared\Factory\CategoryFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Factory\VatRateFactory;
+use App\Tests\Shared\UI\PostedRecordId;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
@@ -16,6 +18,27 @@ final class UpdateCategoryFlowTest extends WebTestCase
 {
     use HasBrowser;
     use Factories;
+    use PostedRecordId;
+
+    #[DataProvider('postedRecordIds')]
+    public function testEditRefusesACategoryIdPostedInTheForm(string $postedId): void
+    {
+        $other = CategoryFactory::createOne(['name' => 'Other']);
+        $category = CategoryFactory::createOne(['name' => 'Before Edit']);
+
+        $this->assertRefusesPostedRecordId(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/category/' . $category->getPublicId()->value() . '/edit',
+            'Update Category',
+            'id',
+            $postedId,
+            $other->getPublicId()->value(),
+            ['name' => 'Renamed'],
+        );
+
+        CategoryFactory::assert()->exists(['id' => $other->getId(), 'name' => 'Other']);
+        CategoryFactory::assert()->exists(['id' => $category->getId(), 'name' => 'Before Edit']);
+    }
 
     public function testSuccessfulEditViaForm(): void
     {
