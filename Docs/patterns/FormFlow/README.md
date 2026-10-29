@@ -134,6 +134,7 @@ From `CreateOrderHandler`. On failure a handler returns `Result::fail('Customer 
 ## Gotchas
 
 - **Auto-update forms** (a field change resubmits the form without saving): see [Submit on change](../UI/StimulusControllers.md#submit-on-change).
+- **A record's id comes from the route, never from a form field.** The controller sets it on the form model (`ProductForm::fromEntity($product)`, `OrderItemForm::fromEntity($order)`) and the form type has no field for it, so a submit cannot change it and the mapper reads the route's id. A hidden id field would let a post act on a record other than the one `#[IsGranted]` checked. A post that adds the field anyway is refused with Symfony's "This form should not contain extra fields." (422).
 - Flows are tested in the package's own suite. Test a context's controllers through HTTP (`tests/Order/UI/AllocateOrderFlowTest.php`) and its handlers directly (`tests/Order/Application/Handler/`); see [Testing](../../07-testing.md).
 
 ## Related
