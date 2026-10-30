@@ -98,8 +98,7 @@ final class TicketStatusFlowTest extends WebTestCase
             ->click('form[action="' . $url . '/close"] button')
             ->assertSee('Ticket closed');
 
-        $fresh = TicketFactory::repository()->find($ticket->getId());
-        self::assertSame($initialCount + 1, $fresh->getMessageCount());
+        self::assertSame($initialCount + 1, $ticket->getMessageCount());
     }
 
     public function testReopenCreatesSystemMessage(): void
@@ -116,8 +115,7 @@ final class TicketStatusFlowTest extends WebTestCase
             ->click('form[action="' . $url . '/close"] button')
             ->assertSee('Ticket closed');
 
-        $afterClose = TicketFactory::repository()->find($ticket->getId());
-        $countAfterClose = $afterClose->getMessageCount();
+        $countAfterClose = $ticket->getMessageCount();
 
         $this->browser()
             ->actingAs($staff)
@@ -125,8 +123,7 @@ final class TicketStatusFlowTest extends WebTestCase
             ->click('form[action="' . $url . '/reopen"] button')
             ->assertSee('Ticket reopened');
 
-        $afterReopen = TicketFactory::repository()->find($ticket->getId());
-        self::assertSame($countAfterClose + 1, $afterReopen->getMessageCount());
+        self::assertSame($countAfterClose + 1, $ticket->getMessageCount());
     }
 
     public function testCloseAndReopenAreNotReachableWithGet(): void
@@ -142,8 +139,8 @@ final class TicketStatusFlowTest extends WebTestCase
             ->get('/note/ticket/' . $closed->getPublicId()->value() . '/reopen')
             ->assertStatus(405);
 
-        self::assertSame(TicketStatus::OPEN, TicketFactory::repository()->find($open->getId())?->getStatus());
-        self::assertSame(TicketStatus::CLOSED, TicketFactory::repository()->find($closed->getId())?->getStatus());
+        self::assertSame(TicketStatus::OPEN, $open->getStatus());
+        self::assertSame(TicketStatus::CLOSED, $closed->getStatus());
     }
 
     public function testCloseRejectsAMissingTokenOrAnotherTicketsToken(): void
@@ -165,7 +162,7 @@ final class TicketStatusFlowTest extends WebTestCase
             ->assertOn($url)
             ->assertSee('Invalid CSRF token.');
 
-        self::assertSame(TicketStatus::OPEN, TicketFactory::repository()->find($ticket->getId())?->getStatus());
+        self::assertSame(TicketStatus::OPEN, $ticket->getStatus());
     }
 
     public function testReopenRejectsAMissingTokenOrAnotherTicketsToken(): void
@@ -187,6 +184,6 @@ final class TicketStatusFlowTest extends WebTestCase
             ->assertOn($url)
             ->assertSee('Invalid CSRF token.');
 
-        self::assertSame(TicketStatus::CLOSED, TicketFactory::repository()->find($ticket->getId())?->getStatus());
+        self::assertSame(TicketStatus::CLOSED, $ticket->getStatus());
     }
 }
