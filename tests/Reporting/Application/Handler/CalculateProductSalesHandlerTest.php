@@ -4,17 +4,18 @@ declare(strict_types=1);
 
 namespace App\Tests\Reporting\Application\Handler;
 
-use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItem;
-use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use App\Reporting\Application\Handler\CalculateProductSalesHandler;
 use App\Reporting\Domain\Model\SalesType\ProductSales;
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\ProductSalesFactory;
 use App\Tests\Shared\Factory\PurchaseOrderItemFactory;
 use App\Tests\Shared\Factory\SupplierFactory;
+use App\Tests\Shared\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Zenstruck\Foundry\Attribute\WithStory;
 
+#[WithStory(StaffUserStory::class)]
 final class CalculateProductSalesHandlerTest extends KernelTestCase
 {
     private CalculateProductSalesHandler $handler;
@@ -34,13 +35,11 @@ final class CalculateProductSalesHandlerTest extends KernelTestCase
         $product = ProductFactory::createOne();
         $supplier = SupplierFactory::createOne();
 
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne([
+        PurchaseOrderItemFactory::new()->delivered()->create([
             'product' => $product,
             'supplier' => $supplier,
             'quantity' => 5,
         ]);
-
-        $this->setDeliveredStatus($this->getEntity($purchaseOrderItem), new \DateTimeImmutable($date));
 
         $this->handler->process($date);
 
@@ -76,15 +75,13 @@ final class CalculateProductSalesHandlerTest extends KernelTestCase
             'salesQty' => 100,
         ]);
 
-        $this->em->clear();
-
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne([
+        PurchaseOrderItemFactory::new()->delivered()->create([
             'product' => $product,
             'supplier' => $supplier,
             'quantity' => 3,
         ]);
 
-        $this->setDeliveredStatus($this->getEntity($purchaseOrderItem), new \DateTimeImmutable($date));
+        $this->em->clear();
 
         $this->handler->process($date);
 
@@ -99,13 +96,11 @@ final class CalculateProductSalesHandlerTest extends KernelTestCase
         $product = ProductFactory::createOne();
         $supplier = SupplierFactory::createOne();
 
-        $purchaseOrderItem = PurchaseOrderItemFactory::createOne([
+        PurchaseOrderItemFactory::new()->delivered()->create([
             'product' => $product,
             'supplier' => $supplier,
             'quantity' => 10,
         ]);
-
-        $this->setDeliveredStatus($this->getEntity($purchaseOrderItem), new \DateTimeImmutable($date));
 
         $this->handler->process($date);
 
@@ -124,19 +119,17 @@ final class CalculateProductSalesHandlerTest extends KernelTestCase
         $product = ProductFactory::createOne();
         $supplier = SupplierFactory::createOne();
 
-        $item1 = PurchaseOrderItemFactory::createOne([
+        PurchaseOrderItemFactory::new()->delivered()->create([
             'product' => $product,
             'supplier' => $supplier,
             'quantity' => 5,
         ]);
-        $this->setDeliveredStatus($this->getEntity($item1), new \DateTimeImmutable($date));
 
-        $item2 = PurchaseOrderItemFactory::createOne([
+        PurchaseOrderItemFactory::new()->delivered()->create([
             'product' => $product,
             'supplier' => $supplier,
             'quantity' => 3,
         ]);
-        $this->setDeliveredStatus($this->getEntity($item2), new \DateTimeImmutable($date));
 
         $this->handler->process($date);
 
@@ -152,19 +145,17 @@ final class CalculateProductSalesHandlerTest extends KernelTestCase
         $supplier1 = SupplierFactory::createOne();
         $supplier2 = SupplierFactory::createOne();
 
-        $item1 = PurchaseOrderItemFactory::createOne([
+        PurchaseOrderItemFactory::new()->delivered()->create([
             'product' => $product,
             'supplier' => $supplier1,
             'quantity' => 5,
         ]);
-        $this->setDeliveredStatus($this->getEntity($item1), new \DateTimeImmutable($date));
 
-        $item2 = PurchaseOrderItemFactory::createOne([
+        PurchaseOrderItemFactory::new()->delivered()->create([
             'product' => $product,
             'supplier' => $supplier2,
             'quantity' => 3,
         ]);
-        $this->setDeliveredStatus($this->getEntity($item2), new \DateTimeImmutable($date));
 
         $this->handler->process($date);
 
@@ -180,25 +171,5 @@ final class CalculateProductSalesHandlerTest extends KernelTestCase
 
         $productSales = $this->em->getRepository(ProductSales::class)->findAll();
         self::assertCount(0, $productSales);
-    }
-
-    private function getEntity(mixed $proxyOrEntity): PurchaseOrderItem
-    {
-        if ($proxyOrEntity instanceof PurchaseOrderItem) {
-            return $proxyOrEntity;
-        }
-
-        return $proxyOrEntity->_real();
-    }
-
-    private function setDeliveredStatus(PurchaseOrderItem $item, \DateTimeImmutable $deliveredAt): void
-    {
-        $statusProperty = new \ReflectionProperty(PurchaseOrderItem::class, 'status');
-        $statusProperty->setValue($item, PurchaseOrderStatus::DELIVERED);
-
-        $deliveredAtProperty = new \ReflectionProperty(PurchaseOrderItem::class, 'deliveredAt');
-        $deliveredAtProperty->setValue($item, $deliveredAt);
-
-        $this->em->flush();
     }
 }

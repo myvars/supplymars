@@ -9,6 +9,7 @@ use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Order\Domain\Model\Order\CustomerOrderItem;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrder;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItem;
+use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use App\Purchasing\Domain\Model\Supplier\Supplier;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
 use Zenstruck\Foundry\LazyValue;
@@ -20,25 +21,11 @@ use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
  */
 final class PurchaseOrderItemFactory extends PersistentObjectFactory
 {
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
-     *
-     * @todo inject services if required
-     */
-    public function __construct()
-    {
-    }
-
     public static function class(): string
     {
         return PurchaseOrderItem::class;
     }
 
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
-     *
-     * @todo add your default values here
-     */
     protected function defaults(): array
     {
         return [
@@ -52,9 +39,6 @@ final class PurchaseOrderItemFactory extends PersistentObjectFactory
         ];
     }
 
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
-     */
     #[\Override]
     protected function initialize(): static
     {
@@ -87,5 +71,20 @@ final class PurchaseOrderItemFactory extends PersistentObjectFactory
                 Instantiator::namedConstructor('createFromCustomerOrderItem')
                     ->allowExtra('product', 'supplier', 'customerOrder')
             );
+    }
+
+    /** Walks the item through each status to delivered, which stamps deliveredAt with now. */
+    public function delivered(): self
+    {
+        return $this->afterInstantiate(function (PurchaseOrderItem $item): void {
+            foreach ([
+                PurchaseOrderStatus::PROCESSING,
+                PurchaseOrderStatus::ACCEPTED,
+                PurchaseOrderStatus::SHIPPED,
+                PurchaseOrderStatus::DELIVERED,
+            ] as $status) {
+                $item->updateItemStatus($status);
+            }
+        });
     }
 }
