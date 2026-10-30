@@ -7,7 +7,7 @@ namespace App\Tests\Customer\UI\Console;
 use App\Tests\Shared\Factory\UserFactory;
 use Doctrine\DBAL\Connection;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -15,7 +15,7 @@ use Zenstruck\Browser\KernelBrowser;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
 
-final class IssueApiTokenCommandTest extends WebTestCase
+final class IssueApiTokenCommandTest extends KernelTestCase
 {
     use HasBrowser;
     use Factories;
