@@ -10,7 +10,7 @@ use App\Shared\Domain\ValueObject\CostChange;
 use App\Shared\Domain\ValueObject\StockChange;
 use PHPUnit\Framework\TestCase;
 
-final class SupplierStockChangeDomainTest extends TestCase
+final class SupplierStockChangeLogDomainTest extends TestCase
 {
     public function testCreateCopiesAfterValues(): void
     {

@@ -9,7 +9,7 @@ use App\Customer\Domain\Model\User\User;
 use App\Shared\Domain\Event\DomainEventType;
 use PHPUnit\Framework\TestCase;
 
-final class StatusChangeDomainTest extends TestCase
+final class StatusChangeLogDomainTest extends TestCase
 {
     public function testCreatesWithValidParameters(): void
     {

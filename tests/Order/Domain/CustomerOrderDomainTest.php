@@ -17,7 +17,7 @@ use App\Pricing\Domain\Model\VatRate\VatRate;
 use App\Shared\Domain\Event\AbstractDomainEvent;
 use PHPUnit\Framework\TestCase;
 
-final class OrderDomainTest extends TestCase
+final class CustomerOrderDomainTest extends TestCase
 {
     private function stubUser(): User
     {
