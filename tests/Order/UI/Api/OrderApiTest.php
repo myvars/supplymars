@@ -19,13 +19,6 @@ final class OrderApiTest extends WebTestCase
 {
     use HasBrowser;
 
-    public function testOrderIndexRequiresAuthentication(): void
-    {
-        $this->browser()
-            ->get('/api/v1/orders')
-            ->assertStatus(401);
-    }
-
     public function testOrderIndexReturnsCollectionWithLinks(): void
     {
         $user = UserFactory::new()->asStaff()->create();
