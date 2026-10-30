@@ -8,7 +8,6 @@ use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Uid\Ulid;
 use Zenstruck\Browser\Test\HasBrowser;
-use Zenstruck\Foundry\Test\Factories;
 
 /**
  * Error pages render without debug, as in production; in debug Symfony shows its exception page instead.
@@ -16,7 +15,6 @@ use Zenstruck\Foundry\Test\Factories;
 final class ErrorPageFlowTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
 
     public function testNotFoundInTheModalFrameShowsTheErrorInsideTheModal(): void
     {

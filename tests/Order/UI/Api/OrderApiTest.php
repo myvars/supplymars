@@ -14,12 +14,10 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\HttpOptions;
 use Zenstruck\Browser\Test\HasBrowser;
-use Zenstruck\Foundry\Test\Factories;
 
 final class OrderApiTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
 
     public function testOrderIndexRequiresAuthentication(): void
     {

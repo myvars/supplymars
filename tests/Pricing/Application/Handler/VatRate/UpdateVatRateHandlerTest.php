@@ -10,12 +10,9 @@ use App\Pricing\Domain\Model\VatRate\VatRatePublicId;
 use App\Pricing\Domain\Repository\VatRateRepository;
 use App\Tests\Shared\Factory\VatRateFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class UpdateVatRateHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private UpdateVatRateHandler $handler;
 
     private VatRateRepository $rates;

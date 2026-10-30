@@ -13,12 +13,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Browser\KernelBrowser;
 use Zenstruck\Browser\Test\HasBrowser;
-use Zenstruck\Foundry\Test\Factories;
 
 final class IssueApiTokenCommandTest extends KernelTestCase
 {
     use HasBrowser;
-    use Factories;
 
     private CommandTester $commandTester;
 

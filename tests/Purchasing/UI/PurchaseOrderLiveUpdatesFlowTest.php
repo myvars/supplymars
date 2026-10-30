@@ -26,7 +26,6 @@ use Symfony\Component\Mercure\Update;
 use Zenstruck\Browser\KernelBrowser;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Attribute\WithStory;
-use Zenstruck\Foundry\Test\Factories;
 
 /**
  * A purchase order's page refreshes with its order's page: it subscribes to the order's topic, which every change
@@ -36,7 +35,6 @@ use Zenstruck\Foundry\Test\Factories;
 final class PurchaseOrderLiveUpdatesFlowTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
 
     public function testPurchaseOrderPageSubscribesToItsOrdersTopic(): void
     {

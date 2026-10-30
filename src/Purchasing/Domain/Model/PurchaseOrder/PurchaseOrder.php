@@ -87,7 +87,7 @@ class PurchaseOrder implements DomainEventProviderInterface
      * @var Collection<int, PurchaseOrderItem>
      */
     #[ORM\OneToMany(targetEntity: PurchaseOrderItem::class, mappedBy: 'purchaseOrder')]
-    #[ORM\OrderBy(['id' => 'ASC'])]
+    #[ORM\OrderBy(['id' => \SortDirection::Ascending])]
     private Collection $purchaseOrderItems;
 
     final private function __construct()

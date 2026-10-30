@@ -14,12 +14,9 @@ use App\Tests\Shared\Factory\CategoryFactory;
 use App\Tests\Shared\Factory\SubcategoryFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class UpdateSubcategoryHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private UpdateSubcategoryHandler $handler;
 
     private SubcategoryRepository $subcategories;

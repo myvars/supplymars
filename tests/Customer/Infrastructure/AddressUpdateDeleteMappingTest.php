@@ -8,12 +8,9 @@ use App\Customer\Domain\Model\Address\Address;
 use App\Tests\Shared\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class AddressUpdateDeleteMappingTest extends KernelTestCase
 {
-    use Factories;
-
     private EntityManagerInterface $em;
 
     protected function setUp(): void

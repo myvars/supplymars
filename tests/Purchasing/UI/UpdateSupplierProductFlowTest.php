@@ -13,12 +13,10 @@ use App\Tests\Shared\Factory\SupplierSubcategoryFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
-use Zenstruck\Foundry\Test\Factories;
 
 final class UpdateSupplierProductFlowTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
 
     public function testSuccessfulEditViaForm(): void
     {

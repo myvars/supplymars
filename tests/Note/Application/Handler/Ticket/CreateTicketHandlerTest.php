@@ -11,12 +11,9 @@ use App\Tests\Shared\Factory\PoolFactory;
 use App\Tests\Shared\Factory\TicketFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class CreateTicketHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private CreateTicketHandler $handler;
 
     protected function setUp(): void

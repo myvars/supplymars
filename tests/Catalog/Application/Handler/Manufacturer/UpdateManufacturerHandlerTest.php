@@ -10,12 +10,9 @@ use App\Catalog\Domain\Model\Manufacturer\ManufacturerPublicId;
 use App\Catalog\Domain\Repository\ManufacturerRepository;
 use App\Tests\Shared\Factory\ManufacturerFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class UpdateManufacturerHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private UpdateManufacturerHandler $handler;
 
     private ManufacturerRepository $manufacturers;

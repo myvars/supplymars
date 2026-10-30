@@ -11,12 +11,9 @@ use App\Catalog\Domain\Repository\ProductImageRepository;
 use App\Tests\Shared\Factory\ProductImageFactory;
 use League\Flysystem\FilesystemOperator;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class DeleteProductImageHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private DeleteProductImageHandler $handler;
 
     private ProductImageRepository $productImages;

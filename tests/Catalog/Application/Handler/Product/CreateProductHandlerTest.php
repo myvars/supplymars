@@ -15,12 +15,9 @@ use App\Tests\Shared\Factory\ManufacturerFactory;
 use App\Tests\Shared\Factory\SubcategoryFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class CreateProductHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private CreateProductHandler $handler;
 
     private ProductRepository $products;

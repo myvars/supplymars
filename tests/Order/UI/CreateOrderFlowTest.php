@@ -11,12 +11,10 @@ use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Factory\VatRateFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
-use Zenstruck\Foundry\Test\Factories;
 
 final class CreateOrderFlowTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
 
     public function testSuccessfulCreationViaForm(): void
     {

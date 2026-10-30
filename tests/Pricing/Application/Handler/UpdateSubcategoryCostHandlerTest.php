@@ -11,12 +11,9 @@ use App\Pricing\Application\Handler\UpdateSubcategoryCostHandler;
 use App\Shared\Domain\ValueObject\PriceModel;
 use App\Tests\Shared\Factory\SubcategoryFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class UpdateSubcategoryCostHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private UpdateSubcategoryCostHandler $handler;
 
     private SubcategoryRepository $subcategories;

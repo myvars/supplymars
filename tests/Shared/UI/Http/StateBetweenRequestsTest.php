@@ -19,7 +19,6 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\Cookie;
 use Zenstruck\Browser\KernelBrowser;
 use Zenstruck\Browser\Test\HasBrowser;
-use Zenstruck\Foundry\Test\Factories;
 
 /**
  * Production runs FrankenPHP in worker mode: one kernel, and its services, serves many requests, so a
@@ -30,7 +29,6 @@ use Zenstruck\Foundry\Test\Factories;
 final class StateBetweenRequestsTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
 
     public function testEachResponseShowsOnlyItsOwnUser(): void
     {

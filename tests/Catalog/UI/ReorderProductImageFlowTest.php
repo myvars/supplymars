@@ -10,12 +10,10 @@ use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Zenstruck\Browser\Test\HasBrowser;
-use Zenstruck\Foundry\Test\Factories;
 
 final class ReorderProductImageFlowTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
 
     private function imagePath(): string
     {

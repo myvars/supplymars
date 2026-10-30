@@ -12,12 +12,9 @@ use App\Tests\Shared\Factory\CustomerOrderFactory;
 use App\Tests\Shared\Factory\CustomerOrderItemFactory;
 use App\Tests\Shared\Factory\CustomerSalesSummaryFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class CustomerInsightsReportHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private CustomerInsightsReportHandler $handler;
 
     protected function setUp(): void

@@ -16,13 +16,11 @@ use App\Tests\Shared\Story\StaffUserStory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Attribute\WithStory;
-use Zenstruck\Foundry\Test\Factories;
 
 #[WithStory(StaffUserStory::class)]
 final class UpdatePurchaseOrderItemStatusFlowTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
 
     public function testSuccessfulStatusChangeViaForm(): void
     {

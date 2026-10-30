@@ -12,14 +12,11 @@ use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\SubcategoryFactory;
 use App\Tests\Shared\Factory\SupplierSubcategoryFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 use function Zenstruck\Foundry\Persistence\save;
 
 final class DeleteSubcategoryHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private DeleteSubcategoryHandler $handler;
 
     private SubcategoryRepository $subcategories;

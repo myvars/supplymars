@@ -10,12 +10,9 @@ use App\Tests\Shared\Factory\CustomerOrderItemFactory;
 use App\Tests\Shared\Factory\ProductFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class OrderItemUpdateDeleteMappingTest extends KernelTestCase
 {
-    use Factories;
-
     private EntityManagerInterface $em;
 
     private OrderItemRepository $orderItems;

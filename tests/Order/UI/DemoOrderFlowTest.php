@@ -14,12 +14,10 @@ use App\Tests\Shared\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
-use Zenstruck\Foundry\Test\Factories;
 
 final class DemoOrderFlowTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
 
     public function testConfirmPageShowsCreateButton(): void
     {

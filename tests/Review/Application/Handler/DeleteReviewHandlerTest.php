@@ -10,12 +10,9 @@ use App\Review\Domain\Model\Review\ReviewPublicId;
 use App\Review\Domain\Repository\ReviewRepository;
 use App\Tests\Shared\Factory\ProductReviewFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class DeleteReviewHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private DeleteReviewHandler $handler;
 
     private ReviewRepository $reviews;

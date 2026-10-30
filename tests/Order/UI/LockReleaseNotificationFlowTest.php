@@ -15,7 +15,6 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Mercure\Exception\RuntimeException;
 use Symfony\Component\Mercure\Update;
 use Zenstruck\Browser\Test\HasBrowser;
-use Zenstruck\Foundry\Test\Factories;
 
 /**
  * Releasing another user's lock tells the holder, wherever they are (NotifyLockHolderOfRelease). The queue is
@@ -24,7 +23,6 @@ use Zenstruck\Foundry\Test\Factories;
 final class LockReleaseNotificationFlowTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
 
     public function testReleasingAnotherUsersLockNotifiesTheHolder(): void
     {

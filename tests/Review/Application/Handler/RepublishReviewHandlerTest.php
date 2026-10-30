@@ -16,12 +16,9 @@ use App\Tests\Shared\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
-use Zenstruck\Foundry\Test\Factories;
 
 final class RepublishReviewHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private RepublishReviewHandler $handler;
 
     private ReviewRepository $reviews;

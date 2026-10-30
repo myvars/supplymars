@@ -12,12 +12,9 @@ use App\Customer\Domain\Repository\UserRepository;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
-use Zenstruck\Foundry\Test\Factories;
 
 final class UpdateCustomerHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private UpdateCustomerHandler $handler;
 
     private UserRepository $users;

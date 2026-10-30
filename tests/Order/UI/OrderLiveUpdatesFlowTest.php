@@ -26,7 +26,6 @@ use Symfony\Component\Mercure\Exception\RuntimeException;
 use Symfony\Component\Mercure\Update;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Attribute\WithStory;
-use Zenstruck\Foundry\Test\Factories;
 
 /**
  * Everyone with an order's page open sees it change (RefreshOrderPageForViewers). Each change is made as a caller
@@ -37,7 +36,6 @@ use Zenstruck\Foundry\Test\Factories;
 final class OrderLiveUpdatesFlowTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
 
     public function testOrderPageSubscribesToTheOrderAndItsViewersToasts(): void
     {

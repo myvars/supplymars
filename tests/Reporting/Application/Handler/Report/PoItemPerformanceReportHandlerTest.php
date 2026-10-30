@@ -9,12 +9,9 @@ use App\Reporting\Application\Report\PoItemPerformanceReportCriteria;
 use App\Reporting\Domain\Metric\SalesDuration;
 use App\Tests\Shared\Factory\PurchaseOrderItemFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class PoItemPerformanceReportHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private PoItemPerformanceReportHandler $handler;
 
     protected function setUp(): void

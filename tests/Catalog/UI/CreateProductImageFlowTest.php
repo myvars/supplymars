@@ -13,12 +13,10 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Zenstruck\Browser\KernelBrowser;
 use Zenstruck\Browser\Test\HasBrowser;
-use Zenstruck\Foundry\Test\Factories;
 
 final class CreateProductImageFlowTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
 
     private function imagePath(): string
     {

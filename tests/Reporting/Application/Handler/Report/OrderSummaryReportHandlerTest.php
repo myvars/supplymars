@@ -9,12 +9,9 @@ use App\Reporting\Application\Report\OrderSummaryReportCriteria;
 use App\Reporting\Domain\Metric\SalesDuration;
 use App\Tests\Shared\Factory\OrderSalesSummaryFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class OrderSummaryReportHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private OrderSummaryReportHandler $handler;
 
     protected function setUp(): void

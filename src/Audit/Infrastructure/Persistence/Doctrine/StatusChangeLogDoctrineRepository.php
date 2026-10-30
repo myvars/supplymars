@@ -91,7 +91,7 @@ class StatusChangeLogDoctrineRepository extends ServiceEntityRepository implemen
             foreach ($entities as [$eventType, $entityClass, $finalStatuses]) {
                 array_push($ids, ...$this->createQueryBuilder('sc')
                     ->select('sc.id')
-                    ->join($entityClass, 'e', 'WITH', 'e.id = sc.eventTypeId')
+                    ->join($entityClass, 'e', 'ON', 'e.id = sc.eventTypeId')
                     ->where('sc.id >= :fromId')
                     ->andWhere('sc.id < :toId')
                     ->andWhere('sc.eventType = :eventType')

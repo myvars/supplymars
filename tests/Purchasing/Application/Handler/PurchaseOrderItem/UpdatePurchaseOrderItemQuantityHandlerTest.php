@@ -19,13 +19,10 @@ use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Story\StaffUserStory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
-use Zenstruck\Foundry\Test\Factories;
 
 #[WithStory(StaffUserStory::class)]
 final class UpdatePurchaseOrderItemQuantityHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private UpdatePurchaseOrderItemQuantityHandler $handler;
 
     private PurchaseOrderItemRepository $purchaseOrderItems;

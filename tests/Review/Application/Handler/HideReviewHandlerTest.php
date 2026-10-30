@@ -12,13 +12,10 @@ use App\Tests\Shared\Factory\ProductReviewFactory;
 use App\Tests\Shared\Story\StaffUserStory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
-use Zenstruck\Foundry\Test\Factories;
 
 #[WithStory(StaffUserStory::class)]
 final class HideReviewHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private HideReviewHandler $handler;
 
     private ReviewRepository $reviews;

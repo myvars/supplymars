@@ -8,13 +8,11 @@ use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Mercure\MercureCookie;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
-use Zenstruck\Foundry\Test\Factories;
 
 /** Each staff page subscribes to its own user's toasts, and only to those (base.html.twig). A customer's subscribes to nothing. */
 final class UserNotificationSubscriptionFlowTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
 
     public function testLoggedInPageSubscribesToItsOwnTopicOnly(): void
     {

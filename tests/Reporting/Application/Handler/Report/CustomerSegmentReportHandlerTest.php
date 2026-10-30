@@ -11,12 +11,9 @@ use App\Reporting\Domain\Metric\SalesDuration;
 use App\Reporting\Domain\Model\SalesType\CustomerSalesType;
 use App\Tests\Shared\Factory\CustomerSegmentSummaryFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class CustomerSegmentReportHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private CustomerSegmentReportHandler $handler;
 
     protected function setUp(): void

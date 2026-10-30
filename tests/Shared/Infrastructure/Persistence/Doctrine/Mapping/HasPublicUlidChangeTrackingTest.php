@@ -12,15 +12,12 @@ use Doctrine\ORM\EntityManagerInterface;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 /**
  * Loading an entity with a public ULID and flushing without a change must not write the row.
  */
 final class HasPublicUlidChangeTrackingTest extends KernelTestCase
 {
-    use Factories;
-
     private const string OLD_UPDATED_AT = '2020-01-01 00:00:00';
 
     private EntityManagerInterface $em;

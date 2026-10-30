@@ -8,12 +8,9 @@ use App\Purchasing\Application\Command\Supplier\CreateSupplier;
 use App\Purchasing\Application\Handler\Supplier\CreateSupplierHandler;
 use App\Purchasing\Domain\Repository\SupplierRepository;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class CreateSupplierHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private CreateSupplierHandler $handler;
 
     private SupplierRepository $suppliers;

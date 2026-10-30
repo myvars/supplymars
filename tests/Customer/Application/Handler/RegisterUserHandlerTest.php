@@ -8,12 +8,9 @@ use App\Customer\Application\Command\RegisterUser;
 use App\Customer\Application\Handler\RegisterUserHandler;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class RegisterUserHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     public function testFailsOnEmailInUseWithReadableMessage(): void
     {
         UserFactory::createOne(['email' => 'taken@example.com']);

@@ -8,12 +8,9 @@ use App\Reporting\Application\Handler\Report\OverdueOrdersReportHandler;
 use App\Reporting\Application\Report\OverdueOrderReportCriteria;
 use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class OverdueOrdersReportHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private OverdueOrdersReportHandler $handler;
 
     protected function setUp(): void

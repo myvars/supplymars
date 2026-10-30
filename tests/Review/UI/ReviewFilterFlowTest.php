@@ -7,12 +7,10 @@ namespace App\Tests\Review\UI;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
-use Zenstruck\Foundry\Test\Factories;
 
 final class ReviewFilterFlowTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
 
     public function testFilterFormRedirectsWithParams(): void
     {

@@ -13,12 +13,9 @@ use App\Tests\Shared\Factory\CustomerOrderFactory;
 use App\Tests\Shared\Factory\ProductFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Uid\Ulid;
-use Zenstruck\Foundry\Test\Factories;
 
 final class CreateOrderItemHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private CreateOrderItemHandler $handler;
 
     private OrderItemRepository $orderItems;

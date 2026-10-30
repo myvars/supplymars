@@ -13,12 +13,9 @@ use App\Tests\Shared\Factory\ProductFactory;
 use League\Flysystem\FilesystemOperator;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Zenstruck\Foundry\Test\Factories;
 
 final class CreateProductImageHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private CreateProductImageHandler $handler;
 
     private ProductRepository $products;

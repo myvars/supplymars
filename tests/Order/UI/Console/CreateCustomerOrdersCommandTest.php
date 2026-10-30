@@ -18,13 +18,10 @@ use Symfony\Component\Console\Exception\InvalidOptionException;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
-use Zenstruck\Foundry\Test\Factories;
 
 #[WithStory(StaffUserStory::class)]
 final class CreateCustomerOrdersCommandTest extends KernelTestCase
 {
-    use Factories;
-
     private CommandTester $commandTester;
 
     private EntityManagerInterface $em;

@@ -15,13 +15,10 @@ use App\Tests\Shared\Factory\PurchaseOrderItemFactory;
 use App\Tests\Shared\Story\StaffUserStory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
-use Zenstruck\Foundry\Test\Factories;
 
 #[WithStory(StaffUserStory::class)]
 final class CancelOrderItemHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private CancelOrderItemHandler $handler;
 
     private OrderItemRepository $orderItems;

@@ -9,12 +9,10 @@ use App\Tests\Shared\Factory\TicketFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
-use Zenstruck\Foundry\Test\Factories;
 
 final class ReplyToTicketFlowTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
 
     public function testStaffCanReplyToTicket(): void
     {

@@ -17,12 +17,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Zenstruck\Foundry\Test\Factories;
 
 final class StatusChangeLogWriterTest extends KernelTestCase
 {
-    use Factories;
-
     private EntityManagerInterface $em;
 
     private StatusChangeLogRepository $repo;

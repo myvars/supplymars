@@ -19,13 +19,10 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
-use Zenstruck\Foundry\Test\Factories;
 
 #[WithStory(StaffUserStory::class)]
 final class UpdateSupplierStockCommandTest extends KernelTestCase
 {
-    use Factories;
-
     private CommandTester $commandTester;
 
     protected function setUp(): void

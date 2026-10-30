@@ -8,12 +8,10 @@ use App\Tests\Shared\Factory\CategoryFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
-use Zenstruck\Foundry\Test\Factories;
 
 final class DeleteCategoryFlowTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
 
     public function testDeleteViaConfirmFlow(): void
     {

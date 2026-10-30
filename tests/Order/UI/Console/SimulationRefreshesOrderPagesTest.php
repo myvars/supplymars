@@ -25,7 +25,6 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Mercure\Update;
 use Zenstruck\Foundry\Attribute\WithStory;
-use Zenstruck\Foundry\Test\Factories;
 
 /**
  * The simulation's commands change many purchase order items in one flush. Each order they touch gets one
@@ -34,8 +33,6 @@ use Zenstruck\Foundry\Test\Factories;
 #[WithStory(StaffUserStory::class)]
 final class SimulationRefreshesOrderPagesTest extends KernelTestCase
 {
-    use Factories;
-
     private EntityManagerInterface $em;
 
     protected function setUp(): void

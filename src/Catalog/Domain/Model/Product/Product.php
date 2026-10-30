@@ -122,12 +122,12 @@ class Product
 
     /** @var Collection<int, SupplierProduct> */
     #[ORM\OneToMany(targetEntity: SupplierProduct::class, mappedBy: 'product')]
-    #[ORM\OrderBy(['cost' => 'ASC'])]
+    #[ORM\OrderBy(['cost' => \SortDirection::Ascending])]
     private Collection $supplierProducts;
 
     /** @var Collection<int, ProductImage> */
     #[ORM\OneToMany(targetEntity: ProductImage::class, mappedBy: 'product')]
-    #[ORM\OrderBy(['position' => 'ASC'])]
+    #[ORM\OrderBy(['position' => \SortDirection::Ascending])]
     private Collection $productImages;
 
     final public function __construct()

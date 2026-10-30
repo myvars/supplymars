@@ -7,12 +7,10 @@ namespace App\Tests\Reporting\UI;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
-use Zenstruck\Foundry\Test\Factories;
 
 final class ReportsControllerTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
 
     public function testProductSalesRendersWithDefaultCriteria(): void
     {

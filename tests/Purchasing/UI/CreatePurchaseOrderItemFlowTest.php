@@ -17,13 +17,11 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Uid\Ulid;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Attribute\WithStory;
-use Zenstruck\Foundry\Test\Factories;
 
 #[WithStory(StaffUserStory::class)]
 final class CreatePurchaseOrderItemFlowTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
     use ActionFormToken;
 
     public function testSuccessfulCreation(): void

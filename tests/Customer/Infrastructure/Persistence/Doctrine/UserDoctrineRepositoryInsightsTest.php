@@ -12,12 +12,9 @@ use App\Tests\Shared\Factory\CustomerOrderFactory;
 use App\Tests\Shared\Factory\CustomerOrderItemFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class UserDoctrineRepositoryInsightsTest extends KernelTestCase
 {
-    use Factories;
-
     private UserRepository $users;
 
     protected function setUp(): void
