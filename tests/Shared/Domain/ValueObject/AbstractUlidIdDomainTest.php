@@ -7,7 +7,7 @@ namespace App\Tests\Shared\Domain\ValueObject;
 use App\Order\Domain\Model\Order\OrderPublicId;
 use PHPUnit\Framework\TestCase;
 
-final class AbstractUlidIdTest extends TestCase
+final class AbstractUlidIdDomainTest extends TestCase
 {
     public function testTryFromStringReturnsIdForUlid(): void
     {

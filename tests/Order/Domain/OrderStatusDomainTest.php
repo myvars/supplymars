@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
  * Status change log retention deletes the history of entities in a final status, so a status counts as final
  * only when nothing can follow it.
  */
-final class OrderStatusFinalTest extends TestCase
+final class OrderStatusDomainTest extends TestCase
 {
     public function testOrderStatusIsFinalWhenItHasNoTransitions(): void
     {

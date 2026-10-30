@@ -8,7 +8,7 @@ use App\Review\Domain\Model\Review\ReviewStatus;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-final class ReviewStatusTransitionTest extends TestCase
+final class ReviewStatusDomainTest extends TestCase
 {
     #[DataProvider('transitionProvider')]
     public function testCanTransitionTo(ReviewStatus $from, ReviewStatus $to, bool $expected): void
