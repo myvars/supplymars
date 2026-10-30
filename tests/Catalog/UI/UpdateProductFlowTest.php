@@ -16,7 +16,7 @@ final class UpdateProductFlowTest extends WebTestCase
     public function testSuccessfulUpdateViaForm(): void
     {
         $user = UserFactory::new()->asStaff()->create();
-        $product = ProductFactory::new()->withActiveSource()->create();
+        $product = ProductFactory::new()->withActiveSource()->create(['isActive' => false]);
         $publicId = $product->getPublicId()->value();
 
         $this->browser()

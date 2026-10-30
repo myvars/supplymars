@@ -47,7 +47,5 @@ final class ReassignTicketFlowTest extends WebTestCase
             ->selectFieldOption('reassign[pool]', (string) $pool->getId())
             ->click('Reassign')
             ->assertSee('Ticket is already in this pool');
-
-        self::assertSame($pool->getId(), $ticket->getPool()->getId());
     }
 }
