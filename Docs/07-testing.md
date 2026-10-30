@@ -53,16 +53,38 @@ Tests mirror `src/`. Copy the nearest existing test.
 
 | Type | Base class | Location | Example |
 |------|-----------|----------|---------|
-| Unit (entity rules, events raised) | `TestCase` | `tests/{Context}/Domain/` | `tests/Order/Domain/OrderDomainTest.php` |
+| Unit (entity rules, events raised) | `TestCase` | `tests/{Context}/Domain/`, named `{Class}DomainTest` | `tests/Order/Domain/OrderDomainTest.php` |
 | Handler | `KernelTestCase` + `Factories` | `tests/{Context}/Application/Handler/` | `tests/Order/Application/Handler/CreateOrderHandlerTest.php`: invokes the handler (`($this->handler)($command)`), reads the order back through `OrderRepository` and checks its fields, and covers the customer-not-found and missing-VAT-rate failures |
 | Listener | `KernelTestCase` + `Factories` | `tests/{Context}/Application/Listener/` | `tests/Pricing/Application/Listener/CategoryPricingWasChangedListenerTest.php` |
 | Service | `KernelTestCase` + `Factories` | `tests/{Context}/Application/Service/` | `tests/Purchasing/Application/Service/OrderAllocatorTest.php`, `OrderItemAllocatorTest.php` (sourcing) |
-| Flow (web) | `WebTestCase` + `HasBrowser` | `tests/{Context}/UI/`, named `{Action}{Entity}FlowTest` | `tests/Catalog/UI/CreateManufacturerFlowTest.php`, `UpdateManufacturerFlowTest.php` |
+| Console | `KernelTestCase` | `tests/{Context}/UI/Console/`, named `{Command}Test` | `tests/Audit/UI/Console/PruneStatusChangeLogCommandTest.php`. A command test that also calls the app over HTTP keeps `KernelTestCase` and adds `HasBrowser` (`tests/Customer/UI/Console/IssueApiTokenCommandTest.php`) |
+| Repository and mapping | `KernelTestCase` | `tests/{Context}/Infrastructure/Persistence/Doctrine/` | `tests/Customer/Infrastructure/Persistence/Doctrine/UserDoctrineRepositoryInsightsTest.php`. Only for a query, or a mapping decision (cascade, orphan removal, `onDelete`, a unique key), whose effect a handler test would not show; `doctrine:schema:validate` already checks the mapping against the schema |
+| Flow (web) | `WebTestCase` + `HasBrowser` | `tests/{Context}/UI/`, named `{Action}{Entity}FlowTest` | `tests/Catalog/UI/CreateManufacturerFlowTest.php`, `UpdateManufacturerFlowTest.php`. A page that is not a FormFlow action is `{Controller}Test`, in the same folder (`tests/Reporting/UI/ReportsControllerTest.php`) |
 | API | as flow | `tests/{Context}/UI/Api/` | `tests/Order/UI/Api/OrderApiTest.php`; token handling and error format in `tests/Shared/UI/Http/Api/ApiAuthenticationTest.php` |
 
 For pricing cascades, see `tests/Pricing/Application/Handler/UpdateCategoryCostHandlerTest.php` and the listener tests beside the one above.
 
 An API test logs in with `->actingAs($user, 'api')`, which attaches the user to the `api` firewall. Public catalog endpoints need no login (`CatalogApiTest`). The API itself is described in [patterns/API/README.md](patterns/API/README.md).
+
+### Conventions
+
+How each test is written. Some tests predate a rule; bring a test in line when you change it.
+
+| Topic | Convention |
+|-------|------------|
+| Class | `final class`. Rector does not enforce it for test cases, so check it in review |
+| One class, one file | One test file per class under test, in the folder that matches `src/`. Add a case to the existing file rather than starting a second one about a topic |
+| Unit test name | `{Class}DomainTest` for a class in `Domain/` (`OrderStatusDomainTest`, `SalesDurationDomainTest`), `{Class}Test` elsewhere |
+| Method | camelCase `testXxx` that says what happens: `testFailsWhenOrderItemNotFound` |
+| Assertions | `self::assert*()` (they are static). Expected exceptions: `$this->expectException()` and `$this->expectExceptionMessageIsOrContains()`, which are instance methods, before the call that throws |
+| Handler setup | Get the handler from the container in `setUp()` and call it: `($this->handler)($command)` |
+| Logging in, handler and kernel tests | `#[WithStory(StaffUserStory::class)]` (or `SuperAdminUserStory`) on the class. Put it on each method instead only when one test must run with no one logged in (`RepublishReviewHandlerTest::testFailsWhenNoModeratorAuthenticated`) or tests need different stories (the super-admin delete handlers) |
+| Logging in, flow tests | `->actingAs(UserFactory::new()->asStaff()->create())`, with no story beside it |
+| Fixtures | Foundry factories and their states. Add a state to the factory rather than build an entity with `new` or `X::create()` + `persist()` + `flush()`, or set a field by reflection |
+| Reading back | `XFactory::assert()->exists()`, `->count()`, `->notExists()` for existence and counts; `XFactory::repository()->find($id)` for field values |
+| Test doubles | `createStub()` unless the test asserts a call; a mock only where it has an expectation. Use the real value object (`ProductPublicId::new()`, `VatRate::create()`) rather than a double of it |
+| Console | `self::runCommand('app:…', [...])` (Symfony 8.1, on `KernelTestCase`) returns an `ExecutionResult`; check it with `$this->assertCommandIsSuccessful($result)`, `assertCommandFailed()` or `assertCommandIsInvalid()`, and read `$result->getDisplay()`. Older tests build a `CommandTester` and compare the status code by hand |
+| Time | Code that needs the current time reads a `ClockInterface`; its test sets the time with Symfony's `ClockSensitiveTrait` (`static::mockTime()`) or a `MockClock`, never compares with `new \DateTimeImmutable()` |
 
 ### Factories and stories
 
@@ -80,7 +102,7 @@ Factories are in `tests/Shared/Factory/` (Zenstruck Foundry), one per entity; mo
 
 Shared related entities are created lazily with `LazyValue::memoize()`, so one is made only when the test does not pass its own; see `tests/Shared/Factory/CategoryFactory.php`.
 
-Log in with `->actingAs(UserFactory::new()->asStaff()->create())` in a flow test, or with a story on the test method: `#[WithStory(StaffUserStory::class)]` or `#[WithStory(SuperAdminUserStory::class)]` (`tests/Shared/Story/`). Each creates the `DefaultUserAuthenticator` default user with that role and logs it in, which is what a handler test needs when the handler reads the current user. The delete handlers that require `ROLE_SUPER_ADMIN` ([08-security.md](08-security.md#what-only-a-super-admin-can-do)) need the super-admin story or state; other deletes need only staff.
+Log in with `->actingAs(UserFactory::new()->asStaff()->create())` in a flow test, or with a story on the test class ([Conventions](#conventions)): `#[WithStory(StaffUserStory::class)]` or `#[WithStory(SuperAdminUserStory::class)]` (`tests/Shared/Story/`). Each creates the `DefaultUserAuthenticator` default user with that role and logs it in, which is what a handler test needs when the handler reads the current user. The delete handlers that require `ROLE_SUPER_ADMIN` ([08-security.md](08-security.md#what-only-a-super-admin-can-do)) need the super-admin story or state; other deletes need only staff.
 
 ### Assert a message was queued
 

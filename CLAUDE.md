@@ -177,7 +177,7 @@ Details: [Docs/patterns/UI/README.md](Docs/patterns/UI/README.md), [Docs/pattern
 
 ## Testing
 
-Details: [Docs/07-testing.md](Docs/07-testing.md).
+Details: [Docs/07-testing.md](Docs/07-testing.md); how each test is written (final classes, file names, logging in, fixtures, doubles): [Conventions](Docs/07-testing.md#conventions).
 
 - A feature isn't done until a test exercises it the way a caller would — an HTTP request for a controller, a handler call for a handler — not just "it didn't throw".
 - Tests mirror `src/` in `tests/`; DAMA rolls back each test's transaction. Foundry factories in `tests/Shared/Factory/` (`Factories` trait).
