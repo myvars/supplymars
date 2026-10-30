@@ -20,7 +20,8 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
-class CreateCustomerOrdersCommandTest extends KernelTestCase
+#[WithStory(StaffUserStory::class)]
+final class CreateCustomerOrdersCommandTest extends KernelTestCase
 {
     use Factories;
 
@@ -37,7 +38,6 @@ class CreateCustomerOrdersCommandTest extends KernelTestCase
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testSuccessCreatesOrders(): void
     {
         $this->createTestProducts(5);
@@ -53,7 +53,6 @@ class CreateCustomerOrdersCommandTest extends KernelTestCase
         self::assertSame($initialCount + 2, $this->getOrderCount());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testInvalidCountReturnsInvalid(): void
     {
         $this->commandTester->execute([
@@ -64,7 +63,6 @@ class CreateCustomerOrdersCommandTest extends KernelTestCase
         self::assertStringContainsString('Order count must be > 0', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testRandomOptionWorks(): void
     {
         $this->createTestProducts(5);
@@ -77,7 +75,6 @@ class CreateCustomerOrdersCommandTest extends KernelTestCase
         self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testDryRunDoesNotPersist(): void
     {
         $this->createTestProducts(5);
@@ -94,7 +91,6 @@ class CreateCustomerOrdersCommandTest extends KernelTestCase
         self::assertSame($initialCount, $this->getOrderCount());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testVerboseOutputShowsOrderIds(): void
     {
         $this->createTestProducts(5);
@@ -107,7 +103,6 @@ class CreateCustomerOrdersCommandTest extends KernelTestCase
         self::assertStringContainsString('Created Order IDs', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testCreatesOneOrderByDefault(): void
     {
         $this->createTestProducts(5);

@@ -15,7 +15,8 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
-class CalculateProductSalesCommandTest extends KernelTestCase
+#[WithStory(StaffUserStory::class)]
+final class CalculateProductSalesCommandTest extends KernelTestCase
 {
     use Factories;
 
@@ -32,7 +33,6 @@ class CalculateProductSalesCommandTest extends KernelTestCase
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testSuccessProcessesDays(): void
     {
         $this->commandTester->execute([
@@ -44,7 +44,6 @@ class CalculateProductSalesCommandTest extends KernelTestCase
         self::assertStringContainsString('Processed product sales data for 3 days', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testInvalidDayCountReturnsInvalid(): void
     {
         $this->commandTester->execute([
@@ -55,7 +54,6 @@ class CalculateProductSalesCommandTest extends KernelTestCase
         self::assertStringContainsString('dayCount must be > 0', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testDryRunDoesNotPersist(): void
     {
         $initialCount = $this->getProductSalesCount();
@@ -71,7 +69,6 @@ class CalculateProductSalesCommandTest extends KernelTestCase
         self::assertSame($initialCount, $this->getProductSalesCount());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testSkipSummaryPreventsChaining(): void
     {
         $this->commandTester->execute([
@@ -83,7 +80,6 @@ class CalculateProductSalesCommandTest extends KernelTestCase
         self::assertStringNotContainsString('product sales summary', strtolower($this->commandTester->getDisplay()));
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testVerboseOutputShowsDates(): void
     {
         $this->commandTester->execute([
@@ -95,7 +91,6 @@ class CalculateProductSalesCommandTest extends KernelTestCase
         self::assertStringContainsString('Processed Dates', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testZeroOffsetTriggersSummary(): void
     {
         $this->commandTester->execute([

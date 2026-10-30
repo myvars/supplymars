@@ -17,7 +17,7 @@ use Zenstruck\Foundry\Test\Factories;
  * Visitors use ordinary public addresses: private_ranges also covers the documentation ranges
  * (192.0.2.0/24, 198.51.100.0/24, 203.0.113.0/24), so an address from those would count as a proxy.
  */
-class TrustedProxyTest extends WebTestCase
+final class TrustedProxyTest extends WebTestCase
 {
     use HasBrowser;
     use Factories;

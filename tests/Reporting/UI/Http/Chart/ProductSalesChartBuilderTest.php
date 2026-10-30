@@ -13,7 +13,7 @@ use Psr\Clock\ClockInterface;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
 
-class ProductSalesChartBuilderTest extends TestCase
+final class ProductSalesChartBuilderTest extends TestCase
 {
     public function testCreateThrowsWhenDurationIsNull(): void
     {

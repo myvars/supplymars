@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Reporting\UI\Http\Controller;
+namespace App\Tests\Reporting\UI;
 
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
 
-class ReportsControllerTest extends WebTestCase
+final class ReportsControllerTest extends WebTestCase
 {
     use HasBrowser;
     use Factories;

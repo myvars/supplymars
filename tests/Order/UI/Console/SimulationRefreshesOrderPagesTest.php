@@ -32,7 +32,7 @@ use Zenstruck\Foundry\Test\Factories;
  * refresh of its page (RefreshOrderPageForViewers), handled as the worker would.
  */
 #[WithStory(StaffUserStory::class)]
-class SimulationRefreshesOrderPagesTest extends KernelTestCase
+final class SimulationRefreshesOrderPagesTest extends KernelTestCase
 {
     use Factories;
 

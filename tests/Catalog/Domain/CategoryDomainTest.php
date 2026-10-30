@@ -11,7 +11,7 @@ use App\Pricing\Domain\Model\VatRate\VatRate;
 use App\Shared\Domain\ValueObject\PriceModel;
 use PHPUnit\Framework\TestCase;
 
-class CategoryDomainTest extends TestCase
+final class CategoryDomainTest extends TestCase
 {
     private function stubUser(): User
     {
@@ -113,8 +113,8 @@ class CategoryDomainTest extends TestCase
 
     public function testInvalidNameThrows(): void
     {
-        self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessageIsOrContains('Category name cannot be empty');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains('Category name cannot be empty');
 
         Category::create(
             name: '',
@@ -128,8 +128,8 @@ class CategoryDomainTest extends TestCase
 
     public function testNegativeMarkupThrows(): void
     {
-        self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessageIsOrContains('Markup cannot be negative');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains('Markup cannot be negative');
 
         Category::create(
             name: 'Electronics',
@@ -143,8 +143,8 @@ class CategoryDomainTest extends TestCase
 
     public function testPriceModelNoneThrows(): void
     {
-        self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessageIsOrContains('A category must have a price model');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains('A category must have a price model');
 
         Category::create(
             name: 'Electronics',

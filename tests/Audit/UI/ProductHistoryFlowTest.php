@@ -16,7 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
 
-class ProductHistoryFlowTest extends WebTestCase
+final class ProductHistoryFlowTest extends WebTestCase
 {
     use HasBrowser;
     use Factories;

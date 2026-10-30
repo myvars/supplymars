@@ -67,8 +67,8 @@ final class UpdateSupplierHandlerTest extends KernelTestCase
         $supplier = SupplierFactory::createOne();
         $publicId = $supplier->getPublicId();
 
-        self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessageIsOrContains('Supplier name cannot be empty');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains('Supplier name cannot be empty');
 
         $command = new UpdateSupplier(
             id: $publicId,

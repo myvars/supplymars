@@ -17,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
+#[WithStory(StaffUserStory::class)]
 final class EditablePurchaseOrderProviderTest extends KernelTestCase
 {
     use Factories;
@@ -32,7 +33,6 @@ final class EditablePurchaseOrderProviderTest extends KernelTestCase
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testReturnsExistingEditablePurchaseOrder(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -50,7 +50,6 @@ final class EditablePurchaseOrderProviderTest extends KernelTestCase
         self::assertSame(PurchaseOrderStatus::PENDING, $result->getStatus());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testCreatesNewPurchaseOrderWhenNoneExists(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -68,7 +67,6 @@ final class EditablePurchaseOrderProviderTest extends KernelTestCase
         self::assertCount(1, $order->getPurchaseOrders());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testReturnsCorrectPOWhenMultipleSuppliersExist(): void
     {
         $supplier1 = SupplierFactory::createOne(['isActive' => true]);
@@ -91,7 +89,6 @@ final class EditablePurchaseOrderProviderTest extends KernelTestCase
         self::assertNotSame($po1->getId(), $result->getId());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testSkipsNonEditablePurchaseOrders(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -122,7 +119,6 @@ final class EditablePurchaseOrderProviderTest extends KernelTestCase
         self::assertTrue($result->allowEdit());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testCreatesSeparatePOsForDifferentSuppliers(): void
     {
         $supplier1 = SupplierFactory::createOne(['isActive' => true]);
@@ -139,7 +135,6 @@ final class EditablePurchaseOrderProviderTest extends KernelTestCase
         self::assertCount(2, $order->getPurchaseOrders());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testIsIdempotent(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);

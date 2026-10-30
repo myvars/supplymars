@@ -21,7 +21,7 @@ use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
-class AllocateOrderFlowTest extends WebTestCase
+final class AllocateOrderFlowTest extends WebTestCase
 {
     use HasBrowser;
     use Factories;

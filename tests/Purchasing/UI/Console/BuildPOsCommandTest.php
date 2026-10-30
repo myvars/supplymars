@@ -28,7 +28,8 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
-class BuildPOsCommandTest extends KernelTestCase
+#[WithStory(StaffUserStory::class)]
+final class BuildPOsCommandTest extends KernelTestCase
 {
     use Factories;
 
@@ -45,7 +46,6 @@ class BuildPOsCommandTest extends KernelTestCase
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testSuccessWithPendingOrders(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -69,7 +69,6 @@ class BuildPOsCommandTest extends KernelTestCase
         self::assertStringContainsString('Processed', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testNoCustomerOrdersToProcess(): void
     {
         $this->commandTester->execute(['order-count' => 10]);
@@ -78,7 +77,6 @@ class BuildPOsCommandTest extends KernelTestCase
         self::assertStringContainsString('No customer orders to process', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testInvalidCountReturnsInvalid(): void
     {
         $this->commandTester->execute(['order-count' => 0]);
@@ -87,7 +85,6 @@ class BuildPOsCommandTest extends KernelTestCase
         self::assertStringContainsString('orderCount must be > 0', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testDryRunDoesNotPersistChanges(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -117,7 +114,6 @@ class BuildPOsCommandTest extends KernelTestCase
         self::assertCount(0, $order->getPurchaseOrders());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testMultiSupplierAllocation(): void
     {
         $supplier1 = SupplierFactory::createOne(['isActive' => true]);
@@ -156,7 +152,6 @@ class BuildPOsCommandTest extends KernelTestCase
         self::assertGreaterThanOrEqual(1, $order->getPurchaseOrders()->count());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testVerboseOutputShowsProcessedOrderIds(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -183,7 +178,6 @@ class BuildPOsCommandTest extends KernelTestCase
         self::assertStringContainsString('Processed Order IDs', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testOutputShowsPOsCreatedAndItemsAllocated(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -208,7 +202,6 @@ class BuildPOsCommandTest extends KernelTestCase
         self::assertStringContainsString('item(s)', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testRetriesLineThatHadNoStock(): void
     {
         $stockedSource = $this->sourceWithStock(100);
@@ -235,7 +228,6 @@ class BuildPOsCommandTest extends KernelTestCase
         }
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testRetriesLineWhosePurchaseOrderItemWasRefunded(): void
     {
         $source = $this->sourceWithStock(100);
@@ -255,7 +247,6 @@ class BuildPOsCommandTest extends KernelTestCase
         self::assertSame(0, $orderItem->getOutstandingQty());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testRetriesLineWhosePurchaseOrderItemWasCancelled(): void
     {
         $source = $this->sourceWithStock(100);
@@ -272,7 +263,6 @@ class BuildPOsCommandTest extends KernelTestCase
         self::assertStringContainsString('allocated 1 item(s)', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testSkipsOrderWithNothingOutstanding(): void
     {
         $source = $this->sourceWithStock(100);
@@ -287,7 +277,6 @@ class BuildPOsCommandTest extends KernelTestCase
         self::assertStringContainsString('No customer orders to process', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testSkipsLockedOrderWithOutstandingQuantity(): void
     {
         $order = $this->orderItemWithOutstandingQuantity()->getCustomerOrder();
@@ -300,7 +289,6 @@ class BuildPOsCommandTest extends KernelTestCase
         self::assertStringContainsString('No customer orders to process', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testTakesNewOrdersBeforeRetries(): void
     {
         $retryItem = $this->orderItemWithOutstandingQuantity();

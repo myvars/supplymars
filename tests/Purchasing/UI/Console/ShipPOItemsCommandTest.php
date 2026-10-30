@@ -22,7 +22,8 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
-class ShipPOItemsCommandTest extends KernelTestCase
+#[WithStory(StaffUserStory::class)]
+final class ShipPOItemsCommandTest extends KernelTestCase
 {
     use Factories;
 
@@ -39,7 +40,6 @@ class ShipPOItemsCommandTest extends KernelTestCase
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testSuccessShippingWithSkipTiming(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -87,7 +87,6 @@ class ShipPOItemsCommandTest extends KernelTestCase
         self::assertSame(PurchaseOrderStatus::SHIPPED, $poItem->getStatus());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testNoAcceptedItemsToShip(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -101,7 +100,6 @@ class ShipPOItemsCommandTest extends KernelTestCase
         self::assertStringContainsString('No accepted PO items to ship', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testInvalidCountReturnsInvalid(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -115,7 +113,6 @@ class ShipPOItemsCommandTest extends KernelTestCase
         self::assertStringContainsString('poItemCount must be > 0', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testNoSupplierFoundReturnsFailure(): void
     {
         $this->commandTester->execute([
@@ -127,7 +124,6 @@ class ShipPOItemsCommandTest extends KernelTestCase
         self::assertStringContainsString('Supplier not found', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testDryRunDoesNotPersistChanges(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -175,7 +171,6 @@ class ShipPOItemsCommandTest extends KernelTestCase
         self::assertSame(PurchaseOrderStatus::ACCEPTED, $poItem->getStatus());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testTimingChecksAppliedWithoutSkipTiming(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -223,7 +218,6 @@ class ShipPOItemsCommandTest extends KernelTestCase
         self::assertStringContainsString('Processed', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testVerboseOutputShowsShippedIds(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -269,7 +263,6 @@ class ShipPOItemsCommandTest extends KernelTestCase
         self::assertStringContainsString('Shipped PO Item IDs', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testSpecificSupplierTargeting(): void
     {
         $supplier1 = SupplierFactory::createOne(['isActive' => true, 'name' => 'Supplier One']);

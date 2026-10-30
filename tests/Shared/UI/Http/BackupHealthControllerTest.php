@@ -8,7 +8,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Filesystem\Filesystem;
 use Zenstruck\Browser\Test\HasBrowser;
 
-class BackupHealthControllerTest extends WebTestCase
+final class BackupHealthControllerTest extends WebTestCase
 {
     use HasBrowser;
 

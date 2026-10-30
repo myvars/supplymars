@@ -10,7 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
 
-class UpdateProductFlowTest extends WebTestCase
+final class UpdateProductFlowTest extends WebTestCase
 {
     use HasBrowser;
     use Factories;

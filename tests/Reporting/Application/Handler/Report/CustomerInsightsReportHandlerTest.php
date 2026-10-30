@@ -14,7 +14,7 @@ use App\Tests\Shared\Factory\CustomerSalesSummaryFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 
-class CustomerInsightsReportHandlerTest extends KernelTestCase
+final class CustomerInsightsReportHandlerTest extends KernelTestCase
 {
     use Factories;
 

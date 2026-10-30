@@ -194,8 +194,8 @@ final class SupplierProductDomainTest extends TestCase
 
     public function testInvalidNameThrows(): void
     {
-        self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessageIsOrContains('Product name cannot be empty');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains('Product name cannot be empty');
 
         SupplierProduct::create(
             name: '',
@@ -216,8 +216,8 @@ final class SupplierProductDomainTest extends TestCase
 
     public function testNegativeWeightThrows(): void
     {
-        self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessageIsOrContains('Weight cannot be negative');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains('Weight cannot be negative');
 
         SupplierProduct::create(
             name: 'X',
@@ -238,8 +238,8 @@ final class SupplierProductDomainTest extends TestCase
 
     public function testNegativeLeadTimeThrows(): void
     {
-        self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessageIsOrContains('Lead time days cannot be negative');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains('Lead time days cannot be negative');
 
         SupplierProduct::create(
             name: 'X',

@@ -22,7 +22,8 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
-class AcceptPOsCommandTest extends KernelTestCase
+#[WithStory(StaffUserStory::class)]
+final class AcceptPOsCommandTest extends KernelTestCase
 {
     use Factories;
 
@@ -39,7 +40,6 @@ class AcceptPOsCommandTest extends KernelTestCase
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testSuccessWithWaitingPurchaseOrders(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -87,7 +87,6 @@ class AcceptPOsCommandTest extends KernelTestCase
         self::assertStringContainsString('Processed', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testNoWaitingPurchaseOrders(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -101,7 +100,6 @@ class AcceptPOsCommandTest extends KernelTestCase
         self::assertStringContainsString('No waiting purchase orders', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testInvalidCountReturnsInvalid(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -115,7 +113,6 @@ class AcceptPOsCommandTest extends KernelTestCase
         self::assertStringContainsString('poCount must be > 0', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testNoSupplierFoundReturnsFailure(): void
     {
         $this->commandTester->execute([
@@ -127,7 +124,6 @@ class AcceptPOsCommandTest extends KernelTestCase
         self::assertStringContainsString('Supplier not found', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testDryRunDoesNotPersistChanges(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -175,7 +171,6 @@ class AcceptPOsCommandTest extends KernelTestCase
         self::assertSame(PurchaseOrderStatus::PROCESSING, $poItem->getStatus());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testVerboseOutputShowsProcessedIds(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -221,7 +216,6 @@ class AcceptPOsCommandTest extends KernelTestCase
         self::assertStringContainsString('Processed PO IDs', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testSpecificSupplierTargeting(): void
     {
         $supplier1 = SupplierFactory::createOne(['isActive' => true, 'name' => 'Supplier One']);

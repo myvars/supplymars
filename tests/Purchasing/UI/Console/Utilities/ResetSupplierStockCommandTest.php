@@ -19,11 +19,11 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
+#[WithStory(StaffUserStory::class)]
 final class ResetSupplierStockCommandTest extends KernelTestCase
 {
     use Factories;
 
-    #[WithStory(StaffUserStory::class)]
     public function testProductStockFollowsItsActiveSourceAfterReset(): void
     {
         self::bootKernel();

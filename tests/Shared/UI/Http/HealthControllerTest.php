@@ -13,7 +13,7 @@ use Symfony\Component\Messenger\Transport\Receiver\MessageCountAwareInterface;
 use Symfony\Component\Messenger\Transport\TransportInterface;
 use Zenstruck\Browser\Test\HasBrowser;
 
-class HealthControllerTest extends WebTestCase
+final class HealthControllerTest extends WebTestCase
 {
     use HasBrowser;
 
@@ -36,7 +36,7 @@ class HealthControllerTest extends WebTestCase
     {
         $browser = $this->browser();
 
-        static::getContainer()->set(RedisHealthCheck::class, new class implements HealthCheckInterface {
+        self::getContainer()->set(RedisHealthCheck::class, new class implements HealthCheckInterface {
             public function name(): string
             {
                 return 'redis';
@@ -87,7 +87,7 @@ class HealthControllerTest extends WebTestCase
                 throw new \RuntimeException('Connection refused to database:3306');
             }
         };
-        static::getContainer()->set(QueueHealthCheck::class, new QueueHealthCheck($transport));
+        self::getContainer()->set(QueueHealthCheck::class, new QueueHealthCheck($transport));
 
         $browser
             ->get('/health')

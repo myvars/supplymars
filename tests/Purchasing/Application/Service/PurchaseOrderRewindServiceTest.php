@@ -23,6 +23,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
+#[WithStory(StaffUserStory::class)]
 final class PurchaseOrderRewindServiceTest extends KernelTestCase
 {
     use Factories;
@@ -51,7 +52,6 @@ final class PurchaseOrderRewindServiceTest extends KernelTestCase
         $this->em = $em;
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testRewindsProcessingPurchaseOrderToPending(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -97,7 +97,6 @@ final class PurchaseOrderRewindServiceTest extends KernelTestCase
         self::assertSame(PurchaseOrderStatus::PENDING, $purchaseOrderItem->getStatus());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testRewindClearsDeliveredAtDate(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -145,7 +144,6 @@ final class PurchaseOrderRewindServiceTest extends KernelTestCase
         self::assertSame(PurchaseOrderStatus::PENDING, $purchaseOrderItem->getStatus());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testRewindRemovesStatusChangeLogs(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -216,7 +214,6 @@ final class PurchaseOrderRewindServiceTest extends KernelTestCase
         self::assertCount(0, $poItemLogsAfter);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testRewindRegeneratesCustomerOrderStatus(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -265,7 +262,6 @@ final class PurchaseOrderRewindServiceTest extends KernelTestCase
         self::assertSame(OrderStatus::PENDING, $orderItem->getStatus());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testRewindsAllItemsInPurchaseOrder(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);

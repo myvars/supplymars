@@ -16,7 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Contracts\Cache\CacheInterface;
 use Zenstruck\Foundry\Test\Factories;
 
-class CreateOrderHandlerTest extends KernelTestCase
+final class CreateOrderHandlerTest extends KernelTestCase
 {
     use Factories;
 

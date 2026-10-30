@@ -15,7 +15,7 @@ use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use App\Purchasing\Domain\Model\Supplier\Supplier;
 use PHPUnit\Framework\TestCase;
 
-class PurchaseOrderDomainTest extends TestCase
+final class PurchaseOrderDomainTest extends TestCase
 {
     private function stubCustomerOrder(): CustomerOrder
     {

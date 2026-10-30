@@ -14,7 +14,8 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
-class HideReviewHandlerTest extends KernelTestCase
+#[WithStory(StaffUserStory::class)]
+final class HideReviewHandlerTest extends KernelTestCase
 {
     use Factories;
 
@@ -29,7 +30,6 @@ class HideReviewHandlerTest extends KernelTestCase
         $this->reviews = self::getContainer()->get(ReviewRepository::class);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testSuccessfulHide(): void
     {
         $review = ProductReviewFactory::new()->published()->create();
@@ -44,7 +44,6 @@ class HideReviewHandlerTest extends KernelTestCase
         self::assertSame(ReviewStatus::HIDDEN, $persisted->getStatus());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testFailsWhenNotPublished(): void
     {
         $review = ProductReviewFactory::createOne(); // PENDING

@@ -8,7 +8,7 @@ use App\Shared\Domain\Event\AbstractDomainEvent;
 use App\Shared\Domain\Event\DomainEventProviderTrait;
 use PHPUnit\Framework\TestCase;
 
-final class DomainEventProviderTraitTest extends TestCase
+final class DomainEventProviderTraitDomainTest extends TestCase
 {
     private function stubEvent(): AbstractDomainEvent
     {

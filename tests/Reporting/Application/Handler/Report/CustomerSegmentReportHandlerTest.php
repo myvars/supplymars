@@ -13,7 +13,7 @@ use App\Tests\Shared\Factory\CustomerSegmentSummaryFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 
-class CustomerSegmentReportHandlerTest extends KernelTestCase
+final class CustomerSegmentReportHandlerTest extends KernelTestCase
 {
     use Factories;
 

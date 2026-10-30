@@ -10,7 +10,7 @@ use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 
-class OverdueOrdersReportHandlerTest extends KernelTestCase
+final class OverdueOrdersReportHandlerTest extends KernelTestCase
 {
     use Factories;
 

@@ -24,7 +24,8 @@ use Zenstruck\Foundry\Test\Factories;
 
 use function Zenstruck\Foundry\force;
 
-class PruneStatusChangeLogCommandTest extends KernelTestCase
+#[WithStory(StaffUserStory::class)]
+final class PruneStatusChangeLogCommandTest extends KernelTestCase
 {
     use Factories;
 
@@ -37,7 +38,6 @@ class PruneStatusChangeLogCommandTest extends KernelTestCase
         $this->commandTester = new CommandTester($application->find('app:prune-status-change-log'));
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testDeletesOldRowsOfFinishedEntitiesOnly(): void
     {
         $deliveredOrder = CustomerOrderFactory::createOne(['status' => force(OrderStatus::DELIVERED)]);
@@ -83,7 +83,6 @@ class PruneStatusChangeLogCommandTest extends KernelTestCase
         }
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testDeletesAcrossBatches(): void
     {
         $deliveredItem = PurchaseOrderItemFactory::createOne(['status' => force(PurchaseOrderStatus::DELIVERED)]);
@@ -98,7 +97,6 @@ class PruneStatusChangeLogCommandTest extends KernelTestCase
         self::assertSame(0, StatusChangeLogFactory::count());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testSimulatorStillShipsAndDeliversOpenItemsAfterAPrune(): void
     {
         $acceptedItem = PurchaseOrderItemFactory::createOne(['status' => force(PurchaseOrderStatus::ACCEPTED)]);

@@ -16,7 +16,7 @@ use App\Shared\Domain\Service\Pricing\MarkupCalculator;
 use App\Shared\Domain\ValueObject\PriceModel;
 use PHPUnit\Framework\TestCase;
 
-class ProductDomainTest extends TestCase
+final class ProductDomainTest extends TestCase
 {
     private function stubUser(): User
     {
@@ -208,8 +208,8 @@ class ProductDomainTest extends TestCase
 
     public function testInvalidNameThrows(): void
     {
-        self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessageIsOrContains('Product name cannot be empty');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains('Product name cannot be empty');
 
         Product::create(
             name: '',
@@ -236,8 +236,8 @@ class ProductDomainTest extends TestCase
             isActive: true,
         );
 
-        self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessageIsOrContains('Markup cannot be negative');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains('Markup cannot be negative');
 
         $product->changePricing(
             markupCalculator: $this->stubCalculator(),

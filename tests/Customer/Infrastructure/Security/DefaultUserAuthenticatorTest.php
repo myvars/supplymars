@@ -122,8 +122,8 @@ final class DefaultUserAuthenticatorTest extends TestCase
             'test@example.com',
         );
 
-        self::expectException(\RuntimeException::class);
-        self::expectExceptionMessageIsOrContains('Default user is not a valid user.');
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessageIsOrContains('Default user is not a valid user.');
         $authenticator->login();
     }
 

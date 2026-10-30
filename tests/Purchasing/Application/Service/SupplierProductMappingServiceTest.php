@@ -13,6 +13,7 @@ use App\Purchasing\Application\Service\SupplierProductMappingService;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
 use App\Tests\Shared\Factory\CategoryFactory;
 use App\Tests\Shared\Factory\ManufacturerFactory;
+use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\SubcategoryFactory;
 use App\Tests\Shared\Factory\SupplierCategoryFactory;
 use App\Tests\Shared\Factory\SupplierFactory;
@@ -40,14 +41,12 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
         self::bootKernel();
         $this->service = self::getContainer()->get(SupplierProductMappingService::class);
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
+        VatRateFactory::new()->withStandardRate()->create();
     }
 
     #[WithStory(StaffUserStory::class)]
     public function testMapsSupplierProductToNewCatalogEntities(): void
     {
-        // Ensure default VAT rate exists
-        VatRateFactory::new()->withStandardRate()->create();
-
         $supplier = SupplierFactory::createOne();
 
         $supplierCategory = SupplierCategoryFactory::createOne([
@@ -127,7 +126,6 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
     {
         // No one is signed in, so a new category falls back to the default staff account
         UserFactory::createOne(['email' => self::getContainer()->get(DefaultUserAuthenticator::class)->getDefaultEmail()]);
-        VatRateFactory::new()->withStandardRate()->create();
 
         $supplierProduct = SupplierProductFactory::createOne(['product' => null]);
 
@@ -140,8 +138,6 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
     #[WithStory(StaffUserStory::class)]
     public function testReusesExistingManufacturerByName(): void
     {
-        VatRateFactory::new()->withStandardRate()->create();
-
         // Create existing manufacturer
         $existingManufacturer = ManufacturerFactory::createOne(['name' => 'Existing Manufacturer']);
 
@@ -193,8 +189,6 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
     #[WithStory(StaffUserStory::class)]
     public function testReusesExistingCategoryByName(): void
     {
-        VatRateFactory::new()->withStandardRate()->create();
-
         // Create existing category
         $existingCategory = CategoryFactory::createOne(['name' => 'Existing Category']);
 
@@ -246,8 +240,6 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
     #[WithStory(StaffUserStory::class)]
     public function testReusesExistingProductByName(): void
     {
-        VatRateFactory::new()->withStandardRate()->create();
-
         $existingCategory = CategoryFactory::createOne(['name' => 'Prod Cat']);
         $existingSubcategory = SubcategoryFactory::createOne([
             'name' => 'Prod Sub',
@@ -314,5 +306,119 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
         self::assertSame($existingProduct->getId(), $product->getId());
         // Supplier product should now be linked
         self::assertSame($product, $supplierProduct->getProduct());
+    }
+
+    public function testMapReusesExistingEntitiesAndDoesNotDuplicate(): void
+    {
+        $sp = SupplierProductFactory::createOne(['product' => null]);
+        $sm = $sp->getSupplierManufacturer();
+        $sc = $sp->getSupplierCategory();
+        $ss = $sp->getSupplierSubcategory();
+
+        $existingManufacturer = ManufacturerFactory::createOne(['name' => $sm->getName()]);
+        $existingCategory = CategoryFactory::createOne(['name' => $sc->getName()]);
+        $existingSubcategory = SubcategoryFactory::createOne([
+            'name' => $ss->getName(),
+            'category' => $existingCategory,
+        ]);
+        $existingProduct = ProductFactory::createOne([
+            'name' => $sp->getName(),
+            'category' => $existingCategory,
+            'subcategory' => $existingSubcategory,
+            'manufacturer' => $existingManufacturer,
+        ]);
+
+        // map and ensure reuse
+        $product = $this->service->map($sp);
+        $this->em->flush();
+
+        self::assertSame($existingProduct->getId(), $product->getId());
+        self::assertSame($existingProduct, $sp->getProduct());
+
+        $products = $this->em->getRepository(Product::class)->findBy(['name' => $sp->getName()]);
+        $manufacturers = $this->em->getRepository(Manufacturer::class)->findBy(['name' => $sm->getName()]);
+        $categories = $this->em->getRepository(Category::class)->findBy(['name' => $sc->getName()]);
+
+        self::assertCount(1, $products);
+        self::assertCount(1, $manufacturers);
+        self::assertCount(1, $categories);
+    }
+
+    public function testMapThrowsWhenSupplierManufacturerMissing(): void
+    {
+        $sp = SupplierProductFactory::createOne(['product' => null]);
+        $sp->assignSupplierManufacturer(null);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains('Supplier manufacturer is missing');
+        $this->service->map($sp);
+    }
+
+    public function testMapThrowsWhenSupplierCategoryMissing(): void
+    {
+        $sp = SupplierProductFactory::createOne(['product' => null]);
+        $sp->assignSupplierCategory(null);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains('Supplier category is missing');
+        $this->service->map($sp);
+    }
+
+    public function testMapThrowsWhenSupplierSubcategoryMissing(): void
+    {
+        $sp = SupplierProductFactory::createOne(['product' => null]);
+        $sp->assignSupplierSubcategory(null);
+
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains('Supplier subcategory is missing');
+        $this->service->map($sp);
+    }
+
+    public function testMapUsesDefaultOwnerWhenNoAuthenticatedUser(): void
+    {
+        // Create the default owner that the service looks for when no authenticated user
+        UserFactory::createOne(['email' => 'admin@supplymars.com', 'isStaff' => true]);
+
+        $sp = SupplierProductFactory::createOne(['product' => null]);
+        $sc = $sp->getSupplierCategory();
+
+        $product = $this->service->map($sp);
+        $this->em->flush();
+
+        $category = $product->getCategory();
+        self::assertSame($sc->getName(), $category->getName());
+        self::assertSame('admin@supplymars.com', $category->getOwner()->getEmail());
+    }
+
+    #[WithStory(StaffUserStory::class)]
+    public function testMapEstablishesBidirectionalRelationships(): void
+    {
+        $sp = SupplierProductFactory::createOne(['product' => null]);
+        $sm = $sp->getSupplierManufacturer();
+        $ss = $sp->getSupplierSubcategory();
+
+        $product = $this->service->map($sp);
+        $this->em->flush();
+
+        $manufacturer = $product->getManufacturer();
+        $subcategory = $product->getSubcategory();
+
+        // Verify bidirectional relationship: manufacturer -> supplierManufacturers
+        self::assertTrue(
+            $manufacturer->getSupplierManufacturers()->contains($sm),
+            'Manufacturer should contain the mapped SupplierManufacturer'
+        );
+
+        // Verify bidirectional relationship: subcategory -> supplierSubcategories
+        self::assertTrue(
+            $subcategory->getSupplierSubcategories()->contains($ss),
+            'Subcategory should contain the mapped SupplierSubcategory'
+        );
+
+        // Verify bidirectional relationship: product -> supplierProducts
+        self::assertTrue(
+            $product->getSupplierProducts()->contains($sp),
+            'Product should contain the mapped SupplierProduct'
+        );
     }
 }

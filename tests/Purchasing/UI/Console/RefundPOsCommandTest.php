@@ -22,7 +22,8 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
-class RefundPOsCommandTest extends KernelTestCase
+#[WithStory(StaffUserStory::class)]
+final class RefundPOsCommandTest extends KernelTestCase
 {
     use Factories;
 
@@ -39,7 +40,6 @@ class RefundPOsCommandTest extends KernelTestCase
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testSuccessRefundingRejectedPOs(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -83,7 +83,6 @@ class RefundPOsCommandTest extends KernelTestCase
         self::assertSame(PurchaseOrderStatus::REFUNDED, $poItem->getStatus());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testNoRejectedPurchaseOrders(): void
     {
         $this->commandTester->execute(['po-count' => 10]);
@@ -92,7 +91,6 @@ class RefundPOsCommandTest extends KernelTestCase
         self::assertStringContainsString('No rejected purchase orders', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testInvalidCountReturnsInvalid(): void
     {
         $this->commandTester->execute(['po-count' => 0]);
@@ -101,7 +99,6 @@ class RefundPOsCommandTest extends KernelTestCase
         self::assertStringContainsString('poCount must be > 0', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testDryRunDoesNotPersistChanges(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -147,7 +144,6 @@ class RefundPOsCommandTest extends KernelTestCase
         self::assertSame(PurchaseOrderStatus::REJECTED, $poItem->getStatus());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testReallocationTriggeredAfterRefund(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -189,7 +185,6 @@ class RefundPOsCommandTest extends KernelTestCase
         self::assertStringContainsString('reallocation', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testVerboseOutputShowsProcessedIds(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -234,7 +229,6 @@ class RefundPOsCommandTest extends KernelTestCase
         self::assertStringContainsString('Processed PO IDs', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testOutputShowsRefundedAndReallocatedCounts(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);

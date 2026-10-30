@@ -15,7 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Uid\Ulid;
 use Zenstruck\Foundry\Test\Factories;
 
-class CreateOrderItemHandlerTest extends KernelTestCase
+final class CreateOrderItemHandlerTest extends KernelTestCase
 {
     use Factories;
 

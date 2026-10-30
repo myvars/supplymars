@@ -17,7 +17,7 @@ use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
-class UpdateOrderItemFlowTest extends WebTestCase
+final class UpdateOrderItemFlowTest extends WebTestCase
 {
     use HasBrowser;
     use Factories;

@@ -21,7 +21,8 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
-class UpdateSupplierStockCommandTest extends KernelTestCase
+#[WithStory(StaffUserStory::class)]
+final class UpdateSupplierStockCommandTest extends KernelTestCase
 {
     use Factories;
 
@@ -35,7 +36,6 @@ class UpdateSupplierStockCommandTest extends KernelTestCase
         $this->commandTester = new CommandTester($command);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testSuccessUpdatingStock(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -56,7 +56,6 @@ class UpdateSupplierStockCommandTest extends KernelTestCase
         self::assertStringContainsString('Processed', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testLowStockReplenishment(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -80,7 +79,6 @@ class UpdateSupplierStockCommandTest extends KernelTestCase
         self::assertGreaterThanOrEqual($initialStock, $supplierProduct->getStock());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testReplenishmentRepricesTheProduct(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -119,7 +117,6 @@ class UpdateSupplierStockCommandTest extends KernelTestCase
         }
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testNoSupplierProductsFound(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -133,7 +130,6 @@ class UpdateSupplierStockCommandTest extends KernelTestCase
         self::assertStringContainsString('No supplier products found', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testInvalidCountReturnsInvalid(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -147,7 +143,6 @@ class UpdateSupplierStockCommandTest extends KernelTestCase
         self::assertStringContainsString('Product count must be > 0', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testNoSupplierFoundReturnsFailure(): void
     {
         $this->commandTester->execute([
@@ -159,7 +154,6 @@ class UpdateSupplierStockCommandTest extends KernelTestCase
         self::assertStringContainsString('Supplier not found', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testDryRunDoesNotPersistChanges(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -188,7 +182,6 @@ class UpdateSupplierStockCommandTest extends KernelTestCase
         self::assertSame($initialCost, $supplierProduct->getCost());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testVerboseOutputShowsProcessedProducts(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -209,7 +202,6 @@ class UpdateSupplierStockCommandTest extends KernelTestCase
         self::assertStringContainsString('Processed Supplier products', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testSpecificSupplierTargeting(): void
     {
         $supplier1 = SupplierFactory::createOne(['isActive' => true, 'name' => 'Supplier One']);
@@ -224,7 +216,6 @@ class UpdateSupplierStockCommandTest extends KernelTestCase
         self::assertStringContainsString('Supplier One', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testOutputShowsStockIncreasedDecreasedCounts(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -246,7 +237,6 @@ class UpdateSupplierStockCommandTest extends KernelTestCase
         self::assertStringContainsString('stock decreased', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testCostUpdateDuringReplenishment(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);

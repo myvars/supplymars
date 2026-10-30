@@ -24,6 +24,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
+#[WithStory(StaffUserStory::class)]
 final class RewindPurchaseOrderHandlerTest extends KernelTestCase
 {
     use Factories;
@@ -46,7 +47,6 @@ final class RewindPurchaseOrderHandlerTest extends KernelTestCase
         $this->em = $em;
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testRewindsExistingPurchaseOrder(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -91,7 +91,6 @@ final class RewindPurchaseOrderHandlerTest extends KernelTestCase
         self::assertSame(PurchaseOrderStatus::PENDING, $purchaseOrder->getStatus());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testRefusesPurchaseOrderWithRefundedItem(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -145,7 +144,6 @@ final class RewindPurchaseOrderHandlerTest extends KernelTestCase
         self::assertCount($logsBefore, $this->statusLogs($refundedItem->getId()));
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testRefusesPurchaseOrderWithCancelledItem(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -185,7 +183,6 @@ final class RewindPurchaseOrderHandlerTest extends KernelTestCase
         );
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testFailsWhenPurchaseOrderNotFound(): void
     {
         $missingId = PurchaseOrderPublicId::new();

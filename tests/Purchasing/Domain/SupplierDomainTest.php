@@ -9,7 +9,7 @@ use App\Purchasing\Domain\Model\Supplier\Supplier;
 use App\Purchasing\Domain\Model\Supplier\SupplierColourScheme;
 use PHPUnit\Framework\TestCase;
 
-class SupplierDomainTest extends TestCase
+final class SupplierDomainTest extends TestCase
 {
     public function testCreateTrimsNameAndSetsActive(): void
     {
@@ -74,8 +74,8 @@ class SupplierDomainTest extends TestCase
 
     public function testInvalidNameThrows(): void
     {
-        self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessageIsOrContains('Supplier name cannot be empty');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains('Supplier name cannot be empty');
 
         Supplier::create(
             name: '',

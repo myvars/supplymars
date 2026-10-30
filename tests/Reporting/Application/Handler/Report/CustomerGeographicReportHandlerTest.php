@@ -12,7 +12,7 @@ use App\Tests\Shared\Factory\CustomerGeographicSummaryFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 
-class CustomerGeographicReportHandlerTest extends KernelTestCase
+final class CustomerGeographicReportHandlerTest extends KernelTestCase
 {
     use Factories;
 
