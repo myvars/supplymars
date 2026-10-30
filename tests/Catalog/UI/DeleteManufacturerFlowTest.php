@@ -24,5 +24,7 @@ final class DeleteManufacturerFlowTest extends WebTestCase
             ->click('Delete')
             ->assertOn('/manufacturer/')
             ->assertSee('Manufacturer deleted');
+
+        ManufacturerFactory::assert()->notExists(['publicId' => $publicId]);
     }
 }

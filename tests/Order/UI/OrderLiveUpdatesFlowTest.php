@@ -251,9 +251,10 @@ final class OrderLiveUpdatesFlowTest extends WebTestCase
     public function testHubFailureKeepsTheChangeAndDoesNotFailTheMessage(): void
     {
         $order = CustomerOrderFactory::createOne();
+        $user = UserFactory::new()->asStaff()->create();
 
         $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->actingAs($user)
             ->visit('/order/' . $order->getPublicId()->value())
             ->interceptRedirects()
             ->click('button[data-order-lock]')
@@ -266,7 +267,7 @@ final class OrderLiveUpdatesFlowTest extends WebTestCase
         self::assertCount(1, $handled);
         self::assertInstanceOf(RefreshOrderPage::class, $handled[0]);
         self::assertSame([], QueuedNotifications::published(self::getContainer()));
-        self::assertNotNull(CustomerOrderFactory::repository()->find($order->getId())?->getOrderLock());
+        self::assertSame($user->getId(), CustomerOrderFactory::repository()->find($order->getId())?->getOrderLock()?->getId());
     }
 
     private function assertOneRefreshOf(CustomerOrder $order): void

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Order\UI;
 
+use App\Order\Domain\Model\Order\OrderStatus;
 use App\Tests\Shared\Factory\CustomerOrderFactory;
 use App\Tests\Shared\Factory\CustomerOrderItemFactory;
 use App\Tests\Shared\Factory\UserFactory;
@@ -26,5 +27,7 @@ final class CancelOrderFlowTest extends WebTestCase
             ->click('Cancel Order')
             ->assertOn('/order/')
             ->assertSee('Order cancelled');
+
+        self::assertSame(OrderStatus::CANCELLED, $order->getStatus());
     }
 }

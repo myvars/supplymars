@@ -104,5 +104,8 @@ final class RewindPurchaseOrderFlowTest extends WebTestCase
             ->click('Rewind to Pending')
             ->assertOn('/purchase/order/' . $publicId)
             ->assertSee('Purchase order rewound to pending');
+
+        self::assertSame(PurchaseOrderStatus::PENDING, $purchaseOrderItem->getStatus());
+        self::assertSame(PurchaseOrderStatus::PENDING, $purchaseOrder->getStatus());
     }
 }

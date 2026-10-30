@@ -34,6 +34,13 @@ final class UpdateSubcategoryFlowTest extends WebTestCase
             ->click('Update Subcategory')
             ->assertOn('/subcategory/' . $publicId)
             ->assertSee('Flow Updated Subcategory');
+
+        self::assertSame('Flow Updated Subcategory', $subcategory->getName());
+        self::assertSame($newCategory->getId(), $subcategory->getCategory()->getId());
+        self::assertSame('7.500', $subcategory->getDefaultMarkup());
+        self::assertSame(PriceModel::PRETTY_99, $subcategory->getPriceModel());
+        self::assertSame($newOwner->getId(), $subcategory->getOwner()?->getId());
+        self::assertFalse($subcategory->isActive());
     }
 
     public function testValidationErrorsOnEmptyName(): void

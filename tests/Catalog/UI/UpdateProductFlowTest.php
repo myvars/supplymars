@@ -28,6 +28,10 @@ final class UpdateProductFlowTest extends WebTestCase
             ->click('Update Product')
             ->assertOn('/product/' . $publicId)
             ->assertSee('Flow Updated Product');
+
+        self::assertSame('Flow Updated Product', $product->getName());
+        self::assertSame('FLOW-9876', $product->getMfrPartNumber());
+        self::assertTrue($product->isActive());
     }
 
     public function testUpdateOfNeverSourcedProduct(): void

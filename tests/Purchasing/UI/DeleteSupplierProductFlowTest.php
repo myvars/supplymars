@@ -75,7 +75,7 @@ final class DeleteSupplierProductFlowTest extends WebTestCase
         $this->deleteViaConfirmFlow($supplierProduct)
             ->assertSee('Used on purchase orders');
 
-        self::assertNotNull(SupplierProductFactory::repository()->find($supplierProduct->getId()));
+        SupplierProductFactory::assert()->exists(['id' => $supplierProduct->getId()]);
     }
 
     public function testRefusedDeleteLeavesActiveSourceUnchanged(): void
