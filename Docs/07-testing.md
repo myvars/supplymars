@@ -99,7 +99,7 @@ Factories are in `tests/Shared/Factory/` (Zenstruck Foundry), one per entity; mo
 | `ProductFactory` | `withActiveSource(?SupplierProduct)` | Adds a supplier product (a new one if none given) after persist (`afterPersist`), so the product has an active source |
 | `SupplierFactory` | `asWarehouse()` | Marks the supplier as the warehouse |
 | `ProductReviewFactory` | `published()`, `hidden()` | A review in that status |
-| `PurchaseOrderItemFactory` | `delivered()` | An item taken through each status to delivered, with `deliveredAt` now. The status changes are audited, so log in first (`StaffUserStory`) |
+| `PurchaseOrderItemFactory` | `delivered()` | An item taken through each status to delivered, with `deliveredAt` now; its purchase order and customer order item follow, as in the domain. The status changes are audited, so log in first (`StaffUserStory`) |
 
 Shared related entities are created lazily with `LazyValue::memoize()`, so one is made only when the test does not pass its own; see `tests/Shared/Factory/CategoryFactory.php`.
 
