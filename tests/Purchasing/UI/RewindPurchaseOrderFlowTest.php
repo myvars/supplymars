@@ -13,8 +13,12 @@ use App\Tests\Shared\Factory\PurchaseOrderItemFactory;
 use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Factory\UserFactory;
+use App\Tests\Shared\Story\StaffUserStory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
+use Zenstruck\Foundry\Attribute\WithStory;
+
+use function Zenstruck\Foundry\Persistence\save;
 
 final class RewindPurchaseOrderFlowTest extends WebTestCase
 {
@@ -62,6 +66,8 @@ final class RewindPurchaseOrderFlowTest extends WebTestCase
             ->assertSee('Are you sure you want to rewind this Purchase Order to pending');
     }
 
+    // Saving the fixture's status change is audited against the current user
+    #[WithStory(StaffUserStory::class)]
     public function testRewindViaConfirmFlow(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -95,6 +101,7 @@ final class RewindPurchaseOrderFlowTest extends WebTestCase
         ]);
 
         $purchaseOrderItem->updateItemStatus(PurchaseOrderStatus::PROCESSING);
+        save($purchaseOrderItem);
 
         $publicId = $purchaseOrder->getPublicId()->value();
 
@@ -104,5 +111,8 @@ final class RewindPurchaseOrderFlowTest extends WebTestCase
             ->click('Rewind to Pending')
             ->assertOn('/purchase/order/' . $publicId)
             ->assertSee('Purchase order rewound to pending');
+
+        self::assertSame(PurchaseOrderStatus::PENDING, $purchaseOrderItem->getStatus());
+        self::assertSame(PurchaseOrderStatus::PENDING, $purchaseOrder->getStatus());
     }
 }

@@ -60,7 +60,7 @@ final class DeleteCustomerFlowTest extends WebTestCase
             ->post('/customer/' . $publicId . '/delete', ['body' => ['_token' => $token]])
             ->assertSee('Customer cannot be deleted.');
 
-        self::assertNotNull(UserFactory::repository()->find($customer->getId()));
+        UserFactory::assert()->exists(['id' => $customer->getId()]);
     }
 
     public function testDeletingACustomerWithATicketShowsAnError(): void
@@ -76,6 +76,6 @@ final class DeleteCustomerFlowTest extends WebTestCase
             ->assertSuccessful()
             ->assertSee('Customer cannot be deleted.');
 
-        self::assertNotNull(UserFactory::repository()->find($customer->getId()));
+        UserFactory::assert()->exists(['id' => $customer->getId()]);
     }
 }

@@ -19,13 +19,16 @@ final class LockOrderFlowTest extends WebTestCase
     {
         $order = CustomerOrderFactory::createOne();
         $publicId = $order->getPublicId()->value();
+        $user = UserFactory::new()->asStaff()->create();
 
         $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->actingAs($user)
             ->get('/order/' . $publicId)
             ->click('button[data-order-lock]')
             ->assertOn('/order/' . $publicId)
             ->assertSeeElement('button[data-order-lock="locked"]');
+
+        self::assertSame($user->getId(), $order->getOrderLock()?->getId());
     }
 
     public function testUnlockOrderViaToggle(): void
@@ -42,6 +45,8 @@ final class LockOrderFlowTest extends WebTestCase
             ->click('button[data-order-lock]')
             ->assertOn('/order/' . $publicId)
             ->assertSeeElement('button[data-order-lock="unlocked"]');
+
+        self::assertNull($order->getOrderLock());
     }
 
     public function testLockIsNotReachableWithGet(): void

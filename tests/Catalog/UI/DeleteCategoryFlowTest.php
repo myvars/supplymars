@@ -24,5 +24,7 @@ final class DeleteCategoryFlowTest extends WebTestCase
             ->click('Delete Category')
             ->assertOn('/category/')
             ->assertSee('Category deleted');
+
+        CategoryFactory::assert()->notExists(['publicId' => $publicId]);
     }
 }

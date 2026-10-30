@@ -31,6 +31,8 @@ final class ReassignTicketFlowTest extends WebTestCase
             ->assertSee('Ticket reassigned to Shipping')
             ->assertSee('Shipping')
             ->assertSee('reassigned from Billing to Shipping');
+
+        self::assertSame($newPool->getId(), $ticket->getPool()->getId());
     }
 
     public function testReassignToSamePoolShowsError(): void

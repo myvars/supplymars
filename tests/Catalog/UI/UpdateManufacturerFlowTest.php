@@ -26,6 +26,9 @@ final class UpdateManufacturerFlowTest extends WebTestCase
             ->click('Update Manufacturer')
             ->assertOn('/manufacturer/' . $publicId)
             ->assertSee('Manufacturer updated');
+
+        self::assertSame('After', $manufacturer->getName());
+        self::assertTrue($manufacturer->isActive());
     }
 
     public function testEditFormValidationError(): void
