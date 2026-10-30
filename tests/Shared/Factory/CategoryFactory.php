@@ -16,29 +16,15 @@ use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
  */
 final class CategoryFactory extends PersistentObjectFactory
 {
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
-     *
-     * @todo inject services if required
-     */
-    public function __construct()
-    {
-    }
-
     public static function class(): string
     {
         return Category::class;
     }
 
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
-     *
-     * @todo add your default values here
-     */
     protected function defaults(): array
     {
         return [
-            'name' => ucfirst(implode(' ', (array) self::faker()->words(random_int(1, 3)))),
+            'name' => ucfirst(implode(' ', (array) self::faker()->words(self::faker()->numberBetween(1, 3)))),
             'owner' => LazyValue::memoize(fn (): User => UserFactory::new()->asStaff()->create()),
             'vatRate' => LazyValue::memoize(fn (): VatRate => VatRateFactory::new()->withStandardRate()->create()),
             'defaultMarkup' => Category::DEFAULT_MARKUP,
@@ -47,9 +33,6 @@ final class CategoryFactory extends PersistentObjectFactory
         ];
     }
 
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
-     */
     #[\Override]
     protected function initialize(): static
     {

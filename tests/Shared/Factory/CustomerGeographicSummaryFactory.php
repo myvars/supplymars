@@ -15,10 +15,6 @@ use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
  */
 final class CustomerGeographicSummaryFactory extends PersistentObjectFactory
 {
-    public function __construct()
-    {
-    }
-
     public static function class(): string
     {
         return CustomerGeographicSummary::class;

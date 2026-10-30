@@ -20,11 +20,6 @@ use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
  */
 final class ProductFactory extends PersistentObjectFactory
 {
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
-     *
-     * @todo inject services if required
-     */
     public function __construct(private readonly MarkupCalculator $markupCalculator)
     {
     }
@@ -34,28 +29,20 @@ final class ProductFactory extends PersistentObjectFactory
         return Product::class;
     }
 
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
-     *
-     * @todo add your default values here
-     */
     protected function defaults(): array
     {
         return [
-            'name' => ucfirst(implode(' ', (array) self::faker()->words(random_int(1, 3)))),
-            'description' => ucfirst(implode(' ', (array) self::faker()->words(random_int(5, 10)))),
+            'name' => ucfirst(implode(' ', (array) self::faker()->words(self::faker()->numberBetween(1, 3)))),
+            'description' => ucfirst(implode(' ', (array) self::faker()->words(self::faker()->numberBetween(5, 10)))),
             'category' => LazyValue::memoize(fn (): Category => CategoryFactory::createOne()),
             'subcategory' => null,
             'manufacturer' => LazyValue::memoize(fn (): Manufacturer => ManufacturerFactory::createOne()),
             'mfrPartNumber' => self::faker()->regexify('[A-Z]{4}[0-4]{4}'),
-            'owner' => LazyValue::memoize(fn (): User => UserFactory::createOne()),
+            'owner' => LazyValue::memoize(fn (): User => UserFactory::new()->asStaff()->create()),
             'isActive' => true,
         ];
     }
 
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
-     */
     #[\Override]
     protected function initialize(): static
     {

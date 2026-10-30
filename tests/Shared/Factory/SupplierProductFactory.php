@@ -20,11 +20,6 @@ use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
  */
 final class SupplierProductFactory extends PersistentObjectFactory
 {
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
-     *
-     * @todo inject services if required
-     */
     public function __construct(private readonly MarkupCalculator $markupCalculator)
     {
     }
@@ -34,11 +29,6 @@ final class SupplierProductFactory extends PersistentObjectFactory
         return SupplierProduct::class;
     }
 
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
-     *
-     * @todo add your default values here
-     */
     protected function defaults(): array
     {
         return [
@@ -58,9 +48,6 @@ final class SupplierProductFactory extends PersistentObjectFactory
         ];
     }
 
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
-     */
     #[\Override]
     protected function initialize(): static
     {

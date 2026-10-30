@@ -18,39 +18,22 @@ use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
  */
 final class CustomerOrderFactory extends PersistentObjectFactory
 {
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
-     *
-     * @todo inject services if required
-     */
-    public function __construct()
-    {
-    }
-
     public static function class(): string
     {
         return CustomerOrder::class;
     }
 
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
-     *
-     * @todo add your default values here
-     */
     protected function defaults(): array
     {
         return [
             'customer' => LazyValue::memoize(fn (): User => UserFactory::createOne()),
             'billingAddress' => null,
-            'shippingMethod' => LazyValue::memoize(fn () => self::faker()->randomElement(ShippingMethod::cases())),
+            'shippingMethod' => self::faker()->randomElement(ShippingMethod::cases()),
             'vatRate' => LazyValue::memoize(fn (): VatRate => VatRateFactory::new()->withStandardRate()->create()),
             'customerOrderRef' => self::faker()->word(),
         ];
     }
 
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
-     */
     #[\Override]
     protected function initialize(): static
     {

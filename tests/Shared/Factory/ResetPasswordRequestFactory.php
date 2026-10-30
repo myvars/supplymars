@@ -14,25 +14,11 @@ use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
  */
 final class ResetPasswordRequestFactory extends PersistentObjectFactory
 {
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
-     *
-     * @todo inject services if required
-     */
-    public function __construct()
-    {
-    }
-
     public static function class(): string
     {
         return ResetPasswordRequest::class;
     }
 
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
-     *
-     * @todo add your default values here
-     */
     protected function defaults(): array
     {
         return [
@@ -41,14 +27,5 @@ final class ResetPasswordRequestFactory extends PersistentObjectFactory
             'selector' => self::faker()->text(20),
             'user' => LazyValue::memoize(fn (): User => UserFactory::createOne()),
         ];
-    }
-
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
-     */
-    #[\Override]
-    protected function initialize(): static
-    {
-        return $this;
     }
 }

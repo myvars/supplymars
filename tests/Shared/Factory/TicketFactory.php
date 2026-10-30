@@ -16,10 +16,6 @@ use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
  */
 final class TicketFactory extends PersistentObjectFactory
 {
-    public function __construct()
-    {
-    }
-
     public static function class(): string
     {
         return Ticket::class;
@@ -30,7 +26,7 @@ final class TicketFactory extends PersistentObjectFactory
         return [
             'pool' => LazyValue::memoize(fn (): Pool => PoolFactory::createOne()),
             'customer' => LazyValue::memoize(fn (): User => UserFactory::createOne()),
-            'subject' => ucfirst(implode(' ', (array) self::faker()->words(random_int(3, 6)))),
+            'subject' => ucfirst(implode(' ', (array) self::faker()->words(self::faker()->numberBetween(3, 6)))),
             'body' => self::faker()->paragraph(),
         ];
     }

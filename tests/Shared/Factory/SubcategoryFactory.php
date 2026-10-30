@@ -16,40 +16,23 @@ use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
  */
 final class SubcategoryFactory extends PersistentObjectFactory
 {
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
-     *
-     * @todo inject services if required
-     */
-    public function __construct()
-    {
-    }
-
     public static function class(): string
     {
         return Subcategory::class;
     }
 
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
-     *
-     * @todo add your default values here
-     */
     protected function defaults(): array
     {
         return [
-            'name' => ucfirst(implode(' ', (array) self::faker()->words(random_int(1, 3)))),
+            'name' => ucfirst(implode(' ', (array) self::faker()->words(self::faker()->numberBetween(1, 3)))),
             'category' => LazyValue::memoize(fn (): Category => CategoryFactory::createOne()),
-            'owner' => LazyValue::memoize(fn (): User => UserFactory::createOne()),
+            'owner' => LazyValue::memoize(fn (): User => UserFactory::new()->asStaff()->create()),
             'defaultMarkup' => Subcategory::DEFAULT_MARKUP,
             'priceModel' => Subcategory::DEFAULT_PRICE_MODEL,
             'isActive' => true,
         ];
     }
 
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
-     */
     #[\Override]
     protected function initialize(): static
     {
