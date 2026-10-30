@@ -60,7 +60,7 @@ final class PaginatorTest extends TestCase
 
         $paginator = new Paginator();
 
-        self::expectException(LessThan1CurrentPageException::class);
+        $this->expectException(LessThan1CurrentPageException::class);
         $paginator->createPagination($adapter, page: 0, limit: 5);
     }
 
@@ -71,7 +71,7 @@ final class PaginatorTest extends TestCase
 
         $paginator = new Paginator();
 
-        self::expectException(OutOfRangeCurrentPageException::class);
+        $this->expectException(OutOfRangeCurrentPageException::class);
         $paginator->createPagination($adapter, page: 100, limit: 5);
     }
 

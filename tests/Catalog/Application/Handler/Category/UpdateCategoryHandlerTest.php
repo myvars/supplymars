@@ -48,7 +48,7 @@ final class UpdateCategoryHandlerTest extends KernelTestCase
 
         $result = ($this->handler)($command);
 
-        $this->assertTrue($result->ok);
+        self::assertTrue($result->ok);
 
         $persisted = $this->categories->getByPublicId($category->getPublicId());
         self::assertSame('Updated Name', $persisted->getName());

@@ -86,8 +86,8 @@ final class ProductImageDomainTest extends TestCase
             position: 1,
         );
 
-        self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessageIsOrContains('Position must be greater than 0');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains('Position must be greater than 0');
         $productImage->changePosition(0);
     }
 }

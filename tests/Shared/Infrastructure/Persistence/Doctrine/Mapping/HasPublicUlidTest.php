@@ -27,7 +27,7 @@ final class HasPublicUlidTest extends TestCase
     {
         $entity = new DummyEntityForUlid();
 
-        self::expectException(\LogicException::class);
+        $this->expectException(\LogicException::class);
         $entity->publicId();
     }
 }

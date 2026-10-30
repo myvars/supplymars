@@ -145,8 +145,8 @@ final class CreateSupplierProductHandlerTest extends KernelTestCase
         ]);
         $manufacturer = SupplierManufacturerFactory::createOne(['supplier' => $supplier]);
 
-        self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessageIsOrContains('Product name cannot be empty');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains('Product name cannot be empty');
 
         $command = new CreateSupplierProduct(
             name: '',

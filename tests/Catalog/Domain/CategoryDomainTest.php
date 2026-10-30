@@ -113,8 +113,8 @@ final class CategoryDomainTest extends TestCase
 
     public function testInvalidNameThrows(): void
     {
-        self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessageIsOrContains('Category name cannot be empty');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains('Category name cannot be empty');
 
         Category::create(
             name: '',
@@ -128,8 +128,8 @@ final class CategoryDomainTest extends TestCase
 
     public function testNegativeMarkupThrows(): void
     {
-        self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessageIsOrContains('Markup cannot be negative');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains('Markup cannot be negative');
 
         Category::create(
             name: 'Electronics',
@@ -143,8 +143,8 @@ final class CategoryDomainTest extends TestCase
 
     public function testPriceModelNoneThrows(): void
     {
-        self::expectException(\InvalidArgumentException::class);
-        self::expectExceptionMessageIsOrContains('A category must have a price model');
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains('A category must have a price model');
 
         Category::create(
             name: 'Electronics',
