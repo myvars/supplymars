@@ -13,10 +13,6 @@ use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
  */
 final class PoolFactory extends PersistentObjectFactory
 {
-    public function __construct()
-    {
-    }
-
     public static function class(): string
     {
         return Pool::class;

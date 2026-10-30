@@ -15,10 +15,6 @@ use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
  */
 final class ProductReviewSummaryFactory extends PersistentObjectFactory
 {
-    public function __construct()
-    {
-    }
-
     public static function class(): string
     {
         return ProductReviewSummary::class;

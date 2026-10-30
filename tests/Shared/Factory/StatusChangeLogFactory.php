@@ -15,25 +15,11 @@ use Zenstruck\Foundry\Persistence\PersistentObjectFactory;
  */
 final class StatusChangeLogFactory extends PersistentObjectFactory
 {
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
-     *
-     * @todo inject services if required
-     */
-    public function __construct()
-    {
-    }
-
     public static function class(): string
     {
         return StatusChangeLog::class;
     }
 
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#model-factories
-     *
-     * @todo add your default values here
-     */
     protected function defaults(): array
     {
         return [
@@ -43,14 +29,5 @@ final class StatusChangeLogFactory extends PersistentObjectFactory
             'user' => LazyValue::memoize(fn (): User => UserFactory::createOne()),
             'eventTimestamp' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
         ];
-    }
-
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#initialization
-     */
-    #[\Override]
-    protected function initialize(): static
-    {
-        return $this;
     }
 }
