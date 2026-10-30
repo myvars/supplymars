@@ -15,10 +15,11 @@ use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Story\StaffUserStory;
 use App\Tests\Shared\UI\ActionFormToken;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Attribute\WithStory;
+
+use function Zenstruck\Foundry\Persistence\save;
 
 final class AllocateOrderFlowTest extends WebTestCase
 {
@@ -64,7 +65,7 @@ final class AllocateOrderFlowTest extends WebTestCase
             'quantity' => 5,
         ]);
         $poItem->updateItemStatus(PurchaseOrderStatus::PROCESSING);
-        self::getContainer()->get(EntityManagerInterface::class)->flush();
+        save($poItem);
 
         $publicId = $order->getPublicId()->value();
 

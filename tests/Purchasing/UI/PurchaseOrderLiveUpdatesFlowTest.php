@@ -20,12 +20,13 @@ use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Mercure\MercureCookie;
 use App\Tests\Shared\Mercure\QueuedNotifications;
 use App\Tests\Shared\Story\StaffUserStory;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Mercure\Update;
 use Zenstruck\Browser\KernelBrowser;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Attribute\WithStory;
+
+use function Zenstruck\Foundry\Persistence\save;
 
 /**
  * A purchase order's page refreshes with its order's page: it subscribes to the order's topic, which every change
@@ -59,7 +60,7 @@ final class PurchaseOrderLiveUpdatesFlowTest extends WebTestCase
         $user = UserFactory::new()->asStaff()->create();
         $poItem = $this->purchaseOrderItem();
         $poItem->updateItemStatus(PurchaseOrderStatus::PROCESSING);
-        self::getContainer()->get(EntityManagerInterface::class)->flush();
+        save($poItem);
         // The setup's own refresh: handled now, so the form's is not dropped as its duplicate
         QueuedNotifications::handle(self::getContainer());
 
@@ -90,7 +91,7 @@ final class PurchaseOrderLiveUpdatesFlowTest extends WebTestCase
     {
         $poItem = $this->purchaseOrderItem();
         $poItem->updateItemStatus(PurchaseOrderStatus::PROCESSING);
-        self::getContainer()->get(EntityManagerInterface::class)->flush();
+        save($poItem);
         QueuedNotifications::handle(self::getContainer());
         $purchaseOrderId = $poItem->getPurchaseOrder()->getPublicId()->value();
 
