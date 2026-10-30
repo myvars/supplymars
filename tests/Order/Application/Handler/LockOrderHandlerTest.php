@@ -15,6 +15,7 @@ use Symfony\Component\Uid\Ulid;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
+#[WithStory(StaffUserStory::class)]
 final class LockOrderHandlerTest extends KernelTestCase
 {
     use Factories;
@@ -30,7 +31,6 @@ final class LockOrderHandlerTest extends KernelTestCase
         $this->orders = self::getContainer()->get(OrderRepository::class);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testHandleLocksOrder(): void
     {
         $order = CustomerOrderFactory::createOne();
@@ -47,7 +47,6 @@ final class LockOrderHandlerTest extends KernelTestCase
         self::assertSame('admin@supplymars.com', $reloaded->getOrderLock()->getUserIdentifier());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testHandleUnlocksOrder(): void
     {
         $order = CustomerOrderFactory::createOne();
@@ -68,7 +67,6 @@ final class LockOrderHandlerTest extends KernelTestCase
         self::assertNull($reloadedAgain->getOrderLock());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testHandleFailsWhenOrderNotFound(): void
     {
         $fakePublicId = OrderPublicId::fromString((string) new Ulid());

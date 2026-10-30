@@ -15,6 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
+#[WithStory(StaffUserStory::class)]
 final class ApproveReviewHandlerTest extends KernelTestCase
 {
     use Factories;
@@ -30,7 +31,6 @@ final class ApproveReviewHandlerTest extends KernelTestCase
         $this->reviews = self::getContainer()->get(ReviewRepository::class);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testSuccessfulApproval(): void
     {
         $review = ProductReviewFactory::createOne();
@@ -45,7 +45,6 @@ final class ApproveReviewHandlerTest extends KernelTestCase
         self::assertSame(ReviewStatus::PUBLISHED, $persisted->getStatus());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testFailsWhenReviewNotFound(): void
     {
         $command = new ApproveReview(ReviewPublicId::new());

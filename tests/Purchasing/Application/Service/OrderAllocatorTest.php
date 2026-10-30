@@ -19,6 +19,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
+#[WithStory(StaffUserStory::class)]
 final class OrderAllocatorTest extends KernelTestCase
 {
     use Factories;
@@ -34,7 +35,6 @@ final class OrderAllocatorTest extends KernelTestCase
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testProcessAllocatesAllItemsWithSufficientStock(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -59,7 +59,6 @@ final class OrderAllocatorTest extends KernelTestCase
         self::assertCount(1, $order->getPurchaseOrders());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testProcessSkipsItemsWithZeroOutstandingQty(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -95,7 +94,6 @@ final class OrderAllocatorTest extends KernelTestCase
         self::assertSame($initialPurchaseOrderCount, $order->getPurchaseOrders()->count());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testProcessSkipsItemsWithNoSupplierProduct(): void
     {
         // Create a product without any supplier product source
@@ -116,7 +114,6 @@ final class OrderAllocatorTest extends KernelTestCase
         self::assertCount(0, $order->getPurchaseOrders());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testProcessContinuesOnPerItemFailures(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -152,7 +149,6 @@ final class OrderAllocatorTest extends KernelTestCase
         self::assertCount(1, $order->getPurchaseOrders());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testProcessUpdatesPurchaseOrderItemStatusWhenAllAllocated(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -182,7 +178,6 @@ final class OrderAllocatorTest extends KernelTestCase
         }
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testProcessDoesNotUpdateStatusWhenPartiallyAllocated(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -223,7 +218,6 @@ final class OrderAllocatorTest extends KernelTestCase
         }
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testAllItemsAllocatedReturnsTrueWhenFullyAllocated(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -253,7 +247,6 @@ final class OrderAllocatorTest extends KernelTestCase
         self::assertTrue($this->allocator->allItemsAllocated($order));
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testAllItemsAllocatedReturnsFalseWhenOutstandingExists(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -283,7 +276,6 @@ final class OrderAllocatorTest extends KernelTestCase
         self::assertFalse($this->allocator->allItemsAllocated($order));
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testProcessCreatesNewPurchaseOrderForSupplier(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -312,7 +304,6 @@ final class OrderAllocatorTest extends KernelTestCase
         self::assertSame($supplier->getId(), $purchaseOrder->getSupplier()->getId());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testProcessUsesExistingEditablePurchaseOrder(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);

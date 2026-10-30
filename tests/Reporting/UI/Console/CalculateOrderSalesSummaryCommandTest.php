@@ -16,6 +16,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
+#[WithStory(StaffUserStory::class)]
 final class CalculateOrderSalesSummaryCommandTest extends KernelTestCase
 {
     use Factories;
@@ -33,7 +34,6 @@ final class CalculateOrderSalesSummaryCommandTest extends KernelTestCase
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testSuccessProcessesAllDurations(): void
     {
         $this->commandTester->execute([]);
@@ -45,7 +45,6 @@ final class CalculateOrderSalesSummaryCommandTest extends KernelTestCase
         );
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testRebuildFlagWorks(): void
     {
         $this->commandTester->execute([
@@ -56,7 +55,6 @@ final class CalculateOrderSalesSummaryCommandTest extends KernelTestCase
         self::assertStringContainsString('calculation completed', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testDryRunDoesNotPersist(): void
     {
         $initialCount = $this->getOrderSalesSummaryCount();
@@ -70,7 +68,6 @@ final class CalculateOrderSalesSummaryCommandTest extends KernelTestCase
         self::assertSame($initialCount, $this->getOrderSalesSummaryCount());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testVerboseOutputShowsDurations(): void
     {
         $this->commandTester->execute([], ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]);

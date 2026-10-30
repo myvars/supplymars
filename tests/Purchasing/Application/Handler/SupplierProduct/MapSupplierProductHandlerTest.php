@@ -16,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
+#[WithStory(StaffUserStory::class)]
 final class MapSupplierProductHandlerTest extends KernelTestCase
 {
     use Factories;
@@ -32,7 +33,6 @@ final class MapSupplierProductHandlerTest extends KernelTestCase
         VatRateFactory::new()->withStandardRate()->create();
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testHandleMapsWhenUnmapped(): void
     {
         $supplierProduct = SupplierProductFactory::createOne([

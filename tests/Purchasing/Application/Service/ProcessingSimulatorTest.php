@@ -17,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
+#[WithStory(StaffUserStory::class)]
 final class ProcessingSimulatorTest extends KernelTestCase
 {
     use Factories;
@@ -31,7 +32,6 @@ final class ProcessingSimulatorTest extends KernelTestCase
         $this->simulator = $simulator;
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testCanShipReturnsFalseWithoutStatusChangeLog(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -43,7 +43,6 @@ final class ProcessingSimulatorTest extends KernelTestCase
         self::assertFalse($result);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testCanShipReturnsFalseOutsideBusinessHours(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -56,7 +55,6 @@ final class ProcessingSimulatorTest extends KernelTestCase
         self::assertFalse($result);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testCanShipReturnsFalseOutsideBusinessHoursEvening(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -69,7 +67,6 @@ final class ProcessingSimulatorTest extends KernelTestCase
         self::assertFalse($result);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testCanShipReturnsFalseWithInsufficientWaitTime(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -84,7 +81,6 @@ final class ProcessingSimulatorTest extends KernelTestCase
         self::assertFalse($result);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testCanShipTimingOnlyReturnsTrueWhenAllConditionsMet(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -99,7 +95,6 @@ final class ProcessingSimulatorTest extends KernelTestCase
         self::assertTrue($result);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testCanDeliverReturnsFalseWithoutStatusChangeLog(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -111,7 +106,6 @@ final class ProcessingSimulatorTest extends KernelTestCase
         self::assertFalse($result);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testCanDeliverReturnsFalseOutsideBusinessHours(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -124,7 +118,6 @@ final class ProcessingSimulatorTest extends KernelTestCase
         self::assertFalse($result);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testCanDeliverReturnsFalseOutsideBusinessHoursEvening(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -137,7 +130,6 @@ final class ProcessingSimulatorTest extends KernelTestCase
         self::assertFalse($result);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testCanDeliverReturnsFalseWithInsufficientWaitTime(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -152,7 +144,6 @@ final class ProcessingSimulatorTest extends KernelTestCase
         self::assertFalse($result);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testCanDeliverTimingOnlyReturnsTrueWhenAllConditionsMet(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -167,7 +158,6 @@ final class ProcessingSimulatorTest extends KernelTestCase
         self::assertTrue($result);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testCanShipAtBusinessHoursBoundary(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -180,7 +170,6 @@ final class ProcessingSimulatorTest extends KernelTestCase
         self::assertTrue($result);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testCanShipAtBusinessHoursBoundaryEnd(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -193,7 +182,6 @@ final class ProcessingSimulatorTest extends KernelTestCase
         self::assertTrue($result);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testCanShipAtBusinessHoursBoundaryFails(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -206,7 +194,6 @@ final class ProcessingSimulatorTest extends KernelTestCase
         self::assertFalse($result);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testCanDeliverAtDeliveryHoursBoundary(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -219,7 +206,6 @@ final class ProcessingSimulatorTest extends KernelTestCase
         self::assertTrue($result);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testCanDeliverAtDeliveryHoursBoundaryEvening(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -232,7 +218,6 @@ final class ProcessingSimulatorTest extends KernelTestCase
         self::assertTrue($result);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testCanDeliverAtDeliveryHoursBoundaryFails(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);

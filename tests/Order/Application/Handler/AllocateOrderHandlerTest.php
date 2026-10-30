@@ -20,6 +20,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
+#[WithStory(StaffUserStory::class)]
 final class AllocateOrderHandlerTest extends KernelTestCase
 {
     use Factories;
@@ -32,7 +33,6 @@ final class AllocateOrderHandlerTest extends KernelTestCase
         $this->handler = self::getContainer()->get(AllocateOrderHandler::class);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testHandleAllocatesOrderSuccessfully(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -58,7 +58,6 @@ final class AllocateOrderHandlerTest extends KernelTestCase
         self::assertSame('Order processed.', $result->message);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testHandleFailsWhenOrderNotFound(): void
     {
         $fakePublicId = OrderPublicId::new();
@@ -71,7 +70,6 @@ final class AllocateOrderHandlerTest extends KernelTestCase
         self::assertStringContainsString('Order not found', $result->message);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testHandleFailsWhenAllItemsAlreadyAllocated(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -107,7 +105,6 @@ final class AllocateOrderHandlerTest extends KernelTestCase
         self::assertSame('No items to allocate.', $result->message);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testHandleSendsHandAllocatedPendingItemsToSuppliers(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -138,7 +135,6 @@ final class AllocateOrderHandlerTest extends KernelTestCase
         self::assertSame(OrderStatus::PROCESSING, $order->getStatus());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testHandleLeavesCancelledItemOffPurchaseOrders(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -173,7 +169,6 @@ final class AllocateOrderHandlerTest extends KernelTestCase
         self::assertSame(0, $cancelledItem->getOutstandingQty());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testHandleFailsWhenCannotAllocateAllItems(): void
     {
         // Create a product without any supplier product source

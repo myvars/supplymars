@@ -17,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
+#[WithStory(StaffUserStory::class)]
 final class UpdateOrderItemHandlerTest extends KernelTestCase
 {
     use Factories;
@@ -116,7 +117,6 @@ final class UpdateOrderItemHandlerTest extends KernelTestCase
         self::assertNull($removed);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testZeroQuantityFailsWithPurchaseOrderAllocation(): void
     {
         $product = ProductFactory::new()->withActiveSource()->create();
@@ -143,7 +143,6 @@ final class UpdateOrderItemHandlerTest extends KernelTestCase
         self::assertStringContainsString('Allocated PO qty > 0', $result->message);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testFailsWhenQuantityBelowAllocated(): void
     {
         $product = ProductFactory::new()->withActiveSource()->create();
@@ -170,7 +169,6 @@ final class UpdateOrderItemHandlerTest extends KernelTestCase
         self::assertStringContainsString('Below allocated qty', $result->message);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testUpdateSucceedsWhenQuantityEqualsAllocated(): void
     {
         $product = ProductFactory::new()->withActiveSource()->create();
@@ -200,7 +198,6 @@ final class UpdateOrderItemHandlerTest extends KernelTestCase
         self::assertSame(3, $persisted->getQuantity());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testUpdateFailsWhenOrderItemIsCancelled(): void
     {
         $product = ProductFactory::new()->withActiveSource()->create();

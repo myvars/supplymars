@@ -16,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
+#[WithStory(StaffUserStory::class)]
 final class CancelOrderHandlerTest extends KernelTestCase
 {
     use Factories;
@@ -31,7 +32,6 @@ final class CancelOrderHandlerTest extends KernelTestCase
         $this->orders = self::getContainer()->get(OrderRepository::class);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testHandleCancelsOrderWithItems(): void
     {
         $order = CustomerOrderFactory::createOne();
@@ -60,7 +60,6 @@ final class CancelOrderHandlerTest extends KernelTestCase
         self::assertStringContainsString('Order not found', $result->message);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testHandleFailsWhenOrderAlreadyCancelled(): void
     {
         $order = CustomerOrderFactory::createOne();

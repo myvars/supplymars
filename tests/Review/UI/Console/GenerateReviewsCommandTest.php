@@ -24,6 +24,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
+#[WithStory(StaffUserStory::class)]
 final class GenerateReviewsCommandTest extends KernelTestCase
 {
     use Factories;
@@ -41,7 +42,6 @@ final class GenerateReviewsCommandTest extends KernelTestCase
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testSuccessGeneratesReviews(): void
     {
         $this->createEligiblePurchase();
@@ -56,7 +56,6 @@ final class GenerateReviewsCommandTest extends KernelTestCase
         self::assertStringContainsString('reviews generated', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testNoEligibleItemsReturnsSuccess(): void
     {
         $this->commandTester->execute([
@@ -67,7 +66,6 @@ final class GenerateReviewsCommandTest extends KernelTestCase
         self::assertStringContainsString('0 reviews generated', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testInvalidCountReturnsInvalid(): void
     {
         $this->commandTester->execute([
@@ -78,7 +76,6 @@ final class GenerateReviewsCommandTest extends KernelTestCase
         self::assertStringContainsString('Count must be > 0', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testDryRunDoesNotPersist(): void
     {
         $this->createEligiblePurchase();
@@ -95,7 +92,6 @@ final class GenerateReviewsCommandTest extends KernelTestCase
         self::assertSame($initialCount, $this->getReviewCount());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testProductIdFilterWorks(): void
     {
         $purchase = $this->createEligiblePurchase();
@@ -108,7 +104,6 @@ final class GenerateReviewsCommandTest extends KernelTestCase
         self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testVerboseOutputShowsReviewIds(): void
     {
         $this->createEligiblePurchase();

@@ -16,6 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
+#[WithStory(StaffUserStory::class)]
 final class RejectReviewHandlerTest extends KernelTestCase
 {
     use Factories;
@@ -31,7 +32,6 @@ final class RejectReviewHandlerTest extends KernelTestCase
         $this->reviews = self::getContainer()->get(ReviewRepository::class);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testSuccessfulRejection(): void
     {
         $review = ProductReviewFactory::createOne();
@@ -52,7 +52,6 @@ final class RejectReviewHandlerTest extends KernelTestCase
         self::assertSame('Clearly spam content', $persisted->getModerationNotes());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testHandleRefusesOverLengthNotesFromTheEntityRules(): void
     {
         // No form in front of the handler: the review's own Length rule must stop the save.

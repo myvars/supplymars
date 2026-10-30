@@ -18,6 +18,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
+#[WithStory(StaffUserStory::class)]
 final class OrderItemAllocatorTest extends KernelTestCase
 {
     use Factories;
@@ -33,7 +34,6 @@ final class OrderItemAllocatorTest extends KernelTestCase
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testForOrderItemCreatesNewPurchaseOrderItem(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -64,7 +64,6 @@ final class OrderItemAllocatorTest extends KernelTestCase
         self::assertSame($orderItem->getId(), $poItem->getCustomerOrderItem()->getId());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testForOrderItemUpdatesExistingItemQuantity(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -101,7 +100,6 @@ final class OrderItemAllocatorTest extends KernelTestCase
         self::assertSame(10, $poItem->getQuantity());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testForOrderItemThrowsWhenNoQuantityToAllocate(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -140,7 +138,6 @@ final class OrderItemAllocatorTest extends KernelTestCase
         $this->allocator->forOrderItem($newPurchaseOrder, $orderItem, $supplierProduct);
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testForOrderItemRecalculatesPurchaseOrderTotal(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -174,7 +171,6 @@ final class OrderItemAllocatorTest extends KernelTestCase
         self::assertEquals($expectedTotal, (float) $purchaseOrder->getTotalPrice());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testForOrderItemLinksCustomerOrderItemCorrectly(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);

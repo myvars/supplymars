@@ -22,6 +22,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
+#[WithStory(StaffUserStory::class)]
 final class RewindMixedStatusPurchaseOrdersCommandTest extends KernelTestCase
 {
     use Factories;
@@ -42,7 +43,6 @@ final class RewindMixedStatusPurchaseOrdersCommandTest extends KernelTestCase
         $this->em = $em;
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testNoMatchingPurchaseOrders(): void
     {
         $this->commandTester->execute(['--limit' => 10]);
@@ -51,7 +51,6 @@ final class RewindMixedStatusPurchaseOrdersCommandTest extends KernelTestCase
         self::assertStringContainsString('No purchase orders found', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testRewindsPurchaseOrderWithMixedStatuses(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -126,7 +125,6 @@ final class RewindMixedStatusPurchaseOrdersCommandTest extends KernelTestCase
         self::assertSame(PurchaseOrderStatus::PENDING, $po->getStatus());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testSkipsPurchaseOrderWithRefundedItem(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -170,7 +168,6 @@ final class RewindMixedStatusPurchaseOrdersCommandTest extends KernelTestCase
         self::assertSame(PurchaseOrderStatus::REFUNDED, $refundedItem->getStatus());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testDryRunDoesNotPersistChanges(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -243,7 +240,6 @@ final class RewindMixedStatusPurchaseOrdersCommandTest extends KernelTestCase
         self::assertSame(PurchaseOrderStatus::ACCEPTED, $poItem2->getStatus());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testVerboseOutputShowsDetails(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -315,7 +311,6 @@ final class RewindMixedStatusPurchaseOrdersCommandTest extends KernelTestCase
         self::assertStringContainsString('ACCEPTED', $this->commandTester->getDisplay());
     }
 
-    #[WithStory(StaffUserStory::class)]
     public function testDoesNotMatchPOWithoutRejectedItems(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
