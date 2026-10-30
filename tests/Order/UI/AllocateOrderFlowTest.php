@@ -107,10 +107,7 @@ final class AllocateOrderFlowTest extends WebTestCase
             ->assertOn('/order/' . $publicId)
             ->assertSee('Order processed.');
 
-        self::assertSame(
-            PurchaseOrderStatus::PROCESSING,
-            PurchaseOrderItemFactory::repository()->find($poItem->getId())?->getStatus()
-        );
+        self::assertSame(PurchaseOrderStatus::PROCESSING, $poItem->getStatus());
     }
 
     public function testAllocateOrderShowsErrorWhenCannotAllocate(): void

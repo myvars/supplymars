@@ -318,13 +318,9 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
         self::assertSame($existingProduct->getId(), $product->getId());
         self::assertSame($existingProduct, $sp->getProduct());
 
-        $products = $this->em->getRepository(Product::class)->findBy(['name' => $sp->getName()]);
-        $manufacturers = $this->em->getRepository(Manufacturer::class)->findBy(['name' => $sm->getName()]);
-        $categories = $this->em->getRepository(Category::class)->findBy(['name' => $sc->getName()]);
-
-        self::assertCount(1, $products);
-        self::assertCount(1, $manufacturers);
-        self::assertCount(1, $categories);
+        ProductFactory::assert()->count(1, ['name' => $sp->getName()]);
+        ManufacturerFactory::assert()->count(1, ['name' => $sm->getName()]);
+        CategoryFactory::assert()->count(1, ['name' => $sc->getName()]);
     }
 
     public function testMapThrowsWhenSupplierManufacturerMissing(): void
