@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Reporting\Application\Handler;
 
 use App\Reporting\Application\Handler\CalculateProductSalesHandler;
-use App\Reporting\Domain\Model\SalesType\ProductSales;
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\ProductSalesFactory;
 use App\Tests\Shared\Factory\PurchaseOrderItemFactory;
@@ -43,8 +42,8 @@ final class CalculateProductSalesHandlerTest extends KernelTestCase
 
         $this->handler->process($date);
 
-        $productSales = $this->em->getRepository(ProductSales::class)->findAll();
-        self::assertCount(1, $productSales);
+        ProductSalesFactory::assert()->count(1);
+        $productSales = ProductSalesFactory::all();
         self::assertSame($date, $productSales[0]->getDateString());
         self::assertSame($product->getId(), $productSales[0]->getProduct()->getId());
         self::assertSame($supplier->getId(), $productSales[0]->getSupplier()->getId());
@@ -58,8 +57,7 @@ final class CalculateProductSalesHandlerTest extends KernelTestCase
 
         $this->handler->process($date);
 
-        $productSales = $this->em->getRepository(ProductSales::class)->findAll();
-        self::assertCount(0, $productSales);
+        ProductSalesFactory::assert()->empty();
     }
 
     public function testProcessDeletesExistingRecordsBeforeCreating(): void
@@ -85,8 +83,8 @@ final class CalculateProductSalesHandlerTest extends KernelTestCase
 
         $this->handler->process($date);
 
-        $productSales = $this->em->getRepository(ProductSales::class)->findAll();
-        self::assertCount(1, $productSales);
+        ProductSalesFactory::assert()->count(1);
+        $productSales = ProductSalesFactory::all();
         self::assertSame(3, $productSales[0]->getSalesQty());
     }
 
@@ -104,8 +102,8 @@ final class CalculateProductSalesHandlerTest extends KernelTestCase
 
         $this->handler->process($date);
 
-        $productSales = $this->em->getRepository(ProductSales::class)->findAll();
-        self::assertCount(1, $productSales);
+        ProductSalesFactory::assert()->count(1);
+        $productSales = ProductSalesFactory::all();
 
         $sales = $productSales[0];
         self::assertSame(10, $sales->getSalesQty());
@@ -133,8 +131,8 @@ final class CalculateProductSalesHandlerTest extends KernelTestCase
 
         $this->handler->process($date);
 
-        $productSales = $this->em->getRepository(ProductSales::class)->findAll();
-        self::assertCount(1, $productSales);
+        ProductSalesFactory::assert()->count(1);
+        $productSales = ProductSalesFactory::all();
         self::assertSame(8, $productSales[0]->getSalesQty());
     }
 
@@ -159,8 +157,7 @@ final class CalculateProductSalesHandlerTest extends KernelTestCase
 
         $this->handler->process($date);
 
-        $productSales = $this->em->getRepository(ProductSales::class)->findAll();
-        self::assertCount(2, $productSales);
+        ProductSalesFactory::assert()->count(2);
     }
 
     public function testProcessWithNoDataCreatesNoRecords(): void
@@ -169,7 +166,6 @@ final class CalculateProductSalesHandlerTest extends KernelTestCase
 
         $this->handler->process($date);
 
-        $productSales = $this->em->getRepository(ProductSales::class)->findAll();
-        self::assertCount(0, $productSales);
+        ProductSalesFactory::assert()->empty();
     }
 }

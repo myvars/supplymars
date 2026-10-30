@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace App\Tests\Order\UI;
 
 use App\Order\Application\Handler\CreateDemoOrderHandler;
-use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Tests\Shared\Factory\CustomerOrderFactory;
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Factory\UserFactory;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 
@@ -43,7 +41,7 @@ final class DemoOrderFlowTest extends WebTestCase
     public function testSuccessfulDemoOrderCreation(): void
     {
         $this->createTestProducts(3);
-        $initialCount = $this->getOrderCount();
+        $initialCount = CustomerOrderFactory::count();
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
@@ -53,7 +51,7 @@ final class DemoOrderFlowTest extends WebTestCase
             ->assertNotOn('/order/demo')
             ->assertSee('Demo order #');
 
-        self::assertSame($initialCount + 1, $this->getOrderCount());
+        CustomerOrderFactory::assert()->count($initialCount + 1);
     }
 
     public function testDemoOrderCreationBlockedAtLimit(): void
@@ -61,7 +59,7 @@ final class DemoOrderFlowTest extends WebTestCase
         $this->createTestProducts(3);
         $this->createDemoOrders(CreateDemoOrderHandler::DAILY_LIMIT);
 
-        $initialCount = $this->getOrderCount();
+        $initialCount = CustomerOrderFactory::count();
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
@@ -70,7 +68,7 @@ final class DemoOrderFlowTest extends WebTestCase
             ->assertSuccessful()
             ->assertSee('You have reached the daily limit');
 
-        self::assertSame($initialCount, $this->getOrderCount());
+        CustomerOrderFactory::assert()->count($initialCount);
     }
 
     public function testDemoOrderButtonVisibleOnIndex(): void
@@ -105,16 +103,5 @@ final class DemoOrderFlowTest extends WebTestCase
                 'customerOrderRef' => 'DEMO-' . sprintf('%04d', $i),
             ]);
         }
-    }
-
-    private function getOrderCount(): int
-    {
-        $em = self::getContainer()->get(EntityManagerInterface::class);
-
-        return (int) $em->getRepository(CustomerOrder::class)
-            ->createQueryBuilder('o')
-            ->select('COUNT(o.id)')
-            ->getQuery()
-            ->getSingleScalarResult();
     }
 }

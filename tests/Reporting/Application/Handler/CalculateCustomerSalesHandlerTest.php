@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Reporting\Application\Handler;
 
 use App\Reporting\Application\Handler\CalculateCustomerSalesHandler;
-use App\Reporting\Domain\Model\SalesType\CustomerActivitySales;
-use App\Reporting\Domain\Model\SalesType\CustomerSales;
+use App\Tests\Shared\Factory\CustomerActivitySalesFactory;
 use App\Tests\Shared\Factory\CustomerOrderFactory;
 use App\Tests\Shared\Factory\CustomerOrderItemFactory;
 use App\Tests\Shared\Factory\CustomerSalesFactory;
@@ -36,8 +35,8 @@ final class CalculateCustomerSalesHandlerTest extends KernelTestCase
 
         $this->handler->process($date);
 
-        $customerSales = $this->em->getRepository(CustomerSales::class)->findAll();
-        self::assertCount(1, $customerSales);
+        CustomerSalesFactory::assert()->count(1);
+        $customerSales = CustomerSalesFactory::all();
         self::assertSame($date, $customerSales[0]->getDateString());
     }
 
@@ -49,8 +48,8 @@ final class CalculateCustomerSalesHandlerTest extends KernelTestCase
 
         $this->handler->process(new \DateTime()->format('Y-m-d'));
 
-        $customerSales = $this->em->getRepository(CustomerSales::class)->findAll();
-        self::assertCount(1, $customerSales);
+        CustomerSalesFactory::assert()->count(1);
+        $customerSales = CustomerSalesFactory::all();
         self::assertSame((float) $order->getTotalPrice(), (float) $customerSales[0]->getOrderValue());
     }
 
@@ -60,8 +59,7 @@ final class CalculateCustomerSalesHandlerTest extends KernelTestCase
 
         $this->handler->process($date);
 
-        $customerSales = $this->em->getRepository(CustomerSales::class)->findAll();
-        self::assertCount(0, $customerSales);
+        CustomerSalesFactory::assert()->empty();
     }
 
     public function testProcessCreatesCustomerActivityForDate(): void
@@ -74,8 +72,8 @@ final class CalculateCustomerSalesHandlerTest extends KernelTestCase
 
         $this->handler->process($date);
 
-        $activity = $this->em->getRepository(CustomerActivitySales::class)->findAll();
-        self::assertCount(1, $activity);
+        CustomerActivitySalesFactory::assert()->count(1);
+        $activity = CustomerActivitySalesFactory::all();
         self::assertSame($date, $activity[0]->getDateString());
         self::assertGreaterThanOrEqual(0, $activity[0]->getTotalCustomers());
     }
@@ -99,8 +97,8 @@ final class CalculateCustomerSalesHandlerTest extends KernelTestCase
 
         $this->handler->process($date);
 
-        $customerSales = $this->em->getRepository(CustomerSales::class)->findAll();
-        self::assertCount(1, $customerSales);
+        CustomerSalesFactory::assert()->count(1);
+        $customerSales = CustomerSalesFactory::all();
         self::assertSame(1, $customerSales[0]->getOrderCount());
     }
 
@@ -116,8 +114,7 @@ final class CalculateCustomerSalesHandlerTest extends KernelTestCase
 
         $this->handler->process($date);
 
-        $customerSales = $this->em->getRepository(CustomerSales::class)->findAll();
-        self::assertGreaterThanOrEqual(1, count($customerSales));
+        CustomerSalesFactory::assert()->countGreaterThanOrEqual(1);
     }
 
     public function testProcessWithNoOrdersStillCreatesActivityRecord(): void
@@ -128,8 +125,8 @@ final class CalculateCustomerSalesHandlerTest extends KernelTestCase
 
         $this->handler->process($date);
 
-        $activity = $this->em->getRepository(CustomerActivitySales::class)->findAll();
-        self::assertCount(1, $activity);
+        CustomerActivitySalesFactory::assert()->count(1);
+        $activity = CustomerActivitySalesFactory::all();
         self::assertSame(0, $activity[0]->getActiveCustomers());
         self::assertSame(0, $activity[0]->getNewCustomers());
         self::assertSame(0, $activity[0]->getReturningCustomers());

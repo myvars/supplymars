@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Reporting\UI\Console;
 
-use App\Reporting\Domain\Model\SalesType\CustomerSales;
 use App\Tests\Shared\Factory\CustomerOrderFactory;
+use App\Tests\Shared\Factory\CustomerSalesFactory;
 use App\Tests\Shared\Story\StaffUserStory;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Command\Command;
@@ -20,15 +19,12 @@ final class CalculateCustomerSalesCommandTest extends KernelTestCase
 {
     private CommandTester $commandTester;
 
-    private EntityManagerInterface $em;
-
     protected function setUp(): void
     {
         self::bootKernel();
         $application = new Application(self::$kernel);
         $command = $application->find('app:calculate-customer-sales');
         $this->commandTester = new CommandTester($command);
-        $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
     public function testSuccessProcessesDays(): void
@@ -58,7 +54,7 @@ final class CalculateCustomerSalesCommandTest extends KernelTestCase
     {
         CustomerOrderFactory::createOne();
 
-        $initialCount = $this->getCustomerSalesCount();
+        $initialCount = CustomerSalesFactory::count();
 
         $this->commandTester->execute([
             'day-count' => 3,
@@ -68,7 +64,7 @@ final class CalculateCustomerSalesCommandTest extends KernelTestCase
 
         self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
         self::assertStringContainsString('[DRY RUN]', $this->commandTester->getDisplay());
-        self::assertSame($initialCount, $this->getCustomerSalesCount());
+        CustomerSalesFactory::assert()->count($initialCount);
     }
 
     public function testSkipSummaryPreventsChaining(): void
@@ -104,14 +100,5 @@ final class CalculateCustomerSalesCommandTest extends KernelTestCase
 
         self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
         self::assertStringContainsString('summary', strtolower($this->commandTester->getDisplay()));
-    }
-
-    private function getCustomerSalesCount(): int
-    {
-        return (int) $this->em->getRepository(CustomerSales::class)
-            ->createQueryBuilder('c')
-            ->select('COUNT(c.dateString)')
-            ->getQuery()
-            ->getSingleScalarResult();
     }
 }

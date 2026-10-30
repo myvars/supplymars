@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace App\Tests\Review\UI\Console;
 
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
-use App\Review\Domain\Model\Review\ProductReview;
 use App\Tests\Shared\Factory\CustomerOrderFactory;
 use App\Tests\Shared\Factory\CustomerOrderItemFactory;
 use App\Tests\Shared\Factory\ProductFactory;
+use App\Tests\Shared\Factory\ProductReviewFactory;
 use App\Tests\Shared\Factory\PurchaseOrderFactory;
 use App\Tests\Shared\Factory\PurchaseOrderItemFactory;
 use App\Tests\Shared\Factory\SupplierFactory;
@@ -43,8 +43,6 @@ final class GenerateReviewsCommandTest extends KernelTestCase
     {
         $this->createEligiblePurchase();
 
-        $this->getReviewCount();
-
         $this->commandTester->execute([
             'count' => 5,
         ]);
@@ -77,7 +75,7 @@ final class GenerateReviewsCommandTest extends KernelTestCase
     {
         $this->createEligiblePurchase();
 
-        $initialCount = $this->getReviewCount();
+        $initialCount = ProductReviewFactory::count();
 
         $this->commandTester->execute([
             'count' => 5,
@@ -86,7 +84,7 @@ final class GenerateReviewsCommandTest extends KernelTestCase
 
         self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
         self::assertStringContainsString('[DRY RUN]', $this->commandTester->getDisplay());
-        self::assertSame($initialCount, $this->getReviewCount());
+        ProductReviewFactory::assert()->count($initialCount);
     }
 
     public function testProductIdFilterWorks(): void
@@ -160,14 +158,5 @@ final class GenerateReviewsCommandTest extends KernelTestCase
         $this->em->flush();
 
         return ['productId' => $product->getId()];
-    }
-
-    private function getReviewCount(): int
-    {
-        return (int) $this->em->getRepository(ProductReview::class)
-            ->createQueryBuilder('r')
-            ->select('COUNT(r.id)')
-            ->getQuery()
-            ->getSingleScalarResult();
     }
 }

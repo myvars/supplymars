@@ -53,7 +53,7 @@ final class CalculateProductSalesSummaryHandlerTest extends KernelTestCase
 
         $this->handler->process();
 
-        $summaries = $this->em->getRepository(ProductSalesSummary::class)->findAll();
+        $summaries = ProductSalesSummaryFactory::all();
         $salesTypeValues = array_unique(array_map(fn (ProductSalesSummary $s) => $s->getSalesType()->value, $summaries));
 
         foreach (SalesType::cases() as $salesType) {
@@ -263,8 +263,7 @@ final class CalculateProductSalesSummaryHandlerTest extends KernelTestCase
     {
         $this->handler->process();
 
-        $summaries = $this->em->getRepository(ProductSalesSummary::class)->findAll();
-        self::assertCount(0, $summaries);
+        ProductSalesSummaryFactory::assert()->empty();
     }
 
     public function testProcessAggregatesByAllType(): void

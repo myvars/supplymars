@@ -45,7 +45,7 @@ final class CalculateOrderSalesSummaryHandlerTest extends KernelTestCase
 
         $this->handler->process();
 
-        $summaries = $this->em->getRepository(OrderSalesSummary::class)->findAll();
+        $summaries = OrderSalesSummaryFactory::all();
         $durations = array_map(fn (OrderSalesSummary $s): ?SalesDuration => $s->getDuration(), $summaries);
 
         foreach (SalesDuration::cases() as $duration) {
@@ -86,8 +86,7 @@ final class CalculateOrderSalesSummaryHandlerTest extends KernelTestCase
     {
         $this->handler->process();
 
-        $summaries = $this->em->getRepository(OrderSalesSummary::class)->findAll();
-        self::assertCount(0, $summaries);
+        OrderSalesSummaryFactory::assert()->empty();
     }
 
     public function testProcessCorrectlyAggregatesLast7Days(): void
