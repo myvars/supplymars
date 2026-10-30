@@ -9,6 +9,7 @@ How tests are run, written and checked here. Read it before adding a feature, an
 - **Clean up uploads.** Files stored through `UploadHelper` are outside the database transaction, so DAMA does not roll them back: delete them at the end of each test that uploads. In the test environment they go to `var/cache/test/storage/`, not `public/`, so a missed one never shows in the dev app.
 - **No deprecations, notices or warnings from `src/`.** `phpunit.xml.dist` sets `failOnDeprecation`, `failOnNotice` and `failOnWarning`, and its `<source>` block (`restrictNotices`, `restrictWarnings`, `ignoreIndirectDeprecations`) limits them to ones triggered from `src/`, so any of those fails the run.
 - **Final classes can be mocked:** `DG\BypassFinals` runs as a PHPUnit extension (`phpunit.xml.dist`).
+- **A failing flow test saves the page it was on:** Browser's `BrowserExtension` (`phpunit.xml.dist`) writes it to `var/browser/source/`, named after the test (a serial run also lists the files at the end). `var/` is a volume of the `php` container, so after `make test` read them with `make bash`. In CI, a failed run uploads them as the `browser-failures` artifact.
 - **A test must not depend on another's files, cache or order** (next section).
 
 ### In Parallel
