@@ -57,7 +57,7 @@ class Ticket
 
     /** @var Collection<int, Message> */
     #[ORM\OneToMany(targetEntity: Message::class, mappedBy: 'ticket', cascade: ['persist', 'remove'])]
-    #[ORM\OrderBy(['createdAt' => 'ASC'])]
+    #[ORM\OrderBy(['createdAt' => \SortDirection::Ascending])]
     private Collection $messages;
 
     final public function __construct()

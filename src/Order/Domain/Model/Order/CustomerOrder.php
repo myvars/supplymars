@@ -93,7 +93,7 @@ class CustomerOrder implements DomainEventProviderInterface
      * @var Collection<int, CustomerOrderItem>
      */
     #[ORM\OneToMany(targetEntity: CustomerOrderItem::class, mappedBy: 'customerOrder')]
-    #[ORM\OrderBy(['id' => 'ASC'])]
+    #[ORM\OrderBy(['id' => \SortDirection::Ascending])]
     private Collection $customerOrderItems;
 
     /**
