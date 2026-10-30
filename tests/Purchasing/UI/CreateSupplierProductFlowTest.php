@@ -14,12 +14,10 @@ use App\Tests\Shared\Factory\UserFactory;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
-use Zenstruck\Foundry\Test\Factories;
 
 final class CreateSupplierProductFlowTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
 
     public function testSuccessfulCreationViaForm(): void
     {

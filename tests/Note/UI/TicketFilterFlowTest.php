@@ -10,12 +10,10 @@ use App\Tests\Shared\Factory\TicketFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
-use Zenstruck\Foundry\Test\Factories;
 
 final class TicketFilterFlowTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
 
     public function testFilterByStatusRedirectsWithParams(): void
     {

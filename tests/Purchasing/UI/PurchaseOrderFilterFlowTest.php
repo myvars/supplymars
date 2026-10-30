@@ -12,12 +12,10 @@ use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\AbstractBrowser;
 use Zenstruck\Browser\Test\HasBrowser;
-use Zenstruck\Foundry\Test\Factories;
 
 final class PurchaseOrderFilterFlowTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
 
     public function testSubmitFilterFormRedirectsWithParams(): void
     {

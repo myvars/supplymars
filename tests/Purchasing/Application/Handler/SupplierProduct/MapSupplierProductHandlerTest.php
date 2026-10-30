@@ -14,13 +14,10 @@ use App\Tests\Shared\Factory\VatRateFactory;
 use App\Tests\Shared\Story\StaffUserStory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
-use Zenstruck\Foundry\Test\Factories;
 
 #[WithStory(StaffUserStory::class)]
 final class MapSupplierProductHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private MapSupplierProductHandler $handler;
 
     private SupplierProductRepository $supplierProducts;

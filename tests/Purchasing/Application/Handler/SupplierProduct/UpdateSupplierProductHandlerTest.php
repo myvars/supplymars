@@ -19,12 +19,9 @@ use App\Tests\Shared\Factory\SupplierManufacturerFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Factory\SupplierSubcategoryFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class UpdateSupplierProductHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private UpdateSupplierProductHandler $handler;
 
     private SupplierProductRepository $supplierProducts;

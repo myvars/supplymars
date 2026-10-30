@@ -12,14 +12,11 @@ use App\Tests\Shared\Factory\ManufacturerFactory;
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\SupplierManufacturerFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 use function Zenstruck\Foundry\Persistence\save;
 
 final class DeleteManufacturerHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private DeleteManufacturerHandler $handler;
 
     private ManufacturerRepository $manufacturers;

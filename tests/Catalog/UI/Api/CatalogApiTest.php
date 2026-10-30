@@ -10,12 +10,10 @@ use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\SubcategoryFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
-use Zenstruck\Foundry\Test\Factories;
 
 final class CatalogApiTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
 
     public function testProductIndexReturnsCollectionWithMeta(): void
     {

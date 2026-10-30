@@ -8,7 +8,6 @@ use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\KernelBrowser;
 use Zenstruck\Browser\Test\HasBrowser;
-use Zenstruck\Foundry\Test\Factories;
 
 /**
  * In production every request comes through the host Caddy, from a private address. framework.yaml
@@ -20,7 +19,6 @@ use Zenstruck\Foundry\Test\Factories;
 final class TrustedProxyTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
 
     private const string PROXY = '172.18.0.5';
 

@@ -13,12 +13,9 @@ use App\Catalog\Domain\Repository\ProductRepository;
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class UpdateProductHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private UpdateProductHandler $handler;
 
     private ProductRepository $products;

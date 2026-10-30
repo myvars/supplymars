@@ -21,12 +21,9 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\PersistentCollection;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
-use Zenstruck\Foundry\Test\Factories;
 
 final class DeleteSupplierHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private DeleteSupplierHandler $handler;
 
     private SupplierRepository $suppliers;

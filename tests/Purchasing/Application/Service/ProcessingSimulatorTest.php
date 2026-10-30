@@ -15,13 +15,10 @@ use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Story\StaffUserStory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
-use Zenstruck\Foundry\Test\Factories;
 
 #[WithStory(StaffUserStory::class)]
 final class ProcessingSimulatorTest extends KernelTestCase
 {
-    use Factories;
-
     private ProcessingSimulator $simulator;
 
     protected function setUp(): void

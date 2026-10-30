@@ -54,9 +54,9 @@ Tests mirror `src/`. Copy the nearest existing test.
 | Type | Base class | Location | Example |
 |------|-----------|----------|---------|
 | Unit (entity rules, events raised) | `TestCase` | `tests/{Context}/Domain/`, named `{Class}DomainTest` | `tests/Order/Domain/CustomerOrderDomainTest.php` |
-| Handler | `KernelTestCase` + `Factories` | `tests/{Context}/Application/Handler/` | `tests/Order/Application/Handler/CreateOrderHandlerTest.php`: invokes the handler (`($this->handler)($command)`), reads the order back through `OrderRepository` and checks its fields, and covers the customer-not-found and missing-VAT-rate failures |
-| Listener | `KernelTestCase` + `Factories` | `tests/{Context}/Application/Listener/` | `tests/Pricing/Application/Listener/CategoryPricingWasChangedListenerTest.php` |
-| Service | `KernelTestCase` + `Factories` | `tests/{Context}/Application/Service/` | `tests/Purchasing/Application/Service/OrderAllocatorTest.php`, `OrderItemAllocatorTest.php` (sourcing) |
+| Handler | `KernelTestCase` | `tests/{Context}/Application/Handler/` | `tests/Order/Application/Handler/CreateOrderHandlerTest.php`: invokes the handler (`($this->handler)($command)`), reads the order back through `OrderRepository` and checks its fields, and covers the customer-not-found and missing-VAT-rate failures |
+| Listener | `KernelTestCase` | `tests/{Context}/Application/Listener/` | `tests/Pricing/Application/Listener/CategoryPricingWasChangedListenerTest.php` |
+| Service | `KernelTestCase` | `tests/{Context}/Application/Service/` | `tests/Purchasing/Application/Service/OrderAllocatorTest.php`, `OrderItemAllocatorTest.php` (sourcing) |
 | Console | `KernelTestCase` | `tests/{Context}/UI/Console/`, named `{Command}Test` | `tests/Audit/UI/Console/PruneStatusChangeLogCommandTest.php`. A command test that also calls the app over HTTP keeps `KernelTestCase` and adds `HasBrowser` (`tests/Customer/UI/Console/IssueApiTokenCommandTest.php`) |
 | Repository and mapping | `KernelTestCase` | `tests/{Context}/Infrastructure/`, matching `src/` (a repository under `Persistence/Doctrine/`) | `tests/Customer/Infrastructure/Persistence/Doctrine/UserDoctrineRepositoryInsightsTest.php`; mapping cases in `tests/Catalog/Infrastructure/ProductUpdateDeleteMappingTest.php`. Only for a query, or a mapping decision (cascade, orphan removal, `onDelete`, a unique key), whose effect a handler test would not show; `doctrine:schema:validate` already checks the mapping against the schema |
 | Flow (web) | `WebTestCase` + `HasBrowser` | `tests/{Context}/UI/`, named `{Action}{Entity}FlowTest` | `tests/Catalog/UI/CreateManufacturerFlowTest.php`, `UpdateManufacturerFlowTest.php`. A page that is not a FormFlow action is `{Controller}Test`, in the same folder (`tests/Reporting/UI/ReportsControllerTest.php`); a test of behaviour across all pages is named after it (`tests/Shared/UI/Http/SecurityHeadersTest.php`). Shared tests mirror `src/Shared/UI/Http/` |
@@ -88,7 +88,7 @@ How each test is written. Some tests predate a rule; bring a test in line when y
 
 ### Factories and stories
 
-Factories are in `tests/Shared/Factory/` (Zenstruck Foundry), one per entity; most create the related entities they need. States worth knowing:
+Factories are in `tests/Shared/Factory/` (Zenstruck Foundry), one per entity; most create the related entities they need. `FoundryExtension` in `phpunit.xml.dist` boots Foundry for every test, so a test class needs no trait; the old `Factories` trait is deprecated and goes in Foundry 3. States worth knowing:
 
 | Factory | State | Gives |
 |---------|-------|-------|

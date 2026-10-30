@@ -11,12 +11,9 @@ use App\Pricing\Application\Handler\UpdateProductCostHandler;
 use App\Shared\Domain\ValueObject\PriceModel;
 use App\Tests\Shared\Factory\ProductFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class UpdateProductCostHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private UpdateProductCostHandler $handler;
 
     private ProductRepository $products;

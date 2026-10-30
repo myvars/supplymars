@@ -180,7 +180,7 @@ Details: [Docs/patterns/UI/README.md](Docs/patterns/UI/README.md), [Docs/pattern
 Details: [Docs/07-testing.md](Docs/07-testing.md); how each test is written (final classes, file names, logging in, fixtures, doubles): [Conventions](Docs/07-testing.md#conventions).
 
 - A feature isn't done until a test exercises it the way a caller would — an HTTP request for a controller, a handler call for a handler — not just "it didn't throw".
-- Tests mirror `src/` in `tests/`; DAMA rolls back each test's transaction. Foundry factories in `tests/Shared/Factory/` (`Factories` trait).
+- Tests mirror `src/` in `tests/`; DAMA rolls back each test's transaction. Foundry factories in `tests/Shared/Factory/`; `FoundryExtension` (in `phpunit.xml.dist`) boots Foundry for every test, so no trait.
 - Auth: `#[WithStory(StaffUserStory::class)]` or `UserFactory::new()->asStaff()->create()`. For super-admin-only actions (the 08 table): `#[WithStory(SuperAdminUserStory::class)]` or `->asSuperAdmin()`.
 - Flow tests use the `HasBrowser` trait (Zenstruck Browser), named `{Feature}FlowTest.php` in `tests/{Context}/UI/`.
 - `make test` runs in parallel (ParaTest, one database per process), so a test must not depend on another's files or order. Badge counts are in the app cache; login throttling and rate-limit counts are in their own `cache.rate_limiter` pool (`ArrayAdapter` in tests); both are in memory in tests and start empty on each kernel boot; the browser reboots the kernel per request, so a test that needs counts to carry between requests uses `disableReboot()` (`RateLimitTest`). See [Docs/07-testing.md](Docs/07-testing.md#in-parallel).

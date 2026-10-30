@@ -11,12 +11,10 @@ use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\UI\ActionFormToken;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
-use Zenstruck\Foundry\Test\Factories;
 
 final class TicketStatusFlowTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
     use ActionFormToken;
 
     public function testCloseTicketWithSystemMessage(): void

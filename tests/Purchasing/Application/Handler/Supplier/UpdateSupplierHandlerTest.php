@@ -10,12 +10,9 @@ use App\Purchasing\Domain\Model\Supplier\SupplierPublicId;
 use App\Purchasing\Domain\Repository\SupplierRepository;
 use App\Tests\Shared\Factory\SupplierFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class UpdateSupplierHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private UpdateSupplierHandler $handler;
 
     private SupplierRepository $suppliers;

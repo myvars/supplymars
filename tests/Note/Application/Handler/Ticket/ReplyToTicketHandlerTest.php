@@ -12,12 +12,9 @@ use App\Tests\Shared\Factory\MessageFactory;
 use App\Tests\Shared\Factory\TicketFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class ReplyToTicketHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private ReplyToTicketHandler $handler;
 
     protected function setUp(): void

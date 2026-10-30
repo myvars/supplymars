@@ -13,12 +13,9 @@ use App\Tests\Shared\Factory\ProductReviewFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class UpdateReviewHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private UpdateReviewHandler $handler;
 
     private ReviewRepository $reviews;

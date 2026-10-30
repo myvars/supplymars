@@ -13,12 +13,9 @@ use App\Tests\Shared\Story\StaffUserStory;
 use App\Tests\Shared\Story\SuperAdminUserStory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
-use Zenstruck\Foundry\Test\Factories;
 
 final class DeleteSupplierProductHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private DeleteSupplierProductHandler $handler;
 
     private SupplierProductRepository $supplierProducts;

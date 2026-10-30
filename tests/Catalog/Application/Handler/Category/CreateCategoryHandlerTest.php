@@ -11,12 +11,9 @@ use App\Shared\Domain\ValueObject\PriceModel;
 use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Factory\VatRateFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class CreateCategoryHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private CreateCategoryHandler $handler;
 
     private CategoryRepository $categories;

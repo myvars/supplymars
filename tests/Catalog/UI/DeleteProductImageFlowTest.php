@@ -12,12 +12,10 @@ use App\Tests\Shared\UI\ActionFormToken;
 use League\Flysystem\FilesystemOperator;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
-use Zenstruck\Foundry\Test\Factories;
 
 final class DeleteProductImageFlowTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
     use ActionFormToken;
 
     public function testDeleteViaFlow(): void

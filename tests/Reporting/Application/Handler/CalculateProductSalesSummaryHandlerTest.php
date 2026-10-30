@@ -17,12 +17,9 @@ use App\Tests\Shared\Factory\ProductSalesSummaryFactory;
 use App\Tests\Shared\Factory\SupplierFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class CalculateProductSalesSummaryHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private CalculateProductSalesSummaryHandler $handler;
 
     private EntityManagerInterface $em;

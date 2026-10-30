@@ -13,12 +13,10 @@ use App\Tests\Shared\Factory\ProductSalesSummaryFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
-use Zenstruck\Foundry\Test\Factories;
 
 final class DashboardControllerTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
 
     public function testDashboardRequiresAuthentication(): void
     {

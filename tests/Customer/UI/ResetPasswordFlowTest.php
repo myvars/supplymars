@@ -10,12 +10,10 @@ use Symfony\Component\Mailer\Messenger\SendEmailMessage;
 use Symfony\Component\Messenger\Transport\InMemory\InMemoryTransport;
 use Symfony\Component\Mime\Email;
 use Zenstruck\Browser\Test\HasBrowser;
-use Zenstruck\Foundry\Test\Factories;
 
 final class ResetPasswordFlowTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
 
     public function testRequestingAResetQueuesTheEmail(): void
     {

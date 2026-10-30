@@ -10,12 +10,9 @@ use App\Reporting\Domain\Metric\SalesDuration;
 use App\Reporting\Domain\Model\SalesType\CustomerSalesType;
 use App\Tests\Shared\Factory\CustomerGeographicSummaryFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class CustomerGeographicReportHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private CustomerGeographicReportHandler $handler;
 
     protected function setUp(): void

@@ -14,12 +14,9 @@ use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Factory\VatRateFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Contracts\Cache\CacheInterface;
-use Zenstruck\Foundry\Test\Factories;
 
 final class CreateOrderHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private CreateOrderHandler $handler;
 
     private OrderRepository $orders;

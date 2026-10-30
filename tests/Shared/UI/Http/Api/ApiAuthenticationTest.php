@@ -9,12 +9,10 @@ use Doctrine\DBAL\Connection;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\HttpOptions;
 use Zenstruck\Browser\Test\HasBrowser;
-use Zenstruck\Foundry\Test\Factories;
 
 final class ApiAuthenticationTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
 
     public function testUnauthenticatedRequestReturns401WithRfc7807(): void
     {

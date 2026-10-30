@@ -10,12 +10,9 @@ use App\Catalog\Domain\Repository\ProductRepository;
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\ProductImageFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class ReorderProductImageHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private ReorderProductImageHandler $handler;
 
     private ProductRepository $products;

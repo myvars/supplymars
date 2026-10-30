@@ -11,12 +11,9 @@ use App\Tests\Shared\Factory\CustomerOrderFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class OrderUpdateDeleteMappingTest extends KernelTestCase
 {
-    use Factories;
-
     private EntityManagerInterface $em;
 
     private OrderRepository $orders;

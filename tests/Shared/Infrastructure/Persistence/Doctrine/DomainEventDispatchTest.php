@@ -12,15 +12,12 @@ use App\Tests\Shared\Factory\UserFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Zenstruck\Foundry\Test\Factories;
 
 /**
  * Domain events raised by entities are dispatched by a real flush, through DomainEventDispatcher.
  */
 final class DomainEventDispatchTest extends KernelTestCase
 {
-    use Factories;
-
     private EntityManagerInterface $em;
 
     /** @var list<object> */

@@ -16,12 +16,9 @@ use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class CreatePurchaseOrderItemHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private CreatePurchaseOrderItemHandler $handler;
 
     private PurchaseOrderItemRepository $purchaseOrderItems;

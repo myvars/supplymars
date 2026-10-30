@@ -11,12 +11,9 @@ use App\Tests\Shared\Factory\CategoryFactory;
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\ProductSalesFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class ProductSalesReportHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private ProductSalesReportHandler $handler;
 
     protected function setUp(): void

@@ -13,13 +13,10 @@ use App\Tests\Shared\Story\StaffUserStory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Uid\Ulid;
 use Zenstruck\Foundry\Attribute\WithStory;
-use Zenstruck\Foundry\Test\Factories;
 
 #[WithStory(StaffUserStory::class)]
 final class LockOrderHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private LockOrderHandler $handler;
 
     private OrderRepository $orders;

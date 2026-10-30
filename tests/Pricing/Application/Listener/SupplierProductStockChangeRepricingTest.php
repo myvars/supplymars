@@ -13,15 +13,12 @@ use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 /**
  * updateStock() and updateCost() are what the stock commands call; flushing them must reprice the product.
  */
 final class SupplierProductStockChangeRepricingTest extends KernelTestCase
 {
-    use Factories;
-
     private EntityManagerInterface $em;
 
     private ProductRepository $products;

@@ -14,12 +14,9 @@ use App\Tests\Shared\Story\StaffUserStory;
 use App\Tests\Shared\Story\SuperAdminUserStory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
-use Zenstruck\Foundry\Test\Factories;
 
 final class DeleteVatRateHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private DeleteVatRateHandler $handler;
 
     private VatRateRepository $rates;

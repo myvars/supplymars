@@ -20,15 +20,12 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
-use Zenstruck\Foundry\Test\Factories;
 
 use function Zenstruck\Foundry\force;
 
 #[WithStory(StaffUserStory::class)]
 final class PruneStatusChangeLogCommandTest extends KernelTestCase
 {
-    use Factories;
-
     private CommandTester $commandTester;
 
     protected function setUp(): void

@@ -19,12 +19,10 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Attribute\WithStory;
-use Zenstruck\Foundry\Test\Factories;
 
 final class AllocateOrderFlowTest extends WebTestCase
 {
     use HasBrowser;
-    use Factories;
     use ActionFormToken;
 
     public function testAllocateOrderSuccessRedirectsToShow(): void

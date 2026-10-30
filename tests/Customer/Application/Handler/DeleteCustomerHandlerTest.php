@@ -15,12 +15,9 @@ use App\Tests\Shared\Factory\StatusChangeLogFactory;
 use App\Tests\Shared\Factory\TicketFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class DeleteCustomerHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private DeleteCustomerHandler $handler;
 
     private UserRepository $customers;

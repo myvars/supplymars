@@ -22,13 +22,10 @@ use App\Tests\Shared\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
-use Zenstruck\Foundry\Test\Factories;
 
 #[WithStory(StaffUserStory::class)]
 final class RewindPurchaseOrderHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private RewindPurchaseOrderHandler $handler;
 
     private EntityManagerInterface $em;

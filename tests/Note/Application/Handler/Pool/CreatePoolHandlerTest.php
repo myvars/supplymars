@@ -8,12 +8,9 @@ use App\Note\Application\Command\Pool\CreatePool;
 use App\Note\Application\Handler\Pool\CreatePoolHandler;
 use App\Tests\Shared\Factory\PoolFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class CreatePoolHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private CreatePoolHandler $handler;
 
     protected function setUp(): void

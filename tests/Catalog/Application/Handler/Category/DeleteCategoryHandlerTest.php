@@ -11,12 +11,9 @@ use App\Catalog\Domain\Repository\CategoryRepository;
 use App\Tests\Shared\Factory\CategoryFactory;
 use App\Tests\Shared\Factory\SubcategoryFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class DeleteCategoryHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private DeleteCategoryHandler $handler;
 
     private CategoryRepository $categories;

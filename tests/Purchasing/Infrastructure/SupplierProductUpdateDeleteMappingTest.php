@@ -11,12 +11,9 @@ use App\Tests\Shared\Factory\SupplierManufacturerFactory;
 use App\Tests\Shared\Factory\SupplierSubcategoryFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class SupplierProductUpdateDeleteMappingTest extends KernelTestCase
 {
-    use Factories;
-
     private EntityManagerInterface $em;
 
     protected function setUp(): void

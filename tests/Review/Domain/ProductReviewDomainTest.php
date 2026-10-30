@@ -9,12 +9,9 @@ use App\Review\Domain\Model\Review\ReviewStatus;
 use App\Tests\Shared\Factory\ProductReviewFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class ProductReviewDomainTest extends KernelTestCase
 {
-    use Factories;
-
     public function testCreateSetsDefaultStatus(): void
     {
         $review = ProductReviewFactory::createOne();

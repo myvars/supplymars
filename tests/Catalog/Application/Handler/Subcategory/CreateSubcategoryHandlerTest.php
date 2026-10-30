@@ -12,12 +12,9 @@ use App\Shared\Domain\ValueObject\PriceModel;
 use App\Tests\Shared\Factory\CategoryFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Zenstruck\Foundry\Test\Factories;
 
 final class CreateSubcategoryHandlerTest extends KernelTestCase
 {
-    use Factories;
-
     private CreateSubcategoryHandler $handler;
 
     private SubcategoryRepository $subcategories;

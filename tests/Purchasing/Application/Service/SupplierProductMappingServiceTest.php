@@ -26,12 +26,9 @@ use App\Tests\Shared\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
-use Zenstruck\Foundry\Test\Factories;
 
 final class SupplierProductMappingServiceTest extends KernelTestCase
 {
-    use Factories;
-
     private SupplierProductMappingService $service;
 
     private EntityManagerInterface $em;

@@ -16,12 +16,9 @@ use App\Tests\Shared\Factory\ProductReviewFactory;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Zenstruck\Foundry\Test\Factories;
 
 final class ReviewSummaryUpdaterTest extends KernelTestCase
 {
-    use Factories;
-
     private EventDispatcherInterface $dispatcher;
 
     private ReviewSummaryRepository $summaries;
