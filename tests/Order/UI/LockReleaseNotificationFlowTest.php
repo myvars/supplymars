@@ -10,11 +10,12 @@ use App\Order\Domain\Model\Order\CustomerOrder;
 use App\Tests\Shared\Factory\CustomerOrderFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Mercure\QueuedNotifications;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Mercure\Exception\RuntimeException;
 use Symfony\Component\Mercure\Update;
 use Zenstruck\Browser\Test\HasBrowser;
+
+use function Zenstruck\Foundry\Persistence\save;
 
 /**
  * Releasing another user's lock tells the holder, wherever they are (NotifyLockHolderOfRelease). The queue is
@@ -80,7 +81,7 @@ final class LockReleaseNotificationFlowTest extends WebTestCase
     {
         $order = CustomerOrderFactory::createOne();
         $order->lockOrder($holder, $holder);
-        self::getContainer()->get(EntityManagerInterface::class)->flush();
+        save($order);
 
         return $order;
     }

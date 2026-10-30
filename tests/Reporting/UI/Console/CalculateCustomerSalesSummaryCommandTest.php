@@ -5,9 +5,8 @@ declare(strict_types=1);
 namespace App\Tests\Reporting\UI\Console;
 
 use App\Reporting\Domain\Metric\SalesDuration;
-use App\Reporting\Domain\Model\SalesType\CustomerSalesSummary;
+use App\Tests\Shared\Factory\CustomerSalesSummaryFactory;
 use App\Tests\Shared\Story\StaffUserStory;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Command\Command;
@@ -20,15 +19,12 @@ final class CalculateCustomerSalesSummaryCommandTest extends KernelTestCase
 {
     private CommandTester $commandTester;
 
-    private EntityManagerInterface $em;
-
     protected function setUp(): void
     {
         self::bootKernel();
         $application = new Application(self::$kernel);
         $command = $application->find('app:calculate-customer-sales-summary');
         $this->commandTester = new CommandTester($command);
-        $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
     public function testSuccessProcessesAllDurations(): void
@@ -54,7 +50,7 @@ final class CalculateCustomerSalesSummaryCommandTest extends KernelTestCase
 
     public function testDryRunDoesNotPersist(): void
     {
-        $initialCount = $this->getCustomerSalesSummaryCount();
+        $initialCount = CustomerSalesSummaryFactory::count();
 
         $this->commandTester->execute([
             '--dry-run' => true,
@@ -62,7 +58,7 @@ final class CalculateCustomerSalesSummaryCommandTest extends KernelTestCase
 
         self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
         self::assertStringContainsString('[DRY RUN]', $this->commandTester->getDisplay());
-        self::assertSame($initialCount, $this->getCustomerSalesSummaryCount());
+        CustomerSalesSummaryFactory::assert()->count($initialCount);
     }
 
     public function testVerboseOutputShowsDurations(): void
@@ -71,14 +67,5 @@ final class CalculateCustomerSalesSummaryCommandTest extends KernelTestCase
 
         self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
         self::assertStringContainsString('Processed Durations', $this->commandTester->getDisplay());
-    }
-
-    private function getCustomerSalesSummaryCount(): int
-    {
-        return (int) $this->em->getRepository(CustomerSalesSummary::class)
-            ->createQueryBuilder('c')
-            ->select('COUNT(c.dateString)')
-            ->getQuery()
-            ->getSingleScalarResult();
     }
 }

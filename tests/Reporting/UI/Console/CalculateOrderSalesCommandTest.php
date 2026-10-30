@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace App\Tests\Reporting\UI\Console;
 
-use App\Reporting\Domain\Model\SalesType\OrderSales;
 use App\Tests\Shared\Factory\CustomerOrderFactory;
+use App\Tests\Shared\Factory\OrderSalesFactory;
 use App\Tests\Shared\Story\StaffUserStory;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Command\Command;
@@ -20,15 +19,12 @@ final class CalculateOrderSalesCommandTest extends KernelTestCase
 {
     private CommandTester $commandTester;
 
-    private EntityManagerInterface $em;
-
     protected function setUp(): void
     {
         self::bootKernel();
         $application = new Application(self::$kernel);
         $command = $application->find('app:calculate-order-sales');
         $this->commandTester = new CommandTester($command);
-        $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
     public function testSuccessProcessesDays(): void
@@ -58,7 +54,7 @@ final class CalculateOrderSalesCommandTest extends KernelTestCase
     {
         CustomerOrderFactory::createOne();
 
-        $initialCount = $this->getOrderSalesCount();
+        $initialCount = OrderSalesFactory::count();
 
         $this->commandTester->execute([
             'day-count' => 3,
@@ -68,7 +64,7 @@ final class CalculateOrderSalesCommandTest extends KernelTestCase
 
         self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
         self::assertStringContainsString('[DRY RUN]', $this->commandTester->getDisplay());
-        self::assertSame($initialCount, $this->getOrderSalesCount());
+        OrderSalesFactory::assert()->count($initialCount);
     }
 
     public function testSkipSummaryPreventsChaining(): void
@@ -106,14 +102,5 @@ final class CalculateOrderSalesCommandTest extends KernelTestCase
         self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
         // With offset=0 and no skip-summary, summary command should run
         self::assertStringContainsString('summary', strtolower($this->commandTester->getDisplay()));
-    }
-
-    private function getOrderSalesCount(): int
-    {
-        return (int) $this->em->getRepository(OrderSales::class)
-            ->createQueryBuilder('o')
-            ->select('COUNT(o.dateString)')
-            ->getQuery()
-            ->getSingleScalarResult();
     }
 }

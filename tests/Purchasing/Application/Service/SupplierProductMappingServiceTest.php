@@ -63,24 +63,21 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
         ]);
 
         // Create unmapped SupplierProduct using factory with no product mapping
-        $supplierProduct = SupplierProduct::create(
-            name: 'Test Mapped Product',
-            productCode: 'TMP-001',
-            supplierCategory: $supplierCategory,
-            supplierSubcategory: $supplierSubcategory,
-            supplierManufacturer: $supplierManufacturer,
-            mfrPartNumber: 'MFR-12345',
-            weight: 500,
-            supplier: $supplier,
-            stock: 100,
-            leadTimeDays: 7,
-            cost: '25.99',
-            product: null,
-            isActive: true,
-        );
-
-        $this->em->persist($supplierProduct);
-        $this->em->flush();
+        $supplierProduct = SupplierProductFactory::createOne([
+            'name' => 'Test Mapped Product',
+            'productCode' => 'TMP-001',
+            'supplierCategory' => $supplierCategory,
+            'supplierSubcategory' => $supplierSubcategory,
+            'supplierManufacturer' => $supplierManufacturer,
+            'mfrPartNumber' => 'MFR-12345',
+            'weight' => 500,
+            'supplier' => $supplier,
+            'stock' => 100,
+            'leadTimeDays' => 7,
+            'cost' => '25.99',
+            'product' => null,
+            'isActive' => true,
+        ]);
 
         // Map the supplier product
         $product = $this->service->map($supplierProduct);
@@ -156,24 +153,21 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
             'name' => 'Existing Manufacturer', // Same name as existing
         ]);
 
-        $supplierProduct = SupplierProduct::create(
-            name: 'Product With Existing Mfr',
-            productCode: 'PWE-001',
-            supplierCategory: $supplierCategory,
-            supplierSubcategory: $supplierSubcategory,
-            supplierManufacturer: $supplierManufacturer,
-            mfrPartNumber: 'MFR-999',
-            weight: 200,
-            supplier: $supplier,
-            stock: 50,
-            leadTimeDays: 3,
-            cost: '15.00',
-            product: null,
-            isActive: true,
-        );
-
-        $this->em->persist($supplierProduct);
-        $this->em->flush();
+        $supplierProduct = SupplierProductFactory::createOne([
+            'name' => 'Product With Existing Mfr',
+            'productCode' => 'PWE-001',
+            'supplierCategory' => $supplierCategory,
+            'supplierSubcategory' => $supplierSubcategory,
+            'supplierManufacturer' => $supplierManufacturer,
+            'mfrPartNumber' => 'MFR-999',
+            'weight' => 200,
+            'supplier' => $supplier,
+            'stock' => 50,
+            'leadTimeDays' => 3,
+            'cost' => '15.00',
+            'product' => null,
+            'isActive' => true,
+        ]);
 
         $product = $this->service->map($supplierProduct);
 
@@ -207,24 +201,21 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
             'name' => 'Some Mfr',
         ]);
 
-        $supplierProduct = SupplierProduct::create(
-            name: 'Product With Existing Cat',
-            productCode: 'PWC-001',
-            supplierCategory: $supplierCategory,
-            supplierSubcategory: $supplierSubcategory,
-            supplierManufacturer: $supplierManufacturer,
-            mfrPartNumber: 'MFR-888',
-            weight: 300,
-            supplier: $supplier,
-            stock: 25,
-            leadTimeDays: 5,
-            cost: '50.00',
-            product: null,
-            isActive: true,
-        );
-
-        $this->em->persist($supplierProduct);
-        $this->em->flush();
+        $supplierProduct = SupplierProductFactory::createOne([
+            'name' => 'Product With Existing Cat',
+            'productCode' => 'PWC-001',
+            'supplierCategory' => $supplierCategory,
+            'supplierSubcategory' => $supplierSubcategory,
+            'supplierManufacturer' => $supplierManufacturer,
+            'mfrPartNumber' => 'MFR-888',
+            'weight' => 300,
+            'supplier' => $supplier,
+            'stock' => 25,
+            'leadTimeDays' => 5,
+            'cost' => '50.00',
+            'product' => null,
+            'isActive' => true,
+        ]);
 
         $product = $this->service->map($supplierProduct);
 
@@ -245,18 +236,16 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
         $existingManufacturer = ManufacturerFactory::createOne(['name' => 'Prod Mfr']);
 
         // Create existing product
-        $existingProduct = Product::create(
-            name: 'Existing Product',
-            description: 'Already exists',
-            category: $existingCategory,
-            subcategory: $existingSubcategory,
-            manufacturer: $existingManufacturer,
-            mfrPartNumber: 'ORIG-001',
-            owner: null,
-            isActive: true,
-        );
-        $this->em->persist($existingProduct);
-        $this->em->flush();
+        $existingProduct = ProductFactory::createOne([
+            'name' => 'Existing Product',
+            'description' => 'Already exists',
+            'category' => $existingCategory,
+            'subcategory' => $existingSubcategory,
+            'manufacturer' => $existingManufacturer,
+            'mfrPartNumber' => 'ORIG-001',
+            'owner' => null,
+            'isActive' => true,
+        ]);
 
         $supplier = SupplierFactory::createOne();
 
@@ -276,24 +265,21 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
             'name' => 'Prod Mfr',
         ]);
 
-        $supplierProduct = SupplierProduct::create(
-            name: 'Existing Product', // Same name as existing
-            productCode: 'SP-001',
-            supplierCategory: $supplierCategory,
-            supplierSubcategory: $supplierSubcategory,
-            supplierManufacturer: $supplierManufacturer,
-            mfrPartNumber: 'MFR-NEW',
-            weight: 100,
-            supplier: $supplier,
-            stock: 75,
-            leadTimeDays: 2,
-            cost: '10.00',
-            product: null,
-            isActive: true,
-        );
-
-        $this->em->persist($supplierProduct);
-        $this->em->flush();
+        $supplierProduct = SupplierProductFactory::createOne([
+            'name' => 'Existing Product', // Same name as existing
+            'productCode' => 'SP-001',
+            'supplierCategory' => $supplierCategory,
+            'supplierSubcategory' => $supplierSubcategory,
+            'supplierManufacturer' => $supplierManufacturer,
+            'mfrPartNumber' => 'MFR-NEW',
+            'weight' => 100,
+            'supplier' => $supplier,
+            'stock' => 75,
+            'leadTimeDays' => 2,
+            'cost' => '10.00',
+            'product' => null,
+            'isActive' => true,
+        ]);
 
         $product = $this->service->map($supplierProduct);
 
@@ -332,13 +318,9 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
         self::assertSame($existingProduct->getId(), $product->getId());
         self::assertSame($existingProduct, $sp->getProduct());
 
-        $products = $this->em->getRepository(Product::class)->findBy(['name' => $sp->getName()]);
-        $manufacturers = $this->em->getRepository(Manufacturer::class)->findBy(['name' => $sm->getName()]);
-        $categories = $this->em->getRepository(Category::class)->findBy(['name' => $sc->getName()]);
-
-        self::assertCount(1, $products);
-        self::assertCount(1, $manufacturers);
-        self::assertCount(1, $categories);
+        ProductFactory::assert()->count(1, ['name' => $sp->getName()]);
+        ManufacturerFactory::assert()->count(1, ['name' => $sm->getName()]);
+        CategoryFactory::assert()->count(1, ['name' => $sc->getName()]);
     }
 
     public function testMapThrowsWhenSupplierManufacturerMissing(): void
@@ -374,7 +356,8 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
     public function testMapUsesDefaultOwnerWhenNoAuthenticatedUser(): void
     {
         // Create the default owner that the service looks for when no authenticated user
-        UserFactory::createOne(['email' => 'admin@supplymars.com', 'isStaff' => true]);
+        $defaultEmail = self::getContainer()->get(DefaultUserAuthenticator::class)->getDefaultEmail();
+        UserFactory::new(['email' => $defaultEmail])->asStaff()->create();
 
         $sp = SupplierProductFactory::createOne(['product' => null]);
         $sc = $sp->getSupplierCategory();
@@ -384,7 +367,7 @@ final class SupplierProductMappingServiceTest extends KernelTestCase
 
         $category = $product->getCategory();
         self::assertSame($sc->getName(), $category->getName());
-        self::assertSame('admin@supplymars.com', $category->getOwner()->getEmail());
+        self::assertSame($defaultEmail, $category->getOwner()->getEmail());
     }
 
     #[WithStory(StaffUserStory::class)]

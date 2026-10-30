@@ -37,7 +37,7 @@ final class CalculateCustomerSalesSummaryHandlerTest extends KernelTestCase
 
         $this->handler->process();
 
-        $summaries = $this->em->getRepository(CustomerSalesSummary::class)->findAll();
+        $summaries = CustomerSalesSummaryFactory::all();
         $durations = array_map(fn (CustomerSalesSummary $s): SalesDuration => $s->getDuration(), $summaries);
 
         foreach (SalesDuration::cases() as $duration) {

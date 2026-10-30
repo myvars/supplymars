@@ -36,7 +36,6 @@ final class StatusChangeLogWriterTest extends KernelTestCase
 
     private function createUser(): User
     {
-        // UserFactory returns a Proxy which extends User, so we can return it directly
         return UserFactory::createOne();
     }
 

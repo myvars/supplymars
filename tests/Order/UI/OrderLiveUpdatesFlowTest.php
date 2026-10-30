@@ -20,12 +20,13 @@ use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Mercure\MercureCookie;
 use App\Tests\Shared\Mercure\QueuedNotifications;
 use App\Tests\Shared\Story\StaffUserStory;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Mercure\Exception\RuntimeException;
 use Symfony\Component\Mercure\Update;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Attribute\WithStory;
+
+use function Zenstruck\Foundry\Persistence\save;
 
 /**
  * Everyone with an order's page open sees it change (RefreshOrderPageForViewers). Each change is made as a caller
@@ -170,7 +171,7 @@ final class OrderLiveUpdatesFlowTest extends WebTestCase
     {
         $poItem = $this->purchaseOrderItem();
         $poItem->updateItemStatus(PurchaseOrderStatus::PROCESSING);
-        self::getContainer()->get(EntityManagerInterface::class)->flush();
+        save($poItem);
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())

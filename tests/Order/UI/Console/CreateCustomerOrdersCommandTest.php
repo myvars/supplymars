@@ -4,13 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Order\UI\Console;
 
-use App\Order\Domain\Model\Order\CustomerOrder;
+use App\Tests\Shared\Factory\CustomerOrderFactory;
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Story\StaffUserStory;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Command\Command;
@@ -24,22 +23,19 @@ final class CreateCustomerOrdersCommandTest extends KernelTestCase
 {
     private CommandTester $commandTester;
 
-    private EntityManagerInterface $em;
-
     protected function setUp(): void
     {
         self::bootKernel();
         $application = new Application(self::$kernel);
         $command = $application->find('app:create-customer-orders');
         $this->commandTester = new CommandTester($command);
-        $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
     public function testSuccessCreatesOrders(): void
     {
         $this->createTestProducts(5);
 
-        $initialCount = $this->getOrderCount();
+        $initialCount = CustomerOrderFactory::count();
 
         $this->commandTester->execute([
             'order-count' => 2,
@@ -47,7 +43,7 @@ final class CreateCustomerOrdersCommandTest extends KernelTestCase
 
         self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
         self::assertStringContainsString('Created 2 customer orders', $this->commandTester->getDisplay());
-        self::assertSame($initialCount + 2, $this->getOrderCount());
+        CustomerOrderFactory::assert()->count($initialCount + 2);
     }
 
     public function testInvalidCountReturnsInvalid(): void
@@ -76,7 +72,7 @@ final class CreateCustomerOrdersCommandTest extends KernelTestCase
     {
         $this->createTestProducts(5);
 
-        $initialCount = $this->getOrderCount();
+        $initialCount = CustomerOrderFactory::count();
 
         $this->commandTester->execute([
             'order-count' => 3,
@@ -85,7 +81,7 @@ final class CreateCustomerOrdersCommandTest extends KernelTestCase
 
         self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
         self::assertStringContainsString('[DRY RUN]', $this->commandTester->getDisplay());
-        self::assertSame($initialCount, $this->getOrderCount());
+        CustomerOrderFactory::assert()->count($initialCount);
     }
 
     public function testVerboseOutputShowsOrderIds(): void
@@ -104,13 +100,13 @@ final class CreateCustomerOrdersCommandTest extends KernelTestCase
     {
         $this->createTestProducts(5);
 
-        $initialCount = $this->getOrderCount();
+        $initialCount = CustomerOrderFactory::count();
 
         $this->commandTester->execute([]);
 
         self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
         self::assertStringContainsString('Created 1 customer orders', $this->commandTester->getDisplay());
-        self::assertSame($initialCount + 1, $this->getOrderCount());
+        CustomerOrderFactory::assert()->count($initialCount + 1);
     }
 
     public function testHasNoTimingOption(): void
@@ -138,14 +134,5 @@ final class CreateCustomerOrdersCommandTest extends KernelTestCase
         }
 
         UserFactory::createOne();
-    }
-
-    private function getOrderCount(): int
-    {
-        return (int) $this->em->getRepository(CustomerOrder::class)
-            ->createQueryBuilder('o')
-            ->select('COUNT(o.id)')
-            ->getQuery()
-            ->getSingleScalarResult();
     }
 }

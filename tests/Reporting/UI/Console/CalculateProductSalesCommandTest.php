@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Reporting\UI\Console;
 
-use App\Reporting\Domain\Model\SalesType\ProductSales;
+use App\Tests\Shared\Factory\ProductSalesFactory;
 use App\Tests\Shared\Story\StaffUserStory;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Command\Command;
@@ -19,15 +18,12 @@ final class CalculateProductSalesCommandTest extends KernelTestCase
 {
     private CommandTester $commandTester;
 
-    private EntityManagerInterface $em;
-
     protected function setUp(): void
     {
         self::bootKernel();
         $application = new Application(self::$kernel);
         $command = $application->find('app:calculate-product-sales');
         $this->commandTester = new CommandTester($command);
-        $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
     public function testSuccessProcessesDays(): void
@@ -53,7 +49,7 @@ final class CalculateProductSalesCommandTest extends KernelTestCase
 
     public function testDryRunDoesNotPersist(): void
     {
-        $initialCount = $this->getProductSalesCount();
+        $initialCount = ProductSalesFactory::count();
 
         $this->commandTester->execute([
             'day-count' => 3,
@@ -63,7 +59,7 @@ final class CalculateProductSalesCommandTest extends KernelTestCase
 
         self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
         self::assertStringContainsString('[DRY RUN]', $this->commandTester->getDisplay());
-        self::assertSame($initialCount, $this->getProductSalesCount());
+        ProductSalesFactory::assert()->count($initialCount);
     }
 
     public function testSkipSummaryPreventsChaining(): void
@@ -97,14 +93,5 @@ final class CalculateProductSalesCommandTest extends KernelTestCase
 
         self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
         self::assertStringContainsString('summary', strtolower($this->commandTester->getDisplay()));
-    }
-
-    private function getProductSalesCount(): int
-    {
-        return (int) $this->em->getRepository(ProductSales::class)
-            ->createQueryBuilder('p')
-            ->select('COUNT(p.dateString)')
-            ->getQuery()
-            ->getSingleScalarResult();
     }
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Reporting\Application\Handler;
 
 use App\Reporting\Application\Handler\CalculateOrderSalesHandler;
-use App\Reporting\Domain\Model\SalesType\OrderSales;
 use App\Tests\Shared\Factory\CustomerOrderFactory;
 use App\Tests\Shared\Factory\CustomerOrderItemFactory;
 use App\Tests\Shared\Factory\OrderSalesFactory;
@@ -34,8 +33,8 @@ final class CalculateOrderSalesHandlerTest extends KernelTestCase
 
         $this->handler->process($date);
 
-        $orderSales = $this->em->getRepository(OrderSales::class)->findAll();
-        self::assertCount(1, $orderSales);
+        OrderSalesFactory::assert()->count(1);
+        $orderSales = OrderSalesFactory::all();
         self::assertSame($date, $orderSales[0]->getDateString());
     }
 
@@ -45,8 +44,7 @@ final class CalculateOrderSalesHandlerTest extends KernelTestCase
 
         $this->handler->process($date);
 
-        $orderSales = $this->em->getRepository(OrderSales::class)->findAll();
-        self::assertCount(0, $orderSales);
+        OrderSalesFactory::assert()->empty();
     }
 
     public function testProcessDeletesExistingRecordsBeforeCreating(): void
@@ -66,8 +64,8 @@ final class CalculateOrderSalesHandlerTest extends KernelTestCase
 
         $this->handler->process($date);
 
-        $orderSales = $this->em->getRepository(OrderSales::class)->findAll();
-        self::assertCount(1, $orderSales);
+        OrderSalesFactory::assert()->count(1);
+        $orderSales = OrderSalesFactory::all();
         self::assertSame(1, $orderSales[0]->getOrderCount());
     }
 
@@ -80,8 +78,8 @@ final class CalculateOrderSalesHandlerTest extends KernelTestCase
 
         $this->handler->process($date);
 
-        $orderSales = $this->em->getRepository(OrderSales::class)->findAll();
-        self::assertCount(1, $orderSales);
+        OrderSalesFactory::assert()->count(1);
+        $orderSales = OrderSalesFactory::all();
 
         $sales = $orderSales[0];
         self::assertSame(1, $sales->getOrderCount());
@@ -104,8 +102,8 @@ final class CalculateOrderSalesHandlerTest extends KernelTestCase
 
         $this->handler->process($date);
 
-        $orderSales = $this->em->getRepository(OrderSales::class)->findAll();
-        self::assertCount(1, $orderSales);
+        OrderSalesFactory::assert()->count(1);
+        $orderSales = OrderSalesFactory::all();
         self::assertSame(3, $orderSales[0]->getOrderCount());
     }
 }
