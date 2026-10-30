@@ -37,6 +37,14 @@ final class CreateOrderFlowTest extends WebTestCase
             ->assertNotOn('/order/');
     }
 
+    public function testStaffIsRefused(): void
+    {
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/order/new')
+            ->assertStatus(403);
+    }
+
     public function testValidationErrorsOnEmptySubmission(): void
     {
         $this->browser()

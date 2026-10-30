@@ -11,7 +11,8 @@ use Zenstruck\Browser\Test\HasBrowser;
 
 /**
  * Who reaches what, as access_control in config/packages/security.yaml decides it: one page per
- * context, the API and the public pages. A page's own tests log in as staff and test the page.
+ * context, the API and the public pages. Audit has no row: its pages need a record and sit under
+ * the same ^/ rule. A page's own tests log in as staff and test the page, and any refusal of its own.
  */
 final class AccessControlTest extends WebTestCase
 {
@@ -38,6 +39,7 @@ final class AccessControlTest extends WebTestCase
         yield 'login' => ['/login'];
         yield 'health' => ['/health'];
         yield 'catalog API' => ['/api/v1/catalog/products'];
+        yield 'API docs' => ['/api/doc']; // its rule must stay above the one that closes ^/api/
     }
 
     #[DataProvider('staffPages')]
@@ -88,21 +90,6 @@ final class AccessControlTest extends WebTestCase
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create(), 'api')
             ->get('/api/v1/orders')
-            ->assertSuccessful();
-    }
-
-    // Super-admin-only (Docs/08-security.md). The five super-admin deletes are refused in their
-    // handlers with a flash, not here; their Delete*FlowTest has the staff case
-    public function testStaffIsRefusedCreatingAnOrderByHand(): void
-    {
-        $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/order/new')
-            ->assertStatus(403);
-
-        $this->browser()
-            ->actingAs(UserFactory::new()->asSuperAdmin()->create())
-            ->get('/order/new')
             ->assertSuccessful();
     }
 }
