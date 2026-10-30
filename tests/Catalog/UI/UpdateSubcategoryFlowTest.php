@@ -17,8 +17,8 @@ use Zenstruck\Browser\Test\HasBrowser;
 final class UpdateSubcategoryFlowTest extends WebTestCase
 {
     use HasBrowser;
-    use PostedRecordId;
     use InlineRename;
+    use PostedRecordId;
 
     public function testSuccessfulUpdateViaForm(): void
     {

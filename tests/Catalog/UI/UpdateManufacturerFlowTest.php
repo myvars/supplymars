@@ -15,8 +15,8 @@ use Zenstruck\Browser\Test\HasBrowser;
 final class UpdateManufacturerFlowTest extends WebTestCase
 {
     use HasBrowser;
-    use PostedRecordId;
     use InlineRename;
+    use PostedRecordId;
 
     public function testEditFormUpdatesAndRedirects(): void
     {

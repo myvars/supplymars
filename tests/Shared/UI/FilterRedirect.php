@@ -8,7 +8,7 @@ use Zenstruck\Browser\KernelBrowser;
 
 /**
  * Checks the index page a filter form redirected to, and its whole query in any order. Browser's
- * assertOn() compares the query string in order, and shortens both URLs when it fails.
+ * assertOn() compares the query string as written, so it fails on a change of order alone.
  */
 trait FilterRedirect
 {
