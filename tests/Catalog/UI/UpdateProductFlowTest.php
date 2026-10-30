@@ -6,12 +6,17 @@ namespace App\Tests\Catalog\UI;
 
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\UserFactory;
+use App\Tests\Shared\UI\InlineRename;
+use App\Tests\Shared\UI\PostedRecordId;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 
 final class UpdateProductFlowTest extends WebTestCase
 {
     use HasBrowser;
+    use PostedRecordId;
+    use InlineRename;
 
     public function testSuccessfulUpdateViaForm(): void
     {
@@ -66,14 +71,12 @@ final class UpdateProductFlowTest extends WebTestCase
     {
         $entity = ProductFactory::createOne(['name' => 'Old Value']);
 
-        $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/product/' . $entity->getPublicId()->value() . '/inline/name?edit=1')
-            ->fillField('inline_field[value]', str_repeat('a', 256))
-            ->click('Save (Enter)')
-            ->assertStatus(422)
-            ->assertSeeIn('form', 'Max 255 characters') // the field's error, rendered inside the form
-            ->assertSeeElement('input[name="inline_field[value]"]');
+        $this->assertInlineEditRefused(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/product/' . $entity->getPublicId()->value() . '/inline/name',
+            str_repeat('a', 256),
+            'Max 255 characters',
+        );
 
         self::assertSame('Old Value', $entity->getName());
     }
@@ -82,13 +85,12 @@ final class UpdateProductFlowTest extends WebTestCase
     {
         $entity = ProductFactory::createOne(['name' => 'Old Value']);
 
-        $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/product/' . $entity->getPublicId()->value() . '/inline/name?edit=1')
-            ->fillField('inline_field[value]', '')
-            ->click('Save (Enter)')
-            ->assertStatus(422)
-            ->assertSeeIn('form', 'Please enter a product name');
+        $this->assertInlineEditRefused(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/product/' . $entity->getPublicId()->value() . '/inline/name',
+            '',
+            'Please enter a product name',
+        );
 
         self::assertSame('Old Value', $entity->getName());
     }
@@ -98,15 +100,30 @@ final class UpdateProductFlowTest extends WebTestCase
         $entity = ProductFactory::createOne(['name' => 'Old Value']);
         $publicId = $entity->getPublicId()->value();
 
-        $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/product/' . $publicId . '/inline/name?edit=1')
-            ->fillField('inline_field[value]', 'Renamed Value')
-            ->click('Save (Enter)')
-            ->assertSuccessful()
-            ->assertContains('<turbo-stream action="refresh" scroll="preserve"></turbo-stream>')
-            ->assertNotContains('Renamed Value')
-            ->get('/product/' . $publicId)
-            ->assertSeeIn('nav[aria-label="breadcrumb"]', 'Renamed Value');
+        $this->assertInlineRenameRefreshes(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/product/' . $publicId . '/inline/name',
+            '/product/' . $publicId,
+        );
+    }
+
+    #[DataProvider('postedRecordIds')]
+    public function testEditRefusesAProductIdPostedInTheForm(string $postedId): void
+    {
+        $other = ProductFactory::createOne(['name' => 'Other']);
+        $product = ProductFactory::createOne(['name' => 'Before Edit']);
+
+        $this->assertRefusesPostedRecordId(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/product/' . $product->getPublicId()->value() . '/edit',
+            'Update Product',
+            'id',
+            $postedId,
+            $other->getPublicId()->value(),
+            ['name' => 'Renamed'],
+        );
+
+        ProductFactory::assert()->exists(['id' => $other->getId(), 'name' => 'Other']);
+        ProductFactory::assert()->exists(['id' => $product->getId(), 'name' => 'Before Edit']);
     }
 }

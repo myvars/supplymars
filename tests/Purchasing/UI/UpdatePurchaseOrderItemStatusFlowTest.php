@@ -13,6 +13,8 @@ use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Story\StaffUserStory;
+use App\Tests\Shared\UI\PostedRecordId;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Attribute\WithStory;
@@ -21,6 +23,7 @@ use Zenstruck\Foundry\Attribute\WithStory;
 final class UpdatePurchaseOrderItemStatusFlowTest extends WebTestCase
 {
     use HasBrowser;
+    use PostedRecordId;
 
     public function testSuccessfulStatusChangeViaForm(): void
     {
@@ -96,5 +99,25 @@ final class UpdatePurchaseOrderItemStatusFlowTest extends WebTestCase
             ->click('Update')
             ->assertOn('/purchase/order/item/' . $poiPublicId . '/edit/status')
             ->assertSee('Status can not be set to');
+    }
+
+    #[DataProvider('postedRecordIds')]
+    public function testEditRefusesAPurchaseOrderItemIdPostedInTheForm(string $postedId): void
+    {
+        $other = PurchaseOrderItemFactory::createOne();
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne();
+
+        $this->assertRefusesPostedRecordId(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/purchase/order/item/' . $purchaseOrderItem->getPublicId()->value() . '/edit/status',
+            'Update',
+            'id',
+            $postedId,
+            $other->getPublicId()->value(),
+            ['purchaseOrderItemStatus' => PurchaseOrderStatus::PROCESSING->value],
+        );
+
+        PurchaseOrderItemFactory::assert()->exists(['id' => $other->getId(), 'status' => PurchaseOrderStatus::PENDING]);
+        PurchaseOrderItemFactory::assert()->exists(['id' => $purchaseOrderItem->getId(), 'status' => PurchaseOrderStatus::PENDING]);
     }
 }
