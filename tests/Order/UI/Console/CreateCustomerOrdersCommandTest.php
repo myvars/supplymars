@@ -20,7 +20,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
-class CreateCustomerOrdersCommandTest extends KernelTestCase
+final class CreateCustomerOrdersCommandTest extends KernelTestCase
 {
     use Factories;
 

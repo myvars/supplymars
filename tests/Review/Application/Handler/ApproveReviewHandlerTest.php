@@ -15,7 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
-class ApproveReviewHandlerTest extends KernelTestCase
+final class ApproveReviewHandlerTest extends KernelTestCase
 {
     use Factories;
 

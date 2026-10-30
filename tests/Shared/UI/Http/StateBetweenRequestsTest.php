@@ -27,7 +27,7 @@ use Zenstruck\Foundry\Test\Factories;
  * another user's. This test keeps one kernel too (disableReboot) and interleaves two logged-in users
  * and a visitor. See "State Between Requests" in Docs/03-architecture.md.
  */
-class StateBetweenRequestsTest extends WebTestCase
+final class StateBetweenRequestsTest extends WebTestCase
 {
     use HasBrowser;
     use Factories;

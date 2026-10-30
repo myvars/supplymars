@@ -15,7 +15,7 @@ use Symfony\Component\Mercure\MockHub;
 use Symfony\Component\Mercure\Update;
 use Twig\Environment;
 
-class MercureUserNotifierTest extends KernelTestCase
+final class MercureUserNotifierTest extends KernelTestCase
 {
     /** @var list<Update> */
     private array $published = [];

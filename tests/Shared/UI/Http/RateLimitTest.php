@@ -12,7 +12,7 @@ use Zenstruck\Browser\Test\HasBrowser;
  * The rules in config/packages/rate_limiter.yaml. The counts are in memory in tests, so each test keeps
  * one kernel (disableReboot) for its counts to carry from request to request.
  */
-class RateLimitTest extends WebTestCase
+final class RateLimitTest extends WebTestCase
 {
     use HasBrowser;
 

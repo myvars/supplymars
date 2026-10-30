@@ -11,7 +11,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
 
-class CancelOrderFlowTest extends WebTestCase
+final class CancelOrderFlowTest extends WebTestCase
 {
     use HasBrowser;
     use Factories;

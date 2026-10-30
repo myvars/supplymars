@@ -12,7 +12,7 @@ use App\Order\Domain\Model\Order\OrderStatus;
 use App\Shared\Domain\Event\AbstractDomainEvent;
 use PHPUnit\Framework\TestCase;
 
-class OrderItemDomainTest extends TestCase
+final class OrderItemDomainTest extends TestCase
 {
     private function stubCustomerOrder(): CustomerOrder
     {

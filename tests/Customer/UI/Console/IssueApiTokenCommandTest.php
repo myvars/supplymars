@@ -15,7 +15,7 @@ use Zenstruck\Browser\KernelBrowser;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
 
-class IssueApiTokenCommandTest extends WebTestCase
+final class IssueApiTokenCommandTest extends WebTestCase
 {
     use HasBrowser;
     use Factories;

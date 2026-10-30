@@ -13,7 +13,7 @@ use Symfony\Component\Messenger\Transport\Receiver\MessageCountAwareInterface;
 use Symfony\Component\Messenger\Transport\TransportInterface;
 use Zenstruck\Browser\Test\HasBrowser;
 
-class HealthControllerTest extends WebTestCase
+final class HealthControllerTest extends WebTestCase
 {
     use HasBrowser;
 

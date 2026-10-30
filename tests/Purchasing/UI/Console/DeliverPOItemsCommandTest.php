@@ -22,7 +22,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
-class DeliverPOItemsCommandTest extends KernelTestCase
+final class DeliverPOItemsCommandTest extends KernelTestCase
 {
     use Factories;
 

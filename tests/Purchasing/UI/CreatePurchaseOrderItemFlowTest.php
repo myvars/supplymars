@@ -20,7 +20,7 @@ use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
 #[WithStory(StaffUserStory::class)]
-class CreatePurchaseOrderItemFlowTest extends WebTestCase
+final class CreatePurchaseOrderItemFlowTest extends WebTestCase
 {
     use HasBrowser;
     use Factories;

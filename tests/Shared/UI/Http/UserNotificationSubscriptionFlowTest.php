@@ -11,7 +11,7 @@ use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
 
 /** Each staff page subscribes to its own user's toasts, and only to those (base.html.twig). A customer's subscribes to nothing. */
-class UserNotificationSubscriptionFlowTest extends WebTestCase
+final class UserNotificationSubscriptionFlowTest extends WebTestCase
 {
     use HasBrowser;
     use Factories;

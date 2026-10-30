@@ -8,7 +8,7 @@ use App\Order\Domain\Model\Order\OrderStatus;
 use App\Reporting\UI\Http\Chart\OrderStatusColorProvider;
 use PHPUnit\Framework\TestCase;
 
-class OrderStatusColorProviderTest extends TestCase
+final class OrderStatusColorProviderTest extends TestCase
 {
     private OrderStatusColorProvider $provider;
 

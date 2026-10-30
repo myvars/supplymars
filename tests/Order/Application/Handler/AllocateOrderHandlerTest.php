@@ -20,7 +20,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
-class AllocateOrderHandlerTest extends KernelTestCase
+final class AllocateOrderHandlerTest extends KernelTestCase
 {
     use Factories;
 

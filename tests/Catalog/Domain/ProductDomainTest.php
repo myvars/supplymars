@@ -16,7 +16,7 @@ use App\Shared\Domain\Service\Pricing\MarkupCalculator;
 use App\Shared\Domain\ValueObject\PriceModel;
 use PHPUnit\Framework\TestCase;
 
-class ProductDomainTest extends TestCase
+final class ProductDomainTest extends TestCase
 {
     private function stubUser(): User
     {

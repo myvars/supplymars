@@ -11,7 +11,7 @@ use App\Tests\Shared\Factory\OrderSalesSummaryFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 
-class OrderSummaryReportHandlerTest extends KernelTestCase
+final class OrderSummaryReportHandlerTest extends KernelTestCase
 {
     use Factories;
 

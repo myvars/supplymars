@@ -13,7 +13,7 @@ use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
 use App\Shared\Domain\Event\AbstractDomainEvent;
 use PHPUnit\Framework\TestCase;
 
-class PurchaseOrderItemDomainTest extends TestCase
+final class PurchaseOrderItemDomainTest extends TestCase
 {
     private function stubPurchaseOrder(): PurchaseOrder
     {

@@ -24,7 +24,7 @@ use Zenstruck\Foundry\Test\Factories;
 
 use function Zenstruck\Foundry\force;
 
-class PruneStatusChangeLogCommandTest extends KernelTestCase
+final class PruneStatusChangeLogCommandTest extends KernelTestCase
 {
     use Factories;
 

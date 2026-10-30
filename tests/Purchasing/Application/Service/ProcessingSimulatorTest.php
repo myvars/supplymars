@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
-class ProcessingSimulatorTest extends KernelTestCase
+final class ProcessingSimulatorTest extends KernelTestCase
 {
     use Factories;
 

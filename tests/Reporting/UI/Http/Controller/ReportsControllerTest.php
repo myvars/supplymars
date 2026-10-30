@@ -9,7 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Test\Factories;
 
-class ReportsControllerTest extends WebTestCase
+final class ReportsControllerTest extends WebTestCase
 {
     use HasBrowser;
     use Factories;

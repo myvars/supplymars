@@ -24,7 +24,7 @@ use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
 #[WithStory(StaffUserStory::class)]
-class CreateReviewHandlerTest extends KernelTestCase
+final class CreateReviewHandlerTest extends KernelTestCase
 {
     use Factories;
 

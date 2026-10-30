@@ -9,7 +9,7 @@ use App\Purchasing\Domain\Model\Supplier\Supplier;
 use App\Purchasing\Domain\Model\Supplier\SupplierColourScheme;
 use PHPUnit\Framework\TestCase;
 
-class SupplierDomainTest extends TestCase
+final class SupplierDomainTest extends TestCase
 {
     public function testCreateTrimsNameAndSetsActive(): void
     {

@@ -21,7 +21,7 @@ use Zenstruck\Foundry\Test\Factories;
  * Releasing another user's lock tells the holder, wherever they are (NotifyLockHolderOfRelease). The queue is
  * handled as the worker would; redirects are not followed, so the queue and hub are this request's.
  */
-class LockReleaseNotificationFlowTest extends WebTestCase
+final class LockReleaseNotificationFlowTest extends WebTestCase
 {
     use HasBrowser;
     use Factories;

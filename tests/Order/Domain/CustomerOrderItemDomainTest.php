@@ -12,7 +12,7 @@ use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItem;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use PHPUnit\Framework\TestCase;
 
-class CustomerOrderItemDomainTest extends TestCase
+final class CustomerOrderItemDomainTest extends TestCase
 {
     private function stubCustomerOrder(): CustomerOrder
     {

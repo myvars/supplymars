@@ -22,7 +22,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
-class RewindMixedStatusPurchaseOrdersCommandTest extends KernelTestCase
+final class RewindMixedStatusPurchaseOrdersCommandTest extends KernelTestCase
 {
     use Factories;
 

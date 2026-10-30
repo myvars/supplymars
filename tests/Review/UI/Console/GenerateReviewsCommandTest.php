@@ -24,7 +24,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
-class GenerateReviewsCommandTest extends KernelTestCase
+final class GenerateReviewsCommandTest extends KernelTestCase
 {
     use Factories;
 

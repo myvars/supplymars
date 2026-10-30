@@ -15,7 +15,7 @@ use PHPUnit\Framework\TestCase;
  * Tests to verify PO item status consistency behaviors.
  * These tests validate the fixes to acceptPOsCommand and refundPOsCommand.
  */
-class PurchaseOrderStatusConsistencyTest extends TestCase
+final class PurchaseOrderStatusConsistencyTest extends TestCase
 {
     private function stubPurchaseOrder(): PurchaseOrder
     {

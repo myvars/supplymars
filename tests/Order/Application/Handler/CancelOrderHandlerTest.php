@@ -16,7 +16,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
-class CancelOrderHandlerTest extends KernelTestCase
+final class CancelOrderHandlerTest extends KernelTestCase
 {
     use Factories;
 

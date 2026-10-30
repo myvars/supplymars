@@ -18,7 +18,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 
-class CalculateCustomerSalesSummaryHandlerTest extends KernelTestCase
+final class CalculateCustomerSalesSummaryHandlerTest extends KernelTestCase
 {
     use Factories;
 

@@ -16,7 +16,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
-class CalculateProductSalesSummaryCommandTest extends KernelTestCase
+final class CalculateProductSalesSummaryCommandTest extends KernelTestCase
 {
     use Factories;
 

@@ -15,7 +15,7 @@ use Symfony\Component\Uid\Ulid;
 use Zenstruck\Foundry\Attribute\WithStory;
 use Zenstruck\Foundry\Test\Factories;
 
-class LockOrderHandlerTest extends KernelTestCase
+final class LockOrderHandlerTest extends KernelTestCase
 {
     use Factories;
 

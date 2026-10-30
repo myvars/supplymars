@@ -13,7 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 
-class CalculateOrderSalesHandlerTest extends KernelTestCase
+final class CalculateOrderSalesHandlerTest extends KernelTestCase
 {
     use Factories;
 

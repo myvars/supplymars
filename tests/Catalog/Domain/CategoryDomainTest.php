@@ -11,7 +11,7 @@ use App\Pricing\Domain\Model\VatRate\VatRate;
 use App\Shared\Domain\ValueObject\PriceModel;
 use PHPUnit\Framework\TestCase;
 
-class CategoryDomainTest extends TestCase
+final class CategoryDomainTest extends TestCase
 {
     private function stubUser(): User
     {

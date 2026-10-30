@@ -13,7 +13,7 @@ use Symfony\Component\Mercure\Jwt\StaticTokenProvider;
 use Symfony\Component\Mercure\MockHub;
 use Symfony\Component\Mercure\Update;
 
-class MercureLiveUpdatePublisherTest extends TestCase
+final class MercureLiveUpdatePublisherTest extends TestCase
 {
     /** @var list<Update> */
     private array $published = [];

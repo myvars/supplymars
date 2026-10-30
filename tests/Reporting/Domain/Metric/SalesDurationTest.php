@@ -7,7 +7,7 @@ namespace App\Tests\Reporting\Domain\Metric;
 use App\Reporting\Domain\Metric\SalesDuration;
 use PHPUnit\Framework\TestCase;
 
-class SalesDurationTest extends TestCase
+final class SalesDurationTest extends TestCase
 {
     public function testDefaultReturnsLast30(): void
     {

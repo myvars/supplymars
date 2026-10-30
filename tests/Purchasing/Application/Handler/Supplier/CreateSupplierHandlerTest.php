@@ -10,7 +10,7 @@ use App\Purchasing\Domain\Repository\SupplierRepository;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 
-class CreateSupplierHandlerTest extends KernelTestCase
+final class CreateSupplierHandlerTest extends KernelTestCase
 {
     use Factories;
 

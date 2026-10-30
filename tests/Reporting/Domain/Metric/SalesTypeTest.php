@@ -8,7 +8,7 @@ use App\Reporting\Domain\Metric\SalesType;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-class SalesTypeTest extends TestCase
+final class SalesTypeTest extends TestCase
 {
     public function testAllCasesExist(): void
     {

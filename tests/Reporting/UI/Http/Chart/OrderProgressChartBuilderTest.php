@@ -12,7 +12,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
 
-class OrderProgressChartBuilderTest extends TestCase
+final class OrderProgressChartBuilderTest extends TestCase
 {
     public function testCreateReturnsChartWithCorrectType(): void
     {

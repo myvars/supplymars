@@ -12,7 +12,7 @@ use Zenstruck\Browser\Test\HasBrowser;
  * The app sends the security headers, so dev and tests use the production policy. HSTS is the web
  * server's (docker/frankenphp/Caddyfile) and is not checked here.
  */
-class SecurityHeadersTest extends WebTestCase
+final class SecurityHeadersTest extends WebTestCase
 {
     use HasBrowser;
 

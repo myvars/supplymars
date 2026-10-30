@@ -34,7 +34,7 @@ use Zenstruck\Foundry\Test\Factories;
  * not followed: the next request would start a new kernel, with an empty queue and hub.
  */
 #[WithStory(StaffUserStory::class)]
-class OrderLiveUpdatesFlowTest extends WebTestCase
+final class OrderLiveUpdatesFlowTest extends WebTestCase
 {
     use HasBrowser;
     use Factories;

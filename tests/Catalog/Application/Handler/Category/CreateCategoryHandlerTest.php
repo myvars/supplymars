@@ -13,7 +13,7 @@ use App\Tests\Shared\Factory\VatRateFactory;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Zenstruck\Foundry\Test\Factories;
 
-class CreateCategoryHandlerTest extends KernelTestCase
+final class CreateCategoryHandlerTest extends KernelTestCase
 {
     use Factories;
 
