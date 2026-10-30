@@ -8,11 +8,13 @@ use App\Note\Domain\Model\Ticket\TicketStatus;
 use App\Tests\Shared\Factory\PoolFactory;
 use App\Tests\Shared\Factory\TicketFactory;
 use App\Tests\Shared\Factory\UserFactory;
+use App\Tests\Shared\UI\FilterRedirect;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 
 final class TicketFilterFlowTest extends WebTestCase
 {
+    use FilterRedirect;
     use HasBrowser;
 
     public function testFilterByStatusRedirectsWithParams(): void
@@ -23,12 +25,14 @@ final class TicketFilterFlowTest extends WebTestCase
             ->fillField('ticket_filter[status]', TicketStatus::OPEN->value)
             ->click('Apply Filter');
 
-        $uri = $browser->crawler()->getUri();
-        $query = [];
-        parse_str((string) parse_url((string) $uri, PHP_URL_QUERY), $query);
-
-        self::assertSame(strtolower(TicketStatus::OPEN->value), $query['status']);
-        self::assertSame('on', $query['filter']);
+        $this->assertRedirectedWithQuery($browser, '/note/ticket/', [
+            'sort' => 'lastMessageAt',
+            'sortDirection' => 'DESC',
+            'page' => 1,
+            'limit' => 5,
+            'status' => strtolower(TicketStatus::OPEN->value),
+            'filter' => 'on',
+        ]);
     }
 
     public function testFilterByPoolRedirectsWithParams(): void
@@ -41,12 +45,14 @@ final class TicketFilterFlowTest extends WebTestCase
             ->fillField('ticket_filter[pool]', (string) $pool->getId())
             ->click('Apply Filter');
 
-        $uri = $browser->crawler()->getUri();
-        $query = [];
-        parse_str((string) parse_url((string) $uri, PHP_URL_QUERY), $query);
-
-        self::assertSame((string) $pool->getId(), $query['poolId']);
-        self::assertSame('on', $query['filter']);
+        $this->assertRedirectedWithQuery($browser, '/note/ticket/', [
+            'sort' => 'lastMessageAt',
+            'sortDirection' => 'DESC',
+            'page' => 1,
+            'limit' => 5,
+            'poolId' => $pool->getId(),
+            'filter' => 'on',
+        ]);
     }
 
     public function testFilterActiveIndicatorAppearsOnIndex(): void

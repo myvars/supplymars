@@ -7,12 +7,14 @@ namespace App\Tests\Order\UI;
 use App\Order\Domain\Model\Order\OrderStatus;
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\UserFactory;
+use App\Tests\Shared\UI\FilterRedirect;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\AbstractBrowser;
 use Zenstruck\Browser\Test\HasBrowser;
 
 final class OrderFilterFlowTest extends WebTestCase
 {
+    use FilterRedirect;
     use HasBrowser;
 
     public function testSubmitFilterFormRedirectsWithParams(): void
@@ -38,22 +40,17 @@ final class OrderFilterFlowTest extends WebTestCase
                 $client->submitForm('Apply Filter', $values);
             });
 
-        $uri = $browser->client()->getRequest()->getUri();
-        $query = [];
-        parse_str((string) parse_url((string) $uri, PHP_URL_QUERY), $query);
-
-        // Assert base search params (defaults from OrderSearchCriteria)
-        self::assertSame('id', $query['sort']);
-        self::assertSame('DESC', $query['sortDirection']);
-        self::assertSame('1', $query['page']);
-        self::assertSame('5', $query['limit']);
-
-        // Assert filter params
-        self::assertSame((string) $customer->getId(), $query['customerId']);
-        self::assertSame((string) $product->getId(), $query['productId']);
-        self::assertSame(strtolower(OrderStatus::PENDING->value), $query['orderStatus']);
-        self::assertSame('2025-01-01', $query['startDate']);
-        self::assertSame('2025-12-31', $query['endDate']);
-        self::assertSame('on', $query['filter']);
+        $this->assertRedirectedWithQuery($browser, '/order/', [
+            'sort' => 'id',
+            'sortDirection' => 'DESC',
+            'page' => 1,
+            'limit' => 5,
+            'customerId' => $customer->getId(),
+            'productId' => $product->getId(),
+            'orderStatus' => strtolower(OrderStatus::PENDING->value),
+            'startDate' => '2025-01-01',
+            'endDate' => '2025-12-31',
+            'filter' => 'on',
+        ]);
     }
 }

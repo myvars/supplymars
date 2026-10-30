@@ -6,6 +6,7 @@ namespace App\Tests\Pricing\UI;
 
 use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Factory\VatRateFactory;
+use App\Tests\Shared\UI\InlineRename;
 use App\Tests\Shared\UI\PostedRecordId;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -14,6 +15,7 @@ use Zenstruck\Browser\Test\HasBrowser;
 final class UpdateVatRateFlowTest extends WebTestCase
 {
     use HasBrowser;
+    use InlineRename;
     use PostedRecordId;
 
     #[DataProvider('postedRecordIds')]
@@ -69,14 +71,12 @@ final class UpdateVatRateFlowTest extends WebTestCase
     {
         $entity = VatRateFactory::createOne(['name' => 'Old Value']);
 
-        $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/vat-rate/' . $entity->getPublicId()->value() . '/inline/name?edit=1')
-            ->fillField('inline_field[value]', str_repeat('a', 256))
-            ->click('Save (Enter)')
-            ->assertStatus(422)
-            ->assertSeeIn('form', 'Max 255 characters') // the field's error, rendered inside the form
-            ->assertSeeElement('input[name="inline_field[value]"]');
+        $this->assertInlineEditRefused(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/vat-rate/' . $entity->getPublicId()->value() . '/inline/name',
+            str_repeat('a', 256),
+            'Max 255 characters',
+        );
 
         self::assertSame('Old Value', $entity->getName());
     }
@@ -85,13 +85,12 @@ final class UpdateVatRateFlowTest extends WebTestCase
     {
         $entity = VatRateFactory::createOne(['name' => 'Old Value']);
 
-        $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/vat-rate/' . $entity->getPublicId()->value() . '/inline/name?edit=1')
-            ->fillField('inline_field[value]', '')
-            ->click('Save (Enter)')
-            ->assertStatus(422)
-            ->assertSeeIn('form', 'Please enter a VAT rate name');
+        $this->assertInlineEditRefused(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/vat-rate/' . $entity->getPublicId()->value() . '/inline/name',
+            '',
+            'Please enter a VAT rate name',
+        );
 
         self::assertSame('Old Value', $entity->getName());
     }
@@ -101,15 +100,10 @@ final class UpdateVatRateFlowTest extends WebTestCase
         $entity = VatRateFactory::createOne(['name' => 'Old Value']);
         $publicId = $entity->getPublicId()->value();
 
-        $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/vat-rate/' . $publicId . '/inline/name?edit=1')
-            ->fillField('inline_field[value]', 'Renamed Value')
-            ->click('Save (Enter)')
-            ->assertSuccessful()
-            ->assertContains('<turbo-stream action="refresh" scroll="preserve"></turbo-stream>')
-            ->assertNotContains('Renamed Value')
-            ->get('/vat-rate/' . $publicId)
-            ->assertSeeIn('nav[aria-label="breadcrumb"]', 'Renamed Value');
+        $this->assertInlineRenameRefreshes(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/vat-rate/' . $publicId . '/inline/name',
+            '/vat-rate/' . $publicId,
+        );
     }
 }

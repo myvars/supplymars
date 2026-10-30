@@ -11,12 +11,15 @@ use App\Tests\Shared\Factory\SupplierManufacturerFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Factory\SupplierSubcategoryFactory;
 use App\Tests\Shared\Factory\UserFactory;
+use App\Tests\Shared\UI\PostedRecordId;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 
 final class UpdateSupplierProductFlowTest extends WebTestCase
 {
     use HasBrowser;
+    use PostedRecordId;
 
     public function testSuccessfulEditViaForm(): void
     {
@@ -107,5 +110,25 @@ final class UpdateSupplierProductFlowTest extends WebTestCase
             ->click('Update Supplier Product')
             ->assertOn('/supplier-product/' . $publicId . '/edit')
             ->assertSee('Please enter a supplier product name');
+    }
+
+    #[DataProvider('postedRecordIds')]
+    public function testEditRefusesASupplierProductIdPostedInTheForm(string $postedId): void
+    {
+        $other = SupplierProductFactory::createOne(['name' => 'Other']);
+        $supplierProduct = SupplierProductFactory::createOne(['name' => 'Before Edit']);
+
+        $this->assertRefusesPostedRecordId(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/supplier-product/' . $supplierProduct->getPublicId()->value() . '/edit',
+            'Update Supplier Product',
+            'id',
+            $postedId,
+            $other->getPublicId()->value(),
+            ['name' => 'Renamed'],
+        );
+
+        SupplierProductFactory::assert()->exists(['id' => $other->getId(), 'name' => 'Other']);
+        SupplierProductFactory::assert()->exists(['id' => $supplierProduct->getId(), 'name' => 'Before Edit']);
     }
 }

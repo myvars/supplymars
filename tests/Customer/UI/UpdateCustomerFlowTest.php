@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Customer\UI;
 
 use App\Tests\Shared\Factory\UserFactory;
+use App\Tests\Shared\UI\InlineRename;
 use App\Tests\Shared\UI\PostedRecordId;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -13,6 +14,7 @@ use Zenstruck\Browser\Test\HasBrowser;
 final class UpdateCustomerFlowTest extends WebTestCase
 {
     use HasBrowser;
+    use InlineRename;
     use PostedRecordId;
 
     #[DataProvider('postedRecordIds')]
@@ -123,14 +125,12 @@ final class UpdateCustomerFlowTest extends WebTestCase
     {
         $entity = UserFactory::createOne(['fullName' => 'Old Value']);
 
-        $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/customer/' . $entity->getPublicId()->value() . '/inline/fullname?edit=1')
-            ->fillField('inline_field[value]', str_repeat('a', 51))
-            ->click('Save (Enter)')
-            ->assertStatus(422)
-            ->assertSeeIn('form', 'Max 50 characters') // the field's error, rendered inside the form
-            ->assertSeeElement('input[name="inline_field[value]"]');
+        $this->assertInlineEditRefused(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/customer/' . $entity->getPublicId()->value() . '/inline/fullname',
+            str_repeat('a', 51),
+            'Max 50 characters',
+        );
 
         self::assertSame('Old Value', $entity->getFullName());
     }
@@ -139,13 +139,12 @@ final class UpdateCustomerFlowTest extends WebTestCase
     {
         $entity = UserFactory::createOne(['fullName' => 'Old Value']);
 
-        $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/customer/' . $entity->getPublicId()->value() . '/inline/fullname?edit=1')
-            ->fillField('inline_field[value]', '')
-            ->click('Save (Enter)')
-            ->assertStatus(422)
-            ->assertSeeIn('form', 'Please enter a full name');
+        $this->assertInlineEditRefused(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/customer/' . $entity->getPublicId()->value() . '/inline/fullname',
+            '',
+            'Please enter a full name',
+        );
 
         self::assertSame('Old Value', $entity->getFullName());
     }
@@ -198,15 +197,10 @@ final class UpdateCustomerFlowTest extends WebTestCase
         $entity = UserFactory::createOne(['fullName' => 'Old Value']);
         $publicId = $entity->getPublicId()->value();
 
-        $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/customer/' . $publicId . '/inline/fullname?edit=1')
-            ->fillField('inline_field[value]', 'Renamed Value')
-            ->click('Save (Enter)')
-            ->assertSuccessful()
-            ->assertContains('<turbo-stream action="refresh" scroll="preserve"></turbo-stream>')
-            ->assertNotContains('Renamed Value')
-            ->get('/customer/' . $publicId)
-            ->assertSeeIn('nav[aria-label="breadcrumb"]', 'Renamed Value');
+        $this->assertInlineRenameRefreshes(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/customer/' . $publicId . '/inline/fullname',
+            '/customer/' . $publicId,
+        );
     }
 }
