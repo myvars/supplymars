@@ -40,4 +40,17 @@ final class DeletePoolFlowTest extends WebTestCase
 
         PoolFactory::assert()->notExists(['publicId' => $publicId]);
     }
+
+    public function testStaffIsRefused(): void
+    {
+        $pool = PoolFactory::createOne();
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/note/pool/' . $pool->getPublicId()->value() . '/delete/confirm')
+            ->click('Delete')
+            ->assertSee('Deleting is disabled for this user.');
+
+        PoolFactory::assert()->exists(['id' => $pool->getId()]);
+    }
 }

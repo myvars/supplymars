@@ -24,5 +24,20 @@ final class DeleteVatRateFlowTest extends WebTestCase
             ->click('Delete VAT Rate')
             ->assertOn('/vat-rate/')
             ->assertSee('VAT rate deleted');
+
+        VatRateFactory::assert()->notExists(['publicId' => $publicId]);
+    }
+
+    public function testStaffIsRefused(): void
+    {
+        $vatRate = VatRateFactory::createOne();
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/vat-rate/' . $vatRate->getPublicId()->value() . '/delete/confirm')
+            ->click('Delete VAT Rate')
+            ->assertSee('Deleting is disabled for this user.');
+
+        VatRateFactory::assert()->exists(['id' => $vatRate->getId()]);
     }
 }

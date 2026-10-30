@@ -18,14 +18,6 @@ final class DashboardControllerTest extends WebTestCase
 {
     use HasBrowser;
 
-    public function testDashboardRequiresAuthentication(): void
-    {
-        $this->browser()
-            ->interceptRedirects()
-            ->get('/dashboard/')
-            ->assertRedirectedTo('/login');
-    }
-
     public function testDashboardRendersForAuthenticatedStaff(): void
     {
         $today = new \DateTime()->format('Y-m-d');

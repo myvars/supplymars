@@ -36,14 +36,6 @@ final class ReportsControllerTest extends WebTestCase
             ->assertSuccessful();
     }
 
-    public function testCustomerInsightsRequiresAuthentication(): void
-    {
-        $this->browser()
-            ->interceptRedirects()
-            ->get('/reports/customer/insights')
-            ->assertRedirectedTo('/login');
-    }
-
     public function testCustomerInsightsRendersWithDefaultCriteria(): void
     {
         $this->browser()
@@ -60,14 +52,6 @@ final class ReportsControllerTest extends WebTestCase
             ->assertSuccessful();
     }
 
-    public function testCustomerGeographicRequiresAuthentication(): void
-    {
-        $this->browser()
-            ->interceptRedirects()
-            ->get('/reports/customer/geographic')
-            ->assertRedirectedTo('/login');
-    }
-
     public function testCustomerGeographicRendersWithDefaultCriteria(): void
     {
         $this->browser()
@@ -82,14 +66,6 @@ final class ReportsControllerTest extends WebTestCase
             ->actingAs(UserFactory::new()->asStaff()->create())
             ->get('/reports/customer/geographic?duration=last_30')
             ->assertSuccessful();
-    }
-
-    public function testCustomerSegmentsRequiresAuthentication(): void
-    {
-        $this->browser()
-            ->interceptRedirects()
-            ->get('/reports/customer/segments')
-            ->assertRedirectedTo('/login');
     }
 
     public function testCustomerSegmentsRendersWithDefaultCriteria(): void

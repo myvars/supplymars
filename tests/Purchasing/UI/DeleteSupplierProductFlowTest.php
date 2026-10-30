@@ -94,6 +94,19 @@ final class DeleteSupplierProductFlowTest extends WebTestCase
         self::assertSame($priceBefore, $product->getSellPrice());
     }
 
+    public function testStaffIsRefused(): void
+    {
+        $supplierProduct = SupplierProductFactory::createOne(['product' => null]);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/supplier-product/' . $supplierProduct->getPublicId()->value() . '/delete/confirm')
+            ->click('Delete Supplier Product')
+            ->assertSee('Deleting is disabled for this user.');
+
+        SupplierProductFactory::assert()->exists(['id' => $supplierProduct->getId()]);
+    }
+
     private function deleteViaConfirmFlow(SupplierProduct $supplierProduct): KernelBrowser
     {
         return $this->browser()
