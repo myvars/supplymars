@@ -8,12 +8,17 @@ use App\Shared\Domain\ValueObject\PriceModel;
 use App\Tests\Shared\Factory\CategoryFactory;
 use App\Tests\Shared\Factory\SubcategoryFactory;
 use App\Tests\Shared\Factory\UserFactory;
+use App\Tests\Shared\UI\InlineRename;
+use App\Tests\Shared\UI\PostedRecordId;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 
 final class UpdateSubcategoryFlowTest extends WebTestCase
 {
     use HasBrowser;
+    use InlineRename;
+    use PostedRecordId;
 
     public function testSuccessfulUpdateViaForm(): void
     {
@@ -54,14 +59,12 @@ final class UpdateSubcategoryFlowTest extends WebTestCase
     {
         $entity = SubcategoryFactory::createOne(['name' => 'Old Value']);
 
-        $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/subcategory/' . $entity->getPublicId()->value() . '/inline/name?edit=1')
-            ->fillField('inline_field[value]', str_repeat('a', 256))
-            ->click('Save (Enter)')
-            ->assertStatus(422)
-            ->assertSeeIn('form', 'Max 255 characters') // the field's error, rendered inside the form
-            ->assertSeeElement('input[name="inline_field[value]"]');
+        $this->assertInlineEditRefused(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/subcategory/' . $entity->getPublicId()->value() . '/inline/name',
+            str_repeat('a', 256),
+            'Max 255 characters',
+        );
 
         self::assertSame('Old Value', $entity->getName());
     }
@@ -70,13 +73,12 @@ final class UpdateSubcategoryFlowTest extends WebTestCase
     {
         $entity = SubcategoryFactory::createOne(['name' => 'Old Value']);
 
-        $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/subcategory/' . $entity->getPublicId()->value() . '/inline/name?edit=1')
-            ->fillField('inline_field[value]', '')
-            ->click('Save (Enter)')
-            ->assertStatus(422)
-            ->assertSeeIn('form', 'Please enter a Subcategory name');
+        $this->assertInlineEditRefused(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/subcategory/' . $entity->getPublicId()->value() . '/inline/name',
+            '',
+            'Please enter a Subcategory name',
+        );
 
         self::assertSame('Old Value', $entity->getName());
     }
@@ -86,15 +88,30 @@ final class UpdateSubcategoryFlowTest extends WebTestCase
         $entity = SubcategoryFactory::createOne(['name' => 'Old Value']);
         $publicId = $entity->getPublicId()->value();
 
-        $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/subcategory/' . $publicId . '/inline/name?edit=1')
-            ->fillField('inline_field[value]', 'Renamed Value')
-            ->click('Save (Enter)')
-            ->assertSuccessful()
-            ->assertContains('<turbo-stream action="refresh" scroll="preserve"></turbo-stream>')
-            ->assertNotContains('Renamed Value')
-            ->get('/subcategory/' . $publicId)
-            ->assertSeeIn('nav[aria-label="breadcrumb"]', 'Renamed Value');
+        $this->assertInlineRenameRefreshes(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/subcategory/' . $publicId . '/inline/name',
+            '/subcategory/' . $publicId,
+        );
+    }
+
+    #[DataProvider('postedRecordIds')]
+    public function testEditRefusesASubcategoryIdPostedInTheForm(string $postedId): void
+    {
+        $other = SubcategoryFactory::createOne(['name' => 'Other']);
+        $subcategory = SubcategoryFactory::createOne(['name' => 'Before Edit']);
+
+        $this->assertRefusesPostedRecordId(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/subcategory/' . $subcategory->getPublicId()->value() . '/edit',
+            'Update Subcategory',
+            'id',
+            $postedId,
+            $other->getPublicId()->value(),
+            ['name' => 'Renamed'],
+        );
+
+        SubcategoryFactory::assert()->exists(['id' => $other->getId(), 'name' => 'Other']);
+        SubcategoryFactory::assert()->exists(['id' => $subcategory->getId(), 'name' => 'Before Edit']);
     }
 }
