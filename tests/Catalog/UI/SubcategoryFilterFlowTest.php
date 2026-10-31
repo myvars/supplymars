@@ -7,11 +7,13 @@ namespace App\Tests\Catalog\UI;
 use App\Shared\Domain\ValueObject\PriceModel;
 use App\Tests\Shared\Factory\CategoryFactory;
 use App\Tests\Shared\Factory\UserFactory;
+use App\Tests\Shared\UI\FilterRedirect;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 
 final class SubcategoryFilterFlowTest extends WebTestCase
 {
+    use FilterRedirect;
     use HasBrowser;
 
     public function testSubmitFilterFormRedirectsWithParams(): void
@@ -27,16 +29,15 @@ final class SubcategoryFilterFlowTest extends WebTestCase
             ->fillField('subcategory_filter[manager]', (string) $manager->getId())
             ->click('Apply Filter');
 
-        $uri = $browser->crawler()->getUri();
-        $query = [];
-        parse_str((string) parse_url((string) $uri, PHP_URL_QUERY), $query);
-
-        self::assertSame('id', $query['sort']);
-        self::assertSame('ASC', $query['sortDirection']);
-        self::assertSame('1', $query['page']);
-        self::assertSame('5', $query['limit']);
-        self::assertSame(strtolower(PriceModel::PRETTY_99->value), $query['priceModel']);
-        self::assertSame((string) $category->getId(), is_string($query['categoryId']) ? $query['categoryId'] : '');
-        self::assertSame((string) $manager->getId(), is_string($query['managerId']) ? $query['managerId'] : '');
+        $this->assertRedirectedWithQuery($browser, '/subcategory/', [
+            'sort' => 'id',
+            'sortDirection' => 'ASC',
+            'page' => 1,
+            'limit' => 5,
+            'categoryId' => $category->getId(),
+            'managerId' => $manager->getId(),
+            'priceModel' => strtolower(PriceModel::PRETTY_99->value),
+            'filter' => 'on',
+        ]);
     }
 }

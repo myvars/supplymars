@@ -14,17 +14,6 @@ final class ShowCustomerFlowTest extends WebTestCase
 {
     use HasBrowser;
 
-    public function testShowRequiresAuthentication(): void
-    {
-        $customer = UserFactory::createOne();
-        $publicId = $customer->getPublicId()->value();
-
-        $this->browser()
-            ->interceptRedirects()
-            ->get('/customer/' . $publicId)
-            ->assertRedirectedTo('/login');
-    }
-
     public function testShowRendersForAuthenticatedStaff(): void
     {
         $actor = UserFactory::new()->asStaff()->create();

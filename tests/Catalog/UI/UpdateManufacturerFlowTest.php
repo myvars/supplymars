@@ -6,12 +6,17 @@ namespace App\Tests\Catalog\UI;
 
 use App\Tests\Shared\Factory\ManufacturerFactory;
 use App\Tests\Shared\Factory\UserFactory;
+use App\Tests\Shared\UI\InlineRename;
+use App\Tests\Shared\UI\PostedRecordId;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 
 final class UpdateManufacturerFlowTest extends WebTestCase
 {
     use HasBrowser;
+    use InlineRename;
+    use PostedRecordId;
 
     public function testEditFormUpdatesAndRedirects(): void
     {
@@ -49,14 +54,12 @@ final class UpdateManufacturerFlowTest extends WebTestCase
     {
         $entity = ManufacturerFactory::createOne(['name' => 'Old Value']);
 
-        $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/manufacturer/' . $entity->getPublicId()->value() . '/inline/name?edit=1')
-            ->fillField('inline_field[value]', str_repeat('a', 256))
-            ->click('Save (Enter)')
-            ->assertStatus(422)
-            ->assertSeeIn('form', 'Max 255 characters') // the field's error, rendered inside the form
-            ->assertSeeElement('input[name="inline_field[value]"]');
+        $this->assertInlineEditRefused(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/manufacturer/' . $entity->getPublicId()->value() . '/inline/name',
+            str_repeat('a', 256),
+            'Max 255 characters',
+        );
 
         self::assertSame('Old Value', $entity->getName());
     }
@@ -65,13 +68,12 @@ final class UpdateManufacturerFlowTest extends WebTestCase
     {
         $entity = ManufacturerFactory::createOne(['name' => 'Old Value']);
 
-        $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/manufacturer/' . $entity->getPublicId()->value() . '/inline/name?edit=1')
-            ->fillField('inline_field[value]', '')
-            ->click('Save (Enter)')
-            ->assertStatus(422)
-            ->assertSeeIn('form', 'Please enter a manufacturer name');
+        $this->assertInlineEditRefused(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/manufacturer/' . $entity->getPublicId()->value() . '/inline/name',
+            '',
+            'Please enter a manufacturer name',
+        );
 
         self::assertSame('Old Value', $entity->getName());
     }
@@ -81,15 +83,30 @@ final class UpdateManufacturerFlowTest extends WebTestCase
         $entity = ManufacturerFactory::createOne(['name' => 'Old Value']);
         $publicId = $entity->getPublicId()->value();
 
-        $this->browser()
-            ->actingAs(UserFactory::new()->asStaff()->create())
-            ->get('/manufacturer/' . $publicId . '/inline/name?edit=1')
-            ->fillField('inline_field[value]', 'Renamed Value')
-            ->click('Save (Enter)')
-            ->assertSuccessful()
-            ->assertContains('<turbo-stream action="refresh" scroll="preserve"></turbo-stream>')
-            ->assertNotContains('Renamed Value')
-            ->get('/manufacturer/' . $publicId)
-            ->assertSeeIn('nav[aria-label="breadcrumb"]', 'Renamed Value');
+        $this->assertInlineRenameRefreshes(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/manufacturer/' . $publicId . '/inline/name',
+            '/manufacturer/' . $publicId,
+        );
+    }
+
+    #[DataProvider('postedRecordIds')]
+    public function testEditRefusesAManufacturerIdPostedInTheForm(string $postedId): void
+    {
+        $other = ManufacturerFactory::createOne(['name' => 'Other']);
+        $manufacturer = ManufacturerFactory::createOne(['name' => 'Before Edit']);
+
+        $this->assertRefusesPostedRecordId(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/manufacturer/' . $manufacturer->getPublicId()->value() . '/edit',
+            'Update Manufacturer',
+            'id',
+            $postedId,
+            $other->getPublicId()->value(),
+            ['name' => 'Renamed'],
+        );
+
+        ManufacturerFactory::assert()->exists(['id' => $other->getId(), 'name' => 'Other']);
+        ManufacturerFactory::assert()->exists(['id' => $manufacturer->getId(), 'name' => 'Before Edit']);
     }
 }

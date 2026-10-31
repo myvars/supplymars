@@ -11,14 +11,11 @@ use App\Tests\Shared\Factory\PurchaseOrderItemFactory;
 use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Factory\UserFactory;
-use App\Tests\Shared\Story\StaffUserStory;
 use App\Tests\Shared\UI\ActionFormToken;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\Uid\Ulid;
 use Zenstruck\Browser\Test\HasBrowser;
-use Zenstruck\Foundry\Attribute\WithStory;
 
-#[WithStory(StaffUserStory::class)]
 final class CreatePurchaseOrderItemFlowTest extends WebTestCase
 {
     use HasBrowser;

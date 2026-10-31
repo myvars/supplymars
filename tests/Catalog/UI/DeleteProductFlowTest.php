@@ -25,5 +25,20 @@ final class DeleteProductFlowTest extends WebTestCase
             ->click('Delete Product')
             ->assertOn('/product/')
             ->assertSee('Product deleted');
+
+        ProductFactory::assert()->notExists(['publicId' => $publicId]);
+    }
+
+    public function testStaffIsRefused(): void
+    {
+        $product = ProductFactory::createOne();
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/product/' . $product->getPublicId()->value() . '/delete/confirm')
+            ->click('Delete Product')
+            ->assertSee('Deleting is disabled for this user.');
+
+        ProductFactory::assert()->exists(['id' => $product->getId()]);
     }
 }
