@@ -24,5 +24,20 @@ final class DeleteSupplierFlowTest extends WebTestCase
             ->click('Delete Supplier')
             ->assertOn('/supplier/')
             ->assertSee('Supplier deleted');
+
+        SupplierFactory::assert()->notExists(['publicId' => $publicId]);
+    }
+
+    public function testStaffIsRefused(): void
+    {
+        $supplier = SupplierFactory::createOne();
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/supplier/' . $supplier->getPublicId()->value() . '/delete/confirm')
+            ->click('Delete Supplier')
+            ->assertSee('Deleting is disabled for this user.');
+
+        SupplierFactory::assert()->exists(['id' => $supplier->getId()]);
     }
 }
