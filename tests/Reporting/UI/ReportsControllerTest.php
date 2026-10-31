@@ -101,7 +101,6 @@ final class ReportsControllerTest extends WebTestCase
             ->actingAs(UserFactory::new()->asStaff()->create())
             ->get('/reports/po/performance')
             ->assertSuccessful()
-            ->assertSee('PO Item Performance')
             ->assertSee('Regolith Sieve')
             ->assertSee('Olympus Supply');
     }

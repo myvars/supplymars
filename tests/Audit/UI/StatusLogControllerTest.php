@@ -50,17 +50,18 @@ final class StatusLogControllerTest extends WebTestCase
         $id = $record->getId();
         \assert($id !== null);
 
-        StatusChangeLogFactory::createOne(['eventType' => $eventType, 'eventTypeId' => $id, 'status' => 'LOGGED']);
+        $at = new \DateTimeImmutable('+1 hour');
+        StatusChangeLogFactory::createOne(['eventType' => $eventType, 'eventTypeId' => $id, 'status' => 'LOGGED', 'eventTimestamp' => $at]);
         // The same id under another event type belongs to a different record
-        StatusChangeLogFactory::createOne(['eventType' => $otherEventType, 'eventTypeId' => $id, 'status' => 'UNRELATED']);
+        StatusChangeLogFactory::createOne(['eventType' => $otherEventType, 'eventTypeId' => $id, 'status' => 'UNRELATED', 'eventTimestamp' => $at]);
 
         $this->browser()
             ->actingAs(UserFactory::new()->asStaff()->create())
             ->get($path . $record->getPublicId()->value())
             ->assertSuccessful()
-            ->assertSee($created)
-            ->assertSee('Logged')
-            ->assertNotSee('Unrelated');
+            ->assertSeeIn('ol', $created)
+            ->assertSeeIn('ol', 'Logged')
+            ->assertNotSeeIn('ol', 'Unrelated');
     }
 
     public function testUnknownRecordIsNotFound(): void

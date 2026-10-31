@@ -20,6 +20,7 @@ final class ProductControllerTest extends WebTestCase
         ProductReviewFactory::new()->published()->create(['product' => $product, 'rating' => 4, 'title' => 'Survived the dust storm']);
         ProductReviewFactory::new()->published()->create(['product' => $product, 'rating' => 2, 'title' => 'Seals leak at night']);
         ProductReviewFactory::new()->hidden()->create(['product' => $product, 'rating' => 1, 'title' => 'Moderated away']);
+        ProductReviewFactory::createOne(['product' => $product, 'rating' => 1, 'title' => 'Awaiting moderation']);
         ProductReviewFactory::new()->published()->create(['title' => 'About another product']);
 
         $this->browser()
@@ -31,6 +32,7 @@ final class ProductControllerTest extends WebTestCase
             ->assertSee('Survived the dust storm')
             ->assertSee('Seals leak at night')
             ->assertNotSee('Moderated away')
+            ->assertNotSee('Awaiting moderation')
             ->assertNotSee('About another product');
     }
 
