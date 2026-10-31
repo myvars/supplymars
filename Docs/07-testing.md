@@ -65,7 +65,7 @@ Tests mirror `src/`. Copy the nearest existing test.
 
 For pricing cascades, see `tests/Pricing/Application/Handler/UpdateCategoryCostHandlerTest.php` and the listener tests beside the one above.
 
-An API test logs in with `->actingAs($user, 'api')`, which attaches the user to the `api` firewall. Public catalog endpoints need no login (`CatalogApiTest`). The API itself is described in [patterns/API/README.md](patterns/API/README.md).
+An API test logs in with `->actingAs($user, 'api')`, which attaches the user to the `api` firewall. The firewall is stateless, so that user is not reloaded from the database: a request that audits a status change (allocating an order) fails to flush it with "A new entity was found through the relationship `StatusChangeLog#user`". Send a Bearer token for those, as a real caller does: `UserFactory::new()->asStaff()->withApiToken()->create()` and an `Authorization: Bearer test-api-token` header (`OrderApiTest::testAllocateOrderReturnsTheProcessingOrder`). Public catalog endpoints need no login (`CatalogApiTest`). The API itself is described in [patterns/API/README.md](patterns/API/README.md).
 
 ### Conventions
 

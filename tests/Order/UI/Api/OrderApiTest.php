@@ -8,6 +8,9 @@ use App\Tests\Shared\Factory\AddressFactory;
 use App\Tests\Shared\Factory\CustomerOrderFactory;
 use App\Tests\Shared\Factory\CustomerOrderItemFactory;
 use App\Tests\Shared\Factory\ProductFactory;
+use App\Tests\Shared\Factory\PurchaseOrderItemFactory;
+use App\Tests\Shared\Factory\SupplierFactory;
+use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Factory\VatRateFactory;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -120,6 +123,44 @@ final class OrderApiTest extends WebTestCase
             ->assertJson()
             ->assertJsonMatches('type', 'about:blank')
             ->assertJsonMatches('status', 404);
+    }
+
+    public function testAllocateOrderReturnsTheProcessingOrder(): void
+    {
+        UserFactory::new()->asStaff()->withApiToken()->create();
+        $product = ProductFactory::createOne(['isActive' => true]);
+        SupplierProductFactory::createOne([
+            'supplier' => SupplierFactory::createOne(['isActive' => true]),
+            'product' => $product,
+            'stock' => 100,
+        ]);
+        $order = CustomerOrderFactory::createOne();
+        $orderItem = CustomerOrderItemFactory::createOne(['customerOrder' => $order, 'product' => $product, 'quantity' => 5]);
+
+        // A Bearer token, not actingAs(): allocating audits status changes against the user, which must be managed
+        $this->browser()
+            ->post('/api/v1/orders/' . $order->getPublicId()->value() . '/allocate', [
+                'headers' => ['Authorization' => 'Bearer test-api-token'],
+            ])
+            ->assertSuccessful()
+            ->assertJson()
+            ->assertJsonMatches('"data"."id"', $order->getPublicId()->value())
+            ->assertJsonMatches('"data"."status"', 'PROCESSING');
+
+        PurchaseOrderItemFactory::assert()->exists(['customerOrderItem' => $orderItem, 'quantity' => 5]);
+    }
+
+    public function testAllocateOrderWithNothingToAllocateReturns422(): void
+    {
+        $user = UserFactory::new()->asStaff()->create();
+        $order = CustomerOrderFactory::createOne();
+
+        $this->browser()
+            ->actingAs($user, 'api')
+            ->post('/api/v1/orders/' . $order->getPublicId()->value() . '/allocate')
+            ->assertStatus(422)
+            ->assertJson()
+            ->assertJsonMatches('detail', 'No items to allocate.');
     }
 
     public function testAddOrderItemReturns201(): void
