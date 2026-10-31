@@ -13,6 +13,8 @@ use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Story\StaffUserStory;
+use App\Tests\Shared\UI\PostedRecordId;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 use Zenstruck\Foundry\Attribute\WithStory;
@@ -21,6 +23,7 @@ use Zenstruck\Foundry\Attribute\WithStory;
 final class UpdatePurchaseOrderItemQuantityFlowTest extends WebTestCase
 {
     use HasBrowser;
+    use PostedRecordId;
 
     public function testSuccessfulEditViaForm(): void
     {
@@ -191,5 +194,25 @@ final class UpdatePurchaseOrderItemQuantityFlowTest extends WebTestCase
         $purchaseOrderItems = self::getContainer()->get(PurchaseOrderItemRepository::class);
         $removed = $purchaseOrderItems->getByPublicId($publicId);
         self::assertNull($removed);
+    }
+
+    #[DataProvider('postedRecordIds')]
+    public function testEditRefusesAPurchaseOrderItemIdPostedInTheForm(string $postedId): void
+    {
+        $other = PurchaseOrderItemFactory::createOne(['quantity' => 3]);
+        $purchaseOrderItem = PurchaseOrderItemFactory::createOne(['quantity' => 3]);
+
+        $this->assertRefusesPostedRecordId(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/purchase/order/item/' . $purchaseOrderItem->getPublicId()->value() . '/edit',
+            'Update',
+            'id',
+            $postedId,
+            $other->getPublicId()->value(),
+            ['quantity' => '1'],
+        );
+
+        PurchaseOrderItemFactory::assert()->exists(['id' => $other->getId(), 'quantity' => 3]);
+        PurchaseOrderItemFactory::assert()->exists(['id' => $purchaseOrderItem->getId(), 'quantity' => 3]);
     }
 }

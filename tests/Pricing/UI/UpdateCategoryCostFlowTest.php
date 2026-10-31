@@ -6,14 +6,18 @@ namespace App\Tests\Pricing\UI;
 
 use App\Catalog\Domain\Model\Product\Product;
 use App\Shared\Domain\ValueObject\PriceModel;
+use App\Tests\Shared\Factory\CategoryFactory;
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\UserFactory;
+use App\Tests\Shared\UI\PostedRecordId;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 
 final class UpdateCategoryCostFlowTest extends WebTestCase
 {
     use HasBrowser;
+    use PostedRecordId;
 
     public function testSuccessfulEditViaForm(): void
     {
@@ -88,5 +92,26 @@ final class UpdateCategoryCostFlowTest extends WebTestCase
             ->assertOn('/pricing/' . $publicId . '/cost/category/edit')
             ->assertSee('Please enter a positive or zero category markup %')
             ->assertSee('A category must have a price model');
+    }
+
+    #[DataProvider('postedRecordIds')]
+    public function testEditRefusesACategoryIdPostedInTheForm(string $postedId): void
+    {
+        $other = CategoryFactory::createOne(['defaultMarkup' => '5.000']);
+        $category = CategoryFactory::createOne(['defaultMarkup' => '5.000']);
+        $product = ProductFactory::createOne(['category' => $category]);
+
+        $this->assertRefusesPostedRecordId(
+            $this->browser()->actingAs(UserFactory::new()->asStaff()->create()),
+            '/pricing/' . $product->getPublicId()->value() . '/cost/category/edit',
+            'Update Category Cost',
+            'id',
+            $postedId,
+            $other->getPublicId()->value(),
+            ['defaultMarkup' => '7.500'],
+        );
+
+        CategoryFactory::assert()->exists(['id' => $other->getId(), 'defaultMarkup' => '5.000']);
+        CategoryFactory::assert()->exists(['id' => $category->getId(), 'defaultMarkup' => '5.000']);
     }
 }

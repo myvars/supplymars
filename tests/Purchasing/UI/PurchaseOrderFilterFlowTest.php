@@ -9,12 +9,14 @@ use App\Tests\Shared\Factory\CustomerOrderFactory;
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Factory\UserFactory;
+use App\Tests\Shared\UI\FilterRedirect;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\BrowserKit\AbstractBrowser;
 use Zenstruck\Browser\Test\HasBrowser;
 
 final class PurchaseOrderFilterFlowTest extends WebTestCase
 {
+    use FilterRedirect;
     use HasBrowser;
 
     public function testSubmitFilterFormRedirectsWithParams(): void
@@ -45,25 +47,20 @@ final class PurchaseOrderFilterFlowTest extends WebTestCase
                 $client->submitForm('Apply Filter', $values);
             });
 
-        $uri = $browser->client()->getRequest()->getUri();
-        $query = [];
-        parse_str((string) parse_url((string) $uri, PHP_URL_QUERY), $query);
-
-        // Assert base search params (defaults from PurchaseOrderSearchCriteria)
-        self::assertSame('id', $query['sort']);
-        self::assertSame('DESC', $query['sortDirection']);
-        self::assertSame('1', $query['page']);
-        self::assertSame('5', $query['limit']);
-
-        // Assert filter params
-        self::assertSame((string) $supplier->getId(), $query['supplierId']);
-        self::assertSame('123', $query['purchaseOrderId']);
-        self::assertSame((string) $customerOrder->getId(), $query['orderId']);
-        self::assertSame((string) $customer->getId(), $query['customerId']);
-        self::assertSame((string) $product->getId(), $query['productId']);
-        self::assertSame(strtolower(PurchaseOrderStatus::PENDING->value), $query['purchaseOrderStatus']);
-        self::assertSame('2025-01-01', $query['startDate']);
-        self::assertSame('2025-12-31', $query['endDate']);
-        self::assertSame('on', $query['filter']);
+        $this->assertRedirectedWithQuery($browser, '/purchase/order/', [
+            'sort' => 'id',
+            'sortDirection' => 'DESC',
+            'page' => 1,
+            'limit' => 5,
+            'purchaseOrderId' => '123',
+            'orderId' => $customerOrder->getId(),
+            'customerId' => $customer->getId(),
+            'productId' => $product->getId(),
+            'supplierId' => $supplier->getId(),
+            'purchaseOrderStatus' => strtolower(PurchaseOrderStatus::PENDING->value),
+            'startDate' => '2025-01-01',
+            'endDate' => '2025-12-31',
+            'filter' => 'on',
+        ]);
     }
 }
