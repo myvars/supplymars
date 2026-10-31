@@ -25,8 +25,8 @@ final class SalesDateRangeResolverDomainTest extends TestCase
 
     public function testOtherDurationsAreChartedByDayFromTheirOwnStart(): void
     {
-        self::assertSame(SalesDuration::DAY, $this->resolver->getRangeDuration(SalesDuration::LAST_30));
-        self::assertSame(SalesDuration::LAST_30->getStartDate(), $this->resolver->getRangeStartDate(SalesDuration::LAST_30));
+        self::assertSame(SalesDuration::DAY, $this->resolver->getRangeDuration(SalesDuration::LAST_7));
+        self::assertSame(SalesDuration::LAST_7->getStartDate(), $this->resolver->getRangeStartDate(SalesDuration::LAST_7));
     }
 
     public function testDateRangeHasOneZeroPerStepAndLeavesOutTheEndDate(): void

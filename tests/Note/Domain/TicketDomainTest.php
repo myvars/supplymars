@@ -34,6 +34,31 @@ final class TicketDomainTest extends TestCase
         self::assertSame(MessageVisibility::PUBLIC, $message->getVisibility());
     }
 
+    public function testCreateTrimsTheSubject(): void
+    {
+        $ticket = Ticket::create(
+            Pool::create('Support', null, true, true),
+            User::create('Ada Customer', 'ada@example.com', false, true),
+            '  Leaking airlock  ',
+            'The seal hisses.',
+        );
+
+        self::assertSame('Leaking airlock', $ticket->getSubject());
+    }
+
+    public function testCreateFailsWithABlankSubject(): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionMessageIsOrContains('Ticket subject cannot be empty');
+
+        Ticket::create(
+            Pool::create('Support', null, true, true),
+            User::create('Ada Customer', 'ada@example.com', false, true),
+            '   ',
+            'The seal hisses.',
+        );
+    }
+
     public function testCloseThenReopen(): void
     {
         $ticket = $this->ticket();
@@ -98,6 +123,8 @@ final class TicketDomainTest extends TestCase
         yield 'staff reply to an open ticket' => [TicketStatus::OPEN, AuthorType::STAFF, TicketStatus::REPLIED];
         yield 'customer reply to a replied ticket' => [TicketStatus::REPLIED, AuthorType::CUSTOMER, TicketStatus::OPEN];
         yield 'customer reply to an open ticket' => [TicketStatus::OPEN, AuthorType::CUSTOMER, TicketStatus::OPEN];
+        yield 'staff reply to a replied ticket' => [TicketStatus::REPLIED, AuthorType::STAFF, TicketStatus::REPLIED];
+        yield 'system message on an open ticket' => [TicketStatus::OPEN, AuthorType::SYSTEM, TicketStatus::OPEN];
         yield 'system message' => [TicketStatus::REPLIED, AuthorType::SYSTEM, TicketStatus::REPLIED];
         yield 'staff reply to a closed ticket' => [TicketStatus::CLOSED, AuthorType::STAFF, TicketStatus::CLOSED];
         yield 'customer reply to a closed ticket' => [TicketStatus::CLOSED, AuthorType::CUSTOMER, TicketStatus::CLOSED];
@@ -112,6 +139,7 @@ final class TicketDomainTest extends TestCase
             TicketStatus::CLOSED => $ticket->close(),
             TicketStatus::OPEN => null,
         };
+        self::assertSame($from, $ticket->getStatus());
 
         $ticket->transitionStatusForReply($author);
 
@@ -123,9 +151,10 @@ final class TicketDomainTest extends TestCase
         $ticket = $this->ticket();
         $first = $ticket->getLastMessageAt();
 
-        $ticket->addMessage(Message::create($ticket, null, AuthorType::SYSTEM, 'Auto reply', MessageVisibility::PUBLIC));
+        $ticket->addMessage(Message::system($ticket, 'Auto reply'));
 
         self::assertSame(2, $ticket->getMessageCount());
+        self::assertNotSame($first, $ticket->getLastMessageAt());
         self::assertGreaterThanOrEqual($first, $ticket->getLastMessageAt());
     }
 
@@ -136,12 +165,12 @@ final class TicketDomainTest extends TestCase
         \assert($first instanceof Message);
         $first->setCreatedAt(new \DateTime('2026-01-01 09:00'));
 
-        $second = Message::create($ticket, null, AuthorType::SYSTEM, 'Auto reply', MessageVisibility::PUBLIC);
+        $second = Message::system($ticket, 'Auto reply');
         $second->setCreatedAt(new \DateTime('2026-01-02 09:00'));
 
         $ticket->addMessage($second);
 
-        $latest = Message::create($ticket, null, AuthorType::SYSTEM, 'Follow up', MessageVisibility::PUBLIC);
+        $latest = Message::system($ticket, 'Follow up');
         $latest->setCreatedAt(new \DateTime('2026-01-03 09:00'));
 
         $ticket->addMessage($latest);
