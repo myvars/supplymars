@@ -128,6 +128,19 @@ final class CatalogApiTest extends WebTestCase
             ->assertJsonMatches('length(data)', 2);
     }
 
+    public function testSubcategoryShowReturnsItemWithItsCategory(): void
+    {
+        $category = CategoryFactory::createOne();
+        $subcategory = SubcategoryFactory::createOne(['category' => $category]);
+
+        $this->browser()
+            ->get('/api/v1/catalog/subcategories/' . $subcategory->getPublicId()->value())
+            ->assertSuccessful()
+            ->assertJson()
+            ->assertJsonMatches('"data"."id"', $subcategory->getPublicId()->value())
+            ->assertJsonMatches('"data"."category"."id"', $category->getPublicId()->value());
+    }
+
     public function testManufacturerIndexReturnsCollection(): void
     {
         ManufacturerFactory::createMany(2);

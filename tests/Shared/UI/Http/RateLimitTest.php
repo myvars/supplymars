@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Shared\UI\Http;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Symfony\Component\Filesystem\Filesystem;
 use Zenstruck\Browser\KernelBrowser;
 use Zenstruck\Browser\Test\HasBrowser;
 
@@ -81,6 +82,11 @@ final class RateLimitTest extends WebTestCase
     public function testBackupHealthIsRefusedAfterSixCallsFromOneAddress(): void
     {
         $browser = $this->browser()->disableReboot();
+
+        // The backup tests leave files in this process's backups folder
+        /** @var string $backupsDir */
+        $backupsDir = self::getContainer()->getParameter('test_backups_dir');
+        new Filesystem()->remove($backupsDir);
 
         // No backup in the test filesystem, so an allowed call gets 503; a refused one gets 429
         $this->from($browser, '81.2.69.140');

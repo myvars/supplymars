@@ -164,6 +164,20 @@ final class UpdateCustomerFlowTest extends WebTestCase
         self::assertSame('Old Value', UserFactory::repository()->find($staff->getId())?->getFullName());
     }
 
+    public function testEditOfStaffAccountIsRefusedForStaffUser(): void
+    {
+        $staff = UserFactory::new()->asStaff()->create(['fullName' => 'Old Value']);
+
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/customer/' . $staff->getPublicId()->value() . '/edit')
+            ->fillField('customer[fullName]', 'New Value')
+            ->click('Update Customer')
+            ->assertSee('Staff accounts can be edited only by a super admin.');
+
+        self::assertSame('Old Value', $staff->getFullName());
+    }
+
     public function testStaffAccountShowsNoEditControlsToStaffUser(): void
     {
         $staff = UserFactory::new()->asStaff()->create(['fullName' => 'Staff Member']);
