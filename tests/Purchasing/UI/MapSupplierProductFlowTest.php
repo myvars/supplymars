@@ -37,7 +37,8 @@ final class MapSupplierProductFlowTest extends WebTestCase
             ->assertOn('/supplier-product/' . $publicId)
             ->assertSee('Supplier product mapped');
 
-        self::assertNotNull($supplierProduct->getProduct());
+        // The mapping creates the catalog product from the supplier product
+        self::assertSame($supplierProduct->getName(), $supplierProduct->getProduct()?->getName());
     }
 
     public function testMapFailsWhenAlreadyMapped(): void

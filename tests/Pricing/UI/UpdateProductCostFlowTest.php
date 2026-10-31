@@ -32,6 +32,9 @@ final class UpdateProductCostFlowTest extends WebTestCase
             ->click('Update Product Cost')
             ->assertOn('/pricing/' . $publicId . '/cost')
             ->assertSee('Product cost updated');
+
+        self::assertSame('7.500', $product->getDefaultMarkup());
+        self::assertSame(PriceModel::PRETTY_99, $product->getPriceModel());
     }
 
     public function testValidationErrorsOnInvalidSubmission(): void

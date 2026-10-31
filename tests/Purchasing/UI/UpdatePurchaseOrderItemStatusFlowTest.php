@@ -61,6 +61,8 @@ final class UpdatePurchaseOrderItemStatusFlowTest extends WebTestCase
             ->fillField('purchase_order_item_status[purchaseOrderItemStatus]', PurchaseOrderStatus::PROCESSING->value)
             ->click('Update')
             ->assertOn('/purchase/order/' . $poPublicId);
+
+        self::assertSame(PurchaseOrderStatus::PROCESSING, $purchaseOrderItem->getStatus());
     }
 
     public function testFailsOnInvalidStatusTransition(): void
@@ -99,6 +101,8 @@ final class UpdatePurchaseOrderItemStatusFlowTest extends WebTestCase
             ->click('Update')
             ->assertOn('/purchase/order/item/' . $poiPublicId . '/edit/status')
             ->assertSee('Status can not be set to');
+
+        self::assertSame(PurchaseOrderStatus::PENDING, $purchaseOrderItem->getStatus());
     }
 
     #[DataProvider('postedRecordIds')]

@@ -24,5 +24,7 @@ final class DeleteSubcategoryFlowTest extends WebTestCase
             ->click('Delete Subcategory')
             ->assertOn('/subcategory/')
             ->assertSee('Subcategory deleted');
+
+        SubcategoryFactory::assert()->notExists(['publicId' => $publicId]);
     }
 }

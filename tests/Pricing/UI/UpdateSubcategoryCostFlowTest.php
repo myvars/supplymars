@@ -32,6 +32,9 @@ final class UpdateSubcategoryCostFlowTest extends WebTestCase
             ->click('Update Subcategory Cost')
             ->assertOn('/pricing/' . $publicId . '/cost')
             ->assertSee('Subcategory cost updated');
+
+        self::assertSame('7.500', $product->getSubcategory()->getDefaultMarkup());
+        self::assertSame(PriceModel::PRETTY_99, $product->getSubcategory()->getPriceModel());
     }
 
     public function testValidationErrorsOnInvalidSubmission(): void
