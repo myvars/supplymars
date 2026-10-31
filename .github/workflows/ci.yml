@@ -60,7 +60,23 @@ jobs:
               run: make check-migrations
 
             - name: Run tests
+              id: tests
               run: make check-tests
+
+            # BrowserExtension (phpunit.xml.dist) saves the page a failing flow test was on, in var/browser/.
+            # var/ is a volume of the php container, so copy it into the mounted checkout first
+            - name: Copy pages of failed tests
+              if: failure() && steps.tests.outcome == 'failure'
+              run: docker compose run --rm --no-deps --entrypoint sh php -c 'cp -r var/browser browser-failures || true'
+
+            - name: Upload pages of failed tests
+              if: failure() && steps.tests.outcome == 'failure'
+              uses: actions/upload-artifact@v7
+              with:
+                  name: browser-failures
+                  path: browser-failures/
+                  if-no-files-found: ignore
+                  retention-days: 7
 
     # Builds the php (which messenger also runs) and reset production images and pushes them to
     # GHCR, tagged with the commit SHA. The server pulls them; it never builds. See Docs/11-runbook.md.

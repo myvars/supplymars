@@ -42,4 +42,6 @@ if ((${#failed[@]})); then
 fi
 
 echo "[run-tests] Running tests..."
+# Pages that failing flow tests saved last time (BrowserExtension in phpunit.xml.dist)
+rm -rf var/browser
 exec vendor/bin/paratest --processes="$PROCESSES" "$@"
