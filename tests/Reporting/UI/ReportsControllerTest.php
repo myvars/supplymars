@@ -56,10 +56,9 @@ final class ReportsControllerTest extends WebTestCase
             ]);
         }, 'Regolith'];
 
-        yield 'order summary' => ['/reports/order/summary', static function () use ($today): void {
+        yield 'order summary' => ['/reports/order/summary', static function (): void {
             OrderSalesSummaryFactory::createOne([
                 'orderSalesType' => OrderSalesType::create(SalesDuration::LAST_30),
-                'dateString' => $today,
                 'orderCount' => 4321,
             ]);
         }, '4,321'];
@@ -71,10 +70,9 @@ final class ReportsControllerTest extends WebTestCase
             ]);
         }, 'Ada Overdue'];
 
-        yield 'customer insights' => ['/reports/customer/insights', static function () use ($today): void {
+        yield 'customer insights' => ['/reports/customer/insights', static function (): void {
             CustomerSalesSummaryFactory::createOne([
                 'customerSalesType' => CustomerSalesType::create(SalesDuration::LAST_30),
-                'dateString' => $today,
                 'totalCustomers' => 4321,
             ]);
         }, '4,321'];
@@ -83,7 +81,6 @@ final class ReportsControllerTest extends WebTestCase
         yield 'customer geographic, last 7 days' => ['/reports/customer/geographic?duration=last7', static function (): void {
             CustomerGeographicSummaryFactory::createOne([
                 'customerSalesType' => CustomerSalesType::create(SalesDuration::LAST_7),
-                'dateString' => SalesDuration::LAST_7->getStartDate(),
                 'city' => 'Olympus Mons',
             ]);
         }, 'Olympus Mons'];
@@ -91,14 +88,12 @@ final class ReportsControllerTest extends WebTestCase
         yield 'customer segments' => ['/reports/customer/segments', static function (): void {
             CustomerSegmentSummaryFactory::createOne([
                 'customerSalesType' => CustomerSalesType::create(SalesDuration::LAST_30),
-                'dateString' => SalesDuration::LAST_30->getStartDate(),
                 'customerCount' => 4321,
             ]);
         }, '4,321'];
 
         yield 'PO performance' => ['/reports/po/performance', static function (): void {
             PurchaseOrderItemFactory::createOne([
-                'product' => ProductFactory::createOne(['name' => 'Regolith Sieve']),
                 'supplier' => SupplierFactory::createOne(['name' => 'Olympus Supply']),
             ]);
         }, 'Olympus Supply'];
