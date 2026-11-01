@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Purchasing\UI\Console;
 
-use App\Catalog\Domain\Model\Product\Product;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
 use App\Shared\Domain\Service\Pricing\MarkupCalculator;
 use App\Shared\Domain\ValueObject\PriceModel;
@@ -95,8 +94,7 @@ final class UpdateSupplierStockCommandTest extends KernelTestCase
         self::getContainer()->get(EntityManagerInterface::class)->clear();
         $calculator = self::getContainer()->get(MarkupCalculator::class);
         foreach ($products as $product) {
-            $reloaded = ProductFactory::repository()->find($product->getId());
-            self::assertInstanceOf(Product::class, $reloaded);
+            $reloaded = ProductFactory::repository()->findOrFail($product->getId());
             $source = $reloaded->getActiveProductSource();
             self::assertInstanceOf(SupplierProduct::class, $source);
 

@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\Pricing\Application\Listener;
 
 use App\Catalog\Domain\Model\Product\Product;
-use App\Catalog\Domain\Model\Product\ProductId;
-use App\Catalog\Domain\Repository\ProductRepository;
 use App\Shared\Domain\ValueObject\PriceModel;
 use App\Tests\Shared\Factory\CategoryFactory;
 use App\Tests\Shared\Factory\ProductFactory;
@@ -21,13 +19,10 @@ final class SupplierProductStockChangeRepricingTest extends KernelTestCase
 {
     private EntityManagerInterface $em;
 
-    private ProductRepository $products;
-
     protected function setUp(): void
     {
         self::bootKernel();
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
-        $this->products = self::getContainer()->get(ProductRepository::class);
     }
 
     public function testStockChangeThatEmptiesActiveSourceMovesToNextSource(): void
@@ -97,9 +92,6 @@ final class SupplierProductStockChangeRepricingTest extends KernelTestCase
     {
         $this->em->clear();
 
-        $reloaded = $this->products->get(ProductId::fromInt($product->getId()));
-        self::assertInstanceOf(Product::class, $reloaded);
-
-        return $reloaded;
+        return ProductFactory::repository()->findOrFail($product->getId());
     }
 }
