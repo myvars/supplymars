@@ -72,7 +72,7 @@ final class DeleteReviewFlowTest extends WebTestCase
         $summaries = self::getContainer()->get(ReviewSummaryRepository::class);
         self::getContainer()->get('doctrine')->getManager()->clear();
 
-        $summary = $summaries->findByProduct(ProductFactory::repository()->find($product->getId()));
+        $summary = $summaries->findByProduct(ProductFactory::repository()->findOrFail($product->getId()));
         self::assertInstanceOf(ProductReviewSummary::class, $summary);
 
         return $summary;

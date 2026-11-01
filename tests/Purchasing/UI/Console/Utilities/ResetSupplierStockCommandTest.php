@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Purchasing\UI\Console\Utilities;
 
-use App\Catalog\Domain\Model\Product\Product;
-use App\Catalog\Domain\Model\Product\ProductId;
-use App\Catalog\Domain\Repository\ProductRepository;
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
@@ -43,10 +40,8 @@ final class ResetSupplierStockCommandTest extends KernelTestCase
 
         // The command sets stock to 0–300, so every product's stored stock has moved off 1000.
         self::getContainer()->get(EntityManagerInterface::class)->clear();
-        $repository = self::getContainer()->get(ProductRepository::class);
         foreach ($products as $product) {
-            $reloaded = $repository->get(ProductId::fromInt($product->getId()));
-            self::assertInstanceOf(Product::class, $reloaded);
+            $reloaded = ProductFactory::repository()->findOrFail($product->getId());
 
             $source = $reloaded->getSupplierProducts()->first();
             self::assertNotFalse($source);
