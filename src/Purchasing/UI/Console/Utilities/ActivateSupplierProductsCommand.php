@@ -71,9 +71,9 @@ readonly class ActivateSupplierProductsCommand
                 new ToggleSupplierProductStatus($supplierProduct->getPublicId())
             );
 
-            $processedItems[] = sprintf('%s : %d (%s)',
+            $processedItems[] = sprintf('%s : %s (%s)',
                 $supplierProduct->getProductCode(),
-                $supplierProduct->getProduct()->getId(),
+                $supplierProduct->getProduct()?->getId() ?? 'unmapped',
                 $supplierProduct->getSupplier()->getName(),
             );
             ++$processed;
