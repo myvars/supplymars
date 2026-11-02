@@ -9,6 +9,7 @@ use App\Catalog\Domain\Model\Category\Event\CategoryPricingWasChangedEvent;
 use App\Customer\Domain\Model\User\User;
 use App\Pricing\Domain\Model\VatRate\VatRate;
 use App\Shared\Domain\ValueObject\PriceModel;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 
 final class CategoryDomainTest extends TestCase
@@ -109,47 +110,23 @@ final class CategoryDomainTest extends TestCase
         self::assertCount(0, $category->releaseDomainEvents());
     }
 
-    public function testInvalidNameThrows(): void
+    /**
+     * @param numeric-string $markup
+     */
+    #[TestWith(['', '5.000', PriceModel::DEFAULT, 'Category name cannot be empty'])]
+    #[TestWith(['Electronics', '-1.000', PriceModel::DEFAULT, 'Markup cannot be negative'])]
+    #[TestWith(['Electronics', '5.000', PriceModel::NONE, 'A category must have a price model'])]
+    public function testCreateRefusesInvalidValues(string $name, string $markup, PriceModel $priceModel, string $message): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessageIsOrContains('Category name cannot be empty');
+        $this->expectExceptionMessageIsOrContains($message);
 
         Category::create(
-            name: '',
+            name: $name,
             owner: $this->stubUser(),
             vatRate: $this->vatRate(),
-            defaultMarkup: '5.000',
-            priceModel: PriceModel::DEFAULT,
-            isActive: true,
-        );
-    }
-
-    public function testNegativeMarkupThrows(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessageIsOrContains('Markup cannot be negative');
-
-        Category::create(
-            name: 'Electronics',
-            owner: $this->stubUser(),
-            vatRate: $this->vatRate(),
-            defaultMarkup: '-1.000',
-            priceModel: PriceModel::DEFAULT,
-            isActive: true,
-        );
-    }
-
-    public function testPriceModelNoneThrows(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessageIsOrContains('A category must have a price model');
-
-        Category::create(
-            name: 'Electronics',
-            owner: $this->stubUser(),
-            vatRate: $this->vatRate(),
-            defaultMarkup: '5.000',
-            priceModel: PriceModel::NONE,
+            defaultMarkup: $markup,
+            priceModel: $priceModel,
             isActive: true,
         );
     }

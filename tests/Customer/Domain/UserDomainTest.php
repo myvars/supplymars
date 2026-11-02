@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Customer\Domain;
 
 use App\Customer\Domain\Model\User\User;
-use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 
 final class UserDomainTest extends TestCase
@@ -84,7 +84,8 @@ final class UserDomainTest extends TestCase
     /**
      * @param list<string> $roles
      */
-    #[DataProvider('superAdminRoles')]
+    #[TestWith([['ROLE_ADMIN', 'ROLE_SUPER_ADMIN']], 'both roles')]
+    #[TestWith([['ROLE_SUPER_ADMIN']], 'super admin role alone')]
     public function testSuperAdminIsNotDeletable(array $roles): void
     {
         $user = User::create(
@@ -97,15 +98,6 @@ final class UserDomainTest extends TestCase
 
         self::assertTrue($user->isAdmin());
         self::assertFalse($user->isDeletable());
-    }
-
-    /**
-     * @return iterable<string, array{list<string>}>
-     */
-    public static function superAdminRoles(): iterable
-    {
-        yield 'both roles' => [['ROLE_ADMIN', 'ROLE_SUPER_ADMIN']];
-        yield 'super admin role alone' => [['ROLE_SUPER_ADMIN']];
     }
 
     public function testToStringUsesEmail(): void

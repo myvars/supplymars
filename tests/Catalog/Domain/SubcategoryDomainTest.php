@@ -9,6 +9,7 @@ use App\Catalog\Domain\Model\Subcategory\Event\SubcategoryPricingWasChangedEvent
 use App\Catalog\Domain\Model\Subcategory\Subcategory;
 use App\Customer\Domain\Model\User\User;
 use App\Shared\Domain\ValueObject\PriceModel;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 
 final class SubcategoryDomainTest extends TestCase
@@ -104,31 +105,21 @@ final class SubcategoryDomainTest extends TestCase
         self::assertCount(0, $subcategory->releaseDomainEvents());
     }
 
-    public function testInvalidNameThrows(): void
+    /**
+     * @param numeric-string $markup
+     */
+    #[TestWith(['', '5.000', 'Subcategory name cannot be empty'])]
+    #[TestWith(['Parts', '-1.000', 'Markup cannot be negative'])]
+    public function testCreateRefusesInvalidValues(string $name, string $markup, string $message): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessageIsOrContains('Subcategory name cannot be empty');
+        $this->expectExceptionMessageIsOrContains($message);
 
         Subcategory::create(
-            name: '',
+            name: $name,
             category: $this->stubCategory(),
             owner: $this->stubUser(),
-            defaultMarkup: '5.000',
-            priceModel: PriceModel::NONE,
-            isActive: true,
-        );
-    }
-
-    public function testNegativeMarkupThrows(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessageIsOrContains('Markup cannot be negative');
-
-        Subcategory::create(
-            name: 'Parts',
-            category: $this->stubCategory(),
-            owner: $this->stubUser(),
-            defaultMarkup: '-1.000',
+            defaultMarkup: $markup,
             priceModel: PriceModel::NONE,
             isActive: true,
         );

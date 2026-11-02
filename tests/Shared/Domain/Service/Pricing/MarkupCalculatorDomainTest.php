@@ -7,6 +7,7 @@ namespace App\Tests\Shared\Domain\Service\Pricing;
 use App\Shared\Domain\Service\Pricing\MarkupCalculator;
 use App\Shared\Domain\ValueObject\PriceModel;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 
 final class MarkupCalculatorDomainTest extends TestCase
@@ -64,22 +65,12 @@ final class MarkupCalculatorDomainTest extends TestCase
      * @param numeric-string $cost
      * @param numeric-string $markup
      */
-    #[DataProvider('sellPriceRoundingProvider')]
+    #[TestWith(['10', '12.345', '11.23'], 'rounds down at the third decimal')]
+    #[TestWith(['10', '12.355', '11.24'], 'rounds up at the third decimal')]
     public function testSellPriceRounding(string $cost, string $markup, string $expected): void
     {
         $sell = $this->calculator->calculateSellPrice($cost, $markup);
         self::assertSame($expected, $sell);
-    }
-
-    /**
-     * @return array<int, array<int, numeric-string>>
-     */
-    public static function sellPriceRoundingProvider(): array
-    {
-        return [
-            ['10', '12.345', '11.23'], // rounds down at 3rd dp
-            ['10', '12.355', '11.24'], // rounds up at 3rd dp
-        ];
     }
 
     public function testBeforeVatRoundingEdge(): void
@@ -88,58 +79,35 @@ final class MarkupCalculatorDomainTest extends TestCase
         self::assertSame('99.99', $beforeVat);
     }
 
-    public function testInvalidCostForSellPrice(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessageIsOrContains('Cost must be greater than 0.');
-        $this->calculator->calculateSellPrice('-1', '20');
-    }
-
-    public function testInvalidMarkupForSellPrice(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessageIsOrContains('Markup must not be negative.');
-        $this->calculator->calculateSellPrice('100', '-1');
-    }
-
-    public function testInvalidCostForMarkupFromSellPrice(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessageIsOrContains('Cost must be greater than 0.');
-        $this->calculator->calculateMarkupFromSellPrice('0', '120');
-    }
-
-    public function testInvalidSellPriceForMarkupFromSellPrice(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessageIsOrContains('Sell price must not be less than cost.');
-        $this->calculator->calculateMarkupFromSellPrice('100', '99.99');
-    }
-
     public function testSellPriceAtCostGivesZeroMarkup(): void
     {
         self::assertSame('0.000', $this->calculator->calculateMarkupFromSellPrice('100', '100'));
         self::assertSame('0.000', $this->calculator->calculateCustomMarkup('45.67', '54.80', '20'));
     }
 
-    public function testInvalidVatForSellPriceIncVat(): void
+    /**
+     * @return iterable<string, array{\Closure(MarkupCalculator): string, string}>
+     */
+    public static function invalidArguments(): iterable
     {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessageIsOrContains('VAT rate must not be negative.');
-        $this->calculator->calculateSellPriceIncVat('100', '20', '-1');
+        yield 'sell price, negative cost' => [static fn (MarkupCalculator $c): string => $c->calculateSellPrice('-1', '20'), 'Cost must be greater than 0.'];
+        yield 'sell price, negative markup' => [static fn (MarkupCalculator $c): string => $c->calculateSellPrice('100', '-1'), 'Markup must not be negative.'];
+        yield 'markup, zero cost' => [static fn (MarkupCalculator $c): string => $c->calculateMarkupFromSellPrice('0', '120'), 'Cost must be greater than 0.'];
+        yield 'markup, sell price below cost' => [static fn (MarkupCalculator $c): string => $c->calculateMarkupFromSellPrice('100', '99.99'), 'Sell price must not be less than cost.'];
+        yield 'price inc VAT, negative VAT' => [static fn (MarkupCalculator $c): string => $c->calculateSellPriceIncVat('100', '20', '-1'), 'VAT rate must not be negative.'];
+        yield 'price before VAT, zero price' => [static fn (MarkupCalculator $c): string => $c->calculateSellPriceBeforeVat('0', '20'), 'Sell price (inc VAT) must be greater than 0.'];
+        yield 'price before VAT, negative VAT' => [static fn (MarkupCalculator $c): string => $c->calculateSellPriceBeforeVat('100', '-1'), 'VAT rate must not be negative.'];
     }
 
-    public function testInvalidSellPriceIncVatForBeforeVat(): void
+    /**
+     * @param \Closure(MarkupCalculator): string $calculate
+     */
+    #[DataProvider('invalidArguments')]
+    public function testRefusesInvalidArguments(\Closure $calculate, string $message): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessageIsOrContains('Sell price (inc VAT) must be greater than 0.');
-        $this->calculator->calculateSellPriceBeforeVat('0', '20');
-    }
+        $this->expectExceptionMessageIsOrContains($message);
 
-    public function testInvalidVatForBeforeVat(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessageIsOrContains('VAT rate must not be negative.');
-        $this->calculator->calculateSellPriceBeforeVat('100', '-1');
+        $calculate($this->calculator);
     }
 }

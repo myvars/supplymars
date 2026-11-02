@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Reporting\Domain\Metric;
 
+use function Symfony\Component\Clock\now;
+
 enum SalesDuration: string
 {
     case TODAY = 'today';
@@ -27,7 +29,7 @@ enum SalesDuration: string
 
     public function getStartDate(bool $rebuildRange = false): string
     {
-        $now = new \DateTime();
+        $now = now();
 
         return match ($this) {
             self::TODAY => $now->format('Y-m-d'),
@@ -47,8 +49,8 @@ enum SalesDuration: string
     public function getEndDate(): string
     {
         return match ($this) {
-            self::WEEK_AGO => new \DateTime()->modify('-7 days')->format('Y-m-d H:i:s'),
-            default => new \DateTime('+1 day')->format('Y-m-d'),
+            self::WEEK_AGO => now()->modify('-7 days')->format('Y-m-d H:i:s'),
+            default => now()->modify('+1 day')->format('Y-m-d'),
         };
     }
 
