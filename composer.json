@@ -68,7 +68,7 @@
         "symfony/validator": "8.1.*",
         "symfony/yaml": "8.1.*",
         "symfonycasts/dynamic-forms": "^0.2.0",
-        "symfonycasts/reset-password-bundle": "^1.25.0",
+        "symfonycasts/reset-password-bundle": "^1.26.1",
         "symfonycasts/tailwind-bundle": "^1.0",
         "symfonycasts/verify-email-bundle": "^1.18.0",
         "tales-from-a-dev/twig-tailwind-extra": "^1.3",
