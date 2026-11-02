@@ -12,25 +12,12 @@ use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Factory\VatRateFactory;
 use App\Tests\Shared\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 
 #[WithStory(StaffUserStory::class)]
 final class CreateWarehouseProductsCommandTest extends KernelTestCase
 {
-    private CommandTester $commandTester;
-
-    protected function setUp(): void
-    {
-        self::bootKernel();
-        $application = new Application(self::$kernel);
-        $command = $application->find('app:create-warehouse-products');
-        $this->commandTester = new CommandTester($command);
-    }
-
     public function testCreatesAProductForEachWarehouseSupplierProduct(): void
     {
         VatRateFactory::new()->withStandardRate()->create();
@@ -44,10 +31,10 @@ final class CreateWarehouseProductsCommandTest extends KernelTestCase
             'product' => null,
         ]);
 
-        $this->commandTester->execute([]);
+        $result = self::runCommand('app:create-warehouse-products');
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('Processed 2 supplier products.', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('Processed 2 supplier products.', $result->getDisplay());
 
         self::getContainer()->get(EntityManagerInterface::class)->clear();
         foreach ($supplierProducts as $supplierProduct) {
@@ -61,10 +48,10 @@ final class CreateWarehouseProductsCommandTest extends KernelTestCase
     {
         SupplierFactory::createOne();
 
-        $this->commandTester->execute([]);
+        $result = self::runCommand('app:create-warehouse-products');
 
-        self::assertSame(Command::FAILURE, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('No default supplier found', $this->commandTester->getDisplay());
+        $this->assertCommandFailed($result);
+        self::assertStringContainsString('No default supplier found', $result->getDisplay());
     }
 
     private function reload(SupplierProductPublicId $publicId): SupplierProduct

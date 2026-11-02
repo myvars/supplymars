@@ -20,26 +20,18 @@ use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 
 #[WithStory(StaffUserStory::class)]
 final class BuildPOsCommandTest extends KernelTestCase
 {
-    private CommandTester $commandTester;
-
     private EntityManagerInterface $em;
 
     protected function setUp(): void
     {
         self::bootKernel();
-        $application = new Application(self::$kernel);
-        $command = $application->find('app:build-purchase-orders');
-        $this->commandTester = new CommandTester($command);
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
@@ -60,26 +52,26 @@ final class BuildPOsCommandTest extends KernelTestCase
             'quantity' => 5,
         ]);
 
-        $this->commandTester->execute(['order-count' => 10]);
+        $result = self::runCommand('app:build-purchase-orders', ['order-count' => 10]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('Processed', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('Processed', $result->getDisplay());
     }
 
     public function testNoCustomerOrdersToProcess(): void
     {
-        $this->commandTester->execute(['order-count' => 10]);
+        $result = self::runCommand('app:build-purchase-orders', ['order-count' => 10]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('No customer orders to process', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('No customer orders to process', $result->getDisplay());
     }
 
     public function testInvalidCountReturnsInvalid(): void
     {
-        $this->commandTester->execute(['order-count' => 0]);
+        $result = self::runCommand('app:build-purchase-orders', ['order-count' => 0]);
 
-        self::assertSame(Command::INVALID, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('orderCount must be > 0', $this->commandTester->getDisplay());
+        $this->assertCommandIsInvalid($result);
+        self::assertStringContainsString('orderCount must be > 0', $result->getDisplay());
     }
 
     public function testDryRunDoesNotPersistChanges(): void
@@ -99,13 +91,13 @@ final class BuildPOsCommandTest extends KernelTestCase
             'quantity' => 5,
         ]);
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:build-purchase-orders', [
             'order-count' => 10,
             '--dry-run' => true,
         ]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('[DRY RUN]', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('[DRY RUN]', $result->getDisplay());
 
         // Order should have no POs (dry run)
         self::assertCount(0, $order->getPurchaseOrders());
@@ -142,9 +134,9 @@ final class BuildPOsCommandTest extends KernelTestCase
             'quantity' => 3,
         ]);
 
-        $this->commandTester->execute(['order-count' => 10]);
+        $result = self::runCommand('app:build-purchase-orders', ['order-count' => 10]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
+        $this->assertCommandIsSuccessful($result);
         // Both products should be allocated (possibly to different suppliers)
         self::assertGreaterThanOrEqual(1, $order->getPurchaseOrders()->count());
     }
@@ -166,13 +158,14 @@ final class BuildPOsCommandTest extends KernelTestCase
             'quantity' => 5,
         ]);
 
-        $this->commandTester->execute(
+        $result = self::runCommand(
+            'app:build-purchase-orders',
             ['order-count' => 10],
-            ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]
+            verbosity: OutputInterface::VERBOSITY_VERBOSE,
         );
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('Processed Order IDs', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('Processed Order IDs', $result->getDisplay());
     }
 
     public function testOutputShowsPOsCreatedAndItemsAllocated(): void
@@ -192,11 +185,11 @@ final class BuildPOsCommandTest extends KernelTestCase
             'quantity' => 5,
         ]);
 
-        $this->commandTester->execute(['order-count' => 10]);
+        $result = self::runCommand('app:build-purchase-orders', ['order-count' => 10]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('PO(s)', $this->commandTester->getDisplay());
-        self::assertStringContainsString('item(s)', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('PO(s)', $result->getDisplay());
+        self::assertStringContainsString('item(s)', $result->getDisplay());
     }
 
     public function testRetriesLineThatHadNoStock(): void
@@ -208,7 +201,7 @@ final class BuildPOsCommandTest extends KernelTestCase
         $stockedItem = $this->orderItem($order, $stockedSource->getProduct(), 5);
         $waitingItem = $this->orderItem($order, $waitingSource->getProduct(), 3);
 
-        $this->commandTester->execute(['order-count' => 10]);
+        self::runCommand('app:build-purchase-orders', ['order-count' => 10]);
 
         self::assertCount(1, $stockedItem->getPurchaseOrderItems());
         self::assertSame(3, $waitingItem->getOutstandingQty());
@@ -216,9 +209,9 @@ final class BuildPOsCommandTest extends KernelTestCase
         $waitingSource->updateStock(10);
         $this->em->flush();
 
-        $this->commandTester->execute(['order-count' => 10]);
+        $result = self::runCommand('app:build-purchase-orders', ['order-count' => 10]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
+        $this->assertCommandIsSuccessful($result);
         self::assertSame(0, $waitingItem->getOutstandingQty());
         foreach ($order->getPurchaseOrders() as $purchaseOrder) {
             self::assertSame(PurchaseOrderStatus::PROCESSING, $purchaseOrder->getStatus());
@@ -238,7 +231,7 @@ final class BuildPOsCommandTest extends KernelTestCase
 
         $this->em->flush();
 
-        $this->commandTester->execute(['order-count' => 10]);
+        self::runCommand('app:build-purchase-orders', ['order-count' => 10]);
 
         self::assertCount(2, $orderItem->getPurchaseOrderItems());
         self::assertSame(0, $orderItem->getOutstandingQty());
@@ -253,11 +246,11 @@ final class BuildPOsCommandTest extends KernelTestCase
         $this->purchaseOrderItem($order, $orderItem, $source, 2)->updateItemStatus(PurchaseOrderStatus::CANCELLED);
         $this->em->flush();
 
-        $this->commandTester->execute(['order-count' => 10]);
+        $result = self::runCommand('app:build-purchase-orders', ['order-count' => 10]);
 
         self::assertCount(3, $orderItem->getPurchaseOrderItems());
         self::assertSame(0, $orderItem->getOutstandingQty());
-        self::assertStringContainsString('allocated 1 item(s)', $this->commandTester->getDisplay());
+        self::assertStringContainsString('allocated 1 item(s)', $result->getDisplay());
     }
 
     public function testSkipsOrderWithNothingOutstanding(): void
@@ -269,9 +262,9 @@ final class BuildPOsCommandTest extends KernelTestCase
         $this->orderItem($order, $source->getProduct(), 2)->cancelItem();
         $this->em->flush();
 
-        $this->commandTester->execute(['order-count' => 10]);
+        $result = self::runCommand('app:build-purchase-orders', ['order-count' => 10]);
 
-        self::assertStringContainsString('No customer orders to process', $this->commandTester->getDisplay());
+        self::assertStringContainsString('No customer orders to process', $result->getDisplay());
     }
 
     public function testSkipsLockedOrderWithOutstandingQuantity(): void
@@ -281,9 +274,9 @@ final class BuildPOsCommandTest extends KernelTestCase
         $order->lockOrder($staff, $staff);
         $this->em->flush();
 
-        $this->commandTester->execute(['order-count' => 10]);
+        $result = self::runCommand('app:build-purchase-orders', ['order-count' => 10]);
 
-        self::assertStringContainsString('No customer orders to process', $this->commandTester->getDisplay());
+        self::assertStringContainsString('No customer orders to process', $result->getDisplay());
     }
 
     public function testTakesNewOrdersBeforeRetries(): void
@@ -298,7 +291,7 @@ final class BuildPOsCommandTest extends KernelTestCase
         $newOrder = CustomerOrderFactory::createOne();
         $this->orderItem($newOrder, $source->getProduct(), 1);
 
-        $this->commandTester->execute(['order-count' => 1]);
+        self::runCommand('app:build-purchase-orders', ['order-count' => 1]);
 
         self::assertCount(1, $newOrder->getPurchaseOrders());
         self::assertSame(3, $retryItem->getOutstandingQty());

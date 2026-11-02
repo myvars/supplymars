@@ -10,62 +10,49 @@ use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Story\StaffUserStory;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Exception\InvalidOptionException;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 
 #[WithStory(StaffUserStory::class)]
 final class CreateCustomerOrdersCommandTest extends KernelTestCase
 {
-    private CommandTester $commandTester;
-
-    protected function setUp(): void
-    {
-        self::bootKernel();
-        $application = new Application(self::$kernel);
-        $command = $application->find('app:create-customer-orders');
-        $this->commandTester = new CommandTester($command);
-    }
-
     public function testSuccessCreatesOrders(): void
     {
         $this->createTestProducts(5);
 
         $initialCount = CustomerOrderFactory::count();
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:create-customer-orders', [
             'order-count' => 2,
         ]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('Created 2 customer orders', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('Created 2 customer orders', $result->getDisplay());
         CustomerOrderFactory::assert()->count($initialCount + 2);
     }
 
     public function testInvalidCountReturnsInvalid(): void
     {
-        $this->commandTester->execute([
+        $result = self::runCommand('app:create-customer-orders', [
             'order-count' => 0,
         ]);
 
-        self::assertSame(Command::INVALID, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('Order count must be > 0', $this->commandTester->getDisplay());
+        $this->assertCommandIsInvalid($result);
+        self::assertStringContainsString('Order count must be > 0', $result->getDisplay());
     }
 
     public function testRandomOptionWorks(): void
     {
         $this->createTestProducts(5);
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:create-customer-orders', [
             'order-count' => 1,
             '--random' => true,
         ]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
+        $this->assertCommandIsSuccessful($result);
     }
 
     public function testDryRunDoesNotPersist(): void
@@ -74,13 +61,13 @@ final class CreateCustomerOrdersCommandTest extends KernelTestCase
 
         $initialCount = CustomerOrderFactory::count();
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:create-customer-orders', [
             'order-count' => 3,
             '--dry-run' => true,
         ]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('[DRY RUN]', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('[DRY RUN]', $result->getDisplay());
         CustomerOrderFactory::assert()->count($initialCount);
     }
 
@@ -88,12 +75,12 @@ final class CreateCustomerOrdersCommandTest extends KernelTestCase
     {
         $this->createTestProducts(5);
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:create-customer-orders', [
             'order-count' => 1,
-        ], ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]);
+        ], verbosity: OutputInterface::VERBOSITY_VERBOSE);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('Created Order IDs', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('Created Order IDs', $result->getDisplay());
     }
 
     public function testCreatesOneOrderByDefault(): void
@@ -102,10 +89,10 @@ final class CreateCustomerOrdersCommandTest extends KernelTestCase
 
         $initialCount = CustomerOrderFactory::count();
 
-        $this->commandTester->execute([]);
+        $result = self::runCommand('app:create-customer-orders');
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('Created 1 customer orders', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('Created 1 customer orders', $result->getDisplay());
         CustomerOrderFactory::assert()->count($initialCount + 1);
     }
 
@@ -114,7 +101,7 @@ final class CreateCustomerOrdersCommandTest extends KernelTestCase
         // The command never waits: the schedule (MainSchedule) spreads the orders instead
         $this->expectException(InvalidOptionException::class);
 
-        $this->commandTester->execute([
+        self::runCommand('app:create-customer-orders', [
             'order-count' => 1,
             '--skip-timing' => true,
         ]);

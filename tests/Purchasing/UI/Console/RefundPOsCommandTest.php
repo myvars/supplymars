@@ -15,26 +15,18 @@ use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 
 #[WithStory(StaffUserStory::class)]
 final class RefundPOsCommandTest extends KernelTestCase
 {
-    private CommandTester $commandTester;
-
     private EntityManagerInterface $em;
 
     protected function setUp(): void
     {
         self::bootKernel();
-        $application = new Application(self::$kernel);
-        $command = $application->find('app:refund-purchase-orders');
-        $this->commandTester = new CommandTester($command);
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
@@ -74,10 +66,10 @@ final class RefundPOsCommandTest extends KernelTestCase
 
         $this->em->flush();
 
-        $this->commandTester->execute(['po-count' => 10]);
+        $result = self::runCommand('app:refund-purchase-orders', ['po-count' => 10]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('Refunded', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('Refunded', $result->getDisplay());
         self::assertSame(PurchaseOrderStatus::REFUNDED, $poItem->getStatus());
     }
 
@@ -116,27 +108,27 @@ final class RefundPOsCommandTest extends KernelTestCase
         $this->em->flush();
         self::assertSame(PurchaseOrderStatus::REJECTED, $po->getStatus());
 
-        $this->commandTester->execute(['po-count' => 10]);
+        $result = self::runCommand('app:refund-purchase-orders', ['po-count' => 10]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
+        $this->assertCommandIsSuccessful($result);
         self::assertSame(PurchaseOrderStatus::REFUNDED, $rejected->getStatus());
         self::assertSame(PurchaseOrderStatus::SHIPPED, $shipped->getStatus());
     }
 
     public function testNoRejectedPurchaseOrders(): void
     {
-        $this->commandTester->execute(['po-count' => 10]);
+        $result = self::runCommand('app:refund-purchase-orders', ['po-count' => 10]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('No rejected purchase orders', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('No rejected purchase orders', $result->getDisplay());
     }
 
     public function testInvalidCountReturnsInvalid(): void
     {
-        $this->commandTester->execute(['po-count' => 0]);
+        $result = self::runCommand('app:refund-purchase-orders', ['po-count' => 0]);
 
-        self::assertSame(Command::INVALID, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('poCount must be > 0', $this->commandTester->getDisplay());
+        $this->assertCommandIsInvalid($result);
+        self::assertStringContainsString('poCount must be > 0', $result->getDisplay());
     }
 
     public function testDryRunDoesNotPersistChanges(): void
@@ -174,13 +166,13 @@ final class RefundPOsCommandTest extends KernelTestCase
 
         $this->em->flush();
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:refund-purchase-orders', [
             'po-count' => 10,
             '--dry-run' => true,
         ]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('[DRY RUN]', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('[DRY RUN]', $result->getDisplay());
         self::assertSame(PurchaseOrderStatus::REJECTED, $poItem->getStatus());
     }
 
@@ -219,10 +211,10 @@ final class RefundPOsCommandTest extends KernelTestCase
 
         $this->em->flush();
 
-        $this->commandTester->execute(['po-count' => 10]);
+        $result = self::runCommand('app:refund-purchase-orders', ['po-count' => 10]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('reallocation', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('reallocation', $result->getDisplay());
     }
 
     public function testVerboseOutputShowsProcessedIds(): void
@@ -260,13 +252,14 @@ final class RefundPOsCommandTest extends KernelTestCase
 
         $this->em->flush();
 
-        $this->commandTester->execute(
+        $result = self::runCommand(
+            'app:refund-purchase-orders',
             ['po-count' => 10],
-            ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]
+            verbosity: OutputInterface::VERBOSITY_VERBOSE,
         );
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('Processed PO IDs', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('Processed PO IDs', $result->getDisplay());
     }
 
     public function testOutputShowsRefundedAndReallocatedCounts(): void
@@ -304,10 +297,10 @@ final class RefundPOsCommandTest extends KernelTestCase
 
         $this->em->flush();
 
-        $this->commandTester->execute(['po-count' => 10]);
+        $result = self::runCommand('app:refund-purchase-orders', ['po-count' => 10]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('item(s)', $this->commandTester->getDisplay());
-        self::assertStringContainsString('reallocation', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('item(s)', $result->getDisplay());
+        self::assertStringContainsString('reallocation', $result->getDisplay());
     }
 }

@@ -11,31 +11,19 @@ use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Tester\CommandTester;
 
 final class ResyncProductPricingCommandTest extends KernelTestCase
 {
-    private CommandTester $commandTester;
-
-    protected function setUp(): void
-    {
-        self::bootKernel();
-        $application = new Application(self::$kernel);
-        $this->commandTester = new CommandTester($application->find('app:resync-product-pricing'));
-    }
-
     public function testBringsStaleProductBackInStepWithItsSources(): void
     {
         $product = $this->staleProduct();
 
-        $this->commandTester->execute([]);
+        $result = self::runCommand('app:resync-product-pricing');
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('1 changed', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('1 changed', $result->getDisplay());
 
         // Markup 25%, VAT 20%, no rounding: 20.00 × 1.25 × 1.20 = 30.00
         $reloaded = $this->reload($product);
@@ -48,19 +36,19 @@ final class ResyncProductPricingCommandTest extends KernelTestCase
     {
         $this->staleProduct();
 
-        $this->commandTester->execute([]);
-        $this->commandTester->execute([]);
+        self::runCommand('app:resync-product-pricing');
+        $result = self::runCommand('app:resync-product-pricing');
 
-        self::assertStringContainsString('0 changed', $this->commandTester->getDisplay());
+        self::assertStringContainsString('0 changed', $result->getDisplay());
     }
 
     public function testDryRunReportsWithoutSaving(): void
     {
         $product = $this->staleProduct();
 
-        $this->commandTester->execute(['--dry-run' => true]);
+        $result = self::runCommand('app:resync-product-pricing', ['--dry-run' => true]);
 
-        self::assertStringContainsString('1 would change', $this->commandTester->getDisplay());
+        self::assertStringContainsString('1 would change', $result->getDisplay());
         $reloaded = $this->reload($product);
         self::assertSame('10.00', $reloaded->getCost());
         self::assertSame(5, $reloaded->getStock());
@@ -70,9 +58,9 @@ final class ResyncProductPricingCommandTest extends KernelTestCase
     {
         $products = [$this->staleProduct(), $this->staleProduct(), $this->staleProduct()];
 
-        $this->commandTester->execute(['--batch-size' => 1]);
+        $result = self::runCommand('app:resync-product-pricing', ['--batch-size' => 1]);
 
-        self::assertStringContainsString('3 changed', $this->commandTester->getDisplay());
+        self::assertStringContainsString('3 changed', $result->getDisplay());
         foreach ($products as $product) {
             self::assertSame('20.00', $this->reload($product)->getCost());
         }
@@ -86,11 +74,11 @@ final class ResyncProductPricingCommandTest extends KernelTestCase
             ['id' => $product->getCategory()->getVatRate()->getId()],
         );
 
-        $this->commandTester->execute([]);
+        $result = self::runCommand('app:resync-product-pricing');
 
-        self::assertSame(Command::FAILURE, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('VAT rate must not be negative', $this->commandTester->getDisplay());
-        self::assertStringContainsString('1 failed', $this->commandTester->getDisplay());
+        $this->assertCommandFailed($result);
+        self::assertStringContainsString('VAT rate must not be negative', $result->getDisplay());
+        self::assertStringContainsString('1 failed', $result->getDisplay());
         self::assertSame('10.00', $this->reload($product)->getCost());
     }
 
@@ -104,9 +92,9 @@ final class ResyncProductPricingCommandTest extends KernelTestCase
         );
         self::getContainer()->get(EntityManagerInterface::class)->clear();
 
-        $this->commandTester->execute(['-v' => true], ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]);
+        $result = self::runCommand('app:resync-product-pricing', ['-v' => true], verbosity: OutputInterface::VERBOSITY_VERBOSE);
 
-        self::assertStringContainsString('source none, stock 0', $this->commandTester->getDisplay());
+        self::assertStringContainsString('source none, stock 0', $result->getDisplay());
         $reloaded = $this->reload($product);
         self::assertNull($reloaded->getActiveProductSource());
         self::assertSame(0, $reloaded->getStock());

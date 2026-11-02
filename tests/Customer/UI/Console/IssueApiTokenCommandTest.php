@@ -6,11 +6,9 @@ namespace App\Tests\Customer\UI\Console;
 
 use App\Tests\Shared\Factory\UserFactory;
 use Doctrine\DBAL\Connection;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Console\Tester\ExecutionResult;
 use Zenstruck\Browser\KernelBrowser;
 use Zenstruck\Browser\Test\HasBrowser;
 
@@ -18,31 +16,22 @@ final class IssueApiTokenCommandTest extends KernelTestCase
 {
     use HasBrowser;
 
-    private CommandTester $commandTester;
-
-    protected function setUp(): void
-    {
-        self::bootKernel();
-        $application = new Application(self::$kernel);
-        $this->commandTester = new CommandTester($application->find('app:user:issue-token'));
-    }
-
     public function testIssuesATokenThatAuthenticatesTheUser(): void
     {
         UserFactory::new(['email' => 'api-user@example.com'])->asStaff()->create();
 
-        $this->commandTester->execute(['email' => 'api-user@example.com']);
+        $result = self::runCommand('app:user:issue-token', ['email' => 'api-user@example.com']);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        $this->getOrdersWith($this->printedToken())->assertSuccessful();
+        $this->assertCommandIsSuccessful($result);
+        $this->getOrdersWith($this->printedToken($result))->assertSuccessful();
     }
 
     public function testStoresOnlyTheHashOfTheToken(): void
     {
         UserFactory::createOne(['email' => 'api-user@example.com']);
 
-        $this->commandTester->execute(['email' => 'api-user@example.com']);
-        $token = $this->printedToken();
+        $result = self::runCommand('app:user:issue-token', ['email' => 'api-user@example.com']);
+        $token = $this->printedToken($result);
 
         /** @var Connection $connection */
         $connection = self::getContainer()->get(Connection::class);
@@ -55,10 +44,10 @@ final class IssueApiTokenCommandTest extends KernelTestCase
     {
         UserFactory::new(['email' => 'api-user@example.com'])->asStaff()->withApiToken('old-token')->create();
 
-        $this->commandTester->execute(['email' => 'api-user@example.com']);
+        $result = self::runCommand('app:user:issue-token', ['email' => 'api-user@example.com']);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('previous token no longer works', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('previous token no longer works', $result->getDisplay());
         $this->getOrdersWith('old-token')->assertStatus(401);
     }
 
@@ -66,25 +55,26 @@ final class IssueApiTokenCommandTest extends KernelTestCase
     {
         UserFactory::createOne(['email' => 'api-user@example.com']);
 
-        $this->commandTester->execute(
+        $result = self::runCommand(
+            'app:user:issue-token',
             ['email' => 'api-user@example.com'],
-            ['verbosity' => OutputInterface::VERBOSITY_QUIET, 'capture_stderr_separately' => true],
+            verbosity: OutputInterface::VERBOSITY_QUIET,
         );
 
-        self::assertMatchesRegularExpression('/^[0-9a-f]{64}\n$/', $this->commandTester->getDisplay());
+        self::assertMatchesRegularExpression('/^[0-9a-f]{64}\n$/', $result->getOutput());
     }
 
     public function testFailsForAnUnknownEmail(): void
     {
-        $this->commandTester->execute(['email' => 'nobody@example.com']);
+        $result = self::runCommand('app:user:issue-token', ['email' => 'nobody@example.com']);
 
-        self::assertSame(Command::FAILURE, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('No user with email "nobody@example.com"', $this->commandTester->getDisplay());
+        $this->assertCommandFailed($result);
+        self::assertStringContainsString('No user with email "nobody@example.com"', $result->getDisplay());
     }
 
-    private function printedToken(): string
+    private function printedToken(ExecutionResult $result): string
     {
-        $matched = preg_match('/^([0-9a-f]{64})$/m', $this->commandTester->getDisplay(), $matches);
+        $matched = preg_match('/^([0-9a-f]{64})$/m', $result->getDisplay(), $matches);
         self::assertSame(1, $matched, 'The command did not print a token.');
 
         return $matches[1] ?? '';

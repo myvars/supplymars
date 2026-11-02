@@ -19,10 +19,7 @@ use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Mercure\QueuedNotifications;
 use App\Tests\Shared\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Mercure\Update;
 use Zenstruck\Foundry\Attribute\WithStory;
 
@@ -76,12 +73,11 @@ final class SimulationRefreshesOrderPagesTest extends KernelTestCase
         QueuedNotifications::handle($container);
         $before = count(QueuedNotifications::published($container));
 
-        $tester = new CommandTester(new Application(self::$kernel)->find($command));
-        $tester->execute($input);
-        self::assertSame(Command::SUCCESS, $tester->getStatusCode(), $tester->getDisplay());
+        $result = self::runCommand($command, $input);
+        $this->assertCommandIsSuccessful($result, $result->getDisplay());
 
         $handled = QueuedNotifications::handle($container);
-        self::assertCount(count($orders), $handled, $tester->getDisplay());
+        self::assertCount(count($orders), $handled, $result->getDisplay());
         self::assertContainsOnlyInstancesOf(RefreshOrderPage::class, $handled);
 
         $updates = array_slice(QueuedNotifications::published($container), $before);
