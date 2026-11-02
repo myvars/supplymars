@@ -136,9 +136,6 @@ final class ResyncProductPricingCommandTest extends KernelTestCase
     {
         self::getContainer()->get(EntityManagerInterface::class)->clear();
 
-        $reloaded = ProductFactory::repository()->find($product->getId());
-        self::assertInstanceOf(Product::class, $reloaded);
-
-        return $reloaded;
+        return ProductFactory::repository()->findOrFail($product->getId());
     }
 }

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Pricing\UI;
 
-use App\Catalog\Domain\Model\Product\Product;
 use App\Shared\Domain\ValueObject\PriceModel;
 use App\Tests\Shared\Factory\CategoryFactory;
 use App\Tests\Shared\Factory\ProductFactory;
@@ -50,10 +49,8 @@ final class UpdateCategoryCostFlowTest extends WebTestCase
             ->assertOn('/pricing/' . $publicId . '/cost')
             ->assertSee('Category cost updated');
 
-        $reloaded = ProductFactory::repository()->find($product->getId());
-        self::assertInstanceOf(Product::class, $reloaded);
-        self::assertSame('0.00', $reloaded->getCost());
-        self::assertSame('0.00', $reloaded->getSellPriceIncVat());
+        self::assertSame('0.00', $product->getCost());
+        self::assertSame('0.00', $product->getSellPriceIncVat());
     }
 
     public function testZeroMarkupPricesAtCost(): void
@@ -71,10 +68,8 @@ final class UpdateCategoryCostFlowTest extends WebTestCase
             ->assertOn('/pricing/' . $publicId . '/cost')
             ->assertSee('Category cost updated');
 
-        $reloaded = ProductFactory::repository()->find($product->getId());
-        self::assertInstanceOf(Product::class, $reloaded);
-        self::assertSame('0.000', $reloaded->getMarkup());
-        self::assertSame($reloaded->getCost(), $reloaded->getSellPrice());
+        self::assertSame('0.000', $product->getMarkup());
+        self::assertSame($product->getCost(), $product->getSellPrice());
     }
 
     public function testValidationErrorsOnInvalidSubmission(): void

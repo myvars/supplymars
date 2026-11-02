@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Purchasing\UI\Console;
 
+use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItem;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use App\Tests\Shared\Factory\CustomerOrderFactory;
 use App\Tests\Shared\Factory\CustomerOrderItemFactory;
@@ -78,6 +79,48 @@ final class RefundPOsCommandTest extends KernelTestCase
         self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
         self::assertStringContainsString('Refunded', $this->commandTester->getDisplay());
         self::assertSame(PurchaseOrderStatus::REFUNDED, $poItem->getStatus());
+    }
+
+    public function testRefundsOnlyTheRejectedItemsOfAPurchaseOrder(): void
+    {
+        $supplier = SupplierFactory::createOne(['isActive' => true]);
+        $order = CustomerOrderFactory::createOne();
+        $po = PurchaseOrderFactory::createOne([
+            'customerOrder' => $order,
+            'supplier' => $supplier,
+        ]);
+
+        $addItem = static function () use ($supplier, $order, $po): PurchaseOrderItem {
+            $product = ProductFactory::createOne(['isActive' => true]);
+            SupplierProductFactory::createOne(['supplier' => $supplier, 'product' => $product, 'stock' => 100]);
+
+            return PurchaseOrderItemFactory::createOne([
+                'purchaseOrder' => $po,
+                'customerOrder' => $order,
+                'customerOrderItem' => CustomerOrderItemFactory::createOne(['customerOrder' => $order, 'product' => $product]),
+                'supplier' => $supplier,
+                'product' => $product,
+            ]);
+        };
+        $rejected = $addItem();
+        $shipped = $addItem();
+
+        // The PO takes its lowest item status, so ship one item before rejecting the other
+        foreach ([PurchaseOrderStatus::PROCESSING, PurchaseOrderStatus::ACCEPTED, PurchaseOrderStatus::SHIPPED] as $status) {
+            $shipped->updateItemStatus($status);
+        }
+
+        $rejected->updateItemStatus(PurchaseOrderStatus::PROCESSING);
+        $rejected->updateItemStatus(PurchaseOrderStatus::REJECTED);
+
+        $this->em->flush();
+        self::assertSame(PurchaseOrderStatus::REJECTED, $po->getStatus());
+
+        $this->commandTester->execute(['po-count' => 10]);
+
+        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
+        self::assertSame(PurchaseOrderStatus::REFUNDED, $rejected->getStatus());
+        self::assertSame(PurchaseOrderStatus::SHIPPED, $shipped->getStatus());
     }
 
     public function testNoRejectedPurchaseOrders(): void

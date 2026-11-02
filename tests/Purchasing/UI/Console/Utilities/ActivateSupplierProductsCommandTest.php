@@ -69,9 +69,6 @@ final class ActivateSupplierProductsCommandTest extends KernelTestCase
 
     private function reload(SupplierProductPublicId $publicId): SupplierProduct
     {
-        $supplierProduct = self::getContainer()->get(SupplierProductRepository::class)->getByPublicId($publicId);
-        self::assertInstanceOf(SupplierProduct::class, $supplierProduct);
-
-        return $supplierProduct;
+        return SupplierProductFactory::repository()->findOrFail(['publicId' => $publicId->value()]);
     }
 }

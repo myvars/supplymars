@@ -7,7 +7,6 @@ namespace App\Tests\Purchasing\UI\Console\Setup;
 use App\Catalog\Domain\Model\Product\Product;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProductPublicId;
-use App\Purchasing\Domain\Repository\SupplierProductRepository;
 use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Factory\VatRateFactory;
@@ -70,9 +69,6 @@ final class CreateWarehouseProductsCommandTest extends KernelTestCase
 
     private function reload(SupplierProductPublicId $publicId): SupplierProduct
     {
-        $supplierProduct = self::getContainer()->get(SupplierProductRepository::class)->getByPublicId($publicId);
-        self::assertInstanceOf(SupplierProduct::class, $supplierProduct);
-
-        return $supplierProduct;
+        return SupplierProductFactory::repository()->findOrFail(['publicId' => $publicId->value()]);
     }
 }

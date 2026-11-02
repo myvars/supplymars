@@ -51,8 +51,7 @@ final class DeleteCustomerFlowTest extends WebTestCase
         $browser = $this->browser()->actingAs(UserFactory::new()->asStaff()->create());
         $token = $this->actionToken($browser, '/customer/' . $publicId . '/delete/confirm', '/customer/' . $publicId . '/delete');
 
-        $promoted = UserFactory::repository()->find($customer->getId());
-        self::assertNotNull($promoted);
+        $promoted = UserFactory::repository()->findOrFail($customer->getId());
         $promoted->setRoles(['ROLE_SUPER_ADMIN']);
         save($promoted);
 

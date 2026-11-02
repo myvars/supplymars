@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Customer\UI;
 
+use App\Customer\Domain\Model\User\User;
 use App\Customer\Infrastructure\Security\EmailVerifier;
 use App\Tests\Shared\Factory\UserFactory;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -16,7 +17,7 @@ final class VerifyEmailFlowTest extends WebTestCase
     public function testSignedLinkVerifiesTheUser(): void
     {
         $user = UserFactory::createOne(['isVerified' => false]);
-        $signedUrl = $this->signedUrl($user->getId());
+        $signedUrl = $this->signedUrl($user);
 
         $this->browser()
             ->get($signedUrl)
@@ -29,7 +30,7 @@ final class VerifyEmailFlowTest extends WebTestCase
     public function testTamperedLinkLeavesTheUserUnverified(): void
     {
         $user = UserFactory::createOne(['isVerified' => false]);
-        $signedUrl = $this->signedUrl($user->getId());
+        $signedUrl = $this->signedUrl($user);
 
         $this->browser()
             ->get(str_replace('signature=', 'signature=x', $signedUrl))
@@ -38,11 +39,8 @@ final class VerifyEmailFlowTest extends WebTestCase
         self::assertFalse(UserFactory::repository()->find($user->getId())?->isVerified());
     }
 
-    private function signedUrl(?int $userId): string
+    private function signedUrl(User $user): string
     {
-        $user = UserFactory::repository()->find($userId);
-        self::assertNotNull($user);
-
         $context = self::getContainer()->get(EmailVerifier::class)->createEmailSignatureContext('app_verify_email', $user);
         self::assertIsString($context['signedUrl']);
 

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Purchasing\UI;
 
-use App\Catalog\Domain\Model\Product\Product;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\PurchaseOrderItemFactory;
@@ -43,7 +42,6 @@ final class DeleteSupplierProductFlowTest extends WebTestCase
         $this->deleteViaConfirmFlow($active)
             ->assertSee('Supplier Product deleted');
 
-        $product = $this->reload($product);
         self::assertSame($next->getId(), $product->getActiveProductSource()?->getId());
         self::assertSame('20.00', $product->getCost());
         $priceAfter = $product->getSellPrice();
@@ -62,7 +60,6 @@ final class DeleteSupplierProductFlowTest extends WebTestCase
         $this->deleteViaConfirmFlow($only)
             ->assertSee('Supplier Product deleted');
 
-        $product = $this->reload($product);
         self::assertFalse($product->hasActiveProductSource());
         self::assertSame(0, $product->getStock());
     }
@@ -89,7 +86,6 @@ final class DeleteSupplierProductFlowTest extends WebTestCase
         $this->deleteViaConfirmFlow($active)
             ->assertSee('Used on purchase orders');
 
-        $product = $this->reload($product);
         self::assertSame($active->getId(), $product->getActiveProductSource()?->getId());
         self::assertSame($priceBefore, $product->getSellPrice());
     }
@@ -114,14 +110,5 @@ final class DeleteSupplierProductFlowTest extends WebTestCase
             ->get('/supplier-product/' . $supplierProduct->getPublicId()->value() . '/delete/confirm')
             ->click('Delete Supplier Product')
             ->assertSuccessful();
-    }
-
-    private function reload(Product $product): Product
-    {
-        self::getContainer()->get('doctrine')->getManager()->clear();
-        $product = ProductFactory::repository()->find($product->getId());
-        self::assertInstanceOf(Product::class, $product);
-
-        return $product;
     }
 }

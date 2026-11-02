@@ -17,8 +17,8 @@ final class RedisSessionHandlerTest extends KernelTestCase
         self::bootKernel();
 
         // Tests themselves keep sessions in mock files (framework.yaml), so take the handler directly
+        /** @var RedisSessionHandler $handler */
         $handler = self::getContainer()->get('session.handler');
-        self::assertInstanceOf(RedisSessionHandler::class, $handler);
 
         /** @var \Redis $redis */
         $redis = self::getContainer()->get('snc_redis.default');
