@@ -5,160 +5,123 @@ declare(strict_types=1);
 namespace App\Tests\Reporting\Domain\Metric;
 
 use App\Reporting\Domain\Metric\SalesDuration;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 
 final class SalesDurationDomainTest extends TestCase
 {
+    use ClockSensitiveTrait;
+
+    protected function setUp(): void
+    {
+        self::mockTime('2026-03-15 10:30:00');
+    }
+
     public function testDefaultReturnsLast30(): void
     {
         self::assertSame(SalesDuration::LAST_30, SalesDuration::default());
     }
 
-    public function testIsValidReturnsTrueForValidDuration(): void
+    #[TestWith(['today', true])]
+    #[TestWith(['weekAgo', true])]
+    #[TestWith(['last7', true])]
+    #[TestWith(['last30', true])]
+    #[TestWith(['mtd', true])]
+    #[TestWith(['day', true])]
+    #[TestWith(['month', true])]
+    #[TestWith(['invalid', false])]
+    #[TestWith(['', false])]
+    #[TestWith(['LAST_30', false])]
+    #[TestWith(['weekly', false])]
+    public function testIsValid(string $duration, bool $valid): void
     {
-        self::assertTrue(SalesDuration::isValid('today'));
-        self::assertTrue(SalesDuration::isValid('weekAgo'));
-        self::assertTrue(SalesDuration::isValid('last7'));
-        self::assertTrue(SalesDuration::isValid('last30'));
-        self::assertTrue(SalesDuration::isValid('mtd'));
-        self::assertTrue(SalesDuration::isValid('day'));
-        self::assertTrue(SalesDuration::isValid('month'));
+        self::assertSame($valid, SalesDuration::isValid($duration));
     }
 
-    public function testIsValidReturnsFalseForInvalidDuration(): void
+    /**
+     * @return iterable<string, array{SalesDuration, bool, string}>
+     */
+    public static function startDates(): iterable
     {
-        self::assertFalse(SalesDuration::isValid('invalid'));
-        self::assertFalse(SalesDuration::isValid(''));
-        self::assertFalse(SalesDuration::isValid('LAST_30'));
-        self::assertFalse(SalesDuration::isValid('weekly'));
+        yield 'today' => [SalesDuration::TODAY, false, '2026-03-15'];
+        yield 'week ago' => [SalesDuration::WEEK_AGO, false, '2026-03-08'];
+        yield 'last 7 days, today included' => [SalesDuration::LAST_7, false, '2026-03-09'];
+        yield 'last 30 days, today included' => [SalesDuration::LAST_30, false, '2026-02-14'];
+        yield 'month to date' => [SalesDuration::MTD, false, '2026-03-01'];
+        yield 'day' => [SalesDuration::DAY, false, '2026-03-15'];
+        yield 'day, rebuilding 30 days' => [SalesDuration::DAY, true, '2026-02-14'];
+        yield 'month' => [SalesDuration::MONTH, false, '2026-03-01'];
+        yield 'month, rebuilding 12 months' => [SalesDuration::MONTH, true, '2025-03-01'];
     }
 
-    public function testGetStartDateForToday(): void
+    #[DataProvider('startDates')]
+    public function testGetStartDate(SalesDuration $duration, bool $rebuildRange, string $expected): void
     {
-        $duration = SalesDuration::TODAY;
-        $expected = new \DateTime()->format('Y-m-d');
-
-        self::assertSame($expected, $duration->getStartDate());
+        self::assertSame($expected, $duration->getStartDate($rebuildRange));
     }
 
-    public function testGetStartDateForLast7(): void
+    #[TestWith([SalesDuration::WEEK_AGO, '2026-03-08 10:30:00'])]
+    #[TestWith([SalesDuration::TODAY, '2026-03-16'])]
+    #[TestWith([SalesDuration::LAST_30, '2026-03-16'])]
+    public function testGetEndDate(SalesDuration $duration, string $expected): void
     {
-        $duration = SalesDuration::LAST_7;
-        $expected = new \DateTime()->modify('-6 days')->format('Y-m-d');
-
-        self::assertSame($expected, $duration->getStartDate());
-    }
-
-    public function testGetStartDateForLast30(): void
-    {
-        $duration = SalesDuration::LAST_30;
-        $expected = new \DateTime()->modify('-29 days')->format('Y-m-d');
-
-        self::assertSame($expected, $duration->getStartDate());
-    }
-
-    public function testGetStartDateForMtd(): void
-    {
-        $duration = SalesDuration::MTD;
-        $expected = new \DateTime()->format('Y-m-01');
-
-        self::assertSame($expected, $duration->getStartDate());
-    }
-
-    public function testGetEndDateForWeekAgoReturnsSevenDaysAgo(): void
-    {
-        $duration = SalesDuration::WEEK_AGO;
-        $result = $duration->getEndDate();
-        $expectedDate = new \DateTime()->modify('-7 days')->format('Y-m-d');
-
-        self::assertStringStartsWith($expectedDate, $result);
-    }
-
-    public function testGetEndDateForDefaultReturnsTomorrow(): void
-    {
-        $duration = SalesDuration::TODAY;
-        $expected = new \DateTime('+1 day')->format('Y-m-d');
-
         self::assertSame($expected, $duration->getEndDate());
     }
 
-    public function testGetDateStringFormatForDay(): void
+    /**
+     * @return iterable<string, array{SalesDuration, string}>
+     */
+    public static function dateStringFormats(): iterable
     {
-        $duration = SalesDuration::DAY;
-
-        self::assertSame('%Y-%m-%d', $duration->getDateStringFormat());
+        yield 'day' => [SalesDuration::DAY, '%Y-%m-%d'];
+        yield 'month' => [SalesDuration::MONTH, '%Y-%m-01'];
+        // Aggregated durations group every row under their start date
+        yield 'today' => [SalesDuration::TODAY, '2026-03-15'];
+        yield 'week ago' => [SalesDuration::WEEK_AGO, '2026-03-08'];
+        yield 'last 7 days' => [SalesDuration::LAST_7, '2026-03-09'];
+        yield 'last 30 days' => [SalesDuration::LAST_30, '2026-02-14'];
+        yield 'month to date' => [SalesDuration::MTD, '2026-03-01'];
     }
 
-    public function testGetDateStringFormatForMonth(): void
+    #[DataProvider('dateStringFormats')]
+    public function testGetDateStringFormat(SalesDuration $duration, string $expected): void
     {
-        $duration = SalesDuration::MONTH;
-
-        self::assertSame('%Y-%m-01', $duration->getDateStringFormat());
+        self::assertSame($expected, $duration->getDateStringFormat());
     }
 
-    public function testGetDateStringFormatForAggregatedDurationsReturnsStartDate(): void
+    #[TestWith([SalesDuration::MONTH, 'M Y', '+1 month'])]
+    #[TestWith([SalesDuration::MTD, 'M Y', '+1 month'])]
+    #[TestWith([SalesDuration::TODAY, 'd M', '+1 day'])]
+    #[TestWith([SalesDuration::WEEK_AGO, 'd M', '+1 day'])]
+    #[TestWith([SalesDuration::LAST_7, 'd M', '+1 day'])]
+    #[TestWith([SalesDuration::LAST_30, 'd M', '+1 day'])]
+    #[TestWith([SalesDuration::DAY, 'd M', '+1 day'])]
+    public function testChartLabelFormatAndGranularity(SalesDuration $duration, string $labelFormat, string $granularity): void
     {
-        self::assertSame(SalesDuration::TODAY->getStartDate(), SalesDuration::TODAY->getDateStringFormat());
-        self::assertSame(SalesDuration::LAST_7->getStartDate(), SalesDuration::LAST_7->getDateStringFormat());
-        self::assertSame(SalesDuration::LAST_30->getStartDate(), SalesDuration::LAST_30->getDateStringFormat());
-        self::assertSame(SalesDuration::MTD->getStartDate(), SalesDuration::MTD->getDateStringFormat());
+        self::assertSame($labelFormat, $duration->getChartLabelFormat());
+        self::assertSame($granularity, $duration->getChartGranularity());
     }
 
-    public function testGetChartLabelFormatForMonthReturnsMonthYear(): void
+    /**
+     * @return iterable<string, array{SalesDuration, bool, ?string}>
+     */
+    public static function rangeStartDates(): iterable
     {
-        self::assertSame('M Y', SalesDuration::MONTH->getChartLabelFormat());
-        self::assertSame('M Y', SalesDuration::MTD->getChartLabelFormat());
+        yield 'day' => [SalesDuration::DAY, false, '2026-03-15'];
+        yield 'month' => [SalesDuration::MONTH, false, '2026-03-01'];
+        yield 'day, rebuilding' => [SalesDuration::DAY, true, null];
+        yield 'month, rebuilding' => [SalesDuration::MONTH, true, null];
+        yield 'today' => [SalesDuration::TODAY, false, null];
+        yield 'last 7 days' => [SalesDuration::LAST_7, false, null];
+        yield 'last 30 days' => [SalesDuration::LAST_30, false, null];
+        yield 'month to date' => [SalesDuration::MTD, false, null];
     }
 
-    public function testGetChartLabelFormatForOtherDurationsReturnsDayMonth(): void
+    #[DataProvider('rangeStartDates')]
+    public function testGetRangeStartDate(SalesDuration $duration, bool $rebuildRange, ?string $expected): void
     {
-        self::assertSame('d M', SalesDuration::TODAY->getChartLabelFormat());
-        self::assertSame('d M', SalesDuration::LAST_7->getChartLabelFormat());
-        self::assertSame('d M', SalesDuration::LAST_30->getChartLabelFormat());
-        self::assertSame('d M', SalesDuration::DAY->getChartLabelFormat());
-    }
-
-    public function testGetChartGranularityForMonthReturnsOneMonth(): void
-    {
-        self::assertSame('+1 month', SalesDuration::MONTH->getChartGranularity());
-        self::assertSame('+1 month', SalesDuration::MTD->getChartGranularity());
-    }
-
-    public function testGetChartGranularityForOtherDurationsReturnsOneDay(): void
-    {
-        self::assertSame('+1 day', SalesDuration::TODAY->getChartGranularity());
-        self::assertSame('+1 day', SalesDuration::LAST_7->getChartGranularity());
-        self::assertSame('+1 day', SalesDuration::LAST_30->getChartGranularity());
-        self::assertSame('+1 day', SalesDuration::DAY->getChartGranularity());
-    }
-
-    public function testGetRangeStartDateReturnsNullForNonRebuildAggregatedDurations(): void
-    {
-        self::assertNull(SalesDuration::TODAY->getRangeStartDate(false));
-        self::assertNull(SalesDuration::LAST_7->getRangeStartDate(false));
-        self::assertNull(SalesDuration::LAST_30->getRangeStartDate(false));
-        self::assertNull(SalesDuration::MTD->getRangeStartDate(false));
-    }
-
-    public function testGetRangeStartDateReturnsStartDateForDayAndMonthWithoutRebuild(): void
-    {
-        self::assertSame(SalesDuration::DAY->getStartDate(false), SalesDuration::DAY->getRangeStartDate(false));
-        self::assertSame(SalesDuration::MONTH->getStartDate(false), SalesDuration::MONTH->getRangeStartDate(false));
-    }
-
-    public function testGetStartDateForDayWithRebuildRangeReturns29DaysAgo(): void
-    {
-        $duration = SalesDuration::DAY;
-        $expected = new \DateTime()->modify('-29 days')->format('Y-m-d');
-
-        self::assertSame($expected, $duration->getStartDate(true));
-    }
-
-    public function testGetStartDateForMonthWithRebuildRangeReturns12MonthsAgo(): void
-    {
-        $duration = SalesDuration::MONTH;
-        $expected = new \DateTime()->modify('-12 months')->format('Y-m-01');
-
-        self::assertSame($expected, $duration->getStartDate(true));
+        self::assertSame($expected, $duration->getRangeStartDate($rebuildRange));
     }
 }
