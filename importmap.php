@@ -34,8 +34,8 @@ return [
     'dropzone' => ['version' => '6.3.5'],
     'just-extend' => ['version' => '6.2.0'],
     'sortablejs' => ['version' => '1.15.7'],
-    'chart.js' => ['version' => '4.5.1'],
-    '@kurkle/color' => ['version' => '0.6.4'],
-    'shadcn/dist/tailwind.css' => ['version' => '4.21.4', 'type' => 'css'],
+    'chart.js' => ['version' => '4.6.1'],
+    '@kurkle/color' => ['version' => '0.6.5'],
+    'shadcn/dist/tailwind.css' => ['version' => '4.23.0', 'type' => 'css'],
     'tw-animate-css/dist/tw-animate.css' => ['version' => '1.4.0', 'type' => 'css'],
 ];
