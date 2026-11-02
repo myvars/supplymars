@@ -152,13 +152,7 @@ final readonly class ProcessingSimulator
 
     private function hasElapsedMinimumWait(\DateTimeImmutable $eventTime, \DateTimeImmutable $now, string $minimumWait): bool
     {
-        $interval = \DateInterval::createFromDateString($minimumWait);
-
-        if ($interval === false) {
-            throw new \InvalidArgumentException(sprintf('Invalid interval string: %s', $minimumWait));
-        }
-
-        $minimumTime = $now->sub($interval);
+        $minimumTime = $now->sub(\DateInterval::createFromDateString($minimumWait));
 
         return $eventTime <= $minimumTime;
     }
