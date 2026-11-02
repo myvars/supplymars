@@ -8,7 +8,11 @@ use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItem;
 use App\Reporting\Application\Handler\Report\PoItemPerformanceReportHandler;
 use App\Reporting\Application\Report\PoItemPerformanceReportCriteria;
 use App\Reporting\Domain\Metric\SalesDuration;
+use App\Shared\Domain\ValueObject\PriceModel;
+use App\Tests\Shared\Factory\CategoryFactory;
+use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\PurchaseOrderItemFactory;
+use App\Tests\Shared\Factory\SupplierProductFactory;
 use PHPUnit\Framework\Attributes\TestWith;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -70,23 +74,26 @@ final class PoItemPerformanceReportHandlerTest extends KernelTestCase
         self::assertArrayHasKey('items', $result->payload);
     }
 
-    #[TestWith(['DESC'])]
-    #[TestWith(['ASC'])]
-    public function testSortsItemsByProfit(string $direction): void
+    /**
+     * @param list<int> $expectedQuantities
+     */
+    #[TestWith(['DESC', [3, 2, 1]])]
+    #[TestWith(['ASC', [1, 2, 3]])]
+    public function testSortsItemsByProfit(string $direction, array $expectedQuantities): void
     {
-        $items = [
-            PurchaseOrderItemFactory::createOne(['quantity' => 1]),
-            PurchaseOrderItemFactory::createOne(['quantity' => 3]),
-        ];
-        $profit = static fn (PurchaseOrderItem $item): string => bcsub(
-            bcmul((string) $item->getQuantity(), $item->getCustomerOrderItem()->getPrice(), 2),
-            $item->getTotalPrice(),
-            2,
-        );
-        usort($items, static fn (PurchaseOrderItem $a, PurchaseOrderItem $b): int => $direction === 'DESC'
-            ? bccomp($profit($b), $profit($a), 2)
-            : bccomp($profit($a), $profit($b), 2));
-        self::assertNotSame($profit($items[0]), $profit($items[1]));
+        // Sells at 12.50 from a 10.00 source (markup 25%), so each item's profit is 2.50 × its quantity
+        $category = CategoryFactory::createOne(['defaultMarkup' => '25.000', 'priceModel' => PriceModel::DEFAULT]);
+        $product = ProductFactory::createOne(['category' => $category]);
+        $source = SupplierProductFactory::createOne(['product' => $product, 'cost' => '10.00', 'stock' => 100]);
+        // Created out of order, so neither direction matches the order the rows were written in
+        foreach ([2, 1, 3] as $quantity) {
+            PurchaseOrderItemFactory::createOne([
+                'product' => $product,
+                'supplier' => $source->getSupplier(),
+                'supplierProduct' => $source,
+                'quantity' => $quantity,
+            ]);
+        }
 
         $criteria = new PoItemPerformanceReportCriteria();
         $criteria->setSort('profit');
@@ -97,8 +104,8 @@ final class PoItemPerformanceReportHandlerTest extends KernelTestCase
         self::assertTrue($result->ok);
         $listed = [...$result->payload['items']->getCurrentPageResults()];
         self::assertSame(
-            array_map(static fn (PurchaseOrderItem $item): ?int => $item->getId(), $items),
-            array_map(static fn (PurchaseOrderItem $item): ?int => $item->getId(), $listed),
+            $expectedQuantities,
+            array_map(static fn (PurchaseOrderItem $item): int => $item->getQuantity(), $listed),
         );
     }
 }
