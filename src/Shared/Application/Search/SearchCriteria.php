@@ -91,6 +91,11 @@ abstract class SearchCriteria implements SearchCriteriaInterface
         return $this->sortDirection ?? static::SORT_DIRECTION_DEFAULT;
     }
 
+    public function getSortOrder(): \SortDirection
+    {
+        return $this->getSortDirection() === 'DESC' ? \SortDirection::Descending : \SortDirection::Ascending;
+    }
+
     public function getPage(): int
     {
         $value = $this->page ?? static::PAGE_DEFAULT;

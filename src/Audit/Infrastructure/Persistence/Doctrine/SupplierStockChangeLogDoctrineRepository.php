@@ -44,7 +44,7 @@ class SupplierStockChangeLogDoctrineRepository extends ServiceEntityRepository i
         $qb = $this->createQueryBuilder('l')
             ->where('l.supplierProductId IN (:ids)')
             ->setParameter('ids', $supplierProductIds)
-            ->orderBy('l.eventTimestamp', 'ASC');
+            ->orderBy('l.eventTimestamp', \SortDirection::Ascending);
 
         if ($since instanceof \DateTimeImmutable) {
             $qb->andWhere('l.eventTimestamp >= :since')

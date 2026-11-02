@@ -63,7 +63,7 @@ class ProductDoctrineRepository extends ServiceEntityRepository implements FindB
     public function iterateAll(): iterable
     {
         return $this->createQueryBuilder('p')
-            ->orderBy('p.id', 'ASC')
+            ->orderBy('p.id', \SortDirection::Ascending)
             ->getQuery()
             ->toIterable();
     }
@@ -78,7 +78,7 @@ class ProductDoctrineRepository extends ServiceEntityRepository implements FindB
         }
 
         $sort = $criteria->getSort();
-        $sortDirection = $criteria->getSortDirection();
+        $sortDirection = $criteria->getSortOrder();
 
         $qb = $this->createQueryBuilder('p');
 

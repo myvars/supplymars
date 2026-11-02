@@ -80,7 +80,7 @@ class UserDoctrineRepository extends ServiceEntityRepository implements Password
         }
 
         $sort = $criteria->getSort();
-        $sortDirection = $criteria->getSortDirection();
+        $sortDirection = $criteria->getSortOrder();
 
         $qb = $this->createQueryBuilder('u');
 

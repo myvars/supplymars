@@ -70,7 +70,7 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
         }
 
         $sort = $criteria->getSort();
-        $sortDirection = $criteria->getSortDirection();
+        $sortDirection = $criteria->getSortOrder();
 
         $qb = $this->createQueryBuilder('o');
 
@@ -143,7 +143,7 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
             ->andWhere('co.orderLock IS NULL')
             ->andWhere('po.id IS NULL')
             ->setParameter('status', OrderStatus::PENDING)
-            ->orderBy('co.createdAt', 'ASC')
+            ->orderBy('co.createdAt', \SortDirection::Ascending)
             ->setMaxResults($orderCount)
             ->getQuery()
             ->getResult();
@@ -190,8 +190,8 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
             ->setParameter('statuses', [OrderStatus::PENDING, OrderStatus::PROCESSING])
             ->setParameter('cancelled', OrderStatus::CANCELLED)
             ->setParameter('releasedStatuses', [PurchaseOrderStatus::CANCELLED, PurchaseOrderStatus::REFUNDED])
-            ->orderBy('co.createdAt', 'ASC')
-            ->addOrderBy('co.id', 'ASC')
+            ->orderBy('co.createdAt', \SortDirection::Ascending)
+            ->addOrderBy('co.id', \SortDirection::Ascending)
             ->setMaxResults($orderCount)
             ->getQuery()
             ->getResult();
@@ -238,7 +238,7 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
     /**
      * @return AdapterInterface<CustomerOrder>
      */
-    public function findOverdueOrders(\DateTime $startDate, string $sort, string $sortDirection): AdapterInterface
+    public function findOverdueOrders(\DateTime $startDate, string $sort, \SortDirection $sortDirection): AdapterInterface
     {
         $qb = $this->getOverdueOrders($startDate)
             ->select('co, DATE_DIFF(CURRENT_DATE(), co.dueDate) AS HIDDEN overdueDays');
@@ -308,7 +308,7 @@ class CustomerOrderDoctrineRepository extends ServiceEntityRepository implements
             ->addSelect('c')
             ->andWhere('co.createdAt >= :startDate')
             ->setParameter('startDate', $startDate)
-            ->orderBy('co.createdAt', 'DESC')
+            ->orderBy('co.createdAt', \SortDirection::Descending)
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();

@@ -21,6 +21,7 @@ final class SearchCriteriaTest extends TestCase
         self::assertNull($this->criteria->getQuery());
         self::assertSame('id', $this->criteria->getSort());
         self::assertSame('ASC', $this->criteria->getSortDirection());
+        self::assertSame(\SortDirection::Ascending, $this->criteria->getSortOrder());
         self::assertSame(1, $this->criteria->getPage());
         self::assertSame(5, $this->criteria->getLimit());
     }
@@ -41,9 +42,11 @@ final class SearchCriteriaTest extends TestCase
     {
         $this->criteria->setSortDirection('desc');
         self::assertSame('DESC', $this->criteria->getSortDirection());
+        self::assertSame(\SortDirection::Descending, $this->criteria->getSortOrder());
 
         $this->criteria->setSortDirection('invalid');
         self::assertSame('ASC', $this->criteria->getSortDirection());
+        self::assertSame(\SortDirection::Ascending, $this->criteria->getSortOrder());
 
         $this->criteria->setSortDirection(null);
         self::assertSame('ASC', $this->criteria->getSortDirection());

@@ -67,7 +67,7 @@ class TicketDoctrineRepository extends ServiceEntityRepository implements FindBy
         }
 
         $sort = $criteria->getSort();
-        $sortDirection = $criteria->getSortDirection();
+        $sortDirection = $criteria->getSortOrder();
 
         $qb = $this->createQueryBuilder('t')
             ->leftJoin('t.pool', 'p')

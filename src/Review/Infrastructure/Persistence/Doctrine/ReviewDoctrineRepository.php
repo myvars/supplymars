@@ -65,7 +65,7 @@ class ReviewDoctrineRepository extends ServiceEntityRepository implements FindBy
             ->andWhere('r.status = :status')
             ->setParameter('product', $product)
             ->setParameter('status', ReviewStatus::PUBLISHED)
-            ->orderBy('r.publishedAt', 'DESC')
+            ->orderBy('r.publishedAt', \SortDirection::Descending)
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
@@ -81,7 +81,7 @@ class ReviewDoctrineRepository extends ServiceEntityRepository implements FindBy
         }
 
         $sort = $criteria->getSort();
-        $sortDirection = $criteria->getSortDirection();
+        $sortDirection = $criteria->getSortOrder();
 
         $qb = $this->createQueryBuilder('r');
 

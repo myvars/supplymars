@@ -47,7 +47,7 @@ final readonly class OverdueOrdersReportHandler
             $this->orderRepository->findOverdueOrders(
                 new \DateTime($criteria->getDuration()->getStartDate()),
                 $criteria->getSort(),
-                $criteria->getSortDirection(),
+                $criteria->getSortOrder(),
             ),
             $criteria->getPage(),
             $criteria->getLimit()

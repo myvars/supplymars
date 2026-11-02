@@ -64,7 +64,7 @@ class ProductSalesDoctrineRepository extends ServiceEntityRepository implements 
 
         return $qb
             ->groupBy('p.id')
-            ->orderBy($criteria->getSort(), $criteria->getSortDirection())
+            ->orderBy($criteria->getSort(), $criteria->getSortOrder())
             ->setMaxResults($criteria->getLimit())
             ->getQuery()
             ->getResult();
@@ -82,7 +82,7 @@ class ProductSalesDoctrineRepository extends ServiceEntityRepository implements 
 
         return $qb
             ->groupBy('p.id')
-            ->orderBy('salesQty', 'desc')
+            ->orderBy('salesQty', \SortDirection::Descending)
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
@@ -137,7 +137,7 @@ class ProductSalesDoctrineRepository extends ServiceEntityRepository implements 
             ->andWhere('ps.product = :productId')
             ->setParameter('productId', $productId)
             ->groupBy('ps.salesDate')
-            ->orderBy('ps.salesDate', 'ASC')
+            ->orderBy('ps.salesDate', \SortDirection::Ascending)
             ->getQuery()
             ->getResult();
     }

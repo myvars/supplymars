@@ -92,7 +92,7 @@ final readonly class BackfillUlidsCommand
         // Streaming query for rows to process
         $qb = $repo->createQueryBuilder('e')
             ->where('e.publicId IS NULL')
-            ->orderBy('e.id', 'ASC');
+            ->orderBy('e.id', \SortDirection::Ascending);
 
         if (null !== $limit) {
             $qb->setMaxResults($limit);

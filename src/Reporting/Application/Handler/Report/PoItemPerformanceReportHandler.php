@@ -49,7 +49,7 @@ final readonly class PoItemPerformanceReportHandler
                 new \DateTime($criteria->getDuration()->getStartDate()),
                 new \DateTime($criteria->getDuration()->getEndDate()),
                 $criteria->getSort(),
-                $criteria->getSortDirection(),
+                $criteria->getSortOrder(),
             ),
             $criteria->getPage(),
             $criteria->getLimit()

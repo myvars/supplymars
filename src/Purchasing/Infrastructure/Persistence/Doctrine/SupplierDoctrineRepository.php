@@ -78,7 +78,7 @@ class SupplierDoctrineRepository extends ServiceEntityRepository implements Find
         }
 
         $sort = $criteria->getSort();
-        $sortDirection = $criteria->getSortDirection();
+        $sortDirection = $criteria->getSortOrder();
 
         $qb = $this->createQueryBuilder('s');
 
