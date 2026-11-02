@@ -18,12 +18,10 @@ final class CategoryDomainTest extends TestCase
         return $this->createStub(User::class);
     }
 
-    private function stubVatRate(string $rate = '20.000'): VatRate
+    /** @param numeric-string $rate */
+    private function vatRate(string $rate = '20.000'): VatRate
     {
-        $vatRate = $this->createStub(VatRate::class);
-        $vatRate->method('getRate')->willReturn($rate);
-
-        return $vatRate;
+        return VatRate::create(name: 'Standard', rate: $rate);
     }
 
     public function testCreateTrimsNameAndSetsActive(): void
@@ -31,7 +29,7 @@ final class CategoryDomainTest extends TestCase
         $category = Category::create(
             name: '  Electronics  ',
             owner: $this->stubUser(),
-            vatRate: $this->stubVatRate(),
+            vatRate: $this->vatRate(),
             defaultMarkup: Category::DEFAULT_MARKUP,
             priceModel: PriceModel::DEFAULT,
             isActive: true,
@@ -46,7 +44,7 @@ final class CategoryDomainTest extends TestCase
         $category = Category::create(
             name: 'Electronics',
             owner: $this->stubUser(),
-            vatRate: $this->stubVatRate(),
+            vatRate: $this->vatRate(),
             defaultMarkup: Category::DEFAULT_MARKUP,
             priceModel: PriceModel::DEFAULT,
             isActive: true,
@@ -66,7 +64,7 @@ final class CategoryDomainTest extends TestCase
         $category = Category::create(
             name: 'Electronics',
             owner: $this->stubUser(),
-            vatRate: $this->stubVatRate('20.000'),
+            vatRate: $this->vatRate('20.000'),
             defaultMarkup: '5.000',
             priceModel: PriceModel::DEFAULT,
             isActive: true,
@@ -74,7 +72,7 @@ final class CategoryDomainTest extends TestCase
         $category->releaseDomainEvents(); // clear initial
 
         $category->changePricing(
-            vatRate: $this->stubVatRate('10.000'),
+            vatRate: $this->vatRate('10.000'),
             defaultMarkup: '7.500',
             priceModel: PriceModel::PRETTY_99,
             isActive: false,
@@ -94,7 +92,7 @@ final class CategoryDomainTest extends TestCase
         $category = Category::create(
             name: 'Electronics',
             owner: $this->stubUser(),
-            vatRate: $this->stubVatRate('20.000'),
+            vatRate: $this->vatRate('20.000'),
             defaultMarkup: '5.000',
             priceModel: PriceModel::DEFAULT,
             isActive: true,
@@ -119,7 +117,7 @@ final class CategoryDomainTest extends TestCase
         Category::create(
             name: '',
             owner: $this->stubUser(),
-            vatRate: $this->stubVatRate(),
+            vatRate: $this->vatRate(),
             defaultMarkup: '5.000',
             priceModel: PriceModel::DEFAULT,
             isActive: true,
@@ -134,7 +132,7 @@ final class CategoryDomainTest extends TestCase
         Category::create(
             name: 'Electronics',
             owner: $this->stubUser(),
-            vatRate: $this->stubVatRate(),
+            vatRate: $this->vatRate(),
             defaultMarkup: '-1.000',
             priceModel: PriceModel::DEFAULT,
             isActive: true,
@@ -149,7 +147,7 @@ final class CategoryDomainTest extends TestCase
         Category::create(
             name: 'Electronics',
             owner: $this->stubUser(),
-            vatRate: $this->stubVatRate(),
+            vatRate: $this->vatRate(),
             defaultMarkup: '5.000',
             priceModel: PriceModel::NONE,
             isActive: true,

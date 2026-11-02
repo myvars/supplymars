@@ -28,18 +28,16 @@ final class ProductDomainTest extends TestCase
         return $this->createStub(Manufacturer::class);
     }
 
-    private function stubVatRate(string $rate = '20.000'): VatRate
+    /** @param numeric-string $rate */
+    private function vatRate(string $rate = '20.000'): VatRate
     {
-        $vat = $this->createStub(VatRate::class);
-        $vat->method('getRate')->willReturn($rate);
-
-        return $vat;
+        return VatRate::create(name: 'Standard', rate: $rate);
     }
 
     private function stubCategory(?VatRate $vatRate = null): Category
     {
         $cat = $this->createStub(Category::class);
-        $cat->method('getVatRate')->willReturn($vatRate ?? $this->stubVatRate('20.000'));
+        $cat->method('getVatRate')->willReturn($vatRate ?? $this->vatRate('20.000'));
         $cat->method('getDefaultMarkup')->willReturn('3.000');
         $cat->method('getPriceModel')->willReturn(PriceModel::DEFAULT);
         $cat->method('isActive')->willReturn(true);

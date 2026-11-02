@@ -38,6 +38,15 @@ final class CustomerOrderItemDomainTest extends TestCase
         return $product;
     }
 
+    private function stubPurchaseOrderItem(PurchaseOrderStatus $status, int $quantity): PurchaseOrderItem
+    {
+        $poItem = $this->createStub(PurchaseOrderItem::class);
+        $poItem->method('getQuantity')->willReturn($quantity);
+        $poItem->method('getStatus')->willReturn($status);
+
+        return $poItem;
+    }
+
     public function testCreateFromProductSetsDefaultStatus(): void
     {
         $item = CustomerOrderItem::createFromProduct(
@@ -113,15 +122,8 @@ final class CustomerOrderItemDomainTest extends TestCase
             quantity: 10,
         );
 
-        // Simulate 5 items allocated to purchase orders using reflection
-        $poItem = $this->createStub(PurchaseOrderItem::class);
-        $poItem->method('getQuantity')->willReturn(5);
-        $poItem->method('getStatus')->willReturn(PurchaseOrderStatus::PENDING);
-
-        $reflection = new \ReflectionClass($item);
-        $poItemsProperty = $reflection->getProperty('purchaseOrderItems');
-        $poItems = $poItemsProperty->getValue($item);
-        $poItems->add($poItem);
+        // 5 of the 10 allocated to a purchase order
+        $item->addPurchaseOrderItem($this->stubPurchaseOrderItem(PurchaseOrderStatus::PENDING, quantity: 5));
 
         $this->expectException(\LogicException::class);
         $this->expectExceptionMessageIsOrContains('Cannot edit this allocated qty below 5');
@@ -143,15 +145,8 @@ final class CustomerOrderItemDomainTest extends TestCase
             quantity: 10,
         );
 
-        // Simulate 5 items allocated
-        $poItem = $this->createStub(PurchaseOrderItem::class);
-        $poItem->method('getQuantity')->willReturn(5);
-        $poItem->method('getStatus')->willReturn(PurchaseOrderStatus::PENDING);
-
-        $reflection = new \ReflectionClass($item);
-        $poItemsProperty = $reflection->getProperty('purchaseOrderItems');
-        $poItems = $poItemsProperty->getValue($item);
-        $poItems->add($poItem);
+        // 5 of the 10 allocated to a purchase order
+        $item->addPurchaseOrderItem($this->stubPurchaseOrderItem(PurchaseOrderStatus::PENDING, quantity: 5));
 
         // Should succeed - qty equals allocated
         $item->updateItem(
@@ -172,15 +167,8 @@ final class CustomerOrderItemDomainTest extends TestCase
             quantity: 10,
         );
 
-        // Simulate 5 items allocated
-        $poItem = $this->createStub(PurchaseOrderItem::class);
-        $poItem->method('getQuantity')->willReturn(5);
-        $poItem->method('getStatus')->willReturn(PurchaseOrderStatus::PENDING);
-
-        $reflection = new \ReflectionClass($item);
-        $poItemsProperty = $reflection->getProperty('purchaseOrderItems');
-        $poItems = $poItemsProperty->getValue($item);
-        $poItems->add($poItem);
+        // 5 of the 10 allocated to a purchase order
+        $item->addPurchaseOrderItem($this->stubPurchaseOrderItem(PurchaseOrderStatus::PENDING, quantity: 5));
 
         // Should succeed - qty above allocated
         $item->updateItem(
@@ -204,11 +192,10 @@ final class CustomerOrderItemDomainTest extends TestCase
         // Default is PENDING which allows edit
         self::assertTrue($item->allowEdit());
 
-        // Set to SHIPPED via reflection (doesn't allow edit)
-        $reflection = new \ReflectionClass($item);
-        $statusProperty = $reflection->getProperty('status');
-        $statusProperty->setValue($item, OrderStatus::SHIPPED);
+        // Its whole quantity on a shipped PO item makes it SHIPPED, which doesn't allow edit
+        $item->addPurchaseOrderItem($this->stubPurchaseOrderItem(PurchaseOrderStatus::SHIPPED, quantity: 1));
 
+        self::assertSame(OrderStatus::SHIPPED, $item->getStatus());
         self::assertFalse($item->allowEdit());
     }
 
