@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Shared\UI\Http;
 
 use App\Tests\Shared\Factory\UserFactory;
-use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 
@@ -62,7 +62,8 @@ final class HelpControllerTest extends WebTestCase
             ->assertSee('Account');
     }
 
-    #[DataProvider('customerInsightsTabs')]
+    #[TestWith(['/reports/customer/geographic'], 'geographic')]
+    #[TestWith(['/reports/customer/segments'], 'segments')]
     public function testHelpCustomerInsightsTabsLoadReports(string $page): void
     {
         $this->browser()
@@ -70,13 +71,6 @@ final class HelpControllerTest extends WebTestCase
             ->assertSuccessful()
             ->assertSee('Available Reports')
             ->assertNotContains('No help is available');
-    }
-
-    /** @return iterable<string, array{string}> */
-    public static function customerInsightsTabs(): iterable
-    {
-        yield 'geographic' => ['/reports/customer/geographic'];
-        yield 'segments' => ['/reports/customer/segments'];
     }
 
     public function testHelpRelatedLinksWork(): void

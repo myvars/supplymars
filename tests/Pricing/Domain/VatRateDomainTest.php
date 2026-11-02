@@ -6,6 +6,7 @@ namespace App\Tests\Pricing\Domain;
 
 use App\Pricing\Domain\Model\VatRate\Event\VatRateWasChangedEvent;
 use App\Pricing\Domain\Model\VatRate\VatRate;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 
 final class VatRateDomainTest extends TestCase
@@ -61,25 +62,16 @@ final class VatRateDomainTest extends TestCase
         self::assertCount(0, $vat->releaseDomainEvents());
     }
 
-    public function testEmptyNameThrows(): void
+    /**
+     * @param numeric-string $rate
+     */
+    #[TestWith(['   ', '5.00', 'Rate name cannot be empty'])]
+    #[TestWith(['Bad', '-1.00', 'Rate cannot be negative'])]
+    public function testCreateRefusesInvalidValues(string $name, string $rate, string $message): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessageIsOrContains('Rate name cannot be empty');
+        $this->expectExceptionMessageIsOrContains($message);
 
-        VatRate::create(
-            name: '   ',
-            rate: '5.00'
-        );
-    }
-
-    public function testNegativeRateThrows(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessageIsOrContains('Rate cannot be negative');
-
-        VatRate::create(
-            name: 'Bad',
-            rate: '-1.00'
-        );
+        VatRate::create(name: $name, rate: $rate);
     }
 }
