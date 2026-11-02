@@ -54,7 +54,7 @@ final readonly class CreateProductHandler
         }
 
         $owner = null;
-        if (null !== $command->ownerId) {
+        if ($command->ownerId !== null) {
             $owner = $this->owners->getStaffById(UserId::fromInt($command->ownerId));
             if (!$owner instanceof User) {
                 return Result::fail('Product manager not found.');

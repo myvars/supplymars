@@ -42,7 +42,7 @@ final class UserFactory extends PersistentObjectFactory
                 Instantiator::namedConstructor('create')
             )
             ->afterInstantiate(function (User $user): void {
-                if ('' !== $user->getPassword() && '0' !== $user->getPassword()) {
+                if ($user->getPassword() !== '' && $user->getPassword() !== '0') {
                     $user->setPassword($this->passwordEncoder->hashPassword($user, $user->getPassword()));
                 }
             });

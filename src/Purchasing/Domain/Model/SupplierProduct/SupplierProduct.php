@@ -318,7 +318,7 @@ class SupplierProduct implements DomainEventProviderInterface
 
     public function hasPositiveCost(): bool
     {
-        return null !== $this->cost && $this->cost > 0;
+        return $this->cost !== null && $this->cost > 0;
     }
 
     public function hasActiveSupplier(): bool

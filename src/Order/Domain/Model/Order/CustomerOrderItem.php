@@ -153,8 +153,8 @@ class CustomerOrderItem implements DomainEventProviderInterface
 
     public function allowCancel(): bool
     {
-        return 0 === $this->getQtyAddedToPurchaseOrders()
-            && (OrderStatus::PENDING === $this->getStatus() || OrderStatus::PROCESSING === $this->getStatus());
+        return $this->getQtyAddedToPurchaseOrders() === 0
+            && ($this->getStatus() === OrderStatus::PENDING || $this->getStatus() === OrderStatus::PROCESSING);
     }
 
     public function cancelItem(): void
@@ -163,7 +163,7 @@ class CustomerOrderItem implements DomainEventProviderInterface
             return;
         }
 
-        if (0 !== $this->getQtyAddedToPurchaseOrders()) {
+        if ($this->getQtyAddedToPurchaseOrders() !== 0) {
             throw new \LogicException('Cannot cancel this order item');
         }
 
@@ -178,7 +178,7 @@ class CustomerOrderItem implements DomainEventProviderInterface
     public function generateStatus(): void
     {
         // If the item is already cancelled, do nothing
-        if (OrderStatus::CANCELLED === $this->getStatus()) {
+        if ($this->getStatus() === OrderStatus::CANCELLED) {
             return;
         }
 
@@ -191,7 +191,7 @@ class CustomerOrderItem implements DomainEventProviderInterface
         }
 
         // If there are still outstanding qty, set the item status to PROCESSING
-        if (0 !== $this->getOutstandingQty() && 0 !== $this->getQtyAddedToPurchaseOrders()) {
+        if ($this->getOutstandingQty() !== 0 && $this->getQtyAddedToPurchaseOrders() !== 0) {
             $this->changeStatus(OrderStatus::PROCESSING);
             $this->customerOrder->generateStatus();
 
@@ -301,7 +301,7 @@ class CustomerOrderItem implements DomainEventProviderInterface
 
     public function isCancelled(): bool
     {
-        return OrderStatus::CANCELLED === $this->getStatus();
+        return $this->getStatus() === OrderStatus::CANCELLED;
     }
 
     private function changeQuantity(int $quantity): void
@@ -402,11 +402,11 @@ class CustomerOrderItem implements DomainEventProviderInterface
         $purchaseOrderItemStatus = null;
         foreach ($this->purchaseOrderItems as $item) {
             // Skip refunded items
-            if (PurchaseOrderStatus::REFUNDED === $item->getStatus()) {
+            if ($item->getStatus() === PurchaseOrderStatus::REFUNDED) {
                 continue;
             }
 
-            if (null === $purchaseOrderItemStatus || $item->getStatus()->getLevel() < $purchaseOrderItemStatus->getLevel()) {
+            if ($purchaseOrderItemStatus === null || $item->getStatus()->getLevel() < $purchaseOrderItemStatus->getLevel()) {
                 $purchaseOrderItemStatus = $item->getStatus();
             }
         }

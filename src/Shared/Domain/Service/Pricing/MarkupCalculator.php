@@ -18,11 +18,11 @@ final class MarkupCalculator
         string $cost,
         string $sellPrice,
     ): string {
-        if (1 !== bccomp($cost, '0', 2)) {
+        if (bccomp($cost, '0', 2) !== 1) {
             throw new \InvalidArgumentException('Cost must be greater than 0.');
         }
 
-        if (-1 === bccomp($sellPrice, $cost, 2)) {
+        if (bccomp($sellPrice, $cost, 2) === -1) {
             throw new \InvalidArgumentException('Sell price must not be less than cost.');
         }
 
@@ -41,11 +41,11 @@ final class MarkupCalculator
         string $cost,
         string $markup,
     ): string {
-        if (1 !== bccomp($cost, '0', 2)) {
+        if (bccomp($cost, '0', 2) !== 1) {
             throw new \InvalidArgumentException('Cost must be greater than 0.');
         }
 
-        if (-1 === bccomp($markup, '0', 2)) {
+        if (bccomp($markup, '0', 2) === -1) {
             throw new \InvalidArgumentException('Markup must not be negative.');
         }
 
@@ -66,7 +66,7 @@ final class MarkupCalculator
         string $markup,
         string $vatRate,
     ): string {
-        if (-1 === bccomp($vatRate, '0', 2)) {
+        if (bccomp($vatRate, '0', 2) === -1) {
             throw new \InvalidArgumentException('VAT rate must not be negative.');
         }
 
@@ -86,11 +86,11 @@ final class MarkupCalculator
         string $sellPriceIncVat,
         string $vatRate,
     ): string {
-        if (1 !== bccomp($sellPriceIncVat, '0', 2)) {
+        if (bccomp($sellPriceIncVat, '0', 2) !== 1) {
             throw new \InvalidArgumentException('Sell price (inc VAT) must be greater than 0.');
         }
 
-        if (-1 === bccomp($vatRate, '0', 2)) {
+        if (bccomp($vatRate, '0', 2) === -1) {
             throw new \InvalidArgumentException('VAT rate must not be negative.');
         }
 

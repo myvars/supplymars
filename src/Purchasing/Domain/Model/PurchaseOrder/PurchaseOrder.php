@@ -193,7 +193,7 @@ class PurchaseOrder implements DomainEventProviderInterface
 
         $status = null;
         foreach ($this->purchaseOrderItems as $item) {
-            if (null === $status || $item->getStatus()->getLevel() < $status->getLevel()) {
+            if ($status === null || $item->getStatus()->getLevel() < $status->getLevel()) {
                 $status = $item->getStatus();
             }
         }

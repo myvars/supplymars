@@ -166,7 +166,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \String
             $this->roles[] = 'ROLE_ADMIN';
         } else {
             $key = array_search('ROLE_ADMIN', $this->roles, true);
-            if (false !== $key) {
+            if ($key !== false) {
                 unset($this->roles[$key]);
             }
         }

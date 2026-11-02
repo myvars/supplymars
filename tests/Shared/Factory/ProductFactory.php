@@ -48,7 +48,7 @@ final class ProductFactory extends PersistentObjectFactory
     {
         return $this
             ->beforeInstantiate(function (array $attributes): array {
-                if (null !== $attributes['category']) {
+                if ($attributes['category'] !== null) {
                     $attributes['subcategory'] ??= LazyValue::memoize(
                         fn (): Subcategory => SubcategoryFactory::createOne(['category' => $attributes['category']])
                     );

@@ -29,7 +29,7 @@ trait HasPublicUlid
     /** Internal helper for entity-specific VO getter. */
     protected function publicIdString(): string
     {
-        if (null === $this->publicId) {
+        if ($this->publicId === null) {
             throw new \LogicException('publicId is not set (does the constructor call initializePublicId()?)');
         }
 

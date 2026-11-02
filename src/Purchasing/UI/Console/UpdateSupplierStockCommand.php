@@ -204,7 +204,7 @@ readonly class UpdateSupplierStockCommand
 
     private function decreaseStock(SupplierProduct $supplierProduct): void
     {
-        if (0 === $supplierProduct->getStock()) {
+        if ($supplierProduct->getStock() === 0) {
             return;
         }
 
@@ -225,13 +225,13 @@ readonly class UpdateSupplierStockCommand
         $cost = $supplierProduct->getCost() ?? '0.00';
 
         // check cost is greater than 0
-        if (1 !== bccomp($cost, '0', 2)) {
+        if (bccomp($cost, '0', 2) !== 1) {
             return;
         }
 
         $percentCost = bcdiv($cost, (string) self::COST_VARIANCE_PERCENT, 2);
         $randomCost = bcdiv((string) random_int(0, (int) bcmul($percentCost, '100', 0)), '100', 2);
-        $randomCost = 0 === random_int(0, 1) ? $randomCost : bcsub('0', $randomCost, 2);
+        $randomCost = random_int(0, 1) === 0 ? $randomCost : bcsub('0', $randomCost, 2);
 
         $supplierProduct->updateCost(bcadd($cost, $randomCost, 2));
     }

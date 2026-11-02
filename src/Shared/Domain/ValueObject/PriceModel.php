@@ -47,7 +47,7 @@ enum PriceModel: string
      */
     public function getPrettyPrice(string $price): string
     {
-        if (1 !== bccomp($price, '0', 2)) {
+        if (bccomp($price, '0', 2) !== 1) {
             throw new \InvalidArgumentException('Price must be greater than 0');
         }
 

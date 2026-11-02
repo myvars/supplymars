@@ -23,7 +23,7 @@ final class MinOrderItemQtyValidator extends ConstraintValidator
             throw new \InvalidArgumentException('Constraint must be instance of ' . MinOrderItemQty::class);
         }
 
-        if (null === $value || '' === $value) {
+        if ($value === null || $value === '') {
             return;
         }
 

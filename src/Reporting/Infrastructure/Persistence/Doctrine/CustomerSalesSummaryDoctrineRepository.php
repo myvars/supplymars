@@ -76,7 +76,7 @@ class CustomerSalesSummaryDoctrineRepository extends ServiceEntityRepository imp
             ->where('cs.duration = :duration')
             ->setParameter('duration', $customerSalesType->getDuration()->value);
 
-        if (null !== $customerSalesType->getRangeStartDate()) {
+        if ($customerSalesType->getRangeStartDate() !== null) {
             $qb->andWhere('cs.dateString = :dateString')
                 ->setParameter('dateString', $customerSalesType->getRangeStartDate());
         }

@@ -16,7 +16,7 @@ final readonly class StringToPurchaseOrderStatusTransformer implements DataTrans
     // Transforms a string (status) to an enum (PurchaseOrderStatus)
     public function transform(mixed $value): ?PurchaseOrderStatus
     {
-        if (null === $value) {
+        if ($value === null) {
             return null;
         }
 

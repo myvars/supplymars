@@ -35,7 +35,7 @@ final readonly class StatusChangeLogger
     public function __invoke(StatusWasChangedEventInterface $event): void
     {
         $legacyId = $this->publicIdResolverRegistry->resolve($event->getId()); // VO in, ?int out
-        if (null === $legacyId) {
+        if ($legacyId === null) {
             $this->logger->warning('Could not resolve legacy ID for public ID', [
                 'publicId' => (string) $event->getId(),
                 'eventClass' => $event::class,

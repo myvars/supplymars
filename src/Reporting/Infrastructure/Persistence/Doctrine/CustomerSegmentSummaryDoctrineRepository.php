@@ -52,7 +52,7 @@ class CustomerSegmentSummaryDoctrineRepository extends ServiceEntityRepository i
             ->where('css.duration = :duration')
             ->setParameter('duration', $customerSalesType->getDuration()->value);
 
-        if (null !== $customerSalesType->getRangeStartDate()) {
+        if ($customerSalesType->getRangeStartDate() !== null) {
             $qb->andWhere('css.dateString = :dateString')
                 ->setParameter('dateString', $customerSalesType->getRangeStartDate());
         }

@@ -33,7 +33,7 @@ final readonly class BackfillUlidsCommand
     ): int {
         $entities = $this->entitiesUsingHasPublicUlid();
 
-        if ([] === $entities) {
+        if ($entities === []) {
             $io->success('No entities found using HasPublicUlid.');
 
             return Command::SUCCESS;
@@ -77,13 +77,13 @@ final readonly class BackfillUlidsCommand
             ->getQuery()
             ->getSingleScalarResult();
 
-        if (0 === $total) {
+        if ($total === 0) {
             $io->section($entityClass . ': nothing to backfill.');
 
             return;
         }
 
-        $target = null !== $limit ? min($total, $limit) : $total;
+        $target = $limit !== null ? min($total, $limit) : $total;
 
         $io->section('Backfilling ' . $entityClass);
         $io->writeln(sprintf('  Missing: <comment>%s</comment>  |  Processing: <comment>%d</comment>  |  Batch: <comment>%d</comment>', $total, $target, $batchSize));
@@ -94,7 +94,7 @@ final readonly class BackfillUlidsCommand
             ->where('e.publicId IS NULL')
             ->orderBy('e.id', \SortDirection::Ascending);
 
-        if (null !== $limit) {
+        if ($limit !== null) {
             $qb->setMaxResults($limit);
         }
 
@@ -113,7 +113,7 @@ final readonly class BackfillUlidsCommand
             $entity->initializePublicId();
             ++$processed;
 
-            if (0 === $processed % $batchSize) {
+            if ($processed % $batchSize === 0) {
                 $this->em->flush();
                 $this->em->clear();
             }

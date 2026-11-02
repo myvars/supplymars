@@ -69,7 +69,7 @@ class OrderSalesSummaryDoctrineRepository extends ServiceEntityRepository implem
             ->where('os.duration = :duration')
             ->setParameter('duration', $orderSalesType->getDuration()->value);
 
-        if (null !== $orderSalesType->getRangeStartDate()) {
+        if ($orderSalesType->getRangeStartDate() !== null) {
             $qb->andWhere('os.dateString = :dateString')
                 ->setParameter('dateString', $orderSalesType->getRangeStartDate());
         }

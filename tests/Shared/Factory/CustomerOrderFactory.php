@@ -39,7 +39,7 @@ final class CustomerOrderFactory extends PersistentObjectFactory
     {
         return $this
             ->beforeInstantiate(function (array $attributes): array {
-                if (null !== $attributes['customer']) {
+                if ($attributes['customer'] !== null) {
                     $attributes['billingAddress'] ??= LazyValue::memoize(
                         fn (): Address => AddressFactory::createOne([
                             'customer' => $attributes['customer'],

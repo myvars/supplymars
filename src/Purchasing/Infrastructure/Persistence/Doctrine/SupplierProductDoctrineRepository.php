@@ -96,11 +96,11 @@ class SupplierProductDoctrineRepository extends ServiceEntityRepository implemen
                 ->setParameter('supplierManufacturerId', $criteria->supplierManufacturerId);
         }
 
-        if (null !== $criteria->inStock) {
+        if ($criteria->inStock !== null) {
             $qb->andWhere($criteria->inStock > 0 ? 's.stock > 0' : 's.stock = 0');
         }
 
-        if (null !== $criteria->isActive) {
+        if ($criteria->isActive !== null) {
             $qb->andWhere($criteria->isActive > 0 ? 's.isActive = 1' : 's.isActive = 0');
         }
 

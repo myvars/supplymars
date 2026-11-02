@@ -16,7 +16,7 @@ final readonly class StringToOrderStatusTransformer implements DataTransformerIn
     // Transforms a string (status) to an enum (OrderStatus)
     public function transform(mixed $value): ?OrderStatus
     {
-        if (null === $value) {
+        if ($value === null) {
             return null;
         }
 

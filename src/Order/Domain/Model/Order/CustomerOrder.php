@@ -162,7 +162,7 @@ class CustomerOrder implements DomainEventProviderInterface
         $totalWeight = 0;
 
         foreach ($this->customerOrderItems as $customerOrderItem) {
-            if (OrderStatus::CANCELLED === $customerOrderItem->getStatus()) {
+            if ($customerOrderItem->getStatus() === OrderStatus::CANCELLED) {
                 continue;
             }
 
@@ -171,7 +171,7 @@ class CustomerOrder implements DomainEventProviderInterface
             $totalWeight += $customerOrderItem->getTotalWeight();
         }
 
-        if (OrderStatus::CANCELLED !== $this->getStatus()) {
+        if ($this->getStatus() !== OrderStatus::CANCELLED) {
             $totalPrice = bcadd($totalPrice, $this->getShippingPrice(), 2);
             $totalPriceIncVat = bcadd($totalPriceIncVat, $this->getShippingPriceIncVat(), 2);
         }
@@ -185,7 +185,7 @@ class CustomerOrder implements DomainEventProviderInterface
     {
         $orderStatus = null;
         foreach ($this->customerOrderItems as $item) {
-            if (null === $orderStatus || $item->getStatus()->getLevel() < $orderStatus->getLevel()) {
+            if ($orderStatus === null || $item->getStatus()->getLevel() < $orderStatus->getLevel()) {
                 $orderStatus = $item->getStatus();
             }
         }
@@ -345,7 +345,7 @@ class CustomerOrder implements DomainEventProviderInterface
 
     public function isCancelled(): bool
     {
-        return OrderStatus::CANCELLED === $this->status;
+        return $this->status === OrderStatus::CANCELLED;
     }
 
     /** @param numeric-string $shippingPrice */

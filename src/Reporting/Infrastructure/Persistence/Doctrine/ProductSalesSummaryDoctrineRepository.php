@@ -82,7 +82,7 @@ class ProductSalesSummaryDoctrineRepository extends ServiceEntityRepository impl
             ->setParameter('salesType', $productSalesType->getSalesType()->value)
             ->setParameter('duration', $productSalesType->getDuration()->value);
 
-        if (null !== $productSalesType->getRangeStartDate()) {
+        if ($productSalesType->getRangeStartDate() !== null) {
             $qb->andWhere('p.dateString = :dateString')
                 ->setParameter('dateString', $productSalesType->getRangeStartDate());
         }
