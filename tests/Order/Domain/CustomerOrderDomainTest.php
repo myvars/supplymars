@@ -16,9 +16,12 @@ use App\Order\Domain\Model\Order\ShippingMethod;
 use App\Pricing\Domain\Model\VatRate\VatRate;
 use App\Shared\Domain\Event\AbstractDomainEvent;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 
 final class CustomerOrderDomainTest extends TestCase
 {
+    use ClockSensitiveTrait;
+
     private function stubUser(): User
     {
         $user = $this->createStub(User::class);
@@ -68,6 +71,8 @@ final class CustomerOrderDomainTest extends TestCase
 
     public function testCreateFromCustomerSetsDueDate(): void
     {
+        self::mockTime('2026-03-15 10:30:00');
+
         $order = CustomerOrder::createFromCustomer(
             customer: $this->stubUser(),
             shippingMethod: ShippingMethod::THREE_DAY,
@@ -75,8 +80,7 @@ final class CustomerOrderDomainTest extends TestCase
             customerOrderRef: null,
         );
 
-        $expectedDueDate = new \DateTimeImmutable('+3 days')->format('Y-m-d');
-        self::assertSame($expectedDueDate, $order->getDueDate()->format('Y-m-d'));
+        self::assertSame('2026-03-18', $order->getDueDate()->format('Y-m-d'));
     }
 
     public function testCreateFromCustomerSetsAddressesFromCustomer(): void
@@ -236,6 +240,8 @@ final class CustomerOrderDomainTest extends TestCase
 
     public function testNextDayShippingSetsCorrectPricesAndDueDate(): void
     {
+        self::mockTime('2026-03-15 10:30:00');
+
         $order = CustomerOrder::createFromCustomer(
             customer: $this->stubUser(),
             shippingMethod: ShippingMethod::NEXT_DAY,
@@ -246,8 +252,7 @@ final class CustomerOrderDomainTest extends TestCase
         self::assertSame('9.99', $order->getShippingPrice());
         self::assertSame('11.99', $order->getShippingPriceIncVat());
 
-        $expectedDueDate = new \DateTimeImmutable('+1 day')->format('Y-m-d');
-        self::assertSame($expectedDueDate, $order->getDueDate()->format('Y-m-d'));
+        self::assertSame('2026-03-16', $order->getDueDate()->format('Y-m-d'));
     }
 
     public function testOrderStatusAllowCancelReturnsFalseForNonPendingStatuses(): void
