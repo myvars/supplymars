@@ -44,11 +44,13 @@ final class PlaygroundLoginFlowTest extends WebTestCase
 
     private function inPlaygroundMode(callable $test): void
     {
+        $previous = [$_SERVER['PLAYGROUND_MODE'] ?? null, $_ENV['PLAYGROUND_MODE'] ?? null];
         $_SERVER['PLAYGROUND_MODE'] = $_ENV['PLAYGROUND_MODE'] = '1';
         try {
             $test();
         } finally {
-            unset($_SERVER['PLAYGROUND_MODE'], $_ENV['PLAYGROUND_MODE']);
+            // Put back what .env loaded; removing it breaks every later test in the process
+            [$_SERVER['PLAYGROUND_MODE'], $_ENV['PLAYGROUND_MODE']] = $previous;
         }
     }
 }
