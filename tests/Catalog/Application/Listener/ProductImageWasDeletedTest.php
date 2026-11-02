@@ -18,8 +18,7 @@ final class ProductImageWasDeletedTest extends TestCase
         // @phpstan-ignore method.unresolvableReturnType
         $uploadHelper = $this->createMock(UploadHelper::class);
         $cacheManager = $this->createMock(CacheManager::class);
-        // @phpstan-ignore method.unresolvableReturnType
-        $productId = $this->createStub(ProductPublicId::class);
+        $productId = ProductPublicId::new();
 
         $uploadHelper->expects(self::never())->method('deleteFile');
         $cacheManager->expects(self::never())->method('remove');
@@ -37,8 +36,7 @@ final class ProductImageWasDeletedTest extends TestCase
         // @phpstan-ignore method.unresolvableReturnType
         $uploadHelper = $this->createMock(UploadHelper::class);
         $cacheManager = $this->createMock(CacheManager::class);
-        // @phpstan-ignore method.unresolvableReturnType
-        $productId = $this->createStub(ProductPublicId::class);
+        $productId = ProductPublicId::new();
 
         $uploadHelper->expects(self::once())
             ->method('deleteFile')
@@ -60,8 +58,7 @@ final class ProductImageWasDeletedTest extends TestCase
         // @phpstan-ignore method.unresolvableReturnType
         $uploadHelper = $this->createMock(UploadHelper::class);
         $cacheManager = $this->createMock(CacheManager::class);
-        // @phpstan-ignore method.unresolvableReturnType
-        $productId = $this->createStub(ProductPublicId::class);
+        $productId = ProductPublicId::new();
 
         $uploadHelper->expects(self::once())
             ->method('deleteFile')

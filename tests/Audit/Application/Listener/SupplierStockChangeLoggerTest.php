@@ -5,21 +5,17 @@ declare(strict_types=1);
 namespace App\Tests\Audit\Application\Listener;
 
 use App\Audit\Application\Listener\SupplierStockChangeLogger;
-use App\Audit\Domain\Model\StockChange\SupplierStockChangeLog;
-use App\Audit\Domain\Repository\SupplierStockChangeLogRepository;
 use App\Audit\Infrastructure\Logging\SupplierStockChangeLogWriter;
 use App\Purchasing\Domain\Model\SupplierProduct\Event\SupplierProductStockWasChangedEvent;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProductPublicId;
-use App\Shared\Application\FlusherInterface;
 use App\Shared\Application\Identity\PublicIdResolverRegistry;
 use App\Shared\Domain\ValueObject\CostChange;
 use App\Shared\Domain\ValueObject\StockChange;
 use App\Tests\Shared\Factory\SupplierProductFactory;
+use App\Tests\Shared\Factory\SupplierStockChangeLogFactory;
 use Doctrine\ORM\EntityManagerInterface;
-use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class SupplierStockChangeLoggerTest extends KernelTestCase
 {
@@ -31,103 +27,39 @@ final class SupplierStockChangeLoggerTest extends KernelTestCase
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
-    public function testPersistsLogAndFlushesOnStockChangeEvent(): void
+    public function testLogsStockChangeOnFlush(): void
     {
-        $sp = SupplierProductFactory::createOne();
-        $beforeStock = $sp->getStock();
+        $sp = SupplierProductFactory::createOne(['stock' => 10, 'cost' => '4.00']);
+        $logsBefore = SupplierStockChangeLogFactory::count(['supplierProductId' => $sp->getId()]);
 
-        // Trigger a stock change domain event
-        $sp->updateStock($beforeStock + 5);
-        $events = $sp->releaseDomainEvents();
-
-        /** @var MockObject&FlusherInterface $flusher */
-        $flusher = $this->createMock(FlusherInterface::class);
-        $flusher->expects(self::once())->method('flush');
-
-        $writer = new SupplierStockChangeLogWriter(
-            supplierStockChangeLogs: self::getContainer()->get(SupplierStockChangeLogRepository::class),
-            validator: self::getContainer()->get(ValidatorInterface::class),
-            flusher: $flusher
-        );
-
-        /** @var PublicIdResolverRegistry $resolver */
-        $resolver = self::getContainer()->get(PublicIdResolverRegistry::class);
-
-        /** @var MockObject&LoggerInterface $logger */
-        $logger = $this->createMock(LoggerInterface::class);
-        $logger->expects(self::never())->method('warning');
-
-        $listener = new SupplierStockChangeLogger(
-            changeLogWriter: $writer,
-            publicIdResolverRegistry: $resolver,
-            logger: $logger
-        );
-
-        // A mapped supplier product also raises SupplierProductPricingWasChangedEvent, for the Pricing listener.
-        foreach ($events as $event) {
-            if (!$event instanceof SupplierProductStockWasChangedEvent) {
-                continue;
-            }
-
-            $listener($event);
-        }
-
+        $sp->updateStock(15);
         $this->em->flush();
         $this->em->clear();
 
-        // Assert a log row exists for this legacy ID and type
-        $repo = $this->em->getRepository(SupplierStockChangeLog::class);
-        $logs = $repo->findBy(['supplierProductId' => $sp->getId()]);
-        self::assertNotEmpty($logs);
-
-        /** @var SupplierStockChangeLog $log */
-        $log = $logs[2];
-        self::assertSame($sp->getId(), $log->getSupplierProductId());
-        self::assertSame($sp->getStock(), $log->getStock());
-        self::assertSame((float) $sp->getCost(), (float) $log->getCost());
+        $logs = SupplierStockChangeLogFactory::repository()->findBy(['supplierProductId' => $sp->getId()], ['id' => 'ASC']);
+        self::assertCount($logsBefore + 1, $logs);
+        $log = $logs[$logsBefore];
+        self::assertSame(15, $log->getStock());
+        self::assertSame('4.00', $log->getCost());
     }
 
-    public function testDoesNotFlushAndWarnsWhenPublicIdCannotResolve(): void
+    public function testWarnsAndWritesNothingWhenPublicIdCannotResolve(): void
     {
-        $sp = SupplierProductFactory::createOne();
-
-        // Make a synthetic event with a public ID that won't resolve
-        $badEvent = new SupplierProductStockWasChangedEvent(
-            id: SupplierProductPublicId::new(),
-            stockChange: StockChange::from($sp->getStock() ?? 0, ($sp->getStock() ?? 0) + 1),
-            costChange: CostChange::from($sp->getCost() ?? '0.00', $sp->getCost() ?? '0.00')
-        );
-
-        /** @var MockObject&FlusherInterface $flusher */
-        $flusher = $this->createMock(FlusherInterface::class);
-        $flusher->expects(self::never())->method('flush');
-
-        $writer = new SupplierStockChangeLogWriter(
-            supplierStockChangeLogs: self::getContainer()->get(SupplierStockChangeLogRepository::class),
-            validator: self::getContainer()->get(ValidatorInterface::class),
-            flusher: $flusher
-        );
-
-        /** @var PublicIdResolverRegistry $resolver */
-        $resolver = self::getContainer()->get(PublicIdResolverRegistry::class);
-
-        /** @var MockObject&LoggerInterface $logger */
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects(self::once())->method('warning');
 
         $listener = new SupplierStockChangeLogger(
-            changeLogWriter: $writer,
-            publicIdResolverRegistry: $resolver,
-            logger: $logger
+            changeLogWriter: self::getContainer()->get(SupplierStockChangeLogWriter::class),
+            publicIdResolverRegistry: self::getContainer()->get(PublicIdResolverRegistry::class),
+            logger: $logger,
         );
 
-        $listener($badEvent);
+        $listener(new SupplierProductStockWasChangedEvent(
+            id: SupplierProductPublicId::new(),
+            stockChange: StockChange::from(10, 11),
+            costChange: CostChange::from('4.00', '4.00'),
+        ));
 
-        $this->em->flush();
-        $this->em->clear();
-
-        $repo = $this->em->getRepository(SupplierStockChangeLog::class);
-        $rows = $repo->findBy(['supplierProductId' => $sp->getId()]);
-        self::assertCount(2, $rows);
+        SupplierStockChangeLogFactory::assert()->empty();
     }
 }

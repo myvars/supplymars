@@ -14,6 +14,7 @@ use App\Purchasing\Domain\Model\SupplierProduct\SupplierManufacturer;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierSubcategory;
 use App\Shared\Domain\Event\AbstractDomainEvent;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 
 final class SupplierProductDomainTest extends TestCase
@@ -377,5 +378,36 @@ final class SupplierProductDomainTest extends TestCase
         self::assertFalse($supplierProductB->hasActiveSupplier());
         self::assertFalse($supplierProductB->hasStock());
         self::assertFalse($supplierProductB->isMapped());
+    }
+
+    #[TestWith([true, false, true], 'deactivated, mapped')]
+    #[TestWith([true, true, false], 'status unchanged')]
+    #[TestWith([false, false, false], 'deactivated, unmapped')]
+    public function testSetActiveRaisesStatusEventOnlyWhenAMappedStatusChanges(bool $mapped, bool $active, bool $raisesEvent): void
+    {
+        $supplierProduct = SupplierProduct::create(
+            name: 'Part',
+            productCode: 'PC',
+            supplierCategory: $this->stubCategory(),
+            supplierSubcategory: $this->stubSubcategory(),
+            supplierManufacturer: $this->stubManufacturer(),
+            mfrPartNumber: 'MFR',
+            weight: 1,
+            supplier: $this->stubActiveSupplier(),
+            stock: 10,
+            leadTimeDays: 3,
+            cost: '5.00',
+            product: $mapped ? $this->stubProduct(1) : null,
+            isActive: true,
+        );
+        $supplierProduct->releaseDomainEvents();
+
+        $supplierProduct->setActive($active);
+
+        $events = array_filter(
+            $supplierProduct->releaseDomainEvents(),
+            static fn (AbstractDomainEvent $e): bool => $e instanceof SupplierProductStatusWasChangedEvent,
+        );
+        self::assertCount($raisesEvent ? 1 : 0, $events);
     }
 }
