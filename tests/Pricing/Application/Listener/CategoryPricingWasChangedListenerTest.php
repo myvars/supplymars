@@ -68,6 +68,26 @@ final class CategoryPricingWasChangedListenerTest extends KernelTestCase
         self::assertSame('36.99', $reloaded->getSellPriceIncVat());
     }
 
+    public function testRecalculatesWhenCategoryPriceModelChangesForActiveTarget(): void
+    {
+        $category = CategoryFactory::createOne(['defaultMarkup' => '25.000', 'priceModel' => PriceModel::DEFAULT]);
+        $product = ProductFactory::createOne(['category' => $category]);
+        SupplierProductFactory::createOne(['product' => $product, 'cost' => '20.00', 'stock' => 5]);
+        self::assertSame('CATEGORY', $product->getActivePriceModelTarget());
+        self::assertSame('30.00', $product->getSellPriceIncVat());
+
+        $category->changePricing(
+            vatRate: $category->getVatRate(),
+            defaultMarkup: $category->getDefaultMarkup(),
+            priceModel: PriceModel::PRETTY_99,
+            isActive: $category->isActive()
+        );
+        $this->em->flush();
+
+        // Markup 25%, VAT 20%: 20.00 × 1.25 × 1.20 = 30.00, which PRETTY_99 makes 30.99
+        self::assertSame('30.99', $this->reload($product)->getSellPriceIncVat());
+    }
+
     private function reload(Product $product): Product
     {
         $this->em->clear();
