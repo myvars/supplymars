@@ -48,7 +48,7 @@ interface PurchaseOrderItemRepository
         \DateTime $startDate,
         \DateTime $endDate,
         string $sort,
-        string $sortDirection,
+        \SortDirection $sortDirection,
     ): AdapterInterface;
 
     /**

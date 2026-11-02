@@ -66,7 +66,7 @@ class VatRateDoctrineRepository extends ServiceEntityRepository implements FindB
         }
 
         $sort = $criteria->getSort();
-        $sortDirection = $criteria->getSortDirection();
+        $sortDirection = $criteria->getSortOrder();
 
         $qb = $this->createQueryBuilder('v');
 

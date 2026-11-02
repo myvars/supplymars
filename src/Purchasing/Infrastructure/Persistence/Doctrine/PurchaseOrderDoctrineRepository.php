@@ -64,7 +64,7 @@ class PurchaseOrderDoctrineRepository extends ServiceEntityRepository implements
         }
 
         $sort = $criteria->getSort();
-        $sortDirection = $criteria->getSortDirection();
+        $sortDirection = $criteria->getSortOrder();
 
         $qb = $this->createQueryBuilder('p');
 
@@ -140,7 +140,7 @@ class PurchaseOrderDoctrineRepository extends ServiceEntityRepository implements
             ->andWhere('co.orderLock IS NULL')
             ->setParameter('supplier', $supplier)
             ->setParameter('status', PurchaseOrderStatus::PROCESSING)
-            ->orderBy('po.createdAt', 'ASC')
+            ->orderBy('po.createdAt', \SortDirection::Ascending)
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
@@ -204,7 +204,7 @@ class PurchaseOrderDoctrineRepository extends ServiceEntityRepository implements
         return $this->createQueryBuilder('po')
             ->where('po.id IN (:ids)')
             ->setParameter('ids', $ids)
-            ->orderBy('po.createdAt', 'DESC')
+            ->orderBy('po.createdAt', \SortDirection::Descending)
             ->getQuery()
             ->getResult();
     }

@@ -59,7 +59,7 @@ class StatusChangeLogDoctrineRepository extends ServiceEntityRepository implemen
             ->setParameter('poItemId', $poItemId)
             ->setParameter('domainEventType', DomainEventType::PURCHASE_ORDER_ITEM_STATUS_CHANGED)
             ->setParameter('status', $status->value)
-            ->orderBy('sc.eventTimestamp', 'DESC')
+            ->orderBy('sc.eventTimestamp', \SortDirection::Descending)
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
@@ -129,7 +129,7 @@ class StatusChangeLogDoctrineRepository extends ServiceEntityRepository implemen
             ->select('sc.id')
             ->where('sc.id >= :fromId')
             ->setParameter('fromId', $fromId)
-            ->orderBy('sc.id', 'ASC')
+            ->orderBy('sc.id', \SortDirection::Ascending)
             ->setFirstResult($count)
             ->setMaxResults(1)
             ->getQuery()
@@ -145,7 +145,7 @@ class StatusChangeLogDoctrineRepository extends ServiceEntityRepository implemen
             ->select('sc.id')
             ->where('sc.eventTimestamp >= :from')
             ->setParameter('from', $from)
-            ->orderBy('sc.id', 'ASC')
+            ->orderBy('sc.id', \SortDirection::Ascending)
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
@@ -163,7 +163,7 @@ class StatusChangeLogDoctrineRepository extends ServiceEntityRepository implemen
             ->andWhere('sc.eventType = :domainEventType')
             ->setParameter('id', $id)
             ->setParameter('domainEventType', $eventType->value)
-            ->orderBy('sc.eventTimestamp', 'ASC')
+            ->orderBy('sc.eventTimestamp', \SortDirection::Ascending)
             ->getQuery()
             ->getResult();
     }

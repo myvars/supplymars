@@ -48,7 +48,7 @@ interface OrderRepository extends FindByCriteriaInterface
      *
      * @return AdapterInterface<CustomerOrder>
      */
-    public function findOverdueOrders(\DateTime $startDate, string $sort, string $sortDirection): AdapterInterface;
+    public function findOverdueOrders(\DateTime $startDate, string $sort, \SortDirection $sortDirection): AdapterInterface;
 
     /**
      * @return array<string, mixed>|null

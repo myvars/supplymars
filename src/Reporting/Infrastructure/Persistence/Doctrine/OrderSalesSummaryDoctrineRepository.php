@@ -47,7 +47,7 @@ class OrderSalesSummaryDoctrineRepository extends ServiceEntityRepository implem
             ->setParameter('duration', $duration->value)
             ->andWhere('os.salesDate >= :startDate')
             ->setParameter('startDate', $startDate)
-            ->orderBy('os.salesDate', 'ASC')
+            ->orderBy('os.salesDate', \SortDirection::Ascending)
             ->getQuery()
             ->getResult();
     }

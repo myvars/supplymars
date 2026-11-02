@@ -39,7 +39,7 @@ class CustomerGeographicSummaryDoctrineRepository extends ServiceEntityRepositor
             ->addSelect('cgs.averageOrderValue')
             ->andWhere('cgs.duration = :duration')
             ->setParameter('duration', $duration->value)
-            ->orderBy('cgs.orderValue', 'DESC')
+            ->orderBy('cgs.orderValue', \SortDirection::Descending)
             ->getQuery()
             ->getResult();
     }

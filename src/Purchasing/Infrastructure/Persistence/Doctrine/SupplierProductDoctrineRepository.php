@@ -62,7 +62,7 @@ class SupplierProductDoctrineRepository extends ServiceEntityRepository implemen
         }
 
         $sort = $criteria->getSort();
-        $sortDirection = $criteria->getSortDirection();
+        $sortDirection = $criteria->getSortOrder();
 
         $qb = $this->createQueryBuilder('s');
 

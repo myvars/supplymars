@@ -66,7 +66,7 @@ class ManufacturerDoctrineRepository extends ServiceEntityRepository implements 
         }
 
         $sort = $criteria->getSort();
-        $sortDirection = $criteria->getSortDirection();
+        $sortDirection = $criteria->getSortOrder();
 
         $qb = $this->createQueryBuilder('m');
 

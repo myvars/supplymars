@@ -66,7 +66,7 @@ class CategoryDoctrineRepository extends ServiceEntityRepository implements Find
         }
 
         $sort = $criteria->getSort();
-        $sortDirection = $criteria->getSortDirection();
+        $sortDirection = $criteria->getSortOrder();
 
         $qb = $this->createQueryBuilder('c');
 

@@ -64,7 +64,7 @@ class CustomerSalesDoctrineRepository extends ServiceEntityRepository implements
             ->andWhere('cas.salesDate BETWEEN :startDate AND :endDate')
             ->setParameter('startDate', $startDate)
             ->setParameter('endDate', $endDate)
-            ->orderBy('cas.salesDate', 'ASC')
+            ->orderBy('cas.salesDate', \SortDirection::Ascending)
             ->getQuery()
             ->getResult();
     }

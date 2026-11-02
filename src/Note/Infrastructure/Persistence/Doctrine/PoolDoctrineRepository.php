@@ -69,7 +69,7 @@ class PoolDoctrineRepository extends ServiceEntityRepository implements FindByCr
         }
 
         $sort = $criteria->getSort();
-        $sortDirection = $criteria->getSortDirection();
+        $sortDirection = $criteria->getSortOrder();
 
         $qb = $this->createQueryBuilder('p');
 

@@ -70,7 +70,7 @@ class PurchaseOrderItemDoctrineRepository extends ServiceEntityRepository implem
             ->andWhere('co.orderLock IS NULL')
             ->setParameter('supplier', $supplier)
             ->setParameter('status', $status)
-            ->orderBy('poi.createdAt', 'ASC')
+            ->orderBy('poi.createdAt', \SortDirection::Ascending)
             ->setMaxResults($limit)
             ->getQuery()
             ->getResult();
@@ -107,7 +107,7 @@ class PurchaseOrderItemDoctrineRepository extends ServiceEntityRepository implem
         \DateTime $startDate,
         \DateTime $endDate,
         string $sort,
-        string $sortDirection,
+        \SortDirection $sortDirection,
     ): AdapterInterface {
         $qb = $this->getPerformanceReportQueryBuilder($startDate, $endDate);
 
@@ -119,14 +119,14 @@ class PurchaseOrderItemDoctrineRepository extends ServiceEntityRepository implem
         } elseif ($sort === 'product.name') {
             $qb->join('coi.product', 'p')
                 ->orderBy('p.name', $sortDirection)
-                ->addOrderBy('profit', 'DESC');
+                ->addOrderBy('profit', \SortDirection::Descending);
         } elseif ($sort === 'supplier.name') {
             $qb->join('po.supplier', 's')
                 ->orderBy('s.name', $sortDirection)
-                ->addOrderBy('profit', 'DESC');
+                ->addOrderBy('profit', \SortDirection::Descending);
         } else {
             $qb->orderBy('poi.' . $sort, $sortDirection)
-                ->addOrderBy('profit', 'DESC');
+                ->addOrderBy('profit', \SortDirection::Descending);
         }
 
         return new QueryAdapter($qb);

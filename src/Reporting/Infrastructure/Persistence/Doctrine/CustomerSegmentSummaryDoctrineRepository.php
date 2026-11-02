@@ -40,7 +40,7 @@ class CustomerSegmentSummaryDoctrineRepository extends ServiceEntityRepository i
             ->addSelect('css.averageItemsPerOrder')
             ->andWhere('css.duration = :duration')
             ->setParameter('duration', $duration->value)
-            ->orderBy('css.orderValue', 'DESC')
+            ->orderBy('css.orderValue', \SortDirection::Descending)
             ->getQuery()
             ->getResult();
     }

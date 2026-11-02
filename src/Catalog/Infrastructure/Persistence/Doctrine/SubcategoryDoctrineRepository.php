@@ -66,7 +66,7 @@ class SubcategoryDoctrineRepository extends ServiceEntityRepository implements F
         }
 
         $sort = $criteria->getSort();
-        $sortDirection = $criteria->getSortDirection();
+        $sortDirection = $criteria->getSortOrder();
 
         $qb = $this->createQueryBuilder('s');
 
