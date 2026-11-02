@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Reporting\Application\Handler\Report;
 
+use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItem;
 use App\Reporting\Application\Handler\Report\PoItemPerformanceReportHandler;
 use App\Reporting\Application\Report\PoItemPerformanceReportCriteria;
 use App\Reporting\Domain\Metric\SalesDuration;
 use App\Tests\Shared\Factory\PurchaseOrderItemFactory;
+use PHPUnit\Framework\Attributes\TestWith;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 final class PoItemPerformanceReportHandlerTest extends KernelTestCase
@@ -68,14 +70,35 @@ final class PoItemPerformanceReportHandlerTest extends KernelTestCase
         self::assertArrayHasKey('items', $result->payload);
     }
 
-    public function testSortingIsApplied(): void
+    #[TestWith(['DESC'])]
+    #[TestWith(['ASC'])]
+    public function testSortsItemsByProfit(string $direction): void
     {
+        $items = [
+            PurchaseOrderItemFactory::createOne(['quantity' => 1]),
+            PurchaseOrderItemFactory::createOne(['quantity' => 3]),
+        ];
+        $profit = static fn (PurchaseOrderItem $item): string => bcsub(
+            bcmul((string) $item->getQuantity(), $item->getCustomerOrderItem()->getPrice(), 2),
+            $item->getTotalPrice(),
+            2,
+        );
+        usort($items, static fn (PurchaseOrderItem $a, PurchaseOrderItem $b): int => $direction === 'DESC'
+            ? bccomp($profit($b), $profit($a), 2)
+            : bccomp($profit($a), $profit($b), 2));
+        self::assertNotSame($profit($items[0]), $profit($items[1]));
+
         $criteria = new PoItemPerformanceReportCriteria();
         $criteria->setSort('profit');
-        $criteria->setSortDirection('DESC');
+        $criteria->setSortDirection($direction);
 
         $result = ($this->handler)($criteria);
 
         self::assertTrue($result->ok);
+        $listed = [...$result->payload['items']->getCurrentPageResults()];
+        self::assertSame(
+            array_map(static fn (PurchaseOrderItem $item): ?int => $item->getId(), $items),
+            array_map(static fn (PurchaseOrderItem $item): ?int => $item->getId(), $listed),
+        );
     }
 }
