@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Purchasing\Application\Service;
 
+use App\Order\Domain\Model\Order\ShippingMethod;
 use App\Purchasing\Application\Service\OrderItemAllocator;
 use App\Tests\Shared\Factory\CustomerOrderFactory;
 use App\Tests\Shared\Factory\CustomerOrderItemFactory;
@@ -146,7 +147,7 @@ final class OrderItemAllocatorTest extends KernelTestCase
             'cost' => '10.00',
         ]);
 
-        $order = CustomerOrderFactory::createOne();
+        $order = CustomerOrderFactory::createOne(['shippingMethod' => ShippingMethod::THREE_DAY]);
         $orderItem = CustomerOrderItemFactory::createOne([
             'customerOrder' => $order,
             'product' => $product,
@@ -158,14 +159,14 @@ final class OrderItemAllocatorTest extends KernelTestCase
             'supplier' => $supplier,
         ]);
 
-        $initialTotal = (float) $purchaseOrder->getTotalPrice();
+        // Starts at the order's shipping price
+        self::assertSame('3.99', $purchaseOrder->getTotalPrice());
 
         $this->allocator->forOrderItem($purchaseOrder, $orderItem, $supplierProduct);
         $this->em->flush();
 
-        // New item adds 5 * 10.00 = 50.00 to total
-        $expectedTotal = $initialTotal + 50.0;
-        self::assertSame($expectedTotal, (float) $purchaseOrder->getTotalPrice());
+        // Plus 5 * 10.00
+        self::assertSame('53.99', $purchaseOrder->getTotalPrice());
     }
 
     public function testForOrderItemLinksCustomerOrderItemCorrectly(): void
