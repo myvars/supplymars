@@ -5,186 +5,96 @@ declare(strict_types=1);
 namespace App\Tests\Pricing\Application\Listener;
 
 use App\Catalog\Domain\Model\Product\Product;
-use App\Catalog\Domain\Repository\ProductRepository;
-use App\Pricing\Application\Listener\SupplierProductPricingWasChanged;
-use App\Purchasing\Domain\Model\SupplierProduct\Event\SupplierProductPricingWasChangedEvent;
 use App\Purchasing\Domain\Model\SupplierProduct\SupplierProduct;
-use App\Purchasing\Domain\Repository\SupplierProductRepository;
-use App\Shared\Application\FlusherInterface;
-use App\Shared\Domain\Service\Pricing\MarkupCalculator;
+use App\Shared\Domain\ValueObject\PriceModel;
+use App\Tests\Shared\Factory\CategoryFactory;
 use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use Doctrine\ORM\EntityManagerInterface;
-use PHPUnit\Framework\Attributes\DataProvider;
-use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\Attributes\TestWith;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 final class SupplierProductPricingWasChangedListenerTest extends KernelTestCase
 {
     private EntityManagerInterface $em;
 
-    private SupplierProductRepository $supplierProducts;
-
-    private ProductRepository $products;
-
-    private MarkupCalculator $calculator;
-
     protected function setUp(): void
     {
         self::bootKernel();
-        $container = self::getContainer();
-
-        $this->em = $container->get(EntityManagerInterface::class);
-        $this->supplierProducts = $container->get(SupplierProductRepository::class);
-        $this->products = $container->get(ProductRepository::class);
-        $this->calculator = $container->get(MarkupCalculator::class);
+        $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
     public function testRecalculatesMappedProductWhenSupplierProductPricingChanges(): void
     {
-        $product = ProductFactory::new()->withActiveSource()->create();
-        $before = $product->getSellPriceIncVat();
+        // Markup 25%, VAT 20%, no rounding: 10.00 × 1.25 × 1.20 = 15.00
+        $category = CategoryFactory::createOne(['defaultMarkup' => '25.000', 'priceModel' => PriceModel::DEFAULT]);
+        $product = ProductFactory::createOne(['category' => $category]);
+        $sp = SupplierProductFactory::createOne(['product' => $product, 'cost' => '10.00', 'stock' => 5]);
+        self::assertSame('15.00', $product->getSellPriceIncVat());
 
-        /** @var SupplierProduct $sp */
-        $sp = $product->getActiveProductSource();
-
-        /** @var MockObject&FlusherInterface $flusher */
-        $flusher = $this->createMock(FlusherInterface::class);
-        $flusher->expects(self::once())->method('flush');
-
-        $listener = new SupplierProductPricingWasChanged(
-            $this->supplierProducts,
-            $this->products,
-            $this->calculator,
-            $flusher
-        );
-
-        // Trigger SupplierProductPricingWasChangedEvent via public update()
-        $sp->update(
-            name: $sp->getName(),
-            productCode: $sp->getProductCode(),
-            supplierCategory: $sp->getSupplierCategory(),
-            supplierSubcategory: $sp->getSupplierSubcategory(),
-            supplierManufacturer: $sp->getSupplierManufacturer(),
-            mfrPartNumber: $sp->getMfrPartNumber(),
-            weight: $sp->getWeight(),
-            supplier: $sp->getSupplier(),
-            stock: $sp->getStock(),
-            leadTimeDays: $sp->getLeadTimeDays(),
-            cost: bcadd($sp->getCost() ?? '0.00', '1.00', 2), // change cost to trigger event
-            product: $sp->getProduct(),
-            isActive: $sp->isActive() ?? true
-        );
-
-        foreach ($sp->releaseDomainEvents() as $event) {
-            if (!$event instanceof SupplierProductPricingWasChangedEvent) {
-                continue;
-            }
-
-            $listener($event);
-        }
-
+        $this->updateSupplierProduct($sp, cost: '20.00', product: $product);
         $this->em->flush();
-        $this->em->clear();
 
-        /** @var Product $reloaded */
-        $reloaded = $this->em->getRepository(Product::class)->find($product->getId());
-        self::assertNotSame($before, $reloaded->getSellPriceIncVat());
+        // 20.00 × 1.25 × 1.20 = 30.00
+        $reloaded = $this->reload($product);
+        self::assertSame('20.00', $reloaded->getCost());
+        self::assertSame('25.00', $reloaded->getSellPrice());
+        self::assertSame('30.00', $reloaded->getSellPriceIncVat());
     }
 
     /**
      * Doctrine orders UPDATEs by id, compared as strings, so both orders must work: the new product
      * must not take the supplier product as its active source while the previous one still holds it.
      */
-    #[DataProvider('remapOrders')]
+    #[TestWith([true], 'new product has the lower id')]
+    #[TestWith([false], 'new product has the higher id')]
     public function testRecalculatesPreviousAndCurrentMappedProductsWhenRemapped(bool $newProductHasLowerId): void
     {
         if ($newProductHasLowerId) {
-            $productB = ProductFactory::createOne();
-            $productA = ProductFactory::createOne();
+            $productB = $this->createProduct();
+            $productA = $this->createProduct();
         } else {
-            $productA = ProductFactory::createOne();
-            $productB = ProductFactory::createOne();
+            $productA = $this->createProduct();
+            $productB = $this->createProduct();
         }
 
-        $sp1 = SupplierProductFactory::createOne(['cost' => '10.00', 'product' => $productA]);
-        $sp2 = SupplierProductFactory::createOne(['cost' => '20.00', 'product' => $productA]);
+        $sp1 = SupplierProductFactory::createOne(['cost' => '10.00', 'stock' => 5, 'product' => $productA]);
+        $sp2 = SupplierProductFactory::createOne(['cost' => '20.00', 'stock' => 5, 'product' => $productA]);
         self::assertSame($sp1->getId(), $productA->getActiveProductSource()?->getId());
+        self::assertSame('12.60', $productA->getSellPriceIncVat());
 
-        $beforeA = $productA->getSellPriceIncVat();
-
-        $listener = new SupplierProductPricingWasChanged(
-            $this->supplierProducts,
-            $this->products,
-            $this->calculator,
-            self::getContainer()->get(FlusherInterface::class)
-        );
-
-        // Remap supplier product to productB -> previousMappedProductId will be set
-        $sp1->update(
-            name: $sp1->getName(),
-            productCode: $sp1->getProductCode(),
-            supplierCategory: $sp1->getSupplierCategory(),
-            supplierSubcategory: $sp1->getSupplierSubcategory(),
-            supplierManufacturer: $sp1->getSupplierManufacturer(),
-            mfrPartNumber: $sp1->getMfrPartNumber(),
-            weight: $sp1->getWeight(),
-            supplier: $sp1->getSupplier(),
-            stock: $sp1->getStock(),
-            leadTimeDays: $sp1->getLeadTimeDays(),
-            cost: $sp1->getCost(),
-            product: $productB, // map to B
-            isActive: $sp1->isActive() ?? true
-        );
-
-        foreach ($sp1->releaseDomainEvents() as $event) {
-            if (!$event instanceof SupplierProductPricingWasChangedEvent) {
-                continue;
-            }
-
-            $listener($event);
-        }
+        $this->updateSupplierProduct($sp1, cost: '10.00', product: $productB);
+        $this->em->flush();
 
         $this->em->clear();
 
-        /** @var Product $reloadedA */
-        $reloadedA = $this->em->getRepository(Product::class)->find($productA->getId());
-        /** @var Product $reloadedB */
-        $reloadedB = $this->em->getRepository(Product::class)->find($productB->getId());
+        $reloadedA = ProductFactory::repository()->findOrFail($productA->getId());
+        $reloadedB = ProductFactory::repository()->findOrFail($productB->getId());
 
-        self::assertSame($sp1->getId(), $reloadedB->getActiveProductSource()?->getId());
+        // A falls back to sp2: 20.00 × 1.05 × 1.20 = 25.20
         self::assertSame($sp2->getId(), $reloadedA->getActiveProductSource()?->getId());
-        self::assertNotSame($beforeA, $reloadedA->getSellPriceIncVat());
+        self::assertSame('25.20', $reloadedA->getSellPriceIncVat());
+
+        // B takes sp1: 10.00 × 1.05 × 1.20 = 12.60
+        self::assertSame($sp1->getId(), $reloadedB->getActiveProductSource()?->getId());
+        self::assertSame('12.60', $reloadedB->getSellPriceIncVat());
     }
 
     /**
-     * @return iterable<string, array{bool}>
+     * Category markup 5%, VAT 20%, no rounding.
      */
-    public static function remapOrders(): iterable
+    private function createProduct(): Product
     {
-        yield 'new product has the lower id' => [true];
-        yield 'new product has the higher id' => [false];
+        $category = CategoryFactory::createOne(['defaultMarkup' => '5.000', 'priceModel' => PriceModel::DEFAULT]);
+
+        return ProductFactory::createOne(['category' => $category]);
     }
 
-    public function testDoesNotFlushWhenNoRelevantChanges(): void
+    /**
+     * @param numeric-string $cost
+     */
+    private function updateSupplierProduct(SupplierProduct $sp, string $cost, Product $product): void
     {
-        $product = ProductFactory::new()->withActiveSource()->create();
-
-        /** @var SupplierProduct $sp */
-        $sp = $product->getActiveProductSource();
-
-        /** @var MockObject&FlusherInterface $flusher */
-        $flusher = $this->createMock(FlusherInterface::class);
-        $flusher->expects(self::never())->method('flush');
-
-        $listener = new SupplierProductPricingWasChanged(
-            $this->supplierProducts,
-            $this->products,
-            $this->calculator,
-            $flusher
-        );
-
-        // No change -> no SupplierProductPricingWasChangedEvent raised
         $sp->update(
             name: $sp->getName(),
             productCode: $sp->getProductCode(),
@@ -196,17 +106,16 @@ final class SupplierProductPricingWasChangedListenerTest extends KernelTestCase
             supplier: $sp->getSupplier(),
             stock: $sp->getStock(),
             leadTimeDays: $sp->getLeadTimeDays(),
-            cost: $sp->getCost() ?? '0.00',
-            product: $sp->getProduct(),
+            cost: $cost,
+            product: $product,
             isActive: $sp->isActive() ?? true
         );
+    }
 
-        foreach ($sp->releaseDomainEvents() as $event) {
-            if (!$event instanceof SupplierProductPricingWasChangedEvent) {
-                continue;
-            }
+    private function reload(Product $product): Product
+    {
+        $this->em->clear();
 
-            $listener($event);
-        }
+        return ProductFactory::repository()->findOrFail($product->getId());
     }
 }

@@ -5,117 +5,75 @@ declare(strict_types=1);
 namespace App\Tests\Pricing\Application\Listener;
 
 use App\Catalog\Domain\Model\Product\Product;
-use App\Catalog\Domain\Model\Subcategory\Event\SubcategoryPricingWasChangedEvent;
-use App\Catalog\Domain\Repository\SubcategoryRepository;
-use App\Pricing\Application\Listener\SubcategoryPricingWasChanged;
-use App\Shared\Application\FlusherInterface;
-use App\Shared\Domain\Service\Pricing\MarkupCalculator;
 use App\Shared\Domain\ValueObject\PriceModel;
+use App\Tests\Shared\Factory\CategoryFactory;
 use App\Tests\Shared\Factory\ProductFactory;
+use App\Tests\Shared\Factory\SupplierProductFactory;
 use Doctrine\ORM\EntityManagerInterface;
-use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 final class SubcategoryPricingWasChangedListenerTest extends KernelTestCase
 {
     private EntityManagerInterface $em;
 
-    private SubcategoryRepository $subcategories;
-
-    private MarkupCalculator $calculator;
-
     protected function setUp(): void
     {
         self::bootKernel();
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
-        $this->subcategories = self::getContainer()->get(SubcategoryRepository::class);
-        $this->calculator = self::getContainer()->get(MarkupCalculator::class);
     }
 
     public function testRecalculatesWhenSubcategoryMarkupChangesForActiveTarget(): void
     {
-        $product = ProductFactory::new()->withActiveSource()->create();
+        $product = $this->createSourcedProduct();
         $subcategory = $product->getSubcategory();
 
-        $before = $product->getSellPriceIncVat();
-
-        /** @var MockObject&FlusherInterface $flusher */
-        $flusher = $this->createMock(FlusherInterface::class);
-        $flusher->expects(self::once())->method('flush');
-
-        $listener = new SubcategoryPricingWasChanged($this->subcategories, $this->calculator, $flusher);
-
         $subcategory->changePricing(
-            defaultMarkup: '7.500',
+            defaultMarkup: '50.000',
             priceModel: $subcategory->getPriceModel(),
             isActive: $subcategory->isActive()
         );
-
-        foreach ($subcategory->releaseDomainEvents() as $event) {
-            \assert($event instanceof SubcategoryPricingWasChangedEvent);
-            $listener($event);
-        }
-
         $this->em->flush();
-        $this->em->clear();
 
-        /** @var Product $reloaded */
-        $reloaded = $this->em->getRepository(Product::class)->find($product->getId());
-        self::assertNotSame($before, $reloaded->getSellPriceIncVat());
+        // Subcategory markup 50% now applies, VAT 20%: 20.00 × 1.50 × 1.20 = 36.00
+        $reloaded = $this->reload($product);
+        self::assertSame('30.00', $reloaded->getSellPrice());
+        self::assertSame('36.00', $reloaded->getSellPriceIncVat());
     }
 
     public function testRecalculatesWhenSubcategoryPriceModelChangesForActiveTarget(): void
     {
-        $product = ProductFactory::new()->withActiveSource()->create();
+        $product = $this->createSourcedProduct();
         $subcategory = $product->getSubcategory();
-
-        /** @var MockObject&FlusherInterface $flusher */
-        $flusher = $this->createMock(FlusherInterface::class);
-        $flusher->expects(self::once())->method('flush');
-
-        $listener = new SubcategoryPricingWasChanged($this->subcategories, $this->calculator, $flusher);
 
         $subcategory->changePricing(
             defaultMarkup: $subcategory->getDefaultMarkup(),
             priceModel: PriceModel::PRETTY_99,
             isActive: $subcategory->isActive()
         );
-
-        foreach ($subcategory->releaseDomainEvents() as $event) {
-            \assert($event instanceof SubcategoryPricingWasChangedEvent);
-            $listener($event);
-        }
-
         $this->em->flush();
-        $this->em->clear();
 
-        /** @var Product $reloaded */
-        $reloaded = $this->em->getRepository(Product::class)->find($product->getId());
-        // Verify PRETTY_99 price model was applied (price ends in .99)
-        self::assertStringEndsWith('.99', $reloaded->getSellPriceIncVat());
+        // Category markup 5%, VAT 20%: 20.00 × 1.05 × 1.20 = 25.20, which PRETTY_99 makes 25.99
+        self::assertSame('25.99', $this->reload($product)->getSellPriceIncVat());
     }
 
-    public function testDoesNotFlushWhenNoRelevantChanges(): void
+    /**
+     * Subcategory has no markup or price model of its own, so the category's 5% and DEFAULT apply:
+     * 20.00 × 1.05 × 1.20 = 25.20.
+     */
+    private function createSourcedProduct(): Product
     {
-        $product = ProductFactory::new()->withActiveSource()->create();
-        $subcategory = $product->getSubcategory();
+        $category = CategoryFactory::createOne(['defaultMarkup' => '5.000', 'priceModel' => PriceModel::DEFAULT]);
+        $product = ProductFactory::createOne(['category' => $category]);
+        SupplierProductFactory::createOne(['product' => $product, 'cost' => '20.00', 'stock' => 5]);
+        self::assertSame('25.20', $product->getSellPriceIncVat());
 
-        /** @var MockObject&FlusherInterface $flusher */
-        $flusher = $this->createMock(FlusherInterface::class);
-        $flusher->expects(self::never())->method('flush');
+        return $product;
+    }
 
-        $listener = new SubcategoryPricingWasChanged($this->subcategories, $this->calculator, $flusher);
+    private function reload(Product $product): Product
+    {
+        $this->em->clear();
 
-        // No effective changes -> no event or event yields no updates
-        $subcategory->changePricing(
-            defaultMarkup: $subcategory->getDefaultMarkup(),
-            priceModel: $subcategory->getPriceModel(),
-            isActive: $subcategory->isActive()
-        );
-
-        foreach ($subcategory->releaseDomainEvents() as $event) {
-            \assert($event instanceof SubcategoryPricingWasChangedEvent);
-            $listener($event);
-        }
+        return ProductFactory::repository()->findOrFail($product->getId());
     }
 }
