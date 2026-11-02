@@ -165,6 +165,6 @@ final readonly class ProcessingSimulator
 
     private function passesRandomCheck(int $denominator): bool
     {
-        return 0 !== random_int(0, $denominator - 1);
+        return random_int(0, $denominator - 1) !== 0;
     }
 }

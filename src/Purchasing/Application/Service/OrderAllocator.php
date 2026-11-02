@@ -81,7 +81,7 @@ final readonly class OrderAllocator
     {
         foreach ($order->getPurchaseOrders() as $purchaseOrder) {
             foreach ($purchaseOrder->getPurchaseOrderItems() as $purchaseOrderItem) {
-                if (PurchaseOrderStatus::PENDING === $purchaseOrderItem->getStatus()) {
+                if ($purchaseOrderItem->getStatus() === PurchaseOrderStatus::PENDING) {
                     return true;
                 }
             }
@@ -97,7 +97,7 @@ final readonly class OrderAllocator
     {
         foreach ($order->getPurchaseOrders() as $purchaseOrder) {
             foreach ($purchaseOrder->getPurchaseOrderItems() as $purchaseOrderItem) {
-                if (PurchaseOrderStatus::PENDING !== $purchaseOrderItem->getStatus()) {
+                if ($purchaseOrderItem->getStatus() !== PurchaseOrderStatus::PENDING) {
                     continue;
                 }
 

@@ -10,7 +10,7 @@ final readonly class SalesDateRangeResolver
 {
     public function getRangeDuration(SalesDuration $salesDuration): SalesDuration
     {
-        if (SalesDuration::MTD === $salesDuration) {
+        if ($salesDuration === SalesDuration::MTD) {
             return SalesDuration::MONTH;
         }
 
@@ -19,7 +19,7 @@ final readonly class SalesDateRangeResolver
 
     public function getRangeStartDate(SalesDuration $salesDuration): string
     {
-        if (SalesDuration::MTD === $salesDuration) {
+        if ($salesDuration === SalesDuration::MTD) {
             return SalesDuration::MONTH->getStartDate(true);
         }
 

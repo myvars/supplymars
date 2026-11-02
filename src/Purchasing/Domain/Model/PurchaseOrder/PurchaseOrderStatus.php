@@ -36,17 +36,17 @@ enum PurchaseOrderStatus: string
 
     public function allowEdit(): bool
     {
-        return self::PENDING === $this;
+        return $this === self::PENDING;
     }
 
     public function isRefunded(): bool
     {
-        return self::REFUNDED === $this;
+        return $this === self::REFUNDED;
     }
 
     public function isCancelled(): bool
     {
-        return self::CANCELLED === $this;
+        return $this === self::CANCELLED;
     }
 
     /** Final: no status follows this one. */

@@ -173,7 +173,7 @@ class Subcategory implements DomainEventProviderInterface
 
     public function hasPriceModel(): bool
     {
-        return $this->priceModel instanceof PriceModel && PriceModel::NONE !== $this->priceModel;
+        return $this->priceModel instanceof PriceModel && $this->priceModel !== PriceModel::NONE;
     }
 
     public function getId(): ?int

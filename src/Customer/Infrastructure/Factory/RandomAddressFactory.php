@@ -24,9 +24,9 @@ final readonly class RandomAddressFactory
 
         return Address::create(
             fullName: $user->getFullName(),
-            companyName: 1 === random_int(1, 5) ? $this->faker->company() : null,
+            companyName: random_int(1, 5) === 1 ? $this->faker->company() : null,
             street: $this->faker->streetAddress(),
-            street2: 1 === random_int(1, 5) ? $this->faker->streetName() : null,
+            street2: random_int(1, 5) === 1 ? $this->faker->streetName() : null,
             city: $cityData->value,
             county: 'Red Zone',
             postCode: $cityData->sectorCode() . '-' . random_int(10, 50),

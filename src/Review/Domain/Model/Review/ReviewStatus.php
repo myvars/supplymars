@@ -37,7 +37,7 @@ enum ReviewStatus: string
 
     public function allowEdit(): bool
     {
-        return self::PENDING === $this || self::PUBLISHED === $this;
+        return $this === self::PENDING || $this === self::PUBLISHED;
     }
 
     public function getLevel(): int

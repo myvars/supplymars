@@ -107,7 +107,7 @@ class ProductDoctrineRepository extends ServiceEntityRepository implements FindB
                 ->setParameter('manufacturerId', $criteria->manufacturerId);
         }
 
-        if (null !== $criteria->inStock) {
+        if ($criteria->inStock !== null) {
             $qb->andWhere($criteria->inStock > 0 ? 'p.stock > 0' : 'p.stock = 0');
         }
 

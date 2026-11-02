@@ -98,7 +98,7 @@ class ProductImageController extends AbstractController
         }
 
         $imageIdOrder = json_decode($request->getContent(), true);
-        if (null === $imageIdOrder) {
+        if ($imageIdOrder === null) {
             return $this->json(['detail' => 'Invalid body'], 400);
         }
 

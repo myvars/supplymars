@@ -19,7 +19,7 @@ trait SalesDurationTrait
 
     public function setDuration(?string $duration): void
     {
-        if (null === $duration || !SalesDuration::isValid($duration)) {
+        if ($duration === null || !SalesDuration::isValid($duration)) {
             $duration = static::DURATION_DEFAULT->value;
         }
 

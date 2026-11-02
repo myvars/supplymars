@@ -148,7 +148,7 @@ class PurchaseOrderItem implements DomainEventProviderInterface
 
     public function allowStatusChange(): bool
     {
-        return PurchaseOrderStatus::DELIVERED !== $this->status && PurchaseOrderStatus::CANCELLED !== $this->status;
+        return $this->status !== PurchaseOrderStatus::DELIVERED && $this->status !== PurchaseOrderStatus::CANCELLED;
     }
 
     public function recalculateTotal(): void
@@ -358,7 +358,7 @@ class PurchaseOrderItem implements DomainEventProviderInterface
         }
 
         $this->status = $newStatus;
-        if (PurchaseOrderStatus::DELIVERED === $newStatus) {
+        if ($newStatus === PurchaseOrderStatus::DELIVERED) {
             $this->recordDelivery(new \DateTimeImmutable());
         }
 

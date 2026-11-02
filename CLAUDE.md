@@ -16,7 +16,7 @@ vendor/bin/phpunit            # Run tests locally (ensure test DB exists)
 
 # Code Quality
 make check                    # Every check CI runs, same commands (Docker); make check-<step> for one
-vendor/bin/php-cs-fixer fix   # @Symfony rules, yoda_style: false
+vendor/bin/php-cs-fixer fix   # @Symfony rules, non-Yoda comparisons
 vendor/bin/phpstan analyse    # Level 7
 vendor/bin/rector process     # Sets and rules in rector.php
 vendor/bin/deptrac analyse    # Rules between bounded contexts (deptrac.yaml)
@@ -189,7 +189,7 @@ Details: [Docs/07-testing.md](Docs/07-testing.md); how each test is written (fin
 ## Code Style
 
 - Readonly properties where possible; constructor property promotion.
-- No Yoda conditions (`$value === null`, not `null === $value`).
+- No Yoda conditions (`$value === null`, not `null === $value`); PHP-CS-Fixer rewrites them.
 - `declare(strict_types=1);` in every PHP file (PHP-CS-Fixer enforces it).
 - Full type hints on all methods.
 - String concatenation: `'foo' . $bar` (space around `.`).

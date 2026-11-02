@@ -22,7 +22,7 @@ final class ValidCustomerIdValidator extends ConstraintValidator
             throw new \InvalidArgumentException('Expected instance of ' . ValidCustomerId::class);
         }
 
-        if (!is_numeric($value) || 0 === (int) $value) {
+        if (!is_numeric($value) || (int) $value === 0) {
             return;
         }
 

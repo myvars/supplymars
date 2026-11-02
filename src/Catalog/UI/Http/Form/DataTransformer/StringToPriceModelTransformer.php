@@ -16,7 +16,7 @@ final readonly class StringToPriceModelTransformer implements DataTransformerInt
     // Transforms a string (model) to an enum (PriceModel)
     public function transform(mixed $value): ?PriceModel
     {
-        if (null === $value) {
+        if ($value === null) {
             return null;
         }
 

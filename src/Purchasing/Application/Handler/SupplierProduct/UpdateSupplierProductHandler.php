@@ -64,7 +64,7 @@ final readonly class UpdateSupplierProductHandler
         }
 
         $product = null;
-        if (null !== $command->productId) {
+        if ($command->productId !== null) {
             $product = $this->products->get(ProductId::fromint($command->productId));
             if (!$product instanceof Product) {
                 return Result::fail('Product not found.');

@@ -51,7 +51,7 @@ class CustomerGeographicSummaryDoctrineRepository extends ServiceEntityRepositor
             ->where('cgs.duration = :duration')
             ->setParameter('duration', $customerSalesType->getDuration()->value);
 
-        if (null !== $customerSalesType->getRangeStartDate()) {
+        if ($customerSalesType->getRangeStartDate() !== null) {
             $qb->andWhere('cgs.dateString = :dateString')
                 ->setParameter('dateString', $customerSalesType->getRangeStartDate());
         }

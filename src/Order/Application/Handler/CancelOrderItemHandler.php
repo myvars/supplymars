@@ -26,7 +26,7 @@ final readonly class CancelOrderItemHandler
             return Result::fail('Order item not found.');
         }
 
-        if (OrderStatus::CANCELLED === $orderItem->getStatus()) {
+        if ($orderItem->getStatus() === OrderStatus::CANCELLED) {
             return Result::fail('Order item already cancelled');
         }
 

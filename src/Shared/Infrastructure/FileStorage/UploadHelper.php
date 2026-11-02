@@ -40,7 +40,7 @@ final readonly class UploadHelper
 
         $this->doUpload($file, $directory, $newFileName, true);
 
-        if (null !== $existingFilename) {
+        if ($existingFilename !== null) {
             $this->deleteFile($this->createFilePath($directory, $existingFilename));
         }
 
@@ -106,6 +106,6 @@ final readonly class UploadHelper
 
     private function createFilePath(?string $directory, string $fileName): string
     {
-        return null === $directory || '' === $directory || '0' === $directory ? $fileName : $directory . '/' . $fileName;
+        return in_array($directory, [null, '', '0'], true) ? $fileName : $directory . '/' . $fileName;
     }
 }

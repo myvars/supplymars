@@ -23,7 +23,7 @@ final class MaxPurchaseOrderItemQtyValidator extends ConstraintValidator
             throw new \InvalidArgumentException('Constraint must be an instance of ' . MaxPurchaseOrderItemQty::class);
         }
 
-        if (null === $value || '' === $value) {
+        if ($value === null || $value === '') {
             return;
         }
 

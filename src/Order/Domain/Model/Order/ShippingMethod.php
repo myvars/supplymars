@@ -38,7 +38,7 @@ enum ShippingMethod: string
     {
         $rate = $vatRate->getRate() ?? '0.00';
 
-        if (1 !== bccomp($rate, '0', 2)) {
+        if (bccomp($rate, '0', 2) !== 1) {
             throw new \InvalidArgumentException('VAT Rate must be greater than 0');
         }
 
