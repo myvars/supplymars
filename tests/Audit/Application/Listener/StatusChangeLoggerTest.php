@@ -21,13 +21,11 @@ use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use App\Shared\Application\Identity\PublicIdResolverRegistry;
 use App\Shared\Domain\Event\DomainEventType;
 use App\Shared\Domain\ValueObject\StatusChange;
-use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
-#[AllowMockObjectsWithoutExpectations]
 final class StatusChangeLoggerTest extends TestCase
 {
     /** @phpstan-ignore property.unresolvableNativeType */

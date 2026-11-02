@@ -7,8 +7,6 @@ namespace App\Tests\Shared\Infrastructure\FileStorage;
 use App\Shared\Infrastructure\FileStorage\UploadHelper;
 use League\Flysystem\Filesystem;
 use League\Flysystem\Visibility;
-use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\File\Exception\CannotWriteFileException;
 use Symfony\Component\HttpFoundation\File\File;
@@ -16,30 +14,22 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\String\UnicodeString;
 
-#[AllowMockObjectsWithoutExpectations]
 final class UploadHelperTest extends TestCase
 {
-    /**
-     * @var MockObject&Filesystem
-     */
-    private MockObject $filesystem;
-
-    private UploadHelper $helper;
-
-    protected function setUp(): void
+    private function helper(Filesystem $filesystem, bool $playgroundMode = false): UploadHelper
     {
-        $this->filesystem = $this->createMock(Filesystem::class);
-
         $slugger = $this->createStub(SluggerInterface::class);
         $slugger
             ->method('slug')
             ->willReturn(new UnicodeString('dummy-image'));
 
-        $this->helper = new UploadHelper($this->filesystem, $slugger, playgroundMode: false);
+        return new UploadHelper($filesystem, $slugger, $playgroundMode);
     }
 
     public function testUploadFileWritesStreamWithPublicVisibility(): void
     {
+        $filesystem = $this->createMock(Filesystem::class);
+
         $dummyImagePath = __DIR__ . '/../../../Shared/Resources/dummy-image.jpg';
 
         $file = $this->createMock(File::class);
@@ -52,7 +42,7 @@ final class UploadHelperTest extends TestCase
 
         $directory = 'images';
 
-        $this->filesystem
+        $filesystem
             ->expects(self::once())
             ->method('writeStream')
             ->with(
@@ -64,16 +54,18 @@ final class UploadHelperTest extends TestCase
                 ])
             );
 
-        $newFileName = $this->helper->uploadFile($file, $directory);
+        $newFileName = $this->helper($filesystem)->uploadFile($file, $directory);
         self::assertStringStartsWith('dummy-image-', $newFileName);
         self::assertStringEndsWith('.jpg', $newFileName);
     }
 
     public function testUploadFileTakesExtensionFromContentNotClientName(): void
     {
+        $filesystem = $this->createMock(Filesystem::class);
+
         $file = new UploadedFile(__DIR__ . '/../../../Shared/Resources/dummy-image.jpg', 'evil.html', test: true);
 
-        $this->filesystem
+        $filesystem
             ->expects(self::once())
             ->method('writeStream')
             ->with(self::stringEndsWith('.jpg'), self::anything(), self::equalTo([
@@ -81,13 +73,15 @@ final class UploadHelperTest extends TestCase
                 'mimetype' => 'image/jpeg',
             ]));
 
-        $newFileName = $this->helper->uploadFile($file, 'images');
+        $newFileName = $this->helper($filesystem)->uploadFile($file, 'images');
 
         self::assertStringEndsWith('.jpg', $newFileName);
     }
 
     public function testUploadFileDeletesExistingWhenPresent(): void
     {
+        $filesystem = $this->createMock(Filesystem::class);
+
         $dummyImagePath = __DIR__ . '/../../../Shared/Resources/dummy-image.jpg';
 
         $file = $this->createMock(File::class);
@@ -101,7 +95,7 @@ final class UploadHelperTest extends TestCase
         $directory = 'images';
         $existingBasename = 'old.jpg';
 
-        $this->filesystem
+        $filesystem
             ->expects(self::once())
             ->method('writeStream')
             ->with(
@@ -110,62 +104,64 @@ final class UploadHelperTest extends TestCase
                 self::arrayHasKey('visibility')
             );
 
-        $this->filesystem
+        $filesystem
             ->expects(self::once())
             ->method('fileExists')
             ->with($directory . '/' . $existingBasename)
             ->willReturn(true);
 
-        $this->filesystem
+        $filesystem
             ->expects(self::once())
             ->method('delete')
             ->with($directory . '/' . $existingBasename);
 
-        $this->helper->uploadFile($file, $directory, $existingBasename);
+        $this->helper($filesystem)->uploadFile($file, $directory, $existingBasename);
     }
 
     public function testDeleteFileDeletesWhenExists(): void
     {
+        $filesystem = $this->createMock(Filesystem::class);
+
         $path = 'images/test.jpg';
 
-        $this->filesystem
+        $filesystem
             ->expects(self::once())
             ->method('fileExists')
             ->with($path)
             ->willReturn(true);
 
-        $this->filesystem
+        $filesystem
             ->expects(self::once())
             ->method('delete')
             ->with($path);
 
-        $result = $this->helper->deleteFile($path);
+        $result = $this->helper($filesystem)->deleteFile($path);
         self::assertTrue($result);
     }
 
     public function testDeleteFileNoOpWhenMissing(): void
     {
+        $filesystem = $this->createMock(Filesystem::class);
+
         $path = 'images/missing.jpg';
 
-        $this->filesystem
+        $filesystem
             ->expects(self::once())
             ->method('fileExists')
             ->with($path)
             ->willReturn(false);
 
-        $this->filesystem
+        $filesystem
             ->expects(self::never())
             ->method('delete');
 
-        $result = $this->helper->deleteFile($path);
+        $result = $this->helper($filesystem)->deleteFile($path);
         self::assertTrue($result);
     }
 
     public function testUploadFileThrowsInPlaygroundMode(): void
     {
-        $filesystem = $this->createStub(Filesystem::class);
-        $slugger = $this->createStub(SluggerInterface::class);
-        $playgroundHelper = new UploadHelper($filesystem, $slugger, playgroundMode: true);
+        $playgroundHelper = $this->helper($this->createStub(Filesystem::class), playgroundMode: true);
 
         $file = $this->createStub(File::class);
 
