@@ -13,6 +13,7 @@ use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrder;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItem;
 use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderStatus;
 use App\Purchasing\Domain\Model\Supplier\Supplier;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 
 final class PurchaseOrderDomainTest extends TestCase
@@ -36,13 +37,15 @@ final class PurchaseOrderDomainTest extends TestCase
     }
 
     /**
-     * @param numeric-string $price
+     * @param numeric-string      $price
+     * @param numeric-string|null $sellPrice
      */
     private function stubPurchaseOrderItem(
         PurchaseOrderStatus $status = PurchaseOrderStatus::PENDING,
         string $price = '10.00',
         int $quantity = 1,
         int $weight = 100,
+        ?string $sellPrice = null,
     ): PurchaseOrderItem {
         $item = $this->createStub(PurchaseOrderItem::class);
         $item->method('getStatus')->willReturn($status);
@@ -54,7 +57,7 @@ final class PurchaseOrderDomainTest extends TestCase
         $item->method('getQuantity')->willReturn($quantity);
 
         $customerOrderItem = $this->createStub(CustomerOrderItem::class);
-        $customerOrderItem->method('getPrice')->willReturn($price);
+        $customerOrderItem->method('getPrice')->willReturn($sellPrice ?? $price);
         $item->method('getCustomerOrderItem')->willReturn($customerOrderItem);
 
         return $item;
@@ -95,50 +98,33 @@ final class PurchaseOrderDomainTest extends TestCase
 
     public function testGenerateStatusUsesLowestItemStatus(): void
     {
-        $purchaseOrder = PurchaseOrder::createFromOrder(
-            $this->stubCustomerOrder(),
-            $this->stubSupplier(),
-        );
+        $purchaseOrder = $this->purchaseOrder();
 
-        // Add items with different statuses
-        $item1 = $this->stubPurchaseOrderItem(PurchaseOrderStatus::PROCESSING);
-        $item2 = $this->stubPurchaseOrderItem(PurchaseOrderStatus::PENDING); // Lowest level
+        // A PROCESSING item first moves the PO to PROCESSING
+        $purchaseOrder->addPurchaseOrderItem($this->stubPurchaseOrderItem(PurchaseOrderStatus::PROCESSING));
+        $purchaseOrder->generateStatus();
+        self::assertSame(PurchaseOrderStatus::PROCESSING, $purchaseOrder->getStatus());
 
-        // Use reflection to add items without triggering recalculation loops
-        $reflection = new \ReflectionClass($purchaseOrder);
-        $itemsProperty = $reflection->getProperty('purchaseOrderItems');
-        $items = $itemsProperty->getValue($purchaseOrder);
-        $items->add($item1);
-        $items->add($item2);
+        // An ACCEPTED item (higher level) leaves it at PROCESSING
+        $purchaseOrder->addPurchaseOrderItem($this->stubPurchaseOrderItem(PurchaseOrderStatus::ACCEPTED));
+        $purchaseOrder->generateStatus();
+        self::assertSame(PurchaseOrderStatus::PROCESSING, $purchaseOrder->getStatus());
 
-        // First transition to PROCESSING to allow testing
-        $statusProperty = $reflection->getProperty('status');
-        $statusProperty->setValue($purchaseOrder, PurchaseOrderStatus::PROCESSING);
-
+        // Adding a PENDING item (lowest level) takes it back to PENDING
+        $purchaseOrder->addPurchaseOrderItem($this->stubPurchaseOrderItem(PurchaseOrderStatus::PENDING));
         $purchaseOrder->generateStatus();
 
-        // Should use lowest level (PENDING = 1)
         self::assertSame(PurchaseOrderStatus::PENDING, $purchaseOrder->getStatus());
     }
 
     public function testGenerateStatusEmitsEventOnChange(): void
     {
-        $purchaseOrder = PurchaseOrder::createFromOrder(
-            $this->stubCustomerOrder(),
-            $this->stubSupplier(),
-        );
+        $purchaseOrder = $this->purchaseOrder();
 
         // Clear any events from creation
         $purchaseOrder->releaseDomainEvents();
 
-        // Add a PROCESSING item
-        $item = $this->stubPurchaseOrderItem(PurchaseOrderStatus::PROCESSING);
-
-        $reflection = new \ReflectionClass($purchaseOrder);
-        $itemsProperty = $reflection->getProperty('purchaseOrderItems');
-        $items = $itemsProperty->getValue($purchaseOrder);
-        $items->add($item);
-
+        $purchaseOrder->addPurchaseOrderItem($this->stubPurchaseOrderItem(PurchaseOrderStatus::PROCESSING));
         $purchaseOrder->generateStatus();
 
         $events = $purchaseOrder->releaseDomainEvents();
@@ -148,18 +134,10 @@ final class PurchaseOrderDomainTest extends TestCase
 
     public function testGenerateStatusNoEventWhenUnchanged(): void
     {
-        $purchaseOrder = PurchaseOrder::createFromOrder(
-            $this->stubCustomerOrder(),
-            $this->stubSupplier(),
-        );
+        $purchaseOrder = $this->purchaseOrder();
 
         // Add a PENDING item (same as default)
-        $item = $this->stubPurchaseOrderItem(PurchaseOrderStatus::PENDING);
-
-        $reflection = new \ReflectionClass($purchaseOrder);
-        $itemsProperty = $reflection->getProperty('purchaseOrderItems');
-        $items = $itemsProperty->getValue($purchaseOrder);
-        $items->add($item);
+        $purchaseOrder->addPurchaseOrderItem($this->stubPurchaseOrderItem(PurchaseOrderStatus::PENDING));
 
         // Clear any events
         $purchaseOrder->releaseDomainEvents();
@@ -172,20 +150,10 @@ final class PurchaseOrderDomainTest extends TestCase
 
     public function testRecalculateTotalAggregatesItemPrices(): void
     {
-        $purchaseOrder = PurchaseOrder::createFromOrder(
-            $this->stubCustomerOrder(),
-            $this->stubSupplier(),
-        );
+        $purchaseOrder = $this->purchaseOrder();
 
-        // Add items with known prices
-        $item1 = $this->stubPurchaseOrderItem(price: '10.00', quantity: 2); // 20.00
-        $item2 = $this->stubPurchaseOrderItem(price: '15.00', quantity: 3); // 45.00
-
-        $reflection = new \ReflectionClass($purchaseOrder);
-        $itemsProperty = $reflection->getProperty('purchaseOrderItems');
-        $items = $itemsProperty->getValue($purchaseOrder);
-        $items->add($item1);
-        $items->add($item2);
+        $purchaseOrder->addPurchaseOrderItem($this->stubPurchaseOrderItem(price: '10.00', quantity: 2)); // 20.00
+        $purchaseOrder->addPurchaseOrderItem($this->stubPurchaseOrderItem(price: '15.00', quantity: 3)); // 45.00
 
         $purchaseOrder->recalculateTotal();
 
@@ -195,19 +163,10 @@ final class PurchaseOrderDomainTest extends TestCase
 
     public function testRecalculateTotalAggregatesWeights(): void
     {
-        $purchaseOrder = PurchaseOrder::createFromOrder(
-            $this->stubCustomerOrder(),
-            $this->stubSupplier(),
-        );
+        $purchaseOrder = $this->purchaseOrder();
 
-        $item1 = $this->stubPurchaseOrderItem(quantity: 2, weight: 100); // 200
-        $item2 = $this->stubPurchaseOrderItem(quantity: 1, weight: 150); // 150
-
-        $reflection = new \ReflectionClass($purchaseOrder);
-        $itemsProperty = $reflection->getProperty('purchaseOrderItems');
-        $items = $itemsProperty->getValue($purchaseOrder);
-        $items->add($item1);
-        $items->add($item2);
+        $purchaseOrder->addPurchaseOrderItem($this->stubPurchaseOrderItem(quantity: 2, weight: 100)); // 200
+        $purchaseOrder->addPurchaseOrderItem($this->stubPurchaseOrderItem(quantity: 1, weight: 150)); // 150
 
         $purchaseOrder->recalculateTotal();
 
@@ -216,76 +175,32 @@ final class PurchaseOrderDomainTest extends TestCase
 
     public function testCalculateProfitReturnsRevenueMinusCost(): void
     {
-        $purchaseOrder = PurchaseOrder::createFromOrder(
-            $this->stubCustomerOrder(),
-            $this->stubSupplier(),
-        );
+        $purchaseOrder = $this->purchaseOrder();
 
         // Item: qty 2, cost 10.00 each, sell price 15.00 each
         // Revenue = 2 * 15 = 30, Cost = 2 * 10 = 20, Profit = 10
-        $item = $this->createStub(PurchaseOrderItem::class);
-        $item->method('getQuantity')->willReturn(2);
-        $item->method('getTotalPrice')->willReturn('20.00'); // Cost
+        $purchaseOrder->addPurchaseOrderItem($this->stubPurchaseOrderItem(price: '10.00', quantity: 2, sellPrice: '15.00'));
 
-        $customerOrderItem = $this->createStub(CustomerOrderItem::class);
-        $customerOrderItem->method('getPrice')->willReturn('15.00'); // Sell price
-        $item->method('getCustomerOrderItem')->willReturn($customerOrderItem);
-
-        $reflection = new \ReflectionClass($purchaseOrder);
-        $itemsProperty = $reflection->getProperty('purchaseOrderItems');
-        $items = $itemsProperty->getValue($purchaseOrder);
-        $items->add($item);
-
-        $profit = $purchaseOrder->calculateProfit();
-
-        self::assertSame('10.00', $profit);
+        self::assertSame('10.00', $purchaseOrder->calculateProfit());
     }
 
     public function testCalculateProfitWithMultipleItems(): void
     {
-        $purchaseOrder = PurchaseOrder::createFromOrder(
-            $this->stubCustomerOrder(),
-            $this->stubSupplier(),
-        );
+        $purchaseOrder = $this->purchaseOrder();
 
         // Item 1: qty 2, cost 10 each, sell 15 each → profit 10
-        $item1 = $this->createStub(PurchaseOrderItem::class);
-        $item1->method('getQuantity')->willReturn(2);
-        $item1->method('getTotalPrice')->willReturn('20.00');
-        $coi1 = $this->createStub(CustomerOrderItem::class);
-        $coi1->method('getPrice')->willReturn('15.00');
-        $item1->method('getCustomerOrderItem')->willReturn($coi1);
-
+        $purchaseOrder->addPurchaseOrderItem($this->stubPurchaseOrderItem(price: '10.00', quantity: 2, sellPrice: '15.00'));
         // Item 2: qty 3, cost 5 each, sell 8 each → profit 9
-        $item2 = $this->createStub(PurchaseOrderItem::class);
-        $item2->method('getQuantity')->willReturn(3);
-        $item2->method('getTotalPrice')->willReturn('15.00');
-        $coi2 = $this->createStub(CustomerOrderItem::class);
-        $coi2->method('getPrice')->willReturn('8.00');
-        $item2->method('getCustomerOrderItem')->willReturn($coi2);
+        $purchaseOrder->addPurchaseOrderItem($this->stubPurchaseOrderItem(price: '5.00', quantity: 3, sellPrice: '8.00'));
 
-        $reflection = new \ReflectionClass($purchaseOrder);
-        $itemsProperty = $reflection->getProperty('purchaseOrderItems');
-        $items = $itemsProperty->getValue($purchaseOrder);
-        $items->add($item1);
-        $items->add($item2);
-
-        $profit = $purchaseOrder->calculateProfit();
-
-        self::assertSame('19.00', $profit);
+        self::assertSame('19.00', $purchaseOrder->calculateProfit());
     }
 
     public function testForceRewindToPendingResetsStatus(): void
     {
-        $purchaseOrder = PurchaseOrder::createFromOrder(
-            $this->stubCustomerOrder(),
-            $this->stubSupplier(),
-        );
-
-        // Set to a different status
-        $reflection = new \ReflectionClass($purchaseOrder);
-        $statusProperty = $reflection->getProperty('status');
-        $statusProperty->setValue($purchaseOrder, PurchaseOrderStatus::PROCESSING);
+        $purchaseOrder = $this->purchaseOrder();
+        $purchaseOrder->addPurchaseOrderItem($this->stubPurchaseOrderItem(PurchaseOrderStatus::PROCESSING));
+        $purchaseOrder->generateStatus();
 
         self::assertSame(PurchaseOrderStatus::PROCESSING, $purchaseOrder->getStatus());
 
@@ -294,59 +209,70 @@ final class PurchaseOrderDomainTest extends TestCase
         self::assertSame(PurchaseOrderStatus::PENDING, $purchaseOrder->getStatus());
     }
 
-    public function testAllowEditOnlyWhenPending(): void
+    /**
+     * @param list<PurchaseOrderStatus> $path the statuses the PO's item moves through
+     */
+    #[TestWith([[], PurchaseOrderStatus::PENDING, true], 'pending')]
+    #[TestWith([[PurchaseOrderStatus::PROCESSING], PurchaseOrderStatus::PROCESSING, false], 'processing')]
+    #[TestWith([[PurchaseOrderStatus::PROCESSING, PurchaseOrderStatus::ACCEPTED, PurchaseOrderStatus::SHIPPED], PurchaseOrderStatus::SHIPPED, false], 'shipped')]
+    public function testAllowEditOnlyWhenPending(array $path, PurchaseOrderStatus $status, bool $allowEdit): void
     {
-        $purchaseOrder = PurchaseOrder::createFromOrder(
-            $this->stubCustomerOrder(),
-            $this->stubSupplier(),
-        );
+        $purchaseOrder = $this->purchaseOrderAt(...$path);
 
-        self::assertTrue($purchaseOrder->allowEdit());
-
-        $reflection = new \ReflectionClass($purchaseOrder);
-        $statusProperty = $reflection->getProperty('status');
-
-        $statusProperty->setValue($purchaseOrder, PurchaseOrderStatus::PROCESSING);
-        self::assertFalse($purchaseOrder->allowEdit());
-
-        $statusProperty->setValue($purchaseOrder, PurchaseOrderStatus::SHIPPED);
-        self::assertFalse($purchaseOrder->allowEdit());
+        self::assertSame($status, $purchaseOrder->getStatus());
+        self::assertSame($allowEdit, $purchaseOrder->allowEdit());
     }
 
     public function testGetLineCountReturnsItemCount(): void
     {
-        $purchaseOrder = PurchaseOrder::createFromOrder(
-            $this->stubCustomerOrder(),
-            $this->stubSupplier(),
-        );
+        $purchaseOrder = $this->purchaseOrder();
 
         self::assertSame(0, $purchaseOrder->getLineCount());
 
-        $reflection = new \ReflectionClass($purchaseOrder);
-        $itemsProperty = $reflection->getProperty('purchaseOrderItems');
-        $items = $itemsProperty->getValue($purchaseOrder);
-        $items->add($this->stubPurchaseOrderItem());
-        $items->add($this->stubPurchaseOrderItem());
+        $purchaseOrder->addPurchaseOrderItem($this->stubPurchaseOrderItem());
+        $purchaseOrder->addPurchaseOrderItem($this->stubPurchaseOrderItem());
 
         self::assertSame(2, $purchaseOrder->getLineCount());
     }
 
     public function testGetItemCountSumsQuantities(): void
     {
-        $purchaseOrder = PurchaseOrder::createFromOrder(
-            $this->stubCustomerOrder(),
-            $this->stubSupplier(),
-        );
+        $purchaseOrder = $this->purchaseOrder();
 
-        $item1 = $this->stubPurchaseOrderItem(quantity: 5);
-        $item2 = $this->stubPurchaseOrderItem(quantity: 3);
-
-        $reflection = new \ReflectionClass($purchaseOrder);
-        $itemsProperty = $reflection->getProperty('purchaseOrderItems');
-        $items = $itemsProperty->getValue($purchaseOrder);
-        $items->add($item1);
-        $items->add($item2);
+        $purchaseOrder->addPurchaseOrderItem($this->stubPurchaseOrderItem(quantity: 5));
+        $purchaseOrder->addPurchaseOrderItem($this->stubPurchaseOrderItem(quantity: 3));
 
         self::assertSame(8, $purchaseOrder->getItemCount());
+    }
+
+    private function purchaseOrder(): PurchaseOrder
+    {
+        return PurchaseOrder::createFromOrder($this->stubCustomerOrder(), $this->stubSupplier());
+    }
+
+    /**
+     * A PO with one item that moves through $path, the PO generating its status from it at each step: the
+     * transitions allowed from PENDING are the only way to reach a later status.
+     */
+    private function purchaseOrderAt(PurchaseOrderStatus ...$path): PurchaseOrder
+    {
+        $status = PurchaseOrderStatus::PENDING;
+
+        $item = $this->createStub(PurchaseOrderItem::class);
+        $item->method('getStatus')->willReturnCallback(static function () use (&$status): PurchaseOrderStatus {
+            return $status;
+        });
+        $item->method('getTotalPrice')->willReturn('10.00');
+        $item->method('getTotalPriceIncVat')->willReturn('10.00');
+
+        $purchaseOrder = $this->purchaseOrder();
+        $purchaseOrder->addPurchaseOrderItem($item);
+
+        foreach ($path as $step) {
+            $status = $step;
+            $purchaseOrder->generateStatus();
+        }
+
+        return $purchaseOrder;
     }
 }

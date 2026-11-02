@@ -15,6 +15,7 @@ use App\Order\Domain\Model\Order\OrderStatus;
 use App\Order\Domain\Model\Order\ShippingMethod;
 use App\Pricing\Domain\Model\VatRate\VatRate;
 use App\Shared\Domain\Event\AbstractDomainEvent;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 
@@ -31,12 +32,10 @@ final class CustomerOrderDomainTest extends TestCase
         return $user;
     }
 
-    private function stubVatRate(string $rate = '20.000'): VatRate
+    /** @param numeric-string $rate */
+    private function vatRate(string $rate = '20.000'): VatRate
     {
-        $vatRate = $this->createStub(VatRate::class);
-        $vatRate->method('getRate')->willReturn($rate);
-
-        return $vatRate;
+        return VatRate::create(name: 'Standard', rate: $rate);
     }
 
     private function stubAddress(): Address
@@ -49,7 +48,7 @@ final class CustomerOrderDomainTest extends TestCase
         $order = CustomerOrder::createFromCustomer(
             customer: $this->stubUser(),
             shippingMethod: ShippingMethod::THREE_DAY,
-            vatRate: $this->stubVatRate(),
+            vatRate: $this->vatRate(),
             customerOrderRef: 'TEST-001',
         );
 
@@ -61,7 +60,7 @@ final class CustomerOrderDomainTest extends TestCase
         $order = CustomerOrder::createFromCustomer(
             customer: $this->stubUser(),
             shippingMethod: ShippingMethod::THREE_DAY,
-            vatRate: $this->stubVatRate('20.000'),
+            vatRate: $this->vatRate('20.000'),
             customerOrderRef: null,
         );
 
@@ -76,7 +75,7 @@ final class CustomerOrderDomainTest extends TestCase
         $order = CustomerOrder::createFromCustomer(
             customer: $this->stubUser(),
             shippingMethod: ShippingMethod::THREE_DAY,
-            vatRate: $this->stubVatRate(),
+            vatRate: $this->vatRate(),
             customerOrderRef: null,
         );
 
@@ -95,7 +94,7 @@ final class CustomerOrderDomainTest extends TestCase
         $order = CustomerOrder::createFromCustomer(
             customer: $customer,
             shippingMethod: ShippingMethod::NEXT_DAY,
-            vatRate: $this->stubVatRate(),
+            vatRate: $this->vatRate(),
             customerOrderRef: null,
         );
 
@@ -108,7 +107,7 @@ final class CustomerOrderDomainTest extends TestCase
         $order = CustomerOrder::createFromCustomer(
             customer: $this->stubUser(),
             shippingMethod: ShippingMethod::THREE_DAY,
-            vatRate: $this->stubVatRate(),
+            vatRate: $this->vatRate(),
             customerOrderRef: null,
         );
 
@@ -121,7 +120,7 @@ final class CustomerOrderDomainTest extends TestCase
         $order = CustomerOrder::createFromCustomer(
             customer: $this->stubUser(),
             shippingMethod: ShippingMethod::THREE_DAY,
-            vatRate: $this->stubVatRate(),
+            vatRate: $this->vatRate(),
             customerOrderRef: null,
         );
 
@@ -134,7 +133,7 @@ final class CustomerOrderDomainTest extends TestCase
         $order = CustomerOrder::createFromCustomer(
             customer: $this->stubUser(),
             shippingMethod: ShippingMethod::THREE_DAY,
-            vatRate: $this->stubVatRate(),
+            vatRate: $this->vatRate(),
             customerOrderRef: null,
         );
 
@@ -149,7 +148,7 @@ final class CustomerOrderDomainTest extends TestCase
         $order = CustomerOrder::createFromCustomer(
             customer: $this->stubUser(),
             shippingMethod: ShippingMethod::THREE_DAY,
-            vatRate: $this->stubVatRate(),
+            vatRate: $this->vatRate(),
             customerOrderRef: null,
         );
 
@@ -245,7 +244,7 @@ final class CustomerOrderDomainTest extends TestCase
         $order = CustomerOrder::createFromCustomer(
             customer: $this->stubUser(),
             shippingMethod: ShippingMethod::NEXT_DAY,
-            vatRate: $this->stubVatRate('20.000'),
+            vatRate: $this->vatRate('20.000'),
             customerOrderRef: null,
         );
 
@@ -276,134 +275,39 @@ final class CustomerOrderDomainTest extends TestCase
         return $item;
     }
 
-    public function testGenerateStatusUsesLowestLevelFromItems(): void
-    {
-        $order = CustomerOrder::createFromCustomer(
-            customer: $this->stubUser(),
-            shippingMethod: ShippingMethod::THREE_DAY,
-            vatRate: $this->stubVatRate(),
-            customerOrderRef: null,
-        );
-
-        // Add items with different statuses using reflection
-        $item1 = $this->stubOrderItem(OrderStatus::SHIPPED); // Level 3
-        $item2 = $this->stubOrderItem(OrderStatus::PROCESSING); // Level 2 - lowest
-
-        $reflection = new \ReflectionClass($order);
-        $itemsProperty = $reflection->getProperty('customerOrderItems');
-        $items = $itemsProperty->getValue($order);
-        $items->add($item1);
-        $items->add($item2);
-
-        $order->generateStatus();
-
-        // Should use the lowest level status (PROCESSING = 2)
-        self::assertSame(OrderStatus::PROCESSING, $order->getStatus());
-    }
-
-    public function testGenerateStatusWithAllShippedItemsReturnsShipped(): void
-    {
-        $order = CustomerOrder::createFromCustomer(
-            customer: $this->stubUser(),
-            shippingMethod: ShippingMethod::THREE_DAY,
-            vatRate: $this->stubVatRate(),
-            customerOrderRef: null,
-        );
-
-        $item1 = $this->stubOrderItem(OrderStatus::SHIPPED);
-        $item2 = $this->stubOrderItem(OrderStatus::SHIPPED);
-
-        $reflection = new \ReflectionClass($order);
-        $itemsProperty = $reflection->getProperty('customerOrderItems');
-        $items = $itemsProperty->getValue($order);
-        $items->add($item1);
-        $items->add($item2);
+    /**
+     * The order takes the lowest-level status of its items: CANCELLED is the highest level, so it never wins
+     * over a live item.
+     */
+    #[TestWith([OrderStatus::PROCESSING, OrderStatus::SHIPPED, OrderStatus::PROCESSING], 'lowest level first')]
+    #[TestWith([OrderStatus::SHIPPED, OrderStatus::PROCESSING, OrderStatus::PROCESSING], 'lowest level last')]
+    #[TestWith([OrderStatus::SHIPPED, OrderStatus::SHIPPED, OrderStatus::SHIPPED], 'all items shipped')]
+    #[TestWith([OrderStatus::DELIVERED, OrderStatus::SHIPPED, OrderStatus::SHIPPED], 'delivered and shipped')]
+    #[TestWith([OrderStatus::PROCESSING, OrderStatus::CANCELLED, OrderStatus::PROCESSING], 'cancelled ranks above a live item')]
+    public function testGenerateStatusUsesLowestLevelFromItems(
+        OrderStatus $first,
+        OrderStatus $second,
+        OrderStatus $expected,
+    ): void {
+        $order = $this->order();
+        $order->addCustomerOrderItem($this->stubOrderItem($first));
+        $order->addCustomerOrderItem($this->stubOrderItem($second));
 
         $order->generateStatus();
 
-        self::assertSame(OrderStatus::SHIPPED, $order->getStatus());
+        self::assertSame($expected, $order->getStatus());
     }
 
-    public function testGenerateStatusWithMixedDeliveredAndShippedReturnsShipped(): void
+    #[TestWith([OrderStatus::PROCESSING, true], 'processing')]
+    #[TestWith([OrderStatus::SHIPPED, false], 'shipped')]
+    public function testAllowEditFollowsTheStatusTheItemsGiveTheOrder(OrderStatus $itemStatus, bool $allowEdit): void
     {
-        $order = CustomerOrder::createFromCustomer(
-            customer: $this->stubUser(),
-            shippingMethod: ShippingMethod::THREE_DAY,
-            vatRate: $this->stubVatRate(),
-            customerOrderRef: null,
-        );
-
-        $item1 = $this->stubOrderItem(OrderStatus::DELIVERED); // Level 4
-        $item2 = $this->stubOrderItem(OrderStatus::SHIPPED);   // Level 3 - lowest
-
-        $reflection = new \ReflectionClass($order);
-        $itemsProperty = $reflection->getProperty('customerOrderItems');
-        $items = $itemsProperty->getValue($order);
-        $items->add($item1);
-        $items->add($item2);
-
+        $order = $this->order();
+        $order->addCustomerOrderItem($this->stubOrderItem($itemStatus));
         $order->generateStatus();
 
-        self::assertSame(OrderStatus::SHIPPED, $order->getStatus());
-    }
-
-    public function testGenerateStatusWithCancelledItemReturnsLowestNonCancelledLevel(): void
-    {
-        $order = CustomerOrder::createFromCustomer(
-            customer: $this->stubUser(),
-            shippingMethod: ShippingMethod::THREE_DAY,
-            vatRate: $this->stubVatRate(),
-            customerOrderRef: null,
-        );
-
-        // CANCELLED has level 5 (highest), so if another item is PROCESSING (2), order should be PROCESSING
-        $item1 = $this->stubOrderItem(OrderStatus::CANCELLED);   // Level 5
-        $item2 = $this->stubOrderItem(OrderStatus::PROCESSING);  // Level 2 - lowest
-
-        $reflection = new \ReflectionClass($order);
-        $itemsProperty = $reflection->getProperty('customerOrderItems');
-        $items = $itemsProperty->getValue($order);
-        $items->add($item1);
-        $items->add($item2);
-
-        $order->generateStatus();
-
-        self::assertSame(OrderStatus::PROCESSING, $order->getStatus());
-    }
-
-    public function testAllowEditReturnsFalseForShippedStatus(): void
-    {
-        $order = CustomerOrder::createFromCustomer(
-            customer: $this->stubUser(),
-            shippingMethod: ShippingMethod::THREE_DAY,
-            vatRate: $this->stubVatRate(),
-            customerOrderRef: null,
-        );
-
-        // Set status to SHIPPED via reflection
-        $reflection = new \ReflectionClass($order);
-        $statusProperty = $reflection->getProperty('status');
-        $statusProperty->setValue($order, OrderStatus::SHIPPED);
-
-        self::assertSame(OrderStatus::SHIPPED, $order->getStatus());
-        self::assertFalse($order->allowEdit());
-    }
-
-    public function testAllowEditReturnsTrueForProcessingStatus(): void
-    {
-        $order = CustomerOrder::createFromCustomer(
-            customer: $this->stubUser(),
-            shippingMethod: ShippingMethod::THREE_DAY,
-            vatRate: $this->stubVatRate(),
-            customerOrderRef: null,
-        );
-
-        $reflection = new \ReflectionClass($order);
-        $statusProperty = $reflection->getProperty('status');
-        $statusProperty->setValue($order, OrderStatus::PROCESSING);
-
-        self::assertSame(OrderStatus::PROCESSING, $order->getStatus());
-        self::assertTrue($order->allowEdit());
+        self::assertSame($itemStatus, $order->getStatus());
+        self::assertSame($allowEdit, $order->allowEdit());
     }
 
     private function order(): CustomerOrder
@@ -411,7 +315,7 @@ final class CustomerOrderDomainTest extends TestCase
         $order = CustomerOrder::createFromCustomer(
             customer: $this->stubUser(),
             shippingMethod: ShippingMethod::THREE_DAY,
-            vatRate: $this->stubVatRate(),
+            vatRate: $this->vatRate(),
             customerOrderRef: null,
         );
         $order->releaseDomainEvents();
