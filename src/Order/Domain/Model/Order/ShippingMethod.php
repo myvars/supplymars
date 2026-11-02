@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Order\Domain\Model\Order;
 
 use App\Pricing\Domain\Model\VatRate\VatRate;
+use Symfony\Component\Clock\Clock;
 
 enum ShippingMethod: string
 {
@@ -61,7 +62,7 @@ enum ShippingMethod: string
         }
 
         try {
-            $date = new \DateTimeImmutable(sprintf('+%d days', $days));
+            $date = Clock::get()->now()->modify(sprintf('+%d days', $days));
         } catch (\Exception) {
             throw new \InvalidArgumentException('Invalid date');
         }

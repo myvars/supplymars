@@ -16,26 +16,18 @@ use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Factory\UserFactory;
 use App\Tests\Shared\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 
 #[WithStory(StaffUserStory::class)]
 final class GenerateReviewsCommandTest extends KernelTestCase
 {
-    private CommandTester $commandTester;
-
     private EntityManagerInterface $em;
 
     protected function setUp(): void
     {
         self::bootKernel();
-        $application = new Application(self::$kernel);
-        $command = $application->find('app:generate-reviews');
-        $this->commandTester = new CommandTester($command);
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
@@ -43,32 +35,32 @@ final class GenerateReviewsCommandTest extends KernelTestCase
     {
         $this->createEligiblePurchase();
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:generate-reviews', [
             'count' => 5,
         ]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('reviews generated', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('reviews generated', $result->getDisplay());
     }
 
     public function testNoEligibleItemsReturnsSuccess(): void
     {
-        $this->commandTester->execute([
+        $result = self::runCommand('app:generate-reviews', [
             'count' => 5,
         ]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('0 reviews generated', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('0 reviews generated', $result->getDisplay());
     }
 
     public function testInvalidCountReturnsInvalid(): void
     {
-        $this->commandTester->execute([
+        $result = self::runCommand('app:generate-reviews', [
             'count' => 0,
         ]);
 
-        self::assertSame(Command::INVALID, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('Count must be > 0', $this->commandTester->getDisplay());
+        $this->assertCommandIsInvalid($result);
+        self::assertStringContainsString('Count must be > 0', $result->getDisplay());
     }
 
     public function testDryRunDoesNotPersist(): void
@@ -77,13 +69,13 @@ final class GenerateReviewsCommandTest extends KernelTestCase
 
         $initialCount = ProductReviewFactory::count();
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:generate-reviews', [
             'count' => 5,
             '--dry-run' => true,
         ]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('[DRY RUN]', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('[DRY RUN]', $result->getDisplay());
         ProductReviewFactory::assert()->count($initialCount);
     }
 
@@ -91,25 +83,25 @@ final class GenerateReviewsCommandTest extends KernelTestCase
     {
         $purchase = $this->createEligiblePurchase();
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:generate-reviews', [
             'count' => 5,
             'product-id' => $purchase['productId'],
         ]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
+        $this->assertCommandIsSuccessful($result);
     }
 
     public function testVerboseOutputShowsReviewIds(): void
     {
         $this->createEligiblePurchase();
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:generate-reviews', [
             'count' => 5,
-        ], ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]);
+        ], verbosity: OutputInterface::VERBOSITY_VERBOSE);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
+        $this->assertCommandIsSuccessful($result);
         // If reviews were created, verbose output should show the section
-        $display = $this->commandTester->getDisplay();
+        $display = $result->getDisplay();
         if (!str_contains($display, '0 reviews generated')) {
             self::assertStringContainsString('Created Review IDs', $display);
         }

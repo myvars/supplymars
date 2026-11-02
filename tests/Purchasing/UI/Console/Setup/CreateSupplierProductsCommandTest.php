@@ -12,25 +12,12 @@ use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 
 #[WithStory(StaffUserStory::class)]
 final class CreateSupplierProductsCommandTest extends KernelTestCase
 {
-    private CommandTester $commandTester;
-
-    protected function setUp(): void
-    {
-        self::bootKernel();
-        $application = new Application(self::$kernel);
-        $command = $application->find('app:create-supplier-products');
-        $this->commandTester = new CommandTester($command);
-    }
-
     public function testCreatesOrMapsProductsForActiveUnmappedSupplierProducts(): void
     {
         $supplier = SupplierFactory::createOne();
@@ -58,10 +45,10 @@ final class CreateSupplierProductsCommandTest extends KernelTestCase
             'product' => null,
         ]);
 
-        $this->commandTester->execute([]);
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
+        $result = self::runCommand('app:create-supplier-products');
+        $this->assertCommandIsSuccessful($result);
 
-        $display = $this->commandTester->getDisplay();
+        $display = $result->getDisplay();
         self::assertMatchesRegularExpression('/New products created: 1$/m', $display);
         self::assertMatchesRegularExpression('/Products mapped: 1$/m', $display);
         self::assertMatchesRegularExpression('/Products skipped \(already mapped\): 1$/m', $display);
@@ -84,10 +71,10 @@ final class CreateSupplierProductsCommandTest extends KernelTestCase
     {
         SupplierFactory::new()->asWarehouse()->create();
 
-        $this->commandTester->execute([]);
+        $result = self::runCommand('app:create-supplier-products');
 
-        self::assertSame(Command::FAILURE, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('No suppliers found', $this->commandTester->getDisplay());
+        $this->assertCommandFailed($result);
+        self::assertStringContainsString('No suppliers found', $result->getDisplay());
     }
 
     private function reload(SupplierProductPublicId $publicId): SupplierProduct

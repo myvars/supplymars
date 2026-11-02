@@ -11,15 +11,11 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 final class ProductImageDomainTest extends TestCase
 {
-    private function uploadedFile(string $name = 'test.png'): UploadedFile
+    private function uploadedFile(): UploadedFile
     {
-        $path = sys_get_temp_dir() . '/' . $name;
-        file_put_contents($path, random_bytes(10));
-
         return new UploadedFile(
-            path: $path,
-            originalName: $name,
-            mimeType: 'image/png',
+            path: __DIR__ . '/../../Shared/Resources/dummy-image.jpg',
+            originalName: 'dummy-image.jpg',
             test: true,
         );
     }

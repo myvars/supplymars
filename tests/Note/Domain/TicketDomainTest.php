@@ -12,10 +12,14 @@ use App\Note\Domain\Model\Pool\Pool;
 use App\Note\Domain\Model\Ticket\Ticket;
 use App\Note\Domain\Model\Ticket\TicketStatus;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\TestWith;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 
 final class TicketDomainTest extends TestCase
 {
+    use ClockSensitiveTrait;
+
     public function testCreateOpensTheTicketWithTheCustomersFirstMessage(): void
     {
         $customer = User::create('Ada Customer', 'ada@example.com', false, true);
@@ -91,8 +95,9 @@ final class TicketDomainTest extends TestCase
 
     public function testSnoozeUntilAFutureDate(): void
     {
+        self::mockTime('2026-03-15 10:30:00');
         $ticket = $this->ticket();
-        $until = new \DateTimeImmutable('+1 day');
+        $until = new \DateTimeImmutable('2026-03-16 09:00:00');
 
         $ticket->snooze($until);
 
@@ -105,14 +110,28 @@ final class TicketDomainTest extends TestCase
         self::assertNull($ticket->getSnoozedUntil());
     }
 
-    public function testSnoozeFailsForAPastDate(): void
+    public function testSnoozeEndsWhenItsTimePasses(): void
     {
+        $clock = self::mockTime('2026-03-15 10:30:00');
+        $ticket = $this->ticket();
+        $ticket->snooze(new \DateTimeImmutable('2026-03-15 11:00:00'));
+
+        $clock->sleep(30 * 60);
+
+        self::assertFalse($ticket->isSnoozed());
+    }
+
+    #[TestWith(['2026-03-15 10:29:00'], 'past')]
+    #[TestWith(['2026-03-15 10:30:00'], 'now')]
+    public function testSnoozeFailsForADateNotInTheFuture(string $until): void
+    {
+        self::mockTime('2026-03-15 10:30:00');
         $ticket = $this->ticket();
 
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessageIsOrContains('Snooze date must be in the future.');
 
-        $ticket->snooze(new \DateTimeImmutable('-1 minute'));
+        $ticket->snooze(new \DateTimeImmutable($until));
     }
 
     /**

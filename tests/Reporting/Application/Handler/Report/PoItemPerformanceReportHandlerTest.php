@@ -4,10 +4,16 @@ declare(strict_types=1);
 
 namespace App\Tests\Reporting\Application\Handler\Report;
 
+use App\Purchasing\Domain\Model\PurchaseOrder\PurchaseOrderItem;
 use App\Reporting\Application\Handler\Report\PoItemPerformanceReportHandler;
 use App\Reporting\Application\Report\PoItemPerformanceReportCriteria;
 use App\Reporting\Domain\Metric\SalesDuration;
+use App\Shared\Domain\ValueObject\PriceModel;
+use App\Tests\Shared\Factory\CategoryFactory;
+use App\Tests\Shared\Factory\ProductFactory;
 use App\Tests\Shared\Factory\PurchaseOrderItemFactory;
+use App\Tests\Shared\Factory\SupplierProductFactory;
+use PHPUnit\Framework\Attributes\TestWith;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 final class PoItemPerformanceReportHandlerTest extends KernelTestCase
@@ -68,14 +74,38 @@ final class PoItemPerformanceReportHandlerTest extends KernelTestCase
         self::assertArrayHasKey('items', $result->payload);
     }
 
-    public function testSortingIsApplied(): void
+    /**
+     * @param list<int> $expectedQuantities
+     */
+    #[TestWith(['DESC', [3, 2, 1]])]
+    #[TestWith(['ASC', [1, 2, 3]])]
+    public function testSortsItemsByProfit(string $direction, array $expectedQuantities): void
     {
+        // Sells at 12.50 from a 10.00 source (markup 25%), so each item's profit is 2.50 × its quantity
+        $category = CategoryFactory::createOne(['defaultMarkup' => '25.000', 'priceModel' => PriceModel::DEFAULT]);
+        $product = ProductFactory::createOne(['category' => $category]);
+        $source = SupplierProductFactory::createOne(['product' => $product, 'cost' => '10.00', 'stock' => 100]);
+        // Created out of order, so neither direction matches the order the rows were written in
+        foreach ([2, 1, 3] as $quantity) {
+            PurchaseOrderItemFactory::createOne([
+                'product' => $product,
+                'supplier' => $source->getSupplier(),
+                'supplierProduct' => $source,
+                'quantity' => $quantity,
+            ]);
+        }
+
         $criteria = new PoItemPerformanceReportCriteria();
         $criteria->setSort('profit');
-        $criteria->setSortDirection('DESC');
+        $criteria->setSortDirection($direction);
 
         $result = ($this->handler)($criteria);
 
         self::assertTrue($result->ok);
+        $listed = [...$result->payload['items']->getCurrentPageResults()];
+        self::assertSame(
+            $expectedQuantities,
+            array_map(static fn (PurchaseOrderItem $item): int => $item->getQuantity(), $listed),
+        );
     }
 }

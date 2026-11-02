@@ -7,65 +7,52 @@ namespace App\Tests\Reporting\UI\Console;
 use App\Reporting\Domain\Metric\SalesDuration;
 use App\Tests\Shared\Factory\ProductSalesSummaryFactory;
 use App\Tests\Shared\Story\StaffUserStory;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 
 #[WithStory(StaffUserStory::class)]
 final class CalculateProductSalesSummaryCommandTest extends KernelTestCase
 {
-    private CommandTester $commandTester;
-
-    protected function setUp(): void
-    {
-        self::bootKernel();
-        $application = new Application(self::$kernel);
-        $command = $application->find('app:calculate-product-sales-summary');
-        $this->commandTester = new CommandTester($command);
-    }
-
     public function testSuccessProcessesAllDurations(): void
     {
-        $this->commandTester->execute([]);
+        $result = self::runCommand('app:calculate-product-sales-summary');
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
+        $this->assertCommandIsSuccessful($result);
         self::assertStringContainsString(
             sprintf('%d durations', count(SalesDuration::cases())),
-            $this->commandTester->getDisplay()
+            $result->getDisplay()
         );
     }
 
     public function testRebuildFlagWorks(): void
     {
-        $this->commandTester->execute([
+        $result = self::runCommand('app:calculate-product-sales-summary', [
             'rebuild' => 1,
         ]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('calculation completed', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('calculation completed', $result->getDisplay());
     }
 
     public function testDryRunDoesNotPersist(): void
     {
         $initialCount = ProductSalesSummaryFactory::count();
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:calculate-product-sales-summary', [
             '--dry-run' => true,
         ]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('[DRY RUN]', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('[DRY RUN]', $result->getDisplay());
         ProductSalesSummaryFactory::assert()->count($initialCount);
     }
 
     public function testVerboseOutputShowsDurations(): void
     {
-        $this->commandTester->execute([], ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]);
+        $result = self::runCommand('app:calculate-product-sales-summary', [], verbosity: OutputInterface::VERBOSITY_VERBOSE);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('Processed Durations', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('Processed Durations', $result->getDisplay());
     }
 }

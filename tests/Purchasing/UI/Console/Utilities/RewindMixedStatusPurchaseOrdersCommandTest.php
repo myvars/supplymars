@@ -14,26 +14,18 @@ use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 
 #[WithStory(StaffUserStory::class)]
 final class RewindMixedStatusPurchaseOrdersCommandTest extends KernelTestCase
 {
-    private CommandTester $commandTester;
-
     private EntityManagerInterface $em;
 
     protected function setUp(): void
     {
         self::bootKernel();
-        $application = new Application(self::$kernel);
-        $command = $application->find('app:rewind-mixed-status-purchase-orders');
-        $this->commandTester = new CommandTester($command);
 
         $em = self::getContainer()->get(EntityManagerInterface::class);
         \assert($em instanceof EntityManagerInterface);
@@ -42,10 +34,10 @@ final class RewindMixedStatusPurchaseOrdersCommandTest extends KernelTestCase
 
     public function testNoMatchingPurchaseOrders(): void
     {
-        $this->commandTester->execute(['--limit' => 10]);
+        $result = self::runCommand('app:rewind-mixed-status-purchase-orders', ['--limit' => 10]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('No purchase orders found', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('No purchase orders found', $result->getDisplay());
     }
 
     public function testRewindsPurchaseOrderWithMixedStatuses(): void
@@ -113,10 +105,10 @@ final class RewindMixedStatusPurchaseOrdersCommandTest extends KernelTestCase
         self::assertSame(PurchaseOrderStatus::REJECTED, $poItem1->getStatus());
         self::assertSame(PurchaseOrderStatus::ACCEPTED, $poItem2->getStatus());
 
-        $this->commandTester->execute(['--limit' => 10]);
+        $result = self::runCommand('app:rewind-mixed-status-purchase-orders', ['--limit' => 10]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('Processed 1 purchase order', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('Processed 1 purchase order', $result->getDisplay());
         self::assertSame(PurchaseOrderStatus::PENDING, $poItem1->getStatus());
         self::assertSame(PurchaseOrderStatus::PENDING, $poItem2->getStatus());
         self::assertSame(PurchaseOrderStatus::PENDING, $po->getStatus());
@@ -157,10 +149,10 @@ final class RewindMixedStatusPurchaseOrdersCommandTest extends KernelTestCase
 
         $this->em->flush();
 
-        $this->commandTester->execute(['--limit' => 10]);
+        $result = self::runCommand('app:rewind-mixed-status-purchase-orders', ['--limit' => 10]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('Skipped 1 purchase order(s) with refunded or cancelled items', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('Skipped 1 purchase order(s) with refunded or cancelled items', $result->getDisplay());
         self::assertSame(PurchaseOrderStatus::REJECTED, $rejectedItem->getStatus());
         self::assertSame(PurchaseOrderStatus::REFUNDED, $refundedItem->getStatus());
     }
@@ -226,13 +218,13 @@ final class RewindMixedStatusPurchaseOrdersCommandTest extends KernelTestCase
 
         $this->em->flush();
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:rewind-mixed-status-purchase-orders', [
             '--limit' => 10,
             '--dry-run' => true,
         ]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('[DRY RUN]', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('[DRY RUN]', $result->getDisplay());
         self::assertSame(PurchaseOrderStatus::REJECTED, $poItem1->getStatus());
         self::assertSame(PurchaseOrderStatus::ACCEPTED, $poItem2->getStatus());
     }
@@ -298,14 +290,15 @@ final class RewindMixedStatusPurchaseOrdersCommandTest extends KernelTestCase
 
         $this->em->flush();
 
-        $this->commandTester->execute(
+        $result = self::runCommand(
+            'app:rewind-mixed-status-purchase-orders',
             ['--limit' => 10, '--dry-run' => true],
-            ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]
+            verbosity: OutputInterface::VERBOSITY_VERBOSE,
         );
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('REJECTED', $this->commandTester->getDisplay());
-        self::assertStringContainsString('ACCEPTED', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('REJECTED', $result->getDisplay());
+        self::assertStringContainsString('ACCEPTED', $result->getDisplay());
     }
 
     public function testDoesNotMatchPOWithoutRejectedItems(): void
@@ -369,9 +362,9 @@ final class RewindMixedStatusPurchaseOrdersCommandTest extends KernelTestCase
 
         $this->em->flush();
 
-        $this->commandTester->execute(['--limit' => 10]);
+        $result = self::runCommand('app:rewind-mixed-status-purchase-orders', ['--limit' => 10]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('No purchase orders found', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('No purchase orders found', $result->getDisplay());
     }
 }

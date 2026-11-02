@@ -165,7 +165,7 @@ final class OrderItemAllocatorTest extends KernelTestCase
 
         // New item adds 5 * 10.00 = 50.00 to total
         $expectedTotal = $initialTotal + 50.0;
-        self::assertEquals($expectedTotal, (float) $purchaseOrder->getTotalPrice());
+        self::assertSame($expectedTotal, (float) $purchaseOrder->getTotalPrice());
     }
 
     public function testForOrderItemLinksCustomerOrderItemCorrectly(): void

@@ -14,26 +14,18 @@ use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 
 #[WithStory(StaffUserStory::class)]
 final class DeliverPOItemsCommandTest extends KernelTestCase
 {
-    private CommandTester $commandTester;
-
     private EntityManagerInterface $em;
 
     protected function setUp(): void
     {
         self::bootKernel();
-        $application = new Application(self::$kernel);
-        $command = $application->find('app:deliver-purchase-order-items');
-        $this->commandTester = new CommandTester($command);
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
     }
 
@@ -74,14 +66,14 @@ final class DeliverPOItemsCommandTest extends KernelTestCase
 
         $this->em->flush();
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:deliver-purchase-order-items', [
             'po-item-count' => 10,
             '--supplier' => $supplier->getId(),
             '--skip-timing' => true,
         ]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('delivered', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('delivered', $result->getDisplay());
         self::assertSame(PurchaseOrderStatus::DELIVERED, $poItem->getStatus());
     }
 
@@ -89,37 +81,37 @@ final class DeliverPOItemsCommandTest extends KernelTestCase
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:deliver-purchase-order-items', [
             'po-item-count' => 10,
             '--supplier' => $supplier->getId(),
         ]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('No shipped PO items to deliver', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('No shipped PO items to deliver', $result->getDisplay());
     }
 
     public function testInvalidCountReturnsInvalid(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:deliver-purchase-order-items', [
             'po-item-count' => 0,
             '--supplier' => $supplier->getId(),
         ]);
 
-        self::assertSame(Command::INVALID, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('poItemCount must be > 0', $this->commandTester->getDisplay());
+        $this->assertCommandIsInvalid($result);
+        self::assertStringContainsString('poItemCount must be > 0', $result->getDisplay());
     }
 
     public function testNoSupplierFoundReturnsFailure(): void
     {
-        $this->commandTester->execute([
+        $result = self::runCommand('app:deliver-purchase-order-items', [
             'po-item-count' => 10,
             '--supplier' => 999999,
         ]);
 
-        self::assertSame(Command::FAILURE, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('Supplier not found', $this->commandTester->getDisplay());
+        $this->assertCommandFailed($result);
+        self::assertStringContainsString('Supplier not found', $result->getDisplay());
     }
 
     public function testDryRunDoesNotPersistChanges(): void
@@ -158,15 +150,15 @@ final class DeliverPOItemsCommandTest extends KernelTestCase
 
         $this->em->flush();
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:deliver-purchase-order-items', [
             'po-item-count' => 10,
             '--supplier' => $supplier->getId(),
             '--skip-timing' => true,
             '--dry-run' => true,
         ]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('[DRY RUN]', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('[DRY RUN]', $result->getDisplay());
         self::assertSame(PurchaseOrderStatus::SHIPPED, $poItem->getStatus());
     }
 
@@ -206,13 +198,13 @@ final class DeliverPOItemsCommandTest extends KernelTestCase
 
         $this->em->flush();
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:deliver-purchase-order-items', [
             'po-item-count' => 10,
             '--supplier' => $supplier->getId(),
         ]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('Processed', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('Processed', $result->getDisplay());
     }
 
     public function testVerboseOutputShowsDeliveredIds(): void
@@ -251,14 +243,14 @@ final class DeliverPOItemsCommandTest extends KernelTestCase
 
         $this->em->flush();
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:deliver-purchase-order-items', [
             'po-item-count' => 10,
             '--supplier' => $supplier->getId(),
             '--skip-timing' => true,
-        ], ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]);
+        ], verbosity: OutputInterface::VERBOSITY_VERBOSE);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('Delivered PO Item IDs', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('Delivered PO Item IDs', $result->getDisplay());
     }
 
     public function testSpecificSupplierTargeting(): void
@@ -266,12 +258,12 @@ final class DeliverPOItemsCommandTest extends KernelTestCase
         $supplier1 = SupplierFactory::createOne(['isActive' => true, 'name' => 'Supplier One']);
         SupplierFactory::createOne(['isActive' => true, 'name' => 'Supplier Two']);
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:deliver-purchase-order-items', [
             'po-item-count' => 10,
             '--supplier' => $supplier1->getId(),
         ]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('Supplier One', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('Supplier One', $result->getDisplay());
     }
 }

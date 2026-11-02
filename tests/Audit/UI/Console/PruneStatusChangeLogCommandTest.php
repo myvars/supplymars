@@ -15,10 +15,7 @@ use App\Tests\Shared\Factory\PurchaseOrderItemFactory;
 use App\Tests\Shared\Factory\StatusChangeLogFactory;
 use App\Tests\Shared\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 
 use function Zenstruck\Foundry\force;
@@ -26,15 +23,6 @@ use function Zenstruck\Foundry\force;
 #[WithStory(StaffUserStory::class)]
 final class PruneStatusChangeLogCommandTest extends KernelTestCase
 {
-    private CommandTester $commandTester;
-
-    protected function setUp(): void
-    {
-        self::bootKernel();
-        $application = new Application(self::$kernel);
-        $this->commandTester = new CommandTester($application->find('app:prune-status-change-log'));
-    }
-
     public function testDeletesOldRowsOfFinishedEntitiesOnly(): void
     {
         $deliveredOrder = CustomerOrderFactory::createOne(['status' => force(OrderStatus::DELIVERED)]);
@@ -64,10 +52,10 @@ final class PruneStatusChangeLogCommandTest extends KernelTestCase
             $this->log(DomainEventType::PURCHASE_ORDER_ITEM_STATUS_CHANGED, (int) $deliveredItem->getId(), '-1 day'),
         ];
 
-        $this->commandTester->execute([]);
+        $result = self::runCommand('app:prune-status-change-log');
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('Deleted 4 status change log rows', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('Deleted 4 status change log rows', $result->getDisplay());
 
         // The delete runs in SQL, so read the rows back from the database rather than the identity map
         self::getContainer()->get(EntityManagerInterface::class)->clear();
@@ -87,10 +75,10 @@ final class PruneStatusChangeLogCommandTest extends KernelTestCase
             $this->log(DomainEventType::PURCHASE_ORDER_ITEM_STATUS_CHANGED, (int) $deliveredItem->getId(), $ago);
         }
 
-        $this->commandTester->execute(['--batch-size' => 2]);
+        $result = self::runCommand('app:prune-status-change-log', ['--batch-size' => 2]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('Deleted 3 status change log rows', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('Deleted 3 status change log rows', $result->getDisplay());
         self::assertSame(0, StatusChangeLogFactory::count());
     }
 
@@ -101,7 +89,7 @@ final class PruneStatusChangeLogCommandTest extends KernelTestCase
         $this->log(DomainEventType::PURCHASE_ORDER_ITEM_STATUS_CHANGED, (int) $acceptedItem->getId(), '-13 months', PurchaseOrderStatus::ACCEPTED);
         $this->log(DomainEventType::PURCHASE_ORDER_ITEM_STATUS_CHANGED, (int) $shippedItem->getId(), '-13 months', PurchaseOrderStatus::SHIPPED);
 
-        $this->commandTester->execute([]);
+        self::runCommand('app:prune-status-change-log');
 
         /** @var ProcessingSimulator $simulator */
         $simulator = self::getContainer()->get(ProcessingSimulator::class);
@@ -112,9 +100,9 @@ final class PruneStatusChangeLogCommandTest extends KernelTestCase
 
     public function testInvalidOptionsReturnInvalid(): void
     {
-        $this->commandTester->execute(['--months' => 0]);
+        $result = self::runCommand('app:prune-status-change-log', ['--months' => 0]);
 
-        self::assertSame(Command::INVALID, $this->commandTester->getStatusCode());
+        $this->assertCommandIsInvalid($result);
     }
 
     private function log(

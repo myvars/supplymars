@@ -20,6 +20,8 @@ use Doctrine\Persistence\ManagerRegistry;
 use Pagerfanta\Adapter\AdapterInterface;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
 
+use function Symfony\Component\Clock\now;
+
 /**
  * @extends ServiceEntityRepository<Ticket>
  *
@@ -92,7 +94,7 @@ class TicketDoctrineRepository extends ServiceEntityRepository implements FindBy
 
         if (!$criteria->showSnoozed) {
             $qb->andWhere('t.snoozedUntil IS NULL OR t.snoozedUntil <= :now')
-                ->setParameter('now', new \DateTimeImmutable());
+                ->setParameter('now', now());
         }
 
         if ($criteria->myPools && $this->userProvider->hasUser()) {
@@ -120,7 +122,7 @@ class TicketDoctrineRepository extends ServiceEntityRepository implements FindBy
             ->andWhere('t.snoozedUntil IS NULL OR t.snoozedUntil <= :now')
             ->setParameter('userId', $userId)
             ->setParameter('closed', TicketStatus::CLOSED)
-            ->setParameter('now', new \DateTimeImmutable())
+            ->setParameter('now', now())
             ->getQuery()
             ->getSingleScalarResult();
     }

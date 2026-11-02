@@ -12,26 +12,13 @@ use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 
 #[WithStory(StaffUserStory::class)]
 final class UpdateSupplierStockCommandTest extends KernelTestCase
 {
-    private CommandTester $commandTester;
-
-    protected function setUp(): void
-    {
-        self::bootKernel();
-        $application = new Application(self::$kernel);
-        $command = $application->find('app:update-supplier-stock');
-        $this->commandTester = new CommandTester($command);
-    }
-
     public function testSuccessUpdatingStock(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
@@ -43,13 +30,13 @@ final class UpdateSupplierStockCommandTest extends KernelTestCase
             'cost' => '10.00',
         ]);
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:update-supplier-stock', [
             'product-count' => 10,
             '--supplier' => $supplier->getId(),
         ]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('Processed', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('Processed', $result->getDisplay());
     }
 
     public function testLowStockReplenishment(): void
@@ -65,12 +52,12 @@ final class UpdateSupplierStockCommandTest extends KernelTestCase
 
         $initialStock = $supplierProduct->getStock();
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:update-supplier-stock', [
             'product-count' => 10,
             '--supplier' => $supplier->getId(),
         ]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
+        $this->assertCommandIsSuccessful($result);
         // Stock should have increased (replenished)
         self::assertGreaterThanOrEqual($initialStock, $supplierProduct->getStock());
     }
@@ -88,8 +75,8 @@ final class UpdateSupplierStockCommandTest extends KernelTestCase
             ]);
         }
 
-        $this->commandTester->execute(['product-count' => 10, '--supplier' => $supplier->getId()]);
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
+        $result = self::runCommand('app:update-supplier-stock', ['product-count' => 10, '--supplier' => $supplier->getId()]);
+        $this->assertCommandIsSuccessful($result);
 
         self::getContainer()->get(EntityManagerInterface::class)->clear();
         $calculator = self::getContainer()->get(MarkupCalculator::class);
@@ -116,37 +103,37 @@ final class UpdateSupplierStockCommandTest extends KernelTestCase
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:update-supplier-stock', [
             'product-count' => 10,
             '--supplier' => $supplier->getId(),
         ]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('No supplier products found', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('No supplier products found', $result->getDisplay());
     }
 
     public function testInvalidCountReturnsInvalid(): void
     {
         $supplier = SupplierFactory::createOne(['isActive' => true]);
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:update-supplier-stock', [
             'product-count' => 0,
             '--supplier' => $supplier->getId(),
         ]);
 
-        self::assertSame(Command::INVALID, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('Product count must be > 0', $this->commandTester->getDisplay());
+        $this->assertCommandIsInvalid($result);
+        self::assertStringContainsString('Product count must be > 0', $result->getDisplay());
     }
 
     public function testNoSupplierFoundReturnsFailure(): void
     {
-        $this->commandTester->execute([
+        $result = self::runCommand('app:update-supplier-stock', [
             'product-count' => 10,
             '--supplier' => 999999,
         ]);
 
-        self::assertSame(Command::FAILURE, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('Supplier not found', $this->commandTester->getDisplay());
+        $this->assertCommandFailed($result);
+        self::assertStringContainsString('Supplier not found', $result->getDisplay());
     }
 
     public function testDryRunDoesNotPersistChanges(): void
@@ -163,14 +150,14 @@ final class UpdateSupplierStockCommandTest extends KernelTestCase
         $initialStock = $supplierProduct->getStock();
         $initialCost = $supplierProduct->getCost();
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:update-supplier-stock', [
             'product-count' => 10,
             '--supplier' => $supplier->getId(),
             '--dry-run' => true,
         ]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('[DRY RUN]', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('[DRY RUN]', $result->getDisplay());
 
         // Values should remain unchanged
         self::assertSame($initialStock, $supplierProduct->getStock());
@@ -188,13 +175,13 @@ final class UpdateSupplierStockCommandTest extends KernelTestCase
             'cost' => '10.00',
         ]);
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:update-supplier-stock', [
             'product-count' => 10,
             '--supplier' => $supplier->getId(),
-        ], ['verbosity' => OutputInterface::VERBOSITY_VERBOSE]);
+        ], verbosity: OutputInterface::VERBOSITY_VERBOSE);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('Processed Supplier products', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('Processed Supplier products', $result->getDisplay());
     }
 
     public function testSpecificSupplierTargeting(): void
@@ -202,13 +189,13 @@ final class UpdateSupplierStockCommandTest extends KernelTestCase
         $supplier1 = SupplierFactory::createOne(['isActive' => true, 'name' => 'Supplier One']);
         SupplierFactory::createOne(['isActive' => true, 'name' => 'Supplier Two']);
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:update-supplier-stock', [
             'product-count' => 10,
             '--supplier' => $supplier1->getId(),
         ]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('Supplier One', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('Supplier One', $result->getDisplay());
     }
 
     public function testOutputShowsStockIncreasedDecreasedCounts(): void
@@ -222,14 +209,14 @@ final class UpdateSupplierStockCommandTest extends KernelTestCase
             'cost' => '10.00',
         ]);
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:update-supplier-stock', [
             'product-count' => 10,
             '--supplier' => $supplier->getId(),
         ]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
-        self::assertStringContainsString('stock increased', $this->commandTester->getDisplay());
-        self::assertStringContainsString('stock decreased', $this->commandTester->getDisplay());
+        $this->assertCommandIsSuccessful($result);
+        self::assertStringContainsString('stock increased', $result->getDisplay());
+        self::assertStringContainsString('stock decreased', $result->getDisplay());
     }
 
     public function testCostUpdateDuringReplenishment(): void
@@ -243,12 +230,12 @@ final class UpdateSupplierStockCommandTest extends KernelTestCase
             'cost' => '10.00',
         ]);
 
-        $this->commandTester->execute([
+        $result = self::runCommand('app:update-supplier-stock', [
             'product-count' => 10,
             '--supplier' => $supplier->getId(),
         ]);
 
-        self::assertSame(Command::SUCCESS, $this->commandTester->getStatusCode());
+        $this->assertCommandIsSuccessful($result);
         // Stock should be replenished (increased or unchanged from 5)
         self::assertGreaterThanOrEqual(5, $supplierProduct->getStock());
     }

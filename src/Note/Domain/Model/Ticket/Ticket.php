@@ -17,6 +17,8 @@ use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
+use function Symfony\Component\Clock\now;
+
 #[ORM\Entity(repositoryClass: TicketDoctrineRepository::class)]
 #[ORM\Index(name: 'idx_ticket_pool_status_snooze', columns: ['pool_id', 'status', 'snoozed_until'])]
 #[ORM\Index(name: 'idx_ticket_last_message', columns: ['last_message_at'])]
@@ -139,7 +141,7 @@ class Ticket
 
     public function snooze(\DateTimeImmutable $until): void
     {
-        if ($until <= new \DateTimeImmutable()) {
+        if ($until <= now()) {
             throw new \InvalidArgumentException('Snooze date must be in the future.');
         }
 
@@ -153,7 +155,7 @@ class Ticket
 
     public function isSnoozed(): bool
     {
-        return $this->snoozedUntil instanceof \DateTimeImmutable && $this->snoozedUntil > new \DateTimeImmutable();
+        return $this->snoozedUntil instanceof \DateTimeImmutable && $this->snoozedUntil > now();
     }
 
     public function transitionStatusForReply(AuthorType $authorType): void

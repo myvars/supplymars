@@ -9,10 +9,7 @@ use App\Tests\Shared\Factory\SupplierFactory;
 use App\Tests\Shared\Factory\SupplierProductFactory;
 use App\Tests\Shared\Story\StaffUserStory;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Tester\CommandTester;
 use Zenstruck\Foundry\Attribute\WithStory;
 
 #[WithStory(StaffUserStory::class)]
@@ -20,10 +17,6 @@ final class ResetSupplierStockCommandTest extends KernelTestCase
 {
     public function testProductStockFollowsItsActiveSourceAfterReset(): void
     {
-        self::bootKernel();
-        $application = new Application(self::$kernel);
-        $commandTester = new CommandTester($application->find('app:reset-supplier-stock'));
-
         $supplier = SupplierFactory::createOne(['isActive' => true]);
         $products = ProductFactory::createMany(5);
         foreach ($products as $product) {
@@ -35,8 +28,8 @@ final class ResetSupplierStockCommandTest extends KernelTestCase
             ]);
         }
 
-        $commandTester->execute(['supplierId' => (string) $supplier->getId()]);
-        self::assertSame(Command::SUCCESS, $commandTester->getStatusCode());
+        $result = self::runCommand('app:reset-supplier-stock', ['supplierId' => (string) $supplier->getId()]);
+        $this->assertCommandIsSuccessful($result);
 
         // The command sets stock to 0–300, so every product's stored stock has moved off 1000.
         self::getContainer()->get(EntityManagerInterface::class)->clear();

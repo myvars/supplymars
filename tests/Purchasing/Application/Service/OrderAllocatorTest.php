@@ -88,7 +88,7 @@ final class OrderAllocatorTest extends KernelTestCase
         $this->em->flush();
 
         // No new PO items should be created
-        self::assertSame($initialPurchaseOrderCount, $order->getPurchaseOrders()->count());
+        self::assertCount($initialPurchaseOrderCount, $order->getPurchaseOrders());
     }
 
     public function testProcessSkipsItemsWithNoSupplierProduct(): void
