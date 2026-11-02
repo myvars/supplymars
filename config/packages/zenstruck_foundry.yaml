@@ -4,7 +4,6 @@ when@dev: &dev
         enable_auto_refresh_with_lazy_objects: true
         # Unset is deprecated since Foundry 2.15. Only the ResetDatabase trait reads it, and the tests
         # don't use it (DAMA and run-tests.sh reset the databases); schema is the old default
-
         orm:
             reset:
                 mode: schema
