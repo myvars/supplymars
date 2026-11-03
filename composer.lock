@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "83b38f7b7675149aad03bbfa91373a99",
+    "content-hash": "fc1a30e3486a87a81588a5a789bad3a2",
     "packages": [
         {
             "name": "async-aws/core",
@@ -3361,16 +3361,16 @@
         },
         {
             "name": "myvars/form-flow",
-            "version": "v1.5.0",
+            "version": "v1.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myvars/form-flow.git",
-                "reference": "fe79837cdaffb6c808a3aa32a99bc67b8def165f"
+                "reference": "a5ec77c9018d08b00ce483e2a19ddb87294f7c1d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myvars/form-flow/zipball/fe79837cdaffb6c808a3aa32a99bc67b8def165f",
-                "reference": "fe79837cdaffb6c808a3aa32a99bc67b8def165f",
+                "url": "https://api.github.com/repos/myvars/form-flow/zipball/a5ec77c9018d08b00ce483e2a19ddb87294f7c1d",
+                "reference": "a5ec77c9018d08b00ce483e2a19ddb87294f7c1d",
                 "shasum": ""
             },
             "require": {
@@ -3389,11 +3389,16 @@
                 "symfony/ux-turbo": "^3.1",
                 "twig/twig": "^3"
             },
+            "conflict": {
+                "symfony/event-dispatcher-contracts": "<2.5.3 || >=3.0,<3.4.1",
+                "symfony/property-info": "<6.4.3 || >=7.0,<7.0.3",
+                "symfony/translation-contracts": "<2.5.3 || >=3.0,<3.4.2"
+            },
             "require-dev": {
                 "friendsofphp/php-cs-fixer": "^3.95",
-                "phpstan/phpstan": "^2.2",
-                "phpstan/phpstan-symfony": "^2.0",
-                "phpunit/phpunit": "^13.1",
+                "phpstan/phpstan": "^2.3",
+                "phpstan/phpstan-symfony": "^2.1",
+                "phpunit/phpunit": "^13.4",
                 "symfony/validator": "^8.1"
             },
             "suggest": {
@@ -3402,7 +3407,7 @@
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "1.5.x-dev"
+                    "dev-main": "1.6.x-dev"
                 }
             },
             "autoload": {
@@ -3432,9 +3437,9 @@
             ],
             "support": {
                 "issues": "https://github.com/myvars/form-flow/issues",
-                "source": "https://github.com/myvars/form-flow/tree/v1.5.0"
+                "source": "https://github.com/myvars/form-flow/tree/v1.6.0"
             },
-            "time": "2026-10-26T14:56:17+00:00"
+            "time": "2026-11-03T13:42:26+00:00"
         },
         {
             "name": "nelmio/api-doc-bundle",
