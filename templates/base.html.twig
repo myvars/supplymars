@@ -50,8 +50,8 @@
                 <turbo-frame id="body" data-turbo-action="advance" refresh="morph">
                     {% block body %}{% endblock %}
 
-                    {# Flashes for a body-frame response (a redirect followed inside the frame), which the toaster below
-                       does not print. The same guard as there #}
+                    {# Flashes for a page loaded into this frame (a redirect followed inside it): the toaster below prints
+                       them only on a full load. show_flashes as there #}
                     {% if show_flashes ?? true %}
                         {{ include('shared/turbo/_frame_success_stream.html.twig', { frame: 'body' }) }}
                     {% endif %}

@@ -111,5 +111,9 @@
                 </template>
             </turbo-stream>
         {% endif %}
+
+        {# Flashes for a page loaded into this frame: a search or page link whose page is out of range redirects to
+           page 1 inside it #}
+        {{ include('shared/turbo/_frame_success_stream.html.twig', { frame: flowModel|slug ~ '-table' }) }}
     </turbo-frame>
 </div>
