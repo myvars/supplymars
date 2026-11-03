@@ -50,6 +50,12 @@
                 <turbo-frame id="body" data-turbo-action="advance" refresh="morph">
                     {% block body %}{% endblock %}
 
+                    {# Flashes for a page loaded into this frame (a redirect followed inside it): the toaster below prints
+                       them only on a full load. show_flashes as there #}
+                    {% if show_flashes ?? true %}
+                        {{ include('shared/turbo/_frame_success_stream.html.twig', { frame: 'body' }) }}
+                    {% endif %}
+
                     {# Live updates for this page's topics (live_topics, from its controller). Their refreshes are public,
                        so the cookie need not grant them. Private, so the browser sends the cookie the element below sets:
                        the hub admits no one without one. Inside the frame, so a visit that changes the frame closes it #}
