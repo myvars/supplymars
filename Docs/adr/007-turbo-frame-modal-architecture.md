@@ -138,7 +138,7 @@ Key files:
 | `templates/shared/turbo/modal_frame.html.twig`, `embedded_frame.html.twig` | Layouts for the modal frame and for other named frames |
 | `assets/app.js` | Registers the custom `redirect` stream action |
 | `templates/shared/turbo/_modal.html.twig` | Modal component with dialog |
-| `templates/shared/turbo/_frame_success_stream.html.twig` | Flash message stream for a form re-rendered in its frame |
+| `templates/shared/turbo/_frame_success_stream.html.twig` | Flash message stream for a response rendered in its frame (a re-rendered form, or a page loaded into `body`) |
 | `vendor/myvars/form-flow/src/Redirect/TurboAwareRedirector.php` | Stream response generation (inline) |
 
 Turbo configuration in `base.html.twig`:
