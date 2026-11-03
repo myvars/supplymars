@@ -69,4 +69,4 @@ An index built on `<twig:Search>` fills the `sort` and `list_item` blocks, one `
 - [FormFlow](README.md)
 - [Templates](../Templates/README.md): naming and template variables
 - [Embedded Forms](EmbeddedForms.md)
-- Package [templates reference](https://github.com/myvars/form-flow/blob/v1.4.0/docs/templates.md)
+- Package [templates reference](https://github.com/myvars/form-flow/blob/v1.6.0/docs/templates.md)

@@ -110,7 +110,7 @@ These areas have non-obvious design. Read the ADR before modifying, and [Docs/04
 
 ### FormFlow (Controller Pattern)
 
-The flows live in the external **`myvars/form-flow`** package (namespace `MyVars\FormFlow\`, `^1.4`, `FormFlowBundle`). It is **not** in `src/`; do not re-add an in-app `FormFlow` directory. The app provides the **adapters**: `Result`, `RedirectTarget`, `FlashMessenger` and `Application\Search\SearchCriteriaInterface` implement or extend the package's `Contract\` ports (autowired; `FlasherInterface` is aliased in `services.yaml`). The package's design-neutral templates are overridden by the app's own at `templates/shared/form_flow/*`. Controllers are thin orchestrators using 5 flow types:
+The flows live in the external **`myvars/form-flow`** package (namespace `MyVars\FormFlow\`, `^1.6`, `FormFlowBundle`). It is **not** in `src/`; do not re-add an in-app `FormFlow` directory. The app provides the **adapters**: `Result`, `RedirectTarget`, `FlashMessenger` and `Application\Search\SearchCriteriaInterface` implement or extend the package's `Contract\` ports (autowired; `FlasherInterface` is aliased in `services.yaml`). The package's design-neutral templates are overridden by the app's own at `templates/shared/form_flow/*`. Controllers are thin orchestrators using 5 flow types:
 
 | Flow | Purpose |
 |------|---------|
