@@ -153,4 +153,4 @@ $model->template('create'); // 'catalog/manufacturer/create.html.twig'
 
 - [FormFlow pattern](../patterns/FormFlow/README.md)
 - [FormFlow template overrides](../patterns/FormFlow/Overrides.md)
-- [form-flow package docs](https://github.com/myvars/form-flow/blob/v1.4.0/docs/flows.md)
+- [form-flow package docs](https://github.com/myvars/form-flow/blob/v1.6.0/docs/flows.md)

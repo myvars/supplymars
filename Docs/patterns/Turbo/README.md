@@ -88,6 +88,8 @@ See [Embedded forms](../FormFlow/EmbeddedForms.md). The ticket reply form is the
 | `FlowContext::forDelete()` / `forConfirm()` | `redirect` stream to the success URL when its path differs from the referer's; otherwise (or no referer) `refresh` | 303 redirect |
 | The handler returned a `RedirectTarget` (every `*FilterHandler`, some create and ticket handlers) | Always a `redirect` stream to that URL | redirect with the target's status |
 
+A stream needs the `Turbo-Frame` header and an `Accept` header listing `text/vnd.turbo-stream.html`, which Turbo sends for a non-`GET` form submit. A link or `GET` form inside a frame (a search page past the last one) gets the 303, which Turbo follows inside the frame (form-flow 1.6).
+
 An inline edit's save (`InlineEditFlow`) answers with the package's `<turbo-stream action="refresh" scroll="preserve">` too, from its success template rather than the redirector ([InlineEdit](../InlineEdit/README.md#after-a-save)).
 
 So a filter submitted in the modal lands on the index URL with the filter params. There is no per-call option to change this. `ActionFlow` redirects the same way after a failed result too (with an error flash). `FormFlow` re-renders the form with 422 on invalid input or `Result::fail()`.

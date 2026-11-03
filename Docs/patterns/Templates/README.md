@@ -59,4 +59,4 @@ A Twig Component documents its props and blocks in the same header, above `{% pr
 
 - [FormFlow Overrides](../FormFlow/Overrides.md): template resolution and recipes
 - [FormFlow](../FormFlow/README.md)
-- Package [templates reference](https://github.com/myvars/form-flow/blob/v1.4.0/docs/templates.md)
+- Package [templates reference](https://github.com/myvars/form-flow/blob/v1.6.0/docs/templates.md)

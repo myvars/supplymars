@@ -2,7 +2,7 @@
 
 How web controllers use the `myvars/form-flow` package: which flow fits which action, how handlers report back, and the rules the app adds. Read when writing or changing a web controller.
 
-The flows live in the package (namespace `MyVars\FormFlow\`, `^1.4` in `composer.json`). Its full reference is in the tagged docs: [flows](https://github.com/myvars/form-flow/blob/v1.4.0/docs/flows.md), [templates](https://github.com/myvars/form-flow/blob/v1.4.0/docs/templates.md), [adapters](https://github.com/myvars/form-flow/blob/v1.4.0/docs/adapters.md). `vendor/myvars/form-flow` holds only the package `README.md`, because `docs/` is excluded from the installed package. Bump these links when `composer.json` moves past 1.4.
+The flows live in the package (namespace `MyVars\FormFlow\`, `^1.6` in `composer.json`). Its full reference is in the tagged docs: [flows](https://github.com/myvars/form-flow/blob/v1.6.0/docs/flows.md), [templates](https://github.com/myvars/form-flow/blob/v1.6.0/docs/templates.md), [adapters](https://github.com/myvars/form-flow/blob/v1.6.0/docs/adapters.md). `vendor/myvars/form-flow` holds only the package `README.md`, because `docs/` is excluded from the installed package. Bump these links when `composer.json` moves past 1.6.
 
 ## Rules
 
