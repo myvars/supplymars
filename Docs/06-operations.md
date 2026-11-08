@@ -12,6 +12,7 @@ How it runs:
 
 - **Production only.** Only the production `messenger` container consumes `scheduler_default` (`compose.prod.yaml`). Development and `make up-prod-local` consume only `async`, so no job runs on a local machine.
 - **`PLAYGROUND_MODE` leaves out the live-only jobs.** A playground refund at 01:30 would be replaced by the 02:15 reset from live's backup, and the playground gets live's pruned history each night anyway.
+- **No playground job from 02:10 to 02:30 UTC.** The 02:15 reset restores the database table by table (about two minutes), and a job run meanwhile fails on missing tables and rows. `SkipJobsDuringPlaygroundReset` cancels every job the worker picks up in that window; a skipped run is not made up later.
 - **One job at a time**, in schedule order when several are due together. The backup is first in the list, so its copy is written before the playground reset reads it at 02:15. The reset itself is not a scheduled job: it runs on cron in its own `reset` container ([playground.md](infrastructure/playground.md)).
 - **Missed runs.** The last run time is kept in the `cache.scheduler` pool, so a run missed while the worker restarts happens when it comes back, once (`processOnlyLastMissedRun`).
 - **Locked.** The schedule takes the `main-schedule` lock, so two workers never run the same job twice.
