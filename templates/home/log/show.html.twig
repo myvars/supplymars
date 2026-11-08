@@ -41,6 +41,22 @@
                 </div>
             {% endif %}
 
+            {% if neighbours.older or neighbours.newer %}
+                <nav aria-label="More posts" class="mt-12 grid gap-4 sm:grid-cols-2">
+                    {% for direction, neighbour in { older: neighbours.older, newer: neighbours.newer } %}
+                        {% if neighbour %}
+                            <a href="{{ path('app_log_show', { slug: neighbour.slug }) }}" data-turbo-frame="body"
+                               rel="{{ direction == 'older' ? 'prev' : 'next' }}"
+                               class="group block rounded-lg border border-white/[0.06] bg-gray-900 p-5 transition-colors hover:border-orange-500/40 focus-ring {{ direction == 'newer' ? 'sm:col-start-2 sm:text-right' }}">
+                                <p class="text-xs font-semibold uppercase tracking-widest text-orange-500">{{ direction == 'older' ? '← Older' : 'Newer →' }}</p>
+                                <p class="mt-2 font-bold text-white group-hover:text-orange-300 transition-colors">{{ neighbour.title }}</p>
+                                <p class="mt-1 text-sm text-gray-400">{{ neighbour.period }}</p>
+                            </a>
+                        {% endif %}
+                    {% endfor %}
+                </nav>
+            {% endif %}
+
             <p class="mt-12">
                 <a href="{{ path('app_log_index') }}" data-turbo-frame="body"
                    class="text-sm font-medium text-orange-400 hover:text-orange-300 transition-colors focus-ring">&larr; All posts</a>

@@ -7,7 +7,7 @@ namespace App\Tests\Home\UI;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 
-final class LogFlowTest extends WebTestCase
+final class LogControllerTest extends WebTestCase
 {
     use HasBrowser;
 
@@ -33,17 +33,23 @@ final class LogFlowTest extends WebTestCase
             ->assertSeeIn('article h2', 'How the weeks went')
             ->assertSee('When things went wrong')
             ->assertSeeIn('article table', '6–12 Oct')
-            ->assertElementCount('a[href="https://github.com/myvars/supplymars/blob/main/Docs/adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md"]', 1);
+            ->assertElementCount('a[href="https://github.com/myvars/supplymars/blob/main/Docs/adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md"]', 1)
+            // The only post has nothing either side of it
+            ->assertElementCount('nav[aria-label="More posts"]', 0)
+            ->assertSeeElement('a[href="/log"]');
     }
 
     public function testUnknownPostIsNotFound(): void
     {
         $this->browser()
             ->get('/log/no-such-post')
+            ->assertStatus(404)
+            // Not a slug the route accepts: still a 404 for a visitor, not the login page
+            ->get('/log/No_Such_Post')
             ->assertStatus(404);
     }
 
-    public function testPostIsLinkedFromTheFooterAndAboutPage(): void
+    public function testLogIsLinkedFromTheFooterAndAboutPage(): void
     {
         $this->browser()
             ->get('/about')

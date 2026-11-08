@@ -29,6 +29,7 @@ final class LogController extends AbstractController
         return $this->render('home/log/show.html.twig', [
             'post' => $post,
             'content' => $this->log->render($post),
+            'neighbours' => $this->log->neighbours($post),
         ]);
     }
 }

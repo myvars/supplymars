@@ -29,6 +29,8 @@ final class EngineeringLogTest extends TestCase
         | 1 | 2 |
 
         <span onclick="alert(1)">raw</span>
+
+        [A link](javascript:alert(1))
         MD;
 
     private string $directory;
@@ -82,7 +84,41 @@ final class EngineeringLogTest extends TestCase
         self::assertNull($this->log()->find('missing'));
     }
 
-    public function testRendersMarkdownWithTablesAndEscapesHtml(): void
+    public function testAcceptsFigureKeysInAnyOrderAndNumbers(): void
+    {
+        $this->write('2024-03-31-a-post.md', str_replace("- { value: '3', label: things }", '- { label: things, value: 1.7 }', self::VALID));
+
+        self::assertSame([['value' => '1.7', 'label' => 'things']], $this->log()->all()[0]->figures);
+    }
+
+    public function testRefusesTwoPostsWithTheSameSlug(): void
+    {
+        $this->write('2024-03-31-pricing.md', self::VALID);
+        $this->write('2026-11-08-pricing.md', self::VALID);
+
+        $this->expectException(\UnexpectedValueException::class);
+        $this->expectExceptionMessageIsOrContains('share the slug "pricing"');
+
+        $this->log()->all();
+    }
+
+    public function testNeighboursAreThePostsEitherSide(): void
+    {
+        $this->write('2024-03-31-first.md', self::VALID);
+        $this->write('2024-09-30-second.md', self::VALID);
+        $this->write('2025-01-31-third.md', self::VALID);
+        $log = $this->log();
+
+        $middle = $log->neighbours($this->found($log, 'second'));
+        $newest = $log->neighbours($this->found($log, 'third'));
+        $oldest = $log->neighbours($this->found($log, 'first'));
+
+        self::assertSame(['third', 'first'], [$middle['newer']?->slug, $middle['older']?->slug]);
+        self::assertSame([null, 'second'], [$newest['newer']?->slug, $newest['older']?->slug]);
+        self::assertSame(['second', null], [$oldest['newer']?->slug, $oldest['older']?->slug]);
+    }
+
+    public function testRendersMarkdownWithTablesAndEscapesHtmlAndUnsafeLinks(): void
     {
         $this->write('2024-03-31-a-post.md', self::VALID);
         $log = $this->log();
@@ -91,8 +127,9 @@ final class EngineeringLogTest extends TestCase
 
         self::assertStringContainsString('<h2>A heading</h2>', $html);
         self::assertStringContainsString('<table>', $html);
+        self::assertStringContainsString('&lt;span onclick', $html);
         self::assertStringNotContainsString('<span', $html);
-        self::assertStringNotContainsString('title: A post', $html);
+        self::assertStringNotContainsString('javascript:', $html);
     }
 
     /** @return iterable<string, array{string, string, string}> */
@@ -123,6 +160,14 @@ final class EngineeringLogTest extends TestCase
     private function log(): EngineeringLog
     {
         return new EngineeringLog($this->directory);
+    }
+
+    private function found(EngineeringLog $log, string $slug): LogPost
+    {
+        $post = $log->find($slug);
+        self::assertNotNull($post);
+
+        return $post;
     }
 
     private function write(string $file, string $contents): void

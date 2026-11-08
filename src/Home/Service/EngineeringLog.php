@@ -41,6 +41,14 @@ final readonly class EngineeringLog
     {
         $files = glob($this->directory . '/*.md');
         $posts = array_map($this->read(...), $files === false ? [] : $files);
+
+        $slugs = array_map(static fn (LogPost $post): string => $post->slug, $posts);
+        $repeated = array_keys(array_filter(array_count_values($slugs), static fn (int $count): bool => $count > 1));
+        if ($repeated !== []) {
+            throw new \UnexpectedValueException(\sprintf('Log posts share the slug "%s"; each needs its own.', implode('", "', $repeated)));
+        }
+
+        // Newest first. glob() returns names sorted and usort() is stable, so posts on the same date keep slug order
         usort($posts, static fn (LogPost $a, LogPost $b): int => $b->date <=> $a->date);
 
         return $posts;
@@ -55,6 +63,26 @@ final readonly class EngineeringLog
         }
 
         return null;
+    }
+
+    /**
+     * The posts either side of this one, to read the log in order.
+     *
+     * @return array{newer: ?LogPost, older: ?LogPost}
+     */
+    public function neighbours(LogPost $post): array
+    {
+        $posts = $this->all();
+        $slugs = array_map(static fn (LogPost $each): string => $each->slug, $posts);
+        $index = array_search($post->slug, $slugs, true);
+        if ($index === false) {
+            return ['newer' => null, 'older' => null];
+        }
+
+        return [
+            'newer' => $posts[$index - 1] ?? null,
+            'older' => $posts[$index + 1] ?? null,
+        ];
     }
 
     public function render(LogPost $post): string
@@ -140,13 +168,13 @@ final readonly class EngineeringLog
 
         $pairs = [];
         foreach ($entries as $entry) {
-            if (!\is_array($entry) || array_keys($entry) !== [$first, $second]) {
+            if (!\is_array($entry) || \count($entry) !== 2 || !\array_key_exists($first, $entry) || !\array_key_exists($second, $entry)) {
                 throw new \UnexpectedValueException(\sprintf('Log post "%s": each of "%s" needs %s and %s.', $file, $key, $first, $second));
             }
 
             $pair = [];
             foreach ([$first, $second] as $field) {
-                if (!\is_string($entry[$field]) && !\is_int($entry[$field])) {
+                if (!\is_string($entry[$field]) && !\is_int($entry[$field]) && !\is_float($entry[$field])) {
                     throw new \UnexpectedValueException(\sprintf('Log post "%s": "%s.%s" must be text.', $file, $key, $field));
                 }
 
