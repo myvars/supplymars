@@ -38,7 +38,7 @@ final class LogControllerTest extends WebTestCase
             ->assertSeeIn('article table', '6–12 Oct')
             ->assertElementCount('a[href="https://github.com/myvars/supplymars/blob/main/Docs/adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md"]', 1)
             // The newest post links to the one before it, and to nothing newer
-            ->assertSeeIn('nav[aria-label="More posts"] a[rel="prev"]', 'Live pages with Mercure')
+            ->assertSeeIn('nav[aria-label="More posts"] a[rel="prev"]', 'From ChatGPT to Claude Code')
             ->assertElementCount('nav[aria-label="More posts"] a[rel="next"]', 0)
             ->assertSeeElement('a[href="/log"]');
     }
