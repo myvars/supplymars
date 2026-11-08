@@ -1,0 +1,50 @@
+{# One engineering log post: hero, figures from the front matter, the Markdown body, then its references.
+   Variables: post (LogPost), content (the body as HTML, from EngineeringLog::render) #}
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ post.title }} · Engineering Log{% endblock %}
+
+{% block main_class %}grow bg-gray-950{% endblock %}
+
+{% block body %}
+    {{ include('home/log/_hero.html.twig', {
+        eyebrow: 'Engineering Log · ' ~ post.period,
+        heading: post.title,
+        lede: post.summary,
+    }) }}
+
+    <article class="bg-gray-950 pt-4 pb-20 lg:pb-28">
+        <div class="mx-auto max-w-3xl px-6">
+            {% if post.figures is not empty %}
+                <dl class="mb-12 grid grid-cols-2 sm:grid-cols-3 gap-px overflow-hidden rounded-lg border border-white/[0.06] bg-white/[0.06]">
+                    {% for figure in post.figures %}
+                        <div class="flex flex-col-reverse gap-1 bg-gray-900 p-4">
+                            <dt class="text-sm text-gray-400">{{ figure.label }}</dt>
+                            <dd class="text-2xl font-bold tracking-tight text-white tabular-nums">{{ figure.value }}</dd>
+                        </div>
+                    {% endfor %}
+                </dl>
+            {% endif %}
+
+            <div class="prose prose-invert lg:prose-lg max-w-none prose-headings:tracking-tight prose-a:text-orange-400 hover:prose-a:text-orange-300 prose-code:text-orange-200 prose-code:before:content-none prose-code:after:content-none prose-th:text-gray-300 prose-td:tabular-nums">
+                {{ content|raw }}
+            </div>
+
+            {% if post.refs is not empty %}
+                <div class="mt-12 border-t border-white/[0.06] pt-6">
+                    <p class="text-xs font-semibold uppercase tracking-widest text-orange-500 mb-3">References</p>
+                    <ul class="flex flex-wrap gap-x-4 gap-y-2 text-sm">
+                        {% for ref in post.refs %}
+                            <li><a href="{{ ref.url }}" target="_blank" class="text-gray-400 hover:text-orange-300 transition-colors focus-ring">{{ ref.label }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
+            <p class="mt-12">
+                <a href="{{ path('app_log_index') }}" data-turbo-frame="body"
+                   class="text-sm font-medium text-orange-400 hover:text-orange-300 transition-colors focus-ring">&larr; All posts</a>
+            </p>
+        </div>
+    </article>
+{% endblock %}

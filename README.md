@@ -4,7 +4,7 @@
 
 A fully operational backend e-commerce platform, built as a portfolio project to demonstrate real-world architectural complexity beyond the checkout.
 
-**[Live Demo →](https://www.supplymars.com)** · **[About the Developer →](https://www.supplymars.com/about)**
+**[Live Demo →](https://www.supplymars.com)** · **[About the Developer →](https://www.supplymars.com/about)** · **[Engineering Log →](https://www.supplymars.com/log)**
 
 ## What Is This?
 

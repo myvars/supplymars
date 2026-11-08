@@ -38,6 +38,8 @@ final class AccessControlTest extends WebTestCase
         yield 'home page' => ['/'];
         yield 'login' => ['/login'];
         yield 'health' => ['/health'];
+        yield 'engineering log' => ['/log'];
+        yield 'engineering log post' => ['/log/five-weeks-119-pull-requests'];
         yield 'catalog API' => ['/api/v1/catalog/products'];
         yield 'API docs' => ['/api/doc']; // its rule must stay above the one that closes ^/api/
     }
