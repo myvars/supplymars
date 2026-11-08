@@ -19,6 +19,9 @@ final class LogControllerTest extends WebTestCase
             ->assertSeeIn('h1', 'Building SupplyMars')
             ->assertSee('Five weeks, 119 pull requests')
             ->assertSee('6 October – 8 November 2026')
+            // Grouped by year, newest first
+            ->assertSeeIn('section:first-of-type h2', '2026')
+            ->assertSeeIn('#log-year-2026 + ol li:first-child h3', 'Five weeks, 119 pull requests')
             ->assertElementAttributeContains('a[href="/log/five-weeks-119-pull-requests"]', 'data-turbo-frame', 'body');
     }
 
@@ -34,9 +37,22 @@ final class LogControllerTest extends WebTestCase
             ->assertSee('When things went wrong')
             ->assertSeeIn('article table', '6–12 Oct')
             ->assertElementCount('a[href="https://github.com/myvars/supplymars/blob/main/Docs/adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md"]', 1)
-            // The only post has nothing either side of it
-            ->assertElementCount('nav[aria-label="More posts"]', 0)
+            // The newest post links to the one before it, and to nothing newer
+            ->assertSeeIn('nav[aria-label="More posts"] a[rel="prev"]', 'Live pages with Mercure')
+            ->assertElementCount('nav[aria-label="More posts"] a[rel="next"]', 0)
             ->assertSeeElement('a[href="/log"]');
+    }
+
+    public function testPostLinksToTheNewerAndOlderPosts(): void
+    {
+        $this->browser()
+            ->get('/log/worker-mode')
+            ->assertSuccessful()
+            ->assertSeeIn('nav[aria-label="More posts"] a[rel="next"]', 'Live pages with Mercure')
+            ->assertSeeIn('nav[aria-label="More posts"] a[rel="prev"]', 'FormFlow becomes a package')
+            ->click('FormFlow becomes a package')
+            ->assertOn('/log/formflow-becomes-a-package')
+            ->assertSeeIn('h1', 'FormFlow becomes a package');
     }
 
     public function testUnknownPostIsNotFound(): void
