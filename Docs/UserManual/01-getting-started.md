@@ -53,7 +53,7 @@ You are signed in straight away and sent a verification email. A new account has
 
 | Role | Shown as | Can do |
 |------|----------|--------|
-| User | A customer with no staff access | Sign in, and open only the public pages (home, about, contact, privacy, terms, help). Every staff page shows "Unauthorized Access to Mars Colony Systems". |
+| User | A customer with no staff access | Sign in, and open only the public pages (home, about, the engineering log, contact, privacy, terms, help). Every staff page shows "Unauthorized Access to Mars Colony Systems". |
 | Staff | **Member of Staff** ticked on the customer record | Everything in this manual, except the super admin actions below. |
 | Super admin | Not shown or set on any screen | Everything staff can do, plus: create orders by hand (the **Create Order** button), delete products, suppliers, supplier products, VAT rates and pools, and edit staff accounts. |
 

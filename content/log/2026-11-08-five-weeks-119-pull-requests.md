@@ -38,8 +38,8 @@ I also tightened how I work. Every change started as a GitHub issue, went onto i
 
 | Week | What it was about |
 |---|---|
-| 6–12 Oct | Dependencies refreshed; Flowbite replaced by the Shadcn UI kit |
-| 13–19 Oct | CI gaps closed, images built in CI, Deptrac rules, a database queue, Sentry and `/health`, hashed API tokens, parallel tests, streamed backups |
+| 6–12 Oct | Dependencies and tooling refreshed |
+| 13–19 Oct | The Shadcn UI kit in place of Flowbite, CI gaps closed, images built in CI, Deptrac rules, a database queue, Sentry and `/health`, hashed API tokens, parallel tests, streamed backups |
 | 20–26 Oct | The Scheduler in place of cron, FrankenPHP and then worker mode, MySQL sized for a 2 GB server, a docs review, live pages with Mercure |
 | 27 Oct – 2 Nov | The bugs the docs review found, a rehearsed restore, about 20 PRs reworking the tests |
 | 3–8 Nov | FormFlow 1.6, the Symfony 8.1.11 security release, a sturdier playground reset |
@@ -67,11 +67,11 @@ The light page got much faster. The order list barely moved, as expected: it spe
 
 The simulation never stops: purchase orders are accepted four times an hour, and items ship and arrive every hour. Until now, a staff user looking at an order saw none of that until they reloaded. With Mercure ([#117](https://github.com/myvars/supplymars/pull/117), [#121](https://github.com/myvars/supplymars/pull/121)), order and purchase order pages refresh themselves, and if someone releases an order lock you hold, you get a toast with a link.
 
-The design took longer than the code. Refreshes and toasts are kept apart. A refresh is public and carries no data at all: it only tells the browser to reload the page, and that reload goes through the page's own access check. Toasts are private, on a per-user topic, and only staff get the cookie that lets them subscribe.
+The design took longer than the code. Refreshes and toasts are kept apart. A refresh is public and carries no data at all: it only tells the browser to reload the page, and that reload goes through the page's own access check. Toasts are private, on a per-user topic, and only staff get the cookie that lets them subscribe ([#145](https://github.com/myvars/supplymars/pull/145)).
 
-One database flush can raise hundreds of events, and I didn't want hundreds of refreshes. A listener turns them into one queued `RefreshOrderPage` message per order, using Messenger's `DeduplicateStamp`, with the locks in Redis so both containers see them ([#124](https://github.com/myvars/supplymars/pull/124)). Turbo morphs the page in place, so anything the viewer has open (a modal, a side sheet, a dropdown) has to protect itself from the morph ([#145](https://github.com/myvars/supplymars/pull/145)).
+One database flush can raise hundreds of events, and I didn't want hundreds of refreshes. A listener turns them into one queued `RefreshOrderPage` message per order, using Messenger's `DeduplicateStamp`, with the locks in Redis so both containers see them. Turbo morphs the page in place, so anything the viewer has open (a modal, a side sheet, a dropdown) has to protect itself from the morph.
 
-Building it turned up four domain events that existed in the code but were never raised. They are raised now, along with new ones for removed items, PO rewinds and lock changes.
+Building it turned up four domain events that existed in the code but were never raised. They are raised now, along with new ones for removed items, PO rewinds and lock changes ([#124](https://github.com/myvars/supplymars/pull/124)).
 
 ## Architecture rules the code actually follows
 
@@ -91,7 +91,7 @@ RabbitMQ was carrying nothing but outgoing email, through a third-party transpor
 
 ## A pipeline that checks everything
 
-CI used to run code style, PHPStan, a mapping check and the tests. Now it runs `make check`, step by step: PHP-CS-Fixer, Rector, PHPStan level 7, Deptrac, the Symfony linters, `composer audit`, migrations built from an empty database and compared with the entities, the tests and the production config ([#14](https://github.com/myvars/supplymars/pull/14), [#45](https://github.com/myvars/supplymars/pull/45)). I run the same commands locally.
+CI used to run code style, PHPStan, a mapping check and the tests. Now it runs `make check`, step by step: PHP-CS-Fixer, Rector, PHPStan level 7, Deptrac, the Symfony linters, `composer audit`, migrations built from an empty database and compared with the entities, the tests and the production config ([#14](https://github.com/myvars/supplymars/pull/14)). I run the same commands locally.
 
 CI also builds the production images and pushes them to GHCR, tagged with the commit SHA ([#31](https://github.com/myvars/supplymars/pull/31)). The server pulls the image for the commit it has checked out and never builds one, so a rollback is a `git reset` and a pull.
 
@@ -100,7 +100,7 @@ CI also builds the production images and pushes them to GHCR, tagged with the co
 - Every action that changed state through a GET link became a one-button POST form with a CSRF token ([#19](https://github.com/myvars/supplymars/pull/19)).
 - API tokens are stored as SHA-256 hashes, issued by a console command and shown once ([#30](https://github.com/myvars/supplymars/pull/30)).
 - Security headers and HSTS come from the app; sign-in, registration and password reset are rate-limited; image uploads are checked on the server; Redis needs a password.
-- Six rules were checked only by a form or a template, so an inline edit, the API or a hand-made POST could skip them. Each is now checked where the change is made, which brought in the project's first security voter ([#166](https://github.com/myvars/supplymars/pull/166)).
+- Six rules were checked only by a form or a template, so an inline edit, the API or a hand-made POST could skip them. Each is now checked where the change is made, which brought in the project's first security voter ([#115](https://github.com/myvars/supplymars/pull/115)). Edit forms take a record's ID from the route, never from a hidden field ([#166](https://github.com/myvars/supplymars/pull/166)).
 - Advisories got patched quickly: two Symfony component CVEs, PHP 8.5.12 and Symfony 8.1.11 ([#215](https://github.com/myvars/supplymars/pull/215)).
 
 ## Operations on a 2 GB server
