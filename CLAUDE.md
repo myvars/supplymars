@@ -232,6 +232,7 @@ Framework APIs change between versions. Look things up in the project rather tha
 - For non-trivial tasks, state: objective, what changes, options considered, and blocking questions.
 - If assumptions would materially affect design or complexity, **stop and ask first**.
 - Commit messages: clear, concise, written as a human contributor. Do not mention AI as a contributor.
+- **Engineering log** (`/log`, posts in `content/log/`, [Docs/README.md](Docs/README.md#records)): after a feature with an ADR, or when a period of work has enough in it, propose a post. First person, the full story with the measurements and the incidents, each setback told as cause, fix and what changed; link the PRs and ADRs. A post goes in its own PR, labelled `log`.
 
 ## Reference
 
