@@ -1,5 +1,6 @@
 @import 'tailwindcss';
 @import "./shadcn.css";
+@plugin "@tailwindcss/typography";
 
 @source "../../templates/**/*.html.twig";
 @source "../../src/Shared/UI/Twig/Components/*.php";
