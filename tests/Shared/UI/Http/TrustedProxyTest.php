@@ -13,8 +13,8 @@ use Zenstruck\Browser\Test\HasBrowser;
  * In production every request comes through the host Caddy, from a private address. framework.yaml
  * trusts its X-Forwarded-For and X-Forwarded-Proto, so the app sees the visitor's IP and HTTPS.
  *
- * Visitors use ordinary public addresses: private_ranges also covers the documentation ranges
- * (192.0.2.0/24, 198.51.100.0/24, 203.0.113.0/24), so an address from those would count as a proxy.
+ * Visitors use ordinary public addresses. private_ranges is IpUtils::PRIVATE_RANGES: loopback, RFC 1918,
+ * link-local, CGNAT and the IPv6 equivalents.
  */
 final class TrustedProxyTest extends WebTestCase
 {
@@ -83,6 +83,20 @@ final class TrustedProxyTest extends WebTestCase
 
         $browser->client()->setServerParameter('HTTP_X_FORWARDED_FOR', '81.2.69.99');
         $browser->get('/login')->assertStatus(429);
+    }
+
+    public function testForwardedHeadersFromAPublicAddressInIpv6FormAreIgnored(): void
+    {
+        // GHSA-xg2q-4rrq-657q: up to Symfony 8.1.10, private_ranges trusted an IPv4-mapped address
+        // (::ffff:a.b.c.d) whatever IPv4 host it embedded, so a public client could pass as the proxy
+        $browser = $this->browser();
+        $browser->client()->followRedirects(false);
+        $browser->client()->setServerParameter('REMOTE_ADDR', '::ffff:81.2.69.190');
+        $browser->client()->setServerParameter('HTTP_X_FORWARDED_PROTO', 'https');
+
+        $browser
+            ->get('/dashboard/')
+            ->assertHeaderEquals('Location', 'http://localhost/login');
     }
 
     private function viaProxy(KernelBrowser $browser, string $visitorIp): void

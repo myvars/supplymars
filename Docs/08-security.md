@@ -123,7 +123,7 @@ Every production request reaches PHP from the host Caddy, so `REMOTE_ADDR` is th
 - `$request->getClientIp()` is then the visitor's address. `login_throttling`, the `registration` limiter and the rate limits count by it; without this, every visitor would be one IP, and one attacker could lock everyone out.
 - Generated URLs and redirects use `https` when `X-Forwarded-Proto` is `https`.
 - A client cannot claim another address: the host Caddy replaces any `X-Forwarded-For` a visitor sends, and the container is reachable only from the host. FrankenPHP drops header names with underscores, so `X_Forwarded_For` cannot stand in either. Only those two headers are trusted; `Host` comes from the request as the host Caddy passes it on.
-- `private_ranges` is Symfony's list of private and reserved networks, which covers Docker's network. It also includes the documentation ranges (`192.0.2.0/24`, `198.51.100.0/24`, `203.0.113.0/24`), so tests use ordinary public addresses for visitors (`tests/Shared/UI/Http/TrustedProxyTest.php`).
+- `private_ranges` is Symfony's `IpUtils::PRIVATE_RANGES`: loopback, the RFC 1918 networks (which cover Docker's), link-local, CGNAT and their IPv6 equivalents. Since Symfony 8.1.11 it matches an IPv4-mapped address (`::ffff:a.b.c.d`) as the IPv4 host it embeds, and holds no 6to4, Teredo or NAT64 prefix, so a public client cannot pass as the proxy that way (GHSA-xg2q-4rrq-657q). Tests use ordinary public addresses for visitors (`tests/Shared/UI/Http/TrustedProxyTest.php`).
 
 ## Rate limiting
 
