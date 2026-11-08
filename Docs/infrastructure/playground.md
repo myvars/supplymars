@@ -46,6 +46,8 @@ The flag reaches PHP as `%env(bool:PLAYGROUND_MODE)%` and Twig as `playground_mo
    3. Syncs S3 `uploads/` and `media/` from live's root to the `playground/` prefix (`--delete`).
    4. `FLUSHALL` on the playground Redis: the cache, and every playground session, so everyone is signed out.
 
+The playground's scheduled jobs are skipped from 02:10 to 02:30 UTC (`SkipJobsDuringPlaygroundReset`): while the restore runs, tables are missing or half-loaded, and a job would fail on them. A skipped run is not made up later; the next one after 02:30 runs as normal ([06-operations.md](../06-operations.md#scheduled-jobs)).
+
 The script restores into `DATABASE_NAME`, which defaults to `app` as the database container's does (`compose.yaml`). The env files leave it unset ([11-runbook.md](../11-runbook.md#production-env-files)).
 
 Run a reset by hand (with `$PLAYGROUND` from [11-runbook.md](../11-runbook.md#compose-command-prefix)):
