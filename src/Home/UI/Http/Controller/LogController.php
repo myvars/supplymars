@@ -18,7 +18,12 @@ final class LogController extends AbstractController
     #[Route(path: '/log', name: 'app_log_index')]
     public function index(): Response
     {
-        return $this->render('home/log/index.html.twig', ['posts' => $this->log->all()]);
+        $postsByYear = [];
+        foreach ($this->log->all() as $post) {
+            $postsByYear[$post->date->format('Y')][] = $post;
+        }
+
+        return $this->render('home/log/index.html.twig', ['postsByYear' => $postsByYear]);
     }
 
     #[Route(path: '/log/{slug}', name: 'app_log_show', requirements: ['slug' => '[a-z0-9]+(?:-[a-z0-9]+)*'])]
