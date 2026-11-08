@@ -64,6 +64,7 @@ Records of decisions; later amendments are noted in each ADR's Status line.
 ## Records
 
 - [12-technical-review.md](12-technical-review.md): architectural review as of V1.0, 31 March 2026. A dated snapshot, not maintained.
+- [`content/log/`](../content/log/): the public engineering log at `/log`, one Markdown file per post (`YYYY-MM-DD-slug.md`, front matter: `title`, `period`, `summary`, optional `figures` and `refs`). It records what changed and why, over time; the docs here describe the system as it is. `EngineeringLog` (`src/Home/Service/`) reads it, and a malformed post (or two posts with the same slug) fails `EngineeringLogTest`. Images must be in the repository or the S3 bucket; the Content Security Policy blocks any other host. Read before writing a post.
 
 ## User manual
 

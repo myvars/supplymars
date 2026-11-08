@@ -1,0 +1,42 @@
+{# Engineering log index: every post, newest first. Dark in both modes, like the About page.
+   Variable: posts (list<LogPost>) #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Engineering Log{% endblock %}
+
+{% block main_class %}grow bg-gray-950{% endblock %}
+
+{% block body %}
+    {{ include('home/log/_hero.html.twig', {
+        eyebrow: 'Engineering Log',
+        heading: 'Building SupplyMars',
+        lede: 'The decisions behind SupplyMars, the trade-offs, and what I learned when things broke, from the first commit onwards.',
+    }) }}
+
+    <section class="bg-gray-950 pt-4 pb-20 lg:pb-28">
+        <div class="mx-auto max-w-3xl px-6">
+            {% if posts is empty %}
+                <p class="text-gray-400">No posts yet.</p>
+            {% else %}
+                <ol class="flex flex-col gap-4">
+                    {% for post in posts %}
+                        <li>
+                            <a href="{{ path('app_log_show', { slug: post.slug }) }}"
+                               data-turbo-frame="body"
+                               class="group block rounded-lg border border-white/[0.06] bg-gray-900 p-6 transition-colors hover:border-orange-500/40 focus-ring">
+                                <p class="text-xs font-semibold uppercase tracking-widest text-orange-500">{{ post.period }}</p>
+                                <h2 class="mt-2 text-xl sm:text-2xl font-bold tracking-tight text-white group-hover:text-orange-300 transition-colors">{{ post.title }}</h2>
+                                <p class="mt-2 text-gray-400 leading-relaxed">{{ post.summary }}</p>
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ol>
+            {% endif %}
+
+            <p class="mt-10 text-sm text-gray-500">
+                Each post is dated by the period it covers. Posts before November 2026 were written up in November 2026 from the commit history and pull requests on
+                <a href="https://github.com/myvars/supplymars" target="_blank" class="text-orange-400 hover:text-orange-300 transition-colors focus-ring">GitHub</a>.
+            </p>
+        </div>
+    </section>
+{% endblock %}

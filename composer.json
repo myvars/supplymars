@@ -18,6 +18,7 @@
         "fakerphp/faker": "^1.24.1",
         "friendsofphp/proxy-manager-lts": "^1.0.19",
         "knplabs/knp-time-bundle": "^2.5",
+        "league/commonmark": "^2.10",
         "league/flysystem-aws-s3-v3": "^3.35.3",
         "liip/imagine-bundle": "^2.18.1",
         "myvars/form-flow": "^1.6",
