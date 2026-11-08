@@ -5,8 +5,8 @@ summary: My controller pattern moves out of the app into its own versioned Compo
 figures:
   - value: "5"
     label: flows in the package
-  - value: −3,264
-    label: lines removed from the app
+  - value: ~3,000
+    label: lines removed from the app, net
   - value: "18"
     label: files switched to the package
   - value: "1,050"
@@ -35,13 +35,13 @@ return $flow->form(
 
 The form binds to a form model, a mapper turns it into a command, a handler does the work and returns a result, and the flow takes care of validation, the 422 on failure, the flash message, the redirect and Turbo. It grew out of two years of iterating on how this app's controllers should work, and by this spring it was stable.
 
-It was also living in two places. I use it in a smaller skeleton project as well, where I try ideas before bringing them here. Two copies of the same code drift, so in June I made it a package: `myvars/form-flow`, versioned and published on Packagist, with the skeleton as the reference copy.
+It was also living in two places. I use it in a smaller skeleton project as well, where I try ideas before bringing them here. Two copies of the same code drift, so in June I made it a package: `myvars/form-flow`, versioned and published on Packagist, and both projects depend on it.
 
 ## Getting the API right first
 
 Extracting code is the moment its API becomes a promise, so I cleaned it up before publishing rather than after.
 
-- **Fewer ways to say the same thing.** `FlowContext` had grown overlapping factory methods. Seventeen calls to `forSuccess()` became `forCommand()`, and the unused ones went.
+- **Fewer ways to say the same thing.** `FlowContext` had grown overlapping factory methods. Seventeen `forSuccess()` calls folded into one factory, which became `forAction()` with the rename below, and the unused ones went.
 - **Names that say what a flow is for.** `CommandFlow` became `ActionFlow`: it runs a state change, like approving a review or locking an order. `DeleteFlow` became `ConfirmFlow`, because deleting is only one of the things that needs a confirmation step.
 
 ## A flaw found on the way
@@ -59,8 +59,8 @@ The package must not know anything about SupplyMars, and the app shouldn't chang
 - The inline edit flow no longer saves anything itself. The callback that applies the change also owns the flush, so the app decides when and how data is persisted.
 - The package ships plain default templates, and the app overrides them with its own, so the look stays in the app.
 
-Then the switch itself: the in-app `FormFlow` directory and its tests went, eighteen files changed their imports to the package's namespace, and the bundle was registered. 3,264 lines left the app, and all 1,050 tests passed.
+Then the switch itself: the in-app `FormFlow` directory and its tests went, eighteen files changed their imports to the package's namespace, and the bundle was registered. About 3,000 lines left the app, and all 1,050 tests passed.
 
 ## Why it was worth it
 
-The pattern now has one home, a version number and its own tests. The app depends on it the way it depends on any other library, through a constraint in `composer.json`, and the skeleton and SupplyMars can't drift apart again. ADR 006 records the move, and the project's instructions say plainly that FormFlow lives in the package and must not come back into `src/`.
+The pattern now has one home, a version number and its own tests. The app depends on it the way it depends on any other library, through a constraint in `composer.json`, and the skeleton and SupplyMars can now differ only by a version number. ADR 006 records the move, and the project's instructions say plainly that FormFlow lives in the package and must not come back into `src/`.

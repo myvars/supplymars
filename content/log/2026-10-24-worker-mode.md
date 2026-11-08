@@ -10,7 +10,7 @@ figures:
   - value: ~200 MiB
     label: flat over 25,000 requests
   - value: 2 → 1
-    label: images to build and run
+    label: web-tier images
 refs:
   - label: ADR 016 · FrankenPHP
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md
@@ -24,7 +24,7 @@ refs:
     url: https://github.com/myvars/supplymars/issues/67
 ---
 
-SupplyMars ran the way most PHP apps run: nginx in front, PHP-FPM behind, two images and a FastCGI hop between them. Every request booted the Symfony kernel from scratch. It worked, but it was two things to configure, build and secure where one would do, and it left the biggest PHP performance gain of recent years on the table.
+SupplyMars ran the way most PHP apps run: nginx in front, PHP-FPM behind, two images and a FastCGI hop between them. Every request booted the Symfony kernel from scratch. It worked, but it was two things to configure, build and secure where one would do, and every request paid for a full boot.
 
 FrankenPHP is a PHP server built on Caddy. It can run PHP the classic way, one boot per request, or in worker mode, where the app boots once and serves request after request. I did it in two steps, so each could be measured on its own.
 
@@ -34,19 +34,19 @@ The first change ([#81](https://github.com/myvars/supplymars/pull/81)) replaced 
 
 The real work was moving what nginx used to do into places that every environment shares:
 
-- **Rate limits** moved into the app with Symfony's RateLimiter: ten sign-ins a minute, a shared limit on registration and password reset, limits on the health checks. The rules match the decoded path, the way the router does, so an encoded URL can't slip past.
+- **Rate limits** moved into the app with Symfony's RateLimiter: ten requests a minute to the sign-in page, a shared limit on registration and password reset, limits on the health checks. The rules match the decoded path, the way the router does, so an encoded URL can't slip past.
 - **Real client IPs** come from Symfony's `trusted_proxies`, trusting only the forwarded-for and protocol headers.
 - **The request body limit** is PHP's own.
 - **Only `public/index.php` can run.** I proved it by writing a `probe.php` into `public/`: it ran from the command line, and the server returned 404 for it.
-- **Production runs as `www-data`** with `no-new-privileges`, and can't write to its own PHP config.
+- **Production runs as `www-data`**, and can't write to its own PHP config.
 
 With nginx gone, development, tests and production enforce the same rules in the same code. The rate limits have tests now, which nginx rules never had.
 
-In classic mode FrankenPHP was about a millisecond slower per request than PHP-FPM, and handled more at twenty concurrent requests. That was the expected trade, and worker mode was the reason to make it.
+In classic mode FrankenPHP was about a millisecond slower per request than PHP-FPM, and handled more at twenty concurrent requests. Classic mode was never the destination; worker mode was the reason for the move.
 
 ## Step two: worker mode
 
-Worker mode is one line of configuration ([#85](https://github.com/myvars/supplymars/pull/85)). Production sets `FRANKENPHP_CONFIG: "worker /app/public/index.php"`; development leaves it empty and stays in classic mode, so a code change is picked up without a restart. Each worker restarts after 500 requests as a safety net against slow leaks.
+Worker mode is mostly one line of configuration ([#85](https://github.com/myvars/supplymars/pull/85)). Production sets `FRANKENPHP_CONFIG: "worker /app/public/index.php"`; development leaves it empty and stays in classic mode, so a code change is picked up without a restart. Each worker restarts after 500 requests as a safety net against slow leaks.
 
 The configuration is the easy part. Worker mode changes a rule that most PHP code never has to think about: **services live across requests**. A service that keeps the current user in a property will hand it to the next visitor.
 
@@ -65,7 +65,7 @@ The production image locally, against a copy of production's data, three runs ea
 | Order list, one at a time | 129.3–129.5 ms | 122.8–123.6 ms |
 | Order list, 20 concurrent | 59.1–59.3 req/s | 61.8–61.9 req/s |
 
-The home page roughly doubled its throughput. The order list improved by the same few milliseconds of boot time, which is small next to its queries, and that tells me exactly where its next gains are.
+The home page served 1.5–1.7× as many requests. The order list improved by the same few milliseconds of boot time, which is small next to its queries: its time is in the database, so that is where its next gains are.
 
 Memory was the other question on a 2 GB server. Over 25,000 mixed requests the container rose from about 150 MiB to 200 MiB as the twenty workers warmed up, then stayed flat, with or without the restarts. Every response was a 2xx.
 
@@ -87,4 +87,4 @@ The fix was to turn preload off. I had set it up under PHP-FPM in February, wher
 
 ## What it leaves behind
 
-One image instead of two. Rules that nginx used to enforce now in tested application code. A home page twice as fast, flat memory, and a written rule with a test that fails when anyone breaks it. `make check-prod-config` validates the production Caddyfile with the real worker line in CI, so a wrong path fails the build, not the deploy.
+One web image instead of two. Rules that nginx used to enforce now in tested application code. A home page 1.5–1.7× faster, flat memory, and a written rule with a test that fails when anyone breaks it. `make check-prod-config` validates the production Caddyfile with the real worker line in CI, so a wrong path fails the build, not the deploy.

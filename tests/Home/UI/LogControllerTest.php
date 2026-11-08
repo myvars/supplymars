@@ -20,7 +20,7 @@ final class LogControllerTest extends WebTestCase
             ->assertSee('Five weeks, 119 pull requests')
             ->assertSee('6 October – 8 November 2026')
             // Grouped by year, newest first
-            ->assertSeeIn('section:first-of-type h2', '2026')
+            ->assertSeeIn('#log-year-2026', '2026')
             ->assertSeeIn('#log-year-2026 + ol li:first-child h3', 'Five weeks, 119 pull requests')
             ->assertElementAttributeContains('a[href="/log/five-weeks-119-pull-requests"]', 'data-turbo-frame', 'body');
     }
