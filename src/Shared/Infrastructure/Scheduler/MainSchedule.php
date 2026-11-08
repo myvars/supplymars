@@ -17,7 +17,7 @@ use Symfony\Contracts\Cache\CacheInterface;
  * Every scheduled job, for both stacks. The production messenger container runs them by consuming
  * scheduler_default, one at a time; development and make up-prod-local consume only async, so nothing
  * here runs locally. Times are UTC (date.timezone in docker/php/conf.d/10-app.ini). On the playground,
- * SkipJobsDuringPlaygroundReset skips every job due from 02:10 to 02:30, while the reset restores the database.
+ * SkipJobsDuringPlaygroundReset skips every job picked up from 02:10 to 02:30, while the reset restores the database.
  */
 #[AsSchedule]
 final readonly class MainSchedule implements ScheduleProviderInterface

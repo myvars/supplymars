@@ -56,6 +56,8 @@ Run a reset by hand (with `$PLAYGROUND` from [11-runbook.md](../11-runbook.md#co
 docker compose $PLAYGROUND exec -T reset /usr/local/bin/playground-reset.sh
 ```
 
+Outside 02:10–02:30 the scheduled jobs keep running, so one that lands during a reset run by hand can fail on the half-restored database. It is harmless (the restore replaces what it wrote), but to avoid the errors, run it in that window or stop `messenger` first and start it after.
+
 ## Troubleshooting
 
 `reset` exists only with `--profile playground`, which `$PLAYGROUND` includes; without it, `ps` and `logs` leave it out.

@@ -52,13 +52,30 @@ final class SkipJobsDuringPlaygroundResetTest extends KernelTestCase
         self::assertSame($handled, $event->shouldHandle());
     }
 
-    public function testTheContainerReadsPlaygroundModeFromTheEnvironment(): void
+    /**
+     * @return iterable<string, array{string, bool}>
+     */
+    public static function environments(): iterable
     {
-        // .env has PLAYGROUND_MODE=0: the live stack never skips
-        self::bootKernel();
-        self::mockTime('2026-11-08 02:15:00 UTC');
+        yield 'playground' => ['1', false];
+        yield 'live' => ['0', true];
+    }
 
-        self::assertTrue($this->receiveScheduledJob('app:build-purchase-orders 20')->shouldHandle());
+    #[DataProvider('environments')]
+    public function testTheRegisteredListenerReadsPlaygroundModeFromTheEnvironment(string $playgroundMode, bool $handled): void
+    {
+        // The container's own listener, not a replacement: wired by #[AsEventListener], mode from the env
+        $previous = [$_SERVER['PLAYGROUND_MODE'] ?? null, $_ENV['PLAYGROUND_MODE'] ?? null];
+        $_SERVER['PLAYGROUND_MODE'] = $_ENV['PLAYGROUND_MODE'] = $playgroundMode;
+
+        try {
+            self::bootKernel();
+            self::mockTime('2026-11-08 02:15:00 UTC');
+
+            self::assertSame($handled, $this->receiveScheduledJob('app:build-purchase-orders 20')->shouldHandle());
+        } finally {
+            [$_SERVER['PLAYGROUND_MODE'], $_ENV['PLAYGROUND_MODE']] = $previous;
+        }
     }
 
     /**
@@ -66,7 +83,9 @@ final class SkipJobsDuringPlaygroundResetTest extends KernelTestCase
      */
     private function receiveScheduledJob(string $command): WorkerMessageReceivedEvent
     {
-        $context = new MessageContext('default', 'job', CronExpressionTrigger::fromSpec('*/15 * * * *'), new \DateTimeImmutable());
+        /** @var ClockInterface $clock */
+        $clock = self::getContainer()->get(ClockInterface::class);
+        $context = new MessageContext('default', 'job', CronExpressionTrigger::fromSpec('*/15 * * * *'), $clock->now());
         $event = new WorkerMessageReceivedEvent(
             new Envelope(new RunCommandMessage($command), [new ScheduledStamp($context)]),
             'scheduler_default',
