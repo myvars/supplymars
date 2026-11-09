@@ -16,7 +16,7 @@ refs:
     url: https://github.com/myvars/supplymars/blob/main/Docs/patterns/Turbo/README.md
 ---
 
-Until October 2024 the project, still called Turtle in its README, sat behind a plain demo homepage, with sign-ups open since January. That month it got search worth the name, a real public face, and a theme: everything a Martian colony needs.
+Until October 2024 the project, still called Turtle in its README, sat behind a plain demo homepage, with sign-ups open since the site went up in April. That month it got search worth the name, a real public face, and a theme: everything a Martian colony needs.
 
 ## Search in the URL
 
@@ -39,7 +39,7 @@ Two weeks later every address moved to Mars too. New customers get one of fiftee
 
 ## Locked to staff
 
-The Mars theme commit of 17 October also closed a gap that had been open since January. Until 21 September the admin screens had no access check at all; that day every admin controller started requiring `ROLE_USER`, which kept out crawlers but still let in anyone who registered. All sixteen now require `ROLE_ADMIN`. Signing up gets you an account, and nothing behind it.
+The Mars theme commit of 17 October also closed a gap that had been open since the site went up in April. Until 21 September the admin screens had no access check at all; that day every admin controller started requiring `ROLE_USER`, which kept out crawlers but still let in anyone who registered. All sixteen now require `ROLE_ADMIN`. Signing up gets you an account, and nothing behind it.
 
 ## Tuning Turbo
 
