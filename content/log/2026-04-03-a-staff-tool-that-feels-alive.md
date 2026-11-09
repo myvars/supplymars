@@ -60,4 +60,4 @@ It mattered that every screen looks great and works properly at every breakpoint
 
 Earlier, in February, iPhone users had got a [native swipe back](/log/an-app-without-an-spa) between pages.
 
-*Update, October 2026: the general-purpose components, such as buttons, forms, dialogs and badges, moved from Flowbite to the Shadcn kit in [the five weeks of October](/log/five-weeks-119-pull-requests). The look described here stayed.*
+*Update, October 2026: the general-purpose components, such as buttons, forms, dialogs and badges, moved from Flowbite to the Shadcn kit: [A UI kit the project owns](/log/a-ui-kit-the-project-owns). The look described here carried across.*
