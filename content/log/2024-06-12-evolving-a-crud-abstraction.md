@@ -21,7 +21,7 @@ public function new(Request $request): Response
 }
 ```
 
-The helper paged the index with Pagerfanta, bound the form to the entity, persisted it, set a flash message, answered a Turbo Frame with a stream that refreshed the page, and worked out the route names from the section, such as `app_category_index`. The five catalogue controllers, about 150 lines each once they shared the structure, came down to about 90. The last commits of the day added error handling: a missing record showed an empty page or redirected with a warning, and each save was wrapped in a catch that turned any failure into an error flash.
+The helper paged the index with Pagerfanta, bound the form to the entity, persisted it, set a flash message, answered a Turbo Frame with a stream that refreshed the page, and worked out the route names from the section, such as `app_category_index`. The five catalogue controllers shrank by about 40%. The last commits of the day added error handling: a missing record showed an empty page or redirected with a warning, and each save was wrapped in a catch that turned any failure into an error flash.
 
 The helper saved every entity the same way, persist and flush, and an entity that needed more had no place to say so.
 
@@ -43,4 +43,4 @@ Five of them, `CreateOrder`, `CreateOrderItem`, `EditOrderItem`, `EditPurchaseOr
 
 Each version moved a decision closer to the code that owned it. The first put everything in one place, which removed the repetition but left no room for an entity that was different. The second made room per entity; the third per operation; the fourth gave the operations names and let them stand without the CRUD layer at all. What stayed the same throughout was the catch-all around each save, turning any exception into a generic error flash.
 
-*Update, November 2026: the options classes became one `CrudOptions` and the handlers one base class in [the winter of 2025](/log/winter-2025-295-tests-to-1014). The [rebuild by bounded context](/log/rebuilding-by-bounded-context) replaced the CRUD layer with FormFlow, whose handlers return a `Result` instead of swallowing exceptions, and FormFlow later [became a package](/log/formflow-becomes-a-package). The verb-named services became commands and handlers, one per operation.*
+*Update, November 2026: the options classes became one `CrudOptions` in [the winter of 2025](/log/winter-2025-295-tests-to-1014). The [rebuild by bounded context](/log/rebuilding-by-bounded-context) replaced the CRUD layer with FormFlow, whose handlers return a `Result` instead of swallowing exceptions, and turned the verb-named services into commands and handlers.*

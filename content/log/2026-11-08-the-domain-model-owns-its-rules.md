@@ -1,7 +1,7 @@
 ---
 title: A domain model that owns its rules
 period: 2024 – 2026
-summary: The thread that runs through every rewrite. Entities that answer for themselves, built whole through named constructors, small immutable values and typed IDs, one path for every write, and rules checked where the change is made. A step at a time, each when the code made the case for it.
+summary: The thread that runs through every rewrite. Entities that answer for themselves, built whole, with typed IDs and immutable values, one path for every write, and rules checked where the change is made.
 refs:
   - label: Architecture
     url: https://github.com/myvars/supplymars/blob/main/Docs/03-architecture.md
@@ -21,7 +21,7 @@ In July the same entities started [raising domain events](/log/domain-events-and
 
 ## Built whole
 
-In February 2025 the four entities at the heart of the business, orders, order lines, purchase orders and their lines, got [private constructors and named ones](/log/orders-built-whole), such as `CustomerOrder::createFromCustomer()`. An order can only be created with what it needs to be valid, its setters went private, and its getters stopped returning nulls that couldn't happen. The test factories build through the same constructors, so a test can't create an order the application never could.
+In February 2025 the four entities at the heart of the business, orders, order lines, purchase orders and their items, got [private constructors and named ones](/log/orders-built-whole), such as `CustomerOrder::createFromCustomer()`. An order can only be created with what it needs to be valid, its setters went private, and its getters stopped returning nulls that couldn't happen. The test factories build through the same constructors, so a test can't create an order the application never could.
 
 ## Small values that can't change
 
@@ -52,18 +52,7 @@ The business rules that had lived in Doctrine listeners, keyed on field names, m
 
 ## One path for every write
 
-The [rebuild by bounded context](/log/rebuilding-by-bounded-context), merged in January 2026, gave every write the same shape. A form fills a form model, never an entity. A mapper turns it into a readonly command, a handler loads the entity and calls one of its methods, and the result is ok or failed with a message. The command says only what is being asked:
-
-```php
-final readonly class CancelOrder
-{
-    public function __construct(public OrderPublicId $id)
-    {
-    }
-}
-```
-
-The entity's method does the rest. Locking an order shows the shape most of them now have: check, change, and say what happened.
+The [rebuild by bounded context](/log/rebuilding-by-bounded-context), merged in January 2026, gave every write the same shape. A form fills a form model, never an entity. A mapper turns it into a readonly command, a handler loads the entity and calls one of its methods, and the result is ok or failed with a message. The command says only what is being asked, such as `CancelOrder` with the order's ID. The entity's method does the rest. Locking an order shows the shape most of them now have: check, change, and say what happened.
 
 ```php
 public function lockOrder(?User $holder, User $changedBy): void

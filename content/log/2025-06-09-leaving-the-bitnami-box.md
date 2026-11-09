@@ -17,7 +17,7 @@ After the April rewrite, `setup.sh` built a server from scratch, asking for the 
 
 The rewrite made them strict: `set -eu`, a check for the commands setup needed, validation of every input, and a clear error and exit at each step that could fail. They were still scripts, run by hand, on one machine.
 
-## Secrets, twice
+## Where the secrets live
 
 In late April I moved the production secrets into Symfony's secrets vault: the database URL, the app secret, the mailer and S3 credentials, encrypted in the repository, with the decryption key kept off it. The scripts stopped asking for them.
 

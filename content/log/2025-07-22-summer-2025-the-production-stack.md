@@ -46,6 +46,6 @@ On 4 July Messenger's `async` transport moved from the database to RabbitMQ, wit
 
 - **A dev-tools compose file** starts the database, Redis, Mailpit and phpMyAdmin for working on the app locally, without the rest of the stack.
 - **phpMyAdmin for production** runs on my machine, not the server, and reaches the production database through an SSH tunnel. Every page it shows carries a red "PRODUCTION DATABASE" banner.
-- **A first k6 load test** of the homepage and the assets it loads: a baseline to build on, run from the Makefile.
+- **A first k6 load test** of the home page and the assets it loads: a baseline to build on, run from the Makefile.
 
-*Update, October 2026: three of these have since been replaced. The queue went back to the database, because it carried only email and the tests needed a running broker (ADR 013). The crontab became a Symfony Scheduler schedule, which runs one job at a time and ended about 11 deadlocks a day between jobs cron had started together (ADR 015). nginx and PHP-FPM gave way to FrankenPHP in [worker mode](/log/worker-mode) (ADR 016). Redis stayed, for the cache and sessions.*
+*Update, October 2026: Redis stayed, but the queue went back to the database (ADR 013), the crontab became a Symfony Scheduler schedule (ADR 015), and nginx and PHP-FPM gave way to FrankenPHP in [worker mode](/log/worker-mode) (ADR 016); [Five weeks, 119 pull requests](/log/five-weeks-119-pull-requests) tells why.*

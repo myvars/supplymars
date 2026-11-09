@@ -5,14 +5,14 @@ summary: One image in place of nginx and PHP-FPM, then a kernel that stays loade
 figures:
   - value: 8 → ~5 ms
     label: home page, one request at a time
-  - value: ~1.7×
+  - value: ~1.5×
     label: home page throughput, 20 concurrent
   - value: ~200 MiB
     label: flat over 25,000 requests
   - value: 2 → 1
     label: web-tier images
 refs:
-  - label: ADR 016 · FrankenPHP
+  - label: ADR 016 · FrankenPHP in place of nginx and PHP-FPM
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md
   - label: "#81 · FrankenPHP, classic mode"
     url: https://github.com/myvars/supplymars/pull/81
@@ -65,7 +65,7 @@ The production image locally, against a copy of production's data, three runs ea
 | Order list, one at a time | 129.3–129.5 ms | 122.8–123.6 ms |
 | Order list, 20 concurrent | 59.1–59.3 req/s | 61.8–61.9 req/s |
 
-The home page served 1.5–1.7× as many requests. The order list improved by the same few milliseconds of boot time, which is small next to its queries: its time is in the database, so that is where its next gains are.
+The home page served about 1.5× as many requests. The order list improved by the same few milliseconds of boot time, which is small next to its queries: its time is in the database, so that is where its next gains are.
 
 Memory was the other question on a 2 GB server. Over 25,000 mixed requests the container rose from about 150 MiB to 200 MiB as the twenty workers warmed up, then stayed flat, with or without the restarts. Every response was a 2xx.
 
@@ -87,4 +87,4 @@ The fix was to turn preload off. I had set it up under PHP-FPM in February, wher
 
 ## What it leaves behind
 
-One web image instead of two. Rules that nginx used to enforce now in tested application code. A home page 1.5–1.7× faster, flat memory, and a written rule with a test that fails when anyone breaks it. `make check-prod-config` validates the production Caddyfile with the real worker line in CI, so a wrong path fails the build, not the deploy.
+One web image instead of two, nginx's rules in tested application code, and a written rule with a test that fails when anyone breaks it. `make check-prod-config` validates the production Caddyfile with the real worker line in CI, so a wrong path fails the build, not the deploy.

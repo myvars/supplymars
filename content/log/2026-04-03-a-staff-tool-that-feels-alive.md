@@ -1,7 +1,7 @@
 ---
 title: A staff tool that feels alive
 period: February – April 2026
-summary: A design pass over the whole app. A darker default that borrows Mars's greys, oranges and reds, colour that tells staff a record's status and supplier at a glance, motion that draws the eye to what just changed, and a homepage built from real screenshots.
+summary: A design pass over the whole app. A darker default that borrows Mars's greys, oranges and reds, colour that tells staff a record's status and supplier at a glance, motion that draws the eye to what just changed, and a home page built from real screenshots.
 refs:
   - label: UI patterns
     url: https://github.com/myvars/supplymars/blob/main/Docs/patterns/UI/README.md
@@ -29,7 +29,7 @@ In a staff tool, colour is information, so each colour carries one meaning:
 - **A colour per supplier.** From 12 February each supplier has its own colour scheme, chosen in the supplier form: violet, amber, teal or rose. On an order split across suppliers, you can see which supplier holds which line. On 17 March the bold supplier gradients became subtle tints, plus a small colour dot beside the supplier's name, so the cards stay readable and the supplier stays recognisable.
 - **Nothing competing with status.** Profit badges became plain coloured text rather than tinted pills, so they no longer pulled the eye away from the status badge beside them.
 
-The same day, whole purchase order cards on the order page became clickable, while the links inside them, such as the status badge and the product image, still go where they say.
+On 17 March, whole purchase order cards on the order page became clickable, while the links inside them, such as the status badge and the product image, still go where they say.
 
 ## Motion with a purpose
 
@@ -45,9 +45,9 @@ The charts are meant to feel alive too. They animate in, and they answer on hove
 
 All of it respects `prefers-reduced-motion`. For someone who has asked for less movement, the animations are switched off and the page transitions shortened to almost nothing.
 
-## A homepage made of the real thing
+## A home page made of the real thing
 
-On 17 March the homepage got a new hero, "Commerce, built for Mars", and a showcase of the app itself: real screenshots of the catalogue, order management and the reporting dashboard, in browser frames with a soft glow behind them, saved as WebP. The next day the About, Contact, Terms and Privacy pages moved to the same dark, full-width sections with Mars landscape headers, and on 25 March I rewrote the About page around my own story.
+On 17 March the home page got a new hero, "Commerce, built for Mars", and a showcase of the app itself: real screenshots of the catalogue, order management and the reporting dashboard, in browser frames with a soft glow behind them, saved as WebP. The next day the About, Contact, Terms and Privacy pages moved to the same dark, full-width sections with Mars landscape headers, and on 25 March I rewrote the About page around my own story.
 
 ## Every breakpoint
 

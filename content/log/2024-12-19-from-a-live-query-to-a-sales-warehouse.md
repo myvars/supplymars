@@ -7,7 +7,7 @@ refs:
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/005-reporting-strategy.md
 ---
 
-With orders flowing through the simulation, the next question was the one any shop asks: what's selling? In November 2024 I built the answer, and rebuilt how it was stored twice in the first week.
+With orders flowing through the simulation, the next question was the one any shop asks: what's selling? In November 2024 I built the answer, and rebuilt how it was stored twice within a week.
 
 ## A live query
 

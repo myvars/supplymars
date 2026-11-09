@@ -29,7 +29,7 @@ Morphing keeps the viewer's place, but it also replaces whatever they have open.
 
 ## One refresh per order, from the worker
 
-One database flush in the simulation can touch an order dozens of times: every item, every purchase order line, every status change raises a domain event. Publishing one refresh per event would hammer the hub and every viewer.
+One database flush in the simulation can touch an order dozens of times: every item, every purchase order item, every status change raises a domain event. Publishing one refresh per event would hammer the hub and every viewer.
 
 A listener, `RefreshOrderPageForViewers`, turns those events into one queued `RefreshOrderPage` message per order, using Messenger's `DeduplicateStamp`. The worker publishes it, so the request that made the change never waits on the hub, and a hub failure is logged, never thrown.
 
@@ -47,9 +47,9 @@ The purchase order page went live the day after the order page ([#121](https://g
 
 ## Toasts for the person who needs to know
 
-Live pages help whoever is looking. Some changes matter to someone who isn't. If you hold the lock on an order and another staff user takes it, you should hear about it on whatever page you're on.
+Live pages help whoever is looking. Some changes matter to someone who isn't. If you hold the lock on an order and another staff user releases or takes it, you should hear about it on whatever page you're on.
 
-`CustomerOrder::lockOrder()` raises `OrderLockWasChangedEvent`, carrying only IDs: the order, the previous holder, the new holder and who acted. A handler sends the previous holder a toast, "Sam Carter released your lock on order #000003", with a link, but only when someone else took the lock. Releasing your own lock sends nothing. In the browser the toast arrived on the order list about half a second after the click.
+`CustomerOrder::lockOrder()` raises `OrderLockWasChangedEvent`, carrying only IDs: the order, the previous holder, the new holder and who acted. A handler sends the previous holder a toast, "Sam Carter released your lock on order #000003", with a link, but only when someone else changed the lock. Releasing your own lock sends nothing. In the browser the toast arrived on the order list about half a second after the click.
 
 ## Getting the security model exactly right
 
@@ -62,7 +62,7 @@ So I separated the two kinds of message by what they carry ([#145](https://githu
 - **A refresh is public and carries no data.** It says "this order changed", nothing more, and each viewer's reload goes through the page's own staff-only access check.
 - **A toast is private**, on the user's own topic, and the cookie grants only that topic, the same on every page, for a week from the last page load.
 
-SupplyMars has customers who can register and log in, so the cookie is staff only. Without that, a customer could subscribe to every order topic and learn when orders change. A staff user who didn't log out could also leave a cookie behind, so a customer's login now clears it.
+SupplyMars has customers who can register and sign in, so the cookie is staff only. Without that, a customer could subscribe to every order topic and learn when orders change. A staff user who didn't sign out could also leave a cookie behind, so a customer's sign-in now clears it.
 
 ADR 017 records the guarantee in one line: any browser holding a token can learn *when* an order changes, never *what* changed, and no content ever goes on a page topic. Staff can see every order anyway.
 

@@ -1,9 +1,9 @@
 ---
 title: FormFlow becomes a package
 period: 2 – 4 June 2026
-summary: My controller pattern moves out of the app into its own versioned Composer package, with ports the app implements, names that say what each flow is for, and a CSRF flaw fixed on the way.
+summary: My controller pattern moved out of the app into its own versioned Composer package, with ports the app implements, names that say what each flow is for, and a CSRF flaw fixed on the way.
 refs:
-  - label: ADR 006 · FormFlow
+  - label: ADR 006 · FormFlow controller pattern
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/006-formflow-controller-pattern.md
   - label: myvars/form-flow
     url: https://github.com/myvars/form-flow
@@ -26,7 +26,7 @@ Extracting code is the moment its API becomes a promise, so I cleaned it up befo
 
 ## A flaw found on the way
 
-The rename made me look at every action that used the confirm step, and that turned up a real problem. Cancelling an order, rewinding a purchase order and removing a supplier product all went through the delete flow, so their CSRF tokens were all built from the key `delete` plus the record's ID. On a supplier product, "delete" and "remove" were literally sharing one token: a token issued for one action was valid for the other.
+The rename made me look at every action that used the confirm step, and that turned up a real problem. Cancelling an order, rewinding a purchase order and removing a supplier product all went through the delete flow, so their CSRF tokens were all built from the key `delete` plus the record's ID. On a supplier product, "delete" and "remove" were sharing one token: a token issued for one action was valid for the other.
 
 Each confirmable action now has its own key, `cancel`, `rewind` or `remove`, and the confirmation pages that had been rendered by hand go through the flow like everything else.
 
@@ -39,7 +39,7 @@ The package must not know anything about SupplyMars, and the app shouldn't chang
 - The inline edit flow no longer saves anything itself. The callback that applies the change also owns the flush, so the app decides when and how data is persisted.
 - The package ships plain default templates, and the app overrides them with its own, so the look stays in the app.
 
-Then the switch itself: the in-app `FormFlow` directory and its tests went, eighteen files changed their imports to the package's namespace, and the bundle was registered. About 3,000 lines left the app, and all 1,050 tests passed.
+Then the switch itself: the in-app `FormFlow` directory and its tests went, eighteen files changed their imports to the package's namespace, and the bundle was registered. All 1,050 tests passed.
 
 ## Why it was worth it
 

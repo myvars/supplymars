@@ -3,9 +3,7 @@ title: Audit week
 period: 13 – 18 February 2026
 summary: I ran a structured audit of my own codebase, then worked through it in a week. Backups, failure handling, a deny-by-default firewall, money in exact arithmetic, and an interface pass that cut 15 icon sets to 3.
 refs:
-  - label: ADR 009 · Support tickets
-    url: https://github.com/myvars/supplymars/blob/main/Docs/adr/009-support-ticket-system.md
-  - label: ADR 010 · Customer insights
+  - label: ADR 010 · Customer insights reporting
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/010-customer-insights-reporting.md
   - label: Runbook
     url: https://github.com/myvars/supplymars/blob/main/Docs/11-runbook.md
@@ -47,9 +45,9 @@ A second round of findings went in the next day:
 
 ## The interface pass
 
-A separate UI audit followed, in two rounds, and around twenty commits over the following two days worked through it in phases:
+A separate UI audit followed, in two rounds, and over the following two days I worked through it in phases:
 
-- **Consistency.** Icons from twelve sets were replaced with Bootstrap Icons, leaving three sets in use. Dark-mode borders and dividers were standardised. Cards, badges and alerts got one set of rules.
+- **Consistency.** Fifteen icon sets came down to three, with Bootstrap Icons replacing the other twelve. Dark-mode borders and dividers were standardised. Cards, badges and alerts got one set of rules.
 - **Accessibility.** Labels on icon-only buttons and a skip link had gone in with the first audit. This pass moved buttons to `focus-visible` outlines and gave the order and purchase order pages a real `h1` instead of a styled `h5`.
 - **Components.** A breadcrumb in place of ad-hoc back links, a `DataTable` component extracted from the reports, an action slot on empty states, and error pages with a clear code and a way back.
 - **Stimulus**, two days later. Shared chart formatting and Turbo refresh helpers extracted, two controllers merged, and one with no references deleted.

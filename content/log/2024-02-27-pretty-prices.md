@@ -1,7 +1,7 @@
 ---
 title: "Pretty prices: markup, VAT and charm pricing"
 period: February 2024
-summary: Prices worked out from cost, a markup that cascades from category to subcategory to product, VAT, and a rounding rule that ends a price in .99 or .95. The rounding rules started as a table and became an enum the same afternoon.
+summary: Prices worked out from cost, a markup that cascades from category to subcategory to product, VAT, and a rounding rule that ends a price in .99 or .95. The rounding rules started as a table and became an enum the same day.
 refs:
   - label: ADR 004 · Pricing abstraction
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/004-pricing-abstraction.md
@@ -34,7 +34,7 @@ The rounding happens on the price with VAT, the one the customer sees, and the p
 
 The price models arrived on 23 February as a database table: an entity, a repository, a form, a controller and fixtures for None, Pretty 00, Pretty 10, Pretty 49, Pretty 95 and Pretty 99, with a `PrettyPriceService` that rounded a price by the model's tag.
 
-The same afternoon the table was gone. `PriceModel` became an enum, each model a rule in code instead of a row in a table, with seven cases, `NONE`, `DEFAULT` and five pretty ones, and the enum does its own rounding:
+The same day the table was gone. `PriceModel` became an enum, each model a rule in code instead of a row in a table, with seven cases, `NONE`, `DEFAULT` and five pretty ones, and the enum does its own rounding:
 
 ```php
 public function getPrettyPrice(string $price): string

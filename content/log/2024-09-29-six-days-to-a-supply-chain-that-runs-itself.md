@@ -21,7 +21,7 @@ The first version built customers and picked products with the Foundry test fact
 
 ## Day three: purchase orders
 
-On Monday `app:process-customer-order`, soon renamed `app:build-purchase-orders`, took the oldest pending orders that had no purchase orders yet and sourced each line: the cheapest active supplier with enough stock for the whole line got it. That evening the logic moved out of the command into a service and gained a rule: only when every line is covered do the purchase order items move from pending to processing, the point where a supplier would see them. The next morning a link on the order page ran the same service, so the command and a person sourcing by hand went through one path.
+On Monday `app:process-customer-order`, soon renamed `app:build-purchase-orders`, took the oldest pending orders that had no purchase orders yet and sourced each line: the cheapest active supplier with enough stock for the whole line got it. The same day the logic moved out of the command into a service and gained a rule: only when every line is covered do the purchase order items move from pending to processing, the point where a supplier would see them. The next day a link on the order page ran the same service, so the command and a person sourcing by hand went through one path.
 
 ## Day five: suppliers answer
 
@@ -48,10 +48,10 @@ With five commands, an order could now go from placed to delivered in the time t
 
 Running the commands over and over, faster than any supplier would, put the status rules under real load. The next day I added refunds, and by the end of the day a command that re-derives every status. That story is in [Hardening the status tree](/log/hardening-the-status-tree).
 
-Three more things came out of the same fortnight. On 23 September every order, line, purchase order and item got a status timeline drawn from the log, showing how long after the record was created each status came. And on 21 September the admin screens got their first access check. Until then they needed no login at all; the commit says it was to stop crawlers. And on 25 September purchase orders took on their supplier's colour, so on a busy order page a staff user can see at a glance which supplier holds which line.
+Three more things came out of the same fortnight. On 21 September the admin screens got their first access check; until then they needed no login at all. On 23 September every order, line, purchase order and item got a status timeline drawn from the log, showing how long after the record was created each status came. And on 25 September purchase orders took on their supplier's colour, so on a busy order page a staff user can see at a glance which supplier holds which line.
 
 ## Stock that moves
 
 A supplier whose stock never changes isn't much of a test of sourcing. On 26 September `app:update-supplier-stock` started moving it: pick a supplier and some of its products, and drain each product's stock by up to 10%. When stock falls to 20 or below, it restocks by up to 100, and the cost moves up or down by up to 10%. `app:reset-supplier-stock` sets each of a supplier's products to a stock level between 0 and 300. Three days later every stock and cost change went into a log of its own, through domain events.
 
-*Update, November 2026: the shipping and delivery rules are now one service, `ProcessingSimulator`, with the same hours and waits they had in 2024: 9 to 18 and 2 hours, 7 to 21 and 12 hours. The chance per run went from 20 in 21 to 19 in 20, an even 95%. Rejections are still one in 50. ADR 003 records the simulation-first design.*
+*Update, November 2026: the shipping and delivery rules are now one service, `ProcessingSimulator`, with the same hours and waits, an even 95% chance per run, and rejections still one in 50. ADR 003 records the simulation-first design.*

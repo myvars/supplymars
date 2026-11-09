@@ -23,8 +23,8 @@ The server now runs two complete stacks side by side, live and playground, each 
 
 A playground is only safe if whatever a visitor does is undone. Every night:
 
-1. At 02:00, live's backup command writes the nightly dump to S3, as it always has, and now also keeps a local copy for the playground.
-2. At 02:15, the playground's reset container restores that copy into the playground database.
+1. Live's backup command writes the nightly dump to S3, as it always has, and now also keeps a local copy for the playground.
+2. Shortly after, the playground's reset container restores that copy into the playground database.
 3. Straight after, it scrambles the staff logins, all except my own admin account, which it keeps on purpose, and creates the demo user.
 4. It copies live's product images to the playground's own S3 prefix, flushes the playground's Redis and empties its queue.
 
@@ -34,7 +34,7 @@ The playground starts each day as an exact, current copy of live, with every oth
 
 The order of steps 2 and 3 matters most. I first wrote the redaction as a PHP console command to run after the restore. Before it was ever scheduled, I replaced it: the reset container has no PHP, and a separate job would have left a gap between the restore and the redaction.
 
-The redaction became plain SQL, `playground-redact-staff.sql`, which the reset script runs as soon as the restore finishes, with nothing in between. The PHP command was deleted the same evening.
+The redaction became plain SQL, `playground-redact-staff.sql`, which the reset script runs as soon as the restore finishes, with nothing in between. The PHP command was deleted the same day.
 
 ## Signing in, and what's switched off
 

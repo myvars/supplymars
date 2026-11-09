@@ -1,7 +1,7 @@
 ---
 title: Orders built whole
 period: February 2025
-summary: Orders, order lines, purchase orders and their lines stopped being assembled with setters. Private constructors and named ones build each in one call, with what it needs to be valid, and the test factories build them the same way.
+summary: Orders, order lines, purchase orders and their items stopped being assembled with setters. Private constructors and named ones build each in one call, with what it needs to be valid, and the test factories build them the same way.
 refs:
   - label: ADR 002 · Order line splitting
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/002-order-line-splitting.md
@@ -9,7 +9,7 @@ refs:
     url: https://github.com/myvars/supplymars/blob/main/Docs/04-sourcing-and-pricing.md
 ---
 
-Until February 2025, a customer order in SupplyMars was put together by whoever needed one. The `CreateOrder` service created an empty order and set its customer, reference, addresses and shipping details one setter at a time. It worked, but the order didn't decide what an order needs. Any code could call `new CustomerOrder()` and set as much or as little as it liked, and the service looked up the customer's default addresses itself, through the repository. All four entities at the heart of the business, the customer order, its lines, the purchase order and its lines, had public constructors.
+Until February 2025, a customer order in SupplyMars was put together by whoever needed one. The `CreateOrder` service created an empty order and set its customer, reference, addresses and shipping details one setter at a time. It worked, but the order didn't decide what an order needs. Any code could call `new CustomerOrder()` and set as much or as little as it liked, and the service looked up the customer's default addresses itself, through the repository. All four entities at the heart of the business, the customer order, its lines, the purchase order and its items, had public constructors.
 
 ## Named constructors
 
@@ -36,6 +36,6 @@ With every field set at construction, the getters could say so. `getStatus()`, `
 
 The Foundry test factories had built entities the same way the old services did: create the object, then set fields on it. A factory that bypasses the constructor can produce an order the application never could, and a test built on one proves less than it seems.
 
-The factories now build through the named constructors. `CustomerOrderFactory` supplies a customer with a default address, a shipping method and a VAT rate, and instantiates with `CustomerOrder::createFromCustomer()`. New factories for purchase orders and their lines do the same. The new tests build purchase orders and their lines through the named constructors, directly in unit tests and through the factories in integration tests.
+The factories now build through the named constructors. `CustomerOrderFactory` supplies a customer with a default address, a shipping method and a VAT rate, and instantiates with `CustomerOrder::createFromCustomer()`. New factories for purchase orders and their items do the same.
 
 A few setters stayed public, such as the order's customer and shipping address, and the job of moving every write behind a domain method finished in the [rebuild by bounded context](/log/rebuilding-by-bounded-context). From here on, an entity decided how it could be built, not just how it could change.

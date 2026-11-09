@@ -21,9 +21,8 @@ The way PHP applications are built has changed a great deal since then. The big 
 - **A stricter language**: strict types, enums, readonly properties and attributes.
 - **Composer**, so code is shared as versioned packages.
 - **Rich entities and domain-driven design**, with an ORM mapping the domain model to the database.
-- **Automated tests**, run on every change.
+- **Automated tests**, run by CI on every change before it ships.
 - **Containers**, so development, CI and production run the same way.
-- **CI**, which checks every change before it ships.
 
 I had used most of it on my own projects. What I hadn't had was a codebase that used all of it from the first line, rather than modern practice added a piece at a time to something older. SupplyMars was that clean sheet.
 
@@ -40,7 +39,7 @@ E-commerce was the obvious domain to build it on. I had spent fifteen years in i
 
 ## The design
 
-Starting from a clean sheet, the design could begin with rich entities that hold their own rules, and with domain-driven design. It went further a step at a time, each step taken when the code made the case for it:
+Starting from a clean sheet, the design could begin with rich entities that hold their own rules, and with domain-driven design. It went further a step at a time:
 
 - **Rich entities.** Status enums that decide their own transitions, and entities that answer questions services used to work out from their fields (2024).
 - **Domain events**, raised by the entity that changed (2024), later rewritten as small, immutable facts (2025).
