@@ -46,32 +46,11 @@ I also tightened how I work. Every change started as a GitHub issue, went onto i
 
 ## A new runtime: FrankenPHP in worker mode
 
-The site ran on nginx and PHP-FPM: two images and a FastCGI hop between them. I replaced both with one FrankenPHP image ([#81](https://github.com/myvars/supplymars/pull/81)), then moved production to worker mode ([#85](https://github.com/myvars/supplymars/pull/85)), where the Symfony kernel stays loaded and serves request after request.
-
-Doing that properly meant moving everything nginx used to do into the app: rate limits through Symfony's RateLimiter, real client IPs through `trusted_proxies`, the request body limit. Development, tests and production now behave the same, because there is no nginx in front of one of them doing things the others don't.
-
-Worker mode also changes a rule most PHP code never has to think about. When one process serves many requests, a service that keeps the current user in a property will hand it to the next visitor. So the project has a rule now: no service holds request data in a property. `StateBetweenRequestsTest` interleaves two staff users and a visitor on one kernel, and I broke the rule on purpose to check that it fails.
-
-I benchmarked the production image locally with Apache Bench, three runs each:
-
-| Request | Classic | Worker |
-|---|---|---|
-| Home page, one at a time | 8.0–8.1 ms | 4.6–5.3 ms |
-| Home page, 20 concurrent | 566–705 req/s | 951–975 req/s |
-| Order list (query-bound), one at a time | 129.3–129.5 ms | 122.8–123.6 ms |
-| Order list, 20 concurrent | 59.1–59.3 req/s | 61.8–61.9 req/s |
-
-The light page got much faster. The order list barely moved, as expected: it spends its time in the database, and the numbers confirm where the next gains are. Over 25,000 requests, memory stayed flat at about 200 MiB once the workers warmed up, and every response was a 2xx.
+The site ran on nginx and PHP-FPM. I replaced both with one FrankenPHP image ([#81](https://github.com/myvars/supplymars/pull/81)), then moved production to worker mode ([#85](https://github.com/myvars/supplymars/pull/85)), where the Symfony kernel stays loaded between requests. Everything nginx used to do moved into the app, so development, tests and production behave the same, and a new rule, guarded by a test, keeps request data out of services that now live across requests. The home page handled 1.5–1.7× as many requests under load, and memory stayed flat at about 200 MiB over 25,000 requests. [FrankenPHP in worker mode](/log/worker-mode) has the benchmarks and the details.
 
 ## Pages that update themselves
 
-The simulation never stops: purchase orders are accepted four times an hour, and items ship and arrive every hour. Until now, a staff user looking at an order saw none of that until they reloaded. With Mercure ([#117](https://github.com/myvars/supplymars/pull/117), [#121](https://github.com/myvars/supplymars/pull/121)), order and purchase order pages refresh themselves, and if someone releases an order lock you hold, you get a toast with a link.
-
-The design took longer than the code. Refreshes and toasts are kept apart. A refresh is public and carries no data at all: it only tells the browser to reload the page, and that reload goes through the page's own access check. Toasts are private, on a per-user topic, and only staff get the cookie that lets them subscribe ([#145](https://github.com/myvars/supplymars/pull/145)).
-
-One database flush can raise hundreds of events, and I didn't want hundreds of refreshes. A listener turns them into one queued `RefreshOrderPage` message per order, using Messenger's `DeduplicateStamp`, with the locks in Redis so both containers see them. Turbo morphs the page in place, so anything the viewer has open (a modal, a side sheet, a dropdown) has to protect itself from the morph.
-
-Building it turned up four domain events that existed in the code but were never raised. They are raised now, along with new ones for removed items, PO rewinds and lock changes ([#124](https://github.com/myvars/supplymars/pull/124)).
+With Mercure ([#117](https://github.com/myvars/supplymars/pull/117), [#121](https://github.com/myvars/supplymars/pull/121)), order and purchase order pages refresh themselves as the simulation moves them, and if someone releases an order lock you hold, you get a toast with a link. A refresh is public and carries no data; a toast is private, and only staff can subscribe ([#145](https://github.com/myvars/supplymars/pull/145)). Building it turned up four domain events that existed in the code but were never raised ([#124](https://github.com/myvars/supplymars/pull/124)). [Live pages with Mercure](/log/live-pages-with-mercure) tells the whole story.
 
 ## Architecture rules the code actually follows
 
@@ -136,7 +115,7 @@ Two changes caused production incidents. Both were found quickly, fixed at the c
 
 **A deploy that waited for a worker that never stopped.** The first deploy with the Scheduler gave the worker 15 minutes to finish its job when asked to stop. The image has no `pcntl`, so the worker never saw the signal. The deploy waited out the full timeout, and live was down for about 20 minutes. The fix is a 30-second grace period: a killed job hasn't advanced the schedule, so it simply runs again ([#84](https://github.com/myvars/supplymars/pull/84)).
 
-**Every page returned 500 after a worker restart.** Mercure added an anonymous class to the compiled container. With OPcache preload on, PHP reused the preloaded class without its interface after a worker restart. I reproduced it by forcing a restart every 50 requests: the failures started at request 50, and with preload off there were none. Preload is now off in production ([#123](https://github.com/myvars/supplymars/pull/123)). It had been a sound choice under PHP-FPM in February; in worker mode, where the app stays loaded between requests, it no longer earned its place.
+**Every page returned 500 after a worker restart.** With OPcache preload on, PHP reused a preloaded class from the compiled container without its interface once a worker had restarted. I reproduced it by forcing a restart every 50 requests, and turned preload off in production ([#123](https://github.com/myvars/supplymars/pull/123)); [the worker mode post](/log/worker-mode) has the trace.
 
 ## Also in these weeks
 

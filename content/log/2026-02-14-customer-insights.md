@@ -44,7 +44,7 @@ Geography uses the shipping address, not the billing address. Where goods go is 
 
 ## Why it lives in Reporting
 
-Customer Insights could have gone in the Customer context. It went in Reporting because it reads across Order, Customer and Review; because its rows are derived data, never the source of truth; and because its heavy aggregation queries are best kept away from the code that registers and edits customers. It also follows the pattern the product and order reports already use, so anyone who knows one knows all three.
+Customer Insights reads across orders, customers and reviews, and everything it stores is derived, never the source of truth. That makes it reporting, not customer management, and it keeps the heavy aggregation queries away from the code that registers and edits customers.
 
 ## Refresh
 

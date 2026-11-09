@@ -31,7 +31,7 @@ The strengths were the ones I had worked for: a consistent architecture applied 
 
 ## Keeping the seam
 
-One recommendation asked me to decide about the async domain event infrastructure, an interface and dispatch logic that nothing used yet: put it to work, or remove it. I kept it, and recorded why: it was a deliberate seam for events that would later need the queue. An audit is input to decisions, not a list of orders, and the report recorded my choice beside its recommendation. Others were deferred or marked won't fix, each with its reason, including centralised logging, which the report rated as a high production gap.
+One recommendation asked me to decide about the async domain event infrastructure, an interface and dispatch logic that nothing used yet: put it to work, or remove it. I kept it, and recorded why: it was a deliberate seam for events that would later need the queue. An audit is input to decisions, not a list of orders, and the report recorded my choice beside its recommendation. Others were deferred or marked won't fix, each with its reason.
 
 ## The follow-up round
 

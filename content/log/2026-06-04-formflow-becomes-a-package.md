@@ -11,18 +11,7 @@ refs:
     url: https://github.com/myvars/supplymars/blob/main/Docs/patterns/FormFlow/README.md
 ---
 
-Every controller action in SupplyMars does one of a handful of things: show a form and save it, change a state, confirm and then act, list and search, or edit one field in place. FormFlow is the pattern that handles each of those once, so a controller only says *what* happens:
-
-```php
-return $flow->form(
-    request: $request,
-    formType: CategoryType::class,
-    data: new CategoryForm(),
-    mapper: $mapper,
-    handler: $handler,
-    context: FlowContext::forCreate($this->model()),
-);
-```
+Every controller action in SupplyMars does one of a handful of things: show a form and save it, change a state, confirm and then act, list and search, or edit one field in place. FormFlow is the pattern that handles each of those once, so a controller action is a single call that names the form, the mapper, the handler and a context.
 
 The form binds to a form model, a mapper turns it into a command, a handler does the work and returns a result, and the flow takes care of validation, the 422 on failure, the flash message, the redirect and Turbo. It grew out of two years of iterating on how this app's controllers should work, and by this spring it was stable.
 

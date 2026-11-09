@@ -27,8 +27,6 @@ At the same time, creating an order by hand, field by field, became a super admi
 
 A **Help** button in the header opens a side panel with help for the page you are on: twenty pages, from sign-in to the pricing screens, loaded through a Turbo Frame. Ten form fields where the label alone isn't enough got help text: the price model, the markup cascade, staff access, ticket pool visibility. The user manual gained chapters on manufacturers and support tickets, and caught up with the dashboard, demo orders and the product tabs.
 
-Two fixes came out of the polish. The help panel was fetching its content again on every open, because a Turbo Frame's `src` becomes an absolute URL after the first load and my comparison used the raw attribute; it now compares parsed URLs. And the date picker's stylesheet carried its own copy of Tailwind's utility layer, which overrode responsive classes like `hidden sm:inline`; it is now imported into the single Tailwind build, before Tailwind itself.
-
 ## Symfony 8.1
 
 April and May were upkeep: dependency and recipe updates, and a fix so the playground's nightly reset jobs receive their environment.
