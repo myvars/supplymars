@@ -17,7 +17,7 @@ Every amount is a decimal column in the database and a numeric string in PHP, an
 
 ## Where a markup comes from
 
-On 20 February VAT rates moved off products and subcategories: a product's VAT rate is its category's. Markup and price model work the same way, but with three levels. A category has a default markup and a price model. A subcategory and a product can each set their own, and a markup of zero, or a price model of `NONE`, means "inherit". So a category can set 5% for everything in it, one subcategory can override that, and one product can override both.
+First, VAT rates moved off products and subcategories: a product's VAT rate is its category's. Markup and price model work the same way, but with three levels. A category has a default markup and a price model. A subcategory and a product can each set their own, and a markup of zero, or a price model of `NONE`, means "inherit". So a category can set 5% for everything in it, one subcategory can override that, and one product can override both.
 
 ## Pretty, then work back
 
@@ -32,7 +32,7 @@ The rounding happens on the price with VAT, the one the customer sees, and the p
 
 ## A table, then an enum
 
-The price models arrived on 23 February as a database table: an entity, a repository, a form, a controller and fixtures for None, Pretty 00, Pretty 10, Pretty 49, Pretty 95 and Pretty 99, with a `PrettyPriceService` that rounded a price by the model's tag.
+A few days later the price models arrived as a database table: an entity, a repository, a form, a controller and fixtures for None, Pretty 00, Pretty 10, Pretty 49, Pretty 95 and Pretty 99, with a `PrettyPriceService` that rounded a price by the model's tag.
 
 The same day the table was gone. `PriceModel` became an enum, each model a rule in code instead of a row in a table, with seven cases, `NONE`, `DEFAULT` and five pretty ones, and the enum does its own rounding:
 
@@ -54,10 +54,10 @@ Pretty 49 ends a price in .49 below the half and .99 above it. Pretty 99 always 
 
 ## Pretty 95, pinned by tests
 
-Pretty 95 ends every price in .95, the next one up. As first written it rounded the wrong way, and the test suite that arrived on 23 March fixed it and pinned the cases: £10.01 becomes £10.95, £10.95 stays, and £10.96 becomes £11.95.
+Pretty 95 ends every price in .95, the next one up. As first written it rounded the wrong way, and the test suite that arrived a month later fixed it and pinned the cases: £10.01 becomes £10.95, £10.95 stays, and £10.96 becomes £11.95.
 
 ## Repricing only what changed
 
-A price depends on four things that live elsewhere: the product's cost, its subcategory, its category and the category's VAT rate. Doctrine listeners on them watch the fields that matter. When a category's markup changes, its listener reprices only the products whose markup comes from the category, those with no markup of their own and none on their subcategory. On 27 February a listener on VAT rates joined them: a change of rate reprices every product in the categories that use it, since VAT has no override. The same commit gave the product a costing section that shows the markup and price model at all three levels, its own, its subcategory's and its category's, and edits each.
+A price depends on four things that live elsewhere: the product's cost, its subcategory, its category and the category's VAT rate. Doctrine listeners on them watch the fields that matter. When a category's markup changes, its listener reprices only the products whose markup comes from the category, those with no markup of their own and none on their subcategory. Before the month was out, a listener on VAT rates joined them: a change of rate reprices every product in the categories that use it, since VAT has no override. The same commit gave the product a costing section that shows the markup and price model at all three levels, its own, its subcategory's and its category's, and edits each.
 
 *Update, November 2026: the seven price models and the three-level cascade haven't changed, and ADR 004 records them. The listeners went in the [October 2025 rewrite of domain events](/log/domain-events-take-two): a category now raises an event saying what changed, and a listener in the Pricing context reprices the products.*

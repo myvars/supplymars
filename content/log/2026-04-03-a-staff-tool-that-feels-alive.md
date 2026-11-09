@@ -17,19 +17,19 @@ The look had roots. Tailwind was there from the first commit. The Mars rebrand o
 
 ## Martian by default
 
-SupplyMars has a light mode and a dark mode, and dark is the default. It's the design I prefer: greys with orange and red accents, a hint of a Martian landscape. Light mode got a full pass on 11 February so it holds up for anyone who chooses it.
+SupplyMars has a light mode and a dark mode, and dark is the default. It's the design I prefer: greys with orange and red accents, a hint of a Martian landscape. Light mode got a full pass in February so it holds up for anyone who chooses it.
 
-On 19 March the dark design got a system of its own. Opaque grey borders gave way to translucent white ones at three strengths, 10%, 6% and 4%, for primary, secondary and tertiary edges, over layered backgrounds, so depth comes from light rather than from heavier lines. The sidebar, the toasts and the user menu got a frosted-glass finish, and form inputs inside a modal sit one level deeper than the modal around them.
+In late March the dark design got a system of its own. Opaque grey borders gave way to translucent white ones at three strengths, 10%, 6% and 4%, for primary, secondary and tertiary edges, over layered backgrounds, so depth comes from light rather than from heavier lines. The sidebar, the toasts and the user menu got a frosted-glass finish, and form inputs inside a modal sit one level deeper than the modal around them.
 
 ## Colour that means something
 
 In a staff tool, colour is information, so each colour carries one meaning:
 
-- **Status on the edge.** From 5 February, record cards carry a coloured left edge for their current status, so an order's state reads before any of its text does.
-- **A colour per supplier.** From 12 February each supplier has its own colour scheme, chosen in the supplier form: violet, amber, teal or rose. On an order split across suppliers, you can see which supplier holds which line. On 17 March the bold supplier gradients became subtle tints, plus a small colour dot beside the supplier's name, so the cards stay readable and the supplier stays recognisable.
+- **Status on the edge.** From early February, record cards carry a coloured left edge for their current status, so an order's state reads before any of its text does.
+- **A colour per supplier.** A week later each supplier got its own colour scheme, chosen in the supplier form: violet, amber, teal or rose. On an order split across suppliers, you can see which supplier holds which line. In March the bold supplier gradients became subtle tints, plus a small colour dot beside the supplier's name, so the cards stay readable and the supplier stays recognisable.
 - **Nothing competing with status.** Profit badges became plain coloured text rather than tinted pills, so they no longer pulled the eye away from the status badge beside them.
 
-On 17 March, whole purchase order cards on the order page became clickable, while the links inside them, such as the status badge and the product image, still go where they say.
+Around the same time, whole purchase order cards on the order page became clickable, while the links inside them, such as the status badge and the product image, still go where they say.
 
 ## Motion with a purpose
 
@@ -38,8 +38,8 @@ The motion is small, and each piece is there to point at something:
 - **Modals** scale in over a blurred page, so the page behind steps back.
 - **Toasts** slide in, and the inline editor scales into place when a value is clicked.
 - **Edit buttons and KPI cards** grow slightly under the pointer, and header buttons, pagination and tabs give a small press when clicked.
-- **Pages** slide a few percent left or right on forward and back navigation, through the browser's view transitions, from 5 February.
-- **New demo orders glow.** From 1 April a reusable Stimulus controller gives anything created within a set time a blue glow that fades over about three seconds, so a visitor who places a demo order sees it arrive in the list.
+- **Pages** slide a few percent left or right on forward and back navigation, through the browser's view transitions, from early February.
+- **New demo orders glow.** From April a reusable Stimulus controller gives anything created within a set time a blue glow that fades over about three seconds, so a visitor who places a demo order sees it arrive in the list.
 
 The charts are meant to feel alive too. They animate in, and they answer on hover with values formatted as money, counts or percentages.
 
@@ -47,7 +47,7 @@ All of it respects `prefers-reduced-motion`. For someone who has asked for less 
 
 ## A home page made of the real thing
 
-On 17 March the home page got a new hero, "Commerce, built for Mars", and a showcase of the app itself: real screenshots of the catalogue, order management and the reporting dashboard, in browser frames with a soft glow behind them, saved as WebP. The next day the About, Contact, Terms and Privacy pages moved to the same dark, full-width sections with Mars landscape headers, and on 25 March I rewrote the About page around my own story.
+In mid-March the home page got a new hero, "Commerce, built for Mars", and a showcase of the app itself: real screenshots of the catalogue, order management and the reporting dashboard, in browser frames with a soft glow behind them, saved as WebP. The About, Contact, Terms and Privacy pages soon moved to the same dark, full-width sections with Mars landscape headers, and a week later I rewrote the About page around my own story.
 
 ## Every breakpoint
 

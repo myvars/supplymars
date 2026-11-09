@@ -21,7 +21,7 @@ The rewrite made them strict: `set -eu`, a check for the commands setup needed, 
 
 In late April I moved the production secrets into Symfony's secrets vault: the database URL, the app secret, the mailer and S3 credentials, encrypted in the repository, with the decryption key kept off it. The scripts stopped asking for them.
 
-When deploys moved to CI in June, the pipeline passed that decryption key to the server on every deploy. Two days later I dropped the vault for plain environment variables, kept in GitHub's secrets and passed to the server by the deploy. Since March 2026 they have lived in env files on the server, outside the repository, and GitHub holds only what it needs to reach the server.
+When deploys moved to CI in June, the pipeline passed that decryption key to the server on every deploy. Within days I dropped the vault for plain environment variables, kept in GitHub's secrets and passed to the server by the deploy. Since March 2026 they have lived in env files on the server, outside the repository, and GitHub holds only what it needs to reach the server.
 
 ## Test factories in production
 
@@ -29,13 +29,13 @@ The simulation creates customers as it goes, and `app:create-customer-orders` bu
 
 ## Containers
 
-On 5 June the app moved into Docker, so development, CI and production would run the same way. One multi-stage Dockerfile builds both images. For PHP, a base stage has PHP 8.3-FPM, its extensions and Composer; a dev stage adds Xdebug; and the prod stage installs dependencies without dev packages, drops the tests and dumps the environment. nginx has a dev and a prod stage of its own. Compose files describe each environment: `compose.yaml` for what every environment shares (PHP, nginx, MySQL and the Messenger worker), an override for development, and `compose.prod.yaml` for production, with the Let's Encrypt certificates mounted into nginx. The containers wait for the database, and an entrypoint script runs the migrations and sets up the Messenger transport.
+In early June the app moved into Docker, so development, CI and production would run the same way. One multi-stage Dockerfile builds both images. For PHP, a base stage has PHP 8.3-FPM, its extensions and Composer; a dev stage adds Xdebug; and the prod stage installs dependencies without dev packages, drops the tests and dumps the environment. nginx has a dev and a prod stage of its own. Compose files describe each environment: `compose.yaml` for what every environment shares (PHP, nginx, MySQL and the Messenger worker), an override for development, and `compose.prod.yaml` for production, with the Let's Encrypt certificates mounted into nginx. The containers wait for the database, and an entrypoint script runs the migrations and sets up the Messenger transport.
 
 The `deploy/` folder, its Apache virtual hosts and its Supervisor config were deleted. So was the per-domain branding the scripts used to copy into place; the app became SupplyMars on one domain.
 
 ## A pipeline
 
-Two days later came the first GitHub Actions workflow. On every push to `main` it builds the containers, runs the test suite inside them, and deploys over SSH to an AWS Lightsail server: pull, then `docker compose up --build --wait`. The Symfony 7.3 upgrade went out through it two days after that.
+Days later came the first GitHub Actions workflow. On every push to `main` it builds the containers, runs the test suite inside them, and deploys over SSH to an AWS Lightsail server: pull, then `docker compose up --build --wait`. The Symfony 7.3 upgrade went out through it soon after.
 
 It was one job, so a failing test stopped the deploy, but nothing ran before a change reached `main`.
 

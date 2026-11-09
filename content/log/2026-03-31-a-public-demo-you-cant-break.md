@@ -34,7 +34,7 @@ The playground starts each day as an exact, current copy of live, with every oth
 
 The order of steps 2 and 3 matters most. I first wrote the redaction as a PHP console command to run after the restore. Before it was ever scheduled, I replaced it: the reset container has no PHP, and a separate job would have left a gap between the restore and the redaction.
 
-The redaction became plain SQL, `playground-redact-staff.sql`, which the reset script runs as soon as the restore finishes, with nothing in between. The PHP command was deleted the same day.
+The redaction became plain SQL, `playground-redact-staff.sql`, which the reset script runs as soon as the restore finishes, with nothing in between. The PHP command was deleted straight away.
 
 ## Signing in, and what's switched off
 

@@ -33,11 +33,11 @@ One recommendation asked me to decide about the async domain event infrastructur
 
 ## The follow-up round
 
-A second round of findings went in the next day:
+A second round of findings went in straight after:
 
 - **Deny by default.** Access used to be checked controller by controller, with an attribute on each. Now the firewall lists what is public (the home page, sign-in, password reset, the About pages) and everything else requires a staff role. A new page is private unless I say otherwise.
 - **Money in exact arithmetic.** A few totals were still summed with floating point. Order and purchase order totals now use `bcmath` on decimal strings, like the pricing engine always had, and a product price comparison uses `bccomp`.
-- **A Content Security Policy**, with the reasons for each exception written down. The first version blocked Asset Mapper's import map shims and the product images on S3; I widened exactly those two the next day.
+- **A Content Security Policy**, with the reasons for each exception written down. The first version blocked Asset Mapper's import map shims and the product images on S3; I widened exactly those two soon after.
 - **A post-deploy smoke test**, cron output into the container logs with rotation, and ADR 010 for Customer Insights.
 - **OPcache preload on PHP 8.5**, which shipped a day later. PHP 8.5's preloader crashed PHP-FPM when it walked the full dependency tree of 900-plus classes. Preloading the compiled container with plain `require` statements kept most of the benefit, so I shipped that and baked the cache into the image at build time.
 

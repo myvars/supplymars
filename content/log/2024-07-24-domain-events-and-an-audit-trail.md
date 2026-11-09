@@ -7,7 +7,7 @@ refs:
     url: https://github.com/myvars/supplymars/blob/main/Docs/03-architecture.md#domain-events
 ---
 
-By June 2024 an order's status in Turtle was worked out from its suppliers' purchase orders, not set by hand. That also meant statuses changed without anyone choosing a value: one purchase order item moving could change its purchase order, its order line and the order. After nearly six weeks without a commit, I came back on 24 July to record those changes.
+By June 2024 an order's status in Turtle was worked out from its suppliers' purchase orders, not set by hand. That also meant statuses changed without anyone choosing a value: one purchase order item moving could change its purchase order, its order line and the order. After nearly six weeks without a commit, I came back in late July to record those changes.
 
 ## Entities raise, services dispatch
 

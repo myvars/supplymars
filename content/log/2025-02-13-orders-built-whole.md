@@ -13,7 +13,7 @@ Until February 2025, a customer order in SupplyMars was put together by whoever 
 
 ## Named constructors
 
-The purchasing side already had static constructors, `PurchaseOrder::createFromOrder()` and `PurchaseOrderItem::createFromCustomerOrderItem()`, but public constructors beside them. On 13 February all four constructors became private, and the customer side got static ones that say what they are for:
+The purchasing side already had static constructors, `PurchaseOrder::createFromOrder()` and `PurchaseOrderItem::createFromCustomerOrderItem()`, but public constructors beside them. In mid-February all four constructors became private, and the customer side got static ones that say what they are for:
 
 ```php
 $customerOrder = CustomerOrder::createFromCustomer(
