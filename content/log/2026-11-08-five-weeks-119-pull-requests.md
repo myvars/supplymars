@@ -119,7 +119,7 @@ Two changes caused production incidents. Both were found quickly, fixed at the c
 
 ## Also in these weeks
 
-- **The Shadcn UI kit.** Three Flowbite packages and a set of hand-converted components were replaced by the Shadcn kit through Symfony UX Toolkit ([#3](https://github.com/myvars/supplymars/pull/3)). In-house components that clashed with kit names got names that say what they are, like `EntityCard` and `ModalPanel`.
+- **The Shadcn UI kit.** Three Flowbite packages and a set of hand-converted components were replaced by the Shadcn kit through Symfony UX Toolkit ([#3](https://github.com/myvars/supplymars/pull/3)). [A UI kit the project owns](/log/a-ui-kit-the-project-owns) tells that story.
 - **FormFlow as a package.** My controller pattern lives in its own Composer package, `myvars/form-flow`, now at 1.6 ([#209](https://github.com/myvars/supplymars/pull/209)).
 - **A docs review that found bugs.** A six-part review checked every guide and ADR against the code. Checking the docs turned up real bugs in orders, purchase orders, the catalog and sign-in, each fixed in its own PR. The project now has 61 documents, including 17 ADRs.
 - **Domain fixes.** Products are repriced when simulated stock and costs change, allocation edge cases are fixed, deleting a record that's still in use is refused, and Doctrine no longer rewrites `public_id` and `updated_at` on every flush.
