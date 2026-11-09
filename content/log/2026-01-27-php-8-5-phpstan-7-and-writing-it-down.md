@@ -20,7 +20,7 @@ refs:
     url: https://github.com/myvars/supplymars/blob/main/Docs/07-testing.md
 ---
 
-On 16 January the bounded-context rebuild merged after three months on its own branch. A change that size leaves work behind it, and January was about doing that work properly: tests, tooling, the pipeline, and writing down how the system works and why.
+On 16 January the [bounded-context rebuild](/log/rebuilding-by-bounded-context) merged after three months on its own branch. A change that size leaves work behind it, and January was about doing that work properly: tests, tooling, the pipeline, and writing down how the system works and why.
 
 ## Rebuilding the tests
 
