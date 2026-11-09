@@ -2,15 +2,6 @@
 title: Live pages with Mercure
 period: 23 – 26 October 2026
 summary: Order and purchase order pages that update themselves as the simulation runs, built on server-rendered HTML, with a security model that says exactly what a subscriber can learn.
-figures:
-  - value: ~0.6 s
-    label: from a change to an open page, locally
-  - value: "1"
-    label: refresh per order per burst of changes
-  - value: "9"
-    label: domain events raised that weren't before
-  - value: "0"
-    label: data on a public topic
 refs:
   - label: ADR 017 · Live updates with Mercure
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/017-live-updates-with-mercure.md

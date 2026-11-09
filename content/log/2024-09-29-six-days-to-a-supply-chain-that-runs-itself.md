@@ -2,15 +2,6 @@
 title: Six days to a supply chain that runs itself
 period: September 2024
 summary: One lifecycle stage a day, from placing an order to delivering it, each a console command with rules meant to look like a real supplier's. The status log became the simulator's clock, a lock let a person take an order out of the machine's hands, and supplier stock started to move on its own.
-figures:
-  - value: "6"
-    label: days from placing orders to delivering them
-  - value: "5"
-    label: commands, one per lifecycle stage
-  - value: 1 in 50
-    label: purchase orders rejected, down from 1 in 25
-  - value: "4"
-    label: stages that skip a locked order
 refs:
   - label: ADR 003 · Simulation-first design
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/003-simulation-first-design.md
@@ -38,13 +29,7 @@ On Wednesday purchase orders gained two statuses, accepted and rejected, and `ap
 
 ## A lock for people
 
-The commit that added those two statuses, just after noon, also added the order lock. A signed-in user can lock an order, and the order card shows a padlock with their name. The lock doesn't stop other users; it stops the machine. Every query the simulation uses to pick work adds one condition:
-
-```php
-->andWhere('co.orderLock IS NULL')
-```
-
-So in September no command sourced, accepted, shipped or delivered a locked order, and whoever holds the lock can work on it knowing the simulation won't move it. Anyone can release any lock. Two years later the build, accept, ship and deliver commands still skip a locked order with that line, and since [October 2026](/log/live-pages-with-mercure) the holder gets a toast when someone else releases their lock, since the simulation may then pick the order up. The one gap is refunds: `app:refund-purchase-orders`, added in October, doesn't check the lock, and still doesn't.
+The commit that added those two statuses also added the order lock. A signed-in user can lock an order, and the order card shows a padlock with their name. The lock doesn't stop other users; it stops the machine. Every query the simulation uses to pick work leaves locked orders out, so in September no command sourced, accepted, shipped or delivered a locked order, and whoever holds the lock can work on it knowing the simulation won't move it. Anyone can release any lock. The build, accept, ship and deliver commands still skip a locked order, and since [October 2026](/log/live-pages-with-mercure) the holder gets a toast when someone else releases their lock, since the simulation may then pick the order up.
 
 ## Day six: ship and deliver
 
@@ -61,7 +46,7 @@ With five commands, an order could now go from placed to delivered in the time t
 
 ## Running at full speed
 
-Running the commands over and over, faster than any supplier would, put the status rules under real load. The next morning I added refunds, and by the end of the day a command that re-derives every status. That story is in [Hardening the status tree](/log/hardening-the-status-tree).
+Running the commands over and over, faster than any supplier would, put the status rules under real load. The next day I added refunds, and by the end of the day a command that re-derives every status. That story is in [Hardening the status tree](/log/hardening-the-status-tree).
 
 Two more things came out of the same fortnight. On 23 September every order, line, purchase order and item got a status timeline drawn from the log, showing how long after the record was created each status came. And on 21 September the admin screens got their first access check. Until then they needed no login at all; the commit says it was to stop crawlers.
 

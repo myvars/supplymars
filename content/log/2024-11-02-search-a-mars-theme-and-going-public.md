@@ -2,13 +2,6 @@
 title: Search, a Mars theme, and going public
 period: October 2024
 summary: The month the project got a public face and its name. Search and filters held in the URL, the Mars theme and the public pages, every admin screen locked to staff, and every address moved to Mars.
-figures:
-  - value: "16"
-    label: admin controllers locked to staff
-  - value: "10"
-    label: search DTOs, one per index page
-  - value: "15"
-    label: Mars cities with sector post codes
 refs:
   - label: Security
     url: https://github.com/myvars/supplymars/blob/main/Docs/08-security.md

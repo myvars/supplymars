@@ -2,15 +2,6 @@
 title: FormFlow becomes a package
 period: 2 – 4 June 2026
 summary: My controller pattern moves out of the app into its own versioned Composer package, with ports the app implements, names that say what each flow is for, and a CSRF flaw fixed on the way.
-figures:
-  - value: "5"
-    label: flows in the package
-  - value: ~3,000
-    label: lines removed from the app, net
-  - value: "18"
-    label: files switched to the package
-  - value: "1,050"
-    label: tests green after the switch
 refs:
   - label: ADR 006 · FormFlow
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/006-formflow-controller-pattern.md

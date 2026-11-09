@@ -2,15 +2,6 @@
 title: "Pretty prices: markup, VAT and charm pricing"
 period: February 2024
 summary: Prices worked out from cost, a markup that cascades from category to subcategory to product, VAT, and a rounding rule that ends a price in .99 or .95. The rounding rules started as a table, became an enum the same afternoon, and one of them was wrong for a month.
-figures:
-  - value: "3"
-    label: levels a markup or price model can come from
-  - value: "7"
-    label: price models, NONE included
-  - value: 3 hours
-    label: from price model table to enum
-  - value: 1 month
-    label: Pretty 95 rounded the wrong way
 refs:
   - label: ADR 004 · Pricing abstraction
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/004-pricing-abstraction.md
@@ -26,23 +17,7 @@ Every amount is a decimal column in the database and a numeric string in PHP, an
 
 ## Where a markup comes from
 
-On 20 February VAT rates moved off products and subcategories: a product's VAT rate is its category's. Markup and price model work the same way, but with three levels. A category has a default markup and a price model. A subcategory and a product can each set their own, and a markup of zero, or a price model of `NONE`, means "inherit":
-
-```php
-public function getActiveMarkup(): ?string
-{
-    if ($this->getDefaultMarkup() > 0) {
-        return $this->getDefaultMarkup();
-    }
-    if ($this->getSubcategory()->getDefaultMarkup() > 0) {
-        return $this->getSubcategory()->getDefaultMarkup();
-    }
-
-    return $this->getCategory()->getDefaultMarkup();
-}
-```
-
-So a category can set 5% for everything in it, one subcategory can override that, and one product can override both.
+On 20 February VAT rates moved off products and subcategories: a product's VAT rate is its category's. Markup and price model work the same way, but with three levels. A category has a default markup and a price model. A subcategory and a product can each set their own, and a markup of zero, or a price model of `NONE`, means "inherit". So a category can set 5% for everything in it, one subcategory can override that, and one product can override both.
 
 ## Pretty, then work back
 
@@ -57,20 +32,25 @@ The rounding happens on the price with VAT, the one the customer sees, and the p
 
 ## A table, then an enum
 
-The price models arrived on 23 February, at noon, as a database table: an entity, a repository, a form, a controller and fixtures for None, Pretty 00, Pretty 10, Pretty 49, Pretty 95 and Pretty 99, with a `PrettyPriceService` that rounded a price by the model's tag.
+The price models arrived on 23 February as a database table: an entity, a repository, a form, a controller and fixtures for None, Pretty 00, Pretty 10, Pretty 49, Pretty 95 and Pretty 99, with a `PrettyPriceService` that rounded a price by the model's tag.
 
-Just after three the table was gone. `PriceModel` became an enum, each model a rule in code instead of a row in a table, with seven cases, `NONE`, `DEFAULT` and five pretty ones, and the enum does its own rounding:
+The same afternoon the table was gone. `PriceModel` became an enum, each model a rule in code instead of a row in a table, with seven cases, `NONE`, `DEFAULT` and five pretty ones, and the enum does its own rounding:
 
 ```php
-private function pretty49(string $price): string
+public function getPrettyPrice(string $price): string
 {
-    $fraction = bccomp(bcsub($price, bcdiv($price, 1, 0), 2), '0.50', 2) >= 0 ? '0.99' : '0.49';
-
-    return bcadd(bcmul($price, '1', 0), $fraction, 2);
+    return match ($this) {
+        self::NONE, self::DEFAULT => $price,
+        self::PRETTY_00 => $this->pretty00($price),
+        self::PRETTY_10 => $this->pretty10($price),
+        self::PRETTY_49 => $this->pretty49($price),
+        self::PRETTY_95 => $this->pretty95($price),
+        self::PRETTY_99 => $this->pretty99($price),
+    };
 }
 ```
 
-Pretty 49 ends a price in .49 below the half and .99 above it. Pretty 99 always ends in .99, Pretty 00 rounds up to the pound, Pretty 10 up to the next ten pence. The commit removed 713 lines and added 180: the controller, the form, the repository, the fixtures and the service went, and the entity's columns became `match` arms.
+Pretty 49 ends a price in .49 below the half and .99 above it. Pretty 99 always ends in .99, Pretty 00 rounds up to the pound, Pretty 10 up to the next ten pence. The controller, the form, the repository, the fixtures and the service all went.
 
 ## Pretty 95, backwards
 

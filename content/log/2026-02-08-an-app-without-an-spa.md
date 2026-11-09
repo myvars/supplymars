@@ -2,13 +2,6 @@
 title: An app without an SPA
 period: 3 – 8 February 2026
 summary: Modals, inline editing and native swipe-back on iPhone, all on server-rendered pages with Turbo. Plus PO Rewind, for undoing a purchase order.
-figures:
-  - value: "1"
-    label: template that renders as a modal or a page
-  - value: "7"
-    label: record types with inline editing
-  - value: "0"
-    label: client-side state to keep in step
 refs:
   - label: ADR 007 · Turbo frames and modals
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/007-turbo-frame-modal-architecture.md
@@ -40,7 +33,7 @@ It is built as part of FormFlow, the project's controller pattern: `InlineEditFl
 
 Turbo takes over browser navigation, and iOS Safari has its own idea of what going back should look like. Swiping back on an iPhone showed a stale page, or animated twice.
 
-The first fix, that morning, re-fetched the page whenever Safari restored it from its back-forward cache. By the afternoon I had replaced it with one aimed at the actual conflict: Safari 18 animates the swipe itself, and that animation can't be turned off, while Turbo was also running its own view transition on the same navigation. The shipped fix removes the re-fetch, detects Safari on iPhone and iPad, and turns off Turbo's view transition for back and forward visits only, turning it back on once the page has rendered. Ordinary link navigation keeps its transition, and the swipe feels native.
+The first fix re-fetched the page whenever Safari restored it from its back-forward cache. The same day I replaced it with one aimed at the actual conflict: Safari 18 animates the swipe itself, and that animation can't be turned off, while Turbo was also running its own view transition on the same navigation. The shipped fix removes the re-fetch, detects Safari on iPhone and iPad, and turns off Turbo's view transition for back and forward visits only, turning it back on once the page has rendered. Ordinary link navigation keeps its transition, and the swipe feels native.
 
 ## PO Rewind
 

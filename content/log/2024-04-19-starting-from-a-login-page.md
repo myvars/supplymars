@@ -2,13 +2,6 @@
 title: Starting from a login page
 period: January – April 2024
 summary: The first three months. A Symfony skeleton with sign-up and login became a catalogue with a pricing engine, suppliers, image uploads, a three-tier test suite and a deploy script, and the skeleton called Butterfly became an e-commerce back end called Turtle.
-figures:
-  - value: "304"
-    label: test methods in the first suite
-  - value: "3"
-    label: test tiers, unit, integration and application
-  - value: 8.3 → 8.2
-    label: PHP requirement, lowered with the deploy scripts
 refs:
   - label: Overview
     url: https://github.com/myvars/supplymars/blob/main/Docs/01-overview.md

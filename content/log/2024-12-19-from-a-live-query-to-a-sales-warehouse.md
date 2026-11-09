@@ -2,15 +2,6 @@
 title: From a live query to a sales warehouse
 period: November – December 2024
 summary: Sales reporting started as a live GROUP BY over delivered purchase order items. The next day it became a daily table, then pre-computed summaries, the two layers the reports still use. Then charts, order sales, an overdue orders report and the first KPI dashboard.
-figures:
-  - value: "1"
-    label: day from live query to daily table
-  - value: "2"
-    label: layers, daily records and summaries
-  - value: "5"
-    label: days from tagged services to one enum
-  - value: "8"
-    label: KPIs on the first dashboard
 refs:
   - label: ADR 005 · Reporting strategy
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/005-reporting-strategy.md
@@ -45,4 +36,3 @@ The rest of the two months built on those layers:
 - **An overdue orders report**, of orders past their due date and by how many days.
 - **The first dashboard**, on 17 December: eight KPI cards (order count, order value, average order value, sales cost, sales profit, gross margin, overdue orders and rejected purchase orders), six of them comparing today with the same day a week earlier, with an arrow for which way it moved, and overdue orders and rejected purchase orders counted over the last 30 days. The card is a Twig component, `KpiCard`, that formats a count, a currency or a percentage.
 
-*Update, November 2026: "gross margin" was never a margin. It divides profit by cost, not revenue, and on the sales reports it averages each row's figure unweighted, so a small sale counts as much as a large one. It's raised as [#223](https://github.com/myvars/supplymars/issues/223).*

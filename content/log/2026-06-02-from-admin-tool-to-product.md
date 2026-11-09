@@ -2,13 +2,6 @@
 title: From admin tool to product
 period: April – June 2026
 summary: A dashboard that answers "what should I do next?", demo orders anyone can place, help on every page, then Symfony 8.1 with its deprecations cleared.
-figures:
-  - value: "20"
-    label: contextual help pages
-  - value: "10"
-    label: form fields given help text
-  - value: "0"
-    label: Symfony 8.1 deprecations left
 refs:
   - label: User manual
     url: https://github.com/myvars/supplymars/blob/main/Docs/UserManual/README.md

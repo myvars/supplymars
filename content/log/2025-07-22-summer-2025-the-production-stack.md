@@ -2,13 +2,6 @@
 title: "Summer 2025: shaping the production stack"
 period: June – July 2025
 summary: With the app in containers, six weeks of building out what runs around it. Redis for sessions and cache, a hardened nginx, a cron container that runs the simulated business, RabbitMQ, local dev tools and a first k6 load test.
-figures:
-  - value: "12"
-    label: scheduled jobs in the crontab
-  - value: "6"
-    label: weeks, mid-June to late July
-  - value: "3"
-    label: of them since replaced
 refs:
   - label: ADR 003 · Simulation-first design
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/003-simulation-first-design.md
@@ -55,4 +48,4 @@ On 4 July Messenger's `async` transport moved from the database to RabbitMQ, wit
 - **phpMyAdmin for production** runs on my machine, not the server, and reaches the production database through an SSH tunnel. Every page it shows carries a red "PRODUCTION DATABASE" banner.
 - **A first k6 load test** requests the homepage and the assets it loads, the CSS, the JavaScript modules and the hero image, resolved from the asset manifest so their versioned names are always right. Two virtual users for 30 seconds, checking that the homepage, the stylesheet and a JavaScript module come back 200: a baseline to build on, run from the Makefile.
 
-*Update, October 2026: three of these have been replaced since. The queue went back to the database, because it carried only email, the broker's package was below 1.0, and with no test transport the suite needed a running broker (ADR 013). The crontab became a Symfony Scheduler schedule, with the jobs in PHP and the schedule locked (ADR 015). By then cron was starting `app:build-purchase-orders` and `app:update-supplier-stock` at the same minutes, and live's log showed about 11 deadlocks a day between them; the schedule runs jobs one at a time, so two that fall due together no longer collide. [The five-week roundup](/log/five-weeks-119-pull-requests) tells that story, including a 20-minute outage on its first deploy. nginx and PHP-FPM gave way to FrankenPHP in [worker mode](/log/worker-mode) (ADR 016). Redis stayed, for the cache and sessions.*
+*Update, October 2026: three of these have since been replaced. The queue went back to the database, because it carried only email and the tests needed a running broker (ADR 013). The crontab became a Symfony Scheduler schedule, which runs one job at a time and ended about 11 deadlocks a day between jobs cron had started together (ADR 015). nginx and PHP-FPM gave way to FrankenPHP in [worker mode](/log/worker-mode) (ADR 016). Redis stayed, for the cache and sessions.*

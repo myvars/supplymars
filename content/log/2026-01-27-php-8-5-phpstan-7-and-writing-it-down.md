@@ -2,15 +2,6 @@
 title: PHP 8.5, PHPStan level 7, and writing it all down
 period: January 2026
 summary: The month the bounded-context rebuild merged, the test suite was rebuilt for it, static analysis went to level 7 with an empty baseline, and the project got its documentation and first ADRs.
-figures:
-  - value: 136 → 190
-    label: test files in eleven days
-  - value: 6 → 7
-    label: PHPStan level, empty baseline
-  - value: "35"
-    label: new documents in one pass
-  - value: "6"
-    label: ADRs recording two years of decisions
 refs:
   - label: Docs index
     url: https://github.com/myvars/supplymars/blob/main/Docs/README.md

@@ -2,13 +2,6 @@
 title: Orders built whole
 period: February 2025
 summary: Orders, order lines, purchase orders and their lines stopped being assembled with setters. Private constructors and named ones build each in one call, with what it needs to be valid, and the test factories build them the same way.
-figures:
-  - value: "4"
-    label: entities with private constructors
-  - value: "91"
-    label: files changed in one commit
-  - value: "4"
-    label: named constructors, now the only way in
 refs:
   - label: ADR 002 · Order line splitting
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/002-order-line-splitting.md
@@ -16,18 +9,7 @@ refs:
     url: https://github.com/myvars/supplymars/blob/main/Docs/04-sourcing-and-pricing.md
 ---
 
-Until February 2025, a customer order in SupplyMars was put together by whoever needed one. The `CreateOrder` service did it like this:
-
-```php
-$customerOrder = (new CustomerOrder())
-    ->setCustomer($customer)
-    ->setCustomerOrderRef($dto->getCustomerOrderRef())
-    ->setBillingAddress($billingAddress)
-    ->setShippingAddress($shippingAddress)
-    ->setShippingDetailsFromShippingMethod($dto->getShippingMethod(), $vatRate);
-```
-
-It worked, but the order didn't decide what an order needs. Any code could call `new CustomerOrder()` and set as much or as little as it liked, and the service looked up the customer's default addresses itself, through the repository. All four entities at the heart of the business, the customer order, its lines, the purchase order and its lines, had public constructors.
+Until February 2025, a customer order in SupplyMars was put together by whoever needed one. The `CreateOrder` service created an empty order and set its customer, reference, addresses and shipping details one setter at a time. It worked, but the order didn't decide what an order needs. Any code could call `new CustomerOrder()` and set as much or as little as it liked, and the service looked up the customer's default addresses itself, through the repository. All four entities at the heart of the business, the customer order, its lines, the purchase order and its lines, had public constructors.
 
 ## Named constructors
 

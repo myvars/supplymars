@@ -2,13 +2,6 @@
 title: Audit week
 period: 13 – 18 February 2026
 summary: I ran a structured audit of my own codebase, then worked through it in a week. Backups, failure handling, a deny-by-default firewall, money in exact arithmetic, and an interface pass that cut 15 icon sets to 3.
-figures:
-  - value: "15"
-    label: audit recommendations resolved or decided
-  - value: 15 → 3
-    label: icon sets
-  - value: "0"
-    label: PHPStan baseline suppressions, then and now
 refs:
   - label: ADR 009 · Support tickets
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/009-support-ticket-system.md

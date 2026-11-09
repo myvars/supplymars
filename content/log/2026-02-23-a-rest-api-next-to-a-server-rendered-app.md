@@ -2,13 +2,6 @@
 title: A REST API next to a server-rendered app
 period: February 2026
 summary: A JSON API for the catalog and orders that reuses the web's handlers, documents itself, and leaves the server-rendered UI untouched. And why not API Platform.
-figures:
-  - value: "16"
-    label: endpoints
-  - value: "8"
-    label: public catalog endpoints
-  - value: "0"
-    label: domain logic duplicated
 refs:
   - label: ADR 011 · REST API layer
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/011-rest-api-layer.md
