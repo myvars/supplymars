@@ -38,4 +38,4 @@ The Foundry test factories had built entities the same way the old services did:
 
 The factories now build through the named constructors. `CustomerOrderFactory` supplies a customer with a default address, a shipping method and a VAT rate, and instantiates with `CustomerOrder::createFromCustomer()`. New factories for purchase orders and their lines do the same. The new tests build purchase orders and their lines through the named constructors, directly in unit tests and through the factories in integration tests.
 
-A few setters stayed public, such as the order's customer and shipping address, and the job of moving every write behind a domain method finished in the [rebuild by bounded context](/log/rebuilding-by-bounded-context). This was where the entities started to own their own rules.
+A few setters stayed public, such as the order's customer and shipping address, and the job of moving every write behind a domain method finished in the [rebuild by bounded context](/log/rebuilding-by-bounded-context). From here on, an entity decided how it could be built, not just how it could change.

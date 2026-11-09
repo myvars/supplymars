@@ -13,7 +13,7 @@ For its first year SupplyMars ran on a Bitnami server: Apache, PHP and MySQL ins
 
 ## The scripts
 
-After the April rewrite, `setup.sh` built a server from scratch. It asked for the domain name, a GitHub password, the Symfony secret, the database password, the mail key, the S3 bucket and its two keys and a developer email, nine values typed in by hand, then installed Supervisor and the Symfony CLI, linked the domain's certificates into Apache and cloned the repository. `startup.sh` ran on every deploy. It asked for the domain again, then ran `composer update`, migrated, copied that domain's logos into place, built Tailwind and the asset map, cleared the cache, restarted two Messenger workers under Supervisor, copied in the Apache virtual hosts and restarted Apache.
+After the April rewrite, `setup.sh` built a server from scratch, asking for the domain name and each secret and key in turn, nine values typed in by hand. `startup.sh` ran on every deploy: update the dependencies, migrate, build the assets, clear the cache, and restart the Messenger workers and Apache.
 
 The rewrite made them strict: `set -eu`, a check for the commands setup needed, validation of every input, and a clear error and exit at each step that could fail. They were still scripts, run by hand, on one machine.
 
@@ -25,11 +25,11 @@ When deploys moved to CI in June, the pipeline passed that decryption key to the
 
 ## Test factories in production
 
-The simulation creates customers as it goes, and `app:create-customer-orders` built them with Foundry's `UserFactory` and `AddressFactory`, test tools. Foundry is a dev dependency, and its bundle is enabled only in dev and test, so in production the simulation depended on something that shouldn't be there. In May I moved Foundry into the production dependencies, and moved it back the same day. In June I fixed the cause: two small services, `RandomUserFactory` and `RandomAddressFactory`, build simulated customers and their addresses with Faker, and the command uses those. Test factories stay out of production code paths.
+The simulation creates customers as it goes, and `app:create-customer-orders` built them with Foundry's `UserFactory` and `AddressFactory`, test tools. Foundry is a dev dependency, and its bundle is enabled only in dev and test, so in production the simulation depended on something that shouldn't be there. In June I fixed it properly: two small services, `RandomUserFactory` and `RandomAddressFactory`, build simulated customers and their addresses with Faker, and the command uses those. Test factories stay out of production code paths.
 
 ## Containers
 
-On 5 June the app moved into Docker. One multi-stage Dockerfile builds both images. For PHP, a base stage has PHP 8.3-FPM, its extensions and Composer; a dev stage adds Xdebug; and the prod stage installs dependencies without dev packages, drops the tests and dumps the environment. nginx has a dev and a prod stage of its own. Compose files describe each environment: `compose.yaml` for what every environment shares (PHP, nginx, MySQL and the Messenger worker), an override for development, and `compose.prod.yaml` for production, with the Let's Encrypt certificates mounted into nginx. The containers wait for the database, and an entrypoint script runs the migrations and sets up the Messenger transport.
+On 5 June the app moved into Docker, so development, CI and production would run the same way. One multi-stage Dockerfile builds both images. For PHP, a base stage has PHP 8.3-FPM, its extensions and Composer; a dev stage adds Xdebug; and the prod stage installs dependencies without dev packages, drops the tests and dumps the environment. nginx has a dev and a prod stage of its own. Compose files describe each environment: `compose.yaml` for what every environment shares (PHP, nginx, MySQL and the Messenger worker), an override for development, and `compose.prod.yaml` for production, with the Let's Encrypt certificates mounted into nginx. The containers wait for the database, and an entrypoint script runs the migrations and sets up the Messenger transport.
 
 The `deploy/` folder, its Apache virtual hosts and its Supervisor config were deleted. So was the per-domain branding the scripts used to copy into place; the app became SupplyMars on one domain.
 
