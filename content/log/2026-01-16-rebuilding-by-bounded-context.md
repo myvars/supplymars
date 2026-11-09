@@ -2,15 +2,6 @@
 title: Rebuilding by bounded context
 period: October 2025 – January 2026
 summary: Three months on a branch, turning folders by type into eight bounded contexts, with commands, handlers, repository interfaces and a new controller pattern, FormFlow. 1,200 files changed, and no change to the schema.
-figures:
-  - value: "1,200"
-    label: files changed in one commit
-  - value: 8 + 1
-    label: bounded contexts, plus a shared kernel
-  - value: "52"
-    label: command handlers
-  - value: 1,004 → 415
-    label: test methods, before → the day it merged
 refs:
   - label: Architecture
     url: https://github.com/myvars/supplymars/blob/main/Docs/03-architecture.md

@@ -2,15 +2,6 @@
 title: Customer Insights
 period: February 2026
 summary: The two-layer reporting design from 2024, extended from products and orders to customers. Segments by lifetime orders, geography by where orders ship, refreshed twice an hour.
-figures:
-  - value: "2"
-    label: daily record types
-  - value: "3"
-    label: pre-computed summaries
-  - value: "4"
-    label: customer segments
-  - value: "4"
-    label: composite indexes for reporting queries
 refs:
   - label: ADR 010 · Customer insights reporting
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/010-customer-insights-reporting.md

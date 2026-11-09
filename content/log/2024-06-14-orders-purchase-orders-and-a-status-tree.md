@@ -2,13 +2,6 @@
 title: Orders, purchase orders and a status tree
 period: April – June 2024
 summary: Customer orders and purchase orders arrived together, with prices copied onto each line and one editable purchase order per supplier per order. By June statuses were enums with transition rules, and an order's status stopped being set by hand; it is worked out from what its suppliers have done.
-figures:
-  - value: "4"
-    label: entities, two orders and their lines
-  - value: "5"
-    label: statuses at each level
-  - value: "1"
-    label: editable purchase order per supplier per order
 refs:
   - label: ADR 002 · Order line splitting
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/002-order-line-splitting.md

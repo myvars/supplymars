@@ -83,7 +83,7 @@ I reproduced it with the production image and the restart interval set to 50 req
 | Preload off | all 200 requests succeed, across four worker restarts |
 | No restarts, 32 in parallel | no failures |
 
-The fix was to turn preload off. I had set it up under PHP-FPM in February, where it saved a boot's worth of class loading on every request. In worker mode the app already stays loaded, so preload was no longer earning its place, and Symfony's own error controller compiles the same kind of class, so a Mercure-only workaround would have left the fault in place. The tests hadn't caught it because they never run with preload and never restart a worker; a check that serves more requests than the restart interval is on the follow-up list.
+The fix was to turn preload off. I had set it up under PHP-FPM in February, where it saved a boot's worth of class loading on every request. In worker mode the app already stays loaded, so preload was no longer earning its place, and Symfony's own error controller compiles the same kind of class, so a Mercure-only workaround would have left the fault in place. The tests hadn't caught it because they never run with preload and never restart a worker.
 
 ## What it leaves behind
 

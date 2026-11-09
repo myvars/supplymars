@@ -2,15 +2,6 @@
 title: A public demo you can't break
 period: March 2026
 summary: Going public meant letting strangers sign in as staff. A second stack restored from live every night, credentials removed in the same step, and the guards a public repository needs.
-figures:
-  - value: "2"
-    label: stacks on one server, no shared networks
-  - value: "02:15"
-    label: nightly reset from live's backup
-  - value: "1"
-    label: public demo login, behind Turnstile
-  - value: V1.0
-    label: public release, 31 March
 refs:
   - label: Playground infrastructure
     url: https://github.com/myvars/supplymars/blob/main/Docs/infrastructure/playground.md

@@ -2,13 +2,6 @@
 title: Leaving the Bitnami box
 period: April – June 2025
 summary: From deploy scripts that asked for a domain name and every secret in turn, to Docker images and a GitHub Actions pipeline that tests and deploys on every push to main.
-figures:
-  - value: "9"
-    label: values typed in by hand at each setup
-  - value: "5"
-    label: Dockerfile stages, for PHP and nginx
-  - value: "1"
-    label: pipeline, build, test and deploy
 refs:
   - label: Runbook
     url: https://github.com/myvars/supplymars/blob/main/Docs/11-runbook.md

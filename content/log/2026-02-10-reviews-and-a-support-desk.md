@@ -2,13 +2,6 @@
 title: Reviews and a support desk
 period: January – February 2026
 summary: Two new bounded contexts in two weeks. Product reviews with moderation and an eligibility rule, and a support desk built on pools that staff choose to work.
-figures:
-  - value: "2"
-    label: new bounded contexts
-  - value: "4"
-    label: review statuses, with set transitions
-  - value: "3"
-    label: ticket statuses, changed by who replies
 refs:
   - label: ADR 009 · Support ticket system
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/009-support-ticket-system.md

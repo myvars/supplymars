@@ -2,13 +2,6 @@
 title: Domain events and an audit trail
 period: July 2024
 summary: Orders, lines, purchase orders and their items started raising events, and one status log recorded every change with who made it and when. The services dispatched the events after the flush, by hand, and Doctrine's own listeners were kept apart.
-figures:
-  - value: "8"
-    label: domain events, on four entities
-  - value: "1"
-    label: status log for all four
-  - value: "8"
-    label: Doctrine listeners kept apart
 refs:
   - label: Architecture · Domain events
     url: https://github.com/myvars/supplymars/blob/main/Docs/03-architecture.md#domain-events
@@ -18,31 +11,9 @@ By June 2024 an order's status in Turtle was worked out from its suppliers' purc
 
 ## Entities raise, services dispatch
 
-The four entities at the centre, the customer order, its lines, the purchase order and its items, now raise events. A small trait gives each one a list:
+The four entities at the centre, the customer order, its lines, the purchase order and its items, now raise events. A small trait gives each one a list of the events it has raised. The constructor raises a created event, and changing the status raises a status-changed event. That's eight events in all, a created and a status-changed for each entity. Raising an event only records it; nothing runs yet.
 
-```php
-public function raiseDomainEvent(DomainEvent $event): void
-{
-    $this->domainEvents[] = $event;
-}
-```
-
-The constructor raises a created event, and changing the status raises a status-changed event. That's eight events in all, a created and a status-changed for each entity. Raising an event only records it; nothing runs yet.
-
-The services that change orders release the events after they flush. `EditPurchaseOrderItem`, for example, saves the item and then hands every entity the change could have touched to a `DomainEventDispatcher`:
-
-```php
-$this->entityManager->flush();
-
-$this->domainEventDispatcher->dispatchProviderEvents([
-    $purchaseOrderItem,
-    $purchaseOrderItem->getPurchaseOrder(),
-    $purchaseOrderItem->getCustomerOrderItem(),
-    $purchaseOrderItem->getCustomerOrderItem()->getCustomerOrder(),
-]);
-```
-
-The dispatcher takes each entity's events, stamps them with the signed-in user, and sends them through Symfony's event dispatcher. Dispatching after the flush means the change is saved before anything reacts to it, and every new record has its database ID by the time a listener reads it. The eight order and purchase order services that had a `$flush` flag, to leave the save to their caller, lost it. Each operation now saves, then announces.
+The services that change orders release the events after they flush. `EditPurchaseOrderItem`, for example, saves the item and then hands a `DomainEventDispatcher` every entity the change could have touched: the item, its purchase order, the order line and the order. The dispatcher takes each entity's events, stamps them with the signed-in user, and sends them through Symfony's event dispatcher. Dispatching after the flush means the change is saved before anything reacts to it, and every new record has its database ID by the time a listener reads it. The eight order and purchase order services that had a `$flush` flag, to leave the save to their caller, lost it. Each operation now saves, then announces.
 
 ## One log for four kinds of record
 
@@ -58,4 +29,4 @@ Turtle already had eight Doctrine listeners, doing jobs such as recalculating pr
 
 The rest of that week was three commits named "Code Kaizen", general tidying; the last renamed the four listeners for what they do, such as `LogOrderStatusChange`. The list of event types also named two that nothing raised yet: a user created and a user logged in.
 
-*Update, November 2026: the hand-written dispatch was the weak part. Every service had to list the entities it might have changed, and an event that carried the entity logged its status as it was when the listener ran, not the change it was raised for. In October 2025 [one dispatcher after every flush](/log/domain-events-take-two) replaced those calls in 16 classes, and the eight Doctrine listeners gave way to domain events and methods on the entities. Events needing a record's identity before the flush were also why every entity got [a public ULID](/log/a-public-ulid-for-every-entity) from its constructor. The status log grew past two million rows, and since October 2026 a command prunes rows older than a year for records that have reached a final status.*
+*Update, November 2026: in October 2025 [one dispatcher after every flush](/log/domain-events-take-two) replaced the hand-written dispatch, events became small facts carrying IDs rather than entities, and the Doctrine listeners gave way to domain events. The status log has grown past two million rows, and a nightly command now prunes old rows for records that have reached a final status.*

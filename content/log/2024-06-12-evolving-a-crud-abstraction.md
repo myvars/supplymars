@@ -2,13 +2,6 @@
 title: Evolving a CRUD abstraction
 period: February – June 2024
 summary: Four versions of one idea in four months. A helper that every admin screen shared, then a strategy per entity, then a service per operation, then the business operations as named services of their own, the shape the rest of the year was built on.
-figures:
-  - value: "4"
-    label: versions in four months
-  - value: "~90"
-    label: lines per catalogue controller on the first helper
-  - value: "1"
-    label: day to build the first helper and move every screen onto it
 refs:
   - label: ADR 006 · FormFlow controller pattern
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/006-formflow-controller-pattern.md
@@ -18,7 +11,7 @@ Turtle's admin is mostly lists and forms: VAT rates, categories, subcategories, 
 
 ## Version one: a helper, in a day
 
-On 9 February the screens moved onto a common structure: one set of CRUD templates, a section name, and the same five actions. By the evening the repeated code was out of the controllers and in a `CrudHelper`: the product screens moved first, and the other four sections a couple of hours later. A controller set its section name in its constructor and handed each action to the helper:
+On 9 February the screens moved onto a common structure: one set of CRUD templates, a section name, and the same five actions. By the end of the day the repeated code was out of the controllers and in a `CrudHelper`: the product screens moved first, and the other four sections after them. A controller set its section name in its constructor and handed each action to the helper:
 
 ```php
 #[Route('/new', name: 'app_category_new', methods: ['GET', 'POST'])]
@@ -38,20 +31,7 @@ On 23 April the save step became a strategy. A `CrudStrategyInterface` had creat
 
 ## Version three: a service per operation
 
-A week later, on 30 April, the commit that brought in customer and purchase orders split the helper by operation: `CrudCreator`, `CrudReader`, `CrudUpdater`, `CrudDeleter` and `CrudIndexer`, each working from an options object. A controller that needed to could fill the options in itself:
-
-```php
-$crudOptions = $crudCreator->resetOptions()
-    ->setSection(self::SECTION)
-    ->setEntity($createOrderDto)
-    ->setForm($form)
-    ->setSuccessResponse($successResponse)
-    ->setCrudStrategy($crudStrategy);
-
-return $crudCreator->build($crudOptions);
-```
-
-The strategies went per operation too. Creating an order isn't the same job as creating a category: its form fills a DTO, not the entity, and a strategy turns the DTO into an order. The order screens built their own form and said where to go on success; the catalogue screens still passed a form type, and the services filled in the options for them.
+A week later, on 30 April, the commit that brought in customer and purchase orders split the helper by operation: `CrudCreator`, `CrudReader`, `CrudUpdater`, `CrudDeleter` and `CrudIndexer`, each working from an options object that a controller could fill in itself. The strategies went per operation too. Creating an order isn't the same job as creating a category: its form fills a DTO, not the entity, and a strategy turns the DTO into an order. The order screens built their own form and said where to go on success; the catalogue screens still passed a form type, and the services filled in the options for them.
 
 ## Version four: actions named for what they do
 

@@ -2,13 +2,6 @@
 title: Choosing a supplier
 period: February – April 2024
 summary: Every product can come from several suppliers, so each one has an active source, the cheapest active supplier with stock. More stock was meant to break a tie, and for a year it didn't. Listeners re-pick the source when a supplier's stock, cost or status changes, and in April a supplier's range could build the catalogue on its own.
-figures:
-  - value: "5"
-    label: supplier-side entities mirroring the catalogue
-  - value: 1 year
-    label: before the stock tie-break worked
-  - value: "4"
-    label: mappers to turn a supplier product into a product
 refs:
   - label: ADR 001 · Multi-supplier sourcing
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/001-multi-supplier-sourcing.md
@@ -30,7 +23,7 @@ The cost the product copies is the one its [pricing](/log/pretty-prices) starts 
 
 ## Keeping it current
 
-The source is re-picked whenever something it depends on changes. A Doctrine listener on `SupplierProduct` watches its stock, cost, lead time, the product it's mapped to, and whether it's active; when any of them changes, the product's source is worked out again. That afternoon a second listener, on `Supplier`, re-picked the source for the products affected when a supplier was switched on or off. The product's own listener then reprices it when its cost changes, so a supplier dropping its price can reach the customer's price without anyone touching the product.
+The source is re-picked whenever something it depends on changes. A Doctrine listener on `SupplierProduct` watches its stock, cost, lead time, the product it's mapped to, and whether it's active; when any of them changes, the product's source is worked out again. The same day a second listener, on `Supplier`, re-picked the source for the products affected when a supplier was switched on or off. The product's own listener then reprices it when its cost changes, so a supplier dropping its price can reach the customer's price without anyone touching the product.
 
 A supplier product can also be switched on and off from its screen, or unmapped from a product, and both go through the same calculation.
 

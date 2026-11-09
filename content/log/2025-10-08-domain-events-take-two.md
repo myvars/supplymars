@@ -2,13 +2,6 @@
 title: Domain events, take two
 period: October 2025
 summary: Events that carried whole entities became small, past-tense facts with an ID and what changed. One listener dispatches them after each flush, replacing calls by hand in sixteen classes, and the Doctrine hooks that held the pricing rules gave way to events.
-figures:
-  - value: 16 → 1
-    label: places that dispatch events
-  - value: "8"
-    label: Doctrine entity listeners retired
-  - value: "17"
-    label: domain events by January
 refs:
   - label: Architecture · Domain events
     url: https://github.com/myvars/supplymars/blob/main/Docs/03-architecture.md#domain-events
@@ -63,4 +56,4 @@ $this->raiseDomainEvent(new CategoryPricingWasChangedEvent(
 
 A listener in the Pricing context reprices the products. Catalog says what happened, and Pricing decides what that means for prices, without either reaching into the other's internals. The same went for VAT rates, subcategories, suppliers and supplier products. Order totals, which a listener used to recalculate when an item's quantity or price changed, moved into the order's own methods. By the merge in January there were 17 domain events across the contexts.
 
-*Update, October 2026: the dispatcher had two bugs, both found and fixed in October 2026. It looked for events in the entity manager's identity map, which a flush has already emptied of deleted entities, so their events were dropped, and the product image delete handler had been dispatching its event by hand to get round it. It now notes deletions in `onFlush`, and the handler just deletes. And a listener that flushed ran the dispatcher again, which dispatched the next entity's events from inside the first; a flush of 50 supplier products nested deep enough to hit Xdebug's 512-frame limit. It now releases every event before dispatching any. No event is async yet. The interface is ready for the first job that can wait.*
+*Update, October 2026: two bugs in the dispatcher were found and fixed. Events from deleted entities were dropped, because a flush has already removed those entities from the identity map; deletions are now noted in `onFlush`. And a listener that flushed re-entered the dispatcher, nesting deep enough on a flush of 50 supplier products to hit Xdebug's frame limit; every event is now released before any is dispatched.*
