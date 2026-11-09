@@ -19,7 +19,7 @@ The next day the report moved onto a table of its own. `ProductSales` holds one 
 
 Five days later came the second layer. `ProductSalesSummary` holds the totals for each reporting period, for products and for each of the groupings, pre-computed from the daily rows. The page's totals come from a handful of summary rows; the ranked list still sums the daily rows, never the raw items.
 
-Those two layers, small daily records and summaries built from them, are still how every report in SupplyMars works. ADR 005, written later, records them, and the [Customer Insights](/log/customer-insights) reports of February 2026 were built the same way.
+Small daily records and summary tables built from them are how I ran reporting at Ebuyer, and they are still how every report in SupplyMars works. ADR 005, written later, records them, and the [Customer Insights](/log/customer-insights) reports of February 2026 were built the same way.
 
 ## Durations, twice
 

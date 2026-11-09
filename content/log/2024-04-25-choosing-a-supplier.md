@@ -1,7 +1,7 @@
 ---
 title: Choosing a supplier
 period: February – April 2024
-summary: Every product can come from several suppliers, so each one has an active source, the cheapest active supplier with stock. More stock was meant to break a tie, and for a year it didn't. Listeners re-pick the source when a supplier's stock, cost or status changes, and in April a supplier's range could build the catalogue on its own.
+summary: Every product can come from several suppliers, so each one has an active source, the cheapest active supplier with stock, with more stock breaking a tie. Listeners re-pick the source when a supplier's stock, cost or status changes, and in April a supplier's range could build the catalogue on its own.
 refs:
   - label: ADR 001 · Multi-supplier sourcing
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/001-multi-supplier-sourcing.md
@@ -17,7 +17,7 @@ On 29 February the suppliers arrived, and their side mirrors the catalogue. A `S
 
 ## The active source
 
-`ActiveSourceCalculator` picks one supplier product as the product's active source. It looks only at supplier products that are active, from a supplier that is active, with stock and a cost above zero. Of those, the cheapest wins. When two cost the same, the one with more stock was meant to win, but the code as written kept whichever it found first: an equal cost with more stock fell through to a check for a lower cost, which failed. The test for it passed only because it added the higher-stock supplier first. The tie-break worked from February 2025, when the unit and integration tests were rewritten and the check became a plain comparison of stock. The product then copies its cost, stock and lead time from the active source. If nothing qualifies, the product has no active source.
+`ActiveSourceCalculator` picks one supplier product as the product's active source. It looks only at supplier products that are active, from a supplier that is active, with stock and a cost above zero. Of those, the cheapest wins, and on equal cost the one with more stock. That tie-break kept whichever supplier it found first until the test rewrite of February 2025 caught it; its first test had passed only because of the order it added the suppliers in. The product then copies its cost, stock and lead time from the active source. If nothing qualifies, the product has no active source.
 
 The cost the product copies is the one its [pricing](/log/pretty-prices) starts from, so a change of source can change the price.
 
@@ -33,4 +33,4 @@ On 25 April a supplier's range could create our catalogue. `ProductGenerator` ta
 
 A map link on a supplier product's screen creates its product, and `app:import-products` did the same for every product of one supplier, the seeded "Turtle Inc". Matching an existing product was by name at first. In September the import became `app:create-warehouse-products`, and a new `app:create-supplier-products` matched other suppliers' products by manufacturer part number.
 
-*Update, November 2026: ADR 001 records the rule, lowest cost, then highest stock, and since February 2025 the code applies both halves of it. Since then the source has been re-picked by domain events rather than Doctrine listeners, in the [October 2025 rewrite](/log/domain-events-take-two). The rule for a single order line is stricter: the line goes to the cheapest supplier with stock [for the whole line](/log/hardening-the-status-tree), or waits.*
+*Update, November 2026: ADR 001 records the rule: lowest cost, then highest stock. Since then the source has been re-picked by domain events rather than Doctrine listeners, in the [October 2025 rewrite](/log/domain-events-take-two). The rule for a single order line is stricter: the line goes to the cheapest supplier with stock [for the whole line](/log/six-days-to-a-supply-chain-that-runs-itself), or waits.*

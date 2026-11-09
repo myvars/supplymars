@@ -9,15 +9,13 @@ refs:
     url: https://github.com/myvars/supplymars/blob/main/Docs/04-sourcing-and-pricing.md
 ---
 
-An order's status in Turtle is never set by hand. Each purchase order item has a status, and it rolls up: to its purchase order, to the order line it serves, and from the lines to the order. At each level the least-progressed child wins, so an order with one line delivered and one still shipping is shipping. Every status has a level, and every enum has a `canTransitionTo()` that says which moves are legal.
-
-In the week of 14 September the [simulator](/log/six-days-to-a-supply-chain-that-runs-itself) started driving those rules: placing orders, sourcing them, and accepting, shipping and delivering on the suppliers' behalf. Run over and over, faster than any supplier would, it reached the edge cases quickly. Friday 20 September went on fixing them.
+An order's status in Turtle is never set by hand: it [rolls up](/log/orders-purchase-orders-and-a-status-tree) from its purchase order items, and at each level the least-progressed child wins. In the week of 14 September the [simulator](/log/six-days-to-a-supply-chain-that-runs-itself) started driving those rules, faster and more often than any supplier would, and it reached the edge cases quickly. Friday 20 September went on fixing them.
 
 ## A rejection that let go too early
 
 When rejections arrived on 18 September, a rejected purchase order item stopped counting towards its line's quantity, the same as a cancelled one. The line went straight back to having quantity outstanding, with the rejected item still attached.
 
-First I added a status after rejected: refunded. A rejected item now holds its quantity on the line until it is refunded, and refunded is the only place a rejection can go. Then the line's roll-up learned to skip refunded items, and to fall back to pending when every item on a line has been refunded. That fallback couldn't be reached yet: an earlier check in the roll-up sent any line with quantity outstanding to processing first, and a fully refunded line always has some. It took until 29 September to fix.
+First I added a status after rejected: refunded. A rejected item now holds its quantity on the line until it is refunded, and refunded is the only place a rejection can go. Then the line's roll-up learned to skip refunded items, and to fall back to pending when every item on a line has been refunded.
 
 ## A command that re-derives everything
 
@@ -34,10 +32,6 @@ The command stayed until the [rebuild by bounded context](/log/rebuilding-by-bou
 On 22 September a single line could be cancelled, not just a whole order. The rule is narrow: a line can be cancelled only while it is pending or processing and nothing has gone on a purchase order. A cancelled line drops out of the order's totals, and an order whose lines are all cancelled drops its shipping charge too.
 
 A week later order processing got two fixes. A line with quantity outstanding but nothing on a purchase order, including a fully refunded one, had shown as processing; it now stays pending until something is ordered from a supplier. And sending an order's purchase orders to the suppliers now moves only the items still pending, so an item a supplier has already answered is left alone.
-
-## All or nothing
-
-Sourcing was strict from the start, on 16 September. A line goes to the cheapest active supplier with stock for the whole line; it is never split across two suppliers. If no supplier can cover it, the line waits. The order's purchase orders aren't sent to the suppliers until every line is covered, so nothing goes to a supplier while part of the order is still unsourced. From the order page, a person can also put a line on a supplier of their choosing.
 
 ## Refunded and sourced again
 

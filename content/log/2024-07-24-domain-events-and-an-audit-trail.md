@@ -25,8 +25,4 @@ The user is required: a change with no one behind it can't be logged. When the s
 
 Turtle already had eight Doctrine listeners, doing jobs such as recalculating prices when a category, subcategory or VAT rate changed, updating stock and order totals, and removing a product's image files. They react to persistence: an entity was updated, so update what depends on it. Domain events say something happened in the business: a purchase order item was accepted. The same commit moved the Doctrine listeners into a `DoctrineEvents` folder of their own, so the two kinds sit apart.
 
-## What came after
-
-The rest of that week was three commits named "Code Kaizen", general tidying; the last renamed the four listeners for what they do, such as `LogOrderStatusChange`. The list of event types also named two that nothing raised yet: a user created and a user logged in.
-
 *Update, November 2026: in October 2025 [one dispatcher after every flush](/log/domain-events-take-two) replaced the hand-written dispatch, events became small facts carrying IDs rather than entities, and the Doctrine listeners gave way to domain events. The status log has grown past two million rows, and a nightly command now prunes old rows for records that have reached a final status.*

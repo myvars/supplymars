@@ -1,7 +1,7 @@
 ---
 title: "Pretty prices: markup, VAT and charm pricing"
 period: February 2024
-summary: Prices worked out from cost, a markup that cascades from category to subcategory to product, VAT, and a rounding rule that ends a price in .99 or .95. The rounding rules started as a table, became an enum the same afternoon, and one of them was wrong for a month.
+summary: Prices worked out from cost, a markup that cascades from category to subcategory to product, VAT, and a rounding rule that ends a price in .99 or .95. The rounding rules started as a table and became an enum the same afternoon.
 refs:
   - label: ADR 004 · Pricing abstraction
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/004-pricing-abstraction.md
@@ -52,12 +52,12 @@ public function getPrettyPrice(string $price): string
 
 Pretty 49 ends a price in .49 below the half and .99 above it. Pretty 99 always ends in .99, Pretty 00 rounds up to the pound, Pretty 10 up to the next ten pence. The controller, the form, the repository, the fixtures and the service all went.
 
-## Pretty 95, backwards
+## Pretty 95, pinned by tests
 
-Pretty 95 was meant to end every price in .95, the next one up. As first written, it did the opposite of what it should: a price whose pence were already past .95 went down to .95, and any price below .95 went up to the next pound's .95, so £10.20 became £11.95. It stayed that way for a month. On 23 March the commit that added the test suite fixed it, and its cases pin the behaviour: £10.01 becomes £10.95, £10.95 stays, and £10.96 becomes £11.95.
+Pretty 95 ends every price in .95, the next one up. As first written it rounded the wrong way, and the test suite that arrived on 23 March fixed it and pinned the cases: £10.01 becomes £10.95, £10.95 stays, and £10.96 becomes £11.95.
 
 ## Repricing only what changed
 
-A price depends on four things that live elsewhere: the product's cost, its subcategory, its category and the category's VAT rate. Doctrine listeners on them watch the fields that matter. When a category's markup changes, its listener reprices only the products whose markup comes from the category, those with no markup of their own and none on their subcategory. The price model got the same check on 23 March; until then a category's change repriced every product without a model of its own, which did no harm, since the price came out the same. On 27 February a listener on VAT rates joined them: a change of rate reprices every product in the categories that use it, since VAT has no override. The same commit gave the product a costing section that shows the markup and price model at all three levels, its own, its subcategory's and its category's, and edits each.
+A price depends on four things that live elsewhere: the product's cost, its subcategory, its category and the category's VAT rate. Doctrine listeners on them watch the fields that matter. When a category's markup changes, its listener reprices only the products whose markup comes from the category, those with no markup of their own and none on their subcategory. On 27 February a listener on VAT rates joined them: a change of rate reprices every product in the categories that use it, since VAT has no override. The same commit gave the product a costing section that shows the markup and price model at all three levels, its own, its subcategory's and its category's, and edits each.
 
 *Update, November 2026: the seven price models and the three-level cascade haven't changed, and ADR 004 records them. The listeners went in the [October 2025 rewrite of domain events](/log/domain-events-take-two): a category now raises an event saying what changed, and a listener in the Pricing context reprices the products.*
