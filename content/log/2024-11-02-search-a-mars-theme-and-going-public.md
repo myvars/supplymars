@@ -39,7 +39,7 @@ Two weeks later every address moved to Mars too. New customers get one of fiftee
 
 ## Locked to staff
 
-The same commit closed a gap that had been open since January: every admin controller required only `ROLE_USER`, so anyone who registered could have opened the catalogue, the orders and the suppliers. All sixteen now require `ROLE_ADMIN`. Signing up gets you an account, and nothing behind it.
+The Mars theme commit of 17 October also closed a gap that had been open since January. Until 21 September the admin screens had no access check at all; that day every admin controller started requiring `ROLE_USER`, which kept out crawlers but still let in anyone who registered. All sixteen now require `ROLE_ADMIN`. Signing up gets you an account, and nothing behind it.
 
 ## Tuning Turbo
 
