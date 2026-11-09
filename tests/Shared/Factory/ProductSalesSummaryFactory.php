@@ -31,8 +31,8 @@ final class ProductSalesSummaryFactory extends PersistentObjectFactory
             'salesId' => self::faker()->numberBetween(1, 1000),
             'dateString' => self::faker()->date(),
             'salesQty' => self::faker()->numberBetween(1, 1000),
-            'salesCost' => self::faker()->randomFloat(2),
-            'salesValue' => self::faker()->randomFloat(2),
+            'salesCost' => self::faker()->randomFloat(2, 1, 100000),
+            'salesValue' => self::faker()->randomFloat(2, 1, 100000),
         ];
     }
 
