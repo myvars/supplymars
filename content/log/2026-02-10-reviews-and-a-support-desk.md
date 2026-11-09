@@ -9,7 +9,7 @@ refs:
     url: https://github.com/myvars/supplymars/blob/main/Docs/03-architecture.md
 ---
 
-With the move to bounded contexts merged in January, adding a feature meant adding a context: its own domain model, commands, handlers, repository interfaces and screens, using other contexts only through their domain. Reviews and the support desk were the first two built that way from scratch, each using other contexts only through their domain, two weeks apart. Reviews came with a full written implementation plan.
+With the move to bounded contexts merged in January, adding a feature meant adding a context: its own domain model, commands, handlers, repository interfaces and screens, using other contexts only through their domain. Reviews and the support desk were the first two built that way from scratch, two weeks apart.
 
 ## Reviews
 

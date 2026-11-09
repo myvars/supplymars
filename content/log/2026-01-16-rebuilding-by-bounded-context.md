@@ -13,7 +13,7 @@ refs:
 
 By October 2025 SupplyMars was organised the way most Symfony apps start: by kind of class. `src/` had `Controller/`, `Entity/`, `Form/`, `Repository/`, `Service/`, `EventListener/`, `DTO/` and ten more folders, 337 files in all. Products, orders, suppliers and pricing were spread across all of them. A purchase order's rules sat next to a VAT rate's because both were entities.
 
-That October I rebuilt it around the business instead. It merged on 16 January 2026.
+The design had been heading towards the business since 2024, with rich entities and domain events, and folders by type had become the thing in its way. That October I rebuilt the code around the business instead. It merged on 16 January 2026.
 
 ## Groundwork on main
 
@@ -83,6 +83,6 @@ The URLs changed with it. Routes are named by context (`app_catalog_manufacturer
 
 The history shows the rebuild as a single commit, started on 13 October and last amended on 15 January, plus a clean-up the day it merged.
 
-The old test suite was written against the old classes, so I moved it aside into `tests_old/`, which PHPUnit doesn't run, and wrote a new suite, context by context. On the day the branch merged, 415 test methods ran, against 1,004 before it. Six contexts and Shared had tests of their own; Order, the core of the business, and Reporting didn't yet. New Order tests, and more for Purchasing, landed five days later and Reporting's the day after that, and the old suite was deleted on 1 February. [The January roundup](/log/php-8-5-phpstan-7-and-writing-it-down) covers that rebuild.
+The old test suite was written against the old classes, so I moved it aside into `tests_old/`, which PHPUnit doesn't run, and wrote a new suite, context by context. On the day the branch merged, 415 test methods ran, against 1,004 before it. Order and Reporting had no tests yet; [the January roundup](/log/php-8-5-phpstan-7-and-writing-it-down) covers how the suite was rebuilt.
 
 *Update, October 2026: nothing checked the rule between contexts until Deptrac did, in October 2026. Measured against the code of the time, 50 imports broke it, 33 between business contexts and 17 from Shared into them. 45 were fixed, and 5 became named exceptions, each its own Deptrac layer; there is no skip list, and the build now fails on a new one. ADR 014 records the rule.*
