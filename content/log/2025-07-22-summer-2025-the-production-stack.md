@@ -21,7 +21,7 @@ Sessions had been files on the server, and the cache was the filesystem too. Fro
 
 ## nginx for production
 
-The production nginx config gained the settings a public site should have: HTTP/2; TLS 1.2 and 1.3 only, with a short list of modern ciphers; HSTS; `nosniff`, frame and referrer headers; no server version in responses; gzip for text, JSON, JavaScript and SVG; and a year's immutable caching for the versioned files under `/assets/`, which change name whenever their content changes. Dotfiles are denied.
+The production nginx config gained what a public site needs: HTTP/2, modern TLS only, HSTS and the usual security headers, compression, and a year's caching for the versioned files under `/assets/`, which change name whenever their content changes.
 
 ## The crontab that ran the business
 
@@ -46,6 +46,6 @@ On 4 July Messenger's `async` transport moved from the database to RabbitMQ, wit
 
 - **A dev-tools compose file** starts the database, Redis, Mailpit and phpMyAdmin for working on the app locally, without the rest of the stack.
 - **phpMyAdmin for production** runs on my machine, not the server, and reaches the production database through an SSH tunnel. Every page it shows carries a red "PRODUCTION DATABASE" banner.
-- **A first k6 load test** requests the homepage and the assets it loads, the CSS, the JavaScript modules and the hero image, resolved from the asset manifest so their versioned names are always right. Two virtual users for 30 seconds, checking that the homepage, the stylesheet and a JavaScript module come back 200: a baseline to build on, run from the Makefile.
+- **A first k6 load test** of the homepage and the assets it loads: a baseline to build on, run from the Makefile.
 
 *Update, October 2026: three of these have since been replaced. The queue went back to the database, because it carried only email and the tests needed a running broker (ADR 013). The crontab became a Symfony Scheduler schedule, which runs one job at a time and ended about 11 deadlocks a day between jobs cron had started together (ADR 015). nginx and PHP-FPM gave way to FrankenPHP in [worker mode](/log/worker-mode) (ADR 016). Redis stayed, for the cache and sessions.*
