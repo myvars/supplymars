@@ -15,7 +15,7 @@ Signing in to the playground used to land you on the product list. That doesn't 
 
 The new dashboard at `/dashboard/` does. Today's orders, revenue, profit and margin, each against the same day last week. A list of things needing attention: pending and overdue orders, rejected purchase orders, and reviews waiting for moderation. The latest orders with their status, the top products, and links to orders, customers, products and categories with their counts.
 
-I kept it separate from the marketing home page on purpose. A visitor who signs in to the playground can still find the home page and the About page, and the reports moved to their own address, `/reports/`. The next day I removed an N+1 query from the latest-orders list; it now loads each order's customer in the same query.
+I kept it separate from the marketing home page on purpose. A visitor who signs in to the playground can still find the home page and the About page, and the reports moved to their own address, `/reports/`. Soon after, I removed an N+1 query from the latest-orders list; it now loads each order's customer in the same query.
 
 ## Demo orders
 

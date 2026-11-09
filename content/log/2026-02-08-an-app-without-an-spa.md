@@ -33,7 +33,7 @@ It is built as part of FormFlow, the project's controller pattern: `InlineEditFl
 
 Turbo takes over browser navigation, and iOS Safari has its own idea of what going back should look like. Swiping back on an iPhone showed a stale page, or animated twice.
 
-The first fix re-fetched the page whenever Safari restored it from its back-forward cache. The same day I replaced it with one aimed at the actual conflict: Safari 18 animates the swipe itself, and that animation can't be turned off, while Turbo was also running its own view transition on the same navigation. The shipped fix removes the re-fetch, detects Safari on iPhone and iPad, and turns off Turbo's view transition for back and forward visits only, turning it back on once the page has rendered. Ordinary link navigation keeps its transition, and the swipe feels native.
+The first fix re-fetched the page whenever Safari restored it from its back-forward cache. Within hours I replaced it with one aimed at the actual conflict: Safari 18 animates the swipe itself, and that animation can't be turned off, while Turbo was also running its own view transition on the same navigation. The shipped fix removes the re-fetch, detects Safari on iPhone and iPad, and turns off Turbo's view transition for back and forward visits only, turning it back on once the page has rendered. Ordinary link navigation keeps its transition, and the swipe feels native.
 
 ## PO Rewind
 

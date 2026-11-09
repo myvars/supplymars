@@ -13,7 +13,7 @@ In the catalogue the same product can come from several suppliers, each with its
 
 ## The supplier's side
 
-On 29 February the suppliers arrived, and their side mirrors the catalogue. A `Supplier` has `SupplierProduct`s, and each supplier product sits in the supplier's own `SupplierCategory`, `SupplierSubcategory` and `SupplierManufacturer`: the supplier's names for things, not ours. A supplier product has a product code, a manufacturer part number, weight, stock, lead time and cost, and it can be mapped to one of our products. A product can have any number of them.
+At the end of February the suppliers arrived, and their side mirrors the catalogue. A `Supplier` has `SupplierProduct`s, and each supplier product sits in the supplier's own `SupplierCategory`, `SupplierSubcategory` and `SupplierManufacturer`: the supplier's names for things, not ours. A supplier product has a product code, a manufacturer part number, weight, stock, lead time and cost, and it can be mapped to one of our products. A product can have any number of them.
 
 ## The active source
 
@@ -23,13 +23,13 @@ The cost the product copies is the one its [pricing](/log/pretty-prices) starts 
 
 ## Keeping it current
 
-The source is re-picked whenever something it depends on changes. A Doctrine listener on `SupplierProduct` watches its stock, cost, lead time, the product it's mapped to, and whether it's active; when any of them changes, the product's source is worked out again. On the same day, 29 February, a second listener, on `Supplier`, re-picked the source for the products affected when a supplier was switched on or off. The product's own listener then reprices it when its cost changes, so a supplier dropping its price can reach the customer's price without anyone touching the product.
+The source is re-picked whenever something it depends on changes. A Doctrine listener on `SupplierProduct` watches its stock, cost, lead time, the product it's mapped to, and whether it's active; when any of them changes, the product's source is worked out again. Alongside it, a second listener, on `Supplier`, re-picked the source for the products affected when a supplier was switched on or off. The product's own listener then reprices it when its cost changes, so a supplier dropping its price can reach the customer's price without anyone touching the product.
 
 A supplier product can also be switched on and off from its screen, or unmapped from a product, and both go through the same calculation.
 
 ## Building the catalogue from a supplier
 
-On 25 April a supplier's range could create our catalogue. `ProductGenerator` takes an unmapped supplier product and runs four mappers. The manufacturer, category and subcategory mappers find ours by name or create them; the product mapper creates the product with the supplier product's name, cost, lead time, part number and weight, then maps the supplier product to it, and `ProductGenerator` prices it. A new category gets the standard VAT rate, a 5% markup and the default price model; a new product inherits both.
+By late April a supplier's range could create our catalogue. `ProductGenerator` takes an unmapped supplier product and runs four mappers. The manufacturer, category and subcategory mappers find ours by name or create them; the product mapper creates the product with the supplier product's name, cost, lead time, part number and weight, then maps the supplier product to it, and `ProductGenerator` prices it. A new category gets the standard VAT rate, a 5% markup and the default price model; a new product inherits both.
 
 A map link on a supplier product's screen creates its product, and `app:import-products` did the same for every product of one supplier, the seeded "Turtle Inc". Matching an existing product was by name at first. In September the import became `app:create-warehouse-products`, and a new `app:create-supplier-products` matched other suppliers' products by manufacturer part number.
 

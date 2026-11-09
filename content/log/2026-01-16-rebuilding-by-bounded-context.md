@@ -81,7 +81,7 @@ The URLs changed with it. Routes are named by context (`app_catalog_manufacturer
 
 ## The tests
 
-The work ran from 13 October to 15 January, with a clean-up the day it merged.
+The work ran from mid-October to mid-January, with a clean-up the day it merged.
 
 The old test suite was written against the old classes, so I moved it aside into `tests_old/`, which PHPUnit doesn't run, and wrote a new suite, context by context. On the day the branch merged, 415 test methods ran, against 1,004 before it. Order and Reporting had no tests yet; [the January roundup](/log/php-8-5-phpstan-7-and-writing-it-down) covers how the suite was rebuilt.
 

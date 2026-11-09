@@ -11,7 +11,7 @@ refs:
     url: https://github.com/myvars/supplymars/blob/main/Docs/07-testing.md
 ---
 
-On 16 January the [bounded-context rebuild](/log/rebuilding-by-bounded-context) merged after three months on its own branch. A change that size leaves work behind it, and January was about doing that work properly: tests, tooling, the pipeline, and writing down how the system works and why.
+In mid-January the [bounded-context rebuild](/log/rebuilding-by-bounded-context) merged after three months on its own branch. A change that size leaves work behind it, and January was about doing that work properly: tests, tooling, the pipeline, and writing down how the system works and why.
 
 ## Rebuilding the tests
 
@@ -36,7 +36,7 @@ CI moved earlier in the process. It used to run only on pushes to `main`, testin
 
 ## Writing it all down
 
-Two years of decisions lived in my head and in the code. On 26 January I wrote them down, in one pass:
+Two years of decisions lived in my head and in the code. In late January I wrote them down, in one pass:
 
 - **Ten developer guides**: an overview of the domain, local setup, the architecture, sourcing and pricing, features, operations, testing, security, the CLI and a code reference.
 - **A user manual** of fourteen chapters and a troubleshooting guide, written from the staff user's side of the screen.
@@ -44,4 +44,4 @@ Two years of decisions lived in my head and in the code. On 26 January I wrote t
 
 The ADRs record decisions made over the previous two years. With them in place, the next change to sourcing or pricing starts from the reasoning instead of from guessing at it.
 
-The week before, I had added a `CLAUDE.md` to the repository, the instructions an AI coding agent reads before it works on the project, and had rewritten it two days later. [From hand-written code to Claude Code](/log/from-hand-written-code-to-claude-code) tells that part of the story.
+The week before, I had added a `CLAUDE.md` to the repository, the instructions an AI coding agent reads before it works on the project, and had rewritten it within days. [From hand-written code to Claude Code](/log/from-hand-written-code-to-claude-code) tells that part of the story.

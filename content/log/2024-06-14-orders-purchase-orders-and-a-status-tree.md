@@ -9,7 +9,7 @@ refs:
     url: https://github.com/myvars/supplymars/blob/main/Docs/04-sourcing-and-pricing.md
 ---
 
-By the end of April 2024 Turtle had a catalogue: products, prices with markups and rounding, and suppliers with their own products, costs and stock. A shop also needs orders, and this one needs two kinds: the customer's order, and the purchase orders that ask suppliers to send the goods. On 30 April four entities arrived in one commit: the customer order and its lines, the purchase order and its lines.
+By the end of April 2024 Turtle had a catalogue: products, prices with markups and rounding, and suppliers with their own products, costs and stock. A shop also needs orders, and this one needs two kinds: the customer's order, and the purchase orders that ask suppliers to send the goods. On the last day of the month four entities arrived in one commit: the customer order and its lines, the purchase order and its lines.
 
 ## A line keeps its price
 
@@ -17,13 +17,13 @@ A customer order line is built from a product and a quantity, and copies what it
 
 ## One purchase order per supplier
 
-On 15 May purchase orders became real. From an order line, a person picks one of the product's supplier products, and the outstanding quantity goes on a purchase order to that supplier. Each order has at most one editable purchase order per supplier: a second line for the same supplier joins it rather than starting another. A purchase order copies the order's shipping address and reference, and each of its lines records the supplier product and copies its cost.
+In mid-May purchase orders became real. From an order line, a person picks one of the product's supplier products, and the outstanding quantity goes on a purchase order to that supplier. Each order has at most one editable purchase order per supplier: a second line for the same supplier joins it rather than starting another. A purchase order copies the order's shipping address and reference, and each of its lines records the supplier product and copies its cost.
 
 A purchase order item's quantity can be edited, but a validator caps it at its current quantity plus what the order line still needs, so a line is never ordered from suppliers in more units than the customer asked for. Reducing a purchase order item and putting the rest with another supplier splits an order line between suppliers, a choice a person makes.
 
 ## Statuses with rules
 
-On 26 May statuses stopped being strings. `OrderStatus` and `PurchaseOrderStatus` became enums, each with five cases (pending, processing, shipped, delivered and cancelled), a default, and a `canTransitionTo()` that lists the legal moves:
+Late in May statuses stopped being strings. `OrderStatus` and `PurchaseOrderStatus` became enums, each with five cases (pending, processing, shipped, delivered and cancelled), a default, and a `canTransitionTo()` that lists the legal moves:
 
 ```php
 self::PROCESSING => match ($to) {
@@ -32,11 +32,11 @@ self::PROCESSING => match ($to) {
 },
 ```
 
-The shipping method had been an enum since the orders arrived, with each method's price and due date. On 7 June the enums moved into a folder of their own, and on 12 June a purchase order item's status could be changed by hand, through a form whose validator checks the transition is allowed. The same day, a purchase order's status became the lowest of its lines'.
+The shipping method had been an enum since the orders arrived, with each method's price and due date. Early in June the enums moved into a folder of their own. Within a week a purchase order item's status could be changed by hand, through a form whose validator checks the transition is allowed, and a purchase order's status became the lowest of its lines'.
 
 ## The status tree
 
-On 14 June, in the last commit for nearly six weeks, the tree went all the way up to the order, whose status is now worked out rather than set by hand. The order statuses got levels too, and the statuses roll up:
+Two days later, in the last commit for nearly six weeks, the tree went all the way up to the order, whose status is now worked out rather than set by hand. The order statuses got levels too, and the statuses roll up:
 
 - A purchase order's status is the lowest of its lines'.
 - An order line with nothing on a purchase order is pending, and one with some quantity on purchase orders and some still to source is processing. Otherwise its status is the lowest of its purchase order items', mapped from the purchase order's status to the order's.
@@ -48,6 +48,6 @@ The same commit added cancelling an order. Only a pending order can be cancelled
 
 ## Rules in the entities
 
-In the middle of those weeks, on 22 May, questions started moving into the entities themselves, and by June the order entities held the status rules: `generateStatus()`, `cancelOrder()`, `allowCancel()`. [A domain model that owns its rules](/log/the-domain-model-owns-its-rules) follows that thread.
+In the middle of those weeks, questions started moving into the entities themselves, and by June the order entities held the status rules: `generateStatus()`, `cancelOrder()`, `allowCancel()`. [A domain model that owns its rules](/log/the-domain-model-owns-its-rules) follows that thread.
 
 *Update, November 2026: the tree is still how status works. ADR 002 records it: status derives from the child purchase order items, the least progressed wins, and a line splits between suppliers only by hand, or after a cancel or refund. The statuses grew to eight levels for purchase orders when suppliers started [accepting, rejecting and refunding](/log/hardening-the-status-tree), and running the tree at simulation speed in September found the cases it got wrong.*

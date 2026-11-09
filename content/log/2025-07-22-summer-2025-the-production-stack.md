@@ -17,7 +17,7 @@ In early June SupplyMars [moved into containers](/log/leaving-the-bitnami-box), 
 
 ## Redis
 
-Sessions had been files on the server, and the cache was the filesystem too. From 13 June both are in Redis. Sessions use the PHP Redis extension's own session handler, and the app cache uses Symfony's Redis adapter, through SncRedisBundle. Redis is its own container in every environment, so development, CI and production all run the same way.
+Sessions had been files on the server, and the cache was the filesystem too. From mid-June both are in Redis. Sessions use the PHP Redis extension's own session handler, and the app cache uses Symfony's Redis adapter, through SncRedisBundle. Redis is its own container in every environment, so development, CI and production all run the same way.
 
 ## nginx for production
 
@@ -25,7 +25,7 @@ The production nginx config gained what a public site needs: HTTP/2, modern TLS 
 
 ## The crontab that ran the business
 
-SupplyMars is simulation-first: console commands play the customers and the suppliers, so the business runs on its own (ADR 003). On 24 June that got a container of its own, built from a cron stage of the same Dockerfile, and the next day its crontab. That crontab was the business's timetable:
+SupplyMars is simulation-first: console commands play the customers and the suppliers, so the business runs on its own (ADR 003). In late June that got a container of its own, built from a cron stage of the same Dockerfile, and then its crontab. That crontab was the business's timetable:
 
 | Every | Job |
 |-------|-----|
@@ -40,7 +40,7 @@ Twelve jobs in all, each writing to one log file that was emptied every Sunday. 
 
 ## RabbitMQ
 
-On 4 July Messenger's `async` transport moved from the database to RabbitMQ, with a broker container on each environment. ADR 013, written when I later reversed this, records why it was added: throughput, and room for what the queue might carry later. What it carried then was outgoing email.
+In early July Messenger's `async` transport moved from the database to RabbitMQ, with a broker container on each environment. ADR 013, written when I later reversed this, records why it was added: throughput, and room for what the queue might carry later. What it carried then was outgoing email.
 
 ## Tools around it
 

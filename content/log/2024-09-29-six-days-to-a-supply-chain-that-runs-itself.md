@@ -13,19 +13,19 @@ By September 2024 Turtle had a catalogue, prices, customer orders and purchase o
 
 ## Day one: orders
 
-On Saturday 14 September, `app:create-customer-orders` started placing orders. It takes a count, and with `--random` places up to that many. Each order has one to five lines of one to five units, picked from the catalogue, with a random shipping method. One order in three comes from an existing customer and the rest from a new one, and each order gets a new default address for its customer. Two days later each order waited a random pause before the next, up to 300 seconds divided by the count, so a batch arrived over a few minutes rather than in the same second. That pause stayed until October 2026.
+On Saturday `app:create-customer-orders` started placing orders. It takes a count, and with `--random` places up to that many. Each order has one to five lines of one to five units, picked from the catalogue, with a random shipping method. One order in three comes from an existing customer and the rest from a new one, and each order gets a new default address for its customer. By Monday each order waited a random pause before the next, up to 300 seconds divided by the count, so a batch arrived over a few minutes rather than in the same second. That pause stayed until October 2026.
 
-The day before, two setup commands had filled in the supply side: `app:create-warehouse-products` and `app:create-supplier-products`, which matches each supplier's products to the catalogue by manufacturer part number and creates a product where there's no match.
+Two setup commands had already filled in the supply side: `app:create-warehouse-products` and `app:create-supplier-products`, which matches each supplier's products to the catalogue by manufacturer part number and creates a product where there's no match.
 
-The first version built customers and picked products with the Foundry test factories, which was quick and wrong: test factories in a production command. Products moved to a repository query on 20 September, and customers took until [June 2025](/log/leaving-the-bitnami-box).
+The first version built customers and picked products with the Foundry test factories, which was quick and wrong: test factories in a production command. Products moved to a repository query within the week, and customers took until [June 2025](/log/leaving-the-bitnami-box).
 
 ## Day three: purchase orders
 
-On Monday `app:process-customer-order`, soon renamed `app:build-purchase-orders`, took the oldest pending orders that had no purchase orders yet and sourced each line: the cheapest active supplier with enough stock for the whole line got it. The same day the logic moved out of the command into a service and gained a rule: only when every line is covered do the purchase order items move from pending to processing, the point where a supplier would see them. The next day a link on the order page ran the same service, so the command and a person sourcing by hand went through one path.
+On Monday `app:process-customer-order`, soon renamed `app:build-purchase-orders`, took the oldest pending orders that had no purchase orders yet and sourced each line: the cheapest active supplier with enough stock for the whole line got it. Then the logic moved out of the command into a service and gained a rule: only when every line is covered do the purchase order items move from pending to processing, the point where a supplier would see them. By Tuesday a link on the order page ran the same service, so the command and a person sourcing by hand went through one path.
 
 ## Day five: suppliers answer
 
-On Wednesday purchase orders gained two statuses, accepted and rejected, and `app:process-purchase-order`, renamed `app:accept-purchase-orders` the next day, started answering for the suppliers: pick a supplier, take its waiting purchase orders, and accept each one, or reject one in 25. A week later it went to one in 50.
+On Wednesday purchase orders gained two statuses, accepted and rejected, and `app:process-purchase-order`, renamed `app:accept-purchase-orders` by Thursday, started answering for the suppliers: pick a supplier, take its waiting purchase orders, and accept each one, or reject one in 25. A week later it went to one in 50.
 
 ## A lock for people
 
@@ -46,12 +46,12 @@ With five commands, an order could now go from placed to delivered in the time t
 
 ## Running at full speed
 
-Running the commands over and over, faster than any supplier would, put the status rules under real load. The next day I added refunds, and by the end of the day a command that re-derives every status. That story is in [Hardening the status tree](/log/hardening-the-status-tree).
+Running the commands over and over, faster than any supplier would, put the status rules under real load. On Friday I added refunds, and a command that re-derives every status. That story is in [Hardening the status tree](/log/hardening-the-status-tree).
 
-Three more things came out of the same fortnight. On 21 September the admin screens got their first access check; until then they needed no login at all. On 23 September every order, line, purchase order and item got a status timeline drawn from the log, showing how long after the record was created each status came. And on 25 September purchase orders took on their supplier's colour, so on a busy order page a staff user can see at a glance which supplier holds which line.
+Three more things came out of the same fortnight. The following weekend the admin screens got their first access check; until then they needed no login at all. Early the next week every order, line, purchase order and item got a status timeline drawn from the log, showing how long after the record was created each status came. And midweek, purchase orders took on their supplier's colour, so on a busy order page a staff user can see at a glance which supplier holds which line.
 
 ## Stock that moves
 
-A supplier whose stock never changes isn't much of a test of sourcing. On 26 September `app:update-supplier-stock` started moving it: pick a supplier and some of its products, and drain each product's stock by up to 10%. When stock falls to 20 or below, it restocks by up to 100, and the cost moves up or down by up to 10%. `app:reset-supplier-stock` sets each of a supplier's products to a stock level between 0 and 300. Three days later every stock and cost change went into a log of its own, through domain events.
+A supplier whose stock never changes isn't much of a test of sourcing. Late in the month `app:update-supplier-stock` started moving it: pick a supplier and some of its products, and drain each product's stock by up to 10%. When stock falls to 20 or below, it restocks by up to 100, and the cost moves up or down by up to 10%. `app:reset-supplier-stock` sets each of a supplier's products to a stock level between 0 and 300. Three days later every stock and cost change went into a log of its own, through domain events.
 
 *Update, November 2026: the shipping and delivery rules are now one service, `ProcessingSimulator`, with the same hours and waits, an even 95% chance per run, and rejections still one in 50. ADR 003 records the simulation-first design.*
