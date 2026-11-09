@@ -28,7 +28,7 @@ final class OrderSalesSummaryFactory extends PersistentObjectFactory
             ),
             'dateString' => self::faker()->date(),
             'orderCount' => self::faker()->numberBetween(1, 1000),
-            'orderValue' => self::faker()->randomFloat(2),
+            'orderValue' => self::faker()->randomFloat(2, 1, 100000),
             'averageOrderValue' => null,
         ];
     }

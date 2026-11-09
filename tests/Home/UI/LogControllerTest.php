@@ -4,55 +4,85 @@ declare(strict_types=1);
 
 namespace App\Tests\Home\UI;
 
+use App\Home\Service\EngineeringLog;
+use App\Home\Service\LogPost;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Zenstruck\Browser\Test\HasBrowser;
 
+/**
+ * The log's pages, read against whatever posts content/log holds: no test names a post, so writing one never
+ * breaks a test. Whether each post is valid is EngineeringLogTest's job.
+ */
 final class LogControllerTest extends WebTestCase
 {
     use HasBrowser;
 
-    public function testVisitorSeesThePosts(): void
+    public function testVisitorSeesEveryPostNewestFirst(): void
     {
-        $this->browser()
+        $posts = $this->posts();
+        $newest = $posts[0];
+
+        $browser = $this->browser()
             ->get('/log')
             ->assertSuccessful()
             ->assertSeeIn('h1', 'Building SupplyMars')
-            ->assertSee('Five weeks, 119 pull requests')
-            ->assertSee('6 October – 8 November 2026')
             // Grouped by year, newest first
-            ->assertSeeIn('#log-year-2026', '2026')
-            ->assertSeeIn('#log-year-2026 + ol li:first-child h3', 'Five weeks, 119 pull requests')
-            ->assertElementAttributeContains('a[href="/log/five-weeks-119-pull-requests"]', 'data-turbo-frame', 'body');
+            ->assertSeeIn('#log-year-' . $newest->date->format('Y') . ' + ol li:first-child h3', $newest->title)
+            ->assertElementCount('ol li a[href^="/log/"]', \count($posts))
+            ->assertElementAttributeContains('a[href="/log/' . $newest->slug . '"]', 'data-turbo-frame', 'body');
+
+        foreach ($posts as $post) {
+            $browser->assertSeeElement('a[href="/log/' . $post->slug . '"]');
+        }
     }
 
-    public function testVisitorReadsAPost(): void
+    public function testVisitorReadsTheNewestPost(): void
     {
-        $this->browser()
-            ->get('/log/five-weeks-119-pull-requests')
+        [$newest, $older] = $this->posts();
+
+        $browser = $this->browser()
+            ->get('/log/' . $newest->slug)
             ->assertSuccessful()
-            ->assertSeeIn('h1', 'Five weeks, 119 pull requests')
-            // A figure from the front matter, a heading and a table from the Markdown, and a reference
-            ->assertSeeIn('dl', 'pull requests merged')
-            ->assertSeeIn('article h2', 'How the weeks went')
-            ->assertSee('When things went wrong')
-            ->assertSeeIn('article table', '6–12 Oct')
-            ->assertElementCount('a[href="https://github.com/myvars/supplymars/blob/main/Docs/adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md"]', 1)
+            ->assertSeeIn('h1', $newest->title)
+            ->assertSee($newest->period)
             // The newest post links to the one before it, and to nothing newer
-            ->assertSeeIn('nav[aria-label="More posts"] a[rel="prev"]', 'From ChatGPT to Claude Code')
+            ->assertSeeIn('nav[aria-label="More posts"] a[rel="prev"]', $older->title)
             ->assertElementCount('nav[aria-label="More posts"] a[rel="next"]', 0)
             ->assertSeeElement('a[href="/log"]');
+
+        foreach ($newest->refs as $ref) {
+            $browser->assertSeeElement('a[href="' . $ref['url'] . '"]');
+        }
+    }
+
+    public function testPostShowsItsFigures(): void
+    {
+        $post = array_find($this->posts(), static fn (LogPost $post): bool => $post->figures !== []);
+        if (!$post instanceof LogPost) {
+            self::markTestSkipped('No post has a figures band.');
+        }
+
+        $browser = $this->browser()
+            ->get('/log/' . $post->slug)
+            ->assertSuccessful();
+
+        foreach ($post->figures as $figure) {
+            $browser->assertSeeIn('dl', $figure['label']);
+        }
     }
 
     public function testPostLinksToTheNewerAndOlderPosts(): void
     {
+        [$newer, $post, $older] = $this->posts();
+
         $this->browser()
-            ->get('/log/worker-mode')
+            ->get('/log/' . $post->slug)
             ->assertSuccessful()
-            ->assertSeeIn('nav[aria-label="More posts"] a[rel="next"]', 'Live pages with Mercure')
-            ->assertSeeIn('nav[aria-label="More posts"] a[rel="prev"]', 'A UI kit the project owns')
-            ->click('A UI kit the project owns')
-            ->assertOn('/log/a-ui-kit-the-project-owns')
-            ->assertSeeIn('h1', 'A UI kit the project owns');
+            ->assertSeeIn('nav[aria-label="More posts"] a[rel="next"]', $newer->title)
+            ->assertSeeIn('nav[aria-label="More posts"] a[rel="prev"]', $older->title)
+            ->click($older->title)
+            ->assertOn('/log/' . $older->slug)
+            ->assertSeeIn('h1', $older->title);
     }
 
     public function testUnknownPostIsNotFound(): void
@@ -72,5 +102,16 @@ final class LogControllerTest extends WebTestCase
             ->assertSuccessful()
             ->assertElementCount('footer a[href="/log"]', 1)
             ->assertSeeElement('main a[href="/log"]');
+    }
+
+    /**
+     * @return list<LogPost> the published posts, newest first; the tests need at least three
+     */
+    private function posts(): array
+    {
+        $posts = new EngineeringLog(\dirname(__DIR__, 3) . '/content/log')->all();
+        self::assertGreaterThanOrEqual(3, \count($posts), 'The log tests need at least three posts.');
+
+        return $posts;
     }
 }
