@@ -23,7 +23,7 @@ The cost the product copies is the one its [pricing](/log/pretty-prices) starts 
 
 ## Keeping it current
 
-The source is re-picked whenever something it depends on changes. A Doctrine listener on `SupplierProduct` watches its stock, cost, lead time, the product it's mapped to, and whether it's active; when any of them changes, the product's source is worked out again. The same day a second listener, on `Supplier`, re-picked the source for the products affected when a supplier was switched on or off. The product's own listener then reprices it when its cost changes, so a supplier dropping its price can reach the customer's price without anyone touching the product.
+The source is re-picked whenever something it depends on changes. A Doctrine listener on `SupplierProduct` watches its stock, cost, lead time, the product it's mapped to, and whether it's active; when any of them changes, the product's source is worked out again. On the same day, 29 February, a second listener, on `Supplier`, re-picked the source for the products affected when a supplier was switched on or off. The product's own listener then reprices it when its cost changes, so a supplier dropping its price can reach the customer's price without anyone touching the product.
 
 A supplier product can also be switched on and off from its screen, or unmapped from a product, and both go through the same calculation.
 
@@ -33,4 +33,4 @@ On 25 April a supplier's range could create our catalogue. `ProductGenerator` ta
 
 A map link on a supplier product's screen creates its product, and `app:import-products` did the same for every product of one supplier, the seeded "Turtle Inc". Matching an existing product was by name at first. In September the import became `app:create-warehouse-products`, and a new `app:create-supplier-products` matched other suppliers' products by manufacturer part number.
 
-*Update, November 2026: ADR 001 records the rule: lowest cost, then highest stock. Since then the source has been re-picked by domain events rather than Doctrine listeners, in the [October 2025 rewrite](/log/domain-events-take-two). The rule for a single order line is stricter: the line goes to the cheapest supplier with stock [for the whole line](/log/six-days-to-a-supply-chain-that-runs-itself), or waits.*
+*Update, November 2026: ADR 001 records the rule, and since the [October 2025 rewrite](/log/domain-events-take-two) the source is re-picked by domain events. A single order line goes to the cheapest supplier with stock [for the whole line](/log/six-days-to-a-supply-chain-that-runs-itself), or waits.*

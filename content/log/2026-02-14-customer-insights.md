@@ -13,7 +13,7 @@ The reports could tell you which products sold and how orders were trending. The
 
 ## The same two layers
 
-Reporting in SupplyMars has worked the same way since 2024 (ADR 005). A first layer holds small daily records, one row per thing per day. A second layer holds summaries computed from them for each reporting period. The dashboard reads summaries, so it never aggregates raw orders while someone waits.
+Reporting in SupplyMars has used [the same two layers](/log/from-a-live-query-to-a-sales-warehouse) since 2024 (ADR 005): small daily records, and summaries computed from them for each reporting period. The dashboard reads summaries, so it never aggregates raw orders while someone waits.
 
 Customers fitted the same shape, with one addition: a second, platform-wide daily record.
 
@@ -24,11 +24,7 @@ Customers fitted the same shape, with one addition: a second, platform-wide dail
 
 Two types, because they answer different questions. Per-customer rows support drill-downs and top-customer lists. Platform-wide rows support trend charts without re-aggregating every customer's rows on each page load.
 
-**Layer 2** has three summaries, each with its own dimension, for each reporting period:
-
-- **Sales**: customers, revenue, average lifetime value, average order value, repeat rate, review rate.
-- **Geography**: customers, orders and order value by city.
-- **Segments**: customers, orders, order value, average order value and items per order for each segment.
+**Layer 2** has three summaries for each reporting period: sales, geography and segments.
 
 Like the other reports, each calculation deletes and re-inserts its rows for the day or period it covers, so a rerun or a backfill gives the same answer.
 
@@ -48,10 +44,6 @@ Customer Insights reads across orders, customers and reviews, and everything it 
 
 ## Refresh
 
-Every night shortly after midnight, the previous day is calculated in full and the summaries are rebuilt. During the day, today's figures are recalculated at quarter past and quarter to each hour, so the dashboard is never more than half an hour behind.
-
-## Indexes
-
-Later in the month I added composite indexes for the queries the reports run most: orders by status and date, purchase orders by supplier, status and date, and two on purchase order items.
+Every night shortly after midnight, the previous day is calculated in full and the summaries are rebuilt. During the day, today's figures are recalculated at quarter past and quarter to each hour, so the dashboard is never more than half an hour behind. Later in the month, composite indexes went in for the queries the reports run most.
 
 ADR 010 records the model, the metric definitions and the reasons above.

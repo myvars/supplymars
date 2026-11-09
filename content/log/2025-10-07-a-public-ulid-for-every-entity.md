@@ -5,9 +5,9 @@ summary: Every record behind a URL got a ULID, an identity set in the constructo
 refs:
   - label: Architecture
     url: https://github.com/myvars/supplymars/blob/main/Docs/03-architecture.md
-  - label: PR #89 · Stop rewriting public_id on every flush
+  - label: "#89 · Stop rewriting public_id on every flush"
     url: https://github.com/myvars/supplymars/pull/89
-  - label: PR #161 · Make publicId NOT NULL
+  - label: "#161 · Make publicId NOT NULL"
     url: https://github.com/myvars/supplymars/pull/161
 ---
 
@@ -35,4 +35,6 @@ The audit log still stored the integer IDs, so a small registry translates a pub
 
 The URLs themselves switched on the rebuild branch, where a single value resolver, `#[ValueResolver('public_id')]`, loads any entity by the ULID in its path. By January there were 21 typed ID classes.
 
-*Update, October 2026: the column stayed nullable for a year, and finishing the job turned up two bugs. The trait mapped the ULID onto a string property while Doctrine hydrates a `Ulid` object, so every flush rewrote `public_id` and `updated_at` on every loaded entity; that was behind a deadlock on live, and the property is now a `Ulid` ([#89](https://github.com/myvars/supplymars/pull/89)). And the status log's constructor never set its ID, leaving 2.26 million rows without one. Nothing read it, so the status log dropped the column, and the other 23 tables went `NOT NULL` in a migration that checks for nulls before changing anything ([#161](https://github.com/myvars/supplymars/pull/161)).*
+## A year later
+
+The column stayed nullable for a year, and finishing the job turned up two bugs. The trait mapped the ULID onto a string property while Doctrine hydrates a `Ulid` object, so every flush rewrote `public_id` and `updated_at` on every loaded entity; that was behind a deadlock on live, and the property is now a `Ulid` ([#89](https://github.com/myvars/supplymars/pull/89)). And the status log's constructor never set its ID, leaving 2.26 million rows without one. Nothing read it, so the status log dropped the column, and the other 23 tables went `NOT NULL` in a migration that checks for nulls before changing anything ([#161](https://github.com/myvars/supplymars/pull/161)).

@@ -49,7 +49,7 @@ The kit had to look like SupplyMars, not the other way round:
 - **Buttons the app needed.** The kit's `Button` was tuned to the app's size and weight, and gained the variants the screens use: warning for cancel and rewind, success for approving a review, and solid destructive and secondary styles.
 - **Better behaviour for free.** The user menu became the kit's dropdown, with arrow keys, Escape to close and focus returned to the button. Toasts stack, pause while hovered and can be swiped away.
 
-Working in the kit's files turned up a few bugs of its own, such as an input group whose focus ring never showed and a toast whose close button a swipe swallowed. They're fixed locally, and ADR 012 lists every change to keep when a recipe is updated.
+Working in the kit's files turned up a few bugs of its own, such as an input group whose focus ring never showed and a toast whose close button a swipe swallowed. They're fixed in the project's copies, and ADR 012 lists every change to keep when a recipe is updated.
 
 ## What it left
 

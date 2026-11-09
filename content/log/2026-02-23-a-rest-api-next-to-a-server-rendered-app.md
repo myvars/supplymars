@@ -1,7 +1,7 @@
 ---
 title: A REST API next to a server-rendered app
 period: February 2026
-summary: A JSON API for the catalog and orders that reuses the web's handlers, documents itself, and leaves the server-rendered UI untouched. And why not API Platform.
+summary: A JSON API for the catalogue and orders that reuses the web's handlers, documents itself, and leaves the server-rendered UI untouched. And why not API Platform.
 refs:
   - label: ADR 011 · REST API layer
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/011-rest-api-layer.md
@@ -11,7 +11,7 @@ refs:
     url: https://www.supplymars.com/api/doc
 ---
 
-SupplyMars is server-rendered on purpose: controllers return HTML, Turbo makes it feel fast, and Symfony's forms and validation do the heavy lifting. That is the right shape for a form-heavy back office. It is the wrong shape for another system that wants the catalog or needs to place an order. An integration shouldn't have to parse HTML.
+SupplyMars is server-rendered on purpose: controllers return HTML, Turbo makes it feel fast, and Symfony's forms and validation do the heavy lifting. That is the right shape for a form-heavy back office. It is the wrong shape for another system that wants the catalogue or needs to place an order. An integration shouldn't have to parse HTML.
 
 So in February I added a JSON API alongside the web UI, with one rule above all others: **the API must not contain any business logic of its own.**
 
@@ -28,7 +28,7 @@ What differs is only the presentation:
 
 ## Kept apart from the web
 
-The API has its own firewall, stateless and using bearer tokens, placed before the web firewall so an API request never touches a session or a CSRF token. The catalog endpoints are public and read-only; the order endpoints need a staff token. That split lives in `access_control`, in one place, not in each controller.
+The API has its own firewall, stateless and using bearer tokens, placed before the web firewall so an API request never touches a session or a CSRF token. The catalogue endpoints are public and read-only; the order endpoints need a staff token. That split lives in `access_control`, in one place, not in each controller.
 
 Sixteen endpoints shipped: list and show for products, categories, subcategories and manufacturers, and for orders list, show, create, cancel, allocate, and add, update and remove items. Each is documented with OpenAPI attributes on the controller and the resource, and NelmioApiDoc serves a Swagger UI at `/api/doc`, generated from attributes that sit next to the code they describe.
 

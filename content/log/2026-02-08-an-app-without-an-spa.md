@@ -3,7 +3,7 @@ title: An app without an SPA
 period: 3 – 8 February 2026
 summary: Modals, inline editing and native swipe-back on iPhone, all on server-rendered pages with Turbo. Plus PO Rewind, for undoing a purchase order.
 refs:
-  - label: ADR 007 · Turbo frames and modals
+  - label: ADR 007 · Turbo Frames and modals
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/007-turbo-frame-modal-architecture.md
   - label: ADR 008 · Server-driven UI
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/008-server-driven-ui-architecture.md
@@ -39,6 +39,6 @@ The first fix re-fetched the page whenever Safari restored it from its back-forw
 
 The simulation occasionally leaves a purchase order in a state a human needs to undo: some items accepted, some rejected, the order half-sourced. PO Rewind puts a purchase order and its items back to pending, so it goes through the supplier's accept or reject step again.
 
-A rewind removes the status log entries it reverses, so the timeline shows the order's actual path, and then re-derives the customer order's status from its items. A console command, `app:rewind-mixed-status-purchase-orders`, finds purchase orders whose items have mixed statuses including a rejection, with a `--dry-run` to see what it would change first. It shipped with about 880 lines of tests.
+A rewind removes the status log entries it reverses, so the timeline shows the order's actual path, and then re-derives the customer order's status from its items. A console command, `app:rewind-mixed-status-purchase-orders`, finds purchase orders whose items have mixed statuses including a rejection, with a `--dry-run` to see what it would change first.
 
 *Update, October 2026: a rewind now refuses a purchase order with refunded or cancelled items. A refunded quantity has usually been re-sourced elsewhere, so rewinding it could put the same quantity on two purchase orders.*

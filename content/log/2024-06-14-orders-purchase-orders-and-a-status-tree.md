@@ -19,7 +19,7 @@ A customer order line is built from a product and a quantity, and copies what it
 
 On 15 May purchase orders became real. From an order line, a person picks one of the product's supplier products, and the outstanding quantity goes on a purchase order to that supplier. Each order has at most one editable purchase order per supplier: a second line for the same supplier joins it rather than starting another. A purchase order copies the order's shipping address and reference, and each of its lines records the supplier product and copies its cost.
 
-A purchase order line's quantity can be edited, but a validator caps it at its current quantity plus what the order line still needs, so a line is never ordered from suppliers in more units than the customer asked for. Reducing a purchase order line and putting the rest with another supplier splits an order line between suppliers, a choice a person makes.
+A purchase order item's quantity can be edited, but a validator caps it at its current quantity plus what the order line still needs, so a line is never ordered from suppliers in more units than the customer asked for. Reducing a purchase order item and putting the rest with another supplier splits an order line between suppliers, a choice a person makes.
 
 ## Statuses with rules
 
@@ -32,22 +32,22 @@ self::PROCESSING => match ($to) {
 },
 ```
 
-Shipping had been an enum since the orders arrived, with each method's price and due date. On 7 June the enums moved into a folder of their own, and on 12 June a purchase order line's status could be changed by hand, through a form whose validator checks the transition is allowed. The same day, a purchase order's status became the lowest of its lines'.
+The shipping method had been an enum since the orders arrived, with each method's price and due date. On 7 June the enums moved into a folder of their own, and on 12 June a purchase order item's status could be changed by hand, through a form whose validator checks the transition is allowed. The same day, a purchase order's status became the lowest of its lines'.
 
 ## The status tree
 
 On 14 June, in the last commit for nearly six weeks, the tree went all the way up to the order, whose status is now worked out rather than set by hand. The order statuses got levels too, and the statuses roll up:
 
 - A purchase order's status is the lowest of its lines'.
-- An order line with nothing on a purchase order is pending, and one with some quantity on purchase orders and some still to source is processing. Otherwise its status is the lowest of its purchase order lines', mapped from the purchase order's status to the order's.
+- An order line with nothing on a purchase order is pending, and one with some quantity on purchase orders and some still to source is processing. Otherwise its status is the lowest of its purchase order items', mapped from the purchase order's status to the order's.
 - The order's status is the lowest of its lines'.
 
-So an order with one line delivered and one still shipping is shipping, and nobody has to decide that. Changing a purchase order line's status works its way up: the line updates its purchase order, then its order line, which updates the order.
+So an order with one line delivered and one shipped is shipped, and nobody has to decide that. Changing a purchase order item's status works its way up: the item updates its purchase order, then its order line, which updates the order.
 
 The same commit added cancelling an order. Only a pending order can be cancelled, and cancelling it cancels each line, unless a line already has quantity on a purchase order. Then the cancel refuses, because that part is with a supplier. Cancelling goes down the tree, but not past a purchase order.
 
 ## Rules in the entities
 
-In the middle of those weeks, on 22 May, a commit called "Code kaizen, move to rich entities" started moving questions into the entities themselves. `Product` gained methods such as `hasDefaultMarkup()`, `hasPriceModel()` and `hasActiveProductSource()`, and the services asked the product instead of checking its fields. By June the order entities held the status rules: `generateStatus()`, `cancelOrder()`, `allowCancel()`. That direction carried on, through [named constructors](/log/orders-built-whole) in 2025 to the [rebuild by bounded context](/log/rebuilding-by-bounded-context).
+In the middle of those weeks, on 22 May, questions started moving into the entities themselves, and by June the order entities held the status rules: `generateStatus()`, `cancelOrder()`, `allowCancel()`. [A domain model that owns its rules](/log/the-domain-model-owns-its-rules) follows that thread.
 
 *Update, November 2026: the tree is still how status works. ADR 002 records it: status derives from the child purchase order items, the least progressed wins, and a line splits between suppliers only by hand, or after a cancel or refund. The statuses grew to eight levels for purchase orders when suppliers started [accepting, rejecting and refunding](/log/hardening-the-status-tree), and running the tree at simulation speed in September found the cases it got wrong.*

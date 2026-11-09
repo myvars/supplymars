@@ -30,7 +30,7 @@ Much of the work was types. The pricing engine has handled money as decimal stri
 
 ## PHP 8.5 and the pipeline
 
-The project moved to PHP 8.5.2. The Docker setup was simplified: unused stages went, the worker and cron containers wait for a healthy PHP container, and only that container runs migrations. The local production-mode environment file moved out of the project folder.
+The project moved to PHP 8.5.2. The Docker setup was simplified: unused stages went, the worker and cron containers wait for a healthy PHP container, and only that container runs migrations.
 
 CI moved earlier in the process. It used to run only on pushes to `main`, testing and deploying in one job. Now it also runs on every pull request, so a change is tested before it merges, and testing and deploying are separate jobs, with the deploy depending on the tests. The build cache is keyed on the files that actually change the image (the Dockerfile, the compose files and `composer.lock`), so an ordinary code change reuses it.
 
@@ -42,6 +42,6 @@ Two years of decisions lived in my head and in the code. On 26 January I wrote t
 - **A user manual** of fourteen chapters and a troubleshooting guide, written from the staff user's side of the screen.
 - **Six architecture decision records**, each with its context, decision and consequences: multi-supplier sourcing, order line splitting, simulation-first design, the pricing cascade, the reporting strategy and FormFlow.
 
-The ADRs record decisions made over the previous two years, some of them in 2024. With them in place, the next change to sourcing or pricing starts from the reasoning instead of from guessing at it.
+The ADRs record decisions made over the previous two years. With them in place, the next change to sourcing or pricing starts from the reasoning instead of from guessing at it.
 
 The week before, I had added a `CLAUDE.md` to the repository, the instructions an AI coding agent reads before it works on the project, and had rewritten it two days later. [From ChatGPT to Claude Code](/log/from-chatgpt-to-claude-code) tells that part of the story.

@@ -11,20 +11,20 @@ figures:
     label: new ADRs (013–017)
   - value: 54s → 22s
     label: CI test step
-  - value: ~1.7×
+  - value: ~1.5×
     label: throughput on a light page
   - value: 453 → 144 MiB
     label: MySQL memory, idle
 refs:
-  - label: ADR 013 · Database queue
+  - label: ADR 013 · Database queue by default
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/013-database-queue-by-default.md
   - label: ADR 014 · Architecture rules
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/014-architecture-rules.md
-  - label: ADR 015 · Scheduler
+  - label: ADR 015 · Symfony Scheduler in place of cron
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/015-symfony-scheduler-in-place-of-cron.md
-  - label: ADR 016 · FrankenPHP
+  - label: ADR 016 · FrankenPHP in place of nginx and PHP-FPM
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/016-frankenphp-in-place-of-nginx-and-php-fpm.md
-  - label: ADR 017 · Mercure
+  - label: ADR 017 · Live updates with Mercure
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/017-live-updates-with-mercure.md
   - label: All pull requests
     url: https://github.com/myvars/supplymars/pulls?q=is%3Apr+is%3Amerged
@@ -32,7 +32,7 @@ refs:
 
 In October I set out to give SupplyMars the work a production system needs and a demo usually skips: a modern runtime, a pipeline that checks everything, rules that the code actually follows, backups I had restored at least once, and a test suite I trusted.
 
-I also tightened how I work. Every change started as a GitHub issue, went onto its own branch and landed as a pull request that says what changed, how it was tested, what to look at closely and what was left out. Five weeks later there were 119 of them. This post is the story of those five weeks, with the numbers from the PRs.
+I also tightened how I work. Every change started as a GitHub issue, went onto its own branch and landed as a pull request. Five weeks later there were 119 of them. This post is the story of those five weeks, with the numbers from the PRs.
 
 ## How the weeks went
 
@@ -46,21 +46,21 @@ I also tightened how I work. Every change started as a GitHub issue, went onto i
 
 ## A new runtime: FrankenPHP in worker mode
 
-The site ran on nginx and PHP-FPM. I replaced both with one FrankenPHP image ([#81](https://github.com/myvars/supplymars/pull/81)), then moved production to worker mode ([#85](https://github.com/myvars/supplymars/pull/85)), where the Symfony kernel stays loaded between requests. Everything nginx used to do moved into the app, so development, tests and production behave the same, and a new rule, guarded by a test, keeps request data out of services that now live across requests. The home page handled 1.5–1.7× as many requests under load, and memory stayed flat at about 200 MiB over 25,000 requests. [FrankenPHP in worker mode](/log/worker-mode) has the benchmarks and the details.
+The site ran on nginx and PHP-FPM. I replaced both with one FrankenPHP image ([#81](https://github.com/myvars/supplymars/pull/81)), then moved production to worker mode ([#85](https://github.com/myvars/supplymars/pull/85)), where the Symfony kernel stays loaded between requests. Everything nginx used to do moved into the app, so development, tests and production behave the same, and a new rule, guarded by a test, keeps request data out of services that now live across requests. The home page handled about 1.5× as many requests under load, and memory stayed flat at about 200 MiB over 25,000 requests. [FrankenPHP in worker mode](/log/worker-mode) has the benchmarks and the details.
 
 ## Pages that update themselves
 
-With Mercure ([#117](https://github.com/myvars/supplymars/pull/117), [#121](https://github.com/myvars/supplymars/pull/121)), order and purchase order pages refresh themselves as the simulation moves them, and if someone releases an order lock you hold, you get a toast with a link. A refresh is public and carries no data; a toast is private, and only staff can subscribe ([#145](https://github.com/myvars/supplymars/pull/145)). Building it turned up four domain events that existed in the code but were never raised ([#124](https://github.com/myvars/supplymars/pull/124)). [Live pages with Mercure](/log/live-pages-with-mercure) tells the whole story.
+With Mercure ([#117](https://github.com/myvars/supplymars/pull/117), [#121](https://github.com/myvars/supplymars/pull/121)), order and purchase order pages refresh themselves as the simulation moves them, and if someone releases an order lock you hold, you get a toast with a link. A refresh is public and carries no data; a toast is private, and only staff can subscribe ([#145](https://github.com/myvars/supplymars/pull/145)). Building it turned up four domain events that existed in the code but were never raised ([#117](https://github.com/myvars/supplymars/pull/117)). [Live pages with Mercure](/log/live-pages-with-mercure) tells the whole story.
 
 ## Architecture rules the code actually follows
 
-The architecture docs described rules that nothing checked, and the code had drifted from them. Unchecked rules are worse than none, so I made them checkable. ADR 014 rewrote them to match a design I actually wanted: a context may use another context's domain (its entities, events and repository interfaces) but never its handlers, services or controllers, and the shared kernel imports no business context. Deptrac checks it in CI ([#37](https://github.com/myvars/supplymars/pull/37)).
+The architecture docs described rules that nothing checked, and the code had drifted from them. Unchecked rules are worse than none, so I made them checkable. ADR 014 rewrote them to match a design I wanted: a context may use another context's domain (its entities, events and repository interfaces) but never its handlers, services or controllers, and the shared kernel imports no business context. Deptrac checks it in CI ([#37](https://github.com/myvars/supplymars/pull/37)).
 
 Measured against the new rules, 50 imports broke them. I fixed 45 by moving or simplifying code. The other five became named exceptions, each its own Deptrac layer that only the context that needs it may use. There is no `skip_violations` list, and a catch-all layer fails the build for any context that isn't registered.
 
 ## The Scheduler in place of cron
 
-Seventeen cron jobs, two crontab files and a cron container became one PHP class, `MainSchedule`, run by the Messenger worker ([#79](https://github.com/myvars/supplymars/pull/79)). The worker runs one job at a time, which removes a problem cron couldn't: two jobs due in the same minute ran together, and the logs showed about 11 database deadlocks a day. With one job at a time, they stopped.
+By then the crontab had grown to seventeen jobs in two files. They and the cron container became one PHP class, `MainSchedule`, run by the Messenger worker ([#79](https://github.com/myvars/supplymars/pull/79)). The worker runs one job at a time, which removes a problem cron couldn't: two jobs due in the same minute ran together, and the logs showed about 11 database deadlocks a day. With one job at a time, they stopped.
 
 The schedule is stateful and locked, so a missed run happens once after a restart, and a failed job reaches Sentry instead of disappearing into a container log. The demo-order command used to sleep for up to five minutes between orders to spread them out. Jitter on the schedule does that now.
 
@@ -90,11 +90,11 @@ Production runs two stacks, live and the playground, on one small server, so mem
 |---|---|---|
 | MySQL memory, idle | 453 MiB | 144 MiB |
 | MySQL memory, with a copy of live | 616 MiB | 356 MiB |
-| Status history rows | 5.28 M | 3.04 M |
+| Status log rows | 5.28 M | 3.04 M |
 | Whole database | 1,713 MB | 1,174 MB |
 | Nightly dump, compressed | 139 MB | 114 MB |
 
-The backup command used to read the whole dump into memory. At about 137 MB compressed and growing, it would soon have failed every night. Upload and restore now stream, and a short download is caught and deleted instead of restored ([#49](https://github.com/myvars/supplymars/pull/49)). Then I rehearsed the runbook's restore on the playground stack, checked it table by table, and wrote down how to repeat it every month ([#162](https://github.com/myvars/supplymars/pull/162)). A backup is only proven once it has been restored.
+The backup command used to read the whole dump into memory. At well over 100 MB compressed and growing, it would soon have failed every night. Upload and restore now stream, and a short download is caught and deleted instead of restored ([#49](https://github.com/myvars/supplymars/pull/49)). Then I rehearsed the runbook's restore on the playground stack, checked it table by table, and wrote down how to repeat it every month ([#162](https://github.com/myvars/supplymars/pull/162)). A backup is only proven once it has been restored.
 
 `/health` runs one check per dependency. `/health/backup` fails when no backup has arrived for 26 hours, and I kept it out of `/health` on purpose: `/health` gates the container healthcheck, and a missed backup shouldn't take the site down.
 
@@ -121,7 +121,7 @@ Two changes caused production incidents. Both were found quickly, fixed at the c
 
 - **The Shadcn UI kit.** Three Flowbite packages and a set of hand-converted components were replaced by the Shadcn kit through Symfony UX Toolkit ([#3](https://github.com/myvars/supplymars/pull/3)). [A UI kit the project owns](/log/a-ui-kit-the-project-owns) tells that story.
 - **FormFlow as a package.** My controller pattern lives in its own Composer package, `myvars/form-flow`, now at 1.6 ([#209](https://github.com/myvars/supplymars/pull/209)).
-- **A docs review that found bugs.** A six-part review checked every guide and ADR against the code. Checking the docs turned up real bugs in orders, purchase orders, the catalog and sign-in, each fixed in its own PR. The project now has 61 documents, including 17 ADRs.
+- **A docs review that found bugs.** A six-part review checked every guide and ADR against the code. Checking the docs turned up real bugs in orders, purchase orders, the catalogue and sign-in, each fixed in its own PR. The project now has 61 documents, including 17 ADRs.
 - **Domain fixes.** Products are repriced when simulated stock and costs change, allocation edge cases are fixed, deleting a record that's still in use is refused, and Doctrine no longer rewrites `public_id` and `updated_at` on every flush.
 
 ## How I worked

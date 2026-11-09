@@ -79,10 +79,10 @@ It started with five flows: `FormFlow` for create and update, `SearchFlow` for i
 
 The URLs changed with it. Routes are named by context (`app_catalog_manufacturer_edit`), and 64 controller arguments load their entity by its ULID through one value resolver.
 
-## One commit, and the tests
+## The tests
 
-The history shows the rebuild as a single commit, started on 13 October and last amended on 15 January, plus a clean-up the day it merged.
+The work ran from 13 October to 15 January, with a clean-up the day it merged.
 
 The old test suite was written against the old classes, so I moved it aside into `tests_old/`, which PHPUnit doesn't run, and wrote a new suite, context by context. On the day the branch merged, 415 test methods ran, against 1,004 before it. Order and Reporting had no tests yet; [the January roundup](/log/php-8-5-phpstan-7-and-writing-it-down) covers how the suite was rebuilt.
 
-*Update, October 2026: nothing checked the rule between contexts until Deptrac did, in October 2026. Measured against the code of the time, 50 imports broke it, 33 between business contexts and 17 from Shared into them. 45 were fixed, and 5 became named exceptions, each its own Deptrac layer; there is no skip list, and the build now fails on a new one. ADR 014 records the rule.*
+*Update, October 2026: Deptrac now checks the rule between contexts and fails the build on a new breach; [Five weeks, 119 pull requests](/log/five-weeks-119-pull-requests) tells how the imports that broke it were fixed, and ADR 014 records the rule.*

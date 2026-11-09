@@ -15,7 +15,7 @@ With the move to bounded contexts merged in January, adding a feature meant addi
 
 A shop without reviews is missing the most-read text on a product page. The Review context gives each product customer reviews, moderated by staff.
 
-**Who may review.** A customer can review a product only if they have a delivered order containing it, and only once per product. That rule is a validator in the Review context. It asks the Order context's repository for the delivered order, rather than reaching into Order's code.
+**Who may review.** A customer can review a product only if they have a delivered order containing it, and only once per product. That rule started as a validator in the Review context, asking the Order context's repository for the delivered order rather than reaching into Order's code.
 
 **Moderation as a state machine.** A review is pending, published, hidden or rejected, and the status enum says which moves are allowed. Pending can be published or rejected. Published can be hidden and hidden can be republished, so staff can take a review down without losing it. Rejected is final. Each move is its own command and handler: approve, reject, hide and republish, plus create, update and delete.
 
@@ -25,15 +25,15 @@ A shop without reviews is missing the most-read text on a product page. The Revi
 
 ## A support desk
 
-Staff need a way to work through customer requests together. The Note context is an internal support desk: staff log tickets for customers and work them, and the model is ready for customers to reply directly later. It has three entities: pools, tickets and messages.
+Staff need a way to work through customer requests together. The Note context is an internal support desk: staff log tickets for customers and work them, and the model already has a customer side. It has three entities: pools, tickets and messages.
 
 **Pools that staff choose.** A pool is a category of work, such as billing or returns. Staff subscribe to the pools they want to work, and see those tickets in their queue. ADR 009, written a few days later, records why that beat the alternatives: a flat list with a dispatcher, which makes one person the bottleneck; tags, which have no clear owner; and round-robin assignment, which ignores who knows what. Tickets move between pools as an issue becomes clearer.
 
-**Status from the conversation.** A ticket is open, replied or closed, and replies move it. A staff reply sets it to replied, because the customer has an answer. A customer reply, which the model supports for when customers can reply directly, sets it back to open. System messages change nothing. Staff close a ticket explicitly. In the common case nobody manages status by hand.
+**Status from the conversation.** A ticket is open, replied or closed, and replies move it. A staff reply sets it to replied, because the customer has an answer. A customer reply sets it back to open. System messages change nothing. Staff close a ticket explicitly. In the common case nobody manages status by hand.
 
 **Snooze as a timestamp.** Snoozing is a `snoozedUntil` date on the ticket, not another status. A ticket can be open and snoozed, or replied and snoozed, and drops out of the queue until the date passes. One field instead of a set of extra statuses and the transitions between them.
 
-**Internal notes.** Each message is public or internal, so staff can discuss a ticket on the ticket itself, and internal notes stay internal once customers can see their tickets.
+**Internal notes.** Each message is public or internal, so staff can discuss a ticket on the ticket itself, and internal notes stay internal from customers.
 
 **Fast lists.** A ticket stores its message count and the time of its last message, updated as messages are added or removed. The queue, the most-viewed page, reads them without touching the messages table, backed by an index on pool, status and snooze date.
 
