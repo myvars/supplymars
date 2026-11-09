@@ -1,7 +1,7 @@
 ---
 title: A public ULID for every URL
 period: October 2025
-summary: Every record behind a URL got a ULID, added to tables with rows in them through a nullable column, a streamed backfill and a typed ID per entity. Finishing the job, and two bugs, came a year later.
+summary: Every record behind a URL got a ULID, an identity set in the constructor rather than by the database on insert, added to tables with rows in them through a nullable column, a streamed backfill and a typed ID per entity. Finishing the job, and two bugs, came a year later.
 figures:
   - value: "18"
     label: tables given a public ID in one migration
@@ -18,7 +18,9 @@ refs:
     url: https://github.com/myvars/supplymars/pull/161
 ---
 
-Every URL in SupplyMars used the database's auto-increment ID: `/order/1042`, `/product/57`. An ID like that tells anyone how many orders exist and what the next one will be. In October 2025 I gave every entity behind a URL, 18 of the 24, a second identifier for the outside world, a ULID, and kept the integer for the database's own relations.
+Every entity in SupplyMars was identified by the database's auto-increment ID, and an auto-increment ID has one awkward property: it doesn't exist until the row is inserted. A new order has no ID until the flush. The new domain events are raised inside the entity, in the method that makes the change, and some of them are raised before the entity has ever been flushed. Each event has to say which entity it is about, so the entity needs an identity before the database gives it one.
+
+So in October 2025 I gave every entity behind a URL, 18 of the 24, an identity of its own, set in its constructor: a ULID. The integer stayed for the database's own relations, and the ULID became the ID the rest of the code, and later the URLs, use.
 
 A ULID is 128 bits, like a UUID, but its first part is a timestamp, so new IDs sort by creation time and index well. It is 26 characters in base 32, safe in a URL. Symfony's Uid component has it built in, and Doctrine stores it as `BINARY(16)`.
 

@@ -36,7 +36,7 @@ class OrderStatusWasChangedEvent extends AbstractDomainEvent implements StatusWa
 }
 ```
 
-An event carries the order's public ID and a `StatusChange` value object, before and after. The entity raises it only when the status actually changes, inside the method that changes it. Every event has a type and the time it occurred. A listener that needs the order loads it by ID; the event never hands out a live entity.
+An event carries the order's public ID, which [exists from the constructor](/log/a-public-ulid-for-every-entity), unlike the database ID, and a `StatusChange` value object, before and after. The entity raises it only when the status actually changes, inside the method that changes it. Every event has a type and the time it occurred. A listener that needs the order loads it by ID; the event never hands out a live entity.
 
 One listener now logs all four status changes, for orders, order items, purchase orders and their items, through the interface they share, in place of a listener class for each.
 
