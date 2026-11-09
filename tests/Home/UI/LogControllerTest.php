@@ -49,10 +49,10 @@ final class LogControllerTest extends WebTestCase
             ->get('/log/worker-mode')
             ->assertSuccessful()
             ->assertSeeIn('nav[aria-label="More posts"] a[rel="next"]', 'Live pages with Mercure')
-            ->assertSeeIn('nav[aria-label="More posts"] a[rel="prev"]', 'FormFlow becomes a package')
-            ->click('FormFlow becomes a package')
-            ->assertOn('/log/formflow-becomes-a-package')
-            ->assertSeeIn('h1', 'FormFlow becomes a package');
+            ->assertSeeIn('nav[aria-label="More posts"] a[rel="prev"]', 'A UI kit the project owns')
+            ->click('A UI kit the project owns')
+            ->assertOn('/log/a-ui-kit-the-project-owns')
+            ->assertSeeIn('h1', 'A UI kit the project owns');
     }
 
     public function testUnknownPostIsNotFound(): void
