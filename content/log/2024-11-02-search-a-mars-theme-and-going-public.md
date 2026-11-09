@@ -1,0 +1,48 @@
+---
+title: Search, a Mars theme, and going public
+period: October 2024
+summary: The month the project got a public face and its name. Search and filters held in the URL, the Mars theme and the public pages, every admin screen locked to staff, and every address moved to Mars.
+figures:
+  - value: "16"
+    label: admin controllers locked to staff
+  - value: "10"
+    label: search DTOs, one per index page
+  - value: "15"
+    label: Mars cities with sector post codes
+refs:
+  - label: Security
+    url: https://github.com/myvars/supplymars/blob/main/Docs/08-security.md
+  - label: Turbo pattern docs
+    url: https://github.com/myvars/supplymars/blob/main/Docs/patterns/Turbo/README.md
+---
+
+Until October 2024 the project, still called Turtle in its README, sat behind a plain demo homepage, with sign-ups open since January. That month it got search worth the name, a real public face, and a theme: everything a Martian colony needs.
+
+## Search in the URL
+
+Every index page got search, sorting and filters, and all of it lives in the query string. Each page has a search DTO: a base `SearchDto` holds the query, sort, direction, page and limit, and each index page extends it with its own filters, such as status for orders, or category and manufacturer for products. The controller receives it already filled with `#[MapQueryString]`:
+
+```php
+public function index(
+    // …
+    #[MapQueryString] CategorySearchDto $dto = new CategorySearchDto()
+): Response
+```
+
+Because the state is in the URL, a filtered list can be bookmarked, shared or reloaded, and the back button works. The search box is a small Stimulus controller: 300 ms after you stop typing, it rebuilds the URL with the new query, keeps the other parameters, and asks Turbo to visit it, replacing the history entry rather than adding one per keystroke. A filter screen for the five busiest sections turns a filter form into the same query string. Four days later, date ranges joined the filters.
+
+## A Mars shop
+
+On 17 October the homepage became a shop for life on the Red Planet: a Martian landscape, "Your One-Stop Shop for Life on the Red Planet", and an honest line underneath saying it is also a working demo of e-commerce development with a modern PHP stack. From here on the project is SupplyMars: the homepage shows the domain it's served on as its name, and the README and page title caught up later. An About page described the stack and the twenty years of e-commerce behind it, with contact, privacy and terms pages and themed error pages for 403, 404 and 500.
+
+Two weeks later every address moved to Mars too. New customers get one of fifteen cities, Olympia, Gale, Hellas, Tharsis and the rest, with a post code built from the city's sector code. A one-off command rewrote the existing addresses the same way, and was deleted the same day once it had run. The [Customer Insights](/log/customer-insights) reports of 2026 still group customers by those cities.
+
+## Locked to staff
+
+The same commit closed a gap that had been open since January: every admin controller required only `ROLE_USER`, so anyone who registered could have opened the catalogue, the orders and the suppliers. All sixteen now require `ROLE_ADMIN`. Signing up gets you an account, and nothing behind it.
+
+## Tuning Turbo
+
+The day after, I tuned how Turbo refreshes pages. Refreshing the whole page by morphing, Turbo's diff-and-patch, went back to a plain replace, and morphing stayed on the main content frame, where it keeps the page steady when content updates in place. The record cards dropped their extra frames at the same time and now target the main frame.
+
+*Update: the README said "Turtle" until the move to containers in June 2025, and the page title said "Butterfly", a name from the project's first weeks, until February 2026.*
