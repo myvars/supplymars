@@ -1,5 +1,5 @@
 ---
-title: From ChatGPT to Claude Code
+title: From hand-written code to Claude Code
 period: March 2023 – November 2026
 summary: How the way I build changed over three years, from writing every line myself, with ChatGPT for the odd question, to an agent working from my issues and rules, and what has stayed mine throughout.
 figures:
