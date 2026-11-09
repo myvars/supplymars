@@ -11,7 +11,7 @@ refs:
 
 The project started on 25 January 2024 as Butterfly, a Symfony skeleton with sign-up, login, Tailwind and Turbo; [why I built it](/log/why-i-built-supplymars) is a post of its own. Everything after was built on that login page, and registration has been part of it since that day.
 
-I wrote it with ChatGPT in a window beside the editor, adapting what it gave me and pasting it in; [that story](/log/from-chatgpt-to-claude-code) has its own post.
+I wrote it by hand, as I did nearly all of the first two years, with ChatGPT for the occasional question; [how that changed](/log/from-chatgpt-to-claude-code) has its own post.
 
 ## February: a catalogue
 

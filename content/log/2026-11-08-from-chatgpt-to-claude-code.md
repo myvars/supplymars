@@ -1,7 +1,7 @@
 ---
 title: From ChatGPT to Claude Code
 period: March 2023 – November 2026
-summary: How the way I build changed over three years of AI tools, from pasting answers out of a chat window to an agent working from my issues and rules, and what has stayed mine throughout.
+summary: How the way I build changed over three years, from writing every line myself, with ChatGPT for the odd question, to an agent working from my issues and rules, and what has stayed mine throughout.
 figures:
   - value: "0% → 77%"
     label: commits with a written explanation
@@ -16,13 +16,13 @@ refs:
     url: https://www.supplymars.com/about
 ---
 
-I have used AI tools for the whole life of SupplyMars, and for a while before it. They changed a great deal over three years. My job on the project didn't, and that is the part worth explaining.
+For most of its life I wrote SupplyMars myself. Today Claude agents write most of the code and the tests. The tools changed a great deal over three years; my job on the project didn't, and that is the part worth explaining.
 
-## ChatGPT: an assistant in a window
+## By hand, with ChatGPT for questions
 
-I subscribed to ChatGPT in March 2023, ten months before the first commit. For most of the project's life that was the whole of my AI tooling: a chat window beside the editor. I would describe a problem, read the answer, take what was useful, adapt it to the codebase and paste it in.
+I subscribed to ChatGPT in March 2023, ten months before the first commit, and occasionally asked it a code question, the way I'd otherwise search the documentation. I didn't rely on it to write the code. Nearly all of the first two years was written by hand: I wrote the code, and I solved the problems.
 
-Every line went through me. The questions that shape this project, such as how a product should pick a supplier, how a status rolls up through an order, and where one context ends and the next begins, were mine to answer, and the code from that period was written by hand, with AI as an assistant.
+That covered the questions that shape this project, such as how a product should pick a supplier, how a status rolls up through an order and how prices cascade, and the code that answers them. As the models improved, I asked them more, but they stayed outside the editor and the code stayed mine.
 
 ## Copilot: in the editor
 
@@ -44,7 +44,7 @@ The clearest change is in how the work is recorded. I counted the commits that c
 
 | Period | Commits | With an explanation |
 |---|---|---|
-| ChatGPT, Jan 2024 – Aug 2025 | 157 | 0% |
+| By hand, Jan 2024 – Aug 2025 | 157 | 0% |
 | Copilot, Sep 2025 – Jan 2026 | 8 | 0% |
 | Claude Code, Jan – Jun 2026 | 140 | 49% |
 | Claude Code, Oct – Nov 2026 | 394 | 77% |
