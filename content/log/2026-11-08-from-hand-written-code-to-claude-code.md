@@ -30,7 +30,7 @@ In September 2025 I added GitHub Copilot to the IDE and used it for about five m
 
 ## Claude Code: an agent with rules
 
-In January 2026 I started using Claude Code, an agent that works in the repository itself: it reads the code, runs the tests and the tools, and makes changes. That needs a different kind of preparation, because an agent will follow whatever conventions it can infer, good or bad. So the first thing I wrote for it was `CLAUDE.md`, 377 lines on the architecture and how the project is built, on 20 January. I rewrote it two days later.
+In January 2026 I started using Claude Code, an agent that works in the repository itself: it reads the code, runs the tests and the tools, and makes changes. That needs a different kind of preparation, because an agent will follow whatever conventions it can infer, good or bad. So the first thing I wrote for it was `CLAUDE.md`, 377 lines on the architecture and how the project is built, and I rewrote it within days.
 
 The tooling around it grew from there. In February I connected two MCP servers: Context7, so it reads current library documentation rather than relying on memory, and Playwright, so it can open the app in a browser and check what it built. I used it to run a structured audit of the codebase with five reviewer roles, which became the work of [audit week](/log/audit-week), and to plan new contexts before building them.
 
