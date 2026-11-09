@@ -24,7 +24,7 @@ The reports could tell you which products sold and how orders were trending. The
 
 Reporting in SupplyMars has worked the same way since 2024 (ADR 005). A first layer holds small daily records, one row per thing per day. A second layer holds summaries computed from them for each reporting period. The dashboard reads summaries, so it never aggregates raw orders while someone waits.
 
-Customers fitted the same shape, with one addition.
+Customers fitted the same shape, with one addition: a second, platform-wide daily record.
 
 **Layer 1** has two daily record types:
 
@@ -37,15 +37,15 @@ Two types, because they answer different questions. Per-customer rows support dr
 
 - **Sales**: customers, revenue, average lifetime value, average order value, repeat rate, review rate.
 - **Geography**: customers, orders and order value by city.
-- **Segments**: the same measures for each customer segment.
+- **Segments**: customers, orders, order value, average order value and items per order for each segment.
 
-Like the other reports, each calculation deletes and re-inserts its rows for the day it covers, so a rerun or a backfill gives the same answer.
+Like the other reports, each calculation deletes and re-inserts its rows for the day or period it covers, so a rerun or a backfill gives the same answer.
 
 ## Segments by lifetime
 
 The segments are **new** (one lifetime order), **returning** (two or three) and **loyal** (four or more). They count lifetime orders, not orders in the period. A customer with ten orders behind them who hasn't ordered this month is loyal, not new; their relationship with the business didn't change because the month did.
 
-**Lapsed**, no order in sixty days, is separate. It measures time, not count, so a customer can be loyal and lapsed at once, which is exactly the customer a business wants to win back.
+**Lapsed**, no order for more than sixty days, is separate. It measures time, not count, so by definition a loyal customer can also be lapsed, which is exactly the customer a business wants to win back.
 
 ## Geography by shipping city
 
@@ -61,6 +61,6 @@ Every night shortly after midnight, the previous day is calculated in full and t
 
 ## Indexes
 
-A week later I added composite indexes for the queries the reports run most: orders by status and date, purchase orders by supplier, status and date, and two on purchase order items. The reports filter on exactly those columns together, so one index each serves the whole filter.
+Later in the month I added composite indexes for the queries the reports run most: orders by status and date, purchase orders by supplier, status and date, and two on purchase order items.
 
 ADR 010 records the model, the metric definitions and the reasons above.

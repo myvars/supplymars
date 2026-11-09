@@ -16,7 +16,7 @@ refs:
     url: https://github.com/myvars/supplymars/blob/main/Docs/03-architecture.md
 ---
 
-With the move to bounded contexts merged in January, adding a feature meant adding a context: its own domain model, commands, handlers, repository interfaces and screens, using other contexts only through their domain. Reviews and the support desk were the first two built that way from scratch, two weeks apart. Reviews was planned in full, in a written plan, before any code.
+With the move to bounded contexts merged in January, adding a feature meant adding a context: its own domain model, commands, handlers, repository interfaces and screens, using other contexts only through their domain. Reviews and the support desk were the first two built that way from scratch, each using other contexts only through their domain, two weeks apart. Reviews came with a full written implementation plan.
 
 ## Reviews
 
@@ -28,19 +28,19 @@ A shop without reviews is missing the most-read text on a product page. The Revi
 
 **Summaries kept by events.** A product page shows a review count, an average rating and the spread across ratings. Computing those on every page view would mean aggregating every review each time. Instead, `ReviewSummaryUpdater` listens for review events and keeps a `ProductReviewSummary` row up to date, so the page reads one row.
 
-**Part of the simulation.** Like everything else in SupplyMars, reviews happen on their own. A review generator writes reviews for delivered orders, so the moderation queue always has work in it.
+**Data to moderate.** A generator command writes pending reviews for delivered orders, so the moderation queue can be filled on demand for a demo or a test.
 
 ## A support desk
 
-Customers need a way to ask for help, and staff need a way to work through the requests together. The Note context is a support desk with three entities: pools, tickets and messages.
+Staff need a way to work through customer requests together. The Note context is an internal support desk: staff log tickets for customers and work them, and the model is ready for customers to reply directly later. It has three entities: pools, tickets and messages.
 
-**Pools that staff choose.** A pool is a category of work, such as billing or returns. Staff subscribe to the pools they want to work, and see those tickets in their queue. I chose that over the alternatives ADR 009 lists: a flat list with a dispatcher, which makes one person the bottleneck; tags, which have no clear owner; and round-robin assignment, which ignores who knows what. Tickets move between pools as an issue becomes clearer.
+**Pools that staff choose.** A pool is a category of work, such as billing or returns. Staff subscribe to the pools they want to work, and see those tickets in their queue. ADR 009, written a few days later, records why that beat the alternatives: a flat list with a dispatcher, which makes one person the bottleneck; tags, which have no clear owner; and round-robin assignment, which ignores who knows what. Tickets move between pools as an issue becomes clearer.
 
-**Status from the conversation.** A ticket is open, replied or closed, and replies move it. A staff reply sets it to replied, because the customer has an answer. A customer reply sets it back to open, because it needs attention. System messages change nothing. Staff close a ticket explicitly. In the common case nobody manages status by hand.
+**Status from the conversation.** A ticket is open, replied or closed, and replies move it. A staff reply sets it to replied, because the customer has an answer. A customer reply, which the model supports for when customers can reply directly, sets it back to open. System messages change nothing. Staff close a ticket explicitly. In the common case nobody manages status by hand.
 
 **Snooze as a timestamp.** Snoozing is a `snoozedUntil` date on the ticket, not another status. A ticket can be open and snoozed, or replied and snoozed, and drops out of the queue until the date passes. One field instead of a set of extra statuses and the transitions between them.
 
-**Internal notes.** Each message is public or internal. Customers never see internal notes, so staff can discuss a ticket on the ticket itself.
+**Internal notes.** Each message is public or internal, so staff can discuss a ticket on the ticket itself, and internal notes stay internal once customers can see their tickets.
 
 **Fast lists.** A ticket stores its message count and the time of its last message, updated as messages are added or removed. The queue, the most-viewed page, reads them without touching the messages table, backed by an index on pool, status and snooze date.
 
