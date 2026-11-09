@@ -44,4 +44,4 @@ Two years of decisions lived in my head and in the code. On 26 January I wrote t
 
 The ADRs record decisions made over the previous two years. With them in place, the next change to sourcing or pricing starts from the reasoning instead of from guessing at it.
 
-The week before, I had added a `CLAUDE.md` to the repository, the instructions an AI coding agent reads before it works on the project, and had rewritten it two days later. [From ChatGPT to Claude Code](/log/from-chatgpt-to-claude-code) tells that part of the story.
+The week before, I had added a `CLAUDE.md` to the repository, the instructions an AI coding agent reads before it works on the project, and had rewritten it two days later. [From hand-written code to Claude Code](/log/from-hand-written-code-to-claude-code) tells that part of the story.
