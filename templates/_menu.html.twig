@@ -17,7 +17,7 @@
         <twig:Sheet:Title class="sr-only">Main menu</twig:Sheet:Title>
         <div class="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-white/[0.06]">
             <a href="{{ path('app_homepage') }}" data-turbo-frame="body" data-action="dialog#close">
-                {{ include('_logo.html.twig', { 'logoHeight': 28 }) }}
+                {{ include('_logo.html.twig', { 'logoId': 'menu', 'logoHeight': 28 }) }}
             </a>
             <twig:Button variant="ghost" size="icon-sm" class="text-muted-foreground" data-action="dialog#close">
                 <svg aria-hidden="true" class="size-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>
