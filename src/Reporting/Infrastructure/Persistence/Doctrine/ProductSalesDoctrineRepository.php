@@ -120,7 +120,7 @@ class ProductSalesDoctrineRepository extends ServiceEntityRepository implements 
             ->addSelect('SUM(ps.salesValue) AS salesValue')
             ->addSelect('SUM(ps.salesCost) AS salesCost')
             ->addSelect('SUM(ps.salesValue - ps.salesCost) AS salesProfit')
-            ->addSelect('AVG(CASE WHEN ps.salesCost > 0 THEN ((ps.salesValue - ps.salesCost) / ps.salesCost)*100 ELSE 0 END) AS salesMargin')
+            ->addSelect('CASE WHEN SUM(ps.salesValue) > 0 THEN (SUM(ps.salesValue - ps.salesCost) / SUM(ps.salesValue)) * 100 ELSE 0 END AS salesMargin')
             ->join('ps.product', 'p')
             ->andWhere('ps.salesDate between :startDate and :endDate')
             ->setParameter('startDate', $startDate)

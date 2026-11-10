@@ -22,6 +22,8 @@ Every report has four buttons at the top right: **Today**, **7 days**, **30 days
 | **PO Item Performance** (menu: PO Performance) | Two KPIs, Total Items and Total Profit; a table of PO items (Product, Supplier, PO, Status, Profit), lowest profit first, 10 per page | Column headings sort by Product, Supplier, Status or Profit |
 | **Overdue Orders** | Overdue Order Count, Overdue Order Value; a table (Order No, Customer, Overdue, Status, Total) | Column headings sort |
 
+**Product Sales margin.** Gross Margin, and Margin in the table, are profit as a share of sales value (both ex VAT) over all the period's sales: (value − cost) ÷ value. Larger sales count for more than small ones.
+
 **Customer Insights figures** (Overview tab). "Active customers" means customers who placed an order in the period.
 
 | Figure | Meaning |
