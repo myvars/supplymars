@@ -164,43 +164,15 @@
 
     {# ── Symfony ──────────────────────────────────────────────────────────── #}
     {% set symfony = [
-        { group: 'Requests & controllers', items: [
-            { name: 'Attributes & autowiring', body: 'Routes, commands, listeners, message handlers and configuration values are declared with attributes on the class itself, and services are autowired. A YAML definition is the last resort.' },
-            { name: 'Value resolvers', body: 'A custom resolver turns the ULID in a URL into the entity, so a controller receives an Order, not a string, and a missing one is a 404.' },
-            { name: 'MapRequestPayload & MapQueryString', body: 'The REST API maps JSON bodies and query strings straight into validated DTOs.' },
-            { name: 'Forms & Validator', body: 'Every form fills a form model with constraint attributes, and one form theme renders every field through the UI kit. SymfonyCasts Dynamic Forms handles fields that depend on each other.' },
-            { name: 'HttpClient', body: 'Server-side verification of Cloudflare Turnstile.' },
-        ] },
-        { group: 'Security', items: [
-            { name: 'Security bundle', body: 'Form login with remember-me and login throttling for the web, an access-token authenticator for the API, a role hierarchy and voters.' },
-            { name: 'RateLimiter', body: 'Limits on sign-in, registration, password reset and the health checks, applied before routing and answered with 429 and Retry-After.' },
-            { name: 'SymfonyCasts bundles', body: 'Password reset and email verification, rather than hand-rolled tokens.' },
-        ] },
-        { group: 'Data', items: [
-            { name: 'Doctrine ORM & Migrations', body: 'Attribute mapping, repositories behind domain interfaces, and every schema change as a migration. Gedmo adds the created and updated timestamps.' },
-            { name: 'Uid', body: 'ULIDs for every public ID: sortable by time, safe to show in a URL, and known before the entity is saved.' },
-            { name: 'Cache & sessions', body: 'Redis for the application cache and the sessions, so a deploy signs no one out.' },
-            { name: 'Clock', body: 'Code that needs the time asks the clock, so a test can freeze it.' },
-        ] },
-        { group: 'Async & operations', items: [
-            { name: 'Messenger', body: 'The async transport for mail, queued events and live refreshes, with a failure transport and retries.' },
-            { name: 'Scheduler', body: 'Every recurring job, run as a console command inside the worker.' },
-            { name: 'Lock', body: 'Mutual exclusion for long-running commands, the schedule and live-refresh deduplication. Never a hand-made lock file.' },
-            { name: 'Console & Process', body: 'More than twenty commands drive the simulation and the operations; backup and restore run mysqldump through Process.' },
-            { name: 'Mailer & Twig', body: 'Transactional email written in Twig with Inky and an inliner, so the markup survives every mail client.' },
-            { name: 'Runtime', body: 'Boots the kernel once inside FrankenPHP\'s worker loop in production.' },
-        ] },
-        { group: 'Symfony UX & assets', items: [
-            { name: 'Twig Components', body: 'The UI kit and the in-house components, used as <twig:Button> and friends.' },
-            { name: 'Turbo & Stimulus', body: 'Frames, streams, morphing and the controllers that add behaviour.' },
-            { name: 'UX Toolkit', body: 'Installs Shadcn kit components into the project as editable files.' },
-            { name: 'UX Icons & Chart.js', body: 'Icons as inline SVG and charts configured from PHP.' },
-            { name: 'Asset Mapper & Tailwind bundle', body: 'Import maps and a standalone Tailwind binary, with no Node build.' },
-        ] },
-        { group: 'Development', items: [
-            { name: 'Flex', body: 'New capabilities arrive as Composer packages whose recipes register and configure them.' },
-            { name: 'Maker & Profiler', body: 'Migrations and scaffolding from the makers; the web profiler and the debug commands for finding out what the container really holds.' },
-        ] },
+        { name: 'Attributes & autowiring', body: 'Routes, commands, listeners and message handlers are declared on the class itself, and services are autowired. Configuration in YAML is the last resort.' },
+        { name: 'Request mapping', body: 'A value resolver turns the ULID in a URL into the entity, and the API maps JSON bodies and query strings straight into validated DTOs.' },
+        { name: 'Forms & Validator', body: 'Forms fill form models carrying constraint attributes, and one form theme renders every field.' },
+        { name: 'Security', body: 'Form login with remember-me and throttling, access tokens for the API, a role hierarchy and voters.' },
+        { name: 'Doctrine', body: 'Attribute mapping, repositories behind domain interfaces, and every schema change as a migration.' },
+        { name: 'Messenger & Scheduler', body: 'Async work and every recurring job, through one queue and one worker.' },
+        { name: 'Lock & RateLimiter', body: 'Mutual exclusion and rate limits from the framework, never hand-built.' },
+        { name: 'Symfony UX', body: 'Twig Components, Turbo, Stimulus, Icons and Chart.js, served by Asset Mapper.' },
+        { name: 'Flex', body: 'New capabilities arrive as packages whose recipes register and configure them.' },
     ] %}
     <section class="bg-gray-950 py-24 lg:py-32 overflow-hidden">
         <div class="mx-auto max-w-(--breakpoint-xl) px-6">
@@ -214,21 +186,14 @@
                 </p>
             </div>
 
-            <div class="lg:columns-2 gap-8">
-                {% for row in symfony %}
-                    <div class="mb-6 lg:mb-8 break-inside-avoid rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] p-6" data-aos="fade-up">
-                        <p class="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-4">{{ row.group }}</p>
-                        <dl class="space-y-4">
-                            {% for item in row.items %}
-                                <div>
-                                    <dt class="text-sm font-semibold text-white">{{ item.name }}</dt>
-                                    <dd class="mt-1 text-sm text-gray-400 leading-relaxed">{{ item.body }}</dd>
-                                </div>
-                            {% endfor %}
-                        </dl>
+            <dl class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8" data-aos="fade-up" data-aos-delay="100">
+                {% for item in symfony %}
+                    <div class="rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] p-6">
+                        <dt class="text-base font-semibold text-white mb-2">{{ item.name }}</dt>
+                        <dd class="text-sm text-gray-400 leading-relaxed">{{ item.body }}</dd>
                     </div>
                 {% endfor %}
-            </div>
+            </dl>
         </div>
     </section>
 
