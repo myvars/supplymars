@@ -21,7 +21,7 @@ The rewrite made them strict: `set -eu`, a check for the commands setup needed, 
 
 In late April I moved the production secrets into Symfony's secrets vault: the database URL, the app secret, the mailer and S3 credentials, encrypted in the repository, with the decryption key kept off it. The scripts stopped asking for them.
 
-When deploys moved to CI in June, the pipeline passed that decryption key to the server on every deploy. Within days I dropped the vault for plain environment variables, kept in GitHub's secrets and passed to the server by the deploy. Since March 2026 they have lived in env files on the server, outside the repository, and GitHub holds only what it needs to reach the server.
+When deploys moved to CI in June, the pipeline passed that decryption key to the server on every deploy. Within days I dropped the vault for plain environment variables, the simpler and more common approach, kept in GitHub's secrets and passed to the server by the deploy. Since March 2026 they have lived in env files on the server, outside the repository, and GitHub holds only what it needs to reach the server.
 
 ## Test factories in production
 

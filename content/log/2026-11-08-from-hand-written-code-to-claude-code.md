@@ -2,13 +2,6 @@
 title: From hand-written code to Claude Code
 period: March 2023 – November 2026
 summary: How the way I build changed over three years, from writing every line myself, with ChatGPT for the odd question, to an agent working from my issues and rules, and what has stayed mine throughout.
-figures:
-  - value: "0% → 77%"
-    label: commits with a written explanation
-  - value: 377 → 239
-    label: lines in CLAUDE.md, as it became rules
-  - value: "0"
-    label: production commands run by an AI
 refs:
   - label: CLAUDE.md
     url: https://github.com/myvars/supplymars/blob/main/CLAUDE.md
@@ -30,17 +23,17 @@ In September 2025 I added GitHub Copilot to the IDE and used it for about five m
 
 ## Claude Code: an agent with rules
 
-In January 2026 I started using Claude Code, an agent that works in the repository itself: it reads the code, runs the tests and the tools, and makes changes. That needs a different kind of preparation, because an agent will follow whatever conventions it can infer, good or bad. So the first thing I wrote for it was `CLAUDE.md`, 377 lines on the architecture and how the project is built, and I rewrote it within days.
+In January 2026 I started using Claude Code, an agent that works in the repository itself: it reads the code, runs the tests and the tools, and makes changes. That needs a different kind of preparation, because an agent will follow whatever conventions it can infer, good or bad. So the first thing I wrote for it was `CLAUDE.md`, a full description of the architecture and how the project is built.
 
 The tooling around it grew from there. In February I connected two MCP servers: Context7, so it reads current library documentation rather than relying on memory, and Playwright, so it can open the app in a browser and check what it built. I used it to run a structured audit of the codebase with five reviewer roles, which became the work of [audit week](/log/audit-week), and to plan new contexts before building them.
 
 By the autumn the way of working had settled. Almost every change starts as a GitHub issue that I write or approve, with its scope and acceptance points. The agent plans against the project's docs and ADRs, I agree the plan, it builds on a branch, and a pull request says what changed, how it was tested, what was left out and what to look at closely. On larger changes, a second agent with no knowledge of the first one's reasoning reviews the diff. In five weeks that produced [119 pull requests](/log/five-weeks-119-pull-requests).
 
-`CLAUDE.md` changed with it. It is now 239 lines, shorter than the first version, because it became a set of rules that each link to the document with the detail, instead of a second copy of the documentation.
+`CLAUDE.md` changed with it. It is shorter than the first version, because it became a set of rules that each link to the document with the detail, instead of a second copy of the documentation.
 
 ## What the history shows
 
-The clearest change is in how the work is recorded. I counted the commits that carry an explanation beyond their one-line title:
+One change shows in the history itself. I counted the commits that carry an explanation beyond their one-line title:
 
 | Period | Commits | With an explanation |
 |---|---|---|

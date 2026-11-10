@@ -11,7 +11,7 @@ refs:
     url: https://github.com/myvars/supplymars/blob/main/Docs/03-architecture.md
 ---
 
-In 2000 I wrote Ebuyer's first website, and the tools the business ran on behind it, on a LAMP stack: PHP, MySQL and whatever I built myself. The [About page](https://www.supplymars.com/about) tells that story. I kept coding after I left in 2014, and kept up with how the work changed. By 2024 almost every part of it had.
+In 2000 I wrote Ebuyer's first website, and the tools the business ran on behind it, on a LAMP stack: PHP, MySQL and whatever I built myself. The [About page](https://www.supplymars.com/about) has the full account. I kept coding after I left in 2014, and kept up with how the work changed. By 2024 almost every part of it had.
 
 ## Then and now
 
@@ -49,9 +49,9 @@ Starting from a clean sheet, the design could begin with rich entities that hold
 
 ## Part-time, and rewritten often
 
-SupplyMars was never a full-time job. Some weeks I could give it several days, others an evening or two, and some months nothing at all. The history has 179 days with a commit in nearly three years: 75 in 2024, 37 in 2025 and 67 in 2026. It undercounts, because the move to bounded contexts was one commit amended over three months on a branch, but the quiet stretches are real: nothing in August 2024, and nothing from July to September 2026.
+SupplyMars was never a full-time job. Some weeks I could give it several days, others an evening or two, and some months nothing at all.
 
-Coming back after a gap meant reading my own code with fresh eyes, and I often wanted to change what I found. So much of the work was going back over it. The shared code behind the admin screens went through [four versions in four months](/log/evolving-a-crud-abstraction), and was later replaced by FormFlow, which [became a package](/log/formflow-becomes-a-package). The test suite was rebuilt from scratch once and reworked again. A string of commits in 2024 are simply called "Code kaizen": small, continuous improvements, aimed at one consistent style across the whole codebase rather than a different style for each month it was written in.
+Coming back after a gap meant reading my own code with fresh eyes, and I raised it to what I had learned since. Much of the work was deliberate rework. The shared code behind the admin screens went through [four versions in four months](/log/evolving-a-crud-abstraction), and was later replaced by FormFlow, which [became a package](/log/formflow-becomes-a-package). The test suite was rebuilt from scratch once and reworked again. A string of commits in 2024 are simply called "Code kaizen": small, continuous improvements, aimed at one consistent style across the whole codebase rather than a different style for each month it was written in.
 
 ## How a sandbox hardened
 

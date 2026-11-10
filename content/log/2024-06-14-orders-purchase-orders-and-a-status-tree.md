@@ -36,7 +36,7 @@ The shipping method had been an enum since the orders arrived, with each method'
 
 ## The status tree
 
-Two days later, in the last commit for nearly six weeks, the tree went all the way up to the order, whose status is now worked out rather than set by hand. The order statuses got levels too, and the statuses roll up:
+Two days later the tree went all the way up to the order, whose status is now worked out rather than set by hand. The order statuses got levels too, and the statuses roll up:
 
 - A purchase order's status is the lowest of its lines'.
 - An order line with nothing on a purchase order is pending, and one with some quantity on purchase orders and some still to source is processing. Otherwise its status is the lowest of its purchase order items', mapped from the purchase order's status to the order's.

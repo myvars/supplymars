@@ -19,7 +19,7 @@ The look had roots. Tailwind was there from the first commit. The Mars rebrand o
 
 SupplyMars has a light mode and a dark mode, and dark is the default. It's the design I prefer: greys with orange and red accents, a hint of a Martian landscape. Light mode got a full pass in February so it holds up for anyone who chooses it.
 
-In late March the dark design got a system of its own. Opaque grey borders gave way to translucent white ones at three strengths, 10%, 6% and 4%, for primary, secondary and tertiary edges, over layered backgrounds, so depth comes from light rather than from heavier lines. The sidebar, the toasts and the user menu got a frosted-glass finish, and form inputs inside a modal sit one level deeper than the modal around them.
+In late March the dark design got a system of its own. Opaque grey borders gave way to translucent white ones at three strengths over layered backgrounds, so depth comes from light rather than from heavier lines. The sidebar, the toasts and the user menu got a frosted-glass finish, and form inputs inside a modal sit one level deeper than the modal around them.
 
 ## Colour that means something
 
@@ -51,12 +51,11 @@ In mid-March the home page got a new hero, "Commerce, built for Mars", and a sho
 
 ## Every breakpoint
 
-It mattered that every screen looks great and works properly at every breakpoint, not just on a desktop monitor. Mobile styles have been part of the app since April 2024. This pass went further:
+Every screen had to look great and work properly at every breakpoint, not just on a desktop monitor. Mobile styles have been part of the app since April 2024. This pass went further:
 
 - The supplier sources on a product's stock page became a compact two-row table, with the active source marked by a green accent bar and a "Best Price" badge.
 - The pricing cascade's three large cards became a compact three-column grid.
 - The header's Help and Sign In buttons adapt to the width.
-- A date picker's stylesheet carried its own copy of Tailwind's utilities, which broke responsive classes such as `hidden sm:inline`. It is now built into the single Tailwind stylesheet, before Tailwind's own rules.
 
 Earlier, in February, iPhone users had got a [native swipe back](/log/an-app-without-an-spa) between pages.
 

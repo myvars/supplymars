@@ -26,8 +26,6 @@ Two types, because they answer different questions. Per-customer rows support dr
 
 **Layer 2** has three summaries for each reporting period: sales, geography and segments.
 
-Like the other reports, each calculation deletes and re-inserts its rows for the day or period it covers, so a rerun or a backfill gives the same answer.
-
 ## Segments by lifetime
 
 The segments are **new** (one lifetime order), **returning** (two or three) and **loyal** (four or more). They count lifetime orders, not orders in the period. A customer with ten orders behind them who hasn't ordered this month is loyal, not new; their relationship with the business didn't change because the month did.
@@ -44,6 +42,6 @@ Customer Insights reads across orders, customers and reviews, and everything it 
 
 ## Refresh
 
-Every night shortly after midnight, the previous day is calculated in full and the summaries are rebuilt. During the day, today's figures are recalculated at quarter past and quarter to each hour, so the dashboard is never more than half an hour behind. Later in the month, composite indexes went in for the queries the reports run most.
+Every night the previous day is calculated in full and the summaries are rebuilt. During the day, today's figures are recalculated twice an hour, so the dashboard is never more than half an hour behind. Later in the month, composite indexes went in for the queries the reports run most.
 
 ADR 010 records the model, the metric definitions and the reasons above.

@@ -7,7 +7,7 @@ refs:
     url: https://github.com/myvars/supplymars/blob/main/Docs/adr/005-reporting-strategy.md
 ---
 
-With orders flowing through the simulation, the next question was the one any shop asks: what's selling? In November 2024 I built the answer, and rebuilt how it was stored twice within a week.
+With orders flowing through the simulation, the next question was the one any shop asks: what's selling? In November 2024 I built the answer, and within a week had the storage it still uses.
 
 ## A live query
 
@@ -21,7 +21,7 @@ Before the week was out came the second layer. `ProductSalesSummary` holds the t
 
 Small daily records and summary tables built from them are how I ran reporting at Ebuyer, and they are still how every report in SupplyMars works. ADR 005, written later, records them, and the [Customer Insights](/log/customer-insights) reports of February 2026 were built the same way.
 
-## Durations, twice
+## A period is a value
 
 The reports needed periods: today, the last 7 and 30 days, month to date, and by day or month for charts. The first version made each a service implementing a `DurationInterface`, auto-tagged so the summary calculator could loop over them all. Within a week I replaced the six classes with one `Duration` enum, with a `match` for each period's start date, its date format and its chart label. A period is a value, not a service, and the enum says so with less code.
 
@@ -34,5 +34,5 @@ The rest of the two months built on those layers:
 - **Charts** of sales over time, with colours per series and tooltips that format money.
 - **Order sales**, on the same pattern: `OrderSales` per day, and summaries of order count, value and average order value, with an order progress chart.
 - **An overdue orders report**, of orders past their due date and by how many days.
-- **The first dashboard**, in mid-December: eight KPI cards (order count, order value, average order value, sales cost, sales profit, gross margin, overdue orders and rejected purchase orders), six of them comparing today with the same day a week earlier, with an arrow for which way it moved, and overdue orders and rejected purchase orders counted over the last 30 days. The card is a Twig component, `KpiCard`, that formats a count, a currency or a percentage.
+- **The first dashboard**, in mid-December: eight KPI cards, most comparing today with the same day a week earlier, with an arrow for which way it moved. The card is a Twig component, `KpiCard`, that formats a count, a currency or a percentage.
 

@@ -35,14 +35,12 @@ The first change ([#81](https://github.com/myvars/supplymars/pull/81)) replaced 
 The real work was moving what nginx used to do into places that every environment shares:
 
 - **Rate limits** moved into the app with Symfony's RateLimiter: ten requests a minute to the sign-in page, a shared limit on registration and password reset, limits on the health checks. The rules match the decoded path, the way the router does, so an encoded URL can't slip past.
-- **Real client IPs** come from Symfony's `trusted_proxies`, trusting only the forwarded-for and protocol headers.
-- **The request body limit** is PHP's own.
 - **Only `public/index.php` can run.** I proved it by writing a `probe.php` into `public/`: it ran from the command line, and the server returned 404 for it.
-- **Production runs as `www-data`**, and can't write to its own PHP config.
+- **The rest is configuration**: real client IPs from Symfony's `trusted_proxies`, PHP's own body limit, and a production user that can't write its own PHP config.
 
-With nginx gone, development, tests and production enforce the same rules in the same code. The rate limits have tests now, which nginx rules never had.
+With nginx gone, development, tests and production enforce the same rules in the same code, and the rate limits have tests.
 
-In classic mode FrankenPHP was about a millisecond slower per request than PHP-FPM, and handled more at twenty concurrent requests. Classic mode was never the destination; worker mode was the reason for the move.
+In classic mode FrankenPHP was roughly level with PHP-FPM. Worker mode was the point.
 
 ## Step two: worker mode
 
@@ -62,10 +60,8 @@ The production image locally, against a copy of production's data, three runs ea
 |---|---|---|
 | Home page, one at a time | 8.0–8.1 ms | 4.6–5.3 ms |
 | Home page, 20 concurrent | 566–705 req/s | 951–975 req/s |
-| Order list, one at a time | 129.3–129.5 ms | 122.8–123.6 ms |
-| Order list, 20 concurrent | 59.1–59.3 req/s | 61.8–61.9 req/s |
 
-The home page served about 1.5× as many requests. The order list improved by the same few milliseconds of boot time, which is small next to its queries: its time is in the database, so that is where its next gains are.
+The home page served about 1.5× as many requests. The order list saved the same few milliseconds of boot (about 129 → 123 ms), which is small next to its queries: its time is in the database, so that is where its next gains are.
 
 Memory was the other question on a 2 GB server. Over 25,000 mixed requests the container rose from about 150 MiB to 200 MiB as the twenty workers warmed up, then stayed flat, with or without the restarts. Every response was a 2xx.
 
@@ -73,7 +69,7 @@ Memory was the other question on a 2 GB server. Over 25,000 mixed requests the c
 
 Two days later, the Mercure deploy took both sites to a 500 on every page. `/health` stayed green, because it doesn't render Twig. The log had one error: Mercure's hub factory had been given an object that didn't implement the interface it was declared with.
 
-The cause took some tracing ([#123](https://github.com/myvars/supplymars/pull/123)). The Mercure bundle wraps a factory in a closure service, which Symfony's compiled container dumps as an anonymous class implementing an interface. Production preloaded the compiled container with OPcache. After a worker's first restart, PHP reused the preloaded anonymous class *without its interface*, and every page that built the hub failed until the container restarted.
+The Mercure bundle wraps a factory in a closure service, which Symfony's compiled container dumps as an anonymous class implementing an interface. Production preloaded the compiled container with OPcache. After a worker's first restart, PHP reused the preloaded anonymous class *without its interface*, and every page that built the hub failed until the container restarted.
 
 I reproduced it with the production image and the restart interval set to 50 requests:
 
@@ -83,8 +79,6 @@ I reproduced it with the production image and the restart interval set to 50 req
 | Preload off | all 200 requests succeed, across four worker restarts |
 | No restarts, 32 in parallel | no failures |
 
-The fix was to turn preload off. I had set it up under PHP-FPM in February, where it saved a boot's worth of class loading on every request. In worker mode the app already stays loaded, so preload was no longer earning its place, and Symfony's own error controller compiles the same kind of class, so a Mercure-only workaround would have left the fault in place. The tests hadn't caught it because they never run with preload and never restart a worker.
+The fix was to turn preload off ([#123](https://github.com/myvars/supplymars/pull/123)). I had set it up under PHP-FPM in February, where it saved class loading on every request; in worker mode the app stays loaded anyway. A Mercure-only workaround would have left the fault in place, since Symfony's own error controller compiles the same kind of class. The tests hadn't caught it because they never preload and never restart a worker.
 
-## What it leaves behind
-
-One web image instead of two, nginx's rules in tested application code, and a written rule with a test that fails when anyone breaks it. `make check-prod-config` validates the production Caddyfile with the real worker line in CI, so a wrong path fails the build, not the deploy.
+In CI, `make check-prod-config` validates the production Caddyfile with the real worker line, so a wrong path fails the build, not the deploy.

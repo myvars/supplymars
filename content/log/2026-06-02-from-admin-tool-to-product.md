@@ -31,11 +31,4 @@ A **Help** button in the header opens a side panel with help for the page you ar
 
 April and May were upkeep: dependency and recipe updates, and a fix so the playground's nightly reset jobs receive their environment.
 
-At the start of June I moved to Symfony 8.1 and cleared every deprecation it reported rather than leaving them for later:
-
-- Named autowiring aliases selected by `#[Target]` instead of by parameter name, for the Flysystem storages.
-- The public ID resolvers indexed with `#[AsTaggedItem]` instead of a default index method.
-- `eraseCredentials()` marked `#[\Deprecated]`, the email verifier on its newer method, and a no-op Doctrine option removed.
-- `config/reference.php`, which Symfony regenerates, no longer tracked in git, so dependency updates stop producing spurious diffs.
-
-The suite was clean on 8.1, which set up the next job: moving FormFlow into its own package.
+At the start of June I moved to Symfony 8.1 and cleared every deprecation it reported. The suite was clean on 8.1, which set up the next job: moving FormFlow into its own package.

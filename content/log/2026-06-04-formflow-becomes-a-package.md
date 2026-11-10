@@ -43,4 +43,4 @@ Then the switch itself: the in-app `FormFlow` directory and its tests went, eigh
 
 ## Why it was worth it
 
-The pattern now has one home, a version number and its own tests. The app depends on it the way it depends on any other library, through a constraint in `composer.json`, and the skeleton and SupplyMars can now differ only by a version number. ADR 006 records the move, and the project's instructions say plainly that FormFlow lives in the package and must not come back into `src/`.
+The pattern now has one home, a version number and its own tests. The app depends on it the way it depends on any other library, through a constraint in `composer.json`, and the skeleton and SupplyMars can now differ only by a version number. ADR 006 records the move.
