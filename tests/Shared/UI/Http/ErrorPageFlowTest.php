@@ -65,7 +65,7 @@ final class ErrorPageFlowTest extends WebTestCase
             ->get('/no-such-page')
             ->assertStatus(404)
             ->assertSeeIn('turbo-frame#body h2', 'Lost in the Martian Dust')
-            ->assertSeeElement('turbo-frame#body a[href="/"][data-turbo-frame="body"]')
+            ->assertSeeElement('turbo-frame#body a[href="/"][data-turbo-frame="_top"]')
             ->assertNotSeeElement('h3#modal-title');
     }
 }
