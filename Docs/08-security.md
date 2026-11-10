@@ -38,6 +38,23 @@ The demo user on the playground has `ROLE_ADMIN`; the owner has `ROLE_SUPER_ADMI
 - File uploads are refused on the playground whatever the role: `UploadHelper` throws `CannotWriteFileException` when `PLAYGROUND_MODE` is true.
 - The nightly reset and the demo account are in [infrastructure/playground.md](infrastructure/playground.md).
 
+### Accounts the playground keeps
+
+The playground is restored from live's backup each night, and `scripts/playground-redact-staff.sql` then scrambles every staff email and password except two:
+
+| Account | On the playground | Password |
+|---------|-------------------|----------|
+| `demo@supplymars.com` | `ROLE_ADMIN`, the account the "Explore the Platform" button signs in to | `demo`, public by design (a fixed hash in the script) |
+| `admin@supplymars.com` | `ROLE_ADMIN` + `ROLE_SUPER_ADMIN`, the owner's account and the `DEFAULT_STAFF_EMAIL` user | Live's, unchanged |
+
+Keeping live's admin password is intended: the owner signs in to the playground as super admin with the same password. The cost, accepted:
+
+- The playground's database holds live's admin password hash between resets. It is as protected as live's: MySQL listens on the server's `127.0.0.1` only ([Database](#database)), and the playground writes no backups of its own.
+- Live's admin password also works on the playground, where anyone can sign in as the demo user. Login throttling ([Sessions and login](#sessions-and-login)) applies there as on live.
+- Changing live's admin password changes the playground's at the next reset (02:15 UTC).
+
+Every other staff account is unusable on the playground. Any change to the redaction script must keep it that way.
+
 ## Registration, verification and password reset
 
 - **Sign-up** (`/register`, `RegistrationController`) creates a `ROLE_USER` account and sends a signed verification link. The form has a Turnstile challenge and the `registration` limiter ([Rate limiting](#rate-limiting)).

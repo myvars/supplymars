@@ -41,7 +41,7 @@ The flag reaches PHP as `%env(bool:PLAYGROUND_MODE)%` and Twig as `playground_mo
    1. Restores `latest.sql.gz` into the `app` database, leaving out the rows of `messenger_messages`: they are live's queue, and the playground worker would send live's pending emails. The table is recreated empty, which also clears the playground's own queue.
    2. Runs `scripts/playground-redact-staff.sql` straight after, as raw SQL, so there is no window where real staff logins work:
       - every staff user's email and password are scrambled, except `demo@supplymars.com` and `admin@supplymars.com`
-      - `admin@supplymars.com` keeps its password and gets `ROLE_ADMIN` + `ROLE_SUPER_ADMIN`. It is kept because it is the `DEFAULT_STAFF_EMAIL` user the simulation commands need ([09-cli-reference.md](../09-cli-reference.md#simulation-behaviour)), and the playground's scheduled jobs would fail without it
+      - `admin@supplymars.com` keeps its password and gets `ROLE_ADMIN` + `ROLE_SUPER_ADMIN`. The account is kept because it is the `DEFAULT_STAFF_EMAIL` user the simulation commands need ([09-cli-reference.md](../09-cli-reference.md#simulation-behaviour)), and the playground's scheduled jobs would fail without it. Its password is kept on purpose, so the owner signs in to the playground as super admin with live's admin password. That is the playground's only super admin, and a change to live's password reaches the playground at the next reset
       - `demo@supplymars.com` is created or reset with `ROLE_ADMIN` and the public password `demo`
    3. Syncs S3 `uploads/` and `media/` from live's root to the `playground/` prefix (`--delete`).
    4. `FLUSHALL` on the playground Redis: the cache, and every playground session, so everyone is signed out.
