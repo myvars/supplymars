@@ -4,10 +4,15 @@ declare(strict_types=1);
 
 namespace App\Home\Service;
 
+use League\CommonMark\Environment\Environment;
+use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
+use League\CommonMark\Extension\CommonMark\Node\Inline\Link;
+use League\CommonMark\Extension\DefaultAttributes\DefaultAttributesExtension;
 use League\CommonMark\Extension\FrontMatter\Data\SymfonyYamlFrontMatterParser;
 use League\CommonMark\Extension\FrontMatter\Exception\InvalidFrontMatterException;
 use League\CommonMark\Extension\FrontMatter\FrontMatterParser;
-use League\CommonMark\GithubFlavoredMarkdownConverter;
+use League\CommonMark\Extension\GithubFlavoredMarkdownExtension;
+use League\CommonMark\MarkdownConverter;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
@@ -20,7 +25,7 @@ final readonly class EngineeringLog
 
     private FrontMatterParser $frontMatterParser;
 
-    private GithubFlavoredMarkdownConverter $converter;
+    private MarkdownConverter $converter;
 
     public function __construct(
         #[Autowire('%kernel.project_dir%/content/log')]
@@ -28,10 +33,22 @@ final readonly class EngineeringLog
     ) {
         $this->frontMatterParser = new FrontMatterParser(new SymfonyYamlFrontMatterParser());
         // Posts are written in the repository, but escape raw HTML anyway: a post is Markdown only
-        $this->converter = new GithubFlavoredMarkdownConverter([
+        $environment = new Environment([
             'html_input' => 'escape',
             'allow_unsafe_links' => false,
+            // A link to another page of the site is a full visit, which starts at the top. Followed inside the body
+            // frame, the new page would open at the old one's scroll position
+            'default_attributes' => [
+                Link::class => [
+                    'data-turbo-frame' => static fn (Link $link): ?string => str_starts_with($link->getUrl(), '/') ? '_top' : null,
+                ],
+            ],
         ]);
+        $environment->addExtension(new CommonMarkCoreExtension());
+        $environment->addExtension(new GithubFlavoredMarkdownExtension());
+        $environment->addExtension(new DefaultAttributesExtension());
+
+        $this->converter = new MarkdownConverter($environment);
     }
 
     /**

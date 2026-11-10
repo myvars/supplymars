@@ -29,7 +29,7 @@ final class LogControllerTest extends WebTestCase
             // Grouped by year, newest first
             ->assertSeeIn('#log-year-' . $newest->date->format('Y') . ' + ol li:first-child h3', $newest->title)
             ->assertElementCount('ol li a[href^="/log/"]', \count($posts))
-            ->assertElementAttributeContains('a[href="/log/' . $newest->slug . '"]', 'data-turbo-frame', 'body');
+            ->assertElementAttributeContains('a[href="/log/' . $newest->slug . '"]', 'data-turbo-frame', '_top');
 
         foreach ($posts as $post) {
             $browser->assertSeeElement('a[href="/log/' . $post->slug . '"]');
