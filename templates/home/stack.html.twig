@@ -48,17 +48,15 @@
         </div>
 
         {% set strip = [
-            { group: 'Core', icon: 'bi:code-slash', tint: 'bg-orange-500/10 text-orange-400', items: [['PHP', '8.5'], ['Symfony', '8.1'], ['Doctrine ORM', '3'], ['Twig', '3']] },
-            { group: 'Data', icon: 'bi:database-fill', tint: 'bg-cyan-500/10 text-cyan-400', items: [['MySQL', '8.4'], ['Redis', '8.8'], ['Amazon S3'], ['Flysystem', '3']] },
-            { group: 'Runtime', icon: 'bi:cloud-fill', tint: 'bg-sky-500/10 text-sky-400', items: [['FrankenPHP', '1.13'], ['Docker Compose'], ['Caddy'], ['AWS Lightsail']] },
-            { group: 'Frontend', icon: 'bi:window-desktop', tint: 'bg-pink-500/10 text-pink-400', items: [['Turbo & Stimulus'], ['Asset Mapper'], ['Tailwind CSS', '4'], ['Shadcn kit']] },
-            { group: 'Async', icon: 'bi:lightning-fill', tint: 'bg-amber-500/10 text-amber-400', items: [['Messenger'], ['Scheduler'], ['Mercure'], ['Sentry']] },
-            { group: 'Testing', icon: 'bi:check-circle-fill', tint: 'bg-emerald-500/10 text-emerald-400', items: [['PHPUnit', '13'], ['ParaTest'], ['Foundry'], ['Zenstruck Browser']] },
-            { group: 'Static analysis', icon: 'bi:shield-check', tint: 'bg-violet-500/10 text-violet-400', items: [['PHPStan', 'level 7'], ['Rector'], ['Deptrac'], ['PHP CS Fixer']] },
-            { group: 'Delivery', icon: 'bi:rocket-takeoff-fill', tint: 'bg-rose-500/10 text-rose-400', items: [['GitHub Actions'], ['GitHub Container Registry'], ['Make'], ['SSH deploy']] },
+            { group: 'Core', icon: 'bi:code-slash', tint: 'bg-orange-500/10 text-orange-400', dot: 'bg-orange-400/70', items: [['PHP', '8.5'], ['Symfony', '8.1'], ['Doctrine ORM', '3'], ['Twig', '3']] },
+            { group: 'Data', icon: 'bi:database-fill', tint: 'bg-cyan-500/10 text-cyan-400', dot: 'bg-cyan-400/70', items: [['MySQL', '8.4'], ['Redis', '8.8'], ['Amazon S3'], ['Flysystem']] },
+            { group: 'Runtime', icon: 'bi:cloud-fill', tint: 'bg-sky-500/10 text-sky-400', dot: 'bg-sky-400/70', items: [['FrankenPHP'], ['Docker Compose'], ['AWS Lightsail'], ['Sentry']] },
+            { group: 'Frontend', icon: 'bi:window-desktop', tint: 'bg-pink-500/10 text-pink-400', dot: 'bg-pink-400/70', items: [['Turbo & Stimulus'], ['Asset Mapper'], ['Tailwind CSS', '4'], ['Shadcn kit']] },
+            { group: 'Async & live', icon: 'bi:lightning-fill', tint: 'bg-amber-500/10 text-amber-400', dot: 'bg-amber-400/70', items: [['Messenger'], ['Scheduler'], ['Lock'], ['Mercure']] },
+            { group: 'Quality', icon: 'bi:shield-check', tint: 'bg-emerald-500/10 text-emerald-400', dot: 'bg-emerald-400/70', items: [['PHPUnit & ParaTest'], ['Foundry & Zenstruck Browser'], ['PHPStan & Rector'], ['Deptrac & PHP CS Fixer']] },
         ] %}
-        <div class="mx-auto max-w-(--breakpoint-xl) px-6 mt-16">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6" data-aos="fade-up" data-aos-delay="100">
+        <div class="mx-auto max-w-5xl px-6 mt-16">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" data-aos="fade-up" data-aos-delay="100">
                 {% for row in strip %}
                     <div class="rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] p-6 transition-all duration-300 hover:bg-gray-800/60 hover:ring-white/[0.1]">
                         <div class="mb-5 flex items-center gap-3">
@@ -67,11 +65,11 @@
                             </span>
                             <h3 class="text-base font-semibold text-white">{{ row.group }}</h3>
                         </div>
-                        <ul class="space-y-2.5">
+                        <ul class="space-y-2.5 text-sm text-gray-300">
                             {% for item in row.items %}
-                                <li class="flex items-baseline justify-between gap-4 text-sm">
-                                    <span class="text-gray-300">{{ item[0] }}</span>
-                                    {% if item[1] is defined %}<span class="shrink-0 text-xs tabular-nums text-gray-500">{{ item[1] }}</span>{% endif %}
+                                <li class="flex items-center gap-3">
+                                    <span class="h-1 w-1 shrink-0 rounded-full {{ row.dot }}" aria-hidden="true"></span>
+                                    <span>{{ item[0] }}{% if item[1] is defined %} <span class="text-gray-500">{{ item[1] }}</span>{% endif %}</span>
                                 </li>
                             {% endfor %}
                         </ul>
