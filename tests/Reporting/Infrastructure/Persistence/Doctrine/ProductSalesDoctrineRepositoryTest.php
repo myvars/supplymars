@@ -24,7 +24,7 @@ final class ProductSalesDoctrineRepositoryTest extends KernelTestCase
 
     public function testMarginIsGrossMarginOnRevenueWeightedBySales(): void
     {
-        $product = $this->createProductWithTwoSales();
+        $product = $this->createProductWithTwoSales(new \DateTime()->format('Y-m-d'));
 
         $criteria = new ProductSalesReportCriteria();
         $criteria->productId = $product->getId();
@@ -38,8 +38,8 @@ final class ProductSalesDoctrineRepositoryTest extends KernelTestCase
 
     public function testDailyRangeMarginIsWeightedAcrossSuppliers(): void
     {
-        $product = $this->createProductWithTwoSales();
         $today = new \DateTime()->format('Y-m-d');
+        $product = $this->createProductWithTwoSales($today);
 
         $range = $this->productSales->findProductSalesRange($product->getId(), $today, $today);
 
@@ -65,9 +65,8 @@ final class ProductSalesDoctrineRepositoryTest extends KernelTestCase
         self::assertEqualsWithDelta(0.0, (float) $sales[0]['salesMargin'], 0.001);
     }
 
-    private function createProductWithTwoSales(): Product
+    private function createProductWithTwoSales(string $today): Product
     {
-        $today = new \DateTime()->format('Y-m-d');
         $product = ProductFactory::createOne();
 
         ProductSalesFactory::createOne([
