@@ -442,7 +442,7 @@ curl -sN -o /dev/null -w "%{http_code}\n" --max-time 3 https://live.supplymars.c
 
 If the browser console shows `Connecting to '…/.well-known/mercure…' violates the following Content Security Policy directive: "connect-src 'self' …"`, the page was loaded from a host other than the one in the stack's `DEFAULT_URI`, where its hub is. Every other host must redirect to it in the host Caddy ([section 1](#1-how-it-fits-together)).
 
-The host Caddy streams `text/event-stream` responses without buffering by default. If updates arrive only in bursts, or when the page is left, something between the browser and the `php` container is buffering `/.well-known/mercure`. Check once after the first deploy with live updates, with an order page open while the hourly shipping job runs.
+The host Caddy streams `text/event-stream` responses without buffering by default. If updates arrive only in bursts, or when the page is left, something between the browser and the `php` container is buffering `/.well-known/mercure`. Check once after the first deploy with live updates, with an order page open while the shipping job runs (every 30 minutes).
 
 ### 6.3 Queue Backlog or Failed Messages
 

@@ -47,8 +47,9 @@ final readonly class MainSchedule implements ScheduleProviderInterface
             $this->job('2-59/5 * * * *', 'app:create-customer-orders 1 --random')->withJitter(290),
             $this->job('*/15 * * * *', 'app:build-purchase-orders 20'),
             $this->job('1,16,31,46 * * * *', 'app:accept-purchase-orders 20'),
-            $this->job('0 * * * *', 'app:ship-purchase-order-items 100'),
-            $this->job('0 * * * *', 'app:deliver-purchase-order-items 100'),
+            // Twice the items accepted in a day, so the oldest-first queue drains rather than holds (#248)
+            $this->job('*/30 * * * *', 'app:ship-purchase-order-items 100'),
+            $this->job('*/30 * * * *', 'app:deliver-purchase-order-items 100'),
             $this->job('*/15 * * * *', 'app:update-supplier-stock 20'),
             $this->job('3 0 * * *', 'app:calculate-product-sales 1 1'),
             $this->job('5 0 * * *', 'app:calculate-product-sales-summary 1'),
