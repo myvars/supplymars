@@ -15,13 +15,14 @@ Every Stimulus controller in use in `assets/controllers/`, what it does and wher
 | `calendar` | Kit. Month grid for `Calendar` | targets `month`, `previous`, `next`, `input` | `Calendar`, via `DatePicker` |
 | `card_link` | Makes a whole element navigate with Turbo `visit()`, ignoring clicks on inner links and buttons | value `url` | `purchasing/purchase_order/_order_po_card.html.twig` |
 | `date_picker` | Kit. Input plus popover calendar | targets `trigger`, `value`, `input` | `DatePicker` (`DatePickerType`, see [Forms](Forms.md#pick-a-date-from-a-calendar)) |
-| `dialog` | Kit. Opens and closes a modal `<dialog>`: Escape, click outside, focus return | targets `trigger`, `dialog` | `Sheet` (sidebar menu, help panel); `Dialog` component, no page uses it yet |
+| `dialog` | Kit. Opens and closes a modal `<dialog>`: Escape, click outside, focus return, an exit transition before it closes | targets `trigger`, `dialog` | `Sheet` (sidebar menu, help panel); `Dialog` component, no page uses it yet |
 | `doughnut_chart` | Tooltip formatting for a Chart.js doughnut; a click replaces `{label}` in `linkUrl` with the segment's label | value `linkUrl` | `reporting/order_summary`, `customer_geographic`, `customer_segments` |
 | `dropdown_menu` | Kit. Menu with arrow-key navigation, Escape, focus return | targets `trigger`, `content`, `item` | `DropdownMenu` (header user menu) |
 | `dropdown_menu_sub` | Kit. Submenu of `dropdown_menu` | targets `trigger`, `content` | `DropdownMenu:Sub`; no submenu yet |
 | `dropzone` | Drag-and-drop image upload (Dropzone.js), then a Turbo refresh | values `url`, `paramName` | `catalog/product_image/show.html.twig` |
 | `help_drawer` | Loads the current page's help into the help `Sheet`; `?` shortcut | target `frame` | `_help_drawer.html.twig` |
 | `inline_edit` | Focuses the field; Enter submits (Cmd/Ctrl+Enter in a textarea), Escape cancels, click outside submits; an unchanged value cancels instead of submitting, and a sent form is not sent again; input grows to fit | targets `cancel`, `sizer`; actions `keydown`, `turbo:frame-load->onFrameLoad`, `turbo:submit-end->onSubmitEnd` on the frame | `InlineEdit` component; see [InlineEdit](../InlineEdit/README.md) |
+| `input_group` | Kit. A click on an `InputGroup:Addon` (not on a button in it) focuses the group's input | action `focusInput` | `InputGroup` (search box, money and percent fields) |
 | `line_chart` | Axis and tooltip formatting for a Chart.js line chart | none | `audit/product_history.html.twig` |
 | `live_open` | While a kit `Sheet` or `DropdownMenu` is open, marks its root `data-turbo-permanent`, so a live refresh keeps it open with what was loaded into it; never in the server's HTML | none | `_menu.html.twig`, `_help_drawer.html.twig`, `_header.html.twig` (user menu); see [Turbo](../Turbo/README.md#what-a-refresh-keeps) |
 | `live_toaster` | Keeps the toaster as it is through a live refresh, then adds any new flash the refreshed page brings | action `keep` on `turbo:before-morph-element` | the wrapper round `<twig:Sonner id="flash-container">` in `base.html.twig` |
@@ -77,7 +78,7 @@ The chart builders (`src/Reporting/UI/Http/Chart/`, `src/Audit/UI/Http/Chart/`) 
 The sidebar menu (`_menu.html.twig`) and the help panel (`_help_drawer.html.twig`) are kit `<twig:Sheet>` components: a modal `<dialog>` that slides in from an edge, driven by the `dialog` controller. The browser keeps focus inside and makes the page behind inert; a rule in `assets/styles/app.css` stops the page scrolling while one is open.
 
 - Give the content an inner element that fills the panel. A click that lands on the `<dialog>` element itself counts as a click outside and closes it.
-- `turbo:before-cache@window->dialog#close` on the `Sheet` closes it before Turbo caches the page, so a back navigation does not restore it open.
+- A back navigation does not restore a panel open: the `dialog` controller closes a `<dialog>` that connects open but not modal, which is how one comes back from Turbo's cache (a local change, ADR 012). A `turbo:before-cache` close cannot do this: the close waits for the exit transition, and Turbo copies the page before it ends (a link that navigates the body frame copies it as it is clicked, without `before-cache`).
 - Links inside close the panel as they navigate with `data-action="dialog#close"`.
 - A panel that needs more behaviour puts its own controller on the same element and calls `dialog` (as `help_drawer` does).
 - `live_open` sits on both panels, beside `dialog`, so a live refresh does not close an open one ([Turbo](../Turbo/README.md#what-a-refresh-keeps)). The kit's files stay as installed: it is added where the `Sheet` is used.

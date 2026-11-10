@@ -118,26 +118,27 @@ No in-house file now shares a name with a kit recipe.
 
 ### Local changes to kit files
 
-Updating a recipe offers to overwrite these; keep them when reviewing the diff:
+The kit files match the Shadcn kit of `symfony/ux-toolkit` 3.7.1, apart from these. Updating a recipe offers to overwrite them; keep them when reviewing the diff:
 
 | File | Change |
 |------|--------|
-| `Button` | 40px default and a size scale shifted up one step; semibold; shadow on solid and outline variants; `destructive-solid` and `destructive-outline`; `data-slot` moved into defaults so wrappers can override it |
+| `Button` | 40px default and a size scale shifted up one step; semibold; shadow on solid and outline variants; `border-input` on `outline`; the extra variants listed below |
 | `Input`, `Textarea`, `NativeSelect` | 40px controls, `px-3`, `rounded-lg`, own text colour, 16px text on mobile |
-| `Input`, `Textarea` | `data-slot` moved into defaults so `InputGroup:Input` and `InputGroup:Textarea` can override it; without that the group's focus ring never shows (kit bug) |
 | `InputGroup` | 40px high, to match `Input` |
-| `Label` | `data-slot` moved into defaults so `Field:Label` can override it |
-| `AlertDialog` | `open` value rendered as `true`/`false`; an empty value made Stimulus open the dialog on load |
 | `Alert` | `info`, `success` and `warning` variants added; `destructive` changed from a neutral card with red text to the same tinted style as the others |
-| `sonner_controller.js` | A `toast` target, so a server-rendered toast added after connect (a Turbo Stream append) is moved into the list and activated; the kit only does this for toasts present at connect. Default surface changed from `bg-background` to `bg-popover`, so a toast stands off the page in dark mode. A press on a toast's close button or action link no longer starts a swipe; the swipe captured the pointer and the click never reached them (kit bug) |
-| `Toast` | An optional `icon` block before the content, and the same `bg-popover` surface. The kit's template has no way to supply an icon |
+| `sonner_controller.js` | A `toast` target, so a server-rendered toast added after connect (a Turbo Stream append) is moved into the list and activated; the kit only does this for toasts present at connect. Default surface changed from `bg-background` to `bg-popover`, so a toast stands off the page in dark mode |
+| `dialog_controller.js` | Closes a `<dialog>` that connects open but not modal. The kit's close plays an exit transition with the `<dialog>` still open, and Turbo copies the page for its cache before it ends (on a `turbo:before-cache` close too), so after Back the Sheet came back open but not modal: no backdrop, no focus trap, and a toggle that thought it was open. Turbo's handbook asks for code that copes with a restored page ("Making transformations idempotent"); this is that check. Used by `Sheet`, `Dialog` |
+| `Sonner:Toast` | An optional `icon` block before the content, and the same `bg-popover` surface. The kit's template has no way to supply an icon |
 
-The `Label`, `Input`/`Textarea` `data-slot`, `AlertDialog` and toast close-button changes are kit bugs worth reporting upstream.
+Four earlier local changes are now in the kit and were dropped at the 3.7 update: the `data-slot` override on `Button`, `Input`, `Textarea` and `Label` (without it `InputGroup:Input` lost its focus ring), the `true`/`false` `open` value on `AlertDialog`, and the toast close button that a swipe swallowed.
+
+Since 3.6 the kit's `Toast` name belongs to a separate toast component (the `toast` recipe: `Toaster` and `toast_controller.js`). Sonner's own toast is `Sonner:Toast` (`templates/components/Sonner/Toast.html.twig`). The `toast` recipe is not installed: `Sonner` is the one toaster. Installing it would no longer overwrite a file here, but it would add a second toast mechanism.
 
 ### Differences in this application
 
 The kit files were copied from the skeleton with the local changes above already applied. This application differs in the following ways:
 
+- **No display controllers.** The `input-group` recipe's `input_group_display_controller.js` is deleted too: it only drives the kit's documentation examples.
 - **Extra button variants.** `Button` also has `warning` (cancel, rewind and remove confirmations), `success` (approve a review) and `secondary-solid` (the solid gray button this application had as `secondary`; the kit's own `secondary` is a soft fill). Keep them when updating the recipe.
 - **Date picker.** The kit's `date-picker`, `calendar` and `popover` recipes are installed, unmodified except that the `calendar` recipe's `calendar_display_controller.js` is deleted: nothing uses it. Reinstalling the recipe adds it back. `DatePickerType` (`src/Shared/UI/Http/Form/Type/`) renders through the `date_picker_widget` block of the form theme and submits a `Y-m-d` string from the calendar's hidden input. The order and purchase order date filters use it in place of the Flowbite datepicker. Its `side` option chooses which edge of the field the calendar opens on; those filters use `top`, because a calendar opening downwards at the bottom of the modal is cut off by the modal's scroll area.
 - **Form theme.** The theme also covers `MoneyType` and `PercentType`, showing the symbol as an `InputGroup` addon, and `DatePickerType`.
@@ -160,7 +161,7 @@ The kit files were copied from the skeleton with the local changes above already
 
 ### Negative
 
-- `symfony/ux-toolkit` is marked experimental. Recipes can change, and four bugs were found in the versions installed here (listed under local changes).
+- `symfony/ux-toolkit` is marked experimental. Recipes can change. Four bugs were found in the versions first installed here; the kit has fixed all four since.
 - Upgrading a recipe means reconciling the local changes above by hand.
 - The form theme is ours to extend. Range and colour inputs and collections are not covered yet.
 - The kit `Button` does not shrink in a flex row and has a fixed height, so two `w-full` buttons side by side overflow (use `flex-1`), and padding alone does not make a button taller (add `h-auto`). Icons inside it are forced to 16px unless given a `size-*` class.

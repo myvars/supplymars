@@ -13,7 +13,10 @@ export default class extends Controller {
     }
 
     get isOpen() {
-        return this.dialog.dialogTarget.open;
+        // A closing panel plays its exit transition while still open; ? or Help then reopens it.
+        const dialog = this.dialog.dialogTarget;
+
+        return dialog.open && !dialog.hasAttribute('data-closing');
     }
 
     open() {

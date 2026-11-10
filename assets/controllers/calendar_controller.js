@@ -69,6 +69,7 @@ export default class extends Controller {
     #focusDate = null;
     #preview = null;
     #rendered = null;
+    #inPopover = false;
     #formatters = {};
 
     connect() {
@@ -76,6 +77,12 @@ export default class extends Controller {
             this.element.querySelector('[data-slot="calendar-day"] button[tabindex="0"]')?.dataset.day ??
             this.selectedValue[0] ??
             this.monthValue;
+        // A popover focuses its `[autofocus]` element on opening: point it at the focusable day.
+        this.#inPopover = null !== this.element.closest('[data-popover-target="content"]');
+        const focusableDay = this.element.querySelector('[data-slot="calendar-day"] button[tabindex="0"]');
+        if (focusableDay) {
+            focusableDay.autofocus = this.#inPopover;
+        }
         this.#connected = true;
     }
 
@@ -329,7 +336,7 @@ export default class extends Controller {
             const button = cell.querySelector('button');
             button.textContent = this.#format('day', timestamp);
             button.dataset.day = date;
-            button.dataset.calendarDateParam = date;
+            button.setAttribute(`data-${this.identifier}-date-param`, date);
             button.dataset.selectedSingle = String('range' !== this.modeValue && selected);
             button.dataset.rangeStart = String(rangeStart);
             button.dataset.rangeMiddle = String(rangeMiddle);
@@ -337,6 +344,7 @@ export default class extends Controller {
             button.setAttribute('aria-label', this.#format('full', timestamp));
             button.disabled = disabled;
             button.tabIndex = date === this.#focusDate ? 0 : -1;
+            button.autofocus = this.#inPopover && date === this.#focusDate;
         });
 
         monthElement.querySelectorAll('[data-slot="calendar-week"]').forEach((row, week) => {
@@ -399,7 +407,7 @@ export default class extends Controller {
             input.type = 'hidden';
             input.name = `${this.nameValue}[]`;
             input.value = date;
-            input.dataset.calendarTarget = 'input';
+            input.setAttribute(`data-${this.identifier}-target`, 'input');
             this.element.append(input);
         }
     }

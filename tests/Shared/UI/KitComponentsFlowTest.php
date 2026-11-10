@@ -56,7 +56,10 @@ final class KitComponentsFlowTest extends WebTestCase
             ->fillField('manufacturer[name]', 'Toast Manufacturer')
             ->click('Create Manufacturer')
             ->assertSuccessful()
-            ->assertSeeIn('#flash-container[data-controller="sonner"] li[data-slot="toast"][data-type="success"][data-sonner-target="toast"] [data-slot="toast-title"]', 'Manufacturer created');
+            ->assertSeeIn('#flash-container[data-controller="sonner"] li[data-slot="toast"][data-type="success"][data-sonner-target="toast"] [data-slot="toast-title"]', 'Manufacturer created')
+            ->assertSeeElement('#flash-container li[data-slot="toast"] [data-slot="toast-icon"]')
+            // The empty list lets clicks through with a class, not a style attribute the CSP has to allow.
+            ->assertSeeElement('#flash-container ol[data-sonner-target="list"].pointer-events-none:not([style])');
     }
 
     public function testFlashFromAnInlineEditShowsInThePageToasterAfterTheRefresh(): void
@@ -136,7 +139,9 @@ final class KitComponentsFlowTest extends WebTestCase
             ->get('/category/new')
             ->assertSuccessful()
             ->assertSeeElement('[data-slot="input-group"] input[data-slot="input-group-control"][name="category[defaultMarkup]"]')
-            ->assertSeeIn('[data-slot="input-group"] [data-slot="input-group-addon"][data-align="inline-end"]', '%');
+            ->assertSeeIn('[data-slot="input-group"] [data-slot="input-group-addon"][data-align="inline-end"]', '%')
+            // A click on the addon focuses the input.
+            ->assertSeeElement('[data-slot="input-group"][data-controller="input-group"] [data-slot="input-group-addon"][data-action="click->input-group#focusInput"]');
 
         $browser
             ->get('/supplier-product/new')

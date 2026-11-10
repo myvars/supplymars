@@ -24,7 +24,7 @@ nelmio_security:
             # csp_nonce() until those are gone. data:: Asset Mapper's CSS loaders.
             # challenges.cloudflare.com: the Turnstile widget (turnstile_controller.js).
             script-src: ['self', 'unsafe-inline', 'data:', 'https://challenges.cloudflare.com']
-            # 'unsafe-inline': style= attributes, Sonner and Turbo's progress bar
+            # 'unsafe-inline': style= attributes and Turbo's progress bar
             style-src: ['self', 'unsafe-inline']
             # The S3 bucket that product images and thumbnails are served from
             img-src: ['self', 'data:', 'https://unicorn-bucket-two.s3.eu-west-2.amazonaws.com']

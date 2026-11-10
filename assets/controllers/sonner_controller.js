@@ -10,11 +10,11 @@ const SONNER_DEFAULT_COLORS = ['bg-popover', 'text-popover-foreground'];
 
 const SONNER_RICH_COLORS = {
     success:
-        'bg-green-50 text-green-900 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800',
-    error: 'bg-red-50 text-red-900 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800',
+        'bg-green-50 text-green-900 border-green-200 dark:bg-[color-mix(in_oklab,var(--color-green-900)_20%,var(--background))] dark:text-green-300 dark:border-green-800',
+    error: 'bg-red-50 text-red-900 border-red-200 dark:bg-[color-mix(in_oklab,var(--color-red-900)_20%,var(--background))] dark:text-red-300 dark:border-red-800',
     warning:
-        'bg-amber-50 text-amber-900 border-amber-200 dark:bg-amber-900/20 dark:text-amber-300 dark:border-amber-800',
-    info: 'bg-blue-50 text-blue-900 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800',
+        'bg-amber-50 text-amber-900 border-amber-200 dark:bg-[color-mix(in_oklab,var(--color-amber-900)_20%,var(--background))] dark:text-amber-300 dark:border-amber-800',
+    info: 'bg-blue-50 text-blue-900 border-blue-200 dark:bg-[color-mix(in_oklab,var(--color-blue-900)_20%,var(--background))] dark:text-blue-300 dark:border-blue-800',
 };
 
 const TYPE_ICONS = {
@@ -47,10 +47,12 @@ export default class extends Controller {
     static targets = ['list', 'toast'];
 
     #swipeAborts = new WeakMap(); // li → AbortController
+    #activatedToasts = new WeakSet();
 
     connect() {
-        this.toastSeq = 0;
-        this.timers = new Map(); // li → { id, remaining, start }
+        // On a reconnect, the toasts still shown keep their ids and their paused timers.
+        this.toastSeq ??= 0;
+        this.timers ??= new Map(); // li → { id, remaining, start }
         this.isHovered = false;
 
         this.onSonnerEvent = (e) => this.#createToast(e.detail || {});
@@ -60,9 +62,13 @@ export default class extends Controller {
 
         // Server-rendered toasts sit outside the <ol> in the DOM; move them in before hydrating
         for (const li of this.element.querySelectorAll('[data-slot="toast"]')) {
+            if (this.#activatedToasts.has(li)) {
+                continue;
+            }
             this.listTarget.appendChild(li);
             this.#hydrateToast(li);
         }
+        this.#resumeAll();
 
         this.onMouseOver = (e) => {
             if (!this.isHovered && e.target.closest('[data-slot="toast"]')) {
@@ -91,7 +97,7 @@ export default class extends Controller {
     // with data-sonner-target="toast". Toasts present at connect are handled there instead:
     // Stimulus reports targets before connect() has set this controller up.
     toastTargetConnected(li) {
-        if (!this.ready || li.parentElement === this.listTarget) return;
+        if (!this.ready || this.#activatedToasts.has(li)) return;
 
         this.listTarget.prepend(li);
         this.#hydrateToast(li);
@@ -103,10 +109,7 @@ export default class extends Controller {
         window.removeEventListener('sonner', this.onSonnerEvent);
         this.listTarget.removeEventListener('mouseover', this.onMouseOver);
         this.listTarget.removeEventListener('mouseout', this.onMouseOut);
-        for (const timer of this.timers.values()) {
-            clearTimeout(timer.id);
-        }
-        this.timers.clear();
+        this.#pauseAll();
     }
 
     // Called via data-action="click->sonner#fire" with data-sonner-*-param attributes.
@@ -246,14 +249,9 @@ export default class extends Controller {
     }
 
     #activateToast(li, type, ms, layoutOnOpen = false) {
+        this.#activatedToasts.add(li);
         this.#anchor(li);
-        li.addEventListener('pointerdown', (e) => {
-            // A swipe captures the pointer on the toast, which would swallow the click on its
-            // close button or action link.
-            if (e.target.closest('button, a')) return;
-
-            this.#startSwipe(e, li);
-        });
+        li.addEventListener('pointerdown', (e) => this.#startSwipe(e, li));
         requestAnimationFrame(() => {
             li.dataset.state = 'open';
             if (layoutOnOpen) this.#layout();
@@ -403,6 +401,11 @@ export default class extends Controller {
     }
 
     #startSwipe(pointerDownEvent, li) {
+        // Capturing the pointer would send the click to the toast instead of this control.
+        if (pointerDownEvent.target.closest('button, a')) {
+            return;
+        }
+
         // Abort any in-flight swipe for this toast before starting a new one, so a
         // re-entrant pointerdown (or a missed pointerup) can't leak the old listeners.
         this.#swipeAborts.get(li)?.abort();
