@@ -11,6 +11,13 @@ export default class extends Controller {
     #closing = null;
 
     connect() {
+        // A page restored from Turbo's cache was cloned with the <dialog> open, often mid-close:
+        // it comes back open but not modal. Start it closed.
+        if (this.#wasOpen === null && this.dialogTarget.open) {
+            this.dialogTarget.removeAttribute('data-closing');
+            this.dialogTarget.close();
+        }
+
         if (this.#wasOpen ?? this.openValue) {
             this.open();
         }
