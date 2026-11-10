@@ -39,7 +39,7 @@
                     SupplyMars is a working e-commerce back office &ndash; catalogue, pricing, multi&#8209;supplier purchasing, fulfilment and reporting &ndash; with a simulated business trading through it around the clock.
                 </p>
                 <p>
-                    It is a modular monolith in strictly typed PHP and Symfony, built around a rich domain model, rendered on the server and shipped as one container image. Three choices run through all of it: few moving parts, the framework before custom code, and rules the build enforces rather than rules people have to remember.
+                    Strictly typed, modern PHP and Symfony, built around a rich domain model, rendered on the server and shipped as one container image. Three choices run through all of it: few moving parts, the framework before custom code, and rules the build enforces rather than rules people have to remember.
                 </p>
                 <p>
                     This page is the overview. The <a href="{{ docs }}README.md" target="_blank" class="{{ link }}">documentation</a> holds the detail, the <a href="{{ docs }}README.md#architecture-decision-records" target="_blank" class="{{ link }}">decision records</a> the reasoning, and the <a href="{{ path('app_log_index') }}" data-turbo-frame="body" class="{{ link }}">engineering log</a> how it got here.
@@ -50,7 +50,7 @@
         {% set strip = [
             { group: 'Core', icon: 'bi:code-slash', tint: 'bg-orange-500/10 text-orange-400', dot: 'bg-orange-400/70', items: [['PHP', '8.5'], ['Symfony', '8.1'], ['Doctrine ORM', '3'], ['Twig', '3']] },
             { group: 'Data', icon: 'bi:database-fill', tint: 'bg-cyan-500/10 text-cyan-400', dot: 'bg-cyan-400/70', items: [['MySQL', '8.4'], ['Redis', '8.8'], ['Amazon S3'], ['Flysystem']] },
-            { group: 'Runtime', icon: 'bi:cloud-fill', tint: 'bg-sky-500/10 text-sky-400', dot: 'bg-sky-400/70', items: [['FrankenPHP'], ['Docker Compose'], ['AWS Lightsail'], ['Sentry']] },
+            { group: 'Runtime', icon: 'bi:cloud-fill', tint: 'bg-sky-500/10 text-sky-400', dot: 'bg-sky-400/70', items: [['FrankenPHP'], ['Docker'], ['AWS Lightsail'], ['Sentry']] },
             { group: 'Frontend', icon: 'bi:window-desktop', tint: 'bg-pink-500/10 text-pink-400', dot: 'bg-pink-400/70', items: [['Turbo & Stimulus'], ['Asset Mapper'], ['Tailwind CSS', '4'], ['Shadcn kit']] },
             { group: 'Async & live', icon: 'bi:lightning-fill', tint: 'bg-amber-500/10 text-amber-400', dot: 'bg-amber-400/70', items: [['Messenger'], ['Scheduler'], ['Lock'], ['Mercure']] },
             { group: 'Quality', icon: 'bi:shield-check', tint: 'bg-emerald-500/10 text-emerald-400', dot: 'bg-emerald-400/70', items: [['PHPUnit & ParaTest'], ['Foundry & Zenstruck Browser'], ['PHPStan & Rector'], ['Deptrac & PHP CS Fixer']] },
@@ -90,7 +90,7 @@
             </div>
             <div class="space-y-5 text-gray-400 leading-relaxed text-base lg:text-lg" data-aos="fade-up" data-aos-delay="100">
                 <p>
-                    One deployable application, divided into bounded contexts that each own their part of the business. A monolith keeps transactions, refactoring and deployment simple; the boundaries keep it from becoming a big ball of mud. Should a context ever need to stand alone, its edges are already drawn.
+                    One deployable application, divided into bounded contexts that each own their part of the business. A monolith keeps transactions, refactoring and deployment simple; the boundaries stop it from turning into one tangled codebase where everything depends on everything else. Should a context ever need to stand alone, its edges are already drawn.
                 </p>
             </div>
 
@@ -118,7 +118,7 @@
 
             <div class="mt-10 space-y-5 text-gray-400 leading-relaxed text-base lg:text-lg" data-aos="fade-up">
                 <p>
-                    The rules between contexts are short. A context may use another context's domain (its entities, enums, events and repository interfaces) but never its handlers, services, Doctrine classes or controllers, and the shared kernel imports from no business context at all. <a href="https://github.com/deptrac/deptrac" target="_blank" class="{{ link }}">Deptrac</a> checks this on every change and the build fails on a new breach. The few deliberate exceptions, such as the current user, are named layers of their own rather than a list of ignored violations, so an exception made for one context cannot quietly spread to another (<a href="{{ docs }}adr/014-architecture-rules.md" target="_blank" class="{{ link }}">ADR 014</a>).
+                    The rules between contexts are short. A context may use another context's domain (its entities, enums, events and repository interfaces) but never its handlers, services, Doctrine classes or controllers, and the shared kernel imports from no business context at all. <a href="https://github.com/deptrac/deptrac" target="_blank" class="{{ link }}">Deptrac</a> checks this on every change and the build fails on a new breach (<a href="{{ docs }}adr/014-architecture-rules.md" target="_blank" class="{{ link }}">ADR 014</a>).
                 </p>
                 <p>
                     The domain is deliberately not framework-free. Entities carry Doctrine mapping and validation attributes, because a second, separate description of every entity would cost more than it saves for an extraction that isn't planned. The business rules themselves stay in plain methods.
@@ -260,7 +260,7 @@
         { icon: 'bi:grid-fill', colour: 'sky', title: 'Docker Compose', body: 'One set of Compose files describes the app, the worker, MySQL 8.4 and Redis 8.8, with an override for each environment. CI runs the checks in it, production runs it from pulled images, and development can run all of it or only the services behind symfony serve.' },
         { icon: 'bi:cloud-fill', colour: 'violet', title: 'One small host', body: 'Two stacks, the live site and the public playground, share one small AWS Lightsail instance behind a host Caddy that terminates TLS. Product images and backups live in S3. Sized to the load, not to a diagram.' },
         { icon: 'bi:database-fill', colour: 'cyan', title: 'MySQL and Redis', body: 'MySQL holds the data and the queue; schema changes go through Doctrine migrations only. Redis holds the cache, sessions, the scheduler\'s state and the locks that deduplicate live refreshes.' },
-        { icon: 'bi:speedometer2', colour: 'emerald', title: 'Monitoring', body: 'Sentry reports uncaught exceptions in production, and Sentry Uptime checks the site from outside. /health checks the database, Redis and the queue for the container healthcheck and the uptime monitor; /health/backup fails if no backup has landed for 26 hours, kept apart so a missed backup cannot mark the site down.' },
+        { icon: 'bi:speedometer2', colour: 'emerald', title: 'Monitoring', body: 'Sentry reports uncaught exceptions in production, and Sentry Uptime checks the site from outside. /health checks the database, Redis and the queue for the container healthcheck and the uptime monitor.' },
         { icon: 'bi:arrow-counterclockwise', colour: 'amber', title: 'Backups and the playground', body: 'A nightly database backup goes to S3. The public playground, where anyone can sign in as staff and try it out, is rebuilt every night from live\'s backup, so nothing a visitor does there lasts.' },
     ] %}
     <section class="bg-gray-900 py-24 lg:py-32 overflow-hidden">
