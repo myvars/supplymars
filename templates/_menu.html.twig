@@ -16,7 +16,7 @@
     <div class="flex min-h-0 flex-1 flex-col overflow-y-auto">
         <twig:Sheet:Title class="sr-only">Main menu</twig:Sheet:Title>
         <div class="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-white/[0.06]">
-            <a href="{{ path('app_homepage') }}" data-turbo-frame="body" data-action="dialog#close">
+            <a href="{{ path('app_homepage') }}" data-turbo-frame="_top" data-action="dialog#close">
                 {{ include('_logo.html.twig', { 'logoId': 'menu', 'logoHeight': 28 }) }}
             </a>
             <twig:Button variant="ghost" size="icon-sm" class="text-muted-foreground" data-action="dialog#close">
@@ -34,7 +34,7 @@
                     <a href="{{ path('app_homepage') }}"
                        data-nav="top"
                        class="flex items-center rounded-lg px-3 py-2.5 text-sm font-medium transition-colors text-gray-900 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
-                       data-turbo-frame="body"
+                       data-turbo-frame="_top"
                        data-action="dialog#close"
                     >
                         <twig:ux:icon name="flowbite:home-solid" data-nav="icon" class="h-5 w-5 text-gray-500 dark:text-gray-400"/>
