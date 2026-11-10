@@ -22,6 +22,12 @@ class HomeController extends AbstractController
         return $this->render('home/about.html.twig');
     }
 
+    #[Route(path: '/stack', name: 'app_stack_page')]
+    public function stack(): Response
+    {
+        return $this->render('home/stack.html.twig');
+    }
+
     #[Route(path: '/contact', name: 'app_contact_page')]
     public function contact(): Response
     {

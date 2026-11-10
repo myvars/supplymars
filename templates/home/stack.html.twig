@@ -1,0 +1,526 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Stack &amp; Architecture{% endblock %}
+
+{% block main_class %}grow bg-gray-950{% endblock %}
+
+{#
+    Stack & Architecture: what SupplyMars uses today and why, for developers, DevOps engineers
+    and architects. The history is in the engineering log; the detail is in Docs/.
+#}
+
+{% set github = 'https://github.com/myvars/supplymars' %}
+{% set docs = github ~ '/blob/main/Docs/' %}
+{% set link = 'text-orange-400 hover:text-orange-300 transition-colors focus-ring' %}
+
+{% block body %}
+    <div data-controller="aos">
+
+    {# ── Hero ─────────────────────────────────────────────────────────────── #}
+    <section class="relative overflow-hidden">
+        <div class="absolute inset-0"
+             style="background: url({{ asset('images/martian_landscape.webp') }}) center center no-repeat; background-size: cover;">
+        </div>
+        <div class="absolute inset-0 bg-gradient-to-b from-gray-950/80 via-gray-950/60 to-gray-950"></div>
+        <div class="relative text-center px-6 pt-20 sm:pt-28 pb-12 sm:pb-16">
+            <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">Stack &amp; Architecture</p>
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-4">How SupplyMars Is Built</h1>
+            <p class="text-base sm:text-lg text-gray-400 max-w-xl mx-auto">
+                The design, the stack, the checks and the delivery as they stand today, and why each was chosen.
+            </p>
+        </div>
+    </section>
+
+    {# ── Introduction and stack strip ─────────────────────────────────────── #}
+    <section class="bg-gray-950 pt-8 pb-16 lg:pb-24">
+        <div class="mx-auto max-w-3xl px-6">
+            <div class="space-y-5 text-gray-400 leading-relaxed text-base lg:text-lg" data-aos="fade-up">
+                <p class="text-lg lg:text-xl text-gray-200 leading-relaxed">
+                    SupplyMars is a working e-commerce back office &ndash; catalogue, pricing, multi&#8209;supplier purchasing, fulfilment and reporting &ndash; with a simulated business trading through it around the clock.
+                </p>
+                <p>
+                    It is a modular monolith in strictly typed PHP and Symfony, built around a rich domain model, rendered on the server and shipped as one container image. Three choices run through all of it: few moving parts, the framework before custom code, and rules the build enforces rather than rules people have to remember.
+                </p>
+                <p>
+                    This page is the overview. The <a href="{{ docs }}README.md" target="_blank" class="{{ link }}">documentation</a> holds the detail, the <a href="{{ docs }}README.md#architecture-decision-records" target="_blank" class="{{ link }}">decision records</a> the reasoning, and the <a href="{{ path('app_log_index') }}" data-turbo-frame="body" class="{{ link }}">engineering log</a> how it got here.
+                </p>
+            </div>
+        </div>
+
+        {% set strip = [
+            { group: 'Core', icon: 'bi:code-slash', tint: 'bg-orange-500/10 text-orange-400', dot: 'bg-orange-400/70', items: [['PHP', '8.5'], ['Symfony', '8.1'], ['Doctrine ORM', '3'], ['Twig', '3']] },
+            { group: 'Data', icon: 'bi:database-fill', tint: 'bg-cyan-500/10 text-cyan-400', dot: 'bg-cyan-400/70', items: [['MySQL', '8.4'], ['Redis', '8.8'], ['Amazon S3'], ['Flysystem']] },
+            { group: 'Runtime', icon: 'bi:cloud-fill', tint: 'bg-sky-500/10 text-sky-400', dot: 'bg-sky-400/70', items: [['FrankenPHP'], ['Docker Compose'], ['AWS Lightsail'], ['Sentry']] },
+            { group: 'Frontend', icon: 'bi:window-desktop', tint: 'bg-pink-500/10 text-pink-400', dot: 'bg-pink-400/70', items: [['Turbo & Stimulus'], ['Asset Mapper'], ['Tailwind CSS', '4'], ['Shadcn kit']] },
+            { group: 'Async & live', icon: 'bi:lightning-fill', tint: 'bg-amber-500/10 text-amber-400', dot: 'bg-amber-400/70', items: [['Messenger'], ['Scheduler'], ['Lock'], ['Mercure']] },
+            { group: 'Quality', icon: 'bi:shield-check', tint: 'bg-emerald-500/10 text-emerald-400', dot: 'bg-emerald-400/70', items: [['PHPUnit & ParaTest'], ['Foundry & Zenstruck Browser'], ['PHPStan & Rector'], ['Deptrac & PHP CS Fixer']] },
+        ] %}
+        <div class="mx-auto max-w-5xl px-6 mt-16">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" data-aos="fade-up" data-aos-delay="100">
+                {% for row in strip %}
+                    <div class="rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] p-6 transition-all duration-300 hover:bg-gray-800/60 hover:ring-white/[0.1]">
+                        <div class="mb-5 flex items-center gap-3">
+                            <span class="flex h-10 w-10 items-center justify-center rounded-xl {{ row.tint }}">
+                                {{ ux_icon(row.icon, { class: 'h-5 w-5' }) }}
+                            </span>
+                            <h3 class="text-base font-semibold text-white">{{ row.group }}</h3>
+                        </div>
+                        <ul class="space-y-2.5 text-sm text-gray-300">
+                            {% for item in row.items %}
+                                <li class="flex items-center gap-3">
+                                    <span class="h-1 w-1 shrink-0 rounded-full {{ row.dot }}" aria-hidden="true"></span>
+                                    <span>{{ item[0] }}{% if item[1] is defined %} <span class="text-gray-500">{{ item[1] }}</span>{% endif %}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    {# ── Architecture ─────────────────────────────────────────────────────── #}
+    <section class="bg-gray-900 py-24 lg:py-32 overflow-hidden">
+        <div class="mx-auto max-w-3xl px-6">
+            <div class="mb-12 lg:mb-16" data-aos="fade-up">
+                <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">Architecture</p>
+                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white">
+                    A Modular Monolith
+                </h2>
+            </div>
+            <div class="space-y-5 text-gray-400 leading-relaxed text-base lg:text-lg" data-aos="fade-up" data-aos-delay="100">
+                <p>
+                    One deployable application, divided into bounded contexts that each own their part of the business. A monolith keeps transactions, refactoring and deployment simple; the boundaries keep it from becoming a big ball of mud. Should a context ever need to stand alone, its edges are already drawn.
+                </p>
+            </div>
+
+            {% set contexts = ['Catalog', 'Pricing', 'Purchasing', 'Order', 'Customer', 'Review', 'Note', 'Reporting', 'Audit', 'Home', 'Shared'] %}
+            <ul class="mt-10 flex flex-wrap gap-2" data-aos="fade-up" data-aos-delay="150">
+                {% for context in contexts %}
+                    <li class="rounded-md px-3 py-1.5 text-sm font-medium {{ context == 'Shared' ? 'bg-orange-500/10 text-orange-300 ring-1 ring-orange-500/20' : 'bg-white/[0.04] text-gray-200 ring-1 ring-white/[0.08]' }}">{{ context }}</li>
+                {% endfor %}
+            </ul>
+
+            {% set layers = [
+                { name: 'Domain', body: 'Entities, value objects, typed IDs, enums, events and repository interfaces. The business rules.' },
+                { name: 'Application', body: 'Commands, handlers, listeners and search criteria. Loads the model, asks it to change, reports back.' },
+                { name: 'Infrastructure', body: 'Doctrine repositories, security, mail, storage. The parts that can be swapped.' },
+                { name: 'UI', body: 'Controllers, forms, the REST API, console commands and Twig. Thin, and calls the layer below.' },
+            ] %}
+            <div class="mt-10 grid grid-cols-1 sm:grid-cols-2 gap-4" data-aos="fade-up" data-aos-delay="200">
+                {% for layer in layers %}
+                    <div class="rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] p-5">
+                        <p class="text-sm font-semibold text-white mb-1">{{ layer.name }}</p>
+                        <p class="text-sm text-gray-400 leading-relaxed">{{ layer.body }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="mt-10 space-y-5 text-gray-400 leading-relaxed text-base lg:text-lg" data-aos="fade-up">
+                <p>
+                    The rules between contexts are short. A context may use another context's domain (its entities, enums, events and repository interfaces) but never its handlers, services, Doctrine classes or controllers, and the shared kernel imports from no business context at all. <a href="https://github.com/deptrac/deptrac" target="_blank" class="{{ link }}">Deptrac</a> checks this on every change and the build fails on a new breach. The few deliberate exceptions, such as the current user, are named layers of their own rather than a list of ignored violations, so an exception made for one context cannot quietly spread to another (<a href="{{ docs }}adr/014-architecture-rules.md" target="_blank" class="{{ link }}">ADR 014</a>).
+                </p>
+                <p>
+                    The domain is deliberately not framework-free. Entities carry Doctrine mapping and validation attributes, because a second, separate description of every entity would cost more than it saves for an extraction that isn't planned. The business rules themselves stay in plain methods.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    {# ── Domain model ─────────────────────────────────────────────────────── #}
+    {% set domain = [
+        { icon: 'bi:box-seam-fill', colour: 'orange', title: 'Rich entities', body: 'An order knows when it can be cancelled; a product knows where its markup comes from. Handlers ask the model rather than decide for it, so a web form, the API and a console command all get the same answer.' },
+        { icon: 'bi:check-circle-fill', colour: 'emerald', title: 'Built whole', body: 'Entities are created through named constructors, such as CustomerOrder::createFromCustomer() and Product::create(). Orders, purchase orders and reviews have private constructors, so there is no other way to build one, and the test factories go through the same constructors.' },
+        { icon: 'bi:hash', colour: 'violet', title: 'Typed public IDs', body: 'Every entity behind a URL has a ULID public ID with its own type, set in the constructor. Auto-increment keys stay internal, URLs reveal no counts, and an order\'s ID cannot be passed where a purchase order\'s is expected.' },
+        { icon: 'bi:currency-pound', colour: 'amber', title: 'Value objects', body: 'Immutable values for each kind of change: a status change, a cost change, a stock change, a price model. Prices are calculated with bcmath on decimal strings, never floats.' },
+        { icon: 'bi:lightning-fill', colour: 'sky', title: 'Domain events', body: 'Aggregates raise immutable events that carry IDs, not live entities. Other contexts react to them: the audit trail, price recalculation, live pages. What must succeed at once is sync; what can lag or retry goes on the queue.' },
+        { icon: 'bi:database-fill', colour: 'cyan', title: 'Repository interfaces', body: 'Each context declares the queries it offers as an interface in its domain; the Doctrine class behind it is a detail. When another context needs a query, the method is added to the interface.' },
+    ] %}
+    <section class="bg-gray-950 py-24 lg:py-32 overflow-hidden">
+        <div class="mx-auto max-w-(--breakpoint-xl) px-6">
+            <div class="mb-12 lg:mb-16 mx-auto max-w-3xl" data-aos="fade-up">
+                <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">Domain-Driven Design</p>
+                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-6">
+                    A Model That Owns Its Rules
+                </h2>
+                <p class="text-gray-400 leading-relaxed text-base lg:text-lg">
+                    The business is complicated: products sourced from several suppliers, an order line's status derived from the purchase order items beneath it, markups that cascade from category to product. That complexity lives in the entities, where it can be tested directly, rather than spread across services and listeners.
+                </p>
+            </div>
+            {{ _self.cards(domain) }}
+        </div>
+    </section>
+
+    {# ── Application layer ────────────────────────────────────────────────── #}
+    {% set application = [
+        { icon: 'bi:arrow-right', colour: 'orange', title: 'Commands and handlers', body: 'Every form, action and API write takes the same path. A form fills a form model, never an entity; a mapper turns it into a readonly command DTO; one handler loads the entity, calls a method on it and returns Result::ok() or Result::fail() with a message. Inline edits are the one shortcut: they check the entity\'s rules, call its method and flush.' },
+        { icon: 'bi:funnel', colour: 'violet', title: 'Search criteria', body: 'Reads are separate. Each index page has a criteria object with its allowed sorts and defaults, passed to a repository that returns a paginated query. Lightweight CQRS: separate models for reading and writing, one database.' },
+        { icon: 'bi:diagram-3-fill', colour: 'sky', title: 'FormFlow', body: 'Controllers are thin orchestrators built from five flows: form, action, confirm, search and inline edit. CSRF, flashes, redirects and Turbo responses are handled once, in an open-source package of my own, myvars/form-flow.' },
+        { icon: 'bi:code-slash', colour: 'emerald', title: 'A REST API on the same handlers', body: 'Versioned JSON endpoints call the same handlers and repositories as the web, so they add no business logic. Errors are RFC 7807 Problem Details, the OpenAPI docs are generated from attributes, and Bearer tokens are stored only as SHA-256 hashes.' },
+    ] %}
+    <section class="bg-gray-900 py-24 lg:py-32 overflow-hidden">
+        <div class="mx-auto max-w-(--breakpoint-xl) px-6">
+            <div class="mb-12 lg:mb-16 mx-auto max-w-3xl" data-aos="fade-up">
+                <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">Application Layer</p>
+                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-6">
+                    One Path for Every Write
+                </h2>
+                <p class="text-gray-400 leading-relaxed text-base lg:text-lg">
+                    A consistent shape makes the codebase predictable. Once you have read one feature, you know where to find the pieces of every other.
+                </p>
+            </div>
+            {{ _self.cards(application, 2) }}
+        </div>
+    </section>
+
+    {# ── Symfony ──────────────────────────────────────────────────────────── #}
+    {% set symfony = [
+        { name: 'Attributes & autowiring', body: 'Routes, commands, listeners and message handlers are declared on the class itself, and services are autowired. Configuration in YAML is the last resort.' },
+        { name: 'Request mapping', body: 'A value resolver turns the ULID in a URL into the entity, and the API maps JSON bodies and query strings straight into validated DTOs.' },
+        { name: 'Forms & Validator', body: 'Forms fill form models carrying constraint attributes, and one form theme renders every field.' },
+        { name: 'Security', body: 'Form login with remember-me and throttling, access tokens for the API, a role hierarchy and voters.' },
+        { name: 'Doctrine', body: 'Attribute mapping, repositories behind domain interfaces, and every schema change as a migration.' },
+        { name: 'EventDispatcher', body: 'Domain events are dispatched once the change is saved. Sync listeners react straight away, in any context; async events go on to Messenger.' },
+        { name: 'Messenger & Scheduler', body: 'The async queue and the recurring jobs, both consumed by one worker.' },
+        { name: 'Lock & RateLimiter', body: 'Locks for scheduled jobs and live refreshes; rate limits on sign-in, registration and password reset.' },
+        { name: 'Symfony UX', body: 'Twig Components, Turbo, Stimulus, Icons and Chart.js, served by Asset Mapper.' },
+    ] %}
+    <section class="bg-gray-950 py-24 lg:py-32 overflow-hidden">
+        <div class="mx-auto max-w-(--breakpoint-xl) px-6">
+            <div class="mb-12 lg:mb-16 mx-auto max-w-3xl" data-aos="fade-up">
+                <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">Symfony</p>
+                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-6">
+                    Leaning on the Framework
+                </h2>
+                <p class="text-gray-400 leading-relaxed text-base lg:text-lg">
+                    Symfony 8.1 does most of the infrastructure work. Before anything is hand-built or another library is added, the first question is which Symfony component already does it. The code that remains is the business.
+                </p>
+            </div>
+
+            <dl class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8" data-aos="fade-up" data-aos-delay="100">
+                {% for item in symfony %}
+                    <div class="rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] p-6">
+                        <dt class="text-base font-semibold text-white mb-2">{{ item.name }}</dt>
+                        <dd class="text-sm text-gray-400 leading-relaxed">{{ item.body }}</dd>
+                    </div>
+                {% endfor %}
+            </dl>
+        </div>
+    </section>
+
+    {# ── Async, scheduling and live updates ───────────────────────────────── #}
+    {% set async = [
+        { icon: 'bi:inbox-fill', colour: 'orange', title: 'Messenger on a database queue', body: 'Async work is a row in MySQL, consumed by a worker. The workload doesn\'t need a broker, so there isn\'t one to run, secure and back up. RabbitMQ stays one setting away, behind a Compose profile, and the code doesn\'t change because Messenger hides the transport.', adr: '013' },
+        { icon: 'bi:clock-history', colour: 'violet', title: 'Symfony Scheduler, not cron', body: 'Every scheduled job is listed in one class and runs inside the Messenger worker, one at a time, with its state in Redis and a lock against double runs. No cron daemon in the application image, and no jobs colliding on the same minute.', adr: '015' },
+        { icon: 'bi:arrow-repeat', colour: 'sky', title: 'Live pages with Mercure', body: 'FrankenPHP\'s built-in Mercure hub pushes changes to the browser. A page refresh is a public signal with no data, so each viewer reloads through their own access check; toasts to a user are private. Refreshes are queued and deduplicated, one per order however many events a change raises.', adr: '017' },
+        { icon: 'bi:truck', colour: 'emerald', title: 'A simulated business', body: 'Console commands simulate the business with realistic timing: customers place orders at random through the day, purchase orders are raised and accepted, suppliers ship and deliver, stock and prices move. The live site always has fresh data, and the order, purchasing and fulfilment lifecycle runs around the clock.', adr: '003' },
+    ] %}
+    <section class="bg-gray-900 py-24 lg:py-32 overflow-hidden">
+        <div class="mx-auto max-w-(--breakpoint-xl) px-6">
+            <div class="mb-12 lg:mb-16 mx-auto max-w-3xl" data-aos="fade-up">
+                <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">Async &amp; Live</p>
+                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-6">
+                    Work That Happens Off the Request
+                </h2>
+                <p class="text-gray-400 leading-relaxed text-base lg:text-lg">
+                    Mail, recurring jobs, live refreshes and the simulation all run off the request, through one queue and one worker.
+                </p>
+            </div>
+            {{ _self.cards(async, 2) }}
+        </div>
+    </section>
+
+    {# ── Frontend ─────────────────────────────────────────────────────────── #}
+    {% set frontend = [
+        { icon: 'bi:window-desktop', colour: 'orange', title: 'Server-rendered, not an SPA', body: 'Twig renders every page and Symfony Forms validate on the server. There is no second application in JavaScript, no client state to keep in sync and no API written only for the UI.', adr: '008' },
+        { icon: 'bi:lightning', colour: 'sky', title: 'Turbo and Stimulus', body: 'Turbo gives app-like navigation: frames for the main content and for modals in a native <dialog>, streams for flashes, morphing for live refreshes. Small Stimulus controllers add behaviour where HTML alone isn\'t enough.', adr: '007' },
+        { icon: 'bi:box-seam', colour: 'emerald', title: 'Asset Mapper, no bundler', body: 'JavaScript is served as native ES modules through an import map, and Tailwind is compiled by its standalone binary. No Node toolchain, no Webpack or Vite build, no node_modules to keep patched.' },
+        { icon: 'bi:palette-fill', colour: 'pink', title: 'Tailwind and the Shadcn kit', body: 'UI primitives come from the Shadcn kit of Symfony UX Toolkit, copied into the project as Twig components. The project owns the files and edits them freely, with no dependency on the toolkit at runtime; in-house components are built from the kit\'s pieces.', adr: '012' },
+        { icon: 'bi:graph-up', colour: 'violet', title: 'Charts and icons', body: 'Chart.js through Symfony UX for the dashboards and reports, and UX Icons with every icon committed to the repository as SVG.' },
+        { icon: 'bi:toggle-on', colour: 'amber', title: 'Dark by default', body: 'A dark Martian theme, a light mode beside it, and every screen responsive from a phone to a wide monitor.' },
+    ] %}
+    <section class="bg-gray-950 py-24 lg:py-32 overflow-hidden">
+        <div class="mx-auto max-w-(--breakpoint-xl) px-6">
+            <div class="mb-12 lg:mb-16 mx-auto max-w-3xl" data-aos="fade-up">
+                <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">Frontend</p>
+                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-6">
+                    HTML Over the Wire
+                </h2>
+                <p class="text-gray-400 leading-relaxed text-base lg:text-lg">
+                    A staff tool lives on forms, tables and state changes, and Symfony handles those well. Rendering on the server keeps one source of truth and one language for the rules; Turbo and Stimulus (Hotwire) make it feel like a single-page app.
+                </p>
+            </div>
+            {{ _self.cards(frontend) }}
+        </div>
+    </section>
+
+    {# ── Runtime and infrastructure ───────────────────────────────────────── #}
+    {% set runtime = [
+        { icon: 'bi:server', colour: 'orange', title: 'One FrankenPHP image', body: 'One Dockerfile on an exactly pinned FrankenPHP base, with development and production stages. FrankenPHP is the web server and PHP in one, so nginx and PHP-FPM are gone; the same production image runs the Messenger worker as a second container. Worker mode keeps the booted kernel in memory, restarting each worker after 500 requests.', adr: '016' },
+        { icon: 'bi:grid-fill', colour: 'sky', title: 'Docker Compose', body: 'One set of Compose files describes the app, the worker, MySQL 8.4 and Redis 8.8, with an override for each environment. CI runs the checks in it, production runs it from pulled images, and development can run all of it or only the services behind symfony serve.' },
+        { icon: 'bi:cloud-fill', colour: 'violet', title: 'One small host', body: 'Two stacks, the live site and the public playground, share one small AWS Lightsail instance behind a host Caddy that terminates TLS. Product images and backups live in S3. Sized to the load, not to a diagram.' },
+        { icon: 'bi:database-fill', colour: 'cyan', title: 'MySQL and Redis', body: 'MySQL holds the data and the queue; schema changes go through Doctrine migrations only. Redis holds the cache, sessions, the scheduler\'s state and the locks that deduplicate live refreshes.' },
+        { icon: 'bi:speedometer2', colour: 'emerald', title: 'Monitoring', body: 'Sentry reports uncaught exceptions in production, and Sentry Uptime checks the site from outside. /health checks the database, Redis and the queue for the container healthcheck and the uptime monitor; /health/backup fails if no backup has landed for 26 hours, kept apart so a missed backup cannot mark the site down.' },
+        { icon: 'bi:arrow-counterclockwise', colour: 'amber', title: 'Backups and the playground', body: 'A nightly database backup goes to S3. The public playground, where anyone can sign in as staff and try it out, is rebuilt every night from live\'s backup, so nothing a visitor does there lasts.' },
+    ] %}
+    <section class="bg-gray-900 py-24 lg:py-32 overflow-hidden">
+        <div class="mx-auto max-w-(--breakpoint-xl) px-6">
+            <div class="mb-12 lg:mb-16 mx-auto max-w-3xl" data-aos="fade-up">
+                <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">Runtime &amp; Infrastructure</p>
+                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-6">
+                    Containerised, End to End
+                </h2>
+                <p class="text-gray-400 leading-relaxed text-base lg:text-lg">
+                    Development, CI and production are built from one Dockerfile on the same pinned base and described by the same Compose files, so what works on a laptop works in production.
+                </p>
+            </div>
+            {{ _self.cards(runtime) }}
+            <div class="mt-12 mx-auto max-w-3xl space-y-5 text-gray-400 leading-relaxed text-base lg:text-lg" data-aos="fade-up">
+                <p>
+                    Worker mode has one rule above the rest: a service must never keep a request's data in a property, because the same service object serves the next request too. Services read the user or the request when they need them, a service that caches on purpose clears itself between requests, and a test fails the build if one doesn't (<a href="{{ docs }}03-architecture.md#state-between-requests" target="_blank" class="{{ link }}">state between requests</a>).
+                </p>
+            </div>
+        </div>
+    </section>
+
+    {# ── Security ─────────────────────────────────────────────────────────── #}
+    {% set security = [
+        { icon: 'bi:person-lock', colour: 'orange', title: 'Roles and voters', body: 'Staff and super-admin roles in a hierarchy, always checked through isGranted() so the hierarchy applies. The most destructive actions are for super admins only, and a voter guards the rule that depends on the record.' },
+        { icon: 'bi:shield-lock', colour: 'sky', title: 'No state change on a GET', body: 'Every state-changing action is a POST with its own CSRF token, including one-button actions such as approving a review. Apart from signing out and the signed links in emails, no link changes anything, so prefetching and crawlers are harmless.' },
+        { icon: 'bi:shield-check', colour: 'emerald', title: 'Headers, limits and proxies', body: 'The app sends its own CSP and security headers, so development, tests and production share one policy. Rate limits, login throttling and trusted proxies live in Symfony rather than the web server, and Cloudflare Turnstile protects sign-up and the playground sign-in.' },
+    ] %}
+    <section class="bg-gray-950 py-24 lg:py-32 overflow-hidden">
+        <div class="mx-auto max-w-(--breakpoint-xl) px-6">
+            <div class="mb-12 lg:mb-16 mx-auto max-w-3xl" data-aos="fade-up">
+                <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">Security</p>
+                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-6">
+                    Rules in the App, Not the Web Server
+                </h2>
+                <p class="text-gray-400 leading-relaxed text-base lg:text-lg">
+                    Security that lives in application code is tested with everything else and behaves the same in every environment. The <a href="{{ docs }}08-security.md" target="_blank" class="{{ link }}">security guide</a> has the full list.
+                </p>
+            </div>
+            {{ _self.cards(security) }}
+        </div>
+    </section>
+
+    {# ── Quality ──────────────────────────────────────────────────────────── #}
+    {% set checks = [
+        { name: 'PHP CS Fixer', body: 'Symfony coding standard, strict_types in every file, no Yoda conditions.' },
+        { name: 'Rector', body: 'PHP, Symfony, Doctrine and PHPUnit sets, dead code, type declarations, early returns. Run in dry-run mode, so the code must already comply.' },
+        { name: 'PHPStan, level 7', body: 'Static analysis over the application and the tests, with an empty baseline kept empty by rule.' },
+        { name: 'Deptrac', body: 'The rules between bounded contexts.' },
+        { name: 'Lint', body: 'The service container, every Twig template and every YAML file in config/.' },
+        { name: 'Composer audit', body: 'Known vulnerabilities in any installed package.' },
+        { name: 'Migrations', body: 'The migrations must produce exactly the schema the entities describe.' },
+        { name: 'Production config', body: 'The production Compose files and the Caddyfile, in each of its modes, must validate before anything is built.' },
+        { name: 'Tests', body: 'The full suite, in parallel.' },
+    ] %}
+    {% set testing = [
+        { icon: 'bi:check-circle-fill', colour: 'emerald', title: 'PHPUnit and ParaTest', body: 'Over 1,300 tests run in parallel with ParaTest, one database per process. A feature is done when a test exercises it the way a caller would: an HTTP request for a page, a handler call for a handler.' },
+        { icon: 'bi:box-seam-fill', colour: 'orange', title: 'Foundry and DAMA', body: 'Zenstruck Foundry factories build test data through the entities\' own constructors, and DAMA rolls each test back in a transaction, so tests are fast and independent. Queued messages go to an in-memory transport that serialises them, so a test can read what was sent.' },
+        { icon: 'bi:window-desktop', colour: 'sky', title: 'Browser flow tests', body: 'Zenstruck Browser drives whole flows through the kernel: sign in, submit a form, follow the redirect, read the flash. When one fails in CI, the page it was on is saved as an artifact.' },
+    ] %}
+    <section class="bg-gray-900 py-24 lg:py-32 overflow-hidden">
+        <div class="mx-auto max-w-(--breakpoint-xl) px-6">
+            <div class="mb-12 lg:mb-16 mx-auto max-w-3xl" data-aos="fade-up">
+                <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">Testing &amp; Code Quality</p>
+                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-6">
+                    The Same Checks, Locally and in CI
+                </h2>
+                <p class="text-gray-400 leading-relaxed text-base lg:text-lg">
+                    <code class="rounded bg-white/[0.06] px-1.5 py-0.5 text-sm text-gray-200">make check</code> runs every check CI runs, with the same commands in the same container. If it passes on a laptop, it passes on the pull request.
+                </p>
+            </div>
+
+            <div class="mx-auto max-w-3xl rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] divide-y divide-white/[0.06]" data-aos="fade-up" data-aos-delay="100">
+                {% for check in checks %}
+                    <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-6 px-6 py-4">
+                        <p class="sm:w-44 shrink-0 text-sm font-semibold text-white">{{ check.name }}</p>
+                        <p class="text-sm text-gray-400 leading-relaxed">{{ check.body }}</p>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class="mt-12">
+                {{ _self.cards(testing) }}
+            </div>
+        </div>
+    </section>
+
+    {# ── CI/CD ────────────────────────────────────────────────────────────── #}
+    {% set pipeline = [
+        { step: 'Test', body: 'On every pull request and every push to main: builds the image with a layer cache, then runs each step of make check.' },
+        { step: 'Publish', body: 'On main only: builds the production images and pushes them to the GitHub Container Registry, tagged with the commit SHA.' },
+        { step: 'Deploy', body: 'Connects to the server, checks out that commit, pulls its images and restarts the live and playground stacks; one container runs the migrations on start. The job then checks that /health answers and no migration is pending. If a newer commit is already live, an older job stops rather than roll it back.' },
+    ] %}
+    <section class="bg-gray-950 py-24 lg:py-32 overflow-hidden">
+        <div class="mx-auto max-w-(--breakpoint-xl) px-6">
+            <div class="mb-12 lg:mb-16 mx-auto max-w-3xl" data-aos="fade-up">
+                <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">CI/CD</p>
+                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-6">
+                    Merge Is Deploy
+                </h2>
+                <p class="text-gray-400 leading-relaxed text-base lg:text-lg">
+                    GitHub Actions takes every merge to main through to production with no manual step.
+                </p>
+            </div>
+
+            <ol class="grid grid-cols-1 md:grid-cols-3 gap-6" data-aos="fade-up" data-aos-delay="100">
+                {% for stage in pipeline %}
+                    <li class="relative rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] p-6">
+                        <div class="mb-4 flex items-center gap-3">
+                            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-orange-500/10 text-sm font-semibold text-orange-400">{{ loop.index }}</span>
+                            <h3 class="text-base font-semibold text-white">{{ stage.step }}</h3>
+                        </div>
+                        <p class="text-sm text-gray-400 leading-relaxed">{{ stage.body }}</p>
+                    </li>
+                {% endfor %}
+            </ol>
+
+            <div class="mt-12 mx-auto max-w-3xl space-y-5 text-gray-400 leading-relaxed text-base lg:text-lg" data-aos="fade-up">
+                <p>
+                    The server never builds anything. CI builds the production images from the commit that passed the tests, the server only pulls them, and the commit that is checked out decides which images run, so a rollback is a checkout of the previous commit and a restart. Application secrets live in env files on the server, outside the repository; GitHub holds only what it needs to reach the server, and third-party actions are pinned to commit SHAs.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    {# ── How the work is done ─────────────────────────────────────────────── #}
+    {% set process = [
+        { icon: 'bi:github', colour: 'orange', title: 'Issues and pull requests', body: 'Work is planned as GitHub issues, and every change arrives as a pull request from its own branch, saying what changed and why. Nothing is published or deployed without passing CI.' },
+        { icon: 'bi:card-text', colour: 'violet', title: 'Decisions written down', body: 'The architecture decision records explain the choices that shape the system, with the alternatives and their costs. A non-obvious area isn\'t changed until its ADR has been read.' },
+        { icon: 'bi:folder', colour: 'sky', title: 'Docs as the source of truth', body: 'The docs describe the system as it is today, and each entry in their index says when to read it. They are updated with the code they describe.' },
+        { icon: 'bi:chat-dots-fill', colour: 'emerald', title: 'AI under review', body: 'For most of its life SupplyMars was written by hand, with AI for the occasional question. Since early 2026 Claude Code has written most of the code and tests, working from a CLAUDE.md that sets out the rules and points to the docs. I set the direction, review every change and remain responsible for the result.' },
+    ] %}
+    <section class="bg-gray-900 py-24 lg:py-32 overflow-hidden">
+        <div class="mx-auto max-w-(--breakpoint-xl) px-6">
+            <div class="mb-12 lg:mb-16 mx-auto max-w-3xl" data-aos="fade-up">
+                <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">Ways of Working</p>
+                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-6">
+                    How the Work Is Done
+                </h2>
+                <p class="text-gray-400 leading-relaxed text-base lg:text-lg">
+                    I run it as if it were a team project, because the habits are what make a codebase easy to hand over.
+                </p>
+            </div>
+            {{ _self.cards(process, 2) }}
+        </div>
+    </section>
+
+    {# ── Principles ───────────────────────────────────────────────────────── #}
+    {% set principles = [
+        { title: 'Use the framework first', body: 'Before building infrastructure or adding a library, look for the Symfony component that already does it: locks, rate limits, scheduling, queues, HTTP.' },
+        { title: 'Keep the rules in the model', body: 'Business rules belong in the entities, behind one path for every write, so no caller can go around them.' },
+        { title: 'Let the build enforce the rules', body: 'A rule that matters is checked by a tool on every change, not left to code review.' },
+        { title: 'Render on the server', body: 'Add JavaScript for behaviour, never for business logic or to duplicate state.' },
+        { title: 'Keep the moving parts few', body: 'One image, one database, one queue, one worker, until the load says otherwise.' },
+        { title: 'Run the same everywhere', body: 'Development, CI and production share one Dockerfile, one set of Compose files and the same checks, so surprises surface early.' },
+        { title: 'Write it down', body: 'Decisions in ADRs, behaviour in the docs, the story in the log.' },
+    ] %}
+    <section class="bg-gray-950 py-24 lg:py-32 overflow-hidden">
+        <div class="mx-auto max-w-3xl px-6">
+            <div class="mb-12 lg:mb-16" data-aos="fade-up">
+                <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">Direction</p>
+                <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-6">
+                    The Principles That Carry Forward
+                </h2>
+                <p class="text-gray-400 leading-relaxed text-base lg:text-lg">
+                    The tools will change; these are the choices each new feature is measured against.
+                </p>
+            </div>
+            <ol class="space-y-6" data-aos="fade-up" data-aos-delay="100">
+                {% for principle in principles %}
+                    <li class="flex gap-5">
+                        <span class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-orange-500/10 text-sm font-semibold text-orange-400">{{ loop.index }}</span>
+                        <div>
+                            <p class="text-base font-semibold text-white mb-1">{{ principle.title }}</p>
+                            <p class="text-gray-400 leading-relaxed">{{ principle.body }}</p>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ol>
+        </div>
+    </section>
+
+    {# ── CTA ──────────────────────────────────────────────────────────────── #}
+    <section class="relative py-28 lg:py-36 overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-950 to-gray-900"></div>
+        <div class="absolute inset-0 opacity-[0.04]"
+             style="background-image: url({{ asset('images/martian_landscape.webp') }}); background-size: cover; background-position: center;">
+        </div>
+
+        <div class="relative mx-auto max-w-2xl px-6 text-center">
+            <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4" data-aos="fade-up">Go Deeper</p>
+            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-8"
+                data-aos="fade-up" data-aos-delay="50" data-aos-duration="600">
+                Read the Code
+            </h2>
+            <p class="text-lg text-gray-400 mb-12 leading-relaxed" data-aos="fade-up" data-aos-delay="100">
+                The repository is public: the code, the tests, the ADRs and the infrastructure behind everything on this page.
+            </p>
+            <div class="flex flex-wrap items-center justify-center gap-4" data-aos="fade-up" data-aos-delay="200">
+                <a href="{{ github }}"
+                   target="_blank"
+                   class="inline-flex items-center gap-2 px-7 py-3 text-sm sm:text-base font-semibold text-white bg-orange-500 hover:bg-orange-400 rounded-lg shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-[0.98] focus-ring">
+                    <twig:ux:icon name="bi:github" class="h-5 w-5" />
+                    View on GitHub
+                </a>
+                <a href="{{ path('app_log_index') }}"
+                   data-turbo-frame="body"
+                   class="inline-flex items-center gap-2 px-7 py-3 text-sm sm:text-base font-semibold text-gray-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg ring-1 ring-white/[0.1] hover:ring-white/[0.18] transition-all duration-200 active:scale-[0.98] focus-ring">
+                    Engineering Log
+                </a>
+                <a href="{{ path('app_about_page') }}"
+                   data-turbo-frame="body"
+                   class="inline-flex items-center gap-2 px-7 py-3 text-sm sm:text-base font-semibold text-gray-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg ring-1 ring-white/[0.1] hover:ring-white/[0.18] transition-all duration-200 active:scale-[0.98] focus-ring">
+                    About Me
+                </a>
+            </div>
+        </div>
+    </section>
+
+    </div>
+{% endblock %}
+
+{#
+    A grid of cards: icon, title, body and an optional ADR link. Colours are listed in full so
+    Tailwind sees each class.
+#}
+{% macro cards(items, columns = 3) %}
+    {% set tints = {
+        orange: ['bg-orange-500/10', 'text-orange-400'],
+        violet: ['bg-violet-500/10', 'text-violet-400'],
+        sky: ['bg-sky-500/10', 'text-sky-400'],
+        emerald: ['bg-emerald-500/10', 'text-emerald-400'],
+        cyan: ['bg-cyan-500/10', 'text-cyan-400'],
+        amber: ['bg-amber-500/10', 'text-amber-400'],
+        pink: ['bg-pink-500/10', 'text-pink-400'],
+    } %}
+    {% set adrs = {
+        '003': '003-simulation-first-design.md',
+        '007': '007-turbo-frame-modal-architecture.md',
+        '008': '008-server-driven-ui-architecture.md',
+        '012': '012-shadcn-ui-kit.md',
+        '013': '013-database-queue-by-default.md',
+        '015': '015-symfony-scheduler-in-place-of-cron.md',
+        '016': '016-frankenphp-in-place-of-nginx-and-php-fpm.md',
+        '017': '017-live-updates-with-mercure.md',
+    } %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 {{ columns == 3 ? 'lg:grid-cols-3' : '' }} gap-6 lg:gap-8">
+        {% for item in items %}
+            <div class="flex flex-col rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] p-6 transition-all duration-300 hover:bg-gray-800/60 hover:ring-white/[0.1]" data-aos="fade-up" data-aos-delay="{{ (loop.index0 % 3) * 50 }}">
+                <div class="mb-4 flex h-12 w-12 items-center justify-center rounded-xl {{ tints[item.colour][0] }}">
+                    {{ ux_icon(item.icon, { class: 'h-6 w-6 ' ~ tints[item.colour][1] }) }}
+                </div>
+                <h3 class="text-base font-semibold text-white mb-2">{{ item.title }}</h3>
+                <p class="text-sm text-gray-400 leading-relaxed">{{ item.body }}</p>
+                {% if item.adr is defined %}
+                    <a href="https://github.com/myvars/supplymars/blob/main/Docs/adr/{{ adrs[item.adr] }}"
+                       target="_blank"
+                       class="mt-auto pt-4 text-xs font-semibold uppercase tracking-widest text-gray-500 hover:text-orange-400 transition-colors focus-ring">ADR {{ item.adr }}</a>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+{% endmacro %}
