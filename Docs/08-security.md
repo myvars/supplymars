@@ -121,7 +121,7 @@ Edit `csp.enforce` in `config/packages/nelmio_security.yaml`; it applies in ever
 |--------|-----------|
 | `script-src 'unsafe-inline'` | The dark-mode script in `templates/base.html.twig`, which must run before the page is painted, and the inline `onload` of the kit's `Avatar:Image` |
 | `script-src data:` | Asset Mapper's CSS loaders (`data:application/javascript,...`), for example Dropzone's CSS |
-| `style-src 'unsafe-inline'` | `style=` attributes, Sonner and Turbo's progress bar |
+| `style-src 'unsafe-inline'` | `style=` attributes and Turbo's progress bar (Sonner sets its styles from JavaScript, which the CSP does not restrict) |
 | `https://challenges.cloudflare.com` in `script-src`, `connect-src`, `frame-src` | The Turnstile widget: `turnstile_controller.js` loads its script from there, and the widget runs in an iframe that calls back to it |
 | The S3 bucket host in `img-src` | Production stores product images and their thumbnails in S3. If the bucket or region changes, change the host here. Development stores them in `public/`, so the host does nothing there |
 
