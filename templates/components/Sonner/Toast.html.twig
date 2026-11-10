@@ -24,7 +24,7 @@
     {%- if id is not null %} data-toast-id="{{ id }}"{% endif %}
     {%- if duration is not null %} data-duration="{{ duration }}"{% endif %}
     {{ attributes.defaults({
-        class: 'group flex w-full items-start gap-3 rounded-lg border bg-popover p-4 text-popover-foreground shadow-lg transition-[transform,opacity] duration-300 pointer-events-auto absolute left-0 right-0'|tailwind_classes,
+        class: 'group flex w-full items-start gap-3 rounded-2xl border bg-popover p-4 text-popover-foreground shadow-lg transition-[transform,opacity] duration-300 pointer-events-auto absolute left-0 right-0'|tailwind_classes,
     }) }}
 >
     {##- Optional leading icon; mark it data-slot="toast-icon". -#}
