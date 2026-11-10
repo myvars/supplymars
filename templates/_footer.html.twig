@@ -3,32 +3,32 @@
         <div class="sm:flex sm:items-center sm:justify-between">
             <a href="{{ path('app_homepage') }}"
                class="mb-4 flex items-center sm:mb-0"
-               data-turbo-frame="body">
+               data-turbo-frame="_top">
                 {{ include('_logo.html.twig', { 'logoId': 'footer', 'logoHeight': 28 }) }}
             </a>
             <ul class="mb-6 flex flex-wrap items-center gap-6 text-sm text-gray-500 dark:text-gray-400 sm:mb-0">
                 <li>
-                    <a href="{{ path('app_about_page') }}" data-turbo-frame="body"
+                    <a href="{{ path('app_about_page') }}" data-turbo-frame="_top"
                        class="transition-colors hover:text-gray-900 dark:hover:text-white">About</a>
                 </li>
                 <li>
-                    <a href="{{ path('app_log_index') }}" data-turbo-frame="body"
+                    <a href="{{ path('app_log_index') }}" data-turbo-frame="_top"
                        class="transition-colors hover:text-gray-900 dark:hover:text-white">Log</a>
                 </li>
                 <li>
-                    <a href="{{ path('app_stack_page') }}" data-turbo-frame="body"
-                       class="transition-colors hover:text-gray-900 dark:hover:text-white">Stack</a>
+                    <a href="{{ path('app_stack_page') }}" data-turbo-frame="_top"
+                       class="transition-colors hover:text-gray-900 dark:hover:text-white">How It's Built</a>
                 </li>
                 <li>
-                    <a href="{{ path('app_terms_page') }}" data-turbo-frame="body"
+                    <a href="{{ path('app_terms_page') }}" data-turbo-frame="_top"
                        class="transition-colors hover:text-gray-900 dark:hover:text-white">T&Cs</a>
                 </li>
                 <li>
-                    <a href="{{ path('app_privacy_page') }}" data-turbo-frame="body"
+                    <a href="{{ path('app_privacy_page') }}" data-turbo-frame="_top"
                        class="transition-colors hover:text-gray-900 dark:hover:text-white">Privacy</a>
                 </li>
                 <li>
-                    <a href="{{ path('app_contact_page') }}" data-turbo-frame="body"
+                    <a href="{{ path('app_contact_page') }}" data-turbo-frame="_top"
                        class="transition-colors hover:text-gray-900 dark:hover:text-white">Contact</a>
                 </li>
             </ul>
@@ -36,7 +36,7 @@
         <div class="mt-6 border-t border-gray-100 pt-6 dark:border-white/[0.04] lg:mt-8 lg:pt-8">
             <p class="text-center text-sm text-gray-400 dark:text-gray-500">
                 &copy; {{ "now"|date("Y") }}
-                <a href="{{ path('app_homepage') }}" class="transition-colors hover:text-gray-900 dark:hover:text-white" data-turbo-frame="body">{{ domain }}</a>.
+                <a href="{{ path('app_homepage') }}" class="transition-colors hover:text-gray-900 dark:hover:text-white" data-turbo-frame="_top">{{ domain }}</a>.
                 All rights reserved.
             </p>
         </div>
