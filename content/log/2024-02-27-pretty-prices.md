@@ -34,7 +34,7 @@ The rounding happens on the price with VAT, the one the customer sees, and the p
 
 A few days later the price models arrived as a database table: an entity, a repository, a form, a controller and fixtures for None, Pretty 00, Pretty 10, Pretty 49, Pretty 95 and Pretty 99, with a `PrettyPriceService` that rounded a price by the model's tag.
 
-The same day the table was gone. `PriceModel` became an enum, each model a rule in code instead of a row in a table, with seven cases, `NONE`, `DEFAULT` and five pretty ones, and the enum does its own rounding:
+The same day I replaced it. A price model is a fixed set of rules, not data anyone edits, so `PriceModel` became an enum with seven cases, `NONE`, `DEFAULT` and five pretty ones, and the enum does its own rounding:
 
 ```php
 public function getPrettyPrice(string $price): string

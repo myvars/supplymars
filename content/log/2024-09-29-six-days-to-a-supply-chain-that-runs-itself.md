@@ -48,7 +48,7 @@ With five commands, an order could now go from placed to delivered in the time t
 
 Running the commands over and over, faster than any supplier would, put the status rules under real load. On Friday I added refunds, and a command that re-derives every status. That story is in [Hardening the status tree](/log/hardening-the-status-tree).
 
-Three more things came out of the same fortnight. The following weekend the admin screens got their first access check; until then they needed no login at all. Early the next week every order, line, purchase order and item got a status timeline drawn from the log, showing how long after the record was created each status came. And midweek, purchase orders took on their supplier's colour, so on a busy order page a staff user can see at a glance which supplier holds which line.
+Two more things came out of the same fortnight. Every order, line, purchase order and item got a status timeline drawn from the log, showing how long after the record was created each status came. And purchase orders took on their supplier's colour, so on a busy order page a staff user can see at a glance which supplier holds which line.
 
 ## Stock that moves
 

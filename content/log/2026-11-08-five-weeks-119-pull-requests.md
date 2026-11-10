@@ -54,7 +54,7 @@ With Mercure ([#117](https://github.com/myvars/supplymars/pull/117), [#121](http
 
 ## Architecture rules the code actually follows
 
-The architecture docs described rules that nothing checked, and the code had drifted from them. Unchecked rules are worse than none, so I made them checkable. ADR 014 rewrote them to match a design I wanted: a context may use another context's domain (its entities, events and repository interfaces) but never its handlers, services or controllers, and the shared kernel imports no business context. Deptrac checks it in CI ([#37](https://github.com/myvars/supplymars/pull/37)).
+The architecture docs described rules that nothing checked, and the code had drifted from them, so I made them checkable. ADR 014 rewrote them to match a design I wanted: a context may use another context's domain (its entities, events and repository interfaces) but never its handlers, services or controllers, and the shared kernel imports no business context. Deptrac checks it in CI ([#37](https://github.com/myvars/supplymars/pull/37)).
 
 Measured against the new rules, 50 imports broke them. I fixed 45 by moving or simplifying code. The other five became named exceptions, each its own Deptrac layer that only the context that needs it may use. There is no `skip_violations` list, and a catch-all layer fails the build for any context that isn't registered.
 
@@ -111,7 +111,7 @@ Then about 20 PRs reworked the suite itself: written conventions, factories on F
 
 ## When things went wrong
 
-Two changes caused production incidents. Both were found quickly, fixed at the cause, and changed how the project works.
+Two changes caused production incidents. Each was traced to its cause and fixed there.
 
 **A deploy that waited for a worker that never stopped.** The first deploy with the Scheduler gave the worker 15 minutes to finish its job when asked to stop. The image has no `pcntl`, so the worker never saw the signal. The deploy waited out the full timeout, and live was down for about 20 minutes. The fix is a 30-second grace period: a killed job hasn't advanced the schedule, so it simply runs again ([#84](https://github.com/myvars/supplymars/pull/84)).
 
@@ -119,7 +119,7 @@ Two changes caused production incidents. Both were found quickly, fixed at the c
 
 ## Also in these weeks
 
-- **The Shadcn UI kit.** Three Flowbite packages and a set of hand-converted components were replaced by the Shadcn kit through Symfony UX Toolkit ([#3](https://github.com/myvars/supplymars/pull/3)). [A UI kit the project owns](/log/a-ui-kit-the-project-owns) tells that story.
+- **The Shadcn UI kit.** Three Flowbite packages and a set of hand-converted components were replaced by the Shadcn kit through Symfony UX Toolkit ([#3](https://github.com/myvars/supplymars/pull/3)). [A UI kit the project owns](/log/a-ui-kit-the-project-owns) covers the move.
 - **FormFlow as a package.** My controller pattern lives in its own Composer package, `myvars/form-flow`, now at 1.6 ([#209](https://github.com/myvars/supplymars/pull/209)).
 - **A docs review that found bugs.** A six-part review checked every guide and ADR against the code. Checking the docs turned up real bugs in orders, purchase orders, the catalogue and sign-in, each fixed in its own PR. The project now has 61 documents, including 17 ADRs.
 - **Domain fixes.** Products are repriced when simulated stock and costs change, allocation edge cases are fixed, deleting a record that's still in use is refused, and Doctrine no longer rewrites `public_id` and `updated_at` on every flush.

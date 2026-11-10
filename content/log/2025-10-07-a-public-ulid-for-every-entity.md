@@ -23,7 +23,7 @@ The tables already held production data, so the column couldn't arrive as `NOT N
 
 1. **A nullable column.** One migration added `public_id` with a unique index to 18 tables: orders and their items, purchase orders and theirs, products, suppliers, users and the rest. Nullable, so the migration succeeds against tables full of rows.
 2. **New rows get one straight away.** A `HasPublicUlid` trait holds the mapping, and each entity's constructor calls `initializePublicId()`.
-3. **A backfill for the old rows.** `app:backfill-ulids` finds every entity using the trait, counts its rows without an ID, and streams them with Doctrine's `toIterable()`, flushing and clearing the entity manager every 200 rows so memory stays flat however big the table, with a progress bar. A `--limit` option runs it a slice at a time.
+3. **A backfill for the old rows.** `app:backfill-ulids` finds every entity using the trait, counts its rows without an ID, and streams them with Doctrine's `toIterable()`, clearing the entity manager as it goes so memory stays flat however big the table, with a progress bar. A `--limit` option runs it a slice at a time.
 
 The plan for the last step was written into the trait: once every row had an ID, make the column `NOT NULL` in a second migration.
 
@@ -37,4 +37,4 @@ The URLs themselves switched on the rebuild branch, where a single value resolve
 
 ## A year later
 
-The column stayed nullable for a year, and finishing the job turned up two bugs. The trait mapped the ULID onto a string property while Doctrine hydrates a `Ulid` object, so every flush rewrote `public_id` and `updated_at` on every loaded entity; that was behind a deadlock on live, and the property is now a `Ulid` ([#89](https://github.com/myvars/supplymars/pull/89)). And the status log's constructor never set its ID, leaving 2.26 million rows without one. Nothing read it, so the status log dropped the column, and the other 23 tables went `NOT NULL` in a migration that checks for nulls before changing anything ([#161](https://github.com/myvars/supplymars/pull/161)).
+Making the column `NOT NULL`, a year later, turned up two bugs. The trait mapped the ULID onto a string property while Doctrine hydrates a `Ulid` object, so every flush rewrote `public_id` and `updated_at` on every loaded entity; that was behind a deadlock on live, and the property is now a `Ulid` ([#89](https://github.com/myvars/supplymars/pull/89)). And the status log's constructor never set its ID, leaving 2.26 million rows without one. Nothing read it, so the status log dropped the column, and the other 23 tables went `NOT NULL` in a migration that checks for nulls before changing anything ([#161](https://github.com/myvars/supplymars/pull/161)).

@@ -25,7 +25,7 @@ I wanted live pages without giving up what makes this app simple to work on: ser
 
 The page subscribes to a topic for its order. When the order changes, the server publishes a refresh, and Turbo reloads the page and morphs the new HTML into the old. No JSON, no client-side rendering, no second copy of the page's logic in JavaScript. The page that arrives is the same one a reload would give, through the same controller and the same access check.
 
-Morphing keeps the viewer's place, but it also replaces whatever they have open. So everything that can be open protects itself: the sidebar, the help panel, the user menu and modals keep their state through a refresh. I tested it with an Add Item modal open, text typed into it, while the order changed underneath.
+Morphing keeps the viewer's place, but it also replaces whatever they have open, so anything that can be open protects itself and keeps its state through a refresh. I tested it with an Add Item modal open, text typed into it, while the order changed underneath.
 
 ## One refresh per order, from the worker
 
@@ -33,25 +33,23 @@ One database flush in the simulation can touch an order dozens of times: every i
 
 A listener, `RefreshOrderPageForViewers`, turns those events into one queued `RefreshOrderPage` message per order, using Messenger's `DeduplicateStamp`. The worker publishes it, so the request that made the change never waits on the hub, and a hub failure is logged, never thrown.
 
-Deduplication needs a lock that both containers can see. The project's locks were on `flock`, which can't work here: a flock key can't be serialised onto the queue, and it can't be released from the other container. Moving every lock to Redis wasn't right either, because `LockableTrait` takes no TTL, so a backup that ran longer than the lock's lifetime would lose it. The answer was a named `deduplication` lock store in Redis, given only to Messenger's deduplication, with everything else left on `flock`.
+Deduplication needs a lock that both containers can see, which the project's `flock` locks can't be. So it has its own lock store in Redis, used only by Messenger's deduplication; every other lock stays on `flock`, where a long-running backup can't outlive its lock.
 
 ## Finding the events that weren't there
 
 A live page is a hard test of a domain model. If a change raises no event, the page doesn't move, and you see it immediately.
 
-Building this turned up four events that existed in the code but were never raised: order item created and changed, purchase order created, and purchase order item created. I raised them, fixed one that carried the wrong type, and added an event for removing an item. Then I closed the rest of the gap ([#124](https://github.com/myvars/supplymars/pull/124)): editing a purchase order item's quantity, removing one, and rewinding a purchase order now raise events too.
+Building this turned up four events that existed in the code but were never raised, and changes to purchase order items and rewinds that raised none. I raised the missing ones and added events for the others ([#124](https://github.com/myvars/supplymars/pull/124)).
 
-The rewind needed care. `PurchaseOrderWasRewoundEvent` is deliberately not a status change event: the rewind deletes the status logs it reverses, so the audit logger must not write a new one for it.
-
-The purchase order page went live the day after the order page ([#121](https://github.com/myvars/supplymars/pull/121)), by subscribing to its order's topic. That meant moving the topic name onto the `CustomerOrder` aggregate, the one place both the Order and Purchasing contexts may reach under the architecture rules, rather than building the string in two places.
+The purchase order page went live the day after the order page ([#121](https://github.com/myvars/supplymars/pull/121)), by subscribing to its order's topic. The topic name lives on the `CustomerOrder` aggregate, which both the Order and Purchasing contexts may reach under the architecture rules, rather than being built in two places.
 
 ## Toasts for the person who needs to know
 
 Live pages help whoever is looking. Some changes matter to someone who isn't. If you hold the lock on an order and another staff user releases or takes it, you should hear about it on whatever page you're on.
 
-`CustomerOrder::lockOrder()` raises `OrderLockWasChangedEvent`, carrying only IDs: the order, the previous holder, the new holder and who acted. A handler sends the previous holder a toast, "Sam Carter released your lock on order #000003", with a link, but only when someone else changed the lock. Releasing your own lock sends nothing. In the browser the toast arrived on the order list about half a second after the click.
+`CustomerOrder::lockOrder()` raises `OrderLockWasChangedEvent`, carrying only IDs. A handler sends the previous holder a toast, "Sam Carter released your lock on order #000003", with a link, but only when someone else changed the lock. Releasing your own lock sends nothing. In the browser the toast arrived on the order list about half a second after the click.
 
-## Getting the security model exactly right
+## Public refreshes, private toasts
 
 The first version made every update private. Each page response set a subscriber cookie granting the user's own topic plus that page's order topics.
 
@@ -60,18 +58,16 @@ Testing it against real browsing showed the flaw in that design. The browser hol
 So I separated the two kinds of message by what they carry ([#145](https://github.com/myvars/supplymars/pull/145)):
 
 - **A refresh is public and carries no data.** It says "this order changed", nothing more, and each viewer's reload goes through the page's own staff-only access check.
-- **A toast is private**, on the user's own topic, and the cookie grants only that topic, the same on every page, for a week from the last page load.
+- **A toast is private**, on the user's own topic, and the cookie grants only that topic, the same on every page.
 
-SupplyMars has customers who can register and sign in, so the cookie is staff only. Without that, a customer could subscribe to every order topic and learn when orders change. A staff user who didn't sign out could also leave a cookie behind, so a customer's sign-in now clears it.
+SupplyMars has customers who can register and sign in, so the cookie is staff only; otherwise a customer could subscribe to every order topic and learn when orders change.
 
-ADR 017 records the guarantee in one line: any browser holding a token can learn *when* an order changes, never *what* changed, and no content ever goes on a page topic. Staff can see every order anyway.
-
-## One origin in production
-
-Production added one more requirement. The playground answered on both `supplymars.com` and `www.supplymars.com`, and its hub lives on `www`. A page loaded from the bare domain subscribed across origins, and the Content Security Policy rightly blocked it. The bare domain now redirects to `www`, keeping the path and HSTS ([#133](https://github.com/myvars/supplymars/pull/133)).
+ADR 017 records the guarantee in one line: any browser holding a token can learn *when* an order changes, never *what* changed, and no content ever goes on a page topic. Staff can see every order anyway. In production the hub lives on `www`, so the bare domain now redirects there, rather than have the Content Security Policy block a cross-origin subscription ([#133](https://github.com/myvars/supplymars/pull/133)).
 
 ## How it was proved
 
-The tests check the subscription and cookie, one refresh for each kind of change, the simulation commands producing one refresh per order, the toast and every case where nothing should be sent, and a hub failure. With deduplication or the "someone else" check removed, seven tests fail.
+The tests cover each kind of change and every case where nothing should be sent; with deduplication or the "someone else" check removed, seven of them fail.
 
 In the browser, with two staff users side by side, an order went from Processing to Accepted, Shipped and Delivered while the simulation commands ran, without a reload.
+
+The deploy itself returned a 500 on every page once a worker restarted: a fault in OPcache preload that Mercure's services exposed. [FrankenPHP in worker mode](/log/worker-mode) has the trace and the fix.

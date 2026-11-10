@@ -21,7 +21,7 @@ First I added a status after rejected: refunded. A rejected item now holds its q
 
 Fixing a rule doesn't fix the orders already saved under the old one. So I added `app:refresh-order-status`. It walks the orders, oldest first, and re-derives every status from the bottom up: each purchase order from its items, each line from its purchase order items, the order from its lines. It prints every status it changes and dispatches the domain events, so each correction lands in the status log like any other change.
 
-Three quick fixes followed. One gave the command an offset, to work through the orders in batches. One made the order's roll-up start from its first line rather than from cancelled. The third was the real find: a line on a cancelled order with nothing on a purchase order rolled up to pending, so re-deriving a cancelled order's statuses brought its lines back to life. Now a line on a cancelled order stays cancelled.
+Running it found a real gap: a line on a cancelled order with nothing on a purchase order rolled up to pending, so re-deriving a cancelled order's statuses brought its lines back to life. Now a line on a cancelled order stays cancelled.
 
 That fix had a cost of its own. The new check reads the line's order, and a line being created didn't have one yet, so placing an order failed. The fix was to attach the line to its order before building it, and orders flowed again.
 
@@ -35,6 +35,6 @@ A week later order processing got two fixes. A line with quantity outstanding bu
 
 ## Refunded and sourced again
 
-Apart from a refund command that was added and removed that Friday, nothing acted on the refunded status until mid-October, three and a half weeks later. `app:refund-purchase-orders` takes rejected purchase orders, refunds their items, and runs the sourcing again for the order. The refund frees the line's quantity, so the line goes to whichever supplier is cheapest with the stock now, which can be the supplier that rejected it.
+In mid-October the refunded status got its command. `app:refund-purchase-orders` takes rejected purchase orders, refunds their items, and runs the sourcing again for the order. The refund frees the line's quantity, so the line goes to whichever supplier is cheapest with the stock now, which can be the supplier that rejected it.
 
 *Update, November 2026: ADR 002 records the allocation rules, which haven't changed in substance: the whole outstanding quantity on one supplier, or the line is skipped. The build command now also retries orders that still have quantity outstanding, after the new ones, so a skipped line no longer waits for someone to click Allocate.*
