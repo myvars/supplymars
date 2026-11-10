@@ -38,6 +38,17 @@ final class HomeControllerTest extends WebTestCase
             ->assertSee('Ebuyer');
     }
 
+    public function testShowStack(): void
+    {
+        $this->browser()
+            ->get('/stack')
+            ->assertSuccessful()
+            ->assertSee('How SupplyMars Is Built')
+            ->assertSee('A Modular Monolith')
+            ->assertSee('Leaning on the Framework')
+            ->assertSee('Merge Is Deploy');
+    }
+
     public function testShowContact(): void
     {
         $this->browser()

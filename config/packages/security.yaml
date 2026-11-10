@@ -69,7 +69,7 @@ security:
         - { path: ^/reset-password, roles: PUBLIC_ACCESS }
         - { path: ^/verify, roles: PUBLIC_ACCESS }
         - { path: ^/$, roles: PUBLIC_ACCESS }
-        - { path: ^/(about|contact|privacy|terms)$, roles: PUBLIC_ACCESS }
+        - { path: ^/(about|contact|privacy|terms|stack)$, roles: PUBLIC_ACCESS }
         - { path: ^/log(/.*)?$, roles: PUBLIC_ACCESS }
         - { path: ^/help, roles: PUBLIC_ACCESS }
         - { path: ^/health(/backup)?$, roles: PUBLIC_ACCESS }
