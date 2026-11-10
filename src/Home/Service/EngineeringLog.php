@@ -47,6 +47,7 @@ final readonly class EngineeringLog
         $environment->addExtension(new CommonMarkCoreExtension());
         $environment->addExtension(new GithubFlavoredMarkdownExtension());
         $environment->addExtension(new DefaultAttributesExtension());
+
         $this->converter = new MarkdownConverter($environment);
     }
 
