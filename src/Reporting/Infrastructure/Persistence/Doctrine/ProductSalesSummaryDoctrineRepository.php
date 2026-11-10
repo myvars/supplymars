@@ -65,7 +65,7 @@ class ProductSalesSummaryDoctrineRepository extends ServiceEntityRepository impl
             ->addSelect('ps.salesValue')
             ->addSelect('ps.salesCost')
             ->addSelect('(ps.salesValue - ps.salesCost) AS salesProfit')
-            ->addSelect('(CASE WHEN ps.salesCost > 0 THEN ((ps.salesValue - ps.salesCost) / ps.salesCost)*100 ELSE 0 END) AS salesMargin')
+            ->addSelect('(CASE WHEN ps.salesValue > 0 THEN ((ps.salesValue - ps.salesCost) / ps.salesValue) * 100 ELSE 0 END) AS salesMargin')
             ->andWhere('ps.salesId = :salesId')
             ->andWhere('ps.salesType = :salesType')
             ->andWhere('ps.duration = :duration')
