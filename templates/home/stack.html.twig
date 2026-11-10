@@ -26,7 +26,7 @@
             <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">Stack &amp; Architecture</p>
             <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-4">How SupplyMars Is Built</h1>
             <p class="text-base sm:text-lg text-gray-400 max-w-xl mx-auto">
-                The design, the stack, the checks and the delivery, as they stand today, and why each was chosen.
+                The design, the stack, the checks and the delivery as they stand today, and why each was chosen.
             </p>
         </div>
     </section>
@@ -36,7 +36,10 @@
         <div class="mx-auto max-w-3xl px-6">
             <div class="space-y-5 text-gray-400 leading-relaxed text-base lg:text-lg" data-aos="fade-up">
                 <p>
-                    SupplyMars is a modular monolith in strictly typed PHP: a Symfony application divided into bounded contexts, with a rich domain model, a server-rendered interface and one container image for the site and its worker. It is built to be read and changed by one person or a small team, so the bias throughout is towards fewer moving parts, framework features over home-grown infrastructure, and rules the build enforces rather than ones people have to remember.
+                    SupplyMars runs a Mars-themed online retailer around the clock: customers order, purchase orders go to suppliers, stock and prices move, and staff manage it all from a server-rendered back office. Underneath is a modular monolith in strictly typed PHP 8.5 and Symfony 8.1, built around its domain model and shipped as a single container image.
+                </p>
+                <p>
+                    Three choices shape everything below: few moving parts, the framework before custom code, and rules the build enforces rather than rules people have to remember.
                 </p>
                 <p>
                     This page is the overview. The <a href="{{ docs }}README.md" target="_blank" class="{{ link }}">documentation</a> holds the detail and the <a href="{{ docs }}README.md#architecture-decision-records" target="_blank" class="{{ link }}">architecture decision records</a> hold the reasoning; how it got here is in the <a href="{{ path('app_log_index') }}" data-turbo-frame="body" class="{{ link }}">engineering log</a>.
@@ -52,19 +55,17 @@
             { group: 'Async & operations', items: ['Messenger', 'Scheduler', 'Mercure', 'Flysystem', 'Sentry'] },
             { group: 'Quality', items: ['PHPUnit 13', 'ParaTest', 'Foundry', 'Zenstruck Browser', 'PHPStan', 'Rector', 'Deptrac', 'PHP CS Fixer'] },
         ] %}
-        <div class="mx-auto max-w-(--breakpoint-xl) px-6 mt-14">
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" data-aos="fade-up" data-aos-delay="100">
+        <div class="mx-auto max-w-3xl px-6 mt-12">
+            <dl class="rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] divide-y divide-white/[0.06]" data-aos="fade-up" data-aos-delay="100">
                 {% for row in strip %}
-                    <div class="rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] p-6">
-                        <p class="text-xs font-semibold uppercase tracking-widest text-gray-500 mb-3">{{ row.group }}</p>
-                        <ul class="flex flex-wrap gap-2">
-                            {% for item in row.items %}
-                                <li class="rounded-md bg-white/[0.04] ring-1 ring-white/[0.08] px-2.5 py-1 text-sm text-gray-300">{{ item }}</li>
-                            {% endfor %}
-                        </ul>
+                    <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-6 px-6 py-4">
+                        <dt class="sm:w-52 shrink-0 text-xs font-semibold uppercase tracking-widest text-orange-500/80">{{ row.group }}</dt>
+                        <dd class="text-sm sm:text-base text-gray-300 leading-relaxed">
+                            {% for item in row.items %}<span class="whitespace-nowrap">{{ item }}{% if not loop.last %}<span class="mx-2 text-gray-600" aria-hidden="true">&middot;</span>{% endif %}</span> {% endfor %}
+                        </dd>
                     </div>
                 {% endfor %}
-            </div>
+            </dl>
         </div>
     </section>
 
@@ -79,7 +80,7 @@
             </div>
             <div class="space-y-5 text-gray-400 leading-relaxed text-base lg:text-lg" data-aos="fade-up" data-aos-delay="100">
                 <p>
-                    One deployable application, divided into bounded contexts that each own their part of the business. A monolith keeps transactions, refactoring and deployment simple; the boundaries keep it from turning into one large ball of code. Should a context ever need to stand alone, its edges are already drawn.
+                    One deployable application, divided into bounded contexts that each own their part of the business. A monolith keeps transactions, refactoring and deployment simple; the boundaries keep it from becoming a big ball of mud. Should a context ever need to stand alone, its edges are already drawn.
                 </p>
             </div>
 
@@ -121,7 +122,7 @@
         { icon: 'bi:box-seam-fill', colour: 'orange', title: 'Rich entities', body: 'An order knows when it can be cancelled; a product knows where its markup comes from. Handlers ask the model rather than decide for it, so a web form, the API and a console command all get the same answer.' },
         { icon: 'bi:check-circle-fill', colour: 'emerald', title: 'Built whole', body: 'Entities are created through named constructors, such as CustomerOrder::createFromCustomer() and Product::create(). Orders, purchase orders and reviews have private constructors, so there is no other way to build one, and the test factories go through the same constructors.' },
         { icon: 'bi:hash', colour: 'violet', title: 'Typed public IDs', body: 'Every entity behind a URL has a ULID public ID with its own type, set in the constructor. Auto-increment keys stay internal, URLs reveal no counts, and an order\'s ID cannot be passed where a purchase order\'s is expected.' },
-        { icon: 'bi:currency-pound', colour: 'amber', title: 'Value objects', body: 'Small immutable values for the things that change: a status change, a cost change, a stock change, a price model. Prices are calculated with bcmath on decimal strings, never floats.' },
+        { icon: 'bi:currency-pound', colour: 'amber', title: 'Value objects', body: 'Immutable values for each kind of change: a status change, a cost change, a stock change, a price model. Prices are calculated with bcmath on decimal strings, never floats.' },
         { icon: 'bi:lightning-fill', colour: 'sky', title: 'Domain events', body: 'Aggregates raise immutable events that carry IDs, not live entities. Other contexts react to them: the audit trail, price recalculation, live pages. What must succeed at once is sync; what can lag or retry goes on the queue.' },
         { icon: 'bi:database-fill', colour: 'cyan', title: 'Repository interfaces', body: 'Each context declares the queries it offers as an interface in its domain; the Doctrine class behind it is a detail. When another context needs a query, the method is added to the interface.' },
     ] %}
@@ -133,7 +134,7 @@
                     A Model That Owns Its Rules
                 </h2>
                 <p class="text-gray-400 leading-relaxed text-base lg:text-lg">
-                    The business is genuinely complicated: products sourced from several suppliers, an order line's status derived from the purchase order items beneath it, markups that cascade from category to product. That complexity lives in the entities, where it can be tested directly, rather than spread across services and listeners.
+                    The business is complicated: products sourced from several suppliers, an order line's status derived from the purchase order items beneath it, markups that cascade from category to product. That complexity lives in the entities, where it can be tested directly, rather than spread across services and listeners.
                 </p>
             </div>
             {{ _self.cards(domain) }}
@@ -170,8 +171,8 @@
         { name: 'Security', body: 'Form login with remember-me and throttling, access tokens for the API, a role hierarchy and voters.' },
         { name: 'Doctrine', body: 'Attribute mapping, repositories behind domain interfaces, and every schema change as a migration.' },
         { name: 'EventDispatcher', body: 'Domain events are dispatched once the change is saved. Sync listeners react straight away, in any context; async events go on to Messenger.' },
-        { name: 'Messenger & Scheduler', body: 'Async work and every recurring job, through one queue and one worker.' },
-        { name: 'Lock & RateLimiter', body: 'Mutual exclusion and rate limits from the framework, never hand-built.' },
+        { name: 'Messenger & Scheduler', body: 'The async queue and the recurring jobs, both consumed by one worker.' },
+        { name: 'Lock & RateLimiter', body: 'Locks for scheduled jobs and live refreshes; rate limits on sign-in, registration and password reset.' },
         { name: 'Symfony UX', body: 'Twig Components, Turbo, Stimulus, Icons and Chart.js, served by Asset Mapper.' },
     ] %}
     <section class="bg-gray-950 py-24 lg:py-32 overflow-hidden">
@@ -202,7 +203,7 @@
         { icon: 'bi:inbox-fill', colour: 'orange', title: 'Messenger on a database queue', body: 'Async work is a row in MySQL, consumed by a worker. The workload doesn\'t need a broker, so there isn\'t one to run, secure and back up. RabbitMQ stays one setting away, behind a Compose profile, and the code doesn\'t change because Messenger hides the transport.', adr: '013' },
         { icon: 'bi:clock-history', colour: 'violet', title: 'Symfony Scheduler, not cron', body: 'Every scheduled job is listed in one class and runs inside the Messenger worker, one at a time, with its state in Redis and a lock against double runs. No cron daemon in the application image, and no jobs colliding on the same minute.', adr: '015' },
         { icon: 'bi:arrow-repeat', colour: 'sky', title: 'Live pages with Mercure', body: 'FrankenPHP\'s built-in Mercure hub pushes changes to the browser. A page refresh is a public signal with no data, so each viewer reloads through their own access check; toasts to a user are private. Refreshes are queued and deduplicated, one per order however many events a change raises.', adr: '017' },
-        { icon: 'bi:truck', colour: 'emerald', title: 'A business that runs itself', body: 'Console commands simulate the business with realistic timing: customers place orders at random through the day, purchase orders are raised and accepted, suppliers ship and deliver, stock and prices move. The live site always has fresh data, and the order, purchasing and fulfilment lifecycle runs around the clock.', adr: '003' },
+        { icon: 'bi:truck', colour: 'emerald', title: 'A simulated business', body: 'Console commands simulate the business with realistic timing: customers place orders at random through the day, purchase orders are raised and accepted, suppliers ship and deliver, stock and prices move. The live site always has fresh data, and the order, purchasing and fulfilment lifecycle runs around the clock.', adr: '003' },
     ] %}
     <section class="bg-gray-900 py-24 lg:py-32 overflow-hidden">
         <div class="mx-auto max-w-(--breakpoint-xl) px-6">
@@ -212,7 +213,7 @@
                     Work That Happens Off the Request
                 </h2>
                 <p class="text-gray-400 leading-relaxed text-base lg:text-lg">
-                    Mail, scheduled jobs and live updates all go through Symfony's own components, so one worker and one set of conventions cover them all.
+                    Mail, recurring jobs, live refreshes and the simulation all run off the request, through one queue and one worker.
                 </p>
             </div>
             {{ _self.cards(async, 2) }}
@@ -223,10 +224,10 @@
     {% set frontend = [
         { icon: 'bi:window-desktop', colour: 'orange', title: 'Server-rendered, not an SPA', body: 'Twig renders every page and Symfony Forms validate on the server. There is no second application in JavaScript, no client state to keep in sync and no API written only for the UI.', adr: '008' },
         { icon: 'bi:lightning', colour: 'sky', title: 'Turbo and Stimulus', body: 'Turbo gives app-like navigation: frames for the main content and for modals in a native <dialog>, streams for flashes, morphing for live refreshes. Small Stimulus controllers add behaviour where HTML alone isn\'t enough.', adr: '007' },
-        { icon: 'bi:box-seam', colour: 'emerald', title: 'Asset Mapper, no bundler', body: 'JavaScript is served as native ES modules through an import map, and Tailwind is compiled by its standalone binary. No Node toolchain, no Webpack or Vite build, nothing to keep patched.' },
+        { icon: 'bi:box-seam', colour: 'emerald', title: 'Asset Mapper, no bundler', body: 'JavaScript is served as native ES modules through an import map, and Tailwind is compiled by its standalone binary. No Node toolchain, no Webpack or Vite build, no node_modules to keep patched.' },
         { icon: 'bi:palette-fill', colour: 'pink', title: 'Tailwind and the Shadcn kit', body: 'UI primitives come from the Shadcn kit of Symfony UX Toolkit, copied into the project as Twig components. The project owns the files and edits them freely, with no dependency on the toolkit at runtime; in-house components are built from the kit\'s pieces.', adr: '012' },
         { icon: 'bi:graph-up', colour: 'violet', title: 'Charts and icons', body: 'Chart.js through Symfony UX for the dashboards and reports, and UX Icons with every icon committed to the repository as SVG.' },
-        { icon: 'bi:toggle-on', colour: 'amber', title: 'Dark by default', body: 'A dark Martian theme by default, a light mode beside it, and every screen responsive from a phone to a wide monitor.' },
+        { icon: 'bi:toggle-on', colour: 'amber', title: 'Dark by default', body: 'A dark Martian theme, a light mode beside it, and every screen responsive from a phone to a wide monitor.' },
     ] %}
     <section class="bg-gray-950 py-24 lg:py-32 overflow-hidden">
         <div class="mx-auto max-w-(--breakpoint-xl) px-6">
@@ -236,7 +237,7 @@
                     HTML Over the Wire
                 </h2>
                 <p class="text-gray-400 leading-relaxed text-base lg:text-lg">
-                    A staff tool lives on forms, tables and state changes, and Symfony is very good at those. Rendering on the server keeps one source of truth and one language for the rules, while Hotwire makes it feel like an application.
+                    A staff tool lives on forms, tables and state changes, and Symfony handles those well. Rendering on the server keeps one source of truth and one language for the rules; Turbo and Stimulus (Hotwire) make it feel like a single-page app.
                 </p>
             </div>
             {{ _self.cards(frontend) }}
@@ -247,9 +248,9 @@
     {% set runtime = [
         { icon: 'bi:server', colour: 'orange', title: 'One FrankenPHP image', body: 'One Dockerfile on an exactly pinned FrankenPHP base, with development and production stages. FrankenPHP is the web server and PHP in one, so nginx and PHP-FPM are gone; the same production image runs the Messenger worker as a second container. Worker mode keeps the booted kernel in memory, restarting each worker after 500 requests.', adr: '016' },
         { icon: 'bi:grid-fill', colour: 'sky', title: 'Docker Compose', body: 'One set of Compose files describes the app, the worker, MySQL 8.4 and Redis 8.8, with an override for each environment. CI runs the checks in it, production runs it from pulled images, and development can run all of it or only the services behind symfony serve.' },
-        { icon: 'bi:cloud-fill', colour: 'violet', title: 'A small, honest host', body: 'Two stacks, the live site and the public playground, share one small AWS Lightsail instance behind a host Caddy that terminates TLS. Product images and backups live in S3. Sized to the load, not to a diagram.' },
+        { icon: 'bi:cloud-fill', colour: 'violet', title: 'One small host', body: 'Two stacks, the live site and the public playground, share one small AWS Lightsail instance behind a host Caddy that terminates TLS. Product images and backups live in S3. Sized to the load, not to a diagram.' },
         { icon: 'bi:database-fill', colour: 'cyan', title: 'MySQL and Redis', body: 'MySQL holds the data and the queue; schema changes go through Doctrine migrations only. Redis holds the cache, sessions, the scheduler\'s state and the locks that deduplicate live refreshes.' },
-        { icon: 'bi:speedometer2', colour: 'emerald', title: 'Monitoring', body: 'Sentry reports uncaught exceptions in production, and Sentry Uptime calls the site. /health checks the database, Redis and the queue for the container healthcheck and the uptime monitor; /health/backup fails if no backup has landed for 26 hours, kept apart so a missed backup cannot mark the site down.' },
+        { icon: 'bi:speedometer2', colour: 'emerald', title: 'Monitoring', body: 'Sentry reports uncaught exceptions in production, and Sentry Uptime checks the site from outside. /health checks the database, Redis and the queue for the container healthcheck and the uptime monitor; /health/backup fails if no backup has landed for 26 hours, kept apart so a missed backup cannot mark the site down.' },
         { icon: 'bi:arrow-counterclockwise', colour: 'amber', title: 'Backups and the playground', body: 'A nightly database backup goes to S3. The public playground, where anyone can sign in as staff and try it out, is rebuilt every night from live\'s backup, so nothing a visitor does there lasts.' },
     ] %}
     <section class="bg-gray-900 py-24 lg:py-32 overflow-hidden">
@@ -260,13 +261,13 @@
                     Containerised, End to End
                 </h2>
                 <p class="text-gray-400 leading-relaxed text-base lg:text-lg">
-                    Every environment is built from the same Dockerfile, on the same pinned base, and described by the same Compose files. What works on a laptop works in CI and in production, and a rollback is a checkout of the previous commit.
+                    Development, CI and production are built from one Dockerfile on the same pinned base and described by the same Compose files, so what works on a laptop works in production.
                 </p>
             </div>
             {{ _self.cards(runtime) }}
             <div class="mt-12 mx-auto max-w-3xl space-y-5 text-gray-400 leading-relaxed text-base lg:text-lg" data-aos="fade-up">
                 <p>
-                    Worker mode has one rule that matters more than any other: a service must never keep a request's data in a property, because the same service object serves the next request too. Services read the user or the request when they need them, a service that caches on purpose clears itself between requests, and a test fails the build if one doesn't (<a href="{{ docs }}03-architecture.md#state-between-requests" target="_blank" class="{{ link }}">state between requests</a>).
+                    Worker mode has one rule above the rest: a service must never keep a request's data in a property, because the same service object serves the next request too. Services read the user or the request when they need them, a service that caches on purpose clears itself between requests, and a test fails the build if one doesn't (<a href="{{ docs }}03-architecture.md#state-between-requests" target="_blank" class="{{ link }}">state between requests</a>).
                 </p>
             </div>
         </div>
@@ -341,7 +342,7 @@
     {% set pipeline = [
         { step: 'Test', body: 'On every pull request and every push to main: builds the image with a layer cache, then runs each step of make check.' },
         { step: 'Publish', body: 'On main only: builds the production images and pushes them to the GitHub Container Registry, tagged with the commit SHA.' },
-        { step: 'Deploy', body: 'Connects to the server, checks out that commit, pulls its images and restarts the live and playground stacks; one container runs the migrations on start. The job then checks that /health answers and no migration is pending. A newer commit already deployed is never rolled back.' },
+        { step: 'Deploy', body: 'Connects to the server, checks out that commit, pulls its images and restarts the live and playground stacks; one container runs the migrations on start. The job then checks that /health answers and no migration is pending. If a newer commit is already live, an older job stops rather than roll it back.' },
     ] %}
     <section class="bg-gray-950 py-24 lg:py-32 overflow-hidden">
         <div class="mx-auto max-w-(--breakpoint-xl) px-6">
@@ -378,19 +379,19 @@
     {# ── How the work is done ─────────────────────────────────────────────── #}
     {% set process = [
         { icon: 'bi:github', colour: 'orange', title: 'Issues and pull requests', body: 'Work is planned as GitHub issues, and every change arrives as a pull request from its own branch, saying what changed and why. Nothing is published or deployed without passing CI.' },
-        { icon: 'bi:card-text', colour: 'violet', title: 'Decisions written down', body: 'Seventeen architecture decision records explain the choices that shape the system, with the alternatives and their costs. Before a non-obvious area changes, its ADR is read first.' },
+        { icon: 'bi:card-text', colour: 'violet', title: 'Decisions written down', body: 'The architecture decision records explain the choices that shape the system, with the alternatives and their costs. A non-obvious area isn\'t changed until its ADR has been read.' },
         { icon: 'bi:folder', colour: 'sky', title: 'Docs as the source of truth', body: 'The docs describe the system as it is today, and each entry in their index says when to read it. They are updated with the code they describe.' },
-        { icon: 'bi:chat-dots-fill', colour: 'emerald', title: 'AI under review', body: 'Claude Code writes most of the code and tests, guided by a CLAUDE.md that summarises the rules and links to the docs. I set the direction, review every change and remain responsible for the result.' },
+        { icon: 'bi:chat-dots-fill', colour: 'emerald', title: 'AI under review', body: 'For most of its life SupplyMars was written by hand, with AI for the occasional question. Since early 2026 Claude Code has written most of the code and tests, working from a CLAUDE.md that sets out the rules and points to the docs. I set the direction, review every change and remain responsible for the result.' },
     ] %}
     <section class="bg-gray-900 py-24 lg:py-32 overflow-hidden">
         <div class="mx-auto max-w-(--breakpoint-xl) px-6">
             <div class="mb-12 lg:mb-16 mx-auto max-w-3xl" data-aos="fade-up">
-                <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">Delivery</p>
+                <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4">Ways of Working</p>
                 <h2 class="text-3xl sm:text-4xl font-bold tracking-tight text-white mb-6">
                     How the Work Is Done
                 </h2>
                 <p class="text-gray-400 leading-relaxed text-base lg:text-lg">
-                    Run as if it were a team project, because the habits are what make a codebase easy to hand over.
+                    I run it as if it were a team project, because the habits are what make a codebase easy to hand over.
                 </p>
             </div>
             {{ _self.cards(process, 2) }}
@@ -401,10 +402,10 @@
     {% set principles = [
         { title: 'Use the framework first', body: 'Before building infrastructure or adding a library, look for the Symfony component that already does it: locks, rate limits, scheduling, queues, HTTP.' },
         { title: 'Keep the rules in the model', body: 'Business rules belong in the entities, behind one path for every write, so no caller can go around them.' },
-        { title: 'Enforce boundaries in the build', body: 'A rule that matters is checked by a tool on every change, not left to code review.' },
+        { title: 'Let the build enforce the rules', body: 'A rule that matters is checked by a tool on every change, not left to code review.' },
         { title: 'Render on the server', body: 'Add JavaScript for behaviour, never for business logic or to duplicate state.' },
-        { title: 'Fewer moving parts', body: 'One image, one database, one queue, one worker, until the load says otherwise.' },
-        { title: 'The same everywhere', body: 'Development, CI and production share one Dockerfile, one set of Compose files and the same checks, so surprises surface early.' },
+        { title: 'Keep the moving parts few', body: 'One image, one database, one queue, one worker, until the load says otherwise.' },
+        { title: 'Run the same everywhere', body: 'Development, CI and production share one Dockerfile, one set of Compose files and the same checks, so surprises surface early.' },
         { title: 'Write it down', body: 'Decisions in ADRs, behaviour in the docs, the story in the log.' },
     ] %}
     <section class="bg-gray-950 py-24 lg:py-32 overflow-hidden">
