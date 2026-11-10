@@ -132,6 +132,21 @@ final class EngineeringLogTest extends TestCase
         self::assertStringNotContainsString('javascript:', $html);
     }
 
+    public function testALinkToAnotherPageOfTheSiteLeavesTheBodyFrame(): void
+    {
+        $this->write('2024-03-31-a-post.md', str_replace(
+            '[A link](javascript:alert(1))',
+            '[Another post](/log/another-post) and [GitHub](https://github.com)',
+            self::VALID,
+        ));
+        $log = $this->log();
+
+        $html = $log->render($log->all()[0]);
+
+        self::assertStringContainsString('<a data-turbo-frame="_top" href="/log/another-post">', $html);
+        self::assertStringContainsString('<a href="https://github.com">', $html);
+    }
+
     /** @return iterable<string, array{string, string, string}> */
     public static function brokenPosts(): iterable
     {

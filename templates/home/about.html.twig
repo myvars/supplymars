@@ -297,7 +297,7 @@
                     How software is delivered matters as much as how it is written. Fast iteration, refactoring, automated testing, clean version control and sensible tooling are part of doing the work properly.
                 </p>
                 <p>
-                    You can explore the engineering behind SupplyMars on <a href="https://github.com/myvars/supplymars" target="_blank" class="text-orange-400 hover:text-orange-300 transition-colors focus-ring">GitHub</a>, including the architecture decisions, test suite and infrastructure, see what it uses and why on the <a href="{{ path('app_stack_page') }}" data-turbo-frame="body" class="text-orange-400 hover:text-orange-300 transition-colors focus-ring">stack page</a>, and read how it was built, and what went wrong along the way, in the <a href="{{ path('app_log_index') }}" data-turbo-frame="body" class="text-orange-400 hover:text-orange-300 transition-colors focus-ring">engineering log</a>.
+                    You can explore the engineering behind SupplyMars on <a href="https://github.com/myvars/supplymars" target="_blank" class="text-orange-400 hover:text-orange-300 transition-colors focus-ring">GitHub</a>, including the architecture decisions, test suite and infrastructure, see what it uses and why on the <a href="{{ path('app_stack_page') }}" data-turbo-frame="_top" class="text-orange-400 hover:text-orange-300 transition-colors focus-ring">stack page</a>, and read how it was built, and what went wrong along the way, in the <a href="{{ path('app_log_index') }}" data-turbo-frame="_top" class="text-orange-400 hover:text-orange-300 transition-colors focus-ring">engineering log</a>.
                 </p>
             </div>
         </div>
@@ -357,7 +357,7 @@
                     <twig:ux:icon name="bi:envelope-fill" class="h-5 w-5" />
                     Get in Touch
                 </a>
-                <a href="{{ path('app_catalog_product_index') }}"
+                <a href="{{ path('app_catalog_product_index') }}" data-turbo-frame="_top"
                    class="inline-flex items-center gap-2 px-7 py-3 text-sm sm:text-base font-semibold text-gray-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg ring-1 ring-white/[0.1] hover:ring-white/[0.18] transition-all duration-200 active:scale-[0.98]"
                    data-turbo-prefetch="false">
                     Explore the Platform

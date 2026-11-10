@@ -24,7 +24,7 @@
                         {% for post in posts %}
                             <li>
                                 <a href="{{ path('app_log_show', { slug: post.slug }) }}"
-                                   data-turbo-frame="body"
+                                   data-turbo-frame="_top"
                                    class="group block rounded-lg border border-white/[0.06] bg-gray-900 p-6 transition-colors hover:border-orange-500/40 focus-ring">
                                     <p class="text-xs font-semibold uppercase tracking-widest text-orange-500">{{ post.period }}</p>
                                     <h3 class="mt-2 text-xl sm:text-2xl font-bold tracking-tight text-white group-hover:text-orange-300 transition-colors">{{ post.title }}</h3>

@@ -42,7 +42,7 @@
                     Strictly typed, modern PHP and Symfony, built around a rich domain model, rendered on the server and shipped as one container image. Three choices run through all of it: few moving parts, the framework before custom code, and rules the build enforces rather than rules people have to remember.
                 </p>
                 <p>
-                    This page is the overview. The <a href="{{ docs }}README.md" target="_blank" class="{{ link }}">documentation</a> holds the detail, the <a href="{{ docs }}README.md#architecture-decision-records" target="_blank" class="{{ link }}">decision records</a> the reasoning, and the <a href="{{ path('app_log_index') }}" data-turbo-frame="body" class="{{ link }}">engineering log</a> how it got here.
+                    This page is the overview. The <a href="{{ docs }}README.md" target="_blank" class="{{ link }}">documentation</a> holds the detail, the <a href="{{ docs }}README.md#architecture-decision-records" target="_blank" class="{{ link }}">decision records</a> the reasoning, and the <a href="{{ path('app_log_index') }}" data-turbo-frame="_top" class="{{ link }}">engineering log</a> how it got here.
                 </p>
             </div>
         </div>
@@ -467,12 +467,12 @@
                     View on GitHub
                 </a>
                 <a href="{{ path('app_log_index') }}"
-                   data-turbo-frame="body"
+                   data-turbo-frame="_top"
                    class="inline-flex items-center gap-2 px-7 py-3 text-sm sm:text-base font-semibold text-gray-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg ring-1 ring-white/[0.1] hover:ring-white/[0.18] transition-all duration-200 active:scale-[0.98] focus-ring">
                     Engineering Log
                 </a>
                 <a href="{{ path('app_about_page') }}"
-                   data-turbo-frame="body"
+                   data-turbo-frame="_top"
                    class="inline-flex items-center gap-2 px-7 py-3 text-sm sm:text-base font-semibold text-gray-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg ring-1 ring-white/[0.1] hover:ring-white/[0.18] transition-all duration-200 active:scale-[0.98] focus-ring">
                     About Me
                 </a>
