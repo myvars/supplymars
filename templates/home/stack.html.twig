@@ -35,37 +35,47 @@
     <section class="bg-gray-950 pt-8 pb-16 lg:pb-24">
         <div class="mx-auto max-w-3xl px-6">
             <div class="space-y-5 text-gray-400 leading-relaxed text-base lg:text-lg" data-aos="fade-up">
-                <p>
-                    SupplyMars runs a Mars-themed online retailer around the clock: customers order, purchase orders go to suppliers, stock and prices move, and staff manage it all from a server-rendered back office. Underneath is a modular monolith in strictly typed PHP 8.5 and Symfony 8.1, built around its domain model and shipped as a single container image.
+                <p class="text-lg lg:text-xl text-gray-200 leading-relaxed">
+                    SupplyMars is a working e-commerce back office &ndash; catalogue, pricing, multi&#8209;supplier purchasing, fulfilment and reporting &ndash; with a simulated business trading through it around the clock.
                 </p>
                 <p>
-                    Three choices shape everything below: few moving parts, the framework before custom code, and rules the build enforces rather than rules people have to remember.
+                    It is a modular monolith in strictly typed PHP and Symfony, built around a rich domain model, rendered on the server and shipped as one container image. Three choices run through all of it: few moving parts, the framework before custom code, and rules the build enforces rather than rules people have to remember.
                 </p>
                 <p>
-                    This page is the overview. The <a href="{{ docs }}README.md" target="_blank" class="{{ link }}">documentation</a> holds the detail and the <a href="{{ docs }}README.md#architecture-decision-records" target="_blank" class="{{ link }}">architecture decision records</a> hold the reasoning; how it got here is in the <a href="{{ path('app_log_index') }}" data-turbo-frame="body" class="{{ link }}">engineering log</a>.
+                    This page is the overview. The <a href="{{ docs }}README.md" target="_blank" class="{{ link }}">documentation</a> holds the detail, the <a href="{{ docs }}README.md#architecture-decision-records" target="_blank" class="{{ link }}">decision records</a> the reasoning, and the <a href="{{ path('app_log_index') }}" data-turbo-frame="body" class="{{ link }}">engineering log</a> how it got here.
                 </p>
             </div>
         </div>
 
         {% set strip = [
-            { group: 'Language & framework', items: ['PHP 8.5', 'Symfony 8.1', 'Doctrine ORM 3', 'Twig 3'] },
-            { group: 'Data', items: ['MySQL 8.4', 'Redis 8.8', 'Amazon S3'] },
-            { group: 'Runtime', items: ['FrankenPHP', 'Docker Compose', 'Caddy', 'AWS Lightsail'] },
-            { group: 'Frontend', items: ['Turbo', 'Stimulus', 'Asset Mapper', 'Tailwind CSS 4', 'Shadcn kit', 'Chart.js'] },
-            { group: 'Async & operations', items: ['Messenger', 'Scheduler', 'Mercure', 'Flysystem', 'Sentry'] },
-            { group: 'Quality', items: ['PHPUnit 13', 'ParaTest', 'Foundry', 'Zenstruck Browser', 'PHPStan', 'Rector', 'Deptrac', 'PHP CS Fixer'] },
+            { group: 'Language & framework', icon: 'bi:code-slash', items: [['PHP', '8.5'], ['Symfony', '8.1'], ['Doctrine ORM', '3'], ['Twig', '3']] },
+            { group: 'Data', icon: 'bi:database-fill', items: [['MySQL', '8.4'], ['Redis', '8.8'], ['Amazon S3']] },
+            { group: 'Runtime', icon: 'bi:cloud-fill', items: [['FrankenPHP'], ['Docker Compose'], ['Caddy'], ['AWS Lightsail']] },
+            { group: 'Frontend', icon: 'bi:window-desktop', items: [['Turbo'], ['Stimulus'], ['Asset Mapper'], ['Tailwind CSS', '4'], ['Shadcn kit'], ['Chart.js']] },
+            { group: 'Async & operations', icon: 'bi:lightning-fill', items: [['Messenger'], ['Scheduler'], ['Mercure'], ['Flysystem'], ['Sentry']] },
+            { group: 'Quality', icon: 'bi:shield-check', items: [['PHPUnit', '13'], ['ParaTest'], ['Foundry'], ['Zenstruck Browser'], ['PHPStan'], ['Rector'], ['Deptrac'], ['PHP CS Fixer']] },
         ] %}
-        <div class="mx-auto max-w-3xl px-6 mt-12">
-            <dl class="rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] divide-y divide-white/[0.06]" data-aos="fade-up" data-aos-delay="100">
+        <div class="mx-auto max-w-(--breakpoint-xl) px-6 mt-14">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" data-aos="fade-up" data-aos-delay="100">
                 {% for row in strip %}
-                    <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-6 px-6 py-4">
-                        <dt class="sm:w-52 shrink-0 text-xs font-semibold uppercase tracking-widest text-orange-500/80">{{ row.group }}</dt>
-                        <dd class="text-sm sm:text-base text-gray-300 leading-relaxed">
-                            {% for item in row.items %}<span class="whitespace-nowrap">{{ item }}{% if not loop.last %}<span class="mx-2 text-gray-600" aria-hidden="true">&middot;</span>{% endif %}</span> {% endfor %}
-                        </dd>
+                    <div class="rounded-xl bg-gray-800/40 ring-1 ring-white/[0.06] p-6">
+                        <div class="mb-4 flex items-center gap-3">
+                            <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-500/10">
+                                {{ ux_icon(row.icon, { class: 'h-4 w-4 text-orange-400' }) }}
+                            </span>
+                            <p class="text-sm font-semibold text-white">{{ row.group }}</p>
+                        </div>
+                        <ul class="flex flex-wrap gap-2">
+                            {% for item in row.items %}
+                                <li class="inline-flex items-baseline gap-1.5 rounded-full bg-white/[0.05] px-3 py-1 text-sm text-gray-200">
+                                    {{ item[0] }}
+                                    {% if item[1] is defined %}<span class="text-xs font-medium tabular-nums text-orange-300/80">{{ item[1] }}</span>{% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
                     </div>
                 {% endfor %}
-            </dl>
+            </div>
         </div>
     </section>
 
