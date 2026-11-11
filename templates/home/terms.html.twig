@@ -20,7 +20,7 @@
     </section>
 
     {# ── Content ────────────────────────────────────────────────────────── #}
-    <section class="bg-gray-950 pt-8 pb-24 lg:pb-32">
+    <section class="bg-gray-950 pt-8 pb-16 lg:pb-20">
         <div class="mx-auto max-w-3xl px-6">
             <div class="space-y-10" data-aos="fade-up">
 
@@ -73,20 +73,21 @@
                     </p>
                 </div>
 
-                <div>
-                    <h2 class="text-lg font-semibold text-white mb-3 border-l-4 border-orange-500 pl-4">Contact</h2>
-                    <p class="text-gray-400 leading-relaxed mb-6">
-                        If you have any questions regarding these terms, please contact us.
-                    </p>
-                    <a href="mailto:contact@supplymars.com"
-                       class="inline-flex items-center gap-2 px-6 py-3 text-sm font-semibold text-gray-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg ring-1 ring-white/[0.1] hover:ring-white/[0.18] transition-all duration-200 active:scale-[0.98]">
-                        Get in Touch
-                    </a>
-                </div>
-
             </div>
         </div>
     </section>
+
+    {% embed 'home/_closing_cta.html.twig' with {
+        heading: 'Questions?',
+        lede: 'If you have any questions about these terms, get in touch.',
+        email: true,
+        style: 'compact',
+    } %}
+        {% block actions %}
+            <twig:CtaButton href="mailto:contact@supplymars.com" icon="bi:envelope-fill" variant="primary">Get in Touch</twig:CtaButton>
+            <twig:CtaButton href="{{ path('app_privacy_page') }}" icon="bi:file-earmark-text-fill">Privacy Policy</twig:CtaButton>
+        {% endblock %}
+    {% endembed %}
 
     </div>
 {% endblock %}
