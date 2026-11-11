@@ -82,12 +82,15 @@ final class HomeControllerTest extends WebTestCase
 
     public function testHeroLeadsToThePlatformTheStackAndTheDeveloper(): void
     {
-        $crawler = $this->browser()->get('/')->assertSuccessful()->crawler();
+        $hero = $this->browser()->get('/')->assertSuccessful()->crawler()->filter('#hero');
 
         self::assertSame(
             ['Explore the Platform' => '/dashboard/', "How It's Built" => '/stack', 'About the Developer' => '/about'],
-            $this->ctaLinks($crawler->filter('section')->first()),
+            $this->ctaLinks($hero),
         );
+        $primary = $hero->filter('a[data-cta="primary"]');
+        self::assertCount(1, $primary);
+        self::assertSame('false', $primary->attr('data-turbo-prefetch'));
     }
 
     /**
@@ -102,9 +105,9 @@ final class HomeControllerTest extends WebTestCase
         $closing = $crawler->filter('#closing-cta');
 
         self::assertSame($expected, $this->ctaLinks($closing));
-        self::assertCount(1, $closing->filter('a[data-slot="button"].bg-orange-500'), 'One primary button');
+        self::assertCount(1, $closing->filter('a[data-cta="primary"]'), 'One primary button');
 
-        $closing->filter('a[data-slot="button"]')->each(function (Crawler $link): void {
+        $closing->filter('a[data-cta]')->each(function (Crawler $link): void {
             $href = (string) $link->attr('href');
             if (str_starts_with($href, 'http')) {
                 self::assertSame('_blank', $link->attr('target'), $href);
@@ -135,7 +138,7 @@ final class HomeControllerTest extends WebTestCase
     private function ctaLinks(Crawler $section): array
     {
         $links = [];
-        $section->filter('a[data-slot="button"]')->each(function (Crawler $link) use (&$links): void {
+        $section->filter('a[data-cta]')->each(function (Crawler $link) use (&$links): void {
             $links[trim($link->text())] = (string) $link->attr('href');
         });
 

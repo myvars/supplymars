@@ -1,14 +1,15 @@
 {# A call-to-action link on the dark public pages (home, About, Stack, log, Contact, legal), built on the kit's Button.
    Stacks full-width on mobile inside a flex-col sm:flex-row row. A path opens at the top of the page,
    an http(s) URL in a new tab; mailto: is left alone.
+   Renders data-cta="<variant>" (the kit's data-variant stays "default"); tests select on it.
    - href: path, URL or mailto:
    - icon: UX icon name
    - variant: primary (orange, one per row) | glass (default)
    Blocks: content (the label) #}
 {% props href, icon, variant = 'glass' %}
 {%- set styles = {
-    primary: 'bg-orange-500 text-white shadow-lg shadow-orange-500/25 hover:bg-orange-400 hover:shadow-lg',
-    glass: 'bg-white/[0.06] text-gray-300 ring-1 ring-white/[0.1] backdrop-blur-sm hover:bg-white/[0.1] hover:text-white hover:ring-white/[0.18]',
+    primary: 'bg-orange-500 text-white shadow-lg shadow-orange-500/25 hover:bg-orange-400',
+    glass: 'bg-white/[0.06] text-gray-300 shadow-none ring-1 ring-white/[0.1] backdrop-blur-sm hover:bg-white/[0.1] hover:text-white hover:ring-white/[0.18]',
 } -%}
 {%- set external = href starts with 'http' -%}
 {%- set label %}{% block content %}{% endblock %}{% endset -%}
@@ -20,6 +21,7 @@
         target: external ? '_blank' : false,
         rel: external ? 'noopener' : false,
         'data-turbo-frame': href starts with '/' ? '_top' : false,
+        'data-cta': variant,
     }) }}
 >
     <twig:ux:icon name="{{ icon }}" class="size-5" />
