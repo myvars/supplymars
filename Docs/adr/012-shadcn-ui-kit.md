@@ -56,6 +56,7 @@ The kit's components are primitives to compose. Where the same composition repea
 | `StatusBadge` | `Badge` | Resolves a status string to its colour through `StatusColor`; optional icon and hover feedback. Keeps its own shape (`rounded-md`, more padding) over the kit's pill |
 | `ProfitBadge` | `Badge` | Signs and formats a currency amount, green or red |
 | `DataTable` | `Table` and its parts | Bordered frame with a title bar and a screen-reader caption; `head` and `body` blocks take kit rows or plain `<tr>` |
+| `CtaButton` | `Button` (`as="a"`) | The dark public pages' calls to action: `primary` (orange) or `glass`, one size, always an icon, full-width on mobile; picks the Turbo frame or new tab from the `href`. Each page's closing row is `home/_closing_cta.html.twig` |
 
 The common case is then identical at every call site and in every project, while an unusual case (a three-level breadcrumb, an alert with an action button) composes the kit's tags directly and looks the same because it is the same markup underneath.
 

@@ -9,7 +9,7 @@ Every Stimulus controller in use in `assets/controllers/`, what it does and wher
 | Controller | What it does | Key values / targets | Used in |
 |------------|--------------|----------------------|---------|
 | `alert_dialog` | Kit. Confirmation dialog for content already on the page | targets `trigger`, `dialog` | `AlertDialog` component; no page uses it yet |
-| `aos` | Animate On Scroll; loads `aos` lazily, skipped under reduced motion | none | `home/` pages (index, about, contact, privacy, terms) |
+| `aos` | Animate On Scroll; loads `aos` lazily, skipped under reduced motion | none | `home/` pages (index, about, stack, contact, privacy, terms, log index) |
 | `bar_chart` | Axis and tooltip formatting for a Chart.js bar chart; a click visits `linkUrl` + `?` + `options.linkParams[index]` | value `linkUrl` | `reporting/order_summary`, `product_sales`, `customer_insights` |
 | `basic_modal` | The Turbo modal: opens on frame load, closes on a successful submit. While open, a live refresh leaves it and the page's scroll lock alone | targets `dialog`, `frame` | `Modal` component; see [Turbo](../Turbo/README.md) |
 | `calendar` | Kit. Month grid for `Calendar` | targets `month`, `previous`, `next`, `input` | `Calendar`, via `DatePicker` |
