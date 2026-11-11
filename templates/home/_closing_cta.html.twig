@@ -1,0 +1,45 @@
+{# The closing call to action of a public page: eyebrow, heading, text and a row of CtaButtons.
+   Used with {% embed %} on: home/index, about, stack, contact, privacy, terms, log/index. The page needs data-controller="aos".
+   Variables: eyebrow, heading, lede (strings, optional), byline (optional), email (bool: show the address under the buttons),
+              style: band (default, its own background) | plain (no background, straight after a hero: contact)
+                     | compact (smaller, ruled off from the page above: the legal pages)
+   Blocks: body (replaces the lede), actions (CtaButtons: one primary, then glass) #}
+{% set style = style|default('band') %}
+{% set compact = style == 'compact' %}
+<section id="closing-cta" class="relative overflow-hidden {{ {band: 'py-28 lg:py-36', plain: 'bg-gray-950 pt-8 pb-24 lg:pb-32', compact: 'border-t border-white/[0.06] bg-gray-950 py-16 lg:py-20'}[style] }}">
+    {% if style == 'band' %}
+        <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-950 to-gray-900"></div>
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_50%,rgba(249,115,22,0.04),transparent)]"></div>
+        <div class="absolute inset-0 opacity-[0.04]"
+             style="background-image: url({{ asset('images/martian_landscape.webp') }}); background-size: cover; background-position: center;">
+        </div>
+    {% endif %}
+
+    <div class="relative mx-auto max-w-2xl px-6 text-center">
+        {% if eyebrow|default %}
+            <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4" data-aos="fade-up">{{ eyebrow }}</p>
+        {% endif %}
+        {% if heading|default %}
+            <h2 class="font-bold tracking-tight text-white {{ compact ? 'text-2xl sm:text-3xl' : 'text-3xl sm:text-4xl lg:text-5xl' }} {{ byline|default ? 'mb-3' : 'mb-6' }}"
+                data-aos="fade-up" data-aos-delay="50" data-aos-duration="600">
+                {{ heading }}
+            </h2>
+        {% endif %}
+        {% if byline|default %}
+            <p class="text-base font-medium text-gray-500 tracking-wide mb-8" data-aos="fade-up" data-aos-delay="75">{{ byline }}</p>
+        {% endif %}
+        <div class="space-y-5 text-gray-400 leading-relaxed {{ compact ? 'text-base mb-8' : 'text-lg mb-12' }}" data-aos="fade-up" data-aos-delay="100">
+            {% block body %}<p>{{ lede }}</p>{% endblock %}
+        </div>
+    </div>
+    <div class="relative mx-auto max-w-4xl px-6 text-center">
+        <div class="flex flex-col sm:flex-row sm:flex-wrap items-center justify-center gap-3 sm:gap-4" data-aos="fade-up" data-aos-delay="200">
+            {% block actions %}{% endblock %}
+        </div>
+        {% if email|default(false) %}
+            <p class="mt-6 text-sm text-gray-500" data-aos="fade-up" data-aos-delay="250">
+                Or write to <a href="mailto:contact@supplymars.com" class="text-gray-400 hover:text-orange-300 transition-colors focus-ring">contact@supplymars.com</a>
+            </p>
+        {% endif %}
+    </div>
+</section>
