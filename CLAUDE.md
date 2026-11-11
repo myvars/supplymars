@@ -179,7 +179,7 @@ Details: [Docs/patterns/UI/README.md](Docs/patterns/UI/README.md), [Docs/pattern
 
 Details: [Docs/07-testing.md](Docs/07-testing.md); how each test is written (final classes, file names, logging in, fixtures, doubles): [Conventions](Docs/07-testing.md#conventions).
 
-- A feature isn't done until a test exercises it the way a caller would — an HTTP request for a controller, a handler call for a handler — not just "it didn't throw".
+- A feature isn't done until a test exercises it the way a caller would — an HTTP request for a controller, a handler call for a handler — not just "it didn't throw". Copy, layout and styling changes need no new test: don't pin labels, order or classes; check them with Playwright instead.
 - Tests mirror `src/` in `tests/`; DAMA rolls back each test's transaction. Foundry factories in `tests/Shared/Factory/`; `FoundryExtension` (in `phpunit.xml.dist`) boots Foundry for every test, so no trait.
 - Auth: `#[WithStory(StaffUserStory::class)]` or `UserFactory::new()->asStaff()->create()`. For super-admin-only actions (the 08 table): `#[WithStory(SuperAdminUserStory::class)]` or `->asSuperAdmin()`.
 - Flow tests use the `HasBrowser` trait (Zenstruck Browser), named `{Feature}FlowTest.php` in `tests/{Context}/UI/`.
