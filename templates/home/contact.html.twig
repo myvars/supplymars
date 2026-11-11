@@ -19,33 +19,21 @@
         </div>
     </section>
 
-    {# ── Content ────────────────────────────────────────────────────────── #}
-    <section class="bg-gray-950 pt-8 pb-24 lg:pb-32">
-        <div class="mx-auto max-w-2xl px-6 text-center">
-            <div class="space-y-5 text-gray-400 leading-relaxed text-base lg:text-lg mb-12" data-aos="fade-up">
-                <p>
-                    If something on this site caught your attention &mdash; whether it's the architecture, the approach, or the <a href="{{ path('app_about_page') }}" data-turbo-frame="_top" class="text-orange-400 hover:text-orange-300 transition-colors">story behind it</a> &mdash; I'd be happy to hear from you.
-                </p>
-                <p>
-                    I'm open to the right kind of opportunity, collaboration, or just a good conversation about software.
-                </p>
-            </div>
-
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4" data-aos="fade-up" data-aos-delay="100">
-                <a href="mailto:contact@supplymars.com"
-                   class="inline-flex items-center gap-2 w-full sm:w-auto px-7 py-3 text-base font-semibold text-white bg-orange-500 hover:bg-orange-400 rounded-lg shadow-lg shadow-orange-500/20 transition-all duration-200 active:scale-[0.98]">
-                    <twig:ux:icon name="bi:envelope-fill" class="h-5 w-5" />
-                    Email
-                </a>
-                <a href="https://github.com/myvars/supplymars"
-                   target="_blank"
-                   class="inline-flex items-center gap-2 w-full sm:w-auto px-7 py-3 text-base font-semibold text-gray-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg ring-1 ring-white/[0.1] hover:ring-white/[0.18] transition-all duration-200 active:scale-[0.98]">
-                    <twig:ux:icon name="bi:github" class="h-5 w-5" />
-                    GitHub
-                </a>
-            </div>
-        </div>
-    </section>
+    {% embed 'home/_closing_cta.html.twig' with { email: true, style: 'plain' } %}
+        {% block body %}
+            <p>
+                If something on this site caught your attention &mdash; whether it's the architecture, the approach, or the <a href="{{ path('app_about_page') }}" data-turbo-frame="_top" class="text-orange-400 hover:text-orange-300 transition-colors focus-ring">story behind it</a> &mdash; I'd be happy to hear from you.
+            </p>
+            <p>
+                I'm open to the right kind of opportunity, collaboration, or just a good conversation about software.
+            </p>
+        {% endblock %}
+        {% block actions %}
+            <twig:CtaButton href="mailto:contact@supplymars.com" icon="bi:envelope-fill" variant="primary">Get in Touch</twig:CtaButton>
+            <twig:CtaButton href="{{ path('app_about_page') }}" icon="bi:person-fill">About the Developer</twig:CtaButton>
+            <twig:CtaButton href="https://github.com/myvars/supplymars" icon="bi:github">View on GitHub</twig:CtaButton>
+        {% endblock %}
+    {% endembed %}
 
     </div>
 {% endblock %}

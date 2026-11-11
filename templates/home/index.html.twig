@@ -36,21 +36,9 @@
                 All operational.
             </p>
             <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 w-full sm:w-auto hero-fade-up" style="animation-delay: 0.5s">
-                <a href="{{ path('app_dashboard') }}" data-turbo-frame="_top"
-                   class="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-7 py-3 text-sm sm:text-base font-semibold text-white bg-orange-500 hover:bg-orange-400 rounded-lg shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-[0.98]"
-                   data-turbo-prefetch="false">
-                    Explore the Platform
-                </a>
-                <a href="{{ path('app_stack_page') }}" data-turbo-frame="_top"
-                   class="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-7 py-3 text-sm sm:text-base font-semibold text-gray-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg ring-1 ring-white/[0.1] hover:ring-white/[0.18] backdrop-blur-sm transition-all duration-200 active:scale-[0.98]">
-                    <twig:ux:icon name="bi:diagram-3-fill" class="size-5" />
-                    How It's Built
-                </a>
-                <a href="{{ path('app_about_page') }}" data-turbo-frame="_top"
-                   class="inline-flex items-center justify-center gap-2 w-full sm:w-auto px-7 py-3 text-sm sm:text-base font-semibold text-gray-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg ring-1 ring-white/[0.1] hover:ring-white/[0.18] backdrop-blur-sm transition-all duration-200 active:scale-[0.98]">
-                    <twig:ux:icon name="bi:person-fill" class="size-5" />
-                    About the Developer
-                </a>
+                <twig:CtaButton href="{{ path('app_dashboard') }}" icon="bi:rocket-takeoff-fill" variant="primary" data-turbo-prefetch="false">Explore the Platform</twig:CtaButton>
+                <twig:CtaButton href="{{ path('app_stack_page') }}" icon="bi:diagram-3-fill">How It's Built</twig:CtaButton>
+                <twig:CtaButton href="{{ path('app_about_page') }}" icon="bi:person-fill">About the Developer</twig:CtaButton>
             </div>
         </div>
 
@@ -449,53 +437,17 @@
         </div>
     </section>
 
-    {# ── CTA ─────────────────────────────────────────────────────────────── #}
-    <section class="relative py-28 lg:py-36 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-950 to-gray-900"></div>
-        <div class="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_50%,rgba(37,99,235,0.06),transparent)]"></div>
-        <div class="absolute inset-0 opacity-[0.04]"
-             style="background-image: url({{ asset('images/martian_landscape.webp') }}); background-size: cover; background-position: center;">
-        </div>
-
-        <div class="relative mx-auto max-w-2xl px-6 text-center">
-            <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4" data-aos="fade-up">Get Involved</p>
-            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-6"
-                data-aos="fade-up" data-aos-delay="50" data-aos-duration="600">
-                Explore the Code
-            </h2>
-            <p class="text-lg text-gray-400 mb-12 leading-relaxed" data-aos="fade-up" data-aos-delay="100">
-                The full source is on GitHub. Explore the architecture, read the story behind it, or get in touch.
-            </p>
-            <div class="flex flex-wrap items-center justify-center gap-4" data-aos="fade-up" data-aos-delay="200">
-                <twig:Button
-                    as="a"
-                    href="https://github.com/myvars/supplymars"
-                    target="_blank"
-                    class="h-auto gap-2 px-8 py-3 text-lg font-bold"
-                >
-                    <twig:ux:icon name="bi:github" class="size-5" />
-                    <span>View on GitHub</span>
-                </twig:Button>
-                <twig:Button
-                    as="a"
-                    href="{{ path('app_about_page') }}" data-turbo-frame="_top"
-                    class="h-auto gap-2 px-8 py-3 text-lg font-bold"
-                    variant="secondary-solid"
-                >
-                    <twig:ux:icon name="bi:person-fill" class="size-5" />
-                    <span>About the Developer</span>
-                </twig:Button>
-                <twig:Button
-                    as="a"
-                    href="mailto:contact@supplymars.com"
-                    class="h-auto gap-2 px-8 py-3 text-lg font-bold"
-                    variant="secondary-solid"
-                >
-                    <span>Get in Touch</span>
-                </twig:Button>
-            </div>
-        </div>
-    </section>
+    {% embed 'home/_closing_cta.html.twig' with {
+        eyebrow: 'Get Involved',
+        heading: 'Explore the Code',
+        lede: 'The full source is on GitHub. Read the story of how it was built, or meet the person behind it.',
+    } %}
+        {% block actions %}
+            <twig:CtaButton href="https://github.com/myvars/supplymars" icon="bi:github" variant="primary">View on GitHub</twig:CtaButton>
+            <twig:CtaButton href="{{ path('app_log_index') }}" icon="bi:journal-text">Engineering Log</twig:CtaButton>
+            <twig:CtaButton href="{{ path('app_about_page') }}" icon="bi:person-fill">About the Developer</twig:CtaButton>
+        {% endblock %}
+    {% endembed %}
 
     </div>
 {% endblock %}

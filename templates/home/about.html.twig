@@ -326,51 +326,25 @@
         </div>
     </section>
 
-    {# ── CTA ──────────────────────────────────────────────────────────────── #}
-    <section class="relative py-28 lg:py-36 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-950 to-gray-900"></div>
-        <div class="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_50%,rgba(249,115,22,0.04),transparent)]"></div>
-        <div class="absolute inset-0 opacity-[0.04]"
-             style="background-image: url({{ asset('images/martian_landscape.webp') }}); background-size: cover; background-position: center;">
-        </div>
-
-        <div class="relative mx-auto max-w-2xl px-6 text-center">
-            <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4" data-aos="fade-up">Get in Touch</p>
-            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-3"
-                data-aos="fade-up" data-aos-delay="50" data-aos-duration="600">
-                Let's Talk
-            </h2>
-            <p class="text-base font-medium text-gray-500 tracking-wide mb-8" data-aos="fade-up" data-aos-delay="75">
-                Adam Ashmore
+    {% embed 'home/_closing_cta.html.twig' with {
+        eyebrow: 'Get in Touch',
+        heading: 'Let\'s Talk',
+        byline: 'Adam Ashmore',
+    } %}
+        {% block body %}
+            <p>
+                I am looking for interesting, ambitious work with people who care about what they build &ndash; as a senior or lead engineer, founding engineer or hands-on CTO, building something new or modernising an established business.
             </p>
-            <div class="space-y-5 text-lg text-gray-400 mb-12 leading-relaxed" data-aos="fade-up" data-aos-delay="100">
-                <p>
-                    I am looking for interesting, ambitious work with people who care about what they build &ndash; as a senior or lead engineer, founding engineer or hands-on CTO, building something new or modernising an established business.
-                </p>
-                <p>
-                    I am open to permanent roles, contracts or consultancy, remote or on-site. If that sounds like a fit, I would love to hear from you.
-                </p>
-            </div>
-            <div class="flex flex-wrap items-center justify-center gap-4" data-aos="fade-up" data-aos-delay="200">
-                <a href="mailto:contact@supplymars.com"
-                   class="inline-flex items-center gap-2 px-7 py-3 text-sm sm:text-base font-semibold text-white bg-orange-500 hover:bg-orange-400 rounded-lg shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-[0.98]">
-                    <twig:ux:icon name="bi:envelope-fill" class="h-5 w-5" />
-                    Get in Touch
-                </a>
-                <a href="{{ path('app_catalog_product_index') }}" data-turbo-frame="_top"
-                   class="inline-flex items-center gap-2 px-7 py-3 text-sm sm:text-base font-semibold text-gray-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg ring-1 ring-white/[0.1] hover:ring-white/[0.18] transition-all duration-200 active:scale-[0.98]"
-                   data-turbo-prefetch="false">
-                    Explore the Platform
-                </a>
-                <a href="https://github.com/myvars/supplymars"
-                   target="_blank"
-                   class="inline-flex items-center gap-2 px-7 py-3 text-sm sm:text-base font-semibold text-gray-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg ring-1 ring-white/[0.1] hover:ring-white/[0.18] transition-all duration-200 active:scale-[0.98]">
-                    <twig:ux:icon name="bi:github" class="h-5 w-5" />
-                    View on GitHub
-                </a>
-            </div>
-        </div>
-    </section>
+            <p>
+                I am open to permanent roles, contracts or consultancy, remote or on-site. If that sounds like a fit, I would love to hear from you.
+            </p>
+        {% endblock %}
+        {% block actions %}
+            <twig:CtaButton href="mailto:contact@supplymars.com" icon="bi:envelope-fill" variant="primary">Get in Touch</twig:CtaButton>
+            <twig:CtaButton href="{{ path('app_stack_page') }}" icon="bi:diagram-3-fill">How It's Built</twig:CtaButton>
+            <twig:CtaButton href="{{ path('app_log_index') }}" icon="bi:journal-text">Engineering Log</twig:CtaButton>
+        {% endblock %}
+    {% endembed %}
 
     </div>
 {% endblock %}

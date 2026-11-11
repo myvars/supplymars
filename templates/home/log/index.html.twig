@@ -7,6 +7,8 @@
 {% block main_class %}grow bg-gray-950{% endblock %}
 
 {% block body %}
+    <div data-controller="aos">
+
     {{ include('home/log/_hero.html.twig', {
         eyebrow: 'Engineering Log',
         heading: 'Building SupplyMars',
@@ -44,4 +46,18 @@
             </p>
         </div>
     </section>
+
+    {% embed 'home/_closing_cta.html.twig' with {
+        eyebrow: 'Go Deeper',
+        heading: 'Behind the Posts',
+        lede: 'Every change these posts describe is in the repository, alongside the decisions and the docs. The stack page explains how it fits together.',
+    } %}
+        {% block actions %}
+            <twig:CtaButton href="https://github.com/myvars/supplymars" icon="bi:github" variant="primary">View on GitHub</twig:CtaButton>
+            <twig:CtaButton href="{{ path('app_stack_page') }}" icon="bi:diagram-3-fill">How It's Built</twig:CtaButton>
+            <twig:CtaButton href="{{ path('app_about_page') }}" icon="bi:person-fill">About the Developer</twig:CtaButton>
+        {% endblock %}
+    {% endembed %}
+
+    </div>
 {% endblock %}

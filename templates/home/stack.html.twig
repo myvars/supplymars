@@ -443,42 +443,17 @@
         </div>
     </section>
 
-    {# ── CTA ──────────────────────────────────────────────────────────────── #}
-    <section class="relative py-28 lg:py-36 overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-gray-900 via-gray-950 to-gray-900"></div>
-        <div class="absolute inset-0 opacity-[0.04]"
-             style="background-image: url({{ asset('images/martian_landscape.webp') }}); background-size: cover; background-position: center;">
-        </div>
-
-        <div class="relative mx-auto max-w-2xl px-6 text-center">
-            <p class="text-sm font-semibold uppercase tracking-widest text-orange-500 mb-4" data-aos="fade-up">Go Deeper</p>
-            <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white mb-8"
-                data-aos="fade-up" data-aos-delay="50" data-aos-duration="600">
-                Read the Code
-            </h2>
-            <p class="text-lg text-gray-400 mb-12 leading-relaxed" data-aos="fade-up" data-aos-delay="100">
-                The repository is public: the code, the tests, the ADRs and the infrastructure behind everything on this page.
-            </p>
-            <div class="flex flex-wrap items-center justify-center gap-4" data-aos="fade-up" data-aos-delay="200">
-                <a href="{{ github }}"
-                   target="_blank"
-                   class="inline-flex items-center gap-2 px-7 py-3 text-sm sm:text-base font-semibold text-white bg-orange-500 hover:bg-orange-400 rounded-lg shadow-lg shadow-orange-500/25 transition-all duration-200 active:scale-[0.98] focus-ring">
-                    <twig:ux:icon name="bi:github" class="h-5 w-5" />
-                    View on GitHub
-                </a>
-                <a href="{{ path('app_log_index') }}"
-                   data-turbo-frame="_top"
-                   class="inline-flex items-center gap-2 px-7 py-3 text-sm sm:text-base font-semibold text-gray-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg ring-1 ring-white/[0.1] hover:ring-white/[0.18] transition-all duration-200 active:scale-[0.98] focus-ring">
-                    Engineering Log
-                </a>
-                <a href="{{ path('app_about_page') }}"
-                   data-turbo-frame="_top"
-                   class="inline-flex items-center gap-2 px-7 py-3 text-sm sm:text-base font-semibold text-gray-300 bg-white/[0.06] hover:bg-white/[0.1] rounded-lg ring-1 ring-white/[0.1] hover:ring-white/[0.18] transition-all duration-200 active:scale-[0.98] focus-ring">
-                    About Me
-                </a>
-            </div>
-        </div>
-    </section>
+    {% embed 'home/_closing_cta.html.twig' with {
+        eyebrow: 'Go Deeper',
+        heading: 'Read the Code',
+        lede: 'The repository is public: the code, the tests, the ADRs and the infrastructure behind everything on this page.',
+    } %}
+        {% block actions %}
+            <twig:CtaButton href="{{ github }}" icon="bi:github" variant="primary">View on GitHub</twig:CtaButton>
+            <twig:CtaButton href="{{ path('app_log_index') }}" icon="bi:journal-text">Engineering Log</twig:CtaButton>
+            <twig:CtaButton href="{{ path('app_about_page') }}" icon="bi:person-fill">About the Developer</twig:CtaButton>
+        {% endblock %}
+    {% endembed %}
 
     </div>
 {% endblock %}
