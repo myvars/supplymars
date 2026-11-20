@@ -173,7 +173,7 @@ return $this->render('/order/show.html.twig', [
 ]);
 ```
 
-`base.html.twig` does the rest. A refresh is public, so the cookie (set by the permanent per-user element) grants only the user's topic, the same on every page, and nothing loaded later can take a live page's updates away. A second element, inside `<turbo-frame id="body">`, subscribes to the page's topics and goes when the page does: the order page is opened in that frame, so outside it a frame visit would keep the previous page's subscription. Do not call `turbo_stream_from(…, private: true)` in a page: the cookie is already set, and a second call throws.
+`base.html.twig` does the rest. A refresh is public, so the cookie (set by the permanent per-user element) grants only the user's topic, the same on every page, and nothing loaded later can take a live page's updates away. A second element, inside `<turbo-frame id="body">`, subscribes to the page's topics and goes when the page does: the order page is opened in that frame, so outside it a frame visit would keep the previous page's subscription. Do not call `turbo_stream_from(…, private: true)` in a page: since symfony/mercure 0.10 a second call no longer throws but adds its topics to the cookie, which must grant only `user/{publicId}`. `OrderLiveUpdatesFlowTest` and `PurchaseOrderLiveUpdatesFlowTest` check the cookie a live page sets.
 
 **Back requests the page again**, so it shows what is current. A copy restored without a request would show what the page held when it was left, until the next update. Two things prevent it:
 
