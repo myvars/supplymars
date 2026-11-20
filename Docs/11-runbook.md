@@ -77,7 +77,7 @@ An env file only reaches the app through `compose.prod.yaml`: the variables list
 | `APP_SECRET` | own | own | `openssl rand -hex 16` |
 | `DEFAULT_DOMAIN` | `supplymars` | `supplymars` | |
 | `DEFAULT_URI` | `https://live.supplymars.com` | `https://www.supplymars.com` | URLs generated outside a request: emails sent by the worker, commands |
-| `DATABASE_URL` | `mysql://app:<MYSQL_PASSWORD>@database:3306/app` | same shape | The app connects as `MYSQL_USER` `app`, which has rights on one database only |
+| `DATABASE_URL` | `mysql://app:<MYSQL_PASSWORD>@database:3306/app` | same shape | The app connects as `MYSQL_USER` `app`, which has rights on one database only. End it with a three-part `?serverVersion=8.4.0`: Doctrine reads `8.4` as older than 8.4.0 and picks the MySQL 8.0 platform |
 | `MYSQL_PASSWORD`, `MYSQL_ROOT_PASSWORD` | own | own | Read by the database container; the root one also by `reset` and the commands below. `openssl rand -base64 24` |
 | `DATABASE_NAME` | unset | unset | Leave it unset, so the database is `app` (`compose.yaml`). The table queries in section 8 assume `app`, and `DATABASE_URL` must name the same database |
 | `REDIS_PASSWORD`, `REDIS_URL` | own | own | Redis refuses to start without the password; `REDIS_URL` (`redis://default:<password>@redis:6379`) carries the same one, for sessions and the cache |
@@ -374,7 +374,7 @@ gunzip < var/backups/supplymars-2026-10-20-020001.sql.gz | \
 
 # 5. The entrypoint's migrate, as the app user. php bin/console, not symfony console, which can
 #    swap in the dev database's URL: check the hostname is the container's ID before migrating
-export DATABASE_URL='mysql://app:apppw@127.0.0.1:3399/app?serverVersion=8.4&charset=utf8mb4'
+export DATABASE_URL='mysql://app:apppw@127.0.0.1:3399/app?serverVersion=8.4.0&charset=utf8mb4'
 php bin/console dbal:run-sql "SELECT @@hostname"
 php bin/console doctrine:migrations:migrate --no-interaction --allow-no-migration
 php bin/console doctrine:schema:validate --skip-mapping

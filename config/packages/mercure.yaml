@@ -7,6 +7,8 @@ mercure:
     # security.yaml. The hub closes a connection when its token expires and refuses the reconnect, so a shorter
     # token would silence a tab left open on one page. Only logout clears it (ClearMercureCookieOnLogout). ADR 017.
     default_cookie_lifetime: '%app.login_lifetime%'
+    # ClearMercureCookieOnLogout clears the cookie, so the bundle's own logout listener is off.
+    clear_cookie_on_logout: false
     hubs:
         default:
             url: '%env(MERCURE_URL)%'
