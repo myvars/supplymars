@@ -19,55 +19,46 @@ doctrine:
                 is_bundle: false
                 dir: '%kernel.project_dir%/src/Audit/Domain/Model'
                 prefix: 'App\Audit\Domain\Model'
-                alias: Audit
             Catalog:
                 type: attribute
                 is_bundle: false
                 dir: '%kernel.project_dir%/src/Catalog/Domain/Model'
                 prefix: 'App\Catalog\Domain\Model'
-                alias: Catalog
             Customer:
                 type: attribute
                 is_bundle: false
                 dir: '%kernel.project_dir%/src/Customer/Domain/Model'
                 prefix: 'App\Customer\Domain\Model'
-                alias: Customer
             Order:
                 type: attribute
                 is_bundle: false
                 dir: '%kernel.project_dir%/src/Order/Domain/Model'
                 prefix: 'App\Order\Domain\Model'
-                alias: Order
             Pricing:
                 type: attribute
                 is_bundle: false
                 dir: '%kernel.project_dir%/src/Pricing/Domain/Model'
                 prefix: 'App\Pricing\Domain\Model'
-                alias: Pricing
             Purchasing:
                 type: attribute
                 is_bundle: false
                 dir: '%kernel.project_dir%/src/Purchasing/Domain/Model'
                 prefix: 'App\Purchasing\Domain\Model'
-                alias: Purchasing
             Reporting:
                 type: attribute
                 is_bundle: false
                 dir: '%kernel.project_dir%/src/Reporting/Domain/Model'
                 prefix: 'App\Reporting\Domain\Model'
-                alias: Reporting
             Note:
                 type: attribute
                 is_bundle: false
                 dir: '%kernel.project_dir%/src/Note/Domain/Model'
                 prefix: 'App\Note\Domain\Model'
-                alias: Note
             Review:
                 type: attribute
                 is_bundle: false
                 dir: '%kernel.project_dir%/src/Review/Domain/Model'
                 prefix: 'App\Review\Domain\Model'
-                alias: Review
         dql:
             numeric_functions:
                 rand: DoctrineExtensions\Query\Mysql\Rand
