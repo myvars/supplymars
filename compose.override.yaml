@@ -128,7 +128,7 @@ services:
   # (/.well-known/mercure; proxy_mercure in .symfony.local.yaml), so the cookie and the CSP need nothing extra.
   # Same version as the hub inside docker/Dockerfile's FrankenPHP image; no history, as there.
   mercure:
-    image: dunglas/mercure:v1.1.4
+    image: dunglas/mercure:v1.1.6
     ports:
       - "127.0.0.1:${MERCURE_PORT:-3001}:80"   # Where the app publishes (MERCURE_URL in .env)
     environment:
