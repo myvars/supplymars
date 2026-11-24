@@ -77,7 +77,7 @@ The chart builders (`src/Reporting/UI/Http/Chart/`, `src/Audit/UI/Http/Chart/`) 
 
 The sidebar menu (`_menu.html.twig`) and the help panel (`_help_drawer.html.twig`) are kit `<twig:Sheet>` components: a modal `<dialog>` that slides in from an edge, driven by the `dialog` controller. The browser keeps focus inside and makes the page behind inert; a rule in `assets/styles/app.css` stops the page scrolling while one is open.
 
-- Give the content an inner element that fills the panel. A click that lands on the `<dialog>` element itself counts as a click outside and closes it.
+- A press and click outside the panel close it (`closedby="any"`, and the controller's `closeOnClickOutside` as the fallback). Since kit 3.8 a click in the panel's own padding, which also targets the `<dialog>`, does not.
 - A back navigation does not restore a panel open: the `dialog` controller closes a `<dialog>` that connects open but not modal, which is how one comes back from Turbo's cache (a local change, ADR 012). A `turbo:before-cache` close cannot do this: the close waits for the exit transition, and Turbo copies the page before it ends (a link that navigates the body frame copies it as it is clicked, without `before-cache`).
 - Links inside close the panel as they navigate with `data-action="dialog#close"`.
 - A panel that needs more behaviour puts its own controller on the same element and calls `dialog` (as `help_drawer` does).

@@ -11,7 +11,7 @@
             <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 17 14"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 1h15M1 7h15M1 13h15"/></svg>
         </twig:Button>
     </twig:Sheet:Trigger>
-    {# The inner div fills the dialog, so a click on empty menu space is not taken for a click outside. #}
+    {# The inner div fills the dialog and scrolls the menu. #}
     <twig:Sheet:Content class="w-72 gap-0" :showCloseButton="false">
     <div class="flex min-h-0 flex-1 flex-col overflow-y-auto">
         <twig:Sheet:Title class="sr-only">Main menu</twig:Sheet:Title>
