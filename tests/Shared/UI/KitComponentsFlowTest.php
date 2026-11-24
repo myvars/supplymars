@@ -119,6 +119,16 @@ final class KitComponentsFlowTest extends WebTestCase
             ->assertSeeElement('[data-modal-size="sm"] form button[type="submit"][data-variant="destructive-solid"]');
     }
 
+    public function testAFormInTheModalHasNoDescription(): void
+    {
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/manufacturer/new', ['headers' => ['Turbo-Frame' => 'modal']])
+            ->assertSuccessful()
+            ->assertElementCount('h3#modal-title', 1)
+            ->assertNotSeeElement('#modal-description');
+    }
+
     public function testFormThemeRendersKitFieldsWithErrorsLinkedToTheirControl(): void
     {
         $this->browser()
