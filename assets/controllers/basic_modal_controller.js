@@ -22,6 +22,7 @@ export default class extends Controller {
         if (this.hasDialogTarget) {
             this.dialogTarget.close();
             this.dialogTarget.dataset.modalSize = 'md';
+            this.dialogTarget.removeAttribute('aria-describedby');
             this.dialogTarget.removeAttribute('data-turbo-permanent');
         }
         if (this.hasFrameTarget) {
@@ -39,7 +40,12 @@ export default class extends Controller {
     }
 
     frameLoaded(event) {
-        if (event.target === this.frameTarget && !this.dialogTarget.open) {
+        if (event.target !== this.frameTarget) {
+            return;
+        }
+        // Also when the modal is open: a confirmation opened from a form replaces the form in it
+        this.#applyDescriptionFromContent();
+        if (!this.dialogTarget.open) {
             this.#applySizeFromContent();
             this.open();
         }
@@ -78,6 +84,15 @@ export default class extends Controller {
     #applySizeFromContent() {
         const content = this.frameTarget.querySelector('[data-modal-size]');
         this.dialogTarget.dataset.modalSize = content?.dataset.modalSize || 'md';
+    }
+
+    // Only content with a description (ConfirmDialog) names one: a fixed attribute would point at nothing in a form
+    #applyDescriptionFromContent() {
+        if (this.frameTarget.querySelector('#modal-description')) {
+            this.dialogTarget.setAttribute('aria-describedby', 'modal-description');
+        } else {
+            this.dialogTarget.removeAttribute('aria-describedby');
+        }
     }
 
     #isClickInElement(event, element) {

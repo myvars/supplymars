@@ -4,7 +4,8 @@
    - fixedTop: Position dialog near the top of viewport (default: false)
    Size is controlled by the loaded content's data-modal-size attribute (sm|md|lg|xl).
    ModalPanel.html.twig exposes a `size` prop; ConfirmDialog defaults to sm.
-   The dialog is named by the loaded content's #modal-title heading, which ModalPanel provides.
+   The dialog is named by the loaded content's #modal-title heading, which ModalPanel provides, and described
+   by its #modal-description when it has one (ConfirmDialog's message); the controller sets aria-describedby.
    The Stimulus controller reads this attribute and applies it to the <dialog>.
    Blocks: trigger, content #}
 {% props

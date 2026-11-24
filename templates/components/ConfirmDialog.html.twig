@@ -21,7 +21,8 @@
             <twig:ux:icon name="bi:exclamation-triangle-fill" class="h-6 w-6 text-red-500 dark:text-red-400"/>
         </div>
     </div>
-    {{ message }}
+    {# The modal's <dialog> is described by this (basic_modal sets aria-describedby when it is loaded) #}
+    <div id="modal-description">{{ message }}</div>
     <form method="post" action="{{ formAction }}">
         <input type="hidden" name="_token" value="{{ csrf_token(csrfId) }}">
         <div class="flex gap-3">
