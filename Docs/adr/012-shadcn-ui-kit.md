@@ -119,7 +119,7 @@ No in-house file now shares a name with a kit recipe.
 
 ### Local changes to kit files
 
-The kit files match the Shadcn kit of `symfony/ux-toolkit` 3.7.1, apart from these. Updating a recipe offers to overwrite them; keep them when reviewing the diff:
+The kit files match the Shadcn kit of `symfony/ux-toolkit` 3.8.0, apart from these. Updating a recipe offers to overwrite them; keep them when reviewing the diff:
 
 | File | Change |
 |------|--------|
@@ -128,10 +128,12 @@ The kit files match the Shadcn kit of `symfony/ux-toolkit` 3.7.1, apart from the
 | `InputGroup` | 40px high, to match `Input` |
 | `Alert` | `info`, `success` and `warning` variants added; `destructive` changed from a neutral card with red text to the same tinted style as the others |
 | `sonner_controller.js` | A `toast` target, so a server-rendered toast added after connect (a Turbo Stream append) is moved into the list and activated; the kit only does this for toasts present at connect. Default surface changed from `bg-background` to `bg-popover`, so a toast stands off the page in dark mode |
-| `dialog_controller.js` | Closes a `<dialog>` that connects open but not modal. The kit's close plays an exit transition with the `<dialog>` still open, and Turbo copies the page for its cache before it ends (on a `turbo:before-cache` close too), so after Back the Sheet came back open but not modal: no backdrop, no focus trap, and a toggle that thought it was open. Turbo's handbook asks for code that copes with a restored page ("Making transformations idempotent"); this is that check. Used by `Sheet`, `Dialog` |
+| `dialog_controller.js` | Closes a `<dialog>` that connects open but not modal. The kit's close plays an exit transition with the `<dialog>` still open, and Turbo copies the page for its cache before it ends (on a `turbo:before-cache` close too), so after Back the Sheet came back open but not modal: no backdrop, no focus trap, and a toggle that thought it was open. Turbo's handbook asks for code that copes with a restored page ("Making transformations idempotent"); this is that check. Since 3.8 the kit's `open()` makes a restored Sheet modal again; `connect()` still leaves it open until it is opened. Used by `Sheet`, `Dialog` |
 | `Sonner:Toast` | An optional `icon` block before the content, and the same `bg-popover` surface. The kit's template has no way to supply an icon |
 
 Four earlier local changes are now in the kit and were dropped at the 3.7 update: the `data-slot` override on `Button`, `Input`, `Textarea` and `Label` (without it `InputGroup:Input` lost its focus ring), the `true`/`false` `open` value on `AlertDialog`, and the toast close button that a swipe swallowed.
+
+3.8 changed the installed `dialog`, `alert-dialog`, `sheet`, `dropdown-menu` and `popover` recipes, re-installed with `ux:install <recipe> --kit=shadcn --force`. `--force` also re-installs the recipes these depend on, which overwrote `Button`; it was restored from git. Dialogs, sheets and alert dialogs now open and close through the native invoker commands (`command`/`commandfor`), keeping the click actions as the fallback; dialogs and sheets (not alert dialogs) also close on an outside click with `closedby="any"`. Popover and dropdown menu content opens in the top layer, placed with anchor positioning where supported, so a modal or an ancestor hiding its overflow no longer clips it. 3.8 rewrote `dialog_controller.js`, and the local change above was merged back by hand.
 
 Since 3.6 the kit's `Toast` name belongs to a separate toast component (the `toast` recipe: `Toaster` and `toast_controller.js`). Sonner's own toast is `Sonner:Toast` (`templates/components/Sonner/Toast.html.twig`). The `toast` recipe is not installed: `Sonner` is the one toaster. Installing it would no longer overwrite a file here, but it would add a second toast mechanism.
 
