@@ -34,7 +34,7 @@ return [
     'dropzone' => ['version' => '6.3.5'],
     'just-extend' => ['version' => '6.2.0'],
     'sortablejs' => ['version' => '1.15.7'],
-    'chart.js' => ['version' => '4.6.1'],
+    'chart.js' => ['version' => '4.6.2'],
     '@kurkle/color' => ['version' => '0.6.6'],
     'shadcn/dist/tailwind.css' => ['version' => '4.23.0', 'type' => 'css'],
     'tw-animate-css/dist/tw-animate.css' => ['version' => '1.4.0', 'type' => 'css'],

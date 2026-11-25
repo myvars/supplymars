@@ -113,9 +113,20 @@ final class KitComponentsFlowTest extends WebTestCase
             ->assertElementCount('h3#modal-title', 1)
             ->assertSeeElement('[data-modal-size="sm"] h3#modal-title')
             ->assertSeeElement('[data-modal-size="sm"] [data-slot="button"][data-action="basic-modal#close"][aria-label="Close dialog"]')
-            ->assertSeeIn('[data-modal-size="sm"]', 'Are you sure you want to delete this Manufacturer?')
+            ->assertSeeIn('[data-modal-size="sm"] #modal-description', 'Are you sure you want to delete this Manufacturer?')
+            ->assertElementCount('#modal-description', 1)
             ->assertSeeElement('[data-modal-size="sm"] form[method="post"] input[type="hidden"][name="_token"]')
             ->assertSeeElement('[data-modal-size="sm"] form button[type="submit"][data-variant="destructive-solid"]');
+    }
+
+    public function testAFormInTheModalHasNoDescription(): void
+    {
+        $this->browser()
+            ->actingAs(UserFactory::new()->asStaff()->create())
+            ->get('/manufacturer/new', ['headers' => ['Turbo-Frame' => 'modal']])
+            ->assertSuccessful()
+            ->assertElementCount('h3#modal-title', 1)
+            ->assertNotSeeElement('#modal-description');
     }
 
     public function testFormThemeRendersKitFieldsWithErrorsLinkedToTheirControl(): void

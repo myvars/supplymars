@@ -32,7 +32,7 @@ State-changing actions are a POST form, never a link (see [FormFlow](../FormFlow
 ### Modal-capable templates
 
 - Extend `shared/turbo/modal_base.html.twig`. The same template then works as a modal, as an embedded frame and as a full page.
-- Wrap the content in `<twig:ModalPanel title="…" size="sm|md|lg|xl">` (default `md`; `ConfirmDialog` uses `sm`). On desktop `md` is half the viewport wide; `sm`, `lg` and `xl` have fixed maximum widths (`templates/components/Modal.html.twig`). Its heading has `id="modal-title"`, which names the dialog for screen readers.
+- Wrap the content in `<twig:ModalPanel title="…" size="sm|md|lg|xl">` (default `md`; `ConfirmDialog` uses `sm`). On desktop `md` is half the viewport wide; `sm`, `lg` and `xl` have fixed maximum widths (`templates/components/Modal.html.twig`). Its heading has `id="modal-title"`, which names the dialog for screen readers. Content with an `#modal-description` element (`ConfirmDialog`'s message) also describes it: `basic_modal` sets `aria-describedby` when the content loads.
 - One modal at a time. Do not open a second modal from inside one; a link inside the modal replaces its content in place (see [Gotchas](#gotchas)).
 
 ### Layout by `Turbo-Frame` header
